@@ -20,7 +20,7 @@
     <Grid Background="#e0e0e0">
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="2*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>

@@ -38,7 +38,7 @@ namespace AasxPluginPlotting
         {
             public const int BufferSize = 512;
 
-            public PlottableSignal Plottable;
+            public ScottPlot.Plottable.SignalPlot Plottable;
             public double[] BufferData = new double[BufferSize];
             public int BufferLevel = 0;
 
@@ -49,7 +49,7 @@ namespace AasxPluginPlotting
                     // simply add
                     BufferData[BufferLevel] = data;
                     if (Plottable != null)
-                        Plottable.maxRenderIndex = BufferLevel;
+                        Plottable.MaxRenderIndex = BufferLevel;
                     BufferLevel++;
                 }
                 else
@@ -58,7 +58,7 @@ namespace AasxPluginPlotting
                     Array.Copy(BufferData, 1, BufferData, 0, BufferSize - 1);
                     BufferData[BufferSize - 1] = data;
                     if (Plottable != null)
-                        Plottable.maxRenderIndex = BufferSize - 1;
+                        Plottable.MaxRenderIndex = BufferSize - 1;
                 }
             }
         }
@@ -69,7 +69,31 @@ namespace AasxPluginPlotting
             public string grp;
             public string fmt;
             public double? xmin, ymin, xmax, ymax;
+            public bool sameaxis;
+            public double? height, width;
+
+            public enum Type { None, Bars }
+            public Type type;
+
             // ReSharper enable UnassignedField.Global
+
+            public static PlotArguments Parse(string json)
+            {
+                if (!json.HasContent())
+                    return null;
+
+                try
+                {
+                    var res = Newtonsoft.Json.JsonConvert.DeserializeObject<PlotArguments>(json);
+                    return res;
+                }
+                catch (Exception ex)
+                {
+                    LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+                return null;
+            }
         }
 
         // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
@@ -142,22 +166,7 @@ namespace AasxPluginPlotting
                 _value = value;
                 _description = description;
                 _displayDescription = description?.GetDefaultStr(lang);
-                TryParseArgs();
-            }
-
-            private void TryParseArgs()
-            {
-                try
-                {
-                    Args = null;
-                    if (!ArgsStr.HasContent())
-                        return;
-                    Args = Newtonsoft.Json.JsonConvert.DeserializeObject<PlotArguments>(ArgsStr);
-                }
-                catch (Exception ex)
-                {
-                    LogInternally.That.SilentlyIgnoredError(ex);
-                }
+                Args = PlotArguments.Parse(ArgsStr);
             }
 
             public int CompareTo(PlotItem other)
@@ -169,7 +178,7 @@ namespace AasxPluginPlotting
                 if (this.Group < other.Group)
                     return -1;
                 // Resharper disable once StringCompareToIsCultureSpecific
-                return (this._path.CompareTo(other._path));
+                return this._path.CompareTo(other._path);
             }
 
         }
@@ -312,8 +321,8 @@ namespace AasxPluginPlotting
 
                     // some basic attributes
                     lastPlot = wpfPlot;
-                    wpfPlot.plt.AntiAlias(false, false, false);
-                    wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
+                    // wpfPlot.Plot.AntiAlias(false, false, false);
+                    wpfPlot.AxesChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
                     groupPI.WpfPlot = wpfPlot;
                     res.Add(groupPI);
 
@@ -344,27 +353,27 @@ namespace AasxPluginPlotting
                         pi.Buffer = pb;
 
                         // factory new Plottable
-                        pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
+                        pb.Plottable = wpfPlot.Plot.AddSignal(pb.BufferData, label: "" + pi.DisplayPath);
                         pb.Push(val.HasValue ? val.Value : 0.0);
                     }
 
                     // apply some more args to the group
                     if (yMin.HasValue)
                     {
-                        wpfPlot.plt.Axis(y1: yMin.Value);
+                        wpfPlot.Plot.SetAxisLimits(yMin: yMin.Value);
                         _autoScaleY = false;
                     }
 
                     if (yMax.HasValue)
                     {
-                        wpfPlot.plt.Axis(y2: yMax.Value);
+                        wpfPlot.Plot.SetAxisLimits(yMax: yMax.Value);
                         _autoScaleY = false;
                     }
 
                     // render the plot into panel
-                    wpfPlot.plt.Legend(fontSize: 9.0f);
+                    wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */ );
                     panel.Children.Add(pvc);
-                    wpfPlot.Render(skipIfCurrentlyRendering: true);
+                    wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
                 }
 
                 // for the last plot ..
@@ -402,14 +411,14 @@ namespace AasxPluginPlotting
                 if (ndx == 1 || ndx == 2)
                 {
                     // Horizontal scale Plus / Minus
-                    var ax = wpfPlot.plt.Axis();
-                    var width = Math.Abs(ax[1] - ax[0]);
+                    var ax = wpfPlot.Plot.GetAxisLimits();
+                    var width = Math.Abs(ax.XMax - ax.XMin);
 
                     if (ndx == 1)
-                        wpfPlot.plt.Axis(x1: ax[0] - width / 2, x2: ax[1] + width / 2);
+                        wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin - width / 2, xMax: ax.XMin + width / 2);
 
                     if (ndx == 2)
-                        wpfPlot.plt.Axis(x1: ax[0] + width / 4, x2: ax[1] - width / 4);
+                        wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
 
                     // no autoscale for X
                     _autoScaleX = false;
@@ -421,14 +430,14 @@ namespace AasxPluginPlotting
                 if (ndx == 3 || ndx == 4)
                 {
                     // Vertical scale Plus / Minus
-                    var ax = wpfPlot.plt.Axis();
-                    var height = Math.Abs(ax[3] - ax[2]);
+                    var ax = wpfPlot.Plot.GetAxisLimits();
+                    var height = Math.Abs(ax.YMax - ax.YMin);
 
                     if (ndx == 3)
-                        wpfPlot.plt.Axis(y1: ax[2] - height / 2, y2: ax[3] + height / 2);
+                        wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin - height / 2, yMax: ax.YMax + height / 2);
 
                     if (ndx == 4)
-                        wpfPlot.plt.Axis(y1: ax[2] + height / 4, y2: ax[3] - height / 4);
+                        wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin + height / 4, yMax: ax.YMax - height / 4);
 
                     // no autoscale for Y
                     _autoScaleY = false;
@@ -468,19 +477,19 @@ namespace AasxPluginPlotting
                         ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
                         {
                             // disable
-                            var oldLimits = grp.WpfPlot.plt.Axis();
-                            grp.WpfPlot.plt.Axis(x2: oldLimits[1] + 10);
+                            var oldLimits = grp.WpfPlot.Plot.GetAxisLimits();
+                            grp.WpfPlot.Plot.SetAxisLimits(xMax: oldLimits.XMax + 10);
                         });
                     }
 
                     ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
                     {
-                        var one = wpfPlot.plt.Axis();
+                        var one = wpfPlot.Plot.GetAxisLimits();
                         if (grp.WpfPlot != wpfPlot && grp.WpfPlot != null)
                         {
                             // move
-                            grp.WpfPlot.plt.Axis(x1: one[0], x2: one[1]);
-                            grp.WpfPlot.Render(skipIfCurrentlyRendering: true);
+                            grp.WpfPlot.Plot.SetAxisLimits(xMin: one.XMin, xMax: one.XMax);
+                            grp.WpfPlot.Render(/* skipIfCurrentlyRendering: true */);
                         }
                     });
                 }
@@ -508,15 +517,15 @@ namespace AasxPluginPlotting
 
                     // scale?
                     if (_autoScaleX && _autoScaleY)
-                        grp.WpfPlot?.plt.AxisAuto();
+                        grp.WpfPlot?.Plot.AxisAuto();
                     else
                     if (_autoScaleX)
-                        grp.WpfPlot?.plt.AxisAutoX();
+                        grp.WpfPlot?.Plot.AxisAutoX();
                     else
                     if (_autoScaleY)
-                        grp.WpfPlot?.plt.AxisAutoY();
+                        grp.WpfPlot?.Plot.AxisAutoY();
 
-                    grp.WpfPlot?.Render(skipIfCurrentlyRendering: true);
+                    grp.WpfPlot?.Render(/* skipIfCurrentlyRendering: true */);
                 }
             }
         }
@@ -560,8 +569,6 @@ namespace AasxPluginPlotting
         // Data logic
         //
 
-
-
         //
         // Mechanics
         //
@@ -584,6 +591,12 @@ namespace AasxPluginPlotting
             // make charts, as well
             PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, plotHeight: 200);
 
+            // hide these
+            if (StackPanelCharts.Children.Count < 1)
+            {
+                GridContentCharts.Visibility = Visibility.Collapsed;
+            }
+
             // start a timer
             // Timer for status
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
@@ -598,6 +611,13 @@ namespace AasxPluginPlotting
             };
             dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
             dispatcherTimer.Start();
+
+            // test
+            // var ts1 = new TimeSeriesRecordData();
+            // ts1.DataAdd("[0,0.1], [ 1, 0.23334 ] , [3,0.3]");
+
+            SetTimeSeriesFromSubmodel(theSubmodel);
+            _timeSeriesData.RenderTimeSeries(StackPanelTimeSeries, plotHeight: 200, theDefaultLang);
         }
 
         private void FillDemoPlots()
@@ -613,8 +633,8 @@ namespace AasxPluginPlotting
                 double[] sin = DataGen.Sin(pointCount);
                 double[] cos = DataGen.Cos(pointCount);
 
-                plt.PlotScatter(xs, sin, label: "sin");
-                plt.PlotScatter(xs, cos, label: "cos");
+                plt.AddScatter(xs, sin, label: "sin");
+                plt.AddScatter(xs, cos, label: "cos");
                 plt.Legend();
 
                 plt.Title("Scatter Plot Quickstart");
@@ -635,16 +655,16 @@ namespace AasxPluginPlotting
             {
                 var pv1 = new ScottPlot.WpfPlot();
                 pv1.Height = 200;
-                pv1.plt.PlotSignal(DataGen.RandomWalk(rand, 100));
+                pv1.Plot.AddSignal(DataGen.RandomWalk(rand, 100));
 
-                var plt = pv1.plt;
+                var plt = pv1.Plot;
                 int pointCount = 51;
                 double[] xs = DataGen.Consecutive(pointCount);
                 double[] sin = DataGen.Sin(pointCount);
                 double[] cos = DataGen.Cos(pointCount);
 
-                plt.PlotScatter(xs, sin, label: "sin");
-                plt.PlotScatter(xs, cos, label: "cos");
+                plt.AddScatter(xs, sin, label: "sin");
+                plt.AddScatter(xs, cos, label: "cos");
                 plt.Legend();
 
                 plt.Title("Scatter Plot Quickstart");
@@ -696,5 +716,589 @@ namespace AasxPluginPlotting
             PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
             DataGridPlotItems.DataContext = PlotItems;
         }
+
+        //
+        // Time Series
+        // Plan: refactor overall class into pieces afterwards
+        //
+
+        public class TimeSeriesDataPoint
+        {
+            public int Index = 0;
+            public string ValStr = "";
+            public double? Value;
+        }
+
+        public class TimeSeriesMinMax<T>
+        {
+            public T Min;
+            public T Max;
+        }
+
+        public enum TimeSeriesTimeAxis { None, Utc, Tai, Plain }
+
+        public class ListOfTimeSeriesDataPoint : List<TimeSeriesDataPoint>
+        {
+            public ListOfTimeSeriesDataPoint() : base() { }
+
+            public ListOfTimeSeriesDataPoint(string json, TimeSeriesTimeAxis timeAxis) : base()
+            {
+                Add(json, timeAxis);
+            }
+
+            public TimeSeriesMinMax<int> GetMinMaxIndex()
+            {
+                var res = new TimeSeriesMinMax<int>();
+                foreach (var dp in this)
+                {
+                    if (dp.Index < res.Min)
+                        res.Min = dp.Index;
+                    if (dp.Index > res.Max)
+                        res.Max = dp.Index;
+                }
+                return res;
+            }
+
+            public void Add(string json, TimeSeriesTimeAxis timeAxis)
+            {
+                // simple state machine approch to pseudo parse-json
+                var state = 0;
+                int i = 0;
+                var err = false;
+                var bufIndex = "";
+                var bufValue = "";
+
+                while (! err && i < json.Length)
+                {
+
+                    switch (state)
+                    {
+                        // expecting inner '['
+                        case 0:                            
+                            if (json[i] == '[')
+                            {
+                                // prepare first buffer
+                                state = 1;
+                                bufIndex = "";
+                                i++;
+                            } else
+                            if (json[i] == ',' || Char.IsWhiteSpace(json[i]))
+                            {
+                                // ignore whitespace
+                                i++;
+                            }
+                            else
+                            {
+                                // break with error
+                                err = true;
+                            }
+                            break;
+
+                        // parsing 1st buffer: index
+                        case 1:
+                            if (json[i] == ',')
+                            {
+                                // prepare second buffer
+                                state = 2;
+                                bufValue = "";
+                                i++;
+                            }
+                            else
+                            if("0123456789-+.TZ\"".IndexOf(json[i]) >= 0)
+                            {
+                                bufIndex += json[i];
+                                i++;
+                            } else
+                            if (Char.IsWhiteSpace(json[i]))
+                            {
+                                // ignore whitespace
+                                i++;
+                            }
+                            else
+                            {
+                                // break with error
+                                err = true;
+                            }
+                            break;
+
+                        // parsing 2nd buffer: value
+                        case 2:
+                            if (json[i] == ']')
+                            {
+                                // ok, finalize
+                                if (int.TryParse(bufIndex, out int iIndex))
+                                {
+                                    var dp = new TimeSeriesDataPoint()
+                                    {
+                                        Index = iIndex,
+                                        ValStr = bufValue
+                                    };
+
+                                    if (timeAxis == TimeSeriesTimeAxis.Utc || timeAxis == TimeSeriesTimeAxis.Tai)
+                                    {
+                                        // strict time string
+                                        if (DateTime.TryParseExact(bufValue,
+                                            "yyyy-MM-dd'T'HH:mm:ssZ", CultureInfo.InvariantCulture,
+                                            DateTimeStyles.AdjustToUniversal, out DateTime dt))
+                                        {
+                                            dp.Value = dt.ToOADate();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // plain time or plain value
+                                        if (double.TryParse(bufValue, NumberStyles.Float,
+                                                CultureInfo.InvariantCulture, out double fValue))
+                                            dp.Value = fValue;
+                                    }
+                                    this.Add(dp);
+                                }
+
+                                // next sample
+                                state = 0;
+                                i++;
+                            }
+                            else
+                            if ("0123456789-+.:TZ\"".IndexOf(json[i]) >= 0)
+                            {
+                                bufValue += json[i];
+                                i++;
+                            }
+                            else
+                            if (Char.IsWhiteSpace(json[i]))
+                            {
+                                // ignore whitespace
+                                i++;
+                            }
+                            else
+                            {
+                                // break with error
+                                err = true;
+                            }
+                            break;
+                    }
+
+                }
+
+            }
+        }
+
+        public class TimeSeriesRecordData
+        {
+            public string RecordId = "";
+            public TimeSeriesTimeAxis TimeAxis;
+            public AdminShell.Property DataPoint;
+            public AdminShell.ConceptDescription DataPointCD;
+
+            public PlotArguments Args = null;
+
+            public TimeSeriesMinMax<int> TsLimits = new TimeSeriesMinMax<int>();
+            
+            protected TimeSeriesMinMax<int> dataLimits = new TimeSeriesMinMax<int>();
+            protected double[] data;
+            public double[] Data { get { return data; } }
+
+            public ScottPlot.Plottable.IPlottable Plottable;
+
+            public void DataAdd(string json)
+            {
+                // intermediate format
+                var temp = new ListOfTimeSeriesDataPoint(json, TimeAxis);
+                if (temp.Count < 1)
+                    return;
+
+                // check to adapt current shape of data
+                var tempLimits = temp.GetMinMaxIndex();
+
+                // extend to the left?
+                if (tempLimits.Min < TsLimits.Min)
+                {
+                    // how much
+                    var delta = TsLimits.Min - tempLimits.Min;
+
+                    // adopt the limits
+                    var oldsize = TsLimits.Max - TsLimits.Min + 1;
+                    TsLimits.Min -= delta;
+
+                    // resize to these limits
+                    Array.Resize<double>(ref data, TsLimits.Max - TsLimits.Min + 1);
+
+                    // shift to right
+                    Array.Copy(data, 0, data, delta, oldsize);
+                }
+
+                // extend to the right (fairly often the case)
+                if (tempLimits.Max > TsLimits.Max)
+                {
+                    // how much
+                    var delta = tempLimits.Max - TsLimits.Max;
+                    TsLimits.Max += delta;
+
+                    // resize to these limits
+                    Array.Resize<double>(ref data, TsLimits.Max - TsLimits.Min + 1);
+                }
+
+                // now, populate
+                foreach (var dp in temp)
+                    if (dp.Value.HasValue)
+                        data[dp.Index + TsLimits.Min] = dp.Value.Value;
+            }
+        }
+
+        public class TimeSeriesData
+        {
+            public AdminShell.SubmodelElementCollection SourceTimeSeries;
+
+            public PlotArguments Args;
+
+            public List<TimeSeriesRecordData> Records = new List<TimeSeriesRecordData>();
+
+            public WpfPlot WpfPlot;
+
+            public TimeSeriesRecordData FindRecordId(string recid)
+            {
+                foreach (var tsd in Records)
+                    if (tsd?.RecordId == recid)
+                        return tsd;
+                return null;
+            }
+        }
+
+        public class ListOfTimeSeriesData : List<TimeSeriesData>
+        {
+            private bool _autoScaleX, _autoScaleY;
+
+            public static string EvalDisplayText(
+                string minmalText, AdminShell.SubmodelElement sme, 
+                AdminShell.ConceptDescription cd = null,
+                bool addMinimalTxt = false,
+                string defaultLang = null,
+                bool useIdShort = true)
+            {
+                var res = "" + minmalText;
+                if (sme != null)
+                {
+                    string better = sme.description?.GetDefaultStr(defaultLang);
+                    if (!better.HasContent() && useIdShort)
+                        better = sme.idShort;
+
+                    if (cd != null)
+                    {
+                        if (!better.HasContent())
+                            better = cd.GetDefaultPreferredName(defaultLang);
+                        if (!better.HasContent())
+                            better = cd.idShort;
+                        if (better.HasContent() && true == cd.IEC61360Content?.unit.HasContent())
+                            better += $" [{cd.IEC61360Content?.unit}]";
+                    }
+                    if (better.HasContent())
+                    {
+                        res = better;
+                        if (addMinimalTxt)
+                            res += $" ({minmalText})";
+                    }
+                }
+                return res;
+            }
+
+            public List<int> RenderTimeSeries(StackPanel panel, double plotHeight, string defaultLang)
+            {
+                // first access
+                var res = new List<int>();
+                if (panel == null)
+                    return null;
+                panel.Children.Clear();
+
+                // before applying arguments
+                _autoScaleX = true;
+                _autoScaleY = true;
+
+                // go over all groups                
+                ScottPlot.WpfPlot lastPlot = null;
+                var xLabels = "Time ( ";
+                int yAxisNum = 0;
+                foreach (var tsd in this)
+                {
+                    // start new group
+                    var pvc = new WpfPlotViewControlHorizontal();
+                    pvc.Text = EvalDisplayText("Time Series scatter plot", tsd.SourceTimeSeries);
+                    var wpfPlot = pvc.WpfPlot;
+
+                    // some basic attributes
+                    lastPlot = wpfPlot;
+                    // wpfPlot.Plot.AntiAlias(false, false, false);
+                    // wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
+                    tsd.WpfPlot = wpfPlot;
+                    res.Add(1);
+
+                    // for all wpf / all signals
+                    pvc.Height = plotHeight;
+                    if (true == tsd.Args?.height.HasValue)
+                        pvc.Height = tsd.Args.height.Value;
+                    // pvc.ButtonClick += WpfPlot_ButtonClicked;
+
+                        // for each signal
+                    double? yMin = null, yMax = null;
+
+                    TimeSeriesRecordData lastTimeRecord = null;
+
+                    foreach (var rec in tsd.Records)
+                    {
+                        // if its a time axis, skip but remember for following axes
+                        if (rec.TimeAxis != TimeSeriesTimeAxis.None)
+                        {
+                            lastTimeRecord = rec;
+                            xLabels += "" + rec.RecordId + " ";
+                            continue;
+                        }
+
+                        // cannot render without time record
+                        if (lastTimeRecord == null)
+                            continue;
+
+                        // integrate args
+                        if (rec.Args != null)
+                        {
+                            if (rec.Args.ymin.HasValue)
+                                yMin = Nullable.Compare(rec.Args.ymin, yMin) > 0 ? rec.Args.ymin : yMin;
+
+                            if (rec.Args.ymax.HasValue)
+                                yMax = Nullable.Compare(yMax, rec.Args.ymax) > 0 ? yMax : rec.Args.ymax;
+                        }
+
+                        // factory new Plottable
+                        // pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
+
+                        ScottPlot.Plottable.BarPlot bars = null;
+                        ScottPlot.Plottable.ScatterPlot scatter = null;
+
+                        if (rec.Args != null && rec.Args.type == PlotArguments.Type.Bars)
+                        {
+                            // Bars
+                            bars = wpfPlot.Plot.AddBar(
+                                positions: lastTimeRecord.Data,
+                                values: rec.Data);
+
+                            // customize the width of bars (80% of the inter-position distance looks good)
+                            if (lastTimeRecord.Data.Length >= 2)
+                                bars.BarWidth = (lastTimeRecord.Data[1] - lastTimeRecord.Data[0]) * .8;
+
+                            bars.Label = EvalDisplayText("" + rec.RecordId, rec.DataPoint, rec.DataPointCD,
+                                addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
+
+                            rec.Plottable = bars;
+                        }
+                        else
+                        {
+                            // Default: Scatter plot
+                            scatter = wpfPlot.Plot.AddScatter(
+                                xs: lastTimeRecord.Data,
+                                ys: rec.Data,
+                                label: EvalDisplayText("" + rec.RecordId, rec.DataPoint, rec.DataPointCD,
+                                    addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
+
+                            rec.Plottable = scatter;
+                        }
+
+                        // axis treatment?
+                        bool sameAxis = (rec.Args?.sameaxis == true) && (yAxisNum != 0);
+                        int assignAxis = -1;
+                        ScottPlot.Renderable.Axis yAxis3 = null;
+                        if (!sameAxis)
+                        {
+                            yAxisNum++;
+                            if (yAxisNum >= 2)
+                            {
+                                yAxis3 = wpfPlot.Plot.AddAxis(ScottPlot.Renderable.Edge.Right, axisIndex: yAxisNum);
+                                assignAxis = yAxisNum;
+                            }
+                        }
+                        else
+                            // take last one
+                            assignAxis = yAxisNum - 1;
+
+                        if (assignAxis >= 0)
+                        {
+                            if (scatter != null)
+                            {
+                                scatter.YAxisIndex = assignAxis;
+                                if (yAxis3 != null)
+                                    yAxis3.Color(scatter.Color);
+                            }
+
+                            if (bars != null)
+                            {
+                                bars.YAxisIndex = assignAxis;
+                                if (yAxis3 != null)
+                                    yAxis3.Color(bars.FillColor);
+                            }
+                        }
+                    }
+
+                    // apply some more args to the group
+                    if (yMin.HasValue)
+                    {
+                        wpfPlot.Plot.SetAxisLimits(yMin: yMin.Value);
+                        _autoScaleY = false;
+                    }
+
+                    if (yMax.HasValue)
+                    {
+                        wpfPlot.Plot.SetAxisLimits(yMax: yMax.Value);
+                        _autoScaleY = false;
+                    }
+
+                    // time axis
+                    if (lastTimeRecord != null && 
+                        (lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Utc
+                         || lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Tai))
+                    {
+                        wpfPlot.Plot.XAxis.DateTimeFormat(true);
+                    }
+
+                    // render the plot into panel
+                    wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
+                    panel.Children.Add(pvc);
+                    wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                }
+
+                // for the last plot ..
+                if (lastPlot != null)
+                {
+                    xLabels += ")";
+                    lastPlot.Plot.XLabel(xLabels);
+                }
+
+                // return groups for notice
+                return res;
+            }
+        }
+
+        protected ListOfTimeSeriesData _timeSeriesData = new ListOfTimeSeriesData();
+
+        protected void SetTimeSeriesFromSubmodel(AdminShell.Submodel sm)
+        {
+            // access
+            if (sm?.submodelElements == null)
+                return;
+            var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
+
+            // clear
+            _timeSeriesData.Clear();
+
+            // challenge is to select SMes, which are NOT from a known semantic id!
+            var tsvAllowed = new[]
+            {
+                pcts.CD_RecordId.GetSingleKey(),
+                pcts.CD_UtcTime.GetSingleKey(),
+                pcts.CD_TaiTime.GetSingleKey(),
+                pcts.CD_Time.GetSingleKey(),
+                pcts.CD_TimeDuration.GetSingleKey(),
+                pcts.CD_ValueArray.GetSingleKey(),
+                pcts.CD_ExternalDataFile.GetSingleKey()
+            };
+
+            var tsrAllowed = new[]
+            {
+                pcts.CD_RecordId.GetSingleKey(),
+                pcts.CD_UtcTime.GetSingleKey(),
+                pcts.CD_TaiTime.GetSingleKey(),
+                pcts.CD_Time.GetSingleKey(),
+                pcts.CD_TimeDuration.GetSingleKey(),
+                pcts.CD_ValueArray.GetSingleKey()
+            };
+
+            // find SMC for TimeSeries itself -> this will result in a plot
+            foreach (var smcts in sm.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                pcts.CD_TimeSeries.GetReference(), mm))
+            {
+                // make initial data for time series
+                var tsd = new TimeSeriesData() { SourceTimeSeries = smcts };
+                _timeSeriesData.Add(tsd);
+
+                // plot arguments for time series
+                tsd.Args = PlotArguments.Parse(smcts.HasQualifierOfType("Plotting.Args")?.value);
+
+                // find segements
+                foreach (var smcseg in smcts.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    pcts.CD_TimeSeriesSegment.GetReference(), mm))
+                {
+                    // find records?
+                    foreach (var smcrec in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        pcts.CD_TimeSeriesRecord.GetReference(), mm))
+                    {
+                        // TODO (MIHO, 2021-10-15): add record data - is quite relevant
+                    }
+
+                    // find variables?
+                    foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        pcts.CD_TimeSeriesVariable.GetReference(), mm))
+                    {
+                        // makes only sense with record id
+                        var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                        if (recid.Length < 1)
+                            continue;
+
+                        // add need a value array as well!
+                        var valarr = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Blob>(
+                            pcts.CD_ValueArray.GetReference(), mm)?.value?.Trim();
+                        if (valarr.Length < 1)
+                            continue;
+
+                        // already have a record with that id .. or make new?
+                        var rd = tsd.FindRecordId(recid);
+                        if (rd == null)
+                        {
+                            // add
+                            rd = new TimeSeriesRecordData() { RecordId = recid };
+                            tsd.Records.Add(rd);
+
+                            // at this very moment, check if this is a time series
+                            if (null != smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                                    pcts.CD_UtcTime.GetReference(), mm))
+                                rd.TimeAxis = TimeSeriesTimeAxis.Utc;
+                            if (null != smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                                    pcts.CD_TaiTime.GetReference(), mm))
+                                rd.TimeAxis = TimeSeriesTimeAxis.Tai;
+                            if (null != smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                                    pcts.CD_Time.GetReference(), mm))
+                                rd.TimeAxis = TimeSeriesTimeAxis.Plain;
+
+                            // find a DataPoint description?
+                            var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, mm,
+                                invertAllowed: true);
+                            if (pdp != null && rd.DataPoint == null)
+                            {
+                                rd.DataPoint = pdp;
+                                rd.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
+                            }
+
+                            // plot arguments for record?
+                            rd.Args = PlotArguments.Parse(smcvar.HasQualifierOfType("Plotting.Args")?.value);
+                        }
+
+                        // now try add the value array
+                        rd.DataAdd(valarr);
+                    }
+
+                    // find records?
+                    foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        pcts.CD_TimeSeriesVariable.GetReference(), mm))
+                    {
+                        // makes only sense with record id
+                        var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                        if (recid.Length < 1)
+                            continue;
+                    }
+                }
+            }
+
+            ;
+        }
+
+
     }
 }

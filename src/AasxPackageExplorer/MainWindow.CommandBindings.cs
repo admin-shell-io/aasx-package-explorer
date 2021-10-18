@@ -477,6 +477,20 @@ namespace AasxPackageExplorer
                     @"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
             }
 
+            if (cmd == "helpissues")
+            {
+                BrowserDisplayLocalFile(
+                    @"https://github.com/admin-shell-io/aasx-package-explorer/issues");
+            }
+
+            if (cmd == "helpoptionsinfo")
+            {
+                var st = Options.ReportOptions(Options.ReportOptionsFormat.Markdown, Options.Curr);
+                var dlg = new MessageReportWindow(st, 
+                    windowTitle: "Report on active and possible options");
+                dlg.ShowDialog();
+            }
+
             if (cmd == "editkey")
                 MenuItemWorkspaceEdit.IsChecked = !MenuItemWorkspaceEdit.IsChecked;
 
@@ -655,7 +669,10 @@ namespace AasxPackageExplorer
             else
             {
                 if (RowDefinitionConcurrent.Height.Value < 1.0)
-                    RowDefinitionConcurrent.Height = new GridLength(140);
+                {
+                    var desiredH = Math.Max(140.0, this.Height / 3.0);
+                    RowDefinitionConcurrent.Height = new GridLength(desiredH);
+                }
 
                 if (targetEvents)
                     TabControlConcurrent.SelectedItem = TabItemConcurrentEvents;

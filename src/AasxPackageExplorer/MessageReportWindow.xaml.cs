@@ -17,9 +17,11 @@ namespace AasxPackageExplorer
 {
     public partial class MessageReportWindow : Window
     {
-        public MessageReportWindow(IEnumerable<StoredPrint> storedPrints)
+        public MessageReportWindow(IEnumerable<StoredPrint> storedPrints, string windowTitle = null)
         {
             InitializeComponent();
+            if (windowTitle != null)
+                this.Title = windowTitle;
 
             foreach (var sp in storedPrints)
             {
@@ -27,6 +29,16 @@ namespace AasxPackageExplorer
                 AasxWpfBaseUtils.StoredPrintToRichTextBox(
                     this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: link_Click);
             }
+        }
+
+        public MessageReportWindow(string fullText, string windowTitle = null)
+        {
+            InitializeComponent();
+            if (windowTitle != null)
+                this.Title = windowTitle;
+
+            this.RichTextTextReport.Document.Blocks.Clear();
+            this.RichTextTextReport.Document.Blocks.Add(new Paragraph(new Run(fullText)));
         }
 
         protected void link_Click(object sender, RoutedEventArgs e)
@@ -40,12 +52,7 @@ namespace AasxPackageExplorer
             var uri = link.NavigateUri.ToString();
             Log.Singleton.Info($"Displaying {uri} remotely in external viewer ..");
             System.Diagnostics.Process.Start(uri);
-        }
-
-        private void ButtonEmailToClipboard_Click(object sender, RoutedEventArgs e)
-        {
-            Clipboard.SetText("michael.hoffmeister@festo.com");
-        }
+        }        
 
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
         {

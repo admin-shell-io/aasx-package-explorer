@@ -24,21 +24,19 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <!-- <TextBox x:Name="TextReport" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" AcceptsReturn="true" AcceptsTab="true" Margin="2" Background="LightGray"/> -->
         <RichTextBox x:Name="RichTextTextReport" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                      IsDocumentEnabled="true" IsReadOnly="True" Margin="2" Background="LightGray"
-                     HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                     HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console">
             <RichTextBox.Resources>
                 <Style TargetType="{x:Type Paragraph}">
                     <Setter Property="Margin" Value="2" />
                 </Style>
             </RichTextBox.Resources>
         </RichTextBox>
-        <Button x:Name="ButtonEmailToClipboard" Grid.Row="1" Grid.Column="0" Margin="2" Click="ButtonEmailToClipboard_Click" >Copy ema@il</Button>
-        <Button x:Name="ButtonCopyToClipboard" Grid.Row="1" Grid.Column="1" Margin="2" Click="ButtonCopyToClipboard_Click">Copy report to clipboard and close</Button>
+        <Button x:Name="ButtonCopyToClipboard" Grid.Row="1" Grid.Column="0" Margin="2" Click="ButtonCopyToClipboard_Click">Copy report to clipboard and close</Button>
     </Grid>
 </Window>

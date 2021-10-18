@@ -17,6 +17,13 @@
           "value": "http://admin-shell.io/tmp/Various/OperationalData/Submodel/1/0",
           "index": 0,
           "idType": "IRI"
+        },
+        {
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/1/0",
+          "index": 0,
+          "idType": "IRI"
         }
       ]
     }

@@ -840,6 +840,10 @@ namespace AasxPackageExplorer
             _packageCentral.MainItem.New();
             RedrawAllAasxElements();
 
+            // pump all pending log messages (from plugins) into the
+            // log / status line, before setting the last information
+            MainTimer_HandleLogMessages();
+
             // Try to load?            
             if (Options.Curr.AasxToLoad != null)
             {
@@ -871,6 +875,9 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // open last UI elements
+            if (Options.Curr.ShowEvents)
+                PanelConcurrentSetVisibleIfRequired(true, targetEvents: true);
         }
 
         private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
@@ -1890,6 +1897,7 @@ namespace AasxPackageExplorer
                 Message.FontWeight = FontWeights.Normal;
                 SetProgressBar();
             }
+            
             if (sender == ButtonReport)
             {
                 // report on message / exception
@@ -1911,8 +1919,7 @@ namespace AasxPackageExplorer
                 |Please consider attaching the AASX package (you might rename this to .zip),
                 |you were working on, as well as an screen shot.
                 |
-                |Please mail your report to: michael.hoffmeister@festo.com
-                |or you can directly add it at github: https://github.com/admin-shell/aasx-package-explorer/issues
+                |Please issue directly to github: https://github.com/admin-shell/aasx-package-explorer/issues
                 |
                 |Below, you're finding the history of log messages. Please check, if non-public information
                 |is contained here.
@@ -1922,18 +1929,6 @@ namespace AasxPackageExplorer
                 head += "\n";
                 head = head.Replace("{0}", "" + Message?.Content);
                 head = Regex.Replace(head, @"^(\s+)\|", "", RegexOptions.Multiline);
-
-                // test
-#if FALSE
-                {
-                    Log.Info(0, StoredPrint.ColorBlue, "This is blue");
-                    Log.Info(0, StoredPrint.ColorRed, "This is red");
-                    Log.Error("This is an error!");
-                    Log.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
-                }
-#endif
-
-
 
                 // Collect all the stored log prints
                 IEnumerable<StoredPrint> Prints()

@@ -43,6 +43,7 @@
   "LoadWithoutPrompt": true,
   "ShowIdAsIri": false,
   "VerboseConnect": true,
+  "ShowEvents":  false,
   "CompressEvents": false,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,

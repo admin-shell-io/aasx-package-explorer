@@ -37,54 +37,94 @@
         </DockPanel>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0" x:Name="ScrollViewerContent" 
-                      HorizontalScrollBarVisibility="Disabled" Margin="4,4,4,2" PreviewMouseWheel="ScrollViewerContent_PreviewMouseWheel">
+                      HorizontalScrollBarVisibility="Disabled" Margin="4,3" PreviewMouseWheel="ScrollViewerContent_PreviewMouseWheel">
+
             <Grid x:Name="GridContent" MinWidth="300">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="1*" MinHeight="50"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="1*" MinHeight="50"/>
                 </Grid.RowDefinitions>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                <Grid x:Name="GridContentCharts" MinWidth="300" Grid.Row="0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*" MinHeight="50"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*" MinHeight="50"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*" MinHeight="50"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                           TextWrapping="Wrap" VerticalAlignment="Center" 
                            Margin="0,10,0,0" FontWeight="Bold">
                     The following Properties have been qualified by "Plotting.Args":
-                </TextBlock>
+                    </TextBlock>
 
-                <DataGrid  x:Name="DataGridPlotItems" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding}" 
+                    <DataGrid  x:Name="DataGridPlotItems" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding}" 
                            CanUserAddRows="False" BorderThickness="0" Background="Transparent"
                            HeadersVisibility="Column" Margin="4, 0, 4, 0" IsReadOnly="True"
                            AutoGenerateColumns="False">
-                    <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Property" Width="1*" MinWidth="150" Binding="{Binding DisplayPath}"/>
-                        <DataGridTextColumn Header="Value" Width="1*" MinWidth="100" Binding="{Binding DisplayValue}"/>
-                        <DataGridTextColumn Header="Description" Width="3*" MinWidth="300" Binding="{Binding DisplayDescription}">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style>
-                                    <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-                                    <Setter Property="TextBlock.TextAlignment" Value="Left"/>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                        <!-- Width="{Binding ElementName=LayoutGrid, Path=ActualWidth}" -->
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Property" Width="1*" MinWidth="150" Binding="{Binding DisplayPath}"/>
+                            <DataGridTextColumn Header="Value" Width="1*" MinWidth="100" Binding="{Binding DisplayValue}"/>
+                            <DataGridTextColumn Header="Description" Width="3*" MinWidth="300" Binding="{Binding DisplayDescription}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style>
+                                        <Setter Property="TextBlock.TextWrapping" Value="Wrap" />
+                                        <Setter Property="TextBlock.TextAlignment" Value="Left"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="Wrap" VerticalAlignment="Center" 
+                    <TextBlock Grid.Row="2" Grid.Column="0" 
+                           TextWrapping="Wrap" VerticalAlignment="Center" 
                            Margin="0,10,0,0" FontWeight="Bold">
                     Charts, sorted by groups:
-                </TextBlock>
+                    </TextBlock>
 
-                <StackPanel Grid.Row="3" Grid.Column="0" x:Name="StackPanelCharts" Orientation="Vertical">
-                    
-                </StackPanel>
-                
+                    <StackPanel Grid.Row="3" Grid.Column="0" x:Name="StackPanelCharts" Orientation="Vertical">
+                    </StackPanel>
+
+                </Grid>
+
+                <Grid x:Name="GridContentTimeSeries" MinWidth="300" Grid.Row="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*" MinHeight="50"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" x:Name="LabelTimeSeries" 
+                           TextWrapping="Wrap" VerticalAlignment="Center" 
+                           Margin="0,10,0,0" FontWeight="Bold">
+                    Time Series:
+                    </TextBlock>
+
+                    <StackPanel Grid.Row="1" Grid.Column="0" x:Name="StackPanelTimeSeries" Orientation="Vertical">
+                    </StackPanel>
+
+                </Grid>
+
             </Grid>
+
         </ScrollViewer>
     </Grid>
 </UserControl>

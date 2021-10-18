@@ -17,8 +17,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="ScottPlot" Version="4.0.48" />
-    <PackageReference Include="ScottPlot.WPF" Version="4.0.48" />
+    <PackageReference Include="ScottPlot" Version="4.1.26" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.26" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29 - Kopieren %282%29.xaml.cs">

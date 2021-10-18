@@ -1487,7 +1487,16 @@ namespace AasxPackageLogic
                 {
                     var sm = env.FindSubmodel(smr);
                     if (sm == null)
+                    {
+                        // notify user
                         Log.Singleton.Error("Cannot find some submodel!");
+
+                        // make reference with NO submodel behind
+                        var tiNoSm = new VisualElementSubmodelRef(
+                            tiAas, cache, env, package, smr, sm: null);
+                        if (tiNoSm != null)
+                            tiAas.Members.Add(tiNoSm);
+                    }
 
                     // generate
                     var tiSm = GenerateVisuElemForVisualElementSubmodelRef(

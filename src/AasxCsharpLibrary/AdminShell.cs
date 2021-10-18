@@ -6089,6 +6089,53 @@ namespace AdminShellNS
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
 
+            /* TODO (MIHO, 2021-10-18): there are overlaps of this new function with
+             * this old function: FindFirstAnySemanticId(Key[] semId ..
+             * clarify/ refactor */
+            public IEnumerable<T> FindAllSemanticId<T>(
+                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Strict,
+                bool invertAllowed = false)
+                where T : SubmodelElement
+            {
+                if (allowedSemId == null || allowedSemId.Length < 1)
+                    yield break;
+
+                foreach (var smw in this)
+                { 
+                    if (smw.submodelElement == null || !(smw.submodelElement is T))
+                        continue;
+
+                    if (smw.submodelElement.semanticId == null || smw.submodelElement.semanticId.Count < 1)
+                    {
+                        if (invertAllowed)
+                            yield return smw.submodelElement as T;
+                        continue;
+                    }
+                    
+                    var found = false;
+                    foreach (var semId in allowedSemId)
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
+                        {
+                            found = true;
+                            break;
+                        }
+
+                    if (invertAllowed)
+                        found = !found;
+
+                    if (found)
+                        yield return smw.submodelElement as T;
+                }
+            }
+
+            public T FindFirstAnySemanticId<T>(
+                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Strict,
+                bool invertAllowed = false)
+                where T : SubmodelElement
+            {
+                return FindAllSemanticId<T>(allowedSemId, matchMode, invertAllowed)?.FirstOrDefault<T>();
+            }
+
             // recursion
 
             /// <summary>

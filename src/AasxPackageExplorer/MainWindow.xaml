@@ -98,6 +98,8 @@
                     <RoutedUICommand x:Key="About" Text="About" />
                     <RoutedUICommand x:Key="HelpGithub" Text="HelpGithub" />
                     <RoutedUICommand x:Key="FaqGithub" Text="FaqGithub" />
+                    <RoutedUICommand x:Key="HelpIssues" Text="HelpIssues" />
+                    <RoutedUICommand x:Key="HelpOptionsInfo" Text="HelpOptionsInfo" />
 
                     <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
                     <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
@@ -259,6 +261,8 @@
         <CommandBinding Command="{StaticResource About}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HelpGithub}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FaqGithub}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpIssues}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpOptionsInfo}" Executed="CommandBinding_Executed"/>
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
@@ -411,6 +415,8 @@
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
                         <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
                         <MenuItem x:Name="MenuItemFaqGithub" Header="FAQ on Github .." Command="{StaticResource FaqGithub}"/>
+                        <MenuItem x:Name="MenuItemFaqIssues" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
+                        <MenuItem x:Name="MenuItemGenerateOptionInfo" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
                 </Menu>
 
