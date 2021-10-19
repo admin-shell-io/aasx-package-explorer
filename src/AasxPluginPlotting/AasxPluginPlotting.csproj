@@ -21,6 +21,12 @@
     <PackageReference Include="ScottPlot.WPF" Version="4.1.26" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="WpfPlotViewControlCumulative.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="WpfPlotViewControlCumulative.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="WpfPlotViewControlVertical - Kopieren %282%29 - Kopieren %282%29.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>WpfPlotViewControlVertical - Kopieren (2).xaml.cs</DependentUpon>
@@ -90,6 +96,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="WpfPlotViewControlCumulative.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="WpfPlotViewControlHorizontal.xaml">
       <SubType>Designer</SubType>
     </Page>

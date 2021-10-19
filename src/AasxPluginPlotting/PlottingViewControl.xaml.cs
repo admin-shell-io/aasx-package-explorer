@@ -72,7 +72,9 @@ namespace AasxPluginPlotting
             public bool sameaxis;
             public double? height, width;
 
-            public enum Type { None, Bars }
+            public bool labels, values, percent;
+
+            public enum Type { None, Bars, Pie }
             public Type type;
 
             // ReSharper enable UnassignedField.Global
@@ -1008,6 +1010,44 @@ namespace AasxPluginPlotting
                     res[i - rl.Min] = data[i - _dataLimits.Min];
                 return res;
             }
+
+            public double? this[int index]
+            {
+                get
+                {
+                    if (index < DsLimits.Min || index > DsLimits.Max)
+                        return null;
+                    return data[index - _dataLimits.Min];
+                }
+            }
+        }
+
+        public class ListOfTimeSeriesDataSet : List<TimeSeriesDataSet>
+        {
+            public List<Tuple<TimeSeriesDataSet, double>> GenerateCumulativeDate()
+            {
+                var res = new List<Tuple<TimeSeriesDataSet, double>>();
+
+                foreach (var ds in this)
+                {
+                    // do not allow empty or time acix data sets
+                    if (ds == null && ds.TimeAxis != TimeSeriesTimeAxis.None)
+                        continue;
+
+                    // get the last sample
+                    var rl = ds.GetRenderLimits();
+                    if (rl == null)
+                        continue;
+                    var lastVal = ds[rl.Max];
+                    if (!lastVal.HasValue)
+                        continue;
+
+                    // add
+                    res.Add(new Tuple<TimeSeriesDataSet, double>(ds, lastVal.Value));
+                }
+
+                return res;
+            }
         }
 
         public class TimeSeriesData
@@ -1016,7 +1056,7 @@ namespace AasxPluginPlotting
 
             public PlotArguments Args;
 
-            public List<TimeSeriesDataSet> DataSet = new List<TimeSeriesDataSet>();
+            public ListOfTimeSeriesDataSet DataSet = new ListOfTimeSeriesDataSet();
 
             public WpfPlot WpfPlot;
 
@@ -1081,165 +1121,238 @@ namespace AasxPluginPlotting
                 // go over all groups                
                 foreach (var tsd in this)
                 {
-                    // start new group
-                    var pvc = new WpfPlotViewControlHorizontal();
-                    pvc.Text = EvalDisplayText("Time Series scatter plot", tsd.SourceTimeSeries);
-                    var wpfPlot = pvc.WpfPlot;
-
-                    ScottPlot.WpfPlot lastPlot = null;
-                    var xLabels = "Time ( ";
-                    int yAxisNum = 0;
-
-                    // some basic attributes
-                    lastPlot = wpfPlot;
-                    // wpfPlot.Plot.AntiAlias(false, false, false);
-                    // wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
-                    tsd.WpfPlot = wpfPlot;
-                    res.Add(1);
-
-                    // for all wpf / all signals
-                    pvc.Height = plotHeight;
-                    if (true == tsd.Args?.height.HasValue)
-                        pvc.Height = tsd.Args.height.Value;
-                    // pvc.ButtonClick += WpfPlot_ButtonClicked;
-
-                    // for each signal
-                    double? yMin = null, yMax = null;
-
-                    TimeSeriesDataSet lastTimeRecord = null;
-
-                    foreach (var rec in tsd.DataSet)
+                    if (tsd.Args != null &&
+                        (tsd.Args.type == PlotArguments.Type.Bars
+                         || tsd.Args.type == PlotArguments.Type.Pie))
                     {
-                        // if its a time axis, skip but remember for following axes
-                        if (rec.TimeAxis != TimeSeriesTimeAxis.None)
+                        //
+                        // Cumulative plots (e.g. the last sample, bars, pie, ..)
+                        //
+
+                        // start new group
+                        var pvc = new WpfPlotViewControlCumulative();
+                        pvc.Text = EvalDisplayText("Cumulative plot", tsd.SourceTimeSeries);
+                        var wpfPlot = pvc.WpfPlot;
+
+                        // for all wpf / all signals
+                        var height = plotHeight;
+                        if (true == tsd.Args?.height.HasValue)
+                            height = tsd.Args.height.Value;
+                        pvc.MinHeight = height;
+                        pvc.MaxHeight = height;
+
+                        // generate cumulative data
+                        var cum = tsd.DataSet.GenerateCumulativeDate();
+
+                        var val2 = new List<double>();
+                        var lab2 = new List<string>();
+                        var pos2 = new List<double>();
+                        double pos = 0.0;
+                        foreach (var cm in cum)
                         {
-                            lastTimeRecord = rec;
-                            xLabels += "" + rec.DataSetId + " ";
-                            continue;
+                            var ds = cm.Item1;
+                            if (ds == null)
+                                continue;
+
+                            var lab = EvalDisplayText("" + ds.DataSetId, ds.DataPoint, ds.DataPointCD,
+                                addMinimalTxt: false, defaultLang: defaultLang, useIdShort: true);
+
+                            val2.Add(cm.Item2);
+                            lab2.Add(lab);
+                            pos2.Add(pos);
+                            pos += 1.0;
                         }
 
-                        // cannot render without time record
-                        var timeDStoUse = rec.TimeDS;
-                        if (timeDStoUse == null)
-                            timeDStoUse = lastTimeRecord;
-                        if (timeDStoUse == null)
-                            continue;
-
-                        // integrate args
-                        if (rec.Args != null)
+                        if (tsd.Args.type == PlotArguments.Type.Pie)
                         {
-                            if (rec.Args.ymin.HasValue)
-                                yMin = Nullable.Compare(rec.Args.ymin, yMin) > 0 ? rec.Args.ymin : yMin;
-
-                            if (rec.Args.ymax.HasValue)
-                                yMax = Nullable.Compare(yMax, rec.Args.ymax) > 0 ? yMax : rec.Args.ymax;
+                            var pie = wpfPlot.Plot.AddPie(val2.ToArray());
+                            pie.SliceLabels = lab2.ToArray();
+                            pie.ShowLabels = true == tsd.Args.labels;
+                            pie.ShowValues = true == tsd.Args.values;
+                            pie.ShowPercentages = true == tsd.Args.percent;
+                            wpfPlot.Plot.Legend();
+                            pvc.ActivePlottable = pie;
                         }
 
-                        // factory new Plottable
-                        // pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
-
-                        ScottPlot.Plottable.BarPlot bars = null;
-                        ScottPlot.Plottable.ScatterPlot scatter = null;
-
-                        if (rec.Args != null && rec.Args.type == PlotArguments.Type.Bars)
+                        if (tsd.Args.type == PlotArguments.Type.Bars)
                         {
-                            // Bars
-                            bars = wpfPlot.Plot.AddBar(
-                                positions: timeDStoUse.RenderDataToLimits(),
-                                values: rec.RenderDataToLimits());
-
-                            // customize the width of bars (80% of the inter-position distance looks good)
-                            if (timeDStoUse.Data.Length >= 2)
-                                bars.BarWidth = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) * .8;
-
-                            bars.Label = EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
-                                addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
-
-                            rec.Plottable = bars;
-                        }
-                        else
-                        {
-                            // Default: Scatter plot
-                            scatter = wpfPlot.Plot.AddScatter(
-                                xs: timeDStoUse.Data,
-                                ys: rec.Data,
-                                label: EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
-                                    addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
-
-                            rec.Plottable = scatter;
-
-                            var rl = rec.GetRenderLimits();
-                            scatter.MinRenderIndex = rl.Min;
-                            scatter.MaxRenderIndex = rl.Max;
+                            var bar = wpfPlot.Plot.AddBar(val2.ToArray());
+                            wpfPlot.Plot.XTicks(pos2.ToArray(), lab2.ToArray());
+                            bar.ShowValuesAboveBars = true == tsd.Args.values;
+                            wpfPlot.Plot.Legend();
+                            pvc.ActivePlottable = bar;
                         }
 
-                        // axis treatment?
-                        bool sameAxis = (rec.Args?.sameaxis == true) && (yAxisNum != 0);
-                        int assignAxis = -1;
-                        ScottPlot.Renderable.Axis yAxis3 = null;
-                        if (!sameAxis)
+                        // render the plot into panel
+                        wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
+                        panel.Children.Add(pvc);
+                        wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                    }
+                    else
+                    {
+                        //
+                        // Time series based plots (scatter, bars)
+                        //
+
+                        // start new group
+                        var pvc = new WpfPlotViewControlHorizontal();
+                        pvc.Text = EvalDisplayText("Time Series plot", tsd.SourceTimeSeries);
+                        var wpfPlot = pvc.WpfPlot;
+
+                        ScottPlot.WpfPlot lastPlot = null;
+                        var xLabels = "Time ( ";
+                        int yAxisNum = 0;
+
+                        // some basic attributes
+                        lastPlot = wpfPlot;
+                        // wpfPlot.Plot.AntiAlias(false, false, false);
+                        // wpfPlot.AxisChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
+                        tsd.WpfPlot = wpfPlot;
+                        res.Add(1);
+
+                        // for all wpf / all signals
+                        pvc.Height = plotHeight;
+                        if (true == tsd.Args?.height.HasValue)
+                            pvc.Height = tsd.Args.height.Value;
+                        // pvc.ButtonClick += WpfPlot_ButtonClicked;
+
+                        // for each signal
+                        double? yMin = null, yMax = null;
+                        TimeSeriesDataSet lastTimeRecord = null;
+
+                        foreach (var rec in tsd.DataSet)
                         {
-                            yAxisNum++;
-                            if (yAxisNum >= 2)
+                            // if its a time axis, skip but remember for following axes
+                            if (rec.TimeAxis != TimeSeriesTimeAxis.None)
                             {
-                                yAxis3 = wpfPlot.Plot.AddAxis(ScottPlot.Renderable.Edge.Right, axisIndex: yAxisNum);
-                                assignAxis = yAxisNum;
-                            }
-                        }
-                        else
-                            // take last one
-                            assignAxis = yAxisNum - 1;
-
-                        if (assignAxis >= 0)
-                        {
-                            if (scatter != null)
-                            {
-                                scatter.YAxisIndex = assignAxis;
-                                if (yAxis3 != null)
-                                    yAxis3.Color(scatter.Color);
+                                lastTimeRecord = rec;
+                                xLabels += "" + rec.DataSetId + " ";
+                                continue;
                             }
 
-                            if (bars != null)
+                            // cannot render without time record
+                            var timeDStoUse = rec.TimeDS;
+                            if (timeDStoUse == null)
+                                timeDStoUse = lastTimeRecord;
+                            if (timeDStoUse == null)
+                                continue;
+
+                            // integrate args
+                            if (rec.Args != null)
                             {
-                                bars.YAxisIndex = assignAxis;
-                                if (yAxis3 != null)
-                                    yAxis3.Color(bars.FillColor);
+                                if (rec.Args.ymin.HasValue)
+                                    yMin = Nullable.Compare(rec.Args.ymin, yMin) > 0 ? rec.Args.ymin : yMin;
+
+                                if (rec.Args.ymax.HasValue)
+                                    yMax = Nullable.Compare(yMax, rec.Args.ymax) > 0 ? yMax : rec.Args.ymax;
+                            }
+
+                            // factory new Plottable
+                            // pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
+
+                            ScottPlot.Plottable.BarPlot bars = null;
+                            ScottPlot.Plottable.ScatterPlot scatter = null;
+
+                            if (rec.Args != null && rec.Args.type == PlotArguments.Type.Bars)
+                            {
+                                // Bars
+                                bars = wpfPlot.Plot.AddBar(
+                                    positions: timeDStoUse.RenderDataToLimits(),
+                                    values: rec.RenderDataToLimits());
+
+                                // customize the width of bars (80% of the inter-position distance looks good)
+                                if (timeDStoUse.Data.Length >= 2)
+                                    bars.BarWidth = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) * .8;
+
+                                bars.Label = EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
+                                    addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
+
+                                rec.Plottable = bars;
+                            }
+                            else
+                            {
+                                // Default: Scatter plot
+                                scatter = wpfPlot.Plot.AddScatter(
+                                    xs: timeDStoUse.Data,
+                                    ys: rec.Data,
+                                    label: EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
+                                        addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
+
+                                rec.Plottable = scatter;
+
+                                var rl = rec.GetRenderLimits();
+                                scatter.MinRenderIndex = rl.Min;
+                                scatter.MaxRenderIndex = rl.Max;
+                            }
+
+                            // axis treatment?
+                            bool sameAxis = (rec.Args?.sameaxis == true) && (yAxisNum != 0);
+                            int assignAxis = -1;
+                            ScottPlot.Renderable.Axis yAxis3 = null;
+                            if (!sameAxis)
+                            {
+                                yAxisNum++;
+                                if (yAxisNum >= 2)
+                                {
+                                    yAxis3 = wpfPlot.Plot.AddAxis(ScottPlot.Renderable.Edge.Right, axisIndex: yAxisNum);
+                                    assignAxis = yAxisNum;
+                                }
+                            }
+                            else
+                                // take last one
+                                assignAxis = yAxisNum - 1;
+
+                            if (assignAxis >= 0)
+                            {
+                                if (scatter != null)
+                                {
+                                    scatter.YAxisIndex = assignAxis;
+                                    if (yAxis3 != null)
+                                        yAxis3.Color(scatter.Color);
+                                }
+
+                                if (bars != null)
+                                {
+                                    bars.YAxisIndex = assignAxis;
+                                    if (yAxis3 != null)
+                                        yAxis3.Color(bars.FillColor);
+                                }
                             }
                         }
-                    }
 
-                    // apply some more args to the group
-                    if (yMin.HasValue)
-                    {
-                        wpfPlot.Plot.SetAxisLimits(yMin: yMin.Value);
-                        _autoScaleY = false;
-                    }
+                        // apply some more args to the group
+                        if (yMin.HasValue)
+                        {
+                            wpfPlot.Plot.SetAxisLimits(yMin: yMin.Value);
+                            _autoScaleY = false;
+                        }
 
-                    if (yMax.HasValue)
-                    {
-                        wpfPlot.Plot.SetAxisLimits(yMax: yMax.Value);
-                        _autoScaleY = false;
-                    }
+                        if (yMax.HasValue)
+                        {
+                            wpfPlot.Plot.SetAxisLimits(yMax: yMax.Value);
+                            _autoScaleY = false;
+                        }
 
-                    // time axis
-                    if (lastTimeRecord != null && 
-                        (lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Utc
-                         || lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Tai))
-                    {
-                        wpfPlot.Plot.XAxis.DateTimeFormat(true);
-                    }
+                        // time axis
+                        if (lastTimeRecord != null &&
+                            (lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Utc
+                             || lastTimeRecord.TimeAxis == TimeSeriesTimeAxis.Tai))
+                        {
+                            wpfPlot.Plot.XAxis.DateTimeFormat(true);
+                        }
 
-                    // for the last plot ..
-                    if (true /* lastPlot != null */)
-                    {
-                        xLabels += ")";
-                        lastPlot.Plot.XLabel(xLabels);
-                    }
+                        // for the last plot ..
+                        if (true /* lastPlot != null */)
+                        {
+                            xLabels += ")";
+                            lastPlot.Plot.XLabel(xLabels);
+                        }
 
-                    // render the plot into panel
-                    wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
-                    panel.Children.Add(pvc);
-                    wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                        // render the plot into panel
+                        wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
+                        panel.Children.Add(pvc);
+                        wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                    }
                 }
 
                 // return groups for notice
