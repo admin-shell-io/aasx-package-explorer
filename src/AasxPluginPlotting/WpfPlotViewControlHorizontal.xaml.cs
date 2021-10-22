@@ -57,5 +57,6 @@ namespace AasxPluginPlotting
             if (sender == ButtonSmaller)
                 ButtonClick?.Invoke(this, 7);
         }
+
     }
 }

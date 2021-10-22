@@ -7,13 +7,15 @@
   /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
   /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
-  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json", */
+  "AasxRepositoryFn": "C:\\MIHO\\Develop\\Aasx\\repo\\new-aasx-repo.json",
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
   /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
-  "AasxToLoad": "C:\\Users\\miho\\Desktop\\test.aasx",
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\test.aasx", */
+  "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\test.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -43,7 +45,7 @@
   "LoadWithoutPrompt": true,
   "ShowIdAsIri": false,
   "VerboseConnect": true,
-  "ShowEvents":  false,
+  "ShowEvents": false,
   "CompressEvents": false,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
@@ -68,6 +70,7 @@
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -114,19 +117,19 @@
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
     },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
+      "Args": []
+    }, */
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
       "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
-      "Args": []
     }
-/* Festo specific from here on */
-/*
+    /* Festo specific from here on */
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": [] /*,

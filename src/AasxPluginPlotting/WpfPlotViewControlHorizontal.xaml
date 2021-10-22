@@ -17,7 +17,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <Grid>
+    <Grid x:Name="TheGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
             <RowDefinition Height="*"/>

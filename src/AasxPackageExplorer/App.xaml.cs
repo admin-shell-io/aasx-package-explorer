@@ -7,8 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using AasxPackageLogic;
 using AnyUi;
@@ -90,6 +92,9 @@ namespace AasxPackageExplorer
             // allow long term logging (for report box)
             Log.Singleton.EnableLongTermStore();
 
+            // catch unhandled exceptions
+            SetupExceptionHandling();
+
             // Build up of options
             Log.Singleton.Info("Application startup.");
 
@@ -170,6 +175,44 @@ namespace AasxPackageExplorer
             // show main window
             MainWindow wnd = new MainWindow(pref);
             wnd.Show();
+        }
+
+        // see: https://stackoverflow.com/questions/793100/globally-catch-exceptions-in-a-wpf-application
+
+        private void SetupExceptionHandling()
+        {
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+                LogUnhandledException((Exception)e.ExceptionObject, "AppDomain.CurrentDomain.UnhandledException");
+
+            DispatcherUnhandledException += (s, e) =>
+            {
+                LogUnhandledException(e.Exception, "Application.Current.DispatcherUnhandledException");
+                e.Handled = true;
+            };
+
+            TaskScheduler.UnobservedTaskException += (s, e) =>
+            {
+                LogUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
+                e.SetObserved();
+            };
+        }
+
+        private void LogUnhandledException(Exception exception, string source)
+        {
+            string message = $"Unhandled exception ({source})";
+            try
+            {
+                System.Reflection.AssemblyName assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+                message = string.Format("Unhandled exception in {0} v{1}", assemblyName.Name, assemblyName.Version);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "Exception in LogUnhandledException");
+            }
+            finally
+            {
+                Log.Singleton.Error(exception, message);
+            }
         }
     }
 }

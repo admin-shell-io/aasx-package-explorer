@@ -187,7 +187,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // create TOP control
                 this.viewControl = new AasxPluginPlotting.PlottingViewControl();
-                this.viewControl.Start(package, sm, options, eventStack);
+                this.viewControl.Start(package, sm, options, eventStack, Log);
                 master.Children.Add(this.viewControl);
 
                 // give object back
