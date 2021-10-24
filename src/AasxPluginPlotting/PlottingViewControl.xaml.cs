@@ -734,7 +734,9 @@ namespace AasxPluginPlotting
 
             public TimeSeriesMinMax<int> GetMinMaxIndex()
             {
-                var res = new TimeSeriesMinMax<int>();
+                if (this.Count < 1)
+                    return new TimeSeriesMinMax<int>();
+                var res = new TimeSeriesMinMax<int>() { Min = int.MaxValue, Max = int.MinValue };
                 foreach (var dp in this)
                 {
                     if (dp.Index < res.Min)
@@ -883,7 +885,7 @@ namespace AasxPluginPlotting
             public TimeSeriesMinMax<int> DsLimits = new TimeSeriesMinMax<int>() 
                     { Min = int.MaxValue, Max = int.MinValue } ;
 
-            protected TimeSeriesMinMax<int> _dataLimits = new TimeSeriesMinMax<int>();           
+            protected TimeSeriesMinMax<int> _dataLimits = null;         
             protected double[] data = new[] { 0.0 };
             public double[] Data { get { return data; } }
 
@@ -898,6 +900,10 @@ namespace AasxPluginPlotting
 
                 // check to adapt current shape of data
                 var tempLimits = temp.GetMinMaxIndex();
+
+                // now, if the first time, start with good limits
+                if (_dataLimits == null)
+                    _dataLimits = new TimeSeriesMinMax<int>() { Min = tempLimits.Min, Max = tempLimits.Min };
 
                 // extend to the left?
                 if (tempLimits.Min < _dataLimits.Min)
@@ -931,7 +937,7 @@ namespace AasxPluginPlotting
                 foreach (var dp in temp)
                     if (dp.Value.HasValue)
                     {
-                        data[dp.Index + _dataLimits.Min] = dp.Value.Value;
+                        data[dp.Index - _dataLimits.Min] = dp.Value.Value;
 
                         if (dp.Index < DsLimits.Min)
                             DsLimits.Min = dp.Index;
@@ -942,6 +948,9 @@ namespace AasxPluginPlotting
 
             public void DataAdd(int index, double value, int headroom = 1024)
             {
+                // now, if the first time, start with good limits
+                if (_dataLimits == null)
+                    _dataLimits = new TimeSeriesMinMax<int>() { Min = index, Max = index };
 
                 // extend to the left?
                 if (index < _dataLimits.Min)
@@ -979,6 +988,10 @@ namespace AasxPluginPlotting
                     DsLimits.Max = index;
             }
 
+            /// <summary>
+            /// Get the min and max used index values w.r.t. to Data[]
+            /// </summary>
+            /// <returns>Null in case of array</returns>
             public TimeSeriesMinMax<int> GetRenderLimits()
             {
                 // reasonable data?
@@ -991,7 +1004,8 @@ namespace AasxPluginPlotting
                 return res;
             }
 
-            public double[] RenderDataToLimits()
+#if __old
+            public double[] RenderDataToLimitsOLD()
             {
                 var rl = GetRenderLimits();
                 if (rl == null)
@@ -1000,6 +1014,24 @@ namespace AasxPluginPlotting
                 var res = new double[1 + rl.Max - rl.Min];
                 for (int i = rl.Min; i <= rl.Max; i++)
                     res[i - rl.Min] = data[i - _dataLimits.Min];
+                return res;
+            }
+#endif
+
+            public double[] RenderDataToLimits(TimeSeriesMinMax<int> lim = null)
+            {
+                // defaults?
+                if (lim == null)
+                    lim = DsLimits;
+
+                // reasonable data?
+                if (lim.Min == int.MaxValue || lim.Max == int.MinValue)
+                    return null;
+
+                // render
+                var res = new double[1 + lim.Max - lim.Min];
+                for (int i = lim.Min; i <= lim.Max; i++)
+                    res[i - lim.Min] = data[i - _dataLimits.Min];
                 return res;
             }
 
@@ -1561,9 +1593,9 @@ namespace AasxPluginPlotting
                                 scatter.MinRenderIndex = rld.Min;
                                 scatter.MaxRenderIndex = rld.Max;
 
-                                var latestX = tsds.AssignedTimeDS[rlt.Max];
-                                if (latestX.HasValue && latestX.Value > maxRenderX)
-                                    maxRenderX = latestX.Value;
+                                var latestX = tsds.AssignedTimeDS.Data[rlt.Max];
+                                if (latestX > maxRenderX)
+                                    maxRenderX = latestX;
 
 #if __not_yet
                                 // Default: Scatter plot
@@ -1867,6 +1899,8 @@ namespace AasxPluginPlotting
 
         public void PushEvent(AasEventMsgEnvelope ev)
         {
+            // return;
+
             // need prefs
             var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
             var mm = AdminShell.Key.MatchMode.Relaxed;
