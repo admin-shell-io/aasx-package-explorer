@@ -286,6 +286,9 @@ namespace AasxPackageExplorer
             _helper.showIriMode = showIriMode;
             _helper.context = _displayContext;
 
+            // inform plug that their potential panel might not shown anymore
+            Plugins.AllPluginsInvoke("clear-panel-visual-extension");
+
             //
             // Test for Blazor
             //

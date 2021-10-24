@@ -589,7 +589,7 @@ namespace AasxPluginPlotting
 
             try
             {
-                SetTimeSeriesFromSubmodel(theSubmodel);
+                TimeSeriesStartFromSubmodel(theSubmodel);
             } catch (Exception ex)
             {
                 theLog?.Error(ex, "accessing Submodel elements for creating plot data");
@@ -878,7 +878,7 @@ namespace AasxPluginPlotting
 
             public PlotArguments Args = null;
 
-            public TimeSeriesDataSet TimeDS;
+            public TimeSeriesDataSet AssignedTimeDS;
 
             public TimeSeriesMinMax<int> DsLimits = new TimeSeriesMinMax<int>() 
                     { Min = int.MaxValue, Max = int.MinValue } ;
@@ -1052,7 +1052,13 @@ namespace AasxPluginPlotting
 
             public ListOfTimeSeriesDataSet DataSet = new ListOfTimeSeriesDataSet();
 
-            public WpfPlot WpfPlot;
+            // the time series might have different time axis for the records (not the variables)
+            public Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet> TimeDsLookup = 
+                new Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet>();
+
+            public WpfPlot UsedWpfPlot;
+            public bool RederedCumulative;
+            public PlotArguments.Type UsedType;
 
             public TimeSeriesDataSet FindDataSetById(string dsid)
             {
@@ -1061,11 +1067,23 @@ namespace AasxPluginPlotting
                         return tsd;
                 return null;
             }
+
         }
 
         public class ListOfTimeSeriesData : List<TimeSeriesData>
         {
             private bool _autoScaleX, _autoScaleY;
+
+            public TimeSeriesData FindDataSetBySource(AdminShell.SubmodelElementCollection smcts)
+            {
+                if (smcts == null)
+                    return null;
+
+                foreach (var tsd in this)
+                    if (tsd?.SourceTimeSeries == smcts)
+                        return tsd;
+                return null;
+            }
 
             public static string EvalDisplayText(
                 string minmalText, AdminShell.SubmodelElement sme, 
@@ -1128,12 +1146,15 @@ namespace AasxPluginPlotting
                         // Cumulative plots (e.g. the last sample, bars, pie, ..)
                         //
 
+                        tsd.RederedCumulative = true;
+
                         // start new group
                         var pvc = new WpfPlotViewControlCumulative();
                         pvc.Text = EvalDisplayText("Cumulative plot", tsd.SourceTimeSeries);
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+                        tsd.UsedWpfPlot = wpfPlot;
 
                         // for all wpf / all signals
                         if (tsd.Palette != null)
@@ -1201,12 +1222,15 @@ namespace AasxPluginPlotting
                         // Time series based plots (scatter, bars)
                         //
 
+                        tsd.RederedCumulative = false;
+
                         // start new group
                         var pvc = new WpfPlotViewControlHorizontal();
                         pvc.Text = EvalDisplayText("Time Series plot", tsd.SourceTimeSeries);
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+                        tsd.UsedWpfPlot = wpfPlot;
 
                         ScottPlot.WpfPlot lastPlot = null;
                         var xLabels = "Time ( ";
@@ -1214,7 +1238,7 @@ namespace AasxPluginPlotting
 
                         // some basic attributes
                         lastPlot = wpfPlot;
-                        tsd.WpfPlot = wpfPlot;
+                        tsd.UsedWpfPlot = wpfPlot;
                         res.Add(1);
 
                         // for all wpf / all signals
@@ -1232,44 +1256,45 @@ namespace AasxPluginPlotting
                         double? yMin = null, yMax = null;
                         TimeSeriesDataSet lastTimeRecord = null;
 
-                        foreach (var rec in tsd.DataSet)
+                        foreach (var tsds in tsd.DataSet)
                         {
                             // skip?
-                            if (rec.Args?.skip == true)
+                            if (tsds.Args?.skip == true)
                                 continue;
 
                             // if its a time axis, skip but remember for following axes
-                            if (rec.TimeAxis != TimeSeriesTimeAxis.None)
+                            if (tsds.TimeAxis != TimeSeriesTimeAxis.None)
                             {
-                                lastTimeRecord = rec;
-                                xLabels += "" + rec.DataSetId + " ";
+                                lastTimeRecord = tsds;
+                                xLabels += "" + tsds.DataSetId + " ";
                                 continue;
                             }
 
                             // cannot render without time record
-                            var timeDStoUse = rec.TimeDS;
+                            var timeDStoUse = tsds.AssignedTimeDS;
                             if (timeDStoUse == null)
                                 timeDStoUse = lastTimeRecord;
                             if (timeDStoUse == null)
                                 continue;
+                            tsds.AssignedTimeDS = timeDStoUse;
 
                             // compare (fix?) render limits
                             var rlt = timeDStoUse.GetRenderLimits();
-                            var rld = rec.GetRenderLimits();
+                            var rld = tsds.GetRenderLimits();
                             if (rlt == null || rld == null || rlt.Min != rld.Min || rlt.Max != rld.Max)
                             {
-                                log?.Error($"When rendering data set {rec.DataSetId} different dimensions for X and Y.");
+                                log?.Error($"When rendering data set {tsds.DataSetId} different dimensions for X and Y.");
                                 continue;
                             }
 
                             // integrate args
-                            if (rec.Args != null)
+                            if (tsds.Args != null)
                             {
-                                if (rec.Args.ymin.HasValue)
-                                    yMin = Nullable.Compare(rec.Args.ymin, yMin) > 0 ? rec.Args.ymin : yMin;
+                                if (tsds.Args.ymin.HasValue)
+                                    yMin = Nullable.Compare(tsds.Args.ymin, yMin) > 0 ? tsds.Args.ymin : yMin;
 
-                                if (rec.Args.ymax.HasValue)
-                                    yMax = Nullable.Compare(yMax, rec.Args.ymax) > 0 ? yMax : rec.Args.ymax;
+                                if (tsds.Args.ymax.HasValue)
+                                    yMax = Nullable.Compare(yMax, tsds.Args.ymax) > 0 ? yMax : tsds.Args.ymax;
                             }
 
                             // factory new Plottable
@@ -1278,40 +1303,40 @@ namespace AasxPluginPlotting
                             ScottPlot.Plottable.BarPlot bars = null;
                             ScottPlot.Plottable.ScatterPlot scatter = null;
 
-                            if (rec.Args != null && rec.Args.type == PlotArguments.Type.Bars)
+                            if (tsds.Args != null && tsds.Args.type == PlotArguments.Type.Bars)
                             {
                                 // Bars
                                 bars = wpfPlot.Plot.AddBar(
                                     positions: timeDStoUse.RenderDataToLimits(),
-                                    values: rec.RenderDataToLimits());
+                                    values: tsds.RenderDataToLimits());
 
                                 // customize the width of bars (80% of the inter-position distance looks good)
                                 if (timeDStoUse.Data.Length >= 2)
                                     bars.BarWidth = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) * .8;
 
-                                bars.Label = EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
+                                bars.Label = EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
                                     addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
 
-                                rec.Plottable = bars;
+                                tsds.Plottable = bars;
                             }
                             else
                             {
                                 // Default: Scatter plot
                                 scatter = wpfPlot.Plot.AddScatter(
                                     xs: timeDStoUse.Data,
-                                    ys: rec.Data,
-                                    label: EvalDisplayText("" + rec.DataSetId, rec.DataPoint, rec.DataPointCD,
+                                    ys: tsds.Data,
+                                    label: EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
                                         addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
 
-                                rec.Plottable = scatter;
+                                tsds.Plottable = scatter;
 
-                                var rl = rec.GetRenderLimits();
+                                var rl = tsds.GetRenderLimits();
                                 scatter.MinRenderIndex = rl.Min;
                                 scatter.MaxRenderIndex = rl.Max;
                             }
 
                             // axis treatment?
-                            bool sameAxis = (rec.Args?.sameaxis == true) && (yAxisNum != 0);
+                            bool sameAxis = (tsds.Args?.sameaxis == true) && (yAxisNum != 0);
                             int assignAxis = -1;
                             ScottPlot.Renderable.Axis yAxis3 = null;
                             if (!sameAxis)
@@ -1384,6 +1409,195 @@ namespace AasxPluginPlotting
                 // return groups for notice
                 return res;
             }
+
+            public List<int> RefreshRenderedTimeSeries(StackPanel panel, string defaultLang, LogInstance log)
+            {
+                // first access
+                var res = new List<int>();
+                if (panel == null)
+                    return null;
+
+                // go over all groups                
+                foreach (var tsd in this)
+                {
+                    // skip?
+                    if (tsd.Args?.skip == true)
+                        continue;
+
+                    // which kind of chart?
+                    if (tsd.RederedCumulative)
+                    {
+                        //
+                        // Cumulative plots (e.g. the last sample, bars, pie, ..)
+                        //
+
+#if __not_yet
+
+                        // start new group
+                        var pvc = new WpfPlotViewControlCumulative();
+                        pvc.Text = EvalDisplayText("Cumulative plot", tsd.SourceTimeSeries);
+                        var wpfPlot = pvc.WpfPlot;
+                        if (wpfPlot == null)
+                            continue;
+                        tsd.UsedWpfPlot = wpfPlot;
+
+                        // for all wpf / all signals
+                        if (tsd.Palette != null)
+                            wpfPlot.Plot.Palette = tsd.Palette;
+                        if (tsd.Style != null)
+                            wpfPlot.Plot.Style(tsd.Style);
+                        var height = plotHeight;
+                        if (true == tsd.Args?.height.HasValue)
+                            height = tsd.Args.height.Value;
+                        pvc.MinHeight = height;
+                        pvc.MaxHeight = height;
+
+                        // generate cumulative data
+                        var cum = tsd.DataSet.GenerateCumulativeDate();
+
+                        var val2 = new List<double>();
+                        var lab2 = new List<string>();
+                        var pos2 = new List<double>();
+                        double pos = 0.0;
+                        foreach (var cm in cum)
+                        {
+                            var ds = cm.Item1;
+                            if (ds == null)
+                                continue;
+
+                            var lab = EvalDisplayText("" + ds.DataSetId, ds.DataPoint, ds.DataPointCD,
+                                addMinimalTxt: false, defaultLang: defaultLang, useIdShort: true);
+
+                            val2.Add(cm.Item2);
+                            lab2.Add(lab);
+                            pos2.Add(pos);
+                            pos += 1.0;
+                        }
+
+                        if (tsd.Args.type == PlotArguments.Type.Pie)
+                        {
+                            var pie = wpfPlot.Plot.AddPie(val2.ToArray());
+                            pie.SliceLabels = lab2.ToArray();
+                            pie.ShowLabels = true == tsd.Args.labels;
+                            pie.ShowValues = true == tsd.Args.values;
+                            pie.ShowPercentages = true == tsd.Args.percent;
+                            pie.SliceFont.Size = 9.0f;
+                            wpfPlot.Plot.Legend();
+                            pvc.ActivePlottable = pie;
+                        }
+
+                        if (tsd.Args.type == PlotArguments.Type.Bars)
+                        {
+                            var bar = wpfPlot.Plot.AddBar(val2.ToArray());
+                            wpfPlot.Plot.XTicks(pos2.ToArray(), lab2.ToArray());
+                            bar.ShowValuesAboveBars = true == tsd.Args.values;
+                            wpfPlot.Plot.Legend();
+                            pvc.ActivePlottable = bar;
+                        }
+
+                        // render the plot into panel
+                        var legend = wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
+                        legend.FontSize = 9.0f;
+                        panel.Children.Add(pvc);
+                        wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+
+#endif
+                    }
+                    else
+                    {
+                        //
+                        // Time series based plots (scatter, bars)
+                        //
+
+                        // access
+                        if (tsd.UsedWpfPlot == null)
+                            continue;
+
+                        double maxRenderX = double.MinValue;
+
+                        // find valid data sets
+                        foreach (var tsds in tsd.DataSet)
+                        {
+                            // skip?
+                            if (tsds.Args?.skip == true)
+                                continue;
+
+                            // required to be no time axis, but to have a time axis
+                            if (tsds.TimeAxis != TimeSeriesTimeAxis.None)
+                                continue;
+                            if (tsds.AssignedTimeDS == null)
+                                continue;
+
+                            // compare (fix?) render limits
+                            var rlt = tsds.AssignedTimeDS.GetRenderLimits();
+                            var rld = tsds.GetRenderLimits();
+                            if (rlt == null || rld == null || rlt.Min != rld.Min || rlt.Max != rld.Max)
+                            {
+                                log?.Error($"When rendering data set {tsds.DataSetId} different dimensions for X and Y.");
+                                continue;
+                            }
+
+                            if (tsds.Plottable is ScottPlot.Plottable.BarPlot bars)
+                            {
+#if __not_yet
+                                // Bars
+                                bars = wpfPlot.Plot.AddBar(
+                                    positions: timeDStoUse.RenderDataToLimits(),
+                                    values: tsds.RenderDataToLimits());
+
+                                // customize the width of bars (80% of the inter-position distance looks good)
+                                if (timeDStoUse.Data.Length >= 2)
+                                    bars.BarWidth = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) * .8;
+
+                                bars.Label = EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                    addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
+#endif
+                            }
+
+                            if (tsds.Plottable is ScottPlot.Plottable.ScatterPlot scatter)
+                            {
+                                // just set the render limits to new values
+                                scatter.Update(tsds.AssignedTimeDS.Data, tsds.Data);
+                                scatter.MinRenderIndex = rld.Min;
+                                scatter.MaxRenderIndex = rld.Max;
+
+                                var latestX = tsds.AssignedTimeDS[rlt.Max];
+                                if (latestX.HasValue && latestX.Value > maxRenderX)
+                                    maxRenderX = latestX.Value;
+
+#if __not_yet
+                                // Default: Scatter plot
+                                scatter = wpfPlot.Plot.AddScatter(
+                                    xs: timeDStoUse.Data,
+                                    ys: tsds.Data,
+                                    label: EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                        addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
+
+
+                                var rl = tsds.GetRenderLimits();
+                                scatter.MinRenderIndex = rl.Min;
+                                scatter.MaxRenderIndex = rl.Max;
+#endif
+                            }
+
+                        }
+
+                        // remain the zoom level, scroll to lastest x
+                        if (maxRenderX != double.MinValue)
+                        {
+                            var ax = tsd.UsedWpfPlot.Plot.GetAxisLimits();
+                            var wx = (ax.XMax - ax.XMin);
+                            tsd.UsedWpfPlot.Plot.SetAxisLimitsX(maxRenderX - 0.9 * wx, maxRenderX + 0.1 * wx);
+                        }
+                        
+                        // render the plot into panel
+                        tsd.UsedWpfPlot.Render(/* skipIfCurrentlyRendering: true */);                        
+                    }
+                }
+
+                // return groups for notice
+                return res;
+            }
         }
 
         protected ListOfTimeSeriesData _timeSeriesData = new ListOfTimeSeriesData();
@@ -1443,16 +1657,15 @@ namespace AasxPluginPlotting
             return null;
         }
 
-        protected void SetTimeSeriesFromSubmodel(AdminShell.Submodel sm)
+        private void TimeSeriesAddSegmentData(
+            ZveiTimeSeriesDataV10 pcts,
+            AdminShell.Key.MatchMode mm,
+            TimeSeriesData tsd,
+            AdminShell.SubmodelElementCollection smcseg)
         {
             // access
-            if (sm?.submodelElements == null)
+            if (pcts == null || smcseg == null)
                 return;
-            var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
-
-            // clear
-            _timeSeriesData.Clear();
 
             // challenge is to select SMes, which are NOT from a known semantic id!
             var tsvAllowed = new[]
@@ -1475,6 +1688,146 @@ namespace AasxPluginPlotting
                 pcts.CD_TimeDuration.GetSingleKey(),
                 pcts.CD_ValueArray.GetSingleKey()
             };
+
+            // find variables?
+            foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                pcts.CD_TimeSeriesVariable.GetReference(), mm))
+            {
+                // makes only sense with record id
+                var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                    pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                if (recid.Length < 1)
+                    continue;
+
+                // add need a value array as well!
+                var valarr = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Blob>(
+                    pcts.CD_ValueArray.GetReference(), mm)?.value?.Trim();
+                if (valarr.Length < 1)
+                    continue;
+
+                // already have a dataset with that id .. or make new?
+                var ds = tsd.FindDataSetById(recid);
+                if (ds == null)
+                {
+                    // add
+                    ds = new TimeSeriesDataSet() { DataSetId = recid };
+                    tsd.DataSet.Add(ds);
+
+                    // at this very moment, check if this is a time series
+                    var timeSpec = DetectTimeSpecifier(pcts, mm, smcvar);
+                    if (timeSpec != null)
+                        ds.TimeAxis = timeSpec.Item1;
+
+                    // find a DataPoint description?
+                    var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, mm,
+                        invertAllowed: true);
+                    if (pdp != null && ds.DataPoint == null)
+                    {
+                        ds.DataPoint = pdp;
+                        ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
+                    }
+
+                    // plot arguments for record?
+                    ds.Args = PlotArguments.Parse(smcvar.HasQualifierOfType("TimeSeries.Args")?.value);
+                }
+
+                // now try add the value array
+                ds.DataAdd(valarr);
+            }
+
+            // find records?
+            foreach (var smcrec in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                pcts.CD_TimeSeriesRecord.GetReference(), mm))
+            {
+                // makes only sense with a numerical record id
+                var recid = "" + smcrec.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                    pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                if (recid.Length < 1)
+                    continue;
+                if (!int.TryParse(recid, out var dataIndex))
+                    continue;
+
+                // to prevent attacks, restrict index
+                if (dataIndex < 0 || dataIndex > 16 * 1024 * 1024)
+                    continue;
+
+                // but, in this case, the dataset id's and data comes from individual
+                // data points
+                foreach (var pdp in smcrec.value.FindAllSemanticId<AdminShell.Property>(tsrAllowed, mm,
+                        invertAllowed: true))
+                {
+                    // the dataset id is?
+                    var dsid = "" + pdp.idShort;
+                    if (!dsid.HasContent())
+                        continue;
+
+                    // query avilable information on the time
+                    var timeSpec = DetectTimeSpecifier(pcts, mm, smcrec);
+                    if (timeSpec == null)
+                        continue;
+
+                    // already have a dataset with that id .. or make new?
+                    var ds = tsd.FindDataSetById(dsid);
+                    if (ds == null)
+                    {
+                        // add
+                        ds = new TimeSeriesDataSet() { DataSetId = dsid };
+                        tsd.DataSet.Add(ds);
+
+                        // find a DataPoint description? .. store it!
+                        if (ds.DataPoint == null)
+                        {
+                            ds.DataPoint = pdp;
+                            ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
+                        }
+
+                        // now fix (one time!) the time data set for this data set
+                        if (tsd.TimeDsLookup.ContainsKey(timeSpec.Item1))
+                            ds.AssignedTimeDS = tsd.TimeDsLookup[timeSpec.Item1];
+                        else
+                        {
+                            // create this
+                            ds.AssignedTimeDS = new TimeSeriesDataSet()
+                            {
+                                DataSetId = "Time_" + timeSpec.Item1.ToString()
+                            };
+                            tsd.TimeDsLookup[timeSpec.Item1] = ds.AssignedTimeDS;
+                        }
+
+                        // plot arguments for datapoint?
+                        ds.Args = PlotArguments.Parse(pdp.HasQualifierOfType("TimeSeries.Args")?.value);
+                    }
+
+                    // now access the value of the data point as float value
+                    if (!double.TryParse(pdp.value, NumberStyles.Float,
+                            CultureInfo.InvariantCulture, out var dataValue))
+                        continue;
+
+                    // TimeDS and time is required
+                    if (ds.AssignedTimeDS == null)
+                        continue;
+
+                    var tm = SpecifiedTimeToDouble(timeSpec.Item1, timeSpec.Item2.value);
+                    if (!tm.HasValue)
+                        continue;
+
+                    // ok, push the data into the dataset
+                    ds.AssignedTimeDS.DataAdd(dataIndex, tm.Value);
+                    ds.DataAdd(dataIndex, dataValue);
+                }
+            }
+        }
+
+        protected void TimeSeriesStartFromSubmodel(AdminShell.Submodel sm)
+        {
+            // access
+            if (sm?.submodelElements == null)
+                return;
+            var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
+
+            // clear
+            _timeSeriesData.Clear();            
 
             // find SMC for TimeSeries itself -> this will result in a plot
             foreach (var smcts in sm.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
@@ -1501,150 +1854,22 @@ namespace AasxPluginPlotting
                         if (st.GetType().Name.ToLower().Trim() == tsd.Args.style.ToLower().Trim())
                             tsd.Style = st;
 
-                // the time series might have different time axis for the records (not the variables)
-                var timeDSindex = new Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet>();
-
                 // find segements
                 foreach (var smcseg in smcts.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
                     pcts.CD_TimeSeriesSegment.GetReference(), mm))
                 {
-                    // find variables?
-                    foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        pcts.CD_TimeSeriesVariable.GetReference(), mm))
-                    {
-                        // makes only sense with record id
-                        var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
-                        if (recid.Length < 1)
-                            continue;
-
-                        // add need a value array as well!
-                        var valarr = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Blob>(
-                            pcts.CD_ValueArray.GetReference(), mm)?.value?.Trim();
-                        if (valarr.Length < 1)
-                            continue;
-
-                        // already have a dataset with that id .. or make new?
-                        var ds = tsd.FindDataSetById(recid);
-                        if (ds == null)
-                        {
-                            // add
-                            ds = new TimeSeriesDataSet() { DataSetId = recid };
-                            tsd.DataSet.Add(ds);
-
-                            // at this very moment, check if this is a time series
-                            var timeSpec = DetectTimeSpecifier(pcts, mm, smcvar);
-                            if (timeSpec != null)
-                                ds.TimeAxis = timeSpec.Item1;
-
-                            // find a DataPoint description?
-                            var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, mm,
-                                invertAllowed: true);
-                            if (pdp != null && ds.DataPoint == null)
-                            {
-                                ds.DataPoint = pdp;
-                                ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
-                            }
-
-                            // plot arguments for record?
-                            ds.Args = PlotArguments.Parse(smcvar.HasQualifierOfType("TimeSeries.Args")?.value);
-                        }
-
-                        // now try add the value array
-                        ds.DataAdd(valarr);
-                    }
-
-                    // find records?
-                    foreach (var smcrec in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        pcts.CD_TimeSeriesRecord.GetReference(), mm))
-                    {
-                        // makes only sense with a numerical record id
-                        var recid = "" + smcrec.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
-                        if (recid.Length < 1)
-                            continue;
-                        if (!int.TryParse(recid, out var dataIndex))
-                            continue;
-
-                        // to prevent attacks, restrict index
-                        if (dataIndex < 0 || dataIndex > 16 * 1024 * 1024)
-                            continue;
-
-                        // but, in this case, the dataset id's and data comes from individual
-                        // data points
-                        foreach (var pdp in smcrec.value.FindAllSemanticId<AdminShell.Property>(tsvAllowed, mm,
-                                invertAllowed: true))
-                        {
-                            // the dataset id is?
-                            var dsid = "" + pdp.idShort;
-                            if (!dsid.HasContent())
-                                continue;
-
-                            // query avilable information on the time
-                            var timeSpec = DetectTimeSpecifier(pcts, mm, smcrec);
-                            if (timeSpec == null)
-                                continue;
-
-                            // already have a dataset with that id .. or make new?
-                            var ds = tsd.FindDataSetById(dsid);
-                            if (ds == null)
-                            {
-                                // add
-                                ds = new TimeSeriesDataSet() { DataSetId = dsid };
-                                tsd.DataSet.Add(ds);                                
-
-                                // find a DataPoint description? .. store it!
-                                if (ds.DataPoint == null)
-                                {
-                                    ds.DataPoint = pdp;
-                                    ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
-                                }
-
-                                // now fix (one time!) the time data set for this data set
-                                if (timeDSindex.ContainsKey(timeSpec.Item1))
-                                    ds.TimeDS = timeDSindex[timeSpec.Item1];
-                                else
-                                {
-                                    // create this
-                                    ds.TimeDS = new TimeSeriesDataSet()
-                                    {
-                                        DataSetId = "Time_" + timeSpec.Item1.ToString()
-                                    };
-                                    timeDSindex[timeSpec.Item1] = ds.TimeDS;
-                                }
-
-                                // plot arguments for datapoint?
-                                ds.Args = PlotArguments.Parse(pdp.HasQualifierOfType("TimeSeries.Args")?.value);
-                            }                            
-
-                            // now access the value of the data point as float value
-                            if (!double.TryParse(pdp.value, NumberStyles.Float,
-                                    CultureInfo.InvariantCulture, out var dataValue))
-                                continue;
-
-                            // TimeDS and time is required
-                            if (ds.TimeDS == null)
-                                continue;
-
-                            var tm = SpecifiedTimeToDouble(timeSpec.Item1, timeSpec.Item2.value);
-                            if (!tm.HasValue)
-                                continue;
-
-                            // ok, push the data into the dataset
-                            ds.TimeDS.DataAdd(dataIndex, tm.Value);
-                            ds.DataAdd(dataIndex, dataValue);
-                        }
-                    }
+                    TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
                 }
             }
 
             ;
-        }
+        }        
 
         public void PushEvent(AasEventMsgEnvelope ev)
         {
             // need prefs
             var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
 
             // TODO: search for updated values and display them in the 'old' plots
 
@@ -1690,12 +1915,27 @@ namespace AasxPluginPlotting
                     continue;
 
                 // the segments needs to be situated in a time series
-                var smcts = smcseg.FindAllParentsWithSemanticId(new AdminShell.SemanticId(
+                var smcts = (smcseg.FindAllParentsWithSemanticId(new AdminShell.SemanticId(
                                 pcts.CD_TimeSeries.GetReference()),
                                 includeThis: false)
                             .FirstOrDefault()) as AdminShell.SubmodelElementCollection;
                 if (smcts == null)
                     continue;
+
+                // find the data for it
+                var tsd = _timeSeriesData.FindDataSetBySource(smcts);
+
+                if (tsd == null)
+                {
+                    // TODO
+                    throw new NotImplementedException("AasxPlugPlotting::PushEvent() does not allow new time series");
+                }
+
+                // ok, add data to time series
+                TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
+
+                // redisplay
+                _timeSeriesData.RefreshRenderedTimeSeries(StackPanelTimeSeries, theDefaultLang, theLog);
             }
         }
 

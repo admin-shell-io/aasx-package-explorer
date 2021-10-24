@@ -363,20 +363,27 @@ namespace AasxPackageLogic
                 }
             }
         }
-        public static void PushEventIntoPlugins(AasEventMsgEnvelope ev)
+
+        public static void AllPluginsInvoke(string name, params object[] args)
         {
             // over all loaded plugins
             foreach (var lpi in LoadedPlugins.Values)
             {
                 try
                 {
-                    lpi.InvokeAction("push-aas-event", ev);
+                    lpi.InvokeAction(name, args);
                 }
                 catch (Exception ex)
                 {
                     AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 }
             }
+        }
+
+        public static void PushEventIntoPlugins(AasEventMsgEnvelope ev)
+        {
+            // over all loaded plugins
+            AllPluginsInvoke("push-aas-event", ev);
         }
 
     }

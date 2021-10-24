@@ -29,8 +29,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginPlotting.PlottingOptions options = new AasxPluginPlotting.PlottingOptions();
 
-        private AasxPluginPlotting.PlottingViewControl viewControl =
-            new AasxPluginPlotting.PlottingViewControl();
+        private AasxPluginPlotting.PlottingViewControl viewControl;
 
         public string GetPluginName()
         {
@@ -93,7 +92,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
+                    "When called, fill given WPF panel with control for plugin display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "clear-panel-visual-extension",
+                    "Clear the panel information; might occur before fill-panel is called."));
             return res.ToArray();
         }
 
@@ -184,6 +187,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 cve.strType = "True";
                 cve.obj = true;
                 return cve;
+            }
+
+            if (action == "clear-panel-visual-extension")
+            {
+                // simple delete reference to view control
+                // this shall also stop event notifications!
+                this.viewControl = null;
             }
 
             if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)
