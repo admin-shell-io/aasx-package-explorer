@@ -1707,6 +1707,9 @@ namespace AasxPackageExplorer
                 foreach (var fa in UserControlAgentsView.Children)
                     fa.GetAgent()?.PushEvent(ev);
 
+                // push into plugins
+                Plugins.PushEventIntoPlugins(ev);
+
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
                 if (foundObservable == null)

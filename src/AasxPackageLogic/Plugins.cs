@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic
@@ -355,6 +356,21 @@ namespace AasxPackageLogic
                                 Log.Singleton.NumberErrors++;
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+            }
+        }
+        public static void PushEventIntoPlugins(AasEventMsgEnvelope ev)
+        {
+            // over all loaded plugins
+            foreach (var lpi in LoadedPlugins.Values)
+            {
+                try
+                {
+                    lpi.InvokeAction("push-aas-event", ev);
                 }
                 catch (Exception ex)
                 {

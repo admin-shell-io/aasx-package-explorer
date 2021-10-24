@@ -25,6 +25,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -1640,6 +1641,63 @@ namespace AasxPluginPlotting
             ;
         }
 
+        public void PushEvent(AasEventMsgEnvelope ev)
+        {
+            // need prefs
+            var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
+
+            // TODO: search for updated values and display them in the 'old' plots
+
+            // TODO: search for updated value arrays and re-display the dáta set
+
+            // search for structural creation of portions of segments
+            // this is to trigger, if NEW SEGMENTS exist
+
+            if (!ev.IsWellInformed || ev.PayloadItems == null)
+                return;
+
+            var segmentsToInspect = new List<AdminShell.SubmodelElementCollection>();
+
+            foreach (var pl in ev.PayloadItems)
+                if (pl is AasPayloadStructuralChange sc && sc.Changes != null)
+                    foreach (var sci in sc.Changes)
+                    {
+                        if (sci.Reason != StructuralChangeReason.Create
+                            || sci.FoundReferable == null)
+                            continue;
+
+                        // find the segment
+
+                        var smcseg = ((sci.FoundReferable as AdminShell.SubmodelElement)
+                            .FindAllParentsWithSemanticId(new AdminShell.SemanticId(
+                                pcts.CD_TimeSeriesSegment.GetReference()),
+                                includeThis: true)
+                            .FirstOrDefault()) as AdminShell.SubmodelElementCollection;
+                        if (smcseg == null)
+                            continue;
+
+                        // remember
+
+                        if (!segmentsToInspect.Contains(smcseg))
+                            segmentsToInspect.Add(smcseg);
+                    }
+
+            // now check the newly discovered sigmentsd
+            foreach (var smcseg in segmentsToInspect)
+            {
+                // access
+                if (smcseg == null)
+                    continue;
+
+                // the segments needs to be situated in a time series
+                var smcts = smcseg.FindAllParentsWithSemanticId(new AdminShell.SemanticId(
+                                pcts.CD_TimeSeries.GetReference()),
+                                includeThis: false)
+                            .FirstOrDefault()) as AdminShell.SubmodelElementCollection;
+                if (smcts == null)
+                    continue;
+            }
+        }
 
     }
 }

@@ -49,6 +49,13 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// </summary>
         public AdminShell.Reference ValueId { get; set; }
 
+        /// <summary>
+        /// Direct reference to Referable, when value item was successfully processed.
+        /// Note: only runtime value; not specified; not interoperable
+        /// </summary>
+        [JsonIgnore]
+        public AdminShell.Referable FoundReferable;
+
         //
         // Constructor
         //

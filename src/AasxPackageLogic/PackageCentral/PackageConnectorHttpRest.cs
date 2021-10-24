@@ -592,7 +592,7 @@ namespace AasxPackageLogic.PackageCentral
             if (change?.Path == null)
                 return;
 
-            // try determine tarket of "Observavle"/"path"
+            // try determine tarket of "Observable"/"path"
             var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (change.Path?.IsEmpty == false)
@@ -665,6 +665,7 @@ namespace AasxPackageLogic.PackageCentral
                     && change.CreateAtIndex < 0)
                 {
                     parentMgr.Add(sme);
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme, parentRef: parent));
                 }
@@ -677,6 +678,7 @@ namespace AasxPackageLogic.PackageCentral
                     && change.CreateAtIndex < parentSmc.value.Count)
                 {
                     parentSmc.value.Insert(change.CreateAtIndex, sme2);
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex));
                 }
@@ -688,6 +690,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     Env.AasEnv.Submodels.Add(sm);
                     parentAas.AddSubmodelRef(sm?.GetSubmodelRef());
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sm, parentRef: parent));
                 }
@@ -729,6 +732,7 @@ namespace AasxPackageLogic.PackageCentral
                     // Note: assumption is, that Remove() will not throw exception,
                     // if sme does not exist. Sadly, there is also no exception to 
                     // handler in this case
+                    change.FoundReferable = target;
                     parentMgr.Remove(sme);
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
                         thisRef: sme, parentRef: parent));
@@ -756,6 +760,8 @@ namespace AasxPackageLogic.PackageCentral
                             "Cannot find SubmodelRef in target AAS!"));
                         return;
                     }
+
+                    change.FoundReferable = target;
 
                     parentAas.submodelRefs.Remove(smrefFound);
                     Env.AasEnv.Submodels.Remove(sm);
@@ -787,7 +793,7 @@ namespace AasxPackageLogic.PackageCentral
             if (value?.Path == null)
                 return;
 
-            // try determine tarket of "Observavle"/"path"
+            // try determine tarket of "Observable"/"path"
             var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (value.Path?.IsEmpty == false)
@@ -809,6 +815,9 @@ namespace AasxPackageLogic.PackageCentral
                     "Cannot find target Referable!"));
                 return;
             }
+
+            // remember (e.g. to be processed further by lugins or similar)
+            value.FoundReferable = target;
 
             // try to update
             if (target is AdminShell.AdministrationShell)

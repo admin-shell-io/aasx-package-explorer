@@ -66,6 +66,13 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// </summary>
         public int CreateAtIndex = -1;
 
+        /// <summary>
+        /// Direct reference to Referable, when change item was successfully processed.
+        /// Note: only runtime value; not specified; not interoperable
+        /// </summary>
+        [JsonIgnore]
+        public AdminShell.Referable FoundReferable;
+
         //
         // Constructor
         //

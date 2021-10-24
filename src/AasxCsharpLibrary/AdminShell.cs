@@ -5534,6 +5534,16 @@ namespace AdminShellNS
                 }
             }
 
+            public IEnumerable<Referable> FindAllParentsWithSemanticId(
+                SemanticId semId,
+                bool includeThis = false, bool includeSubmodel = false)
+            {
+                return (FindAllParents(
+                    (rf) => ( true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId, 
+                        matchMode: Key.MatchMode.Relaxed)),
+                    includeThis: includeThis, includeSubmodel: includeSubmodel));
+            }
+
             public Tuple<string, string> ToCaptionInfo()
             {
                 var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");

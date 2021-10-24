@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -74,6 +75,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "call-check-visual-extension",
                     "When called with Referable, returns possibly visual extension for it."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "push-aas-event", "Pushes an AAS event to the plugin."));
             // rest follows
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -126,6 +130,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // ok
                 return cve;
+            }
+
+            if (action == "push-aas-event")
+            {
+                // arguments
+                if (args.Length < 1 || !(args[0] is AasEventMsgEnvelope ev))
+                    return null;
+
+                this.viewControl?.PushEvent(ev);
             }
 
             // rest follows
