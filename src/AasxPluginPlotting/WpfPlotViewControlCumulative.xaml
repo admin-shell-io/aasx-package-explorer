@@ -26,12 +26,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"/>
@@ -43,17 +37,28 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
 
-        <Button x:Name="ButtonLabels"  Click="Button_Click" Width="22"
-                ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" 
-                Content="&#x1F3F7;" FontSize="14" Padding="0,0,0,0" Margin="1"/>
+            <Button x:Name="ButtonPrev"  Click="Button_Click" Width="22"
+                    ToolTip="Increase offset to latest sample shown" Foreground="#ff303030" 
+                    Content="&#x25c0;" FontSize="16" Padding="0,-1,0,0" Margin="1"/>
 
-        <Button x:Name="ButtonValues" Click="Button_Click" Width="22"
-                ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
-                Content="&#x2211;" FontSize="14" Padding="0,-2,0,0" Margin="1"/>
+            <TextBox x:Name="TextBoxSamplePos" Text="0" Width="50"
+                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center" KeyDown="TextBoxSamplePos_KeyDown" />
 
-        <Button x:Name="ButtonPercentage" Click="Button_Click" Width="22"
-                ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
-                Content="&#x25;" FontSize="16" Padding="0,-2,0,0" Margin="1"/>
+            <Button x:Name="ButtonNext"  Click="Button_Click" Width="22"
+                    ToolTip="Decrease offset to latest sample shown" Foreground="#ff303030" 
+                    Content="&#x25B6;" FontSize="16" Padding="0,-1,0,0" Margin="1,1,10,1"/>
+
+            <Button x:Name="ButtonLabels"  Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" 
+                    Content="&#x1F3F7;" FontSize="14" Padding="0,0,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonValues" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
+                    Content="&#x2211;" FontSize="14" Padding="0,-2,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonPercentage" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
+                    Content="&#x25;" FontSize="16" Padding="0,-2,0,0" Margin="1"/>
 
         </StackPanel>
 

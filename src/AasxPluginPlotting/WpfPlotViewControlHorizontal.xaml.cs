@@ -27,13 +27,24 @@ namespace AasxPluginPlotting
     /// <summary>
     /// Interaktionslogik für WpfPlotViewControl.xaml
     /// </summary>
-    public partial class WpfPlotViewControlHorizontal : UserControl
+    public partial class WpfPlotViewControlHorizontal : UserControl, IWpfPlotViewControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
 
         public event Action<WpfPlotViewControlHorizontal, int> ButtonClick;
 
         public string Text { get { return TextboxInfo.Text; } set { TextboxInfo.Text = value; } }
+
+        public bool AutoScaleX { 
+            get => true == ButtonScaleX.IsChecked;
+            set => ButtonScaleX.IsChecked = value; 
+        }
+
+        public bool AutoScaleY
+        {
+            get => true == ButtonScaleY.IsChecked;
+            set => ButtonScaleY.IsChecked = value;
+        }
 
         public WpfPlotViewControlHorizontal()
         {
@@ -58,5 +69,75 @@ namespace AasxPluginPlotting
                 ButtonClick?.Invoke(this, 7);
         }
 
+        public void DefaultButtonClicked(WpfPlotViewControlHorizontal sender, int ndx)
+        {
+            // access
+            var wpfPlot = sender?.WpfPlot;
+            if (wpfPlot == null)
+                return;
+
+            if (ndx == 1 || ndx == 2)
+            {
+                // Horizontal scale Plus / Minus
+                var ax = wpfPlot.Plot.GetAxisLimits();
+                var width = Math.Abs(ax.XMax - ax.XMin);
+
+                if (ndx == 1)
+                    wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin - width / 2, xMax: ax.XMax + width / 2);
+
+                if (ndx == 2)
+                    wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
+
+                // no autoscale for X
+                AutoScaleX = false;
+
+                // show
+                wpfPlot.Render();
+            }
+
+            if (ndx == 3 || ndx == 4)
+            {
+                // Vertical scale Plus / Minus
+                var ax = wpfPlot.Plot.GetAxisLimits();
+                var height = Math.Abs(ax.YMax - ax.YMin);
+
+                if (ndx == 3)
+                    wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin - height / 2, yMax: ax.YMax + height / 2);
+
+                if (ndx == 4)
+                    wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin + height / 4, yMax: ax.YMax - height / 4);
+
+                // no autoscale for Y
+                AutoScaleY = false;
+
+                // show
+                wpfPlot.Render();
+            }
+
+            if (ndx == 5)
+            {
+                // switch auto scale ON and hope the best
+                AutoScaleX = true;
+                AutoScaleY = true;
+            }
+
+            if (ndx == 6)
+            {
+                // plot larger
+                sender.Height += 100;
+
+                // show
+                wpfPlot.Render();
+            }
+
+            if (ndx == 7 && sender.Height >= 299)
+            {
+                // plot smaller
+                sender.Height -= 100;
+
+                // show
+                wpfPlot.Render();
+            }
+        }
     }
 }

@@ -27,11 +27,12 @@ namespace AasxPluginPlotting
     /// <summary>
     /// Interaktionslogik für WpfPlotViewControl.xaml
     /// </summary>
-    public partial class WpfPlotViewControlCumulative : UserControl
+    public partial class WpfPlotViewControlCumulative : UserControl, IWpfPlotViewControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
 
-        public event Action<WpfPlotViewControlHorizontal, int> ButtonClick;
+        public event Action<WpfPlotViewControlCumulative, int> ButtonClick;
+        public event Action<WpfPlotViewControlCumulative, int> LatestSamplePositionChanged;
 
         public string Text { get { return TextboxInfo.Text; } set { TextboxInfo.Text = value; } }
 
@@ -40,6 +41,20 @@ namespace AasxPluginPlotting
         {
             set { _plottable = value; AdjustButtonVisibility(); }
             get { return _plottable; }
+        }
+
+        public bool AutoScaleX { get => false; set { ; } }
+        public bool AutoScaleY { get => false; set { ; } }
+
+        protected int _latestSamplePosition = 0;        
+        public int LatestSamplePosition
+        {
+            get { return _latestSamplePosition; }
+            set
+            {
+                _latestSamplePosition = value;
+                TextBoxSamplePos.Text = "" + _latestSamplePosition;
+            }
         }
 
         public WpfPlotViewControlCumulative()
@@ -71,7 +86,34 @@ namespace AasxPluginPlotting
                 if (sender == ButtonValues) bar.ShowValuesAboveBars = !bar.ShowValuesAboveBars;
             }
 
+            if (sender == ButtonPrev)
+            {
+                _latestSamplePosition--;
+                TextBoxSamplePos.Text = "" + _latestSamplePosition;
+                LatestSamplePositionChanged?.Invoke(this, _latestSamplePosition);
+            }
+
+            if (sender == ButtonNext && _latestSamplePosition < 0)
+            {
+                _latestSamplePosition++;
+                TextBoxSamplePos.Text = "" + _latestSamplePosition;
+                LatestSamplePositionChanged?.Invoke(this, _latestSamplePosition);
+            }
+
             WpfPlotItself.Render();
+        }
+
+        private void TextBoxSamplePos_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Return)
+            {
+                if (int.TryParse(TextBoxSamplePos.Text, out var i))
+                {
+                    _latestSamplePosition = Math.Min(0, i);
+                    TextBoxSamplePos.Text = "" + _latestSamplePosition;
+                    LatestSamplePositionChanged?.Invoke(this, _latestSamplePosition);
+                }
+            }
         }
     }
 }

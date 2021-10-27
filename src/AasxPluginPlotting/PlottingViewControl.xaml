@@ -26,7 +26,7 @@
         </Grid.ColumnDefinitions>
 
         <DockPanel Grid.Row="0" Grid.Column="0" Background="LightBlue">
-            <Label DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">
+            <Label x:Name="LabelPanelTitle" DockPanel.Dock="Left" FontSize="24" FontWeight="Bold" Foreground="DarkBlue">
                 Plotting of Properties</Label>
             <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
                 <Label Content="Lang:"/>

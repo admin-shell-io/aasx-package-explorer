@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src",
+    "\\src\\AasxPluginPlotting"
   ],
-  "SelectedNode": "\\AasxPackageExplorer.sln",
+  "SelectedNode": "\\src\\AasxPluginPlotting\\WpfPlotViewControlCumulative.xaml.cs",
   "PreviewInSolutionExplorer": false
 }

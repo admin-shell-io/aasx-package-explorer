@@ -22,6 +22,11 @@ namespace AasxPluginPlotting
         // ReSharper disable UnassignedField.Global
 
         /// <summary>
+        /// Display title of the respective entity to be shown in the panel
+        /// </summary>
+        public string title;
+
+        /// <summary>
         /// Symbolic name of a group, a plot shall assigned to
         /// </summary>            
         public string grp;
@@ -45,6 +50,16 @@ namespace AasxPluginPlotting
         /// Keep the plot on the same Y axis as the plot before
         /// </summary>
         public bool sameaxis;
+
+        /// <summary>
+        /// Plottables will be shown with ascending order
+        /// </summary>
+        public int order = -1;
+
+        /// <summary>
+        /// Width of plot line, size of its markers
+        /// </summary>
+        public double? linewidth, markersize;
 
         /// <summary>
         /// Dimensions of the overall plot

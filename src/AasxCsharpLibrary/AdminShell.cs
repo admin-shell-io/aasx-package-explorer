@@ -5283,6 +5283,38 @@ namespace AdminShellNS
             }
             // ReSharper enable MethodOverloadWithOptionalParameter
             // ReSharper enable RedundantArgumentDefaultValue
+
+            // for convenience methods of Submodel, SubmodelElement
+
+            public static void AddQualifier(
+                ref QualifierCollection qualifiers,
+                string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
+                Reference qualifierValueId = null)
+            {
+                if (qualifiers == null)
+                    qualifiers = new QualifierCollection();
+                var q = new Qualifier()
+                {
+                    type = qualifierType,
+                    value = qualifierValue,
+                    valueId = qualifierValueId,
+                };
+                if (semanticKeys != null)
+                    q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
+                qualifiers.Add(q);
+            }
+
+            public static Qualifier HasQualifierOfType(
+                QualifierCollection qualifiers, 
+                string qualifierType)
+            {
+                if (qualifiers == null || qualifierType == null)
+                    return null;
+                foreach (var q in qualifiers)
+                    if (q.type.Trim().ToLower() == qualifierType.Trim().ToLower())
+                        return q;
+                return null;
+            }
         }
 
         public class ListOfSubmodelElement : List<SubmodelElement>
@@ -5435,33 +5467,13 @@ namespace AdminShellNS
                 string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
                 Reference qualifierValueId = null)
             {
-                if (this.qualifiers == null)
-                    this.qualifiers = new QualifierCollection();
-                var q = new Qualifier()
-                {
-                    type = qualifierType,
-                    value = qualifierValue,
-                    valueId = qualifierValueId,
-                };
-                if (semanticKeys != null)
-                    q.semanticId = SemanticId.CreateFromKeys(semanticKeys);
-                // dead-csharp off
-                /* OZ
-                if (valueType != null)
-                    q.valueType = valueType;
-                */
-                // dead-csharp on
-                this.qualifiers.Add(q);
+                QualifierCollection.AddQualifier(
+                    ref this.qualifiers, qualifierType, qualifierValue, semanticKeys, qualifierValueId);
             }
 
             public Qualifier HasQualifierOfType(string qualifierType)
             {
-                if (this.qualifiers == null || qualifierType == null)
-                    return null;
-                foreach (var q in this.qualifiers)
-                    if (q.type.Trim().ToLower() == qualifierType.Trim().ToLower())
-                        return q;
-                return null;
+                return QualifierCollection.HasQualifierOfType(this.qualifiers, qualifierType);
             }
 
             public override AasElementSelfDescription GetSelfDescription()
@@ -6758,6 +6770,20 @@ namespace AdminShellNS
             }
 
             // further
+
+            public void AddQualifier(
+                string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
+                Reference qualifierValueId = null)
+            {
+                QualifierCollection.AddQualifier(
+                    ref this.qualifiers, qualifierType, qualifierValue, semanticKeys, qualifierValueId);
+            }
+
+            public Qualifier HasQualifierOfType(string qualifierType)
+            {
+                return QualifierCollection.HasQualifierOfType(this.qualifiers, qualifierType);
+            }
+
 
             public override AasElementSelfDescription GetSelfDescription()
             {
