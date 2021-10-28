@@ -1384,6 +1384,55 @@ namespace AasxPackageExplorer
             }
         }
 
+        private double _mainTimer_CheckAnimationPhaseSecs = 0.0;
+
+        private void MainTimer_CheckAnimationElements(
+            double deltaSecs,
+            AdminShell.AdministrationShellEnv env,
+            IndexOfSignificantAasElements significantElems)
+        {
+            // trivial
+            if (env == null || significantElems == null)
+                return;
+            
+            // find elements?
+            foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.QualifiedAnimation))
+            {
+                // valid?
+                if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                    continue;
+
+                // which SME?
+                if (rec.LiveObject is AdminShell.Property prop)
+                {
+                    AnimateDemoValues.Animate(prop,
+                        phaseSecs: _mainTimer_CheckAnimationPhaseSecs,
+                        deltaSecs: deltaSecs,
+                        emitEvent: (prop2, evi2) => {
+                            // Animate the event visually; create a change event for this.
+                            // Note: this might by not ideal, final state
+                            /* TODO (MIHO, 2021-10-28): Check, if a better solution exists 
+                             * to instrument event updates in a way that they're automatically
+                             * visualized */
+                            DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange()
+                            {
+                                Change = new PackCntChangeEventData()
+                                {
+                                    Container = _packageCentral.MainItem.Container,
+                                    Reason = PackCntChangeEventReason.ValueUpdateSingle,
+                                    ThisElem = prop2,
+                                    ParentElem = prop2?.parent,
+                                    Info = "Animated value update"
+                                }
+                            });
+                        });
+                }
+            }
+
+            // increase the phase
+            _mainTimer_CheckAnimationPhaseSecs += deltaSecs;
+        }
+
         private void MainTimer_CheckDiaryDateToEmitEvents(
             DateTime lastTime,
             AdminShell.AdministrationShellEnv env,
@@ -1746,6 +1795,7 @@ namespace AasxPackageExplorer
         }
 
         private DateTime _mainTimer_LastCheckForDiaryEvents;
+        private DateTime _mainTimer_LastCheckForAnimationElements = DateTime.Now;
 
         private async Task MainTimer_Tick(object sender, EventArgs e)
         {
@@ -1754,12 +1804,28 @@ namespace AasxPackageExplorer
             await MainTimer_HandleApplicationEvents();
 
             if (_packageCentral?.MainItem?.Container?.SignificantElements != null)
+            {
                 MainTimer_CheckDiaryDateToEmitEvents(
                     _mainTimer_LastCheckForDiaryEvents,
                     _packageCentral.MainItem.Container.Env?.AasEnv,
                     _packageCentral.MainItem.Container.SignificantElements,
                     directEmit: !MenuItemOptionsCompressEvents.IsChecked);
-            _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
+                _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
+
+                // do animation?
+                var deltaSecs = 0.0;
+                if (_mainTimer_LastCheckForAnimationElements != null)
+                    deltaSecs = (DateTime.Now - _mainTimer_LastCheckForAnimationElements).TotalSeconds;
+
+                if (deltaSecs > 1.0)
+                {
+                    MainTimer_CheckAnimationElements(
+                        deltaSecs,
+                        _packageCentral.MainItem.Container.Env?.AasEnv,
+                        _packageCentral.MainItem.Container.SignificantElements);
+                    _mainTimer_LastCheckForAnimationElements = DateTime.Now;
+                }
+            }
 
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
