@@ -51,6 +51,10 @@ namespace AasxPluginPlotting
             InitializeComponent();
         }
 
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (sender == ButtonHPlus)
@@ -139,5 +143,6 @@ namespace AasxPluginPlotting
                 wpfPlot.Render();
             }
         }
+
     }
 }

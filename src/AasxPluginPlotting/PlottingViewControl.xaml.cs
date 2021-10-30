@@ -40,15 +40,20 @@ namespace AasxPluginPlotting
             public const int BufferSize = 512;
 
             public ScottPlot.Plottable.SignalPlot Plottable;
-            public double[] BufferData = new double[BufferSize];
+            public double[] Xdata = new double[BufferSize];
+            public double[] Ydata = new double[BufferSize];
             public int BufferLevel = 0;
 
-            public void Push(double data)
+            public void Push(double y, double? x = null)
             {
+                if (!x.HasValue)
+                    x = DateTime.UtcNow.ToOADate();
+                
                 if (BufferLevel < BufferSize)
                 {
                     // simply add
-                    BufferData[BufferLevel] = data;
+                    Xdata[BufferLevel] = x.Value;
+                    Ydata[BufferLevel] = y;
                     if (Plottable != null)
                         Plottable.MaxRenderIndex = BufferLevel;
                     BufferLevel++;
@@ -56,8 +61,10 @@ namespace AasxPluginPlotting
                 else
                 {
                     // brute shift
-                    Array.Copy(BufferData, 1, BufferData, 0, BufferSize - 1);
-                    BufferData[BufferSize - 1] = data;
+                    Array.Copy(Xdata, 1, Xdata, 0, BufferSize - 1);
+                    Array.Copy(Ydata, 1, Ydata, 0, BufferSize - 1);
+                    Xdata[BufferSize - 1] = x.Value;
+                    Ydata[BufferSize - 1] = y;
                     if (Plottable != null)
                         Plottable.MaxRenderIndex = BufferSize - 1;
                 }
@@ -260,8 +267,6 @@ namespace AasxPluginPlotting
                     yield return temp;
             }
 
-            private bool _autoScaleX, _autoScaleY;
-
             public List<PlotItemGroup> RenderedGroups;
 
             public List<PlotItemGroup> RenderAllGroups(StackPanel panel, double plotHeight)
@@ -270,11 +275,7 @@ namespace AasxPluginPlotting
                 var res = new List<PlotItemGroup>();
                 if (panel == null)
                     return null;
-                panel.Children.Clear();
-
-                // before applying arguments
-                _autoScaleX = true;
-                _autoScaleY = true;
+                panel.Children.Clear();                
 
                 // go over all groups                
                 ScottPlot.WpfPlot lastPlot = null;
@@ -286,6 +287,11 @@ namespace AasxPluginPlotting
                     if (groupPI.Group >= 0 && groupPI.Group < 9999)
                         pvc.Text += $"; grp={groupPI.Group}";
                     var wpfPlot = pvc.WpfPlot;
+                    wpfPlot.Tag = pvc;
+
+                    // before applying arguments
+                    pvc.AutoScaleX = true;
+                    pvc.AutoScaleY = true;
 
                     // some basic attributes
                     lastPlot = wpfPlot;
@@ -321,7 +327,7 @@ namespace AasxPluginPlotting
                         pi.Buffer = pb;
 
                         // factory new Plottable
-                        pb.Plottable = wpfPlot.Plot.AddSignal(pb.BufferData, label: "" + pi.DisplayPath);
+                        pb.Plottable = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
                         pb.Push(val.HasValue ? val.Value : 0.0);
                     }
 
@@ -329,13 +335,13 @@ namespace AasxPluginPlotting
                     if (yMin.HasValue)
                     {
                         wpfPlot.Plot.SetAxisLimits(yMin: yMin.Value);
-                        _autoScaleY = false;
+                        pvc.AutoScaleY = false;
                     }
 
                     if (yMax.HasValue)
                     {
                         wpfPlot.Plot.SetAxisLimits(yMax: yMax.Value);
-                        _autoScaleY = false;
+                        pvc.AutoScaleY = false;
                     }
 
                     // render the plot into panel
@@ -347,7 +353,7 @@ namespace AasxPluginPlotting
                 // for the last plot ..
                 if (lastPlot != null)
                 {
-                    lastPlot.plt.XLabel("Samples");
+                    lastPlot.Plot.XLabel("Samples");
                 }
 
                 // return groups for notice
@@ -369,11 +375,14 @@ namespace AasxPluginPlotting
                 }
             }
 
-            private void WpfPlot_ButtonClicked(WpfPlotViewControlHorizontal sender, int ndx)
+            private void WpfPlot_ButtonClicked(IWpfPlotViewControl sender, int ndx)
             {
                 // access
                 var wpfPlot = sender?.WpfPlot;
                 if (wpfPlot == null)
+                    return;
+
+                if (!(sender is WpfPlotViewControlHorizontal pvc))
                     return;
 
                 if (ndx == 1 || ndx == 2)
@@ -389,7 +398,7 @@ namespace AasxPluginPlotting
                         wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
 
                     // no autoscale for X
-                    _autoScaleX = false;
+                    sender.AutoScaleX = false;
 
                     // call for the other
                     WpfPlot_AxisChanged(wpfPlot, null);
@@ -408,7 +417,7 @@ namespace AasxPluginPlotting
                         wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin + height / 4, yMax: ax.YMax - height / 4);
 
                     // no autoscale for Y
-                    _autoScaleY = false;
+                    sender.AutoScaleY = false;
 
                     // call for the other
                     WpfPlot_AxisChanged(wpfPlot, null);
@@ -417,31 +426,38 @@ namespace AasxPluginPlotting
                 if (ndx == 5)
                 {
                     // swithc auto scale ON and hope the best
-                    _autoScaleX = true;
-                    _autoScaleY = true;
+                    sender.AutoScaleX = true;
+                    sender.AutoScaleY = true;
                 }
 
                 if (ndx == 6)
                 {
                     // plot larger
-                    sender.Height += 100;
+                    pvc.Height += 100;
                 }
 
-                if (ndx == 7 && sender.Height >= 299)
+                if (ndx == 7 && pvc.Height >= 299)
                 {
                     // plot smaller
-                    sender.Height -= 100;
+                    pvc.Height -= 100;
                 }
             }
 
             private void WpfPlot_AxisChanged(object sender, EventArgs e)
             {
-                if (sender is ScottPlot.WpfPlot wpfPlot)
+                if (!(sender is ScottPlot.WpfPlot wpfPlot))
+                    return;
+
+                if (!(wpfPlot.Tag is WpfPlotViewControlHorizontal pvc))
+                    return;
+
+                // is the USER performed a axis move action
+                if (false)
                 {
-                    if (_autoScaleX || _autoScaleY)
+                    if (pvc.AutoScaleX || pvc.AutoScaleY)
                     {
-                        _autoScaleX = false;
-                        _autoScaleY = false;
+                        pvc.AutoScaleX = false;
+                        pvc.AutoScaleY = false;
                         ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
                         {
                             // disable
@@ -457,7 +473,7 @@ namespace AasxPluginPlotting
                         {
                             // move
                             grp.WpfPlot.Plot.SetAxisLimits(xMin: one.XMin, xMax: one.XMax);
-                            grp.WpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                            grp.WpfPlot.Render();
                         }
                     });
                 }
@@ -483,14 +499,17 @@ namespace AasxPluginPlotting
                         pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
                     }
 
+                    if (!(grp.WpfPlot?.Tag is IWpfPlotViewControl pvc))
+                        continue;
+
                     // scale?
-                    if (_autoScaleX && _autoScaleY)
+                    if (pvc.AutoScaleX && pvc.AutoScaleY)
                         grp.WpfPlot?.Plot.AxisAuto();
                     else
-                    if (_autoScaleX)
+                    if (pvc.AutoScaleX)
                         grp.WpfPlot?.Plot.AxisAutoX();
                     else
-                    if (_autoScaleY)
+                    if (pvc.AutoScaleY)
                         grp.WpfPlot?.Plot.AxisAutoY();
 
                     grp.WpfPlot?.Render(/* skipIfCurrentlyRendering: true */);
