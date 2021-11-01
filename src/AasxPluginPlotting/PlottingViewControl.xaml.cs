@@ -297,6 +297,11 @@ namespace AasxPluginPlotting
                     lastPlot = wpfPlot;
                     // wpfPlot.Plot.AntiAlias(false, false, false);
                     wpfPlot.AxesChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
+                    wpfPlot.MouseDown += (s2, e2) =>
+                    {
+                        _userAxisChangeEnabled = true;
+                    };
+                    wpfPlot.MouseMove += WpfPlot_MouseMove;
                     groupPI.WpfPlot = wpfPlot;
                     res.Add(groupPI);
 
@@ -392,7 +397,7 @@ namespace AasxPluginPlotting
                     var width = Math.Abs(ax.XMax - ax.XMin);
 
                     if (ndx == 1)
-                        wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin - width / 2, xMax: ax.XMin + width / 2);
+                        wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin - width / 2, xMax: ax.XMax + width / 2);
 
                     if (ndx == 2)
                         wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
@@ -443,8 +448,20 @@ namespace AasxPluginPlotting
                 }
             }
 
+            private bool _userAxisChangeEnabled = false;
+
             private void WpfPlot_AxisChanged(object sender, EventArgs e)
             {
+            }
+
+            private void WpfPlot_MouseMove(object sender, MouseEventArgs e)
+            {
+                // Note: this function originally was the WpfPlot_AxisChanged handler; however
+                // this handler was frequently triggered by the widget system or axis change and
+                // not by the user. So, the functionality was moved to the mouse handler
+                if (!(e.LeftButton == MouseButtonState.Pressed))
+                    return;
+                
                 if (!(sender is ScottPlot.WpfPlot wpfPlot))
                     return;
 
@@ -452,7 +469,7 @@ namespace AasxPluginPlotting
                     return;
 
                 // is the USER performed a axis move action
-                if (false)
+                if (_userAxisChangeEnabled)
                 {
                     if (pvc.AutoScaleX || pvc.AutoScaleY)
                     {
