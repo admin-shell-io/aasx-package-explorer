@@ -71,8 +71,8 @@
                     The following Properties have been qualified by "Plotting.Args":
                     </TextBlock>
 
-                    <TabControl x:Name="TabControlDataView" Grid.Row="1" Grid.Column="0" SelectedIndex="1">
-                        <TabItem x:Name="TabItemDataList" Header="DataList">
+                    <TabControl x:Name="TabControlDataView" Grid.Row="1" Grid.Column="0" SelectedIndex="1" BorderThickness="0">
+                        <TabItem x:Name="TabItemDataList" Header="DataList" BorderThickness="0">
                             <DataGrid  x:Name="DataGridPlotItems"  ItemsSource="{Binding}" 
                                    CanUserAddRows="False" BorderThickness="0" Background="Transparent"
                                    HeadersVisibility="Column" Margin="4, 0, 4, 0" IsReadOnly="True"
@@ -92,9 +92,9 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </TabItem>
-                        <TabItem x:Name="TabItemDataGrid" Header="DataGrid">
+                        <TabItem x:Name="TabItemDataTiles" Header="DataGrid" BorderThickness="0">
                             <!-- ItemsSource="{Binding}" {Binding RowCount} {Binding ColumnCount} -->
-                            <ItemsControl x:Name="PanelGridPlotItems" Height="Auto" ItemsSource="{Binding}">
+                            <ItemsControl x:Name="PanelGridDataTiles" Height="Auto" ItemsSource="{Binding}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <Grid local:GridHelpers.DefaultLength="*" 
@@ -133,11 +133,12 @@
                                             </Grid.RowDefinitions>
                                             <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontWeight="Bold" Foreground="DarkBlue"
                                                        Text="{Binding DisplayPath}"/>
-                                            <Viewbox Grid.Row="1">
+                                            <Viewbox Grid.Row="1" VerticalAlignment="Bottom">
                                                 <StackPanel Orientation="Horizontal">
                                                     <TextBox  IsReadOnly="True" IsReadOnlyCaretVisible="False" 
                                                               BorderThickness="0" Background="Transparent"
                                                               HorizontalContentAlignment="Right" MinWidth="80"
+                                                              Foreground="{Binding ValueForeground}"
                                                               Text="{Binding DisplayValue}"/>
                                                     <TextBlock HorizontalAlignment="Left" FontSize="8" VerticalAlignment="Bottom" 
                                                                Foreground="DarkBlue"

@@ -149,6 +149,13 @@ namespace AasxPluginPlotting
             public int RowSpan { get; set; }
             public int ColumnSpan { get; set; }
 
+            private Brush _valueForeground = Brushes.Black;
+            public Brush ValueForeground
+            {
+                get { return _valueForeground; }
+                set { _valueForeground = value; OnPropertyChanged("DisplayValue"); }
+            }
+
             public PlotItem() { }
 
             public PlotItem(AdminShell.SubmodelElement sme, string args,
@@ -232,7 +239,7 @@ namespace AasxPluginPlotting
                 return res;
             }
 
-            public RowColTuple ReAssignItemGrid(int defaultCols = 4)
+            public RowColTuple ReAssignItemTiles(int defaultCols = 4)
             {
                 // first clear all items
                 foreach (var it in this)
@@ -398,6 +405,20 @@ namespace AasxPluginPlotting
 
             public List<PlotItemGroup> RenderedGroups;
 
+            public static Brush BrushFrom(System.Drawing.Color col)
+            {
+                return new SolidColorBrush(Color.FromArgb(col.A, col.R, col.G, col.B));
+            }
+
+            public static void SetOverallPlotProperties(ScottPlot.WpfPlot wpfPlot)
+            {
+                if (wpfPlot == null)
+                    return;
+                
+                var legend = wpfPlot.Plot.Legend(location: Alignment.UpperRight);
+                legend.FontSize = 9.0f;
+            }
+
             public List<PlotItemGroup> RenderAllGroups(StackPanel panel, double plotHeight)
             {
                 // first access
@@ -469,13 +490,18 @@ namespace AasxPluginPlotting
                         if (!groupPI.UseOAaxis)
                         {
                             // sample based
-                            pb.Plottable = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
+                            var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
+                            pb.Plottable = signal;
                             pb.Push(val.HasValue ? val.Value : 0.0);
+                            if (signal.FillColor1.HasValue)
+                                pi.ValueForeground = BrushFrom(signal.FillColor1.Value);
                         }
                         else
                         {
                             // time based
-                            pb.Plottable = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: "" + pi.DisplayPath);
+                            var scatter = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: "" + pi.DisplayPath);
+                            pb.Plottable = scatter;
+                            pi.ValueForeground = BrushFrom(scatter.Color);
                         }
                         
                     }
@@ -498,9 +524,9 @@ namespace AasxPluginPlotting
                         wpfPlot.Plot.XAxis.DateTimeFormat(true);
 
                     // render the plot into panel
-                    wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */ );
+                    SetOverallPlotProperties(wpfPlot);
                     panel.Children.Add(pvc);
-                    wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
+                    wpfPlot.Render();
                 }
 
                 // for the last plot ..
@@ -760,6 +786,7 @@ namespace AasxPluginPlotting
         private PlottingOptions theOptions = null;
         private PluginEventStack theEventStack = null;
         private LogInstance theLog = null;
+        private PlotArguments _panelArgs = null;
 
         private string theDefaultLang = null;
 
@@ -798,37 +825,44 @@ namespace AasxPluginPlotting
         {
         }
 
-       
+        private void ReDisplayPlotItemListTiles()
+        {
+            // reset both
+            TabItemDataTiles.Visibility = Visibility.Collapsed;
+            TabItemDataList.Visibility = Visibility.Collapsed;
+            DataGridPlotItems.DataContext = null;
+            PanelGridDataTiles.ItemsSource = null;
+
+            // what to display?
+            if (true == _panelArgs?.tiles)
+            {
+                TabControlDataView.SelectedItem = TabItemDataTiles;
+
+                PanelGridDataTiles.DataContext = PlotItems.ReAssignItemTiles();
+                PanelGridDataTiles.ItemsSource = PlotItems;
+            }
+            else
+            {
+                TabControlDataView.SelectedItem = TabItemDataList;
+                DataGridPlotItems.DataContext = PlotItems;
+            }
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            // panel arguments (needs to be first when loaded)
+            _panelArgs = PlotArguments.Parse(theSubmodel.HasQualifierOfType("Plotting.Args")?.value);
+            if (true == _panelArgs?.title.HasContent())
+                LabelPanelTitle.Content = _panelArgs.title;
+
             // languages
             foreach (var lng in AasxLanguageHelper.GetLangCodes())
                 ComboBoxLang.Items.Add("" + lng);
             ComboBoxLang.Text = "en";
 
-            // panel title
-            var panelArgs = PlotArguments.Parse(theSubmodel.HasQualifierOfType("Plotting.Args")?.value);
-            if (true == panelArgs?.title.HasContent())
-                LabelPanelTitle.Content = panelArgs.title;
-
             // try display plot items
             PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
-            // DataGridPlotItems.DataContext = PlotItems;
-
-            //PlotItems[0].RowIndex = 0;
-            //PlotItems[0].ColumnIndex = 0;
-
-            //PlotItems[1].RowIndex = 1;
-            //PlotItems[1].RowSpan = 1;
-            //PlotItems[1].ColumnIndex = 1;
-            //PlotItems[1].ColumnSpan = 1;
-
-            //PanelGridPlotItems.DataContext = new RowColTuple() { Rows = 2, Cols = 2 };
-
-            PanelGridPlotItems.DataContext = PlotItems.ReAssignItemGrid();
-            PanelGridPlotItems.ItemsSource = PlotItems;
-
-
+            ReDisplayPlotItemListTiles();
 
             // make charts, as well
             PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, plotHeight: 200);
@@ -841,8 +875,8 @@ namespace AasxPluginPlotting
 
             // start a timer
             var mainTimerMS = 500;
-            if (panelArgs != null && panelArgs.timer >= 100)
-                mainTimerMS = panelArgs.timer;
+            if (_panelArgs != null && _panelArgs.timer >= 100)
+                mainTimerMS = _panelArgs.timer;
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             // ReSharper disable once RedundantDelegateCreation
             dispatcherTimer.Tick += (se, e2) =>
@@ -985,11 +1019,10 @@ namespace AasxPluginPlotting
 
         private void ComboBoxLang_TextChanged(object sender, TextChangedEventArgs e)
         {
-            theDefaultLang = ComboBoxLang.Text;
-            DataGridPlotItems.DataContext = null;
+            theDefaultLang = ComboBoxLang.Text;           
             PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
             SafelyRefreshRenderedTimeSeries();
-            DataGridPlotItems.DataContext = PlotItems;
+            ReDisplayPlotItemListTiles();
         }
 
         //
@@ -1543,7 +1576,7 @@ namespace AasxPluginPlotting
                     pie.ShowValues = true == args.values;
                     pie.ShowPercentages = true == args.percent;
                     pie.SliceFont.Size = 9.0f;
-                    wpfPlot.Plot.Legend();
+                    SetOverallPlotProperties(wpfPlot);
                     return pie;
                 }
 
@@ -1552,7 +1585,7 @@ namespace AasxPluginPlotting
                     var bar = wpfPlot.Plot.AddBar(cumdi.Value.ToArray());
                     wpfPlot.Plot.XTicks(cumdi.Position.ToArray(), cumdi.Label.ToArray());
                     bar.ShowValuesAboveBars = true == args.values;
-                    wpfPlot.Plot.Legend();
+                    SetOverallPlotProperties(wpfPlot);
                     return bar;
                 }
 
@@ -1613,8 +1646,7 @@ namespace AasxPluginPlotting
                         pvc.ActivePlottable = plottable;
 
                         // render the plottable into panel
-                        var legend = wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */);
-                        legend.FontSize = 9.0f;
+                        SetOverallPlotProperties(wpfPlot);
                         panel.Children.Add(pvc);                        
                         wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
                         res.Add(pvc);
@@ -1831,8 +1863,7 @@ namespace AasxPluginPlotting
                         }
 
                         // render the plot into panel
-                        var legend = wpfPlot.Plot.Legend(location: Alignment.UpperRight);
-                        legend.FontSize = 9.0f;
+                        SetOverallPlotProperties(wpfPlot);
                         panel.Children.Add(pvc);
                         pvc.ButtonClick += (sender, ndx) =>
                         {

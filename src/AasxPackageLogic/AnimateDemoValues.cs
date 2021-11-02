@@ -27,7 +27,7 @@ namespace AasxPackageLogic
     {
         public class AnimateArgs
         {
-            public enum TypeDef { None, Sin, Cos, Saw }
+            public enum TypeDef { None, Sin, Cos, Saw, Square }
 
             /// <summary>
             /// Type of the mapping function.
@@ -145,6 +145,11 @@ namespace AasxPackageLogic
 
                 case AnimateArgs.TypeDef.Cos:
                     res = args.ofs + args.scale * Math.Cos(phase * 2 * Math.PI);
+                    break;
+
+                case AnimateArgs.TypeDef.Square:
+                    res = args.ofs + ((phase < 1.0) ? -1.0 : 1.0);
+                    phase = phase % 2.0;
                     break;
             }
 

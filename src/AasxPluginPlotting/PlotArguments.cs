@@ -108,8 +108,16 @@ namespace AasxPluginPlotting
         public int timer;
 
         /// <summary>
+        /// Instead of displaying a list of plot items, display a set of tiles.
+        /// Rows and columns can be assigned to the individual tiles.
+        /// Applicable on: Submodel
+        /// </summary>
+        public bool tiles;
+
+        /// <summary>
         /// Defines the zero-based row- and column position for tile based display.
         /// The span-settings allow stretching over multiple (>1) tiles.
+        /// Applicable on: Properties
         /// </summary>
         public int? row, col, rowspan, colspan;
 
