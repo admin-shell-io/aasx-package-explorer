@@ -39,7 +39,7 @@ namespace AasxPluginPlotting
         {
             public const int BufferSize = 512;
 
-            public ScottPlot.Plottable.SignalPlot Plottable;
+            public ScottPlot.Plottable.IPlottable Plottable;
             public double[] Xdata = new double[BufferSize];
             public double[] Ydata = new double[BufferSize];
             public int BufferLevel = 0;
@@ -54,8 +54,12 @@ namespace AasxPluginPlotting
                     // simply add
                     Xdata[BufferLevel] = x.Value;
                     Ydata[BufferLevel] = y;
-                    if (Plottable != null)
-                        Plottable.MaxRenderIndex = BufferLevel;
+                    
+                    if (Plottable is ScottPlot.Plottable.SignalPlot sigp)
+                        sigp.MaxRenderIndex = BufferLevel;
+                    if (Plottable is ScottPlot.Plottable.ScatterPlot scap)
+                        scap.MaxRenderIndex = BufferLevel;
+                    
                     BufferLevel++;
                 }
                 else
@@ -65,8 +69,11 @@ namespace AasxPluginPlotting
                     Array.Copy(Ydata, 1, Ydata, 0, BufferSize - 1);
                     Xdata[BufferSize - 1] = x.Value;
                     Ydata[BufferSize - 1] = y;
-                    if (Plottable != null)
-                        Plottable.MaxRenderIndex = BufferSize - 1;
+
+                    if (Plottable is ScottPlot.Plottable.SignalPlot sigp)
+                        sigp.MaxRenderIndex = BufferSize - 1;
+                    if (Plottable is ScottPlot.Plottable.ScatterPlot scap)
+                        scap.MaxRenderIndex = BufferSize - 1;
                 }
             }
         }
@@ -116,6 +123,13 @@ namespace AasxPluginPlotting
                 set { _value = value; OnPropertyChanged("DisplayValue"); }
             }
 
+            private string _unit = "";
+            public string DisplayUnit
+            {
+                get { return _unit; }
+                set { _unit = value; OnPropertyChanged("DisplayUnit"); }
+            }
+
             private AdminShell.Description _description = new AdminShell.Description();
             public AdminShell.Description Description
             {
@@ -129,6 +143,11 @@ namespace AasxPluginPlotting
                 get { return _displayDescription; }
                 set { _displayDescription = value; OnPropertyChanged("DisplayDescription"); }
             }
+
+            public int RowIndex { get; set; }
+            public int ColumnIndex { get; set; }
+            public int RowSpan { get; set; }
+            public int ColumnSpan { get; set; }
 
             public PlotItem() { }
 
@@ -156,10 +175,114 @@ namespace AasxPluginPlotting
                 return this._path.CompareTo(other._path);
             }
 
+            public void ResetRowCol(PlotArguments args = null)
+            {
+                RowIndex = -1;
+                ColumnIndex = -1;
+                RowSpan = 1;
+                ColumnSpan = 1;
+
+                if (args?.row != null)
+                    RowIndex = Math.Max(0, args.row.Value);
+
+                if (args?.col != null)
+                    ColumnIndex = Math.Max(0, args.col.Value);
+
+                if (args?.rowspan != null)
+                    RowSpan = Math.Max(1, args.rowspan.Value);
+
+                if (args?.colspan != null)
+                    ColumnSpan = Math.Max(1, args.colspan.Value);
+            }
+
+            public bool RowColValid()
+            {
+                return RowIndex >= 0 && ColumnIndex >= 0
+                    && RowSpan >= 1 && ColumnSpan >= 1;
+            }
+        }
+
+        public class RowColTuple
+        {
+            public int Rows { get; set; }
+            public int Cols { get; set; }
         }
 
         public class ListOfPlotItem : ObservableCollection<PlotItem>
         {
+            public RowColTuple GetMaxRowCol()
+            {
+                var res = new RowColTuple() { Rows = -1, Cols = -1 };
+                foreach (var it in this)
+                {
+                    if (!it.RowColValid())
+                        continue;
+                    res.Rows = Math.Max(res.Rows, it.RowIndex + it.RowSpan - 1);
+                    res.Cols = Math.Max(res.Cols, it.ColumnIndex + it.ColumnSpan - 1);
+                }
+                return res;
+            }
+
+            public int GetMaxColForRow(int row)
+            {
+                var res = -1;
+                foreach (var it in this)
+                    if (it.RowIndex <= row && it.RowIndex + it.RowSpan > row)
+                        res = Math.Max(res, it.ColumnIndex + it.ColumnSpan - 1);
+                return res;
+            }
+
+            public RowColTuple ReAssignItemGrid(int defaultCols = 4)
+            {
+                // first clear all items
+                foreach (var it in this)
+                    it.ResetRowCol(it.Args);
+
+                // get the fix assigned maximums
+                var fixmax = GetMaxRowCol();
+                if (fixmax.Rows < 1 || fixmax.Cols < 1)
+                {
+                    // default
+                    fixmax.Rows = 1;
+                    fixmax.Cols = defaultCols;
+                }
+                fixmax.Rows = Math.Max(1, fixmax.Rows);
+                fixmax.Cols = Math.Max(1, fixmax.Cols);
+
+                // try reassign un-assigned items
+                var lastRow = fixmax.Rows - 1;
+                foreach (var it in this)
+                {
+                    // already done?
+                    if (it.RowColValid())
+                        continue;
+
+                    // find a column in the currently last row
+                    var lastCol = GetMaxColForRow(lastRow);
+                    
+                    // already to wrap?
+                    if (lastCol >= fixmax.Cols - 1)
+                    {
+                        lastRow++;
+                        lastCol = 0;
+                    }
+                    else
+                    {
+                        lastCol = lastCol + 1;
+                    }
+
+                    // assign
+                    it.RowIndex = lastRow;
+                    it.ColumnIndex = lastCol;
+                }
+
+                // ok, eval in total
+                var res = GetMaxRowCol();
+                res.Rows = Math.Max(1, res.Rows + 1);
+                res.Cols = Math.Max(1, res.Cols + 1);
+                return res;
+            }
+
             public void UpdateLang(string lang)
             {
                 foreach (var it in this)
@@ -217,7 +340,12 @@ namespace AasxPluginPlotting
                             path = "" + par.idShort + " / " + path;
 
                     // add
-                    temp.Add(new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description, lang));
+                    var npi = new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description, lang);
+                    temp.Add(npi);
+
+                    // re-adjust
+                    if (npi.Args?.unit != null && !npi.DisplayUnit.HasContent())
+                        npi.DisplayUnit = npi.Args.unit;
 
                     // recurse
                     return true;
@@ -233,6 +361,7 @@ namespace AasxPluginPlotting
             {
                 public ScottPlot.WpfPlot WpfPlot;
                 public int Group = 0;
+                public bool UseOAaxis = false;
             }
 
             public IEnumerable<PlotItemGroup> GetItemsGrouped()
@@ -293,6 +422,11 @@ namespace AasxPluginPlotting
                     pvc.AutoScaleX = true;
                     pvc.AutoScaleY = true;
 
+                    // figure out type of x axis
+                    foreach (var pi in groupPI)
+                        if (pi.Args != null && pi.Args.src == PlotArguments.Source.Event)
+                            groupPI.UseOAaxis = true;
+
                     // some basic attributes
                     lastPlot = wpfPlot;
                     // wpfPlot.Plot.AntiAlias(false, false, false);
@@ -332,8 +466,18 @@ namespace AasxPluginPlotting
                         pi.Buffer = pb;
 
                         // factory new Plottable
-                        pb.Plottable = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
-                        pb.Push(val.HasValue ? val.Value : 0.0);
+                        if (!groupPI.UseOAaxis)
+                        {
+                            // sample based
+                            pb.Plottable = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
+                            pb.Push(val.HasValue ? val.Value : 0.0);
+                        }
+                        else
+                        {
+                            // time based
+                            pb.Plottable = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: "" + pi.DisplayPath);
+                        }
+                        
                     }
 
                     // apply some more args to the group
@@ -349,6 +493,10 @@ namespace AasxPluginPlotting
                         pvc.AutoScaleY = false;
                     }
 
+                    // enable time axis
+                    if (groupPI.UseOAaxis)
+                        wpfPlot.Plot.XAxis.DateTimeFormat(true);
+
                     // render the plot into panel
                     wpfPlot.Plot.Legend(location: Alignment.UpperRight /* fontSize: 9.0f */ );
                     panel.Children.Add(pvc);
@@ -358,7 +506,7 @@ namespace AasxPluginPlotting
                 // for the last plot ..
                 if (lastPlot != null)
                 {
-                    lastPlot.Plot.XLabel("Samples");
+                    lastPlot.Plot.XLabel("Samples / Time");
                 }
 
                 // return groups for notice
@@ -512,8 +660,18 @@ namespace AasxPluginPlotting
                     // push for each item
                     foreach (var pi in grp)
                     {
+                        // do this NOT for event sources items
+                        if (pi.Args != null && pi.Args.src == PlotArguments.Source.Event)
+                            continue;
+
+                        // add
                         var val = pi.SME?.ValueAsDouble();
-                        pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
+                        if (grp.UseOAaxis)
+                            pi.Buffer?.Push(
+                                x: DateTime.UtcNow.ToOADate(),
+                                y: val.HasValue ? val.Value : 0.0);
+                        else
+                            pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
                     }
 
                     if (!(grp.WpfPlot?.Tag is IWpfPlotViewControl pvc))
@@ -530,6 +688,62 @@ namespace AasxPluginPlotting
                         grp.WpfPlot?.Plot.AxisAutoY();
 
                     grp.WpfPlot?.Render(/* skipIfCurrentlyRendering: true */);
+                }
+            }
+
+            public void UpdateMatchingPlotItemsFrom(
+                List<PlotItemGroup> groups, 
+                AasPayloadUpdateValueItem uvi,
+                DateTime timestamp)
+            {
+                // access
+                if (groups == null || uvi == null)
+                    return;
+
+                // foreach
+                foreach (var grp in groups)
+                {
+                    // access
+                    if (grp == null)
+                        continue;
+
+                    // push for each item
+                    bool found = false;
+                    foreach (var pi in grp)
+                    {
+                        // must be event source
+                        if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event)
+                            continue;
+
+                        // found a hit?
+                        if (pi.SME != uvi.FoundReferable)
+                            continue;
+                        found = true;
+
+                        // update assuming that the values was already set to the SME
+                        var val = pi.SME?.ValueAsDouble();
+                        if (grp.UseOAaxis)
+                            pi.Buffer?.Push(
+                                x: timestamp.ToOADate(),
+                                y: val.HasValue ? val.Value : 0.0);
+                        else
+                            pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
+                    }
+
+                    if (!(found && grp.WpfPlot?.Tag is IWpfPlotViewControl pvc))
+                        continue;
+
+                    // scale?
+                    if (pvc.AutoScaleX && pvc.AutoScaleY)
+                        grp.WpfPlot?.Plot.AxisAuto();
+                    else
+                    if (pvc.AutoScaleX)
+                        grp.WpfPlot?.Plot.AxisAutoX();
+                    else
+                    if (pvc.AutoScaleY)
+                        grp.WpfPlot?.Plot.AxisAutoY();
+
+                    grp.WpfPlot?.Render();
                 }
             }
         }
@@ -584,6 +798,7 @@ namespace AasxPluginPlotting
         {
         }
 
+       
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // languages
@@ -598,7 +813,22 @@ namespace AasxPluginPlotting
 
             // try display plot items
             PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
-            DataGridPlotItems.DataContext = PlotItems;
+            // DataGridPlotItems.DataContext = PlotItems;
+
+            //PlotItems[0].RowIndex = 0;
+            //PlotItems[0].ColumnIndex = 0;
+
+            //PlotItems[1].RowIndex = 1;
+            //PlotItems[1].RowSpan = 1;
+            //PlotItems[1].ColumnIndex = 1;
+            //PlotItems[1].ColumnSpan = 1;
+
+            //PanelGridPlotItems.DataContext = new RowColTuple() { Rows = 2, Cols = 2 };
+
+            PanelGridPlotItems.DataContext = PlotItems.ReAssignItemGrid();
+            PanelGridPlotItems.ItemsSource = PlotItems;
+
+
 
             // make charts, as well
             PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, plotHeight: 200);
@@ -610,7 +840,9 @@ namespace AasxPluginPlotting
             }
 
             // start a timer
-            // Timer for status
+            var mainTimerMS = 500;
+            if (panelArgs != null && panelArgs.timer >= 100)
+                mainTimerMS = panelArgs.timer;
             System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             // ReSharper disable once RedundantDelegateCreation
             dispatcherTimer.Tick += (se, e2) =>
@@ -621,7 +853,7 @@ namespace AasxPluginPlotting
                     PlotItems.UpdateAllRenderedPlotItems(PlotItems.RenderedGroups);
                 }
             };
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, mainTimerMS);
             dispatcherTimer.Start();
 
             // test
@@ -2143,9 +2375,18 @@ namespace AasxPluginPlotting
                 var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
                 var mm = AdminShell.Key.MatchMode.Relaxed;
 
+                // access
+                if (ev == null)
+                    return;
+
                 // TODO: search for updated values and display them in the 'old' plots
 
-                // TODO: search for updated value arrays and re-display the dáta set
+                // search for updated value arrays and re-display the data set
+
+                foreach (var pl in ev.PayloadItems)
+                    if (pl is AasPayloadUpdateValue uv && uv.Values != null)
+                        foreach (var uvi in uv.Values)
+                            PlotItems.UpdateMatchingPlotItemsFrom(PlotItems.RenderedGroups, uvi, ev.Timestamp);
 
                 // search for structural creation of portions of segments
                 // this is to trigger, if NEW SEGMENTS exist

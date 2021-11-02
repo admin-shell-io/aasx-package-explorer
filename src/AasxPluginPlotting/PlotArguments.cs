@@ -32,9 +32,15 @@ namespace AasxPluginPlotting
         public string grp;
 
         /// <summary>
-        /// C# string format string to format a double value pretty
+        /// C# string format string to format a double value pretty.
+        /// Note: e.g. F4
         /// </summary>
         public string fmt;
+
+        /// <summary>
+        /// Unit to display.
+        /// </summary>
+        public string unit;
 
         /// <summary>
         /// Min and max values of the axes
@@ -87,6 +93,25 @@ namespace AasxPluginPlotting
         /// Can be associated to TimeSeries or TimeSeriesVariable/ DataPoint
         /// </summary>
         public Type type;
+
+        public enum Source { Timer, Event }
+
+        /// <summary>
+        /// Specify source for value updates.
+        /// </summary>
+        public Source src;
+
+        /// <summary>
+        /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
+        /// Applicable on: Submodel
+        /// </summary>
+        public int timer;
+
+        /// <summary>
+        /// Defines the zero-based row- and column position for tile based display.
+        /// The span-settings allow stretching over multiple (>1) tiles.
+        /// </summary>
+        public int? row, col, rowspan, colspan;
 
         // ReSharper enable UnassignedField.Global
 
