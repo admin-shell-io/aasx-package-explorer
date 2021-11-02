@@ -27,6 +27,7 @@ namespace AasxPluginPlotting
     public interface IWpfPlotViewControl
     {
         ScottPlot.WpfPlot WpfPlot { get; }
+        ContentControl ContentControl { get; }
 
         string Text { get; set; }
 

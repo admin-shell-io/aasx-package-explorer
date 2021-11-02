@@ -13,42 +13,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AasxIntegrationBase
+namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
-    /// Implements a minimal stack for plugin events
+    /// Implements a minimal stack for
     /// </summary>
-    public class PluginEventStack
+    public class AasEventMsgStack
     {
-        private List<AasxPluginResultEventBase> eventStack = new List<AasxPluginResultEventBase>();
+        private List<AasEventMsgEnvelope> eventStack = new List<AasEventMsgEnvelope>();
 
-        public void PushEvent(AasxPluginResultEventBase evt)
+        public void PushEvent(AasEventMsgEnvelope ev)
         {
-            if (evt == null || this.eventStack == null)
+            if (ev == null || this.eventStack == null)
                 return;
             lock (this.eventStack)
             {
-                this.eventStack.Add(evt);
+                this.eventStack.Add(ev);
             }
         }
 
-        public AasxPluginResultEventBase PopEvent()
+        public AasEventMsgEnvelope PopEvent()
         {
             // result
-            AasxPluginResultEventBase evt = null;
+            AasEventMsgEnvelope ev = null;
 
             // get?
             lock (this.eventStack)
             {
                 if (this.eventStack.Count > 0)
                 {
-                    evt = this.eventStack[0];
+                    ev = this.eventStack[0];
                     this.eventStack.RemoveAt(0);
                 }
             }
 
             // return if found or not ..
-            return evt;
+            return ev;
         }
     }
 }

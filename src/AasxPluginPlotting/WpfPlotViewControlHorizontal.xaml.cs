@@ -30,6 +30,7 @@ namespace AasxPluginPlotting
     public partial class WpfPlotViewControlHorizontal : UserControl, IWpfPlotViewControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
+        public ContentControl ContentControl => this;
 
         public event Action<WpfPlotViewControlHorizontal, int> ButtonClick;
 

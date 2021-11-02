@@ -30,6 +30,7 @@ namespace AasxPluginPlotting
     public partial class WpfPlotViewControlCumulative : UserControl, IWpfPlotViewControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
+        public ContentControl ContentControl => this;
 
         public event Action<WpfPlotViewControlCumulative, int> ButtonClick;
         public event Action<WpfPlotViewControlCumulative, int> LatestSamplePositionChanged;
@@ -55,7 +56,7 @@ namespace AasxPluginPlotting
                 _latestSamplePosition = value;
                 TextBoxSamplePos.Text = "" + _latestSamplePosition;
             }
-        }
+        }        
 
         public WpfPlotViewControlCumulative()
         {
