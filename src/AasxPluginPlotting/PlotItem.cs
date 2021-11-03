@@ -51,6 +51,8 @@ namespace AasxPluginPlotting
 
         public PlotBufferFixLen Buffer;
 
+        public DateTime? LastUpdate;
+
         public int Group
         {
             get
@@ -114,12 +116,11 @@ namespace AasxPluginPlotting
         public PlotItem() { }
 
         public PlotItem(AdminShell.SubmodelElement sme, string args,
-            string path, string value, AdminShell.Description description, string lang)
+            string path, AdminShell.Description description, string lang)
         {
             SME = sme;
             ArgsStr = args;
             _path = path;
-            _value = value;
             _description = description;
             _displayDescription = description?.GetDefaultStr(lang);
             Args = PlotArguments.Parse(ArgsStr);
@@ -307,7 +308,8 @@ namespace AasxPluginPlotting
                         path = "" + par.idShort + " / " + path;
 
                 // add
-                var npi = new PlotItem(sme, "" + q.value, path, "" + sme.ValueAsText(), sme.description, lang);
+                var npi = new PlotItem(sme, "" + q.value, path, sme.description, lang);
+                npi.SetValue(sme.ValueAsDouble(), lang);
                 temp.Add(npi);
 
                 // re-adjust
@@ -363,9 +365,7 @@ namespace AasxPluginPlotting
                 yield return temp;
         }
 
-        public List<PlotItemGroup> RenderedGroups;
-
-               
+        public List<PlotItemGroup> RenderedGroups;               
 
         public List<PlotItemGroup> RenderAllGroups(StackPanel panel, double defPlotHeight)
         {

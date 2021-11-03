@@ -65,11 +65,15 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!--
                     <TextBlock Grid.Row="0" Grid.Column="0"
                            TextWrapping="Wrap" VerticalAlignment="Center" 
                            Margin="0,10,0,0" FontWeight="Bold">
                     The following Properties have been qualified by "Plotting.Args":
                     </TextBlock>
+                    -->
+                    <StackPanel x:Name="PanelAnnoTop" Grid.Row="0" Grid.Column="0"
+                                Orientation="Vertical"/>
 
                     <TabControl x:Name="TabControlDataView" Grid.Row="1" Grid.Column="0" SelectedIndex="1" BorderThickness="0">
                         <TabItem x:Name="TabItemDataList" Header="DataList" BorderThickness="0">
@@ -157,11 +161,16 @@
                         </TabItem>
                     </TabControl>
 
+                    <!--
                     <TextBlock Grid.Row="2" Grid.Column="0" 
                            TextWrapping="Wrap" VerticalAlignment="Center" 
                            Margin="0,10,0,0" FontWeight="Bold">
                     Charts, sorted by groups:
                     </TextBlock>
+                    -->
+
+                    <StackPanel x:Name="PanelAnnoMiddle1" Grid.Row="2" Grid.Column="0" 
+                                Orientation="Vertical"/>
 
                     <StackPanel Grid.Row="3" Grid.Column="0" x:Name="StackPanelCharts" Orientation="Vertical">
                     </StackPanel>
@@ -173,20 +182,29 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="1*" MinHeight="50"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!--
                     <TextBlock Grid.Row="0" Grid.Column="0" x:Name="LabelTimeSeries" 
                            TextWrapping="Wrap" VerticalAlignment="Center" 
                            Margin="0,10,0,0" FontWeight="Bold">
                     Time Series:
                     </TextBlock>
+                    -->
+
+                    <StackPanel x:Name="PanelAnnoMiddle2" Grid.Row="0" Grid.Column="0"
+                                Orientation="Vertical"/>
 
                     <StackPanel Grid.Row="1" Grid.Column="0" x:Name="StackPanelTimeSeries" Orientation="Vertical">
                     </StackPanel>
+
+                    <StackPanel x:Name="PanelAnnoBottom" Grid.Row="2" Grid.Column="0"
+                                Orientation="Vertical"/>
 
                 </Grid>
 

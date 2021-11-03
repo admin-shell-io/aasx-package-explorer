@@ -20,15 +20,15 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// </summary>
     public class AasEventMsgStack
     {
-        private List<AasEventMsgEnvelope> eventStack = new List<AasEventMsgEnvelope>();
+        private List<AasEventMsgEnvelope> _stack = new List<AasEventMsgEnvelope>();
 
         public void PushEvent(AasEventMsgEnvelope ev)
         {
-            if (ev == null || this.eventStack == null)
+            if (ev == null || this._stack == null)
                 return;
-            lock (this.eventStack)
+            lock (this._stack)
             {
-                this.eventStack.Add(ev);
+                this._stack.Add(ev);
             }
         }
 
@@ -38,17 +38,49 @@ namespace AasxIntegrationBase.AdminShellEvents
             AasEventMsgEnvelope ev = null;
 
             // get?
-            lock (this.eventStack)
+            lock (this._stack)
             {
-                if (this.eventStack.Count > 0)
+                if (this._stack.Count > 0)
                 {
-                    ev = this.eventStack[0];
-                    this.eventStack.RemoveAt(0);
+                    ev = this._stack[0];
+                    this._stack.RemoveAt(0);
                 }
             }
 
             // return if found or not ..
             return ev;
+        }
+
+        public int Count()
+        {
+            return _stack.Count();
+        }
+
+        public AasEventMsgEnvelope this[int i]
+        {
+            get
+            {
+                if (i < 0 || i >= _stack.Count)
+                    return null;
+                return _stack[i];
+            }
+        }
+
+        public IEnumerable<AasEventMsgEnvelope> All()
+        {
+            foreach (var msg in _stack)
+                yield return msg;
+        }
+
+        public IEnumerable<Tuple<AasEventMsgEnvelope, AasPayloadUpdateValueItem>> AllValueItems()
+        {
+            foreach (var ev in _stack)
+                if (ev.PayloadItems != null)
+                    foreach (var pl in ev.PayloadItems)
+                        if (pl is AasPayloadUpdateValue uv && uv.Values != null)
+                            foreach (var uvi in uv.Values)
+                                if (uvi != null)
+                                    yield return new Tuple<AasEventMsgEnvelope, AasPayloadUpdateValueItem>(ev, uvi);
         }
     }
 }

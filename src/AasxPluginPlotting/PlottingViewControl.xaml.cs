@@ -51,6 +51,7 @@ namespace AasxPluginPlotting
         private PluginEventStack theEventStack = null;
         private LogInstance theLog = null;
         private PlotArguments _panelArgs = null;
+        private AnnotatedElements _annotations = null;
 
         private string theDefaultLang = null;
 
@@ -112,6 +113,31 @@ namespace AasxPluginPlotting
             }
         }
 
+        private void ReDisplayAnnotations()
+        {
+            // formalize
+            var tuples = new[]
+            { 
+                new Tuple<StackPanel, string>(PanelAnnoTop, "top"),
+                new Tuple<StackPanel, string>(PanelAnnoMiddle1, "middle-1"),
+                new Tuple<StackPanel, string>(PanelAnnoMiddle2, "middle-2"),
+                new Tuple<StackPanel, string>(PanelAnnoBottom, "bottom"),
+            };
+
+            // clear
+            foreach (var t in tuples)
+                t.Item1.Children.Clear();
+
+            // any content?
+            if (_annotations == null)
+                return;
+
+            // display
+            foreach (var t in tuples)
+                t.Item1.Children.Add(
+                    _annotations.RenderElements(_annotations.FindAnnotations(t.Item2), theDefaultLang));
+        }
+
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // panel arguments (needs to be first when loaded)
@@ -124,9 +150,27 @@ namespace AasxPluginPlotting
                 ComboBoxLang.Items.Add("" + lng);
             ComboBoxLang.Text = "en";
 
+            // try display annotations
+            try
+            {
+                _annotations = new AnnotatedElements(theSubmodel);
+                ReDisplayAnnotations();
+            }
+            catch (Exception ex)
+            {
+                theLog?.Error(ex, "accessing Submodel elements for annotations");
+            }
+
             // try display plot items
-            PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
-            ReDisplayPlotItemListTiles();
+            try
+            { 
+                PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
+                ReDisplayPlotItemListTiles();
+            }
+            catch (Exception ex)
+            {
+                theLog?.Error(ex, "accessing Submodel elements for creating plot item data");
+            }
 
             // make charts, as well
             PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
@@ -172,7 +216,7 @@ namespace AasxPluginPlotting
                 TimeSeriesStartFromSubmodel(theSubmodel);
             } catch (Exception ex)
             {
-                theLog?.Error(ex, "accessing Submodel elements for creating plot data");
+                theLog?.Error(ex, "accessing Submodel elements for creating timer series data");
             }
 
             try
@@ -292,10 +336,17 @@ namespace AasxPluginPlotting
 
         private void ComboBoxLang_TextChanged(object sender, TextChangedEventArgs e)
         {
-            theDefaultLang = ComboBoxLang.Text;           
-            PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
-            SafelyRefreshRenderedTimeSeries();
-            ReDisplayPlotItemListTiles();
+            theDefaultLang = ComboBoxLang.Text;
+            try { 
+                PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
+                SafelyRefreshRenderedTimeSeries();
+                ReDisplayPlotItemListTiles();
+                ReDisplayAnnotations();
+            }
+            catch (Exception ex)
+            {
+                theLog?.Error(ex, "re-display plot information due to languange change");
+            }
         }
 
         //
@@ -1636,34 +1687,109 @@ namespace AasxPluginPlotting
         public void PushEvent(AasEventMsgEnvelope ev)
             => _eventStack?.PushEvent(ev);
 
+        private DateTime? _lastEventTimeProcessed = null;
+
         private void ProcessEvents()
         {
             // need prefs
             var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
             var mm = AdminShell.Key.MatchMode.Relaxed;
 
-            // process all events
-            while (true)
+#if __non
+
+            //
+            // Test: make sure the incoming events are always sequential in
+            // time
+            //
+
+            foreach (var ev in _eventStack.All())
             {
-                var ev = _eventStack.PopEvent();
-                if (ev == null)
-                    return;
+                if (_lastEventTimeProcessed != null)
+                {
+                    var delta = ev.Timestamp - _lastEventTimeProcessed.Value;
+                    var dms = delta.TotalMilliseconds;
+                    if (dms < 0)
+                        ;
+                }
+                _lastEventTimeProcessed = ev.Timestamp;
+            }
+#endif
+            //
+            // Single value updates of plot items
+            // Go over all plot groups/ items and search for appropriate events
+            //
 
-                // TODO: search for updated values and display them in the 'old' plots
+            if (PlotItems?.RenderedGroups != null)
+            {
+                foreach (var grp in PlotItems.RenderedGroups)
+                {
+                    var groupTouch = false;
 
-                // search for updated value arrays and re-display the data set
+                    foreach (var pi in grp)
+                    {
+                        // must be event source
+                        if (pi.SME == null || pi.Args == null || pi.Args.src != PlotArguments.Source.Event)
+                            continue;
 
-                var changedGroups = new Dictionary<ListOfPlotItem.PlotItemGroup, int>();
+                        // unify finally to one
+                        double? lastValue = null;
 
-                foreach (var pl in ev.PayloadItems)
-                    if (pl is AasPayloadUpdateValue uv && uv.Values != null)
-                        foreach (var uvi in uv.Values)
-                            PlotItems.UpdateMatchingPlotItemsFrom(
-                                PlotItems.RenderedGroups, changedGroups, uvi, ev.Timestamp, theDefaultLang);
+                        // ok, search thru ALL events
+                        foreach (var uvi in _eventStack.AllValueItems())
+                            if (uvi.Item2.FoundReferable == pi.SME)
+                            {
+                                var val = pi.SME?.ValueAsDouble();
+                                if (!val.HasValue)
+                                    continue;
+                                if (uvi.Item2.Value is double vdbl)
+                                    val = vdbl;
+                                if (uvi.Item2.Value is string vstr)
+                                    if (double.TryParse(vstr, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
+                                        val = f;
 
-                foreach (var grp in changedGroups.Keys)
-                    PlotItems.UpdateFinalGroup(grp);
+                                // only allow events, which are sequential in time
+                                if (pi.LastUpdate.HasValue && pi.LastUpdate > uvi.Item1.Timestamp)
+                                    continue;
+                                pi.LastUpdate = uvi.Item1.Timestamp;
 
+                                // commit
+                                lastValue = val;
+
+                                if (grp.UseOAaxis)
+                                    pi.Buffer?.Push(
+                                        x: uvi.Item1.Timestamp.ToOADate(),
+                                        y: val.HasValue ? val.Value : 0.0);
+                                else
+                                    pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
+                            }
+
+                        // ok, changed?
+                        if (lastValue.HasValue)
+                        {
+                            // update item for list/ tiles
+                            pi.SetValue(lastValue.Value, theDefaultLang);
+                            groupTouch = true;
+                        }
+
+                    }
+
+                    if (groupTouch)
+                    {
+                        // update the group display
+                        PlotItems.UpdateFinalGroup(grp);
+                    }
+                }
+
+            }
+
+            // search for updated value arrays and re-display the data set
+
+            //
+            // Final: per event
+            //
+
+            foreach (var ev in _eventStack.All())
+            {
                 // search for structural creation of portions of segments
                 // this is to trigger, if NEW SEGMENTS exist
 
@@ -1728,7 +1854,6 @@ namespace AasxPluginPlotting
                     _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, theDefaultLang, theLog);
                 }
             }
-
         }
 
     }
