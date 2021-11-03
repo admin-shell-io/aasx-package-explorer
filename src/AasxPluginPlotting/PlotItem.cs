@@ -153,7 +153,7 @@ namespace AasxPluginPlotting
             if (this.Group < other.Group)
                 return -1;
             // Resharper disable once StringCompareToIsCultureSpecific
-            return this._path.CompareTo(other._path);
+            return _path.CompareTo(other._path);
         }
 
         public void ResetRowCol(PlotArguments args = null)

@@ -34,40 +34,38 @@ using ScottPlot;
 namespace AasxPluginPlotting
 {
     public partial class PlottingViewControl : UserControl
-    {
-              
-        
-
-        public ListOfPlotItem PlotItems = new ListOfPlotItem();
+    {                   
+        protected ListOfPlotItem _plotItems = new ListOfPlotItem();
 
         public PlottingViewControl()
         {
             InitializeComponent();
         }
 
-        private AdminShellPackageEnv thePackage = null;
-        private AdminShell.Submodel theSubmodel = null;
-        private PlottingOptions theOptions = null;
-        private PluginEventStack theEventStack = null;
-        private LogInstance theLog = null;
+        private AdminShellPackageEnv _package = null;
+        private AdminShell.Submodel _submodel = null;
+        private PlottingOptions _options = null;
+        private PluginEventStack _pluginEvents = null;
+        private AasEventMsgStack _eventStack = new AasEventMsgStack();
+        private LogInstance _log = null;
         private PlotArguments _panelArgs = null;
         private AnnotatedElements _annotations = null;
 
-        private string theDefaultLang = null;
+        private string _defaultLang = null;
 
         public void Start(
             AdminShellPackageEnv package,
             AdminShell.Submodel sm,
             PlottingOptions options,
-            PluginEventStack eventStack,
+            PluginEventStack pluginEvents,
             LogInstance log)
         {
             // set the context
-            this.thePackage = package;
-            this.theSubmodel = sm;
-            this.theOptions = options;
-            this.theEventStack = eventStack;
-            this.theLog = log;
+            _package = package;
+            _submodel = sm;
+            _options = options;
+            _pluginEvents = pluginEvents;
+            _log = log;
 
             // ok, directly set contents
             SetContents();
@@ -103,13 +101,13 @@ namespace AasxPluginPlotting
             {
                 TabControlDataView.SelectedItem = TabItemDataTiles;
 
-                PanelGridDataTiles.DataContext = PlotItems.ReAssignItemTiles();
-                PanelGridDataTiles.ItemsSource = PlotItems;
+                PanelGridDataTiles.DataContext = _plotItems.ReAssignItemTiles();
+                PanelGridDataTiles.ItemsSource = _plotItems;
             }
             else
             {
                 TabControlDataView.SelectedItem = TabItemDataList;
-                DataGridPlotItems.DataContext = PlotItems;
+                DataGridPlotItems.DataContext = _plotItems;
             }
         }
 
@@ -119,8 +117,8 @@ namespace AasxPluginPlotting
             var tuples = new[]
             { 
                 new Tuple<StackPanel, string>(PanelAnnoTop, "top"),
-                new Tuple<StackPanel, string>(PanelAnnoMiddle1, "middle-1"),
-                new Tuple<StackPanel, string>(PanelAnnoMiddle2, "middle-2"),
+                new Tuple<StackPanel, string>(PanelAnnoCharts, "charts"),
+                new Tuple<StackPanel, string>(PanelAnnoMiddle, "middle"),
                 new Tuple<StackPanel, string>(PanelAnnoBottom, "bottom"),
             };
 
@@ -135,13 +133,13 @@ namespace AasxPluginPlotting
             // display
             foreach (var t in tuples)
                 t.Item1.Children.Add(
-                    _annotations.RenderElements(_annotations.FindAnnotations(t.Item2), theDefaultLang));
+                    _annotations.RenderElements(_annotations.FindAnnotations(t.Item2), _defaultLang));
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // panel arguments (needs to be first when loaded)
-            _panelArgs = PlotArguments.Parse(theSubmodel.HasQualifierOfType("Plotting.Args")?.value);
+            _panelArgs = PlotArguments.Parse(_submodel.HasQualifierOfType("Plotting.Args")?.value);
             if (true == _panelArgs?.title.HasContent())
                 LabelPanelTitle.Content = _panelArgs.title;
 
@@ -153,27 +151,25 @@ namespace AasxPluginPlotting
             // try display annotations
             try
             {
-                _annotations = new AnnotatedElements(theSubmodel);
+                _annotations = new AnnotatedElements(_submodel);
                 ReDisplayAnnotations();
             }
             catch (Exception ex)
             {
-                theLog?.Error(ex, "accessing Submodel elements for annotations");
+                _log?.Error(ex, "accessing Submodel elements for annotations");
             }
 
             // try display plot items
             try
             { 
-                PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
+                _plotItems.RebuildFromSubmodel(_submodel, _defaultLang);
+                _plotItems.RenderedGroups = _plotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
                 ReDisplayPlotItemListTiles();
             }
             catch (Exception ex)
             {
-                theLog?.Error(ex, "accessing Submodel elements for creating plot item data");
+                _log?.Error(ex, "accessing Submodel elements for creating plot item data");
             }
-
-            // make charts, as well
-            PlotItems.RenderedGroups = PlotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
 
             // hide these
             if (StackPanelCharts.Children.Count < 1)
@@ -189,7 +185,7 @@ namespace AasxPluginPlotting
             // ReSharper disable once RedundantDelegateCreation
             dispatcherTimer.Tick += (se, e2) =>
             {
-                if (PlotItems != null)
+                if (_plotItems != null)
                 {
                     try
                     { 
@@ -199,7 +195,7 @@ namespace AasxPluginPlotting
                     }
                     catch (Exception ex)
                     {
-                        theLog?.Error(ex, "AasxPluginPlotting:TimerTick() processing updates");
+                        _log?.Error(ex, "AasxPluginPlotting:TimerTick() processing updates");
                     }
 
                 }
@@ -213,16 +209,16 @@ namespace AasxPluginPlotting
 
             try
             {
-                TimeSeriesStartFromSubmodel(theSubmodel);
+                TimeSeriesStartFromSubmodel(_submodel);
             } catch (Exception ex)
             {
-                theLog?.Error(ex, "accessing Submodel elements for creating timer series data");
+                _log?.Error(ex, "accessing Submodel elements for creating timer series data");
             }
 
             try
             {
                 var pvcs = _timeSeriesData?.RenderTimeSeries(
-                    StackPanelTimeSeries, defPlotHeight: 200, theDefaultLang, theLog);
+                    StackPanelTimeSeries, defPlotHeight: 200, _defaultLang, _log);
 
                 // do post processing where we superior control
                 foreach (var pvc in pvcs)
@@ -233,14 +229,14 @@ namespace AasxPluginPlotting
                         {
                             // re-rendering will access updated sample position from the widget
                             _timeSeriesData?.RefreshRenderedTimeSeries(
-                                StackPanelTimeSeries, theDefaultLang, theLog);
+                                StackPanelTimeSeries, _defaultLang, _log);
                         };
                     }
                 }
             }
             catch (Exception ex)
             {
-                theLog?.Error(ex, "rendering pre-processed plot data");
+                _log?.Error(ex, "rendering pre-processed plot data");
             }
 
         }
@@ -336,16 +332,18 @@ namespace AasxPluginPlotting
 
         private void ComboBoxLang_TextChanged(object sender, TextChangedEventArgs e)
         {
-            theDefaultLang = ComboBoxLang.Text;
+            _defaultLang = ComboBoxLang.Text;
             try { 
-                PlotItems.RebuildFromSubmodel(theSubmodel, theDefaultLang);
+                _plotItems.RebuildFromSubmodel(_submodel, _defaultLang);
+                _plotItems.RenderedGroups = _plotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
+                ReDisplayPlotItemListTiles();
                 SafelyRefreshRenderedTimeSeries();
                 ReDisplayPlotItemListTiles();
                 ReDisplayAnnotations();
             }
             catch (Exception ex)
             {
-                theLog?.Error(ex, "re-display plot information due to languange change");
+                _log?.Error(ex, "re-display plot information due to languange change");
             }
         }
 
@@ -946,6 +944,7 @@ namespace AasxPluginPlotting
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+                        PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
 
                         // generate cumulative data
                         var cum = tsd.DataSet.GenerateCumulativeData(pvc.LatestSamplePosition);
@@ -978,6 +977,7 @@ namespace AasxPluginPlotting
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+                        PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
 
                         ScottPlot.WpfPlot lastPlot = null;
                         var xLabels = "Time ( ";
@@ -1161,8 +1161,7 @@ namespace AasxPluginPlotting
                             lastPlot.Plot.XLabel(xLabels);
                         }
 
-                        // render the plot into panel
-                        PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
+                        // render the plot into panel                        
                         panel.Children.Add(pvc);
                         pvc.ButtonClick += (sender, ndx) =>
                         {
@@ -1542,7 +1541,7 @@ namespace AasxPluginPlotting
                     if (pdp != null && ds.DataPoint == null)
                     {
                         ds.DataPoint = pdp;
-                        ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
+                        ds.DataPointCD = _package?.AasEnv?.FindConceptDescription(pdp.semanticId);
                     }
 
                     // plot arguments for record?
@@ -1596,7 +1595,7 @@ namespace AasxPluginPlotting
                         if (ds.DataPoint == null)
                         {
                             ds.DataPoint = pdp;
-                            ds.DataPointCD = thePackage?.AasEnv?.FindConceptDescription(pdp.semanticId);
+                            ds.DataPointCD = _package?.AasEnv?.FindConceptDescription(pdp.semanticId);
                         }
 
                         // now fix (one time!) the time data set for this data set
@@ -1674,15 +1673,13 @@ namespace AasxPluginPlotting
             try
             {
                 // redisplay
-                _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, theDefaultLang, theLog);
+                _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, _defaultLang, _log);
             }
             catch (Exception ex)
             {
-                theLog?.Error(ex, "AasxPluginPlotting: refresh display of time series data");
+                _log?.Error(ex, "AasxPluginPlotting: refresh display of time series data");
             }
         }
-
-        private AasEventMsgStack _eventStack = new AasEventMsgStack();
 
         public void PushEvent(AasEventMsgEnvelope ev)
             => _eventStack?.PushEvent(ev);
@@ -1719,9 +1716,9 @@ namespace AasxPluginPlotting
             // Go over all plot groups/ items and search for appropriate events
             //
 
-            if (PlotItems?.RenderedGroups != null)
+            if (_plotItems?.RenderedGroups != null)
             {
-                foreach (var grp in PlotItems.RenderedGroups)
+                foreach (var grp in _plotItems.RenderedGroups)
                 {
                     var groupTouch = false;
 
@@ -1767,7 +1764,7 @@ namespace AasxPluginPlotting
                         if (lastValue.HasValue)
                         {
                             // update item for list/ tiles
-                            pi.SetValue(lastValue.Value, theDefaultLang);
+                            pi.SetValue(lastValue.Value, _defaultLang);
                             groupTouch = true;
                         }
 
@@ -1776,7 +1773,7 @@ namespace AasxPluginPlotting
                     if (groupTouch)
                     {
                         // update the group display
-                        PlotItems.UpdateFinalGroup(grp);
+                        _plotItems.UpdateFinalGroup(grp);
                     }
                 }
 
@@ -1851,7 +1848,7 @@ namespace AasxPluginPlotting
                     TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
 
                     // redisplay
-                    _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, theDefaultLang, theLog);
+                    _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, _defaultLang, _log);
                 }
             }
         }
