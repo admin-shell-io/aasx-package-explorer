@@ -6,7 +6,7 @@
              xmlns:scott="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
              xmlns:local="clr-namespace:AasxPluginPlotting"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="600">
+             d:DesignHeight="200" d:DesignWidth="600" Loaded="UserControl_Loaded">
 
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>

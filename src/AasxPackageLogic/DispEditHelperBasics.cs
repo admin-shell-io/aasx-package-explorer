@@ -517,6 +517,47 @@ namespace AasxPackageLogic
             }
         }
 
+        public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
+            ModifyRepo repo,
+            string contextMenuText, string[] menuHeaders, Func<object, AnyUiLambdaActionBase> menuItemLambda,
+            AnyUiThickness margin = null, AnyUiThickness padding = null)
+        {
+            var g = new AnyUiGrid();
+            g.Margin = new AnyUiThickness(0, 13, 0, 0);
+
+            var gc1 = new AnyUiColumnDefinition();
+            gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+            g.ColumnDefinitions.Add(gc1);
+
+            var isContextMenu = repo != null && contextMenuText != null && menuHeaders != null && menuItemLambda != null;
+            if (isContextMenu)
+            {
+                var gc3 = new AnyUiColumnDefinition();
+                gc3.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+                g.ColumnDefinitions.Add(gc3);
+            }
+
+            var l = new AnyUiLabel();
+            l.Margin = new AnyUiThickness(0, 0, 0, 0);
+            l.Padding = new AnyUiThickness(5, 0, 0, 0);
+            l.Background = background;
+            l.Foreground = foreground;
+            l.Content = "" + name;
+            l.FontWeight = AnyUiFontWeight.Bold;
+            AnyUiGrid.SetRow(l, 0);
+            AnyUiGrid.SetColumn(l, 0);
+            g.Children.Add(l);
+            view.Children.Add(g);
+
+            if (isContextMenu)
+            {
+                AddSmallContextMenuItemTo(
+                    g, 0, 1,
+                    contextMenuText, repo, menuHeaders, menuItemLambda,
+                    margin: margin, padding: padding);
+            }
+        }
+
         public AnyUiSelectableTextBlock AddSmallLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false)
@@ -1944,6 +1985,7 @@ namespace AasxPackageLogic
                 var qual = qualifiers[i];
                 var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
+                /*
                 AddGroup(
                     substack, $"Qualifier {1 + i}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
@@ -1954,6 +1996,76 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     });
+                */
+                int storedI = i;
+                AddGroup(
+                    substack, $"Qualifier {1 + i}",
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    contextMenuText: "\u22ee",                    
+                    menuHeaders: new[] {
+                        "\u2702", "Delete",
+                        "\u25b2", "Move Up",
+                        "\u25bc", "Move Down",
+                        "\u25bc", "Copy to clipboard",
+                        "\u25bc", "Paste from clipboard",
+                    },
+                    menuItemLambda: (o) =>
+                    {
+                        var action = false;
+
+                        if (o is int ti)
+                            switch (ti)
+                            {
+                                case 0:
+                                    qualifiers.Remove(qual);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    action = true;
+                                    break;
+                                case 1:
+                                    action = true;
+                                    break;
+                                case 2:
+                                    action = true;
+                                    break;
+                                case 3:
+                                    var jsonStr = JsonConvert.SerializeObject(
+                                        qualifiers[storedI], Formatting.Indented);
+                                    this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                                    Log.Singleton.Info("Qualified serialized to clipboard.");
+                                    break;
+                                case 4:
+                                    try
+                                    {
+                                        var qCurr = qualifiers[storedI];
+                                        var jsonInput = this.context?.ClipboardGet()?.Text;
+                                        var qIn = JsonConvert.DeserializeObject<AdminShell.Qualifier>(jsonInput);
+                                        if (qCurr != null && qIn != null)
+                                        {
+                                            qCurr.type = qIn.type;
+                                            qCurr.value = qIn.value;
+                                            qCurr.valueType = qIn.valueType;
+                                            if (qIn.valueId != null)
+                                                qCurr.valueId = qIn.valueId;
+                                            if (qIn.semanticId != null)
+                                                qCurr.semanticId = qIn.semanticId;
+                                            Log.Singleton.Info("Qualifier data taken from clipboard.");
+                                            action = true;
+                                        }
+                                    } 
+                                    catch (Exception ex)
+                                    {
+                                        Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
+                                    }
+                                    break;
+
+                            }
+
+                        if (action)
+                            return new AnyUiLambdaActionRedrawEntity();
+                        return new AnyUiLambdaActionNone();
+                    },
+                    margin: new AnyUiThickness(2, 2, 2, 2),
+                    padding: new AnyUiThickness(5, 0, 5, 0));
 
                 AddHintBubble(
                     substack, hintMode,

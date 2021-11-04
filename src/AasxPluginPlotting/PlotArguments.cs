@@ -32,9 +32,15 @@ namespace AasxPluginPlotting
         public string grp;
 
         /// <summary>
-        /// C# string format string to format a double value pretty
+        /// C# string format string to format a double value pretty.
+        /// Note: e.g. F4
         /// </summary>
         public string fmt;
+
+        /// <summary>
+        /// Unit to display.
+        /// </summary>
+        public string unit;
 
         /// <summary>
         /// Min and max values of the axes
@@ -60,6 +66,12 @@ namespace AasxPluginPlotting
         /// Width of plot line, size of its markers
         /// </summary>
         public double? linewidth, markersize;
+
+        /// <summary>
+        /// In order to display more than one bar plottable, set the bar-width to 0.5 or 0.33
+        /// and the bar-offset to -0.5 .. +0.5
+        /// </summary>
+        public double? barwidth, barofs;
 
         /// <summary>
         /// Dimensions of the overall plot
@@ -88,6 +100,33 @@ namespace AasxPluginPlotting
         /// </summary>
         public Type type;
 
+        public enum Source { Timer, Event }
+
+        /// <summary>
+        /// Specify source for value updates.
+        /// </summary>
+        public Source src;
+
+        /// <summary>
+        /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
+        /// Applicable on: Submodel
+        /// </summary>
+        public int timer;
+
+        /// <summary>
+        /// Instead of displaying a list of plot items, display a set of tiles.
+        /// Rows and columns can be assigned to the individual tiles.
+        /// Applicable on: Submodel
+        /// </summary>
+        public bool tiles;
+
+        /// <summary>
+        /// Defines the zero-based row- and column position for tile based display.
+        /// The span-settings allow stretching over multiple (>1) tiles.
+        /// Applicable on: Properties
+        /// </summary>
+        public int? row, col, rowspan, colspan;
+
         // ReSharper enable UnassignedField.Global
 
         public static PlotArguments Parse(string json)
@@ -105,6 +144,24 @@ namespace AasxPluginPlotting
                 LogInternally.That.SilentlyIgnoredError(ex);
             }
 
+            return null;
+        }
+
+        public ScottPlot.Drawing.Palette GetScottPalette()
+        {
+            if (palette.HasContent() == true)
+                foreach (var pl in ScottPlot.Palette.GetPalettes())
+                    if (pl.Name.ToLower().Trim() == palette.ToLower().Trim())
+                        return pl;
+            return null;
+        }
+
+        public ScottPlot.Styles.IStyle GetScottStyle()
+        {
+            if (style.HasContent() == true)
+                foreach (var st in ScottPlot.Style.GetStyles())
+                    if (st.GetType().Name.ToLower().Trim() == style.ToLower().Trim())
+                        return st;
             return null;
         }
     }

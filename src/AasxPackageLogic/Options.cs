@@ -384,8 +384,15 @@ namespace AasxPackageLogic
             "hide the  panel, if required.")]
         public bool ShowEvents = false;
 
-        [OptionDescription(Description = "When activated, the UI will compress events, which are emited by the editor. " +
-            "Events are emited, when \"take over\" or load/ save is activiated.")]
+        [OptionDescription(Description = "When activated, the UI will detect SubmodelElements which feature " +
+            "qualifiers of type \"Animate.Args\" and will cyclically animate its values.")]
+        public bool AnimateElements = false;
+
+        [OptionDescription(Description = "When activated, the UI will observe AAS events, which are subsequently " +
+            "emited by the editor. AAS events are emited, when \"take over\" or load/ save is activiated.")]
+        public bool ObserveEvents = false;
+
+        [OptionDescription(Description = "When activated, the UI will compress events, which are emited by the editor. ")]
         public bool CompressEvents = false;
 
         [OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +

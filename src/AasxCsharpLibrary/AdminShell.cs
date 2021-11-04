@@ -5107,6 +5107,11 @@ namespace AdminShellNS
             Reference GetReference(bool includeParents = true);
         }
 
+        public interface IGetQualifiers
+        {
+            QualifierCollection GetQualifiers();
+        }
+
         public class Qualifier : IAasElement
         {
             // for JSON only
@@ -5315,6 +5320,15 @@ namespace AdminShellNS
                         return q;
                 return null;
             }
+
+            public IEnumerable<Qualifier> FindAllQualifierType(string qualifierType)
+            {
+                if (qualifierType == null)
+                    yield break;
+                foreach (var q in this)
+                    if (q.type.Trim().ToLower() == qualifierType.Trim().ToLower())
+                        yield return q;
+            }
         }
 
         public class ListOfSubmodelElement : List<SubmodelElement>
@@ -5335,7 +5349,7 @@ namespace AdminShellNS
             }
         }
 
-        public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId
+        public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId, IGetQualifiers
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
@@ -5384,6 +5398,7 @@ namespace AdminShellNS
             [XmlArrayItem("qualifier")]
             [JsonProperty(PropertyName = "constraints")]
             public QualifierCollection qualifiers = null;
+            public QualifierCollection GetQualifiers() => qualifiers;
 
             // from hasDataSpecification:
             [XmlElement(ElementName = "embeddedDataSpecification")]
@@ -6555,7 +6570,7 @@ namespace AdminShellNS
 
         public class Submodel : Identifiable, IManageSubmodelElements,
                                     System.IDisposable, IEnumerateChildren, IFindAllReferences,
-                                    IGetSemanticId
+                                    IGetSemanticId, IGetQualifiers
         {
             // for JSON only
             [XmlIgnore]
@@ -6599,6 +6614,7 @@ namespace AdminShellNS
             [XmlArray("qualifier")]
             [XmlArrayItem("qualifier")]
             public QualifierCollection qualifiers = null;
+            public QualifierCollection GetQualifiers() => qualifiers;
 
             // from hasDataSpecification:
             [XmlElement(ElementName = "embeddedDataSpecification")]

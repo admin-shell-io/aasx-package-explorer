@@ -30,6 +30,7 @@ namespace AasxPluginPlotting
     public partial class WpfPlotViewControlHorizontal : UserControl, IWpfPlotViewControl
     {
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
+        public ContentControl ContentControl => this;
 
         public event Action<WpfPlotViewControlHorizontal, int> ButtonClick;
 
@@ -49,6 +50,10 @@ namespace AasxPluginPlotting
         public WpfPlotViewControlHorizontal()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -124,7 +129,10 @@ namespace AasxPluginPlotting
             if (ndx == 6)
             {
                 // plot larger
-                sender.Height += 100;
+                var h = sender.ActualHeight + 100;
+                sender.Height = h;
+                sender.MinHeight = h;
+                sender.MaxHeight = h;
 
                 // show
                 wpfPlot.Render();
@@ -133,11 +141,15 @@ namespace AasxPluginPlotting
             if (ndx == 7 && sender.Height >= 299)
             {
                 // plot smaller
-                sender.Height -= 100;
+                var h = sender.ActualHeight - 100;
+                sender.Height = h;
+                sender.MinHeight = h;
+                sender.MaxHeight = h;
 
                 // show
                 wpfPlot.Render();
             }
         }
+
     }
 }

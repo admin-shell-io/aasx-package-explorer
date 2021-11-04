@@ -822,6 +822,8 @@ namespace AasxPackageExplorer
             MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
+            MenuItemOptionsAnimateElems.IsChecked = Options.Curr.AnimateElements;
+            MenuItemOptionsObserveEvents.IsChecked = Options.Curr.ObserveEvents;
             MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
 
             // the UI application might receive events from items in the package central
@@ -1384,7 +1386,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private double _mainTimer_CheckAnimationPhaseSecs = 0.0;
+        private AnimateDemoValues _mainTimer_AnimateDemoValues = new AnimateDemoValues();
 
         private void MainTimer_CheckAnimationElements(
             double deltaSecs,
@@ -1392,7 +1394,7 @@ namespace AasxPackageExplorer
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significantElems == null)
+            if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
                 return;
             
             // find elements?
@@ -1405,9 +1407,7 @@ namespace AasxPackageExplorer
                 // which SME?
                 if (rec.LiveObject is AdminShell.Property prop)
                 {
-                    AnimateDemoValues.Animate(prop,
-                        phaseSecs: _mainTimer_CheckAnimationPhaseSecs,
-                        deltaSecs: deltaSecs,
+                    _mainTimer_AnimateDemoValues.Animate(prop,
                         emitEvent: (prop2, evi2) => {
                             // Animate the event visually; create a change event for this.
                             // Note: this might by not ideal, final state
@@ -1428,9 +1428,6 @@ namespace AasxPackageExplorer
                         });
                 }
             }
-
-            // increase the phase
-            _mainTimer_CheckAnimationPhaseSecs += deltaSecs;
         }
 
         private void MainTimer_CheckDiaryDateToEmitEvents(
@@ -1440,7 +1437,7 @@ namespace AasxPackageExplorer
             bool directEmit)
         {
             // trivial
-            if (env == null || significantElems == null)
+            if (env == null || significantElems == null || !MenuItemOptionsObserveEvents.IsChecked)
                 return;
 
             // do this twice
@@ -1817,7 +1814,7 @@ namespace AasxPackageExplorer
                 if (_mainTimer_LastCheckForAnimationElements != null)
                     deltaSecs = (DateTime.Now - _mainTimer_LastCheckForAnimationElements).TotalSeconds;
 
-                if (deltaSecs > 1.0)
+                if (deltaSecs >= 0.1)
                 {
                     MainTimer_CheckAnimationElements(
                         deltaSecs,
