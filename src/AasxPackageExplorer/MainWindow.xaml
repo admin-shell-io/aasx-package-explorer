@@ -83,6 +83,8 @@
                     <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
                     <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
                     <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
+                    <RoutedUICommand x:Key="AnimateElements" Text="AnimateElements" />
+                    <RoutedUICommand x:Key="ObserveEvents" Text="ObserveEvents" />
                     <RoutedUICommand x:Key="CompressEvents" Text="CompressEvents" />
                     <RoutedUICommand x:Key="Test" Text="Test" />
                     <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
@@ -246,6 +248,8 @@
         <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource AnimateElements}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ObserveEvents}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CompressEvents}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BufferClear}" Executed="CommandBinding_Executed"/>
@@ -409,6 +413,8 @@
                         <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
                         <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                        <MenuItem x:Name="MenuItemOptionsAnimateElems" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
+                        <MenuItem x:Name="MenuItemOptionsObserveEvents" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
                         <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">

@@ -129,7 +129,10 @@ namespace AasxPluginPlotting
             if (ndx == 6)
             {
                 // plot larger
-                sender.Height += 100;
+                var h = sender.ActualHeight + 100;
+                sender.Height = h;
+                sender.MinHeight = h;
+                sender.MaxHeight = h;
 
                 // show
                 wpfPlot.Render();
@@ -138,7 +141,10 @@ namespace AasxPluginPlotting
             if (ndx == 7 && sender.Height >= 299)
             {
                 // plot smaller
-                sender.Height -= 100;
+                var h = sender.ActualHeight - 100;
+                sender.Height = h;
+                sender.MinHeight = h;
+                sender.MaxHeight = h;
 
                 // show
                 wpfPlot.Render();

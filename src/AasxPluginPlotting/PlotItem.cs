@@ -387,6 +387,9 @@ namespace AasxPluginPlotting
                 var wpfPlot = pvc.WpfPlot;
                 wpfPlot.Tag = pvc;
 
+                // initial state
+                PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, null, defPlotHeight);
+
                 // before applying arguments
                 pvc.AutoScaleX = true;
                 pvc.AutoScaleY = true;
@@ -438,9 +441,10 @@ namespace AasxPluginPlotting
                     if (!groupPI.UseOAaxis)
                     {
                         // sample based
-                        var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
-                        pb.Plottable = signal;
                         pb.Push(val.HasValue ? val.Value : 0.0);
+                        var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
+                        PlotHelpers.SetPlottableProperties(signal, pi.Args);
+                        pb.Plottable = signal;                        
                         if (signal.FillColor1.HasValue)
                             pi.ValueForeground = PlotHelpers.BrushFrom(signal.FillColor1.Value);
                     }
@@ -448,6 +452,7 @@ namespace AasxPluginPlotting
                     {
                         // time based
                         var scatter = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: "" + pi.DisplayPath);
+                        PlotHelpers.SetPlottableProperties(scatter, pi.Args);
                         pb.Plottable = scatter;
                         pi.ValueForeground = PlotHelpers.BrushFrom(scatter.Color);
                     }
@@ -472,7 +477,6 @@ namespace AasxPluginPlotting
                     wpfPlot.Plot.XAxis.DateTimeFormat(true);
 
                 // render the plot into panel
-                PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, null, defPlotHeight);
                 panel.Children.Add(pvc);
                 wpfPlot.Render();
             }
@@ -489,7 +493,7 @@ namespace AasxPluginPlotting
 
         public void ForAllGroupsAndPlot(
             List<PlotItemGroup> groups,
-            Action<PlotItemGroup, PlotItem> lambda = null)
+            Action<PlotItemGroup, IWpfPlotViewControl, PlotItem> lambda = null)
         {
             if (groups == null)
                 return;
@@ -497,8 +501,9 @@ namespace AasxPluginPlotting
             {
                 if (grp == null)
                     continue;
+                var pvc = grp?.WpfPlot?.Tag as IWpfPlotViewControl;
                 foreach (var pi in grp)
-                    lambda?.Invoke(grp, pi);
+                    lambda?.Invoke(grp, pvc, pi);
             }
         }
 
@@ -525,10 +530,14 @@ namespace AasxPluginPlotting
                     wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
 
                 // no autoscale for X
-                sender.AutoScaleX = false;
+                ForAllGroupsAndPlot(RenderedGroups, (grp, opvc, pi) => 
+                { 
+                    if (opvc != null) 
+                        opvc.AutoScaleX = false; 
+                });
 
                 // call for the other
-                WpfPlot_AxisChanged(wpfPlot, null);
+                ApplyLimitsToAllOtherLimitsOf(wpfPlot);
             }
 
             if (ndx == 3 || ndx == 4)
@@ -544,15 +553,19 @@ namespace AasxPluginPlotting
                     wpfPlot.Plot.SetAxisLimits(yMin: ax.YMin + height / 4, yMax: ax.YMax - height / 4);
 
                 // no autoscale for Y
-                sender.AutoScaleY = false;
+                ForAllGroupsAndPlot(RenderedGroups, (grp, opvc, pi) =>
+                {
+                    if (opvc != null)
+                        opvc.AutoScaleX = false;
+                });
 
                 // call for the other
-                WpfPlot_AxisChanged(wpfPlot, null);
+                ApplyLimitsToAllOtherLimitsOf(wpfPlot);
             }
 
             if (ndx == 5)
             {
-                // swithc auto scale ON and hope the best
+                // switch auto scale ON and hope the best
                 sender.AutoScaleX = true;
                 sender.AutoScaleY = true;
             }
@@ -560,13 +573,19 @@ namespace AasxPluginPlotting
             if (ndx == 6)
             {
                 // plot larger
-                pvc.Height += 100;
+                var h = pvc.ActualHeight + 100;
+                pvc.Height = h;
+                pvc.MinHeight = h;
+                pvc.MaxHeight = h;
             }
 
             if (ndx == 7 && pvc.Height >= 299)
             {
                 // plot smaller
-                pvc.Height -= 100;
+                var h = pvc.ActualHeight - 100;
+                pvc.Height = h;
+                pvc.MinHeight = h;
+                pvc.MaxHeight = h;
             }
         }
 
@@ -574,6 +593,21 @@ namespace AasxPluginPlotting
 
         private void WpfPlot_AxisChanged(object sender, EventArgs e)
         {
+        }
+
+        private void ApplyLimitsToAllOtherLimitsOf(
+            ScottPlot.WpfPlot wpfPlot)
+        {
+            ForAllGroupsAndPlot(RenderedGroups, (grp, pvc, pi) =>
+            {
+                var one = wpfPlot.Plot.GetAxisLimits();
+                if (grp.WpfPlot != wpfPlot && grp.WpfPlot != null)
+                {
+                    // move
+                    grp.WpfPlot.Plot.SetAxisLimits(xMin: one.XMin, xMax: one.XMax);
+                    grp.WpfPlot.Render();
+                }
+            });
         }
 
         private void WpfPlot_MouseMove(object sender, MouseEventArgs e)
@@ -597,24 +631,19 @@ namespace AasxPluginPlotting
                 {
                     pvc.AutoScaleX = false;
                     pvc.AutoScaleY = false;
-                    ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
+                    ForAllGroupsAndPlot(RenderedGroups, (grp, opvc, pi) =>
                     {
-                        // disable
+                        // disable also there
+                        if (opvc == null)
+                            return;
+                        opvc.AutoScaleX = false;
+                        opvc.AutoScaleY = false;
                         var oldLimits = grp.WpfPlot.Plot.GetAxisLimits();
                         grp.WpfPlot.Plot.SetAxisLimits(xMax: oldLimits.XMax + 10);
                     });
                 }
 
-                ForAllGroupsAndPlot(RenderedGroups, (grp, pi) =>
-                {
-                    var one = wpfPlot.Plot.GetAxisLimits();
-                    if (grp.WpfPlot != wpfPlot && grp.WpfPlot != null)
-                    {
-                        // move
-                        grp.WpfPlot.Plot.SetAxisLimits(xMin: one.XMin, xMax: one.XMax);
-                        grp.WpfPlot.Render();
-                    }
-                });
+                ApplyLimitsToAllOtherLimitsOf(wpfPlot);
             }
         }
 

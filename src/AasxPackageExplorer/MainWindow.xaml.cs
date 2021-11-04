@@ -822,6 +822,8 @@ namespace AasxPackageExplorer
             MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
+            MenuItemOptionsAnimateElems.IsChecked = Options.Curr.AnimateElements;
+            MenuItemOptionsObserveEvents.IsChecked = Options.Curr.ObserveEvents;
             MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
 
             // the UI application might receive events from items in the package central
@@ -1392,7 +1394,7 @@ namespace AasxPackageExplorer
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significantElems == null)
+            if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
                 return;
             
             // find elements?
@@ -1435,7 +1437,7 @@ namespace AasxPackageExplorer
             bool directEmit)
         {
             // trivial
-            if (env == null || significantElems == null)
+            if (env == null || significantElems == null || !MenuItemOptionsObserveEvents.IsChecked)
                 return;
 
             // do this twice

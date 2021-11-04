@@ -69,5 +69,43 @@ namespace AasxPluginPlotting
                 cc.MaxHeight = height;
             }
         }
+
+        public static void SetPlottableProperties(
+            ScottPlot.Plottable.BarPlot bars, 
+            PlotArguments args)
+        {
+        }
+
+        public static void SetPlottableProperties(
+            ScottPlot.Plottable.ScatterPlot scatter,
+            PlotArguments args)
+        {
+            // access
+            if (scatter == null)
+                return;
+
+            // set
+            if (true == args?.linewidth.HasValue)
+                scatter.LineWidth = args.linewidth.Value;
+
+            if (true == args?.markersize.HasValue)
+                scatter.MarkerSize = (float)args.markersize.Value;
+        }
+
+        public static void SetPlottableProperties(
+            ScottPlot.Plottable.SignalPlot signal,
+            PlotArguments args)
+        {
+            // access
+            if (signal == null)
+                return;
+
+            // set
+            if (true == args?.linewidth.HasValue)
+                signal.LineWidth = args.linewidth.Value;
+
+            if (true == args?.markersize.HasValue)
+                signal.MarkerSize = (float)args.markersize.Value;
+        }
     }
 }

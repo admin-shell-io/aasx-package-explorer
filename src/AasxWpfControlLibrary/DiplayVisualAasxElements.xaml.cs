@@ -272,7 +272,7 @@ namespace AasxPackageExplorer
         public void Refresh()
         {
             preventSelectedItemChanged = true;
-            _selectedItems = new ListOfVisualElementBasic();
+            // _selectedItems = new ListOfVisualElementBasic();
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
             preventSelectedItemChanged = false;

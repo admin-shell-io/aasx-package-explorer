@@ -189,8 +189,8 @@ namespace AasxPluginPlotting
                 {
                     try
                     { 
-                        // PlotItems.UpdateValues();
-                        // PlotItems.UpdateAllRenderedPlotItems(PlotItems.RenderedGroups);
+                        _plotItems.UpdateValues();
+                        _plotItems.UpdateAllRenderedPlotItems(_plotItems.RenderedGroups);
                         ProcessEvents();
                     }
                     catch (Exception ex)
@@ -944,6 +944,8 @@ namespace AasxPluginPlotting
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+
+                        // initial state
                         PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
 
                         // generate cumulative data
@@ -955,7 +957,6 @@ namespace AasxPluginPlotting
                         pvc.ActivePlottable = plottable;
 
                         // render the plottable into panel
-                        PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
                         panel.Children.Add(pvc);                        
                         wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
                         res.Add(pvc);
@@ -977,6 +978,8 @@ namespace AasxPluginPlotting
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
+
+                        // initial state
                         PlotHelpers.SetOverallPlotProperties(pvc, wpfPlot, tsd.Args, defPlotHeight);
 
                         ScottPlot.WpfPlot lastPlot = null;
@@ -1050,17 +1053,32 @@ namespace AasxPluginPlotting
                                     positions: timeDStoUse.RenderDataToLimits(),
                                     values: tsds.RenderDataToLimits());
 
+                                PlotHelpers.SetPlottableProperties(scatter, tsds.Args);
+
                                 // customize the width of bars (80% of the inter-position distance looks good)
                                 if (timeDStoUse.Data.Length >= 2)
                                 {
                                     // Note: pretty trivial approach, yet
-                                    var bw = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) * .8;
+                                    var timeDelta = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) ;
+                                    var bw = timeDelta * .8;
+
+                                    // apply bar width?
+                                    if (tsds.Args?.barwidth != null)
+                                        bw *= Math.Max(0.0, Math.Min(1.0, (tsds.Args?.barwidth).Value));
 
                                     // set
                                     bars.BarWidth = bw;
 
+                                    // bar ofsett
+                                    var extraOfs = 0.0;
+                                    if (tsds.Args?.barofs != null)
+                                        extraOfs = (tsds.Args?.barofs).Value;
+                                    var bo = timeDelta * (-0.0 + 0.5 * extraOfs);
+                                    bars.PositionOffset = bo;
+
                                     // remember
                                     tsds.RenderedBarWidth = bw;
+                                    tsds.RenderedBarOffet = bo;
                                 }
 
                                 bars.Label = EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
@@ -1077,11 +1095,7 @@ namespace AasxPluginPlotting
                                     label: EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
                                         addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
 
-                                if (true == tsds.Args?.linewidth.HasValue)
-                                    scatter.LineWidth = tsds.Args.linewidth.Value;
-
-                                if (true == tsds.Args?.markersize.HasValue)
-                                    scatter.MarkerSize = (float) tsds.Args.markersize.Value;
+                                PlotHelpers.SetPlottableProperties(scatter, tsds.Args);
 
                                 tsds.Plottable = scatter;
 

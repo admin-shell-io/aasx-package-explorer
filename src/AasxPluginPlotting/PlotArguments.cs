@@ -68,6 +68,12 @@ namespace AasxPluginPlotting
         public double? linewidth, markersize;
 
         /// <summary>
+        /// In order to display more than one bar plottable, set the bar-width to 0.5 or 0.33
+        /// and the bar-offset to -0.5 .. +0.5
+        /// </summary>
+        public double? barwidth, barofs;
+
+        /// <summary>
         /// Dimensions of the overall plot
         /// </summary>
         public double? height, width;
