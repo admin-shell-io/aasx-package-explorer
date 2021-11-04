@@ -1024,38 +1024,38 @@ namespace AasxUANodesetImExport
                 CreateReference(
                     "HasProperty",
                     CreateProperty(
-                        concept.GetIEC61360().GetHashCode().ToString(), "BaseVariableType", "Code", "String")));
+                        concept.GetIEC61360()?.GetHashCode().ToString(), "BaseVariableType", "Code", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().dataType, "BaseVariableType", "DataType", "String")));
+                    CreateProperty(concept.GetIEC61360()?.dataType, "BaseVariableType", "DataType", "String")));
 
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().definition, "Definition")));
+                    CreateLangStrContainer(concept.GetIEC61360()?.definition, "Definition")));
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().preferredName, "PreferredName")));
+                    CreateLangStrContainer(concept.GetIEC61360()?.preferredName, "PreferredName")));
 
             refs.Add(
                 CreateReference(
                     "HasProperty",
                     CreateProperty(
-                        concept.GetIEC61360().shortName.ToString(), "BaseVariableType", "ShortName", "String")));
+                        concept.GetIEC61360()?.shortName.ToString(), "BaseVariableType", "ShortName", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().symbol, "BaseVariableType", "Symbol", "String")));
+                    CreateProperty(concept.GetIEC61360()?.symbol, "BaseVariableType", "Symbol", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().unit, "BaseVariableType", "Unit", "String")));
+                    CreateProperty(concept.GetIEC61360()?.unit, "BaseVariableType", "Unit", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().valueFormat, "BaseVariableType", "ValueFormat", "String")));
+                    CreateProperty(concept.GetIEC61360()?.valueFormat, "BaseVariableType", "ValueFormat", "String")));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
@@ -1071,10 +1071,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("BaseObjectType"));
 
-            foreach (AdminShellV20.LangStr str in list)
-            {
-                refs.Add(CreateReference("HasProperty", CreateLangStrSet(str.lang, str.str)));
-            }
+            if (list != null)
+                foreach (AdminShellV20.LangStr str in list)
+                {
+                    refs.Add(CreateReference("HasProperty", CreateLangStrSet(str.lang, str.str)));
+                }
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
