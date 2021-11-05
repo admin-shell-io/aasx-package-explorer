@@ -48,7 +48,7 @@ namespace AasxPluginPlotting
         public double? xmin, ymin, xmax, ymax;
 
         /// <summary>
-        /// Skip this plot
+        /// Skip this plot in charts display
         /// </summary>
         public bool skip;
 

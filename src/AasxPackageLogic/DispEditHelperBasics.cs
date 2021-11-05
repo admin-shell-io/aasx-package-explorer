@@ -1938,6 +1938,26 @@ namespace AasxPackageLogic
                 });
         }
 
+        private bool PasteQualifierTextIntoExisting(
+            string jsonInput,
+            AdminShell.Qualifier qCurr)
+        {
+            var qIn = JsonConvert.DeserializeObject<AdminShell.Qualifier>(jsonInput);
+            if (qCurr != null && qIn != null)
+            {
+                qCurr.type = qIn.type;
+                qCurr.value = qIn.value;
+                qCurr.valueType = qIn.valueType;
+                if (qIn.valueId != null)
+                    qCurr.valueId = qIn.valueId;
+                if (qIn.semanticId != null)
+                    qCurr.semanticId = qIn.semanticId;
+                Log.Singleton.Info("Qualifier data taken from clipboard.");
+                return true;
+            }
+            return false;
+        }
+
         public void QualifierHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<AdminShell.Qualifier> qualifiers,
@@ -1947,11 +1967,14 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of references
                 AddAction(
-                    stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Delete last" }, repo,
+                    stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
+                        {
                             qualifiers.Add(new AdminShell.Qualifier());
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        }
 
                         if (buttonNdx == 1)
                         {
@@ -1963,6 +1986,7 @@ namespace AasxPackageLogic
                                 this.context.StartFlyoverModal(uc);
                                 if (uc.Result && uc.ResultQualifier != null)
                                     qualifiers.Add(uc.ResultQualifier);
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             }
                             catch (Exception ex)
                             {
@@ -1971,9 +1995,26 @@ namespace AasxPackageLogic
                             }
                         }
 
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        if (buttonNdx == 2)
+                        {
+                            try
+                            {
+                                var qNew = new AdminShell.Qualifier();
+                                var jsonInput = this.context?.ClipboardGet()?.Text;
+                                if (PasteQualifierTextIntoExisting(jsonInput, qNew))
+                                {
+                                    qualifiers.Add(qNew);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    Log.Singleton.Info("Qualifier taken from clipboard.");
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
+                            }
+                        }
 
-                        if (buttonNdx == 2 && qualifiers.Count > 0)
+                        if (buttonNdx == 3 && qualifiers.Count > 0)
                             qualifiers.RemoveAt(qualifiers.Count - 1);
 
                         return new AnyUiLambdaActionRedrawEntity();
@@ -2006,8 +2047,8 @@ namespace AasxPackageLogic
                         "\u2702", "Delete",
                         "\u25b2", "Move Up",
                         "\u25bc", "Move Down",
-                        "\u25bc", "Copy to clipboard",
-                        "\u25bc", "Paste from clipboard",
+                        "\u29c9", "Copy to clipboard",
+                        "\u2398", "Paste from clipboard",
                     },
                     menuItemLambda: (o) =>
                     {
@@ -2036,21 +2077,10 @@ namespace AasxPackageLogic
                                 case 4:
                                     try
                                     {
-                                        var qCurr = qualifiers[storedI];
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
-                                        var qIn = JsonConvert.DeserializeObject<AdminShell.Qualifier>(jsonInput);
-                                        if (qCurr != null && qIn != null)
-                                        {
-                                            qCurr.type = qIn.type;
-                                            qCurr.value = qIn.value;
-                                            qCurr.valueType = qIn.valueType;
-                                            if (qIn.valueId != null)
-                                                qCurr.valueId = qIn.valueId;
-                                            if (qIn.semanticId != null)
-                                                qCurr.semanticId = qIn.semanticId;
-                                            Log.Singleton.Info("Qualifier data taken from clipboard.");
-                                            action = true;
-                                        }
+                                        action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
+                                        if (action)
+                                            Log.Singleton.Info("Qualifier taken from clipboard.");
                                     } 
                                     catch (Exception ex)
                                     {
