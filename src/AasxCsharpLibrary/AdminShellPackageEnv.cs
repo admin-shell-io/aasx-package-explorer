@@ -911,7 +911,8 @@ namespace AdminShellNS
         /// Temporariyl saves & closes package and executes lambda. Afterwards, the package is re-opened
         /// under the same file name
         /// </summary>
-        /// <param name="lambda"></param>
+        /// <param name="lambda">Action which is to be executed while the file is CLOSED</param>
+        /// <param name="prefFmt">Format for the saved file</param>
         public void TemporarilySaveCloseAndReOpenPackage(
             Action lambda,
             AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
