@@ -401,6 +401,13 @@ namespace AasxPackageLogic.PackageCentral
                 changedSomething = true;
             }
 
+            if (smeToModify is AdminShell.Blob blob)
+            {
+                if (vl.Value is string vls)
+                    blob.value = vls;
+                changedSomething = true;
+            }
+
             // ok
             return changedSomething;
         }

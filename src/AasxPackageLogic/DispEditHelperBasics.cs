@@ -2059,11 +2059,15 @@ namespace AasxPackageLogic
                             {
                                 case 0:
                                     qualifiers.Remove(qual);
-                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                     action = true;
                                     break;
                                 case 1:
-                                    action = true;
+                                    var res = this.MoveElementInListUpwards<AdminShell.Qualifier>(
+                                        qualifiers, qualifiers[storedI]);
+                                    if (res > -1)
+                                    {
+                                        action = true;
+                                    }
                                     break;
                                 case 2:
                                     action = true;
@@ -2091,7 +2095,10 @@ namespace AasxPackageLogic
                             }
 
                         if (action)
+                        {
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
+                        }
                         return new AnyUiLambdaActionNone();
                     },
                     margin: new AnyUiThickness(2, 2, 2, 2),

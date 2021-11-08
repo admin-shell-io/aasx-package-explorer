@@ -646,6 +646,13 @@ namespace AasxPackageLogic.PackageCentral
                     return;
                 }
 
+                // need to care for parents inside
+                // TODO (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic
+                if (dataRef is AdminShell.Submodel drsm)
+                    drsm.SetAllParents();
+                if (dataRef is AdminShell.SubmodelElement drsme)
+                    AdminShell.Submodel.SetParentsForSME(parent, drsme);
+
                 // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(

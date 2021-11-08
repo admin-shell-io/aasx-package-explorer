@@ -103,8 +103,11 @@ namespace AasxPluginPlotting
 
         public int RowIndex { get; set; }
         public int ColumnIndex { get; set; }
-        public int RowSpan { get; set; }
-        public int ColumnSpan { get; set; }
+
+        // prevent binding errors
+        private int _rowSpan = 1, _columnSpan = 1;
+        public int RowSpan { get => Math.Max(1, _rowSpan); set { _rowSpan = value; } }
+        public int ColumnSpan { get => Math.Max(1, _columnSpan); set { _columnSpan = value; } }
 
         private Brush _valueForeground = Brushes.Black;
         public Brush ValueForeground
@@ -280,7 +283,9 @@ namespace AasxPluginPlotting
                 }
         }
 
-        public void RebuildFromSubmodel(AdminShell.Submodel sm, string lang)
+        public void RebuildFromSubmodel(
+            AdminShellPackageEnv package,
+            AdminShell.Submodel sm, string lang)
         {
             // clear & access
             this.Clear();
@@ -311,6 +316,11 @@ namespace AasxPluginPlotting
                 var npi = new PlotItem(sme, "" + q.value, path, sme.description, lang);
                 npi.SetValue(sme.ValueAsDouble(), lang);
                 temp.Add(npi);
+
+                // try access CD
+                var cd = package?.AasEnv?.FindConceptDescription(sme.semanticId);
+                if (cd?.IEC61360Content?.unit != null)
+                    npi.DisplayUnit = cd.IEC61360Content.unit;
 
                 // re-adjust
                 if (npi.Args?.unit != null && !npi.DisplayUnit.HasContent())
@@ -381,9 +391,10 @@ namespace AasxPluginPlotting
             {
                 // start new group
                 var pvc = new WpfPlotViewControlHorizontal();
-                pvc.Text = "Single value plot";
+                var grpHeader1 = "Single value plot";
                 if (groupPI.Group >= 0 && groupPI.Group < 9999)
-                    pvc.Text += $"; grp={groupPI.Group}";
+                    grpHeader1 += $"; grp={groupPI.Group}";
+                var grpHeader2 = "";
                 var wpfPlot = pvc.WpfPlot;
                 wpfPlot.Tag = pvc;
 
@@ -408,8 +419,7 @@ namespace AasxPluginPlotting
                     _userAxisChangeEnabled = true;
                 };
                 wpfPlot.MouseMove += WpfPlot_MouseMove;
-                groupPI.WpfPlot = wpfPlot;
-                res.Add(groupPI);
+                groupPI.WpfPlot = wpfPlot;                
 
                 // for all wpf / all signals
                 pvc.Height = defPlotHeight;
@@ -420,6 +430,10 @@ namespace AasxPluginPlotting
 
                 foreach (var pi in groupPI)
                 {
+                    // display at all?
+                    if (true == pi.Args?.skip)
+                        continue;
+
                     // value
                     var val = pi.SME?.ValueAsDouble();
 
@@ -437,12 +451,20 @@ namespace AasxPluginPlotting
                     var pb = new PlotBufferFixLen();
                     pi.Buffer = pb;
 
+                    // header of the group
+                    grpHeader2 = (grpHeader2 + " " + pi.Args?.title).Trim();
+
+                    // label
+                    var label = "" + pi.DisplayPath;
+                    if (pi.DisplayUnit.HasContent())
+                        label += $" [{pi.DisplayUnit}]";
+
                     // factory new Plottable
                     if (!groupPI.UseOAaxis)
                     {
                         // sample based
                         pb.Push(val.HasValue ? val.Value : 0.0);
-                        var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: "" + pi.DisplayPath);
+                        var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: label);
                         PlotHelpers.SetPlottableProperties(signal, pi.Args);
                         pb.Plottable = signal;                        
                         if (signal.FillColor1.HasValue)
@@ -451,7 +473,7 @@ namespace AasxPluginPlotting
                     else
                     {
                         // time based
-                        var scatter = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: "" + pi.DisplayPath);
+                        var scatter = wpfPlot.Plot.AddScatter(pb.Xdata, pb.Ydata, label: label);
                         PlotHelpers.SetPlottableProperties(scatter, pi.Args);
                         pb.Plottable = scatter;
                         pi.ValueForeground = PlotHelpers.BrushFrom(scatter.Color);
@@ -477,8 +499,13 @@ namespace AasxPluginPlotting
                     wpfPlot.Plot.XAxis.DateTimeFormat(true);
 
                 // render the plot into panel
-                panel.Children.Add(pvc);
-                wpfPlot.Render();
+                if (wpfPlot.Plot.GetPlottables().Length > 0)
+                {
+                    pvc.Text = (grpHeader2.HasContent()) ? grpHeader2 : grpHeader1;
+                    panel.Children.Add(pvc);
+                    res.Add(groupPI);
+                    wpfPlot.Render();
+                }
             }
 
             // for the last plot ..
@@ -663,6 +690,10 @@ namespace AasxPluginPlotting
                 // push for each item
                 foreach (var pi in grp)
                 {
+                    // display at all?
+                    if (true == pi.Args?.skip)
+                        continue;
+
                     // do this NOT for event sources items
                     if (pi.Args != null && pi.Args.src == PlotArguments.Source.Event)
                         continue;
@@ -736,9 +767,12 @@ namespace AasxPluginPlotting
                         val = f;
 
                     // commit
-                    found = true;
-
                     pi.SetValue(val, lang);
+
+                    // need also a plot display?
+                    if (true == pi.Args?.skip)
+                        continue;
+                    found = true;
 
                     if (grp.UseOAaxis)
                         pi.Buffer?.Push(

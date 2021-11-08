@@ -107,5 +107,44 @@ namespace AasxPluginPlotting
             if (true == args?.markersize.HasValue)
                 signal.MarkerSize = (float)args.markersize.Value;
         }
+
+        public static string EvalDisplayText(
+                string minmalText, AdminShell.SubmodelElement sme,
+                AdminShell.ConceptDescription cd = null,
+                bool addMinimalTxt = false,
+                string defaultLang = null,
+                bool useIdShort = true)
+        {
+            var res = "" + minmalText;
+            if (sme != null)
+            {
+                // best option: description of the SME itself
+                string better = sme.description?.GetDefaultStr(defaultLang);
+
+                // if still none, simply use idShort
+                // SME specific non-multi-lang found better than CD multi-lang?!
+                if (!better.HasContent() && useIdShort)
+                    better = sme.idShort;
+
+                // no? then look for CD information
+                if (cd != null)
+                {
+                    if (!better.HasContent())
+                        better = cd.GetDefaultPreferredName(defaultLang);
+                    if (!better.HasContent())
+                        better = cd.idShort;
+                    if (better.HasContent() && true == cd.IEC61360Content?.unit.HasContent())
+                        better += $" [{cd.IEC61360Content?.unit}]";
+                }
+
+                if (better.HasContent())
+                {
+                    res = better;
+                    if (addMinimalTxt)
+                        res += $" ({minmalText})";
+                }
+            }
+            return res;
+        }
     }
 }

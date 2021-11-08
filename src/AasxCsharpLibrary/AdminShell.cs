@@ -6921,7 +6921,7 @@ namespace AdminShellNS
 
             // Parents stuff
 
-            private static void SetParentsForSME(Referable parent, SubmodelElement se)
+            public static void SetParentsForSME(Referable parent, SubmodelElement se)
             {
                 if (se == null)
                     return;

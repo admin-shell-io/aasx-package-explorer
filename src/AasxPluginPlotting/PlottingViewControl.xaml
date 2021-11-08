@@ -97,18 +97,6 @@
                                         <Grid local:GridHelpers.DefaultLength="*" 
                                               local:GridHelpers.RowCount="{Binding Rows}" 
                                               local:GridHelpers.ColumnCount="{Binding Cols}">
-                                            <!--
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="20"/>
-                                                <RowDefinition Height="20"/>
-                                                <RowDefinition Height="20"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60" />
-                                                <ColumnDefinition Width="60" />
-                                                <ColumnDefinition Width="60" />
-                                            </Grid.ColumnDefinitions>
-                                            -->
                                         </Grid>
                                     </ItemsPanelTemplate>
                                 </ItemsControl.ItemsPanel>
@@ -138,7 +126,7 @@
                                                               Foreground="{Binding ValueForeground}"
                                                               Text="{Binding DisplayValue}"/>
                                                     <TextBlock HorizontalAlignment="Left" FontSize="8" VerticalAlignment="Bottom" 
-                                                               Foreground="DarkBlue"
+                                                               Foreground="DarkBlue" Margin="2,1,4,1"
                                                                Text="{Binding DisplayUnit}" />
                                                 </StackPanel>
                                             </Viewbox>

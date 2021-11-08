@@ -29,7 +29,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginPlotting.PlottingOptions options = new AasxPluginPlotting.PlottingOptions();
 
-        private AasxPluginPlotting.PlottingViewControl viewControl;
+        private AasxPluginPlotting.PlottingViewControl _viewControl;
 
         public string GetPluginName()
         {
@@ -141,7 +141,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args.Length < 1 || !(args[0] is AasEventMsgEnvelope ev))
                     return null;
 
-                this.viewControl?.PushEvent(ev);
+                _viewControl?.PushEvent(ev);
             }
 
             // rest follows
@@ -193,7 +193,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // simple delete reference to view control
                 // this shall also stop event notifications!
-                this.viewControl = null;
+                if (_viewControl != null)
+                    _viewControl.Stop();
+                _viewControl = null;
             }
 
             if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)
@@ -209,13 +211,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 sm.SetAllParents();
 
                 // create TOP control
-                this.viewControl = new AasxPluginPlotting.PlottingViewControl();
-                this.viewControl.Start(package, sm, options, eventStack, Log);
-                master.Children.Add(this.viewControl);
+                _viewControl = new AasxPluginPlotting.PlottingViewControl();
+                _viewControl.Start(package, sm, options, eventStack, Log);
+                master.Children.Add(_viewControl);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = this.viewControl;
+                res.obj = _viewControl;
                 return res;
             }
 

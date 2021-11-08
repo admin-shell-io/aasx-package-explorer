@@ -56,6 +56,11 @@ namespace AasxIntegrationBase.AdminShellEvents
             return _stack.Count();
         }
 
+        public void Clear()
+        {
+            _stack.Clear();
+        }
+
         public AasEventMsgEnvelope this[int i]
         {
             get

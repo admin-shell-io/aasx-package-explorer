@@ -19,11 +19,18 @@
           "idType": "IRI"
         },
         {
-          "type": "GlobalReference",
-          "local": false,
-          "value": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/1/0",
-          "index": 0,
-          "idType": "IRI"
+            "type": "GlobalReference",
+            "local": false,
+            "value": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/1/0",
+            "index": 0,
+            "idType": "IRI"
+        },
+        {
+            "type": "Submodel",
+            "local": false,
+            "value": "https://admin-shell.io/sandbox/pi40/CarbonMonitoring/1/0",
+            "index": 0,
+            "idType": "IRI"
         }
       ]
     }
