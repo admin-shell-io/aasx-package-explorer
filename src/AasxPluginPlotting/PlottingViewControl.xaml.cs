@@ -1880,7 +1880,8 @@ namespace AasxPluginPlotting
 
                             // find segment of ValueArr
                             var x = foundValArray.FindAllParentsWithSemanticId(
-                                new AdminShell.SemanticId(pcts.CD_TimeSeriesSegment.GetReference())).FirstOrDefault();
+                                new AdminShell.SemanticId(pcts.CD_TimeSeriesSegment.GetReference()),
+                                passOverMiss: true).FirstOrDefault();
                             if (!(x is AdminShell.SubmodelElementCollection foundSeg))
                                 continue;
 

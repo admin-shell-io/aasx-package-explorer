@@ -5534,7 +5534,8 @@ namespace AdminShellNS
 
             public IEnumerable<Referable> FindAllParents(
                 Predicate<Referable> p,
-                bool includeThis = false, bool includeSubmodel = false)
+                bool includeThis = false, bool includeSubmodel = false,
+                bool passOverMiss = false)
             {
                 // call for this?
                 if (includeThis)
@@ -5542,7 +5543,8 @@ namespace AdminShellNS
                     if (p == null || p.Invoke(this))
                         yield return this;
                     else
-                        yield break;
+                        if (!passOverMiss)
+                            yield break;
                 }
 
                 // daisy chain all parents ..
@@ -5550,7 +5552,8 @@ namespace AdminShellNS
                 {
                     if (this.parent is SubmodelElement psme)
                     {
-                        foreach (var q in psme.FindAllParents(p, includeThis: true))
+                        foreach (var q in psme.FindAllParents(p, includeThis: true, 
+                            passOverMiss: passOverMiss))
                             yield return q;
                     }
                     else if (includeSubmodel && this.parent is Submodel psm)
@@ -5563,12 +5566,12 @@ namespace AdminShellNS
 
             public IEnumerable<Referable> FindAllParentsWithSemanticId(
                 SemanticId semId,
-                bool includeThis = false, bool includeSubmodel = false)
+                bool includeThis = false, bool includeSubmodel = false, bool passOverMiss = false)
             {
                 return (FindAllParents(
                     (rf) => ( true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId, 
                         matchMode: Key.MatchMode.Relaxed)),
-                    includeThis: includeThis, includeSubmodel: includeSubmodel));
+                    includeThis: includeThis, includeSubmodel: includeSubmodel, passOverMiss: passOverMiss));
             }
 
             public Tuple<string, string> ToCaptionInfo()
