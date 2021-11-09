@@ -71,7 +71,7 @@ namespace AasxPluginPlotting
         }
 
         public static void SetPlottableProperties(
-            ScottPlot.Plottable.BarPlot bars, 
+            ScottPlot.Plottable.BarPlot bars,
             PlotArguments args)
         {
         }

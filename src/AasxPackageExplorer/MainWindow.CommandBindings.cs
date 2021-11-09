@@ -486,7 +486,7 @@ namespace AasxPackageExplorer
             if (cmd == "helpoptionsinfo")
             {
                 var st = Options.ReportOptions(Options.ReportOptionsFormat.Markdown, Options.Curr);
-                var dlg = new MessageReportWindow(st, 
+                var dlg = new MessageReportWindow(st,
                     windowTitle: "Report on active and possible options");
                 dlg.ShowDialog();
             }

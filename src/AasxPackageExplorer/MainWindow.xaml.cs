@@ -1396,7 +1396,7 @@ namespace AasxPackageExplorer
             // trivial
             if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
                 return;
-            
+
             // find elements?
             foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.QualifiedAnimation))
             {
@@ -1408,7 +1408,8 @@ namespace AasxPackageExplorer
                 if (rec.LiveObject is AdminShell.Property prop)
                 {
                     _mainTimer_AnimateDemoValues.Animate(prop,
-                        emitEvent: (prop2, evi2) => {
+                        emitEvent: (prop2, evi2) =>
+                        {
                             // Animate the event visually; create a change event for this.
                             // Note: this might by not ideal, final state
                             /* TODO (MIHO, 2021-10-28): Check, if a better solution exists 
@@ -1963,7 +1964,7 @@ namespace AasxPackageExplorer
                 Message.FontWeight = FontWeights.Normal;
                 SetProgressBar();
             }
-            
+
             if (sender == ButtonReport)
             {
                 // report on message / exception

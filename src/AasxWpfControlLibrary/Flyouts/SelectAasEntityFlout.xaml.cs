@@ -121,7 +121,7 @@ namespace AasxPackageExplorer
             {
                 // check if a valuable item was selected
                 // new special case: "GlobalReference" allows to select all (2021-09-11)
-                var skip = DiaData.Filter != null &&  
+                var skip = DiaData.Filter != null &&
                     DiaData.Filter.Trim().ToLower() == AdminShell.Key.GlobalReference.Trim().ToLower();
                 if (!skip)
                 {

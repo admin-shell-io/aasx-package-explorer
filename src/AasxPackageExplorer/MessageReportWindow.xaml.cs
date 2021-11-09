@@ -52,7 +52,7 @@ namespace AasxPackageExplorer
             var uri = link.NavigateUri.ToString();
             Log.Singleton.Info($"Displaying {uri} remotely in external viewer ..");
             System.Diagnostics.Process.Start(uri);
-        }        
+        }
 
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
         {

@@ -272,7 +272,10 @@ namespace AasxPackageExplorer
         public void Refresh()
         {
             preventSelectedItemChanged = true;
-            // _selectedItems = new ListOfVisualElementBasic();
+            // TODO (MIHO, 2021-11-09): check, if clearing selected items on refresh is required
+#if __old_version_of_code
+            _selectedItems = new ListOfVisualElementBasic();
+#endif
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
             preventSelectedItemChanged = false;

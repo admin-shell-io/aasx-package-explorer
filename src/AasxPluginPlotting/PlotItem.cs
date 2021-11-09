@@ -132,17 +132,7 @@ namespace AasxPluginPlotting
         public void SetValue(double? dbl, string lang)
         {
             if (dbl.HasValue && Args?.fmt != null)
-            {
-                //try
-                //{
-                    DisplayValue = "" + dbl.Value.ToString(Args.fmt, CultureInfo.InvariantCulture);
-                //}
-                //catch (Exception ex)
-                //{
-                //    DisplayValue = "<fmt error>";
-                //    LogInternally.That.SilentlyIgnoredError(ex);
-                //}
-            }
+                DisplayValue = "" + dbl.Value.ToString(Args.fmt, CultureInfo.InvariantCulture);
             else
                 DisplayValue = "" + SME.ValueAsText(lang);
         }
@@ -375,7 +365,7 @@ namespace AasxPluginPlotting
                 yield return temp;
         }
 
-        public List<PlotItemGroup> RenderedGroups;               
+        public List<PlotItemGroup> RenderedGroups;
 
         public List<PlotItemGroup> RenderAllGroups(StackPanel panel, double defPlotHeight)
         {
@@ -412,14 +402,13 @@ namespace AasxPluginPlotting
 
                 // some basic attributes
                 lastPlot = wpfPlot;
-                // wpfPlot.Plot.AntiAlias(false, false, false);
                 wpfPlot.AxesChanged += (s, e) => WpfPlot_AxisChanged(wpfPlot, e);
                 wpfPlot.MouseDown += (s2, e2) =>
                 {
                     _userAxisChangeEnabled = true;
                 };
                 wpfPlot.MouseMove += WpfPlot_MouseMove;
-                groupPI.WpfPlot = wpfPlot;                
+                groupPI.WpfPlot = wpfPlot;
 
                 // for all wpf / all signals
                 pvc.Height = defPlotHeight;
@@ -466,7 +455,7 @@ namespace AasxPluginPlotting
                         pb.Push(val.HasValue ? val.Value : 0.0);
                         var signal = wpfPlot.Plot.AddSignal(pb.Ydata, label: label);
                         PlotHelpers.SetPlottableProperties(signal, pi.Args);
-                        pb.Plottable = signal;                        
+                        pb.Plottable = signal;
                         if (signal.FillColor1.HasValue)
                             pi.ValueForeground = PlotHelpers.BrushFrom(signal.FillColor1.Value);
                     }
@@ -557,10 +546,10 @@ namespace AasxPluginPlotting
                     wpfPlot.Plot.SetAxisLimits(xMin: ax.XMin + width / 4, xMax: ax.XMax - width / 4);
 
                 // no autoscale for X
-                ForAllGroupsAndPlot(RenderedGroups, (grp, opvc, pi) => 
-                { 
-                    if (opvc != null) 
-                        opvc.AutoScaleX = false; 
+                ForAllGroupsAndPlot(RenderedGroups, (grp, opvc, pi) =>
+                {
+                    if (opvc != null)
+                        opvc.AutoScaleX = false;
                 });
 
                 // call for the other
@@ -727,7 +716,7 @@ namespace AasxPluginPlotting
 
         public void UpdateMatchingPlotItemsFrom(
             List<PlotItemGroup> groups,
-            Dictionary<PlotItemGroup,int> groupsToUpdate,
+            Dictionary<PlotItemGroup, int> groupsToUpdate,
             AasPayloadUpdateValueItem uvi,
             DateTime timestamp,
             string lang)
@@ -753,7 +742,7 @@ namespace AasxPluginPlotting
 
                     // found a hit?
                     if (pi.SME != uvi.FoundReferable)
-                        continue;                    
+                        continue;
 
                     // use the value which was already set to the SME
                     // then try newer one
@@ -764,7 +753,7 @@ namespace AasxPluginPlotting
                         val = vdbl;
                     if (uvi.Value is string vstr)
                         if (double.TryParse(vstr, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
-                        val = f;
+                            val = f;
 
                     // commit
                     pi.SetValue(val, lang);

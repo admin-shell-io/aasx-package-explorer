@@ -10,16 +10,16 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
-using AasxIntegrationBase;
-using System.Globalization;
-using AasxIntegrationBase.AdminShellEvents;
 
 namespace AasxPackageLogic
 {
@@ -62,7 +62,7 @@ namespace AasxPackageLogic
             public double Phase;
         }
 
-        protected Dictionary<AdminShell.Referable, AnimateState> _states = 
+        protected Dictionary<AdminShell.Referable, AnimateState> _states =
             new Dictionary<AdminShell.Referable, AnimateState>();
 
         public void Clear()
@@ -180,7 +180,7 @@ namespace AasxPackageLogic
             }
         }
 
-        
-        
+
+
     }
 }

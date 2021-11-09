@@ -529,7 +529,8 @@ namespace AasxPackageLogic
             gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc1);
 
-            var isContextMenu = repo != null && contextMenuText != null && menuHeaders != null && menuItemLambda != null;
+            var isContextMenu = repo != null && contextMenuText != null
+                && menuHeaders != null && menuItemLambda != null;
             if (isContextMenu)
             {
                 var gc3 = new AnyUiColumnDefinition();
@@ -1967,7 +1968,9 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of references
                 AddAction(
-                    stack, "Qualifier entities:", new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" }, repo,
+                    stack, "Qualifier entities:",
+                    new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
+                    repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
@@ -2026,23 +2029,11 @@ namespace AasxPackageLogic
                 var qual = qualifiers[i];
                 var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
-                /*
-                AddGroup(
-                    substack, $"Qualifier {1 + i}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
-                    auxButtonTitle: "Delete",
-                    auxButtonLambda: (o) =>
-                    {
-                        qualifiers.Remove(qual);
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    });
-                */
                 int storedI = i;
                 AddGroup(
                     substack, $"Qualifier {1 + i}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
-                    contextMenuText: "\u22ee",                    
+                    contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",
                         "\u25b2", "Move Up",
@@ -2085,7 +2076,7 @@ namespace AasxPackageLogic
                                         action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
                                         if (action)
                                             Log.Singleton.Info("Qualifier taken from clipboard.");
-                                    } 
+                                    }
                                     catch (Exception ex)
                                     {
                                         Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");

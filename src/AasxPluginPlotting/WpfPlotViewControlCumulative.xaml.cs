@@ -44,10 +44,10 @@ namespace AasxPluginPlotting
             get { return _plottable; }
         }
 
-        public bool AutoScaleX { get => false; set { ; } }
-        public bool AutoScaleY { get => false; set { ; } }
+        public bool AutoScaleX { get => false; set {; } }
+        public bool AutoScaleY { get => false; set {; } }
 
-        protected int _latestSamplePosition = 0;        
+        protected int _latestSamplePosition = 0;
         public int LatestSamplePosition
         {
             get { return _latestSamplePosition; }
@@ -56,7 +56,7 @@ namespace AasxPluginPlotting
                 _latestSamplePosition = value;
                 TextBoxSamplePos.Text = "" + _latestSamplePosition;
             }
-        }        
+        }
 
         public WpfPlotViewControlCumulative()
         {
@@ -68,7 +68,7 @@ namespace AasxPluginPlotting
             var isPie = _plottable is ScottPlot.Plottable.PiePlot;
             var isBar = _plottable is ScottPlot.Plottable.BarPlot;
 
-            ButtonLabels.Visibility =  isPie ? Visibility.Visible : Visibility.Collapsed;
+            ButtonLabels.Visibility = isPie ? Visibility.Visible : Visibility.Collapsed;
             ButtonValues.Visibility = (isPie || isBar) ? Visibility.Visible : Visibility.Collapsed;
             ButtonPercentage.Visibility = isPie ? Visibility.Visible : Visibility.Collapsed;
         }

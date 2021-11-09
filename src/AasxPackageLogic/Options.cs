@@ -88,7 +88,7 @@ namespace AasxPackageLogic
             return st;
         }
 
-        public static string ReportOptions(ReportOptionsFormat fmt, 
+        public static string ReportOptions(ReportOptionsFormat fmt,
             OptionsInformation options = null)
         {
             var sb = new StringBuilder();
@@ -101,7 +101,7 @@ namespace AasxPackageLogic
             {
                 sb.AppendLine($"| {"JSON option",-35} | {"Command line",-20} " +
                                     $"| {"Argument",-20} | Description |");
-                sb.AppendLine($"|-{new String('-',35)}-|-{new String('-', 20)}-" +
+                sb.AppendLine($"|-{new String('-', 35)}-|-{new String('-', 20)}-" +
                     $"|-{new String('-', 20)}-|-------------|");
             };
 
@@ -205,7 +205,7 @@ namespace AasxPackageLogic
     public class OptionsInformation
     {
 
-        [OptionDescription(Description="This file shall be loaded at start of application")]
+        [OptionDescription(Description = "This file shall be loaded at start of application")]
         [SettableOption]
         public string AasxToLoad = null;
 
@@ -263,7 +263,7 @@ namespace AasxPackageLogic
             Cmd = "-eclass", Arg = "<path>")]
         public string EclassDir = null;
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "Path to the directory with the default sources for the Dictionary Import " +
             "feature (see AasxDictionaryImport).  If this option is not set, the current working directory " +
             "is used.",
@@ -352,29 +352,29 @@ namespace AasxPackageLogic
             return AnyUiColors.Black;
         }
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "Contains a list of remarks. Intended use: disabling lines of preferences.",
             Cmd = "-rem")]
         public List<string> Remarks = new List<string>();
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "If not null points to the dir, where plugins are (recursively) searched",
             Cmd = "-plugin-dir")]
         public string PluginDir = null;
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "For such operations as query repository, do load a new AASX file without " +
             "prompting the user.",
             Cmd = "-load-without-prompt")]
         public bool LoadWithoutPrompt = false;
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "When activated, the UI will check if identifications and other texts are " +
             "starting with schemes like http:// and will render IRIs for them",
             Cmd = "-show-id-as-iri")]
         public bool ShowIdAsIri = false;
 
-        [OptionDescription(Description = 
+        [OptionDescription(Description =
             "When activated, the UI will show verbose information on (secure) connect procedures. " +
             "When de-activated, default answers to questions within these procedures will be given",
             Cmd = "-verbose-connect")]
@@ -392,7 +392,8 @@ namespace AasxPackageLogic
             "emited by the editor. AAS events are emited, when \"take over\" or load/ save is activiated.")]
         public bool ObserveEvents = false;
 
-        [OptionDescription(Description = "When activated, the UI will compress events, which are emited by the editor. ")]
+        [OptionDescription(Description = "When activated, the UI will compress events, which are emited by " +
+            "the editor. ")]
         public bool CompressEvents = false;
 
         [OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +

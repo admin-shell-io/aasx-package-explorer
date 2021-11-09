@@ -36,9 +36,10 @@ namespace AasxPluginPlotting
 
         public string Text { get { return TextboxInfo.Text; } set { TextboxInfo.Text = value; } }
 
-        public bool AutoScaleX { 
+        public bool AutoScaleX
+        {
             get => true == ButtonScaleX.IsChecked;
-            set => ButtonScaleX.IsChecked = value; 
+            set => ButtonScaleX.IsChecked = value;
         }
 
         public bool AutoScaleY

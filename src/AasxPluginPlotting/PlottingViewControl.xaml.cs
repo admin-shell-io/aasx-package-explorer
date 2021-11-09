@@ -34,7 +34,7 @@ using ScottPlot;
 namespace AasxPluginPlotting
 {
     public partial class PlottingViewControl : UserControl
-    {                   
+    {
         protected ListOfPlotItem _plotItems = new ListOfPlotItem();
 
         public PlottingViewControl()
@@ -126,7 +126,7 @@ namespace AasxPluginPlotting
         {
             // formalize
             var tuples = new[]
-            { 
+            {
                 new Tuple<StackPanel, string>(PanelAnnoTop, "top"),
                 new Tuple<StackPanel, string>(PanelAnnoCharts, "charts"),
                 new Tuple<StackPanel, string>(PanelAnnoMiddle, "middle"),
@@ -172,7 +172,7 @@ namespace AasxPluginPlotting
 
             // try display plot items
             try
-            { 
+            {
                 _plotItems.RebuildFromSubmodel(_package, _submodel, _defaultLang);
                 _plotItems.RenderedGroups = _plotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
                 ReDisplayPlotItemListTiles();
@@ -199,11 +199,11 @@ namespace AasxPluginPlotting
                 if (_plotItems != null)
                 {
                     try
-                    { 
+                    {
                         _plotItems.UpdateValues();
                         _plotItems.UpdateAllRenderedPlotItems(_plotItems.RenderedGroups);
                         ProcessEvents();
-                    }                    
+                    }
                     catch (Exception ex)
                     {
                         _log?.Error(ex, "AasxPluginPlotting:TimerTick() processing updates");
@@ -218,14 +218,11 @@ namespace AasxPluginPlotting
             _dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, mainTimerMS);
             _dispatcherTimer.Start();
 
-            // test
-            // var ts1 = new TimeSeriesRecordData();
-            // ts1.DataAdd("[0,0.1], [ 1, 0.23334 ] , [3,0.3]");
-
             try
             {
                 TimeSeriesStartFromSubmodel(_submodel);
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _log?.Error(ex, "accessing Submodel elements for creating timer series data");
             }
@@ -348,7 +345,8 @@ namespace AasxPluginPlotting
         private void ComboBoxLang_TextChanged(object sender, TextChangedEventArgs e)
         {
             _defaultLang = ComboBoxLang.Text;
-            try { 
+            try
+            {
                 _plotItems.RebuildFromSubmodel(_package, _submodel, _defaultLang);
                 _plotItems.RenderedGroups = _plotItems.RenderAllGroups(StackPanelCharts, defPlotHeight: 200);
                 ReDisplayPlotItemListTiles();
@@ -378,7 +376,7 @@ namespace AasxPluginPlotting
         {
             public double Min;
             public double Max;
-            public bool IsValid { get { return Min != double.MaxValue && Max != double.MinValue;  } }
+            public bool IsValid { get { return Min != double.MaxValue && Max != double.MinValue; } }
             public double Span { get { return Max - Min; } }
             public static TimeSeriesMinMaxDouble Invalid =>
                 new TimeSeriesMinMaxDouble() { Min = double.MaxValue, Max = double.MinValue };
@@ -429,20 +427,21 @@ namespace AasxPluginPlotting
                 var bufIndex = "";
                 var bufValue = "";
 
-                while (! err && i < json.Length)
+                while (!err && i < json.Length)
                 {
 
                     switch (state)
                     {
                         // expecting inner '['
-                        case 0:                            
+                        case 0:
                             if (json[i] == '[')
                             {
                                 // prepare first buffer
                                 state = 1;
                                 bufIndex = "";
                                 i++;
-                            } else
+                            }
+                            else
                             if (json[i] == ',' || Char.IsWhiteSpace(json[i]))
                             {
                                 // ignore whitespace
@@ -465,11 +464,12 @@ namespace AasxPluginPlotting
                                 i++;
                             }
                             else
-                            if("0123456789-+.TZ\"".IndexOf(json[i]) >= 0)
+                            if ("0123456789-+.TZ\"".IndexOf(json[i]) >= 0)
                             {
                                 bufIndex += json[i];
                                 i++;
-                            } else
+                            }
+                            else
                             if (Char.IsWhiteSpace(json[i]))
                             {
                                 // ignore whitespace
@@ -562,7 +562,7 @@ namespace AasxPluginPlotting
             public TimeSeriesMinMaxInt DsLimits = TimeSeriesMinMaxInt.Invalid;
             public TimeSeriesMinMaxDouble ValueLimits = TimeSeriesMinMaxDouble.Invalid;
 
-            protected TimeSeriesMinMaxInt _dataLimits;         
+            protected TimeSeriesMinMaxInt _dataLimits;
             protected double[] data = new[] { 0.0 };
             public double[] Data { get { return data; } }
 
@@ -785,7 +785,7 @@ namespace AasxPluginPlotting
                 }
 
                 return res;
-            }            
+            }
         }
 
         public class TimeSeriesData
@@ -797,7 +797,7 @@ namespace AasxPluginPlotting
             public ListOfTimeSeriesDataSet DataSet = new ListOfTimeSeriesDataSet();
 
             // the time series might have different time axis for the records (not the variables)
-            public Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet> TimeDsLookup = 
+            public Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet> TimeDsLookup =
                 new Dictionary<TimeSeriesTimeAxis, TimeSeriesDataSet>();
 
             public IWpfPlotViewControl UsedPlot;
@@ -814,7 +814,7 @@ namespace AasxPluginPlotting
 
             public TimeSeriesDataSet FindDataForTimeAxis(bool findUtc = false, bool findTai = false)
             {
-                foreach (var tsd in DataSet) 
+                foreach (var tsd in DataSet)
                 {
                     if (tsd == null)
                         continue;
@@ -838,7 +838,7 @@ namespace AasxPluginPlotting
                     if (tsd?.SourceTimeSeries == smcts)
                         return tsd;
                 return null;
-            }            
+            }
 
             public class CumulativeDataItems
             {
@@ -932,7 +932,8 @@ namespace AasxPluginPlotting
                         // start new group
                         var pvc = new WpfPlotViewControlCumulative();
                         tsd.UsedPlot = pvc;
-                        pvc.Text = PlotHelpers.EvalDisplayText("Cumulative plot", tsd.SourceTimeSeries, defaultLang: defaultLang);
+                        pvc.Text = PlotHelpers.EvalDisplayText("Cumulative plot",
+                            tsd.SourceTimeSeries, defaultLang: defaultLang);
                         var wpfPlot = pvc.WpfPlot;
                         if (wpfPlot == null)
                             continue;
@@ -949,7 +950,7 @@ namespace AasxPluginPlotting
                         pvc.ActivePlottable = plottable;
 
                         // render the plottable into panel
-                        panel.Children.Add(pvc);                        
+                        panel.Children.Add(pvc);
                         wpfPlot.Render(/* skipIfCurrentlyRendering: true */);
                         res.Add(pvc);
                     }
@@ -964,7 +965,8 @@ namespace AasxPluginPlotting
                         // start new group
                         var pvc = new WpfPlotViewControlHorizontal();
                         tsd.UsedPlot = pvc;
-                        pvc.Text = PlotHelpers.EvalDisplayText("Time Series plot", tsd.SourceTimeSeries, defaultLang: defaultLang);
+                        pvc.Text = PlotHelpers.EvalDisplayText("Time Series plot",
+                            tsd.SourceTimeSeries, defaultLang: defaultLang);
                         pvc.AutoScaleX = true;
                         pvc.AutoScaleY = true;
                         var wpfPlot = pvc.WpfPlot;
@@ -1018,7 +1020,8 @@ namespace AasxPluginPlotting
                             var rld = tsds.GetRenderLimits();
                             if (rlt == null || rld == null || rlt.Min != rld.Min || rlt.Max != rld.Max)
                             {
-                                log?.Error($"When rendering data set {tsds.DataSetId} different dimensions for X and Y.");
+                                log?.Error($"When rendering data set {tsds.DataSetId} different " +
+                                    $"dimensions for X and Y.");
                                 continue;
                             }
 
@@ -1033,7 +1036,6 @@ namespace AasxPluginPlotting
                             }
 
                             // factory new Plottable
-                            // pb.Plottable = wpfPlot.plt.PlotSignal(pb.BufferData, label: "" + pi.DisplayPath);
 
                             ScottPlot.Plottable.BarPlot bars = null;
                             ScottPlot.Plottable.ScatterPlot scatter = null;
@@ -1051,7 +1053,7 @@ namespace AasxPluginPlotting
                                 if (timeDStoUse.Data.Length >= 2)
                                 {
                                     // Note: pretty trivial approach, yet
-                                    var timeDelta = (timeDStoUse.Data[1] - timeDStoUse.Data[0]) ;
+                                    var timeDelta = (timeDStoUse.Data[1] - timeDStoUse.Data[0]);
                                     var bw = timeDelta * .8;
 
                                     // apply bar width?
@@ -1073,7 +1075,8 @@ namespace AasxPluginPlotting
                                     tsds.RenderedBarOffet = bo;
                                 }
 
-                                bars.Label = PlotHelpers.EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                bars.Label = PlotHelpers.EvalDisplayText("" + tsds.DataSetId,
+                                    tsds.DataPoint, tsds.DataPointCD,
                                     addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
 
                                 tsds.Plottable = bars;
@@ -1084,7 +1087,8 @@ namespace AasxPluginPlotting
                                 scatter = wpfPlot.Plot.AddScatter(
                                     xs: timeDStoUse.Data,
                                     ys: tsds.Data,
-                                    label: PlotHelpers.EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                    label: PlotHelpers.EvalDisplayText("" + tsds.DataSetId,
+                                        tsds.DataPoint, tsds.DataPointCD,
                                         addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
 
                                 PlotHelpers.SetPlottableProperties(scatter, tsds.Args);
@@ -1134,7 +1138,7 @@ namespace AasxPluginPlotting
                         }
 
                         // now sort for order
-                        moveOrder.Sort((mo1, mo2) => Nullable.Compare(mo1.Item2,mo2.Item2));
+                        moveOrder.Sort((mo1, mo2) => Nullable.Compare(mo1.Item2, mo2.Item2));
                         foreach (var mo in moveOrder)
                             if (mo?.Item1?.Plottable != null)
                                 wpfPlot.Plot.MoveLast(mo.Item1.Plottable);
@@ -1222,7 +1226,8 @@ namespace AasxPluginPlotting
                     // general plot data
                     if (tsd.UsedPlot is IWpfPlotViewControl ipvc)
                     {
-                        ipvc.Text = PlotHelpers.EvalDisplayText("Time Series plot", tsd.SourceTimeSeries, defaultLang: defaultLang);
+                        ipvc.Text = PlotHelpers.EvalDisplayText("Time Series plot",
+                            tsd.SourceTimeSeries, defaultLang: defaultLang);
                     }
 
                     // which kind of chart?
@@ -1287,7 +1292,8 @@ namespace AasxPluginPlotting
                             var rld = tsds.GetRenderLimits();
                             if (rlt == null || rld == null || rlt.Min != rld.Min || rlt.Max != rld.Max)
                             {
-                                log?.Error($"When rendering data set {tsds.DataSetId} different dimensions for X and Y.");
+                                log?.Error($"When rendering data set {tsds.DataSetId} different " +
+                                    $"dimensions for X and Y.");
                                 continue;
                             }
 
@@ -1324,7 +1330,8 @@ namespace AasxPluginPlotting
                                 if (tsds.RenderedBarOffet.HasValue)
                                     bars.PositionOffset = tsds.RenderedBarOffet.Value;
 
-                                bars.Label = PlotHelpers.EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                bars.Label = PlotHelpers.EvalDisplayText("" + tsds.DataSetId,
+                                    tsds.DataPoint, tsds.DataPointCD,
                                     addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false);
 
                                 // eval latest X for later setting
@@ -1352,7 +1359,8 @@ namespace AasxPluginPlotting
                                 scatter = tsd.UsedPlot.WpfPlot.Plot.AddScatter(
                                     xs: tsds.AssignedTimeDS.RenderDataToLimits(),
                                     ys: tsds.RenderDataToLimits(),
-                                    label: PlotHelpers.EvalDisplayText("" + tsds.DataSetId, tsds.DataPoint, tsds.DataPointCD,
+                                    label: PlotHelpers.EvalDisplayText("" + tsds.DataSetId,
+                                        tsds.DataPoint, tsds.DataPointCD,
                                         addMinimalTxt: true, defaultLang: defaultLang, useIdShort: false));
 
                                 // tedious re-assign of style
@@ -1386,7 +1394,7 @@ namespace AasxPluginPlotting
                                 if (latestX > maxRenderX)
                                     maxRenderX = latestX;
 
-                                if (tsd.UsedPlot.AutoScaleY 
+                                if (tsd.UsedPlot.AutoScaleY
                                     && tsds.ValueLimits.Min != double.MaxValue
                                     && tsds.ValueLimits.Max != double.MinValue)
                                 {
@@ -1412,7 +1420,7 @@ namespace AasxPluginPlotting
                             if (XMaxNew > ax.XMax)
                                 tsd.UsedPlot.WpfPlot.Plot.SetAxisLimitsX(XMinNew, XMaxNew);
                         }
-                        
+
                         // render the plot into panel
                         tsd.UsedPlot.WpfPlot.Render();
                     }
@@ -1448,7 +1456,7 @@ namespace AasxPluginPlotting
             return null;
         }
 
-        protected Tuple<TimeSeriesTimeAxis, AdminShell.Property> 
+        protected Tuple<TimeSeriesTimeAxis, AdminShell.Property>
             DetectTimeSpecifier(
                 ZveiTimeSeriesDataV10 pcts,
                 AdminShell.Key.MatchMode mm,
@@ -1697,7 +1705,7 @@ namespace AasxPluginPlotting
             var mm = AdminShell.Key.MatchMode.Relaxed;
 
             // clear
-            _timeSeriesData.Clear();            
+            _timeSeriesData.Clear();
 
             // find SMC for TimeSeries itself -> this will result in a plot
             foreach (var smcts in sm.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
@@ -1719,7 +1727,7 @@ namespace AasxPluginPlotting
             }
 
             ;
-        }        
+        }
 
         public void SafelyRefreshRenderedTimeSeries()
         {
@@ -1766,7 +1774,7 @@ namespace AasxPluginPlotting
                 _lastEventTimeProcessed = ev.Timestamp;
             }
 #endif
-                                 
+
             //
             // Single value updates of plot items
             // Go over all plot groups/ items and search for appropriate events
@@ -1792,11 +1800,12 @@ namespace AasxPluginPlotting
                             if (uvi.Item2.FoundReferable == pi.SME)
                             {
                                 // get a value
-                                var val = pi.SME?.ValueAsDouble();                                
+                                var val = pi.SME?.ValueAsDouble();
                                 if (uvi.Item2.Value is double vdbl)
                                     val = vdbl;
                                 if (uvi.Item2.Value is string vstr)
-                                    if (double.TryParse(vstr, NumberStyles.Float, CultureInfo.InvariantCulture, out var f))
+                                    if (double.TryParse(vstr, NumberStyles.Float,
+                                        CultureInfo.InvariantCulture, out var f))
                                         val = f;
                                 if (!val.HasValue)
                                     continue;
@@ -1872,12 +1881,6 @@ namespace AasxPluginPlotting
                                 || (true != foundValArray.semanticId?.Matches(pcts.CD_ValueArray.GetReference(), mm)))
                                 continue;
 
-                            //// find variable of ValueArr
-                            //var x = foundValArray.FindAllParentsWithSemanticId(
-                            //    new AdminShell.SemanticId(pcts.CD_TimeSeriesVariable.GetReference())).FirstOrDefault();
-                            //if (!(x is AdminShell.SubmodelElementCollection foundVar))
-                            //    continue;
-
                             // find segment of ValueArr
                             var x = foundValArray.FindAllParentsWithSemanticId(
                                 new AdminShell.SemanticId(pcts.CD_TimeSeriesSegment.GetReference()),
@@ -1924,13 +1927,13 @@ namespace AasxPluginPlotting
                             // remember
                             if (!segmentsToProcess.ContainsKey(smcseg))
                                 segmentsToProcess.Add(smcseg, _segmentProcessType.InspectAdd);
-                        }                
+                        }
             }
 
             //
             // now check the newly discovered sigmentsd
             //
-            
+
             foreach (var smcseg in segmentsToProcess.Keys)
             {
                 // access
@@ -1950,7 +1953,7 @@ namespace AasxPluginPlotting
 
                 if (tsd == null)
                 {
-                    // TODO
+                    // TODO (MIHO, 2021-11-09): AasxPlugPlotting dies not allow all options
                     return;
                     throw new NotImplementedException("AasxPlugPlotting::PushEvent() does not allow new time series");
                 }

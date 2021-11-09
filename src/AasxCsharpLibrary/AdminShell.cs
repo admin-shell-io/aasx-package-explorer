@@ -5310,7 +5310,7 @@ namespace AdminShellNS
             }
 
             public static Qualifier HasQualifierOfType(
-                QualifierCollection qualifiers, 
+                QualifierCollection qualifiers,
                 string qualifierType)
             {
                 if (qualifiers == null || qualifierType == null)
@@ -5544,7 +5544,7 @@ namespace AdminShellNS
                         yield return this;
                     else
                         if (!passOverMiss)
-                            yield break;
+                        yield break;
                 }
 
                 // daisy chain all parents ..
@@ -5552,7 +5552,7 @@ namespace AdminShellNS
                 {
                     if (this.parent is SubmodelElement psme)
                     {
-                        foreach (var q in psme.FindAllParents(p, includeThis: true, 
+                        foreach (var q in psme.FindAllParents(p, includeThis: true,
                             passOverMiss: passOverMiss))
                             yield return q;
                     }
@@ -5569,7 +5569,7 @@ namespace AdminShellNS
                 bool includeThis = false, bool includeSubmodel = false, bool passOverMiss = false)
             {
                 return (FindAllParents(
-                    (rf) => ( true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId, 
+                    (rf) => (true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId,
                         matchMode: Key.MatchMode.Relaxed)),
                     includeThis: includeThis, includeSubmodel: includeSubmodel, passOverMiss: passOverMiss));
             }
@@ -6141,7 +6141,7 @@ namespace AdminShellNS
                     yield break;
 
                 foreach (var smw in this)
-                { 
+                {
                     if (smw.submodelElement == null || !(smw.submodelElement is T))
                         continue;
 
@@ -6151,7 +6151,7 @@ namespace AdminShellNS
                             yield return smw.submodelElement as T;
                         continue;
                     }
-                    
+
                     var found = false;
                     foreach (var semId in allowedSemId)
                         if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
