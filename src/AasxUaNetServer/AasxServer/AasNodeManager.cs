@@ -189,8 +189,8 @@ namespace AasOpcUaServer
                     {
                         // Bad hack, apoligizes
                         var ni = new NodeId(
-                            value: (object)rootItem.NodeId.Identifier,
-                            namespaceIndex: (ushort)(((ushort)rootItem.NodeId.NamespaceIndex) - (ushort)1));
+                            value: rootItem.NodeId.Identifier,
+                            namespaceIndex: (ushort)((rootItem.NodeId.NamespaceIndex) - 1));
                         rootItemSt = ni.Format();
                     }
 
