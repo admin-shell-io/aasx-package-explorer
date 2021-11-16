@@ -66,6 +66,7 @@
     "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
   ],
   "PluginDll": [
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -104,7 +105,7 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
       "Args": []
-    },
+    }, */
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
       "Args": []
