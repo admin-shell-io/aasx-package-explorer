@@ -1152,7 +1152,7 @@ namespace AasOpcUaServer
                     : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(),
                 null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            
+
             this.entityBuilder.CreateAddPropertyState<string>(
                 this.typeObject, CreateMode.Type, "Value",
                  (true == this.entityBuilder?.theServerOptions?.SimpleDataTypes)
@@ -1160,7 +1160,7 @@ namespace AasOpcUaServer
                     : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(),
                 null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            
+
             this.entityBuilder.AasTypes.FileType.CreateAddElements(this.typeObject, CreateMode.Type);
         }
 
@@ -1180,15 +1180,15 @@ namespace AasOpcUaServer
             // own attributes
             this.entityBuilder.CreateAddPropertyState<string>(
                 o, CreateMode.Instance, "MimeType",
-                (this.entityBuilder.theServerOptions?.SimpleDataTypes == true) 
+                (this.entityBuilder.theServerOptions?.SimpleDataTypes == true)
                     ? DataTypeIds.String
-                    : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(), 
+                    : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(),
                 file.mimeType, defaultSettings: true);
             this.entityBuilder.CreateAddPropertyState<string>(
                 o, CreateMode.Instance, "Value",
                 (true == this.entityBuilder?.theServerOptions?.SimpleDataTypes)
                     ? DataTypeIds.String
-                    : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(), 
+                    : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(),
                 file.value, defaultSettings: true);
 
             // wonderful working

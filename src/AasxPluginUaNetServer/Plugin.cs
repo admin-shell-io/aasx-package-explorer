@@ -152,9 +152,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                             this.server.Stop();
                         break;
                     }
-                    //// MICHA TODO : Temporary disabled
-                    //// if (false && this.server != null && this.server.IsNotRunningAnymore())
+
+                    // MICHA TODO : Temporary disabled
+                    // seems not to work anymore
+                    ////if (this.server != null && this.server.IsNotRunningAnymore())
                     ////    break;
+
+                    // new option
+                    if (true == this.server?.FinallyStopped)
+                        break;
+
                     System.Threading.Thread.Sleep(50);
                     if (i % 200 == 0)
                         logger.Info("Heartbeat {0} x 50ms ..", i);

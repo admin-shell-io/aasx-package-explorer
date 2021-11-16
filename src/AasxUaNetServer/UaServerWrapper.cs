@@ -72,6 +72,7 @@ namespace AasxUaNetServer
         static ExitCode exitCode;
         static AdminShellPackageEnv aasxEnv = null;
         static AasxUaServerOptions aasxServerOptions = null;
+        public bool FinallyStopped = false;
 
         public UaServerWrapper(
             bool _autoAccept, int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null,
@@ -101,6 +102,8 @@ namespace AasxUaNetServer
                 Log.Error(ex, "starting server");
                 Console.WriteLine("Exception: {0}", ex.Message);
                 exitCode = ExitCode.ErrorServerException;
+                Stop();
+                FinallyStopped = true;
                 return;
             }
 
@@ -122,6 +125,8 @@ namespace AasxUaNetServer
                     // Stop server and dispose
                     if (_server != null)
                         _server.Stop();
+
+                    FinallyStopped = true;
 
                     Log.Info("End of Server stopping!");
                 }
@@ -189,7 +194,7 @@ namespace AasxUaNetServer
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information 
+            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information
                 | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
 
             // attach tracing?
@@ -200,7 +205,9 @@ namespace AasxUaNetServer
                     // bad hack
                     if (args == null)
                         return;
-                    if (args.TraceMask == 2 || args.TraceMask == 8 || args.TraceMask == 16)
+                    if (args.TraceMask == Utils.TraceMasks.Information
+                        || args.TraceMask == Utils.TraceMasks.Service
+                        || args.TraceMask == Utils.TraceMasks.ServiceDetail)
                         return;
 
                     var st = String.Format(args.Format,
@@ -208,11 +215,17 @@ namespace AasxUaNetServer
                         // ReSharper disable once RedundantExplicitArrayCreation
                         (args.Arguments != null ? args.Arguments : new string[] { "" }));
 
+                    // supports specially knows errors
+                    if (true == args.Exception?.InnerException?.Message?.Contains("libuv"))
+                        return;
+
+                    // suppress more errors
                     if (st.Contains("Mindestens ein") || st.Contains("At least"))
-                        ;
+                        return;
 
                     this.Log.Info("[{0}] {1} {2} {3} {4}",
-                        args.TraceMask, st, args.Message, args.Exception?.Message ?? "-", args.Exception?.StackTrace);
+                        args.TraceMask, st, args.Message, "" + args.Exception?.Message,
+                        "" + args.Exception?.StackTrace);
                 }
             };
 

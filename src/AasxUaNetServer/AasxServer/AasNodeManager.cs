@@ -28,10 +28,10 @@
  * ======================================================================*/
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using AdminShellNS;
 using Opc.Ua;
@@ -139,19 +139,25 @@ namespace AasOpcUaServer
             //// l.AddRange(NamespaceUris);
             //// nodeSet.NamespaceUris = l.ToArray();
 
-            Utils.Trace("Exporting {0} nodes ..", nsc.Count);
+            Utils.Trace(Utils.TraceMasks.Operation, "Exporting {0} nodes ..", nsc.Count);
+            int i = 0;
             foreach (var n in nsc)
             {
                 nodeSet.Export(context, n);
+                if ((i++) % 500 == 0)
+                    Utils.Trace(Utils.TraceMasks.Operation, "  .. exported already {0} nodes ..", nodeSet.Items.Length);
             }
 
             if (filterSingleNodeIds)
             {
-                Utils.Trace("Filtering single node ids..");
+                Utils.Trace(Utils.TraceMasks.Operation, "Filtering single node ids..");
 
                 // MIHO: There might be DOUBLE nodeIds in the the set!!!!!!!!!! WTF!!!!!!!!!!!!!
                 // Brutally eliminate them
                 var nodup = new List<Opc.Ua.Export.UANode>();
+
+#if __old_implementation
+
                 foreach (var it in nodeSet.Items)
                 {
                     var found = false;
@@ -162,18 +168,29 @@ namespace AasOpcUaServer
                         continue;
                     nodup.Add(it);
                 }
+#else
+                var visitedNodeIds = new Dictionary<string, int>();
+
+                foreach (var it in nodeSet.Items)
+                {
+                    if (visitedNodeIds.ContainsKey(it.NodeId))
+                        continue;
+                    visitedNodeIds.Add(it.NodeId, 1);
+                    nodup.Add(it);
+                }
+#endif
 
                 if (addRootItem)
                 {
-                    Utils.Trace("Adding root item..");
+                    Utils.Trace(Utils.TraceMasks.Operation, "Adding root item..");
 
                     var rootItemSt = "ns=2;i=95"; // weird default
                     if (rootItem != null)
                     {
                         // Bad hack, apoligizes
                         var ni = new NodeId(
-                            value: (object) rootItem.NodeId.Identifier, 
-                            namespaceIndex: (ushort)(((ushort) rootItem.NodeId.NamespaceIndex) - (ushort) 1));
+                            value: (object)rootItem.NodeId.Identifier,
+                            namespaceIndex: (ushort)(((ushort)rootItem.NodeId.NamespaceIndex) - (ushort)1));
                         rootItemSt = ni.Format();
                     }
 
@@ -202,11 +219,12 @@ namespace AasOpcUaServer
                 nodeSet.Items = nodup.ToArray();
             }
 
-            Utils.Trace("Writing stream ..");
+            Utils.Trace(Utils.TraceMasks.Operation, "Writing stream ..");
             nodeSet.Write(stream);
         }
 
-        public void SaveNodestateCollectionAsNodeSet2tryout(ISystemContext context, NodeStateCollection nsc, Stream stream,
+        public void SaveNodestateCollectionAsNodeSet2tryout(
+            ISystemContext context, NodeStateCollection nsc, Stream stream,
             bool filterSingleNodeIds)
         {
             while (nsc.Count > 2)
@@ -248,7 +266,7 @@ namespace AasOpcUaServer
 
                     // Root of whole structure is special, needs to link to external reference
                     builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, null, "AASROOT");
-                    
+
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
                         builder.RootAAS.NodeId, externalReferences);
@@ -324,16 +342,18 @@ namespace AasOpcUaServer
                             foreach (var y in this.PredefinedNodes)
                             {
                                 var node = y.Value;
-                                /*
+
                                 if (theServerOptions.ExportFilterNamespaceIndex != null
-                                    && !theServerOptions.ExportFilterNamespaceIndex.Contains(node.NodeId.NamespaceIndex))
+                                    && !theServerOptions.ExportFilterNamespaceIndex.Contains(
+                                        node.NodeId.NamespaceIndex))
                                     continue;
-                                */
+
                                 nodesToExport.Add(node);
                             }
 
                             // export
-                            Utils.Trace("Writing export file: " + theServerOptions.ExportFilename);
+                            Utils.Trace(Utils.TraceMasks.Operation,
+                                "Writing export file: " + theServerOptions.ExportFilename);
                             var stream = new StreamWriter(theServerOptions.ExportFilename);
 
                             //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
@@ -341,7 +361,8 @@ namespace AasOpcUaServer
 
                             //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
                             SaveNodestateCollectionAsNodeSet2(this.SystemContext, nodesToExport, stream.BaseStream,
-                                filterSingleNodeIds: theServerOptions != null && theServerOptions.FilterForSingleNodeIds,
+                                filterSingleNodeIds: theServerOptions != null
+                                    && theServerOptions.FilterForSingleNodeIds,
                                 addRootItem: theServerOptions != null && theServerOptions.AddRootItem,
                                 builder.RootAAS);
 
@@ -354,12 +375,14 @@ namespace AasOpcUaServer
                                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                             }
 
-                            Utils.Trace("Export file written!");
+                            Utils.Trace(Utils.TraceMasks.Operation,
+                                "Export file *** completely written! ***");
 
                             // stop afterwards
                             if (theServerOptions.FinalizeAction != null)
                             {
-                                Utils.Trace("Requesting to shut down application..");
+                                Utils.Trace(Utils.TraceMasks.Operation,
+                                    "Requesting to shut down application..");
                                 theServerOptions.FinalizeAction();
                             }
 
@@ -372,11 +395,11 @@ namespace AasOpcUaServer
                         // shutdown ..
 
                     }
-
                 }
 
                 Debug.WriteLine("Done creating custom address space!");
-                Utils.Trace("Done creating custom address space!");
+                Utils.Trace(Utils.TraceMasks.Operation,
+                    "Done creating custom address space!");
             }
         }
 
