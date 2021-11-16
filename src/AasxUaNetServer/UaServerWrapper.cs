@@ -189,8 +189,8 @@ namespace AasxUaNetServer
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error /* | Utils.TraceMasks.Information */
-                | Utils.TraceMasks.StartStop /* | Utils.TraceMasks.StackTrace */);
+            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information 
+                | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
 
             // attach tracing?
             Utils.Tracing.TraceEventHandler += (sender, args) =>
@@ -207,8 +207,12 @@ namespace AasxUaNetServer
                         // ReSharper disable once CoVariantArrayConversion
                         // ReSharper disable once RedundantExplicitArrayCreation
                         (args.Arguments != null ? args.Arguments : new string[] { "" }));
-                    this.Log.Info("[{0}] {1} {2} {3}",
-                        args.TraceMask, st, args.Message, args.Exception?.Message ?? "-");
+
+                    if (st.Contains("Mindestens ein") || st.Contains("At least"))
+                        ;
+
+                    this.Log.Info("[{0}] {1} {2} {3} {4}",
+                        args.TraceMask, st, args.Message, args.Exception?.Message ?? "-", args.Exception?.StackTrace);
                 }
             };
 

@@ -13,6 +13,7 @@
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
+  "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_579071.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -70,6 +71,8 @@
       "Args": [
         "-single-nodeids",
         "-single-keys",
+        "-add-root-item",
+        "-simple-data-types",
         "-ns",
         "2",
         "-ns",
@@ -121,46 +124,16 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
       "Args": []
-    },
+    }
     /* Festo specific from here on */
-    {
+    /* {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
-      "Args": [] /*,
-      "Options": {
-        "Records": [
-          {
-            "AllowSubmodelSemanticId": [
-              {
-                "type": "Submodel",
-                "local": false,
-                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
-                "index": 0,
-                "idType": "IRI"
-              }
-            ]
-          }
-        ]
-      }*/
+      "Args": []
     },
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-      "Args": [] /*,
-      "Options": {
-        "Records": [
-          {
-            "AllowSubmodelSemanticId": [
-              {
-                "type": "Submodel",
-                "local": false,
-                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
-                "index": 0,
-                "idType": "IRI"
-              }
-            ]
-          }
-        ]
-      } */
-    }
+      "Args": []
+    } */
   ],
   "SecureConnectPresets": [
     {

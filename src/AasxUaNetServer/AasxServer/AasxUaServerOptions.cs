@@ -57,6 +57,17 @@ namespace AasOpcUaServer
         public Action FinalizeAction = null;
 
         /// <summary>
+        /// If true, a nodeset export will try to explicetely include the root item link within the 
+        /// export. Try this for SiOME usage.
+        /// </summary>
+        public bool AddRootItem = false;
+
+        /// <summary>
+        /// If true, usage of customised data types will be reduced
+        /// </summary>
+        public bool SimpleDataTypes = false;
+
+        /// <summary>
         /// Parse args given by command line or plug-in arguments
         /// </summary>
         public void ParseArgs(string[] args)
@@ -79,6 +90,18 @@ namespace AasOpcUaServer
                 if (arg == "-single-nodeids")
                 {
                     FilterForSingleNodeIds = true;
+                    continue;
+                }
+
+                if (arg == "-simple-data-types")
+                {
+                    SimpleDataTypes = true;
+                    continue;
+                }
+
+                if (arg == "-add-root-item")
+                {
+                    AddRootItem = true;
                     continue;
                 }
 

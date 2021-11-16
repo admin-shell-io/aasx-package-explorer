@@ -28,6 +28,7 @@
  * ======================================================================*/
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -112,17 +113,42 @@ namespace AasOpcUaServer
         }
 
         public void SaveNodestateCollectionAsNodeSet2(ISystemContext context, NodeStateCollection nsc, Stream stream,
-            bool filterSingleNodeIds)
+            bool filterSingleNodeIds, bool addRootItem = false, NodeState rootItem = null)
         {
             Opc.Ua.Export.UANodeSet nodeSet = new Opc.Ua.Export.UANodeSet();
             nodeSet.LastModified = DateTime.UtcNow;
             nodeSet.LastModifiedSpecified = true;
 
+            // 
+            // Because the pain of so many wasted hours is so great:
+            // This function realizes a "write Nodeset2.xml" functionality, hwich
+            // seems to not work out-of-the-box by the existing OPC UA .dll
+            // (see "SaveNodestateCollectionAsNodeSet2tryout", .dll is an old version
+            //  because auf .net Framework 4.7.2)
+            //
+            // This function "fakes" this export.
+            // Remark: the call of nodeSet.Export() shift the namespace-index.
+            // For multiple hours I tried to initialize the namespace-index better,
+            // or to figure out, which is the correct exported node for "AASROOT".
+            // It was not possible. So, a very bad hack is used.
+            // 
+
+            //// nodeSet.NamespaceUris = new[] { "http://opcfoundation.org/UA/" };
+            //// var l = new List<string>();
+            //// l.Add("http://opcfoundation.org/UA/");
+            //// l.AddRange(NamespaceUris);
+            //// nodeSet.NamespaceUris = l.ToArray();
+
+            Utils.Trace("Exporting {0} nodes ..", nsc.Count);
             foreach (var n in nsc)
+            {
                 nodeSet.Export(context, n);
+            }
 
             if (filterSingleNodeIds)
             {
+                Utils.Trace("Filtering single node ids..");
+
                 // MIHO: There might be DOUBLE nodeIds in the the set!!!!!!!!!! WTF!!!!!!!!!!!!!
                 // Brutally eliminate them
                 var nodup = new List<Opc.Ua.Export.UANode>();
@@ -136,10 +162,66 @@ namespace AasOpcUaServer
                         continue;
                     nodup.Add(it);
                 }
+
+                if (addRootItem)
+                {
+                    Utils.Trace("Adding root item..");
+
+                    var rootItemSt = "ns=2;i=95"; // weird default
+                    if (rootItem != null)
+                    {
+                        // Bad hack, apoligizes
+                        var ni = new NodeId(
+                            value: (object) rootItem.NodeId.Identifier, 
+                            namespaceIndex: (ushort)(((ushort) rootItem.NodeId.NamespaceIndex) - (ushort) 1));
+                        rootItemSt = ni.Format();
+                    }
+
+                    var ri = new Opc.Ua.Export.UAObject()
+                    {
+                        BrowseName = "Objects",
+                        DisplayName = new[] {
+                            new Opc.Ua.Export.LocalizedText() { Locale = "en", Value = "Objects" }
+                        },
+                        NodeId = "ns=0;i=85",
+                        References = new[]
+                        {
+                            new Opc.Ua.Export.Reference() {
+                                ReferenceType = /* "" + Opc.Ua.ReferenceTypeIds.HierarchicalReferences.Format() */
+                                    "i=33", Value = rootItemSt /* "ns=2;i=95" */ /* rootItemSt */ },
+                            new Opc.Ua.Export.Reference() {
+                                ReferenceType = /* "" + Opc.Ua.ReferenceTypeIds.HasTypeDefinition.Format() */
+                                    "i=40",
+                                Value ="i=68" }
+                        },
+                    };
+
+                    nodup.Add(ri);
+                }
+
                 nodeSet.Items = nodup.ToArray();
             }
 
+            Utils.Trace("Writing stream ..");
             nodeSet.Write(stream);
+        }
+
+        public void SaveNodestateCollectionAsNodeSet2tryout(ISystemContext context, NodeStateCollection nsc, Stream stream,
+            bool filterSingleNodeIds)
+        {
+            while (nsc.Count > 2)
+                nsc.RemoveAt(1);
+
+            // MICHA TODO TEST
+            using (var sw = new StreamWriter("export-nodeset.xml"))
+            {
+                nsc.SaveAsNodeSet(context, sw.BaseStream);
+            }
+
+            using (var sw2 = new StreamWriter("export-nodeset2.xml"))
+            {
+                nsc.SaveAsNodeSet2(context, sw2.BaseStream);
+            }
         }
 
         #region INodeManager Members
@@ -166,12 +248,12 @@ namespace AasOpcUaServer
 
                     // Root of whole structure is special, needs to link to external reference
                     builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, null, "AASROOT");
+                    
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
                         builder.RootAAS.NodeId, externalReferences);
                     this.AddExternalReferencePublic(builder.RootAAS.NodeId, ReferenceTypeIds.Organizes, true,
                         new NodeId(85, 0), externalReferences);
-
 
                     // Folders for DataSpecs
                     // DO NOT USE THIS FEATURE -> Data Spec are "under" the CDs
@@ -225,64 +307,71 @@ namespace AasOpcUaServer
 
                     // start process
                     builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
-                }
 #endif
 
-                // Try: ensure the reverse refernces exist.
-                //// AddReverseReferences(externalReferences);
+                    // Try: ensure the reverse refernces exist.
+                    //// AddReverseReferences(externalReferences);
 
-                if (theServerOptions != null
-                    && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
-                {
-                    try
+                    if (theServerOptions != null
+                        && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
                     {
-                        // empty list
-                        var nodesToExport = new NodeStateCollection();
-
-                        // apply filter criteria
-                        foreach (var y in this.PredefinedNodes)
-                        {
-                            var node = y.Value;
-                            if (theServerOptions.ExportFilterNamespaceIndex != null
-                                && !theServerOptions.ExportFilterNamespaceIndex.Contains(node.NodeId.NamespaceIndex))
-                                continue;
-                            nodesToExport.Add(node);
-                        }
-
-                        // export
-                        Utils.Trace("Writing export file: " + theServerOptions.ExportFilename);
-                        var stream = new StreamWriter(theServerOptions.ExportFilename);
-
-                        //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
-                        //// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
-
-                        //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
-                        SaveNodestateCollectionAsNodeSet2(this.SystemContext, nodesToExport, stream.BaseStream,
-                            theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
-
                         try
                         {
-                            stream.Close();
+                            // empty list
+                            var nodesToExport = new NodeStateCollection();
+
+                            // apply filter criteria
+                            foreach (var y in this.PredefinedNodes)
+                            {
+                                var node = y.Value;
+                                /*
+                                if (theServerOptions.ExportFilterNamespaceIndex != null
+                                    && !theServerOptions.ExportFilterNamespaceIndex.Contains(node.NodeId.NamespaceIndex))
+                                    continue;
+                                */
+                                nodesToExport.Add(node);
+                            }
+
+                            // export
+                            Utils.Trace("Writing export file: " + theServerOptions.ExportFilename);
+                            var stream = new StreamWriter(theServerOptions.ExportFilename);
+
+                            //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream, null, 
+                            //// theServerOptions != null && theServerOptions.FilterForSingleNodeIds);
+
+                            //// nodesToExport.SaveAsNodeSet2(this.SystemContext, stream.BaseStream);
+                            SaveNodestateCollectionAsNodeSet2(this.SystemContext, nodesToExport, stream.BaseStream,
+                                filterSingleNodeIds: theServerOptions != null && theServerOptions.FilterForSingleNodeIds,
+                                addRootItem: theServerOptions != null && theServerOptions.AddRootItem,
+                                builder.RootAAS);
+
+                            try
+                            {
+                                stream.Close();
+                            }
+                            catch (Exception ex)
+                            {
+                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            }
+
+                            Utils.Trace("Export file written!");
+
+                            // stop afterwards
+                            if (theServerOptions.FinalizeAction != null)
+                            {
+                                Utils.Trace("Requesting to shut down application..");
+                                theServerOptions.FinalizeAction();
+                            }
+
                         }
                         catch (Exception ex)
                         {
-                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                            Utils.Trace(ex, "When exporting to {0}", "" + theServerOptions.ExportFilename);
                         }
 
-                        // stop afterwards
-                        if (theServerOptions.FinalizeAction != null)
-                        {
-                            Utils.Trace("Requesting to shut down application..");
-                            theServerOptions.FinalizeAction();
-                        }
+                        // shutdown ..
 
                     }
-                    catch (Exception ex)
-                    {
-                        Utils.Trace(ex, "When exporting to {0}", "" + theServerOptions.ExportFilename);
-                    }
-
-                    // shutdown ..
 
                 }
 
