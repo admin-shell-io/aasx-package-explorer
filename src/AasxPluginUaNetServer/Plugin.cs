@@ -166,7 +166,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (options?.Args != null)
                     foreach (var o1 in options.Args)
                         externalOptions.Add(o1);
-                
+
                 if (args.Length >= 2 && args[1] is string[])
                 {
                     var pluginArgs = args[1] as string[];

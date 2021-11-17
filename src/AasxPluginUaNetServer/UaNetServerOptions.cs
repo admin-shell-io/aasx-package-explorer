@@ -14,6 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnassignedField.Global
+
 namespace AasxUaNetServer
 {
     public class UaNetServerOptionsRecord

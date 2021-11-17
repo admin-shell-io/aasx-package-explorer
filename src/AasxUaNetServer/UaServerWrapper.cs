@@ -250,7 +250,8 @@ namespace AasxUaNetServer
             if (aasxServerOptions != null)
                 aasxServerOptions.FinalizeAction += () =>
                 {
-                    // server.Stop();
+                    //// server.Stop();
+                    // changed to the following to close the window, as well
                     Stop();
                     IgnoreFurtherErrors = true;
                 };
