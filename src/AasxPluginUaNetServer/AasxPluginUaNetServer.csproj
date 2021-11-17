@@ -38,6 +38,9 @@
     <ProjectReference Include="..\AasxUaNetServer\AasxUaNetServer.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="AasxPluginUaNetServer.options.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AasxPluginUaNetServer.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

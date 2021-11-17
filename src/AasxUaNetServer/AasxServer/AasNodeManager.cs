@@ -209,7 +209,7 @@ namespace AasOpcUaServer
                             new Opc.Ua.Export.Reference() {
                                 ReferenceType = /* "" + Opc.Ua.ReferenceTypeIds.HasTypeDefinition.Format() */
                                     "i=40",
-                                Value ="i=68" }
+                                Value = "i=61" /* FoldersType!! */ /* "i=68" */ }
                         },
                     };
 

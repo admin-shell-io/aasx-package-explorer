@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using AasOpcUaServer;
 using AasxUaNetServer;
 using AdminShellNS;
+using Newtonsoft.Json;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 using Opc.Ua.Server;
@@ -30,6 +31,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         #region // Plug In
         private LogInstance logger = new LogInstance();
+        private AasxUaNetServer.UaNetServerOptions options = new AasxUaNetServer.UaNetServerOptions();
         private bool stop = false;
 
         private UaServerWrapper server = null;
@@ -37,12 +39,60 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public string GetPluginName()
         {
             logger.Info("GetPluginName() = {0}", "Net46AasxServerPlugin");
-            return "Net46AasxServerPlugin";
+            return "AasxPluginUaNetServer";
         }
+
+        /* TODO (MIHO, 2021-11-17): damned, weird dependency reasons between
+         * .netstandard2.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
+         * Fix */
+        private static T LoadDefaultOptionsFromAssemblyDirXXXX<T>(
+            string pluginName, Assembly assy = null,
+            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+        {
+            // expand assy?
+            if (assy == null)
+                assy = Assembly.GetExecutingAssembly();
+            if (pluginName == null || pluginName == "")
+                return null;
+
+            // build fn
+            var optfn = System.IO.Path.Combine(
+                        System.IO.Path.GetDirectoryName(assy.Location),
+                        pluginName + ".options.json");
+
+            if (File.Exists(optfn))
+            {
+                var optText = File.ReadAllText(optfn);
+
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
+            }
+
+            // no
+            return null;
+        }
+
 
         public void InitPlugin(string[] args)
         {
             logger.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+
+            // .. with built-in options
+            options = AasxUaNetServer.UaNetServerOptions.CreateDefault();
+
+            // try load defaults options from assy directory
+            try
+            {
+                var newOpt =
+                    /* AasxPluginOptionsBase */ LoadDefaultOptionsFromAssemblyDirXXXX<
+                         AasxUaNetServer.UaNetServerOptions>(
+                            this.GetPluginName(), Assembly.GetExecutingAssembly());
+                if (newOpt != null)
+                    this.options = newOpt;
+            }
+            catch (Exception ex)
+            {
+                logger?.Error(ex, "Exception when reading default options {1}");
+            }
         }
 
         public object CheckForLogMessage()
@@ -112,28 +162,36 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 ApplicationInstance.MessageDlg = new ApplicationMessageDlg(logger);
 
                 // arguments
-                var options = new AasOpcUaServer.AasxUaServerOptions();
+                var externalOptions = new List<string>();
+                if (options?.Args != null)
+                    foreach (var o1 in options.Args)
+                        externalOptions.Add(o1);
+                
                 if (args.Length >= 2 && args[1] is string[])
                 {
                     var pluginArgs = args[1] as string[];
                     if (pluginArgs != null && pluginArgs.Length > 0)
                     {
-                        // debug
-                        var lstr = $"Taking over {pluginArgs.Length} arguments: ";
-                        foreach (var ls in pluginArgs)
-                            lstr += ls + " ";
-                        logger.Info("{0}", lstr);
-
-                        // parse
-                        options.ParseArgs(pluginArgs);
+                        foreach (var o2 in pluginArgs)
+                            externalOptions.Add(o2);
                     }
                 }
+
+                // debug
+                var lstr = $"Taking over {externalOptions.Count} arguments: ";
+                foreach (var ls in externalOptions)
+                    lstr += ls + " ";
+                logger.Info("{0}", lstr);
+
+                // parse
+                var internalOptions = new AasOpcUaServer.AasxUaServerOptions();
+                internalOptions.ParseArgs(externalOptions.ToArray());
 
                 // run the server
                 try
                 {
                     this.server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: package,
-                        logger: logger, _serverOptions: options);
+                        logger: logger, _serverOptions: internalOptions);
                     this.server.Run();
                 }
                 catch (Exception ex)

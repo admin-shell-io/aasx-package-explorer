@@ -45,7 +45,7 @@
   "VerboseConnect": true,
   "DefaultStayConnected": true,
   "DefaultUpdatePeriod": 1000,
-  "StayConnectOptions": "REST-QUEUE", // SIM
+  "StayConnectOptions": "REST-QUEUE", // SIM REST-QUEUE
   /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
   /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
   /* "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711", */
@@ -69,14 +69,6 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
-        "-single-nodeids",
-        "-single-keys",
-        "-add-root-item",
-        "-simple-data-types",
-        "-ns",
-        "2",
-        "-ns",
-        "3"
       ],
       "Options": null
     },

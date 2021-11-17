@@ -1,0 +1,14 @@
+﻿{
+  /* This plug-ins comes with this sample options to show, how multiple Submodel semantic ids can
+     be matched. This could be used, e.g., to enable a general "operational data" with this feature. */
+  "Args": [
+    "-single-nodeids",
+    "-single-keys",
+    "-add-root-item",
+    "-simple-data-types",
+    "-ns",
+    "2",
+    "-ns",
+    "3"
+  ]
+}
