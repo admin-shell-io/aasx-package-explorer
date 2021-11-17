@@ -10,23 +10,31 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
 
 function Main
 {
-    $artefactsDir = CreateAndGetArtefactsDir
-    $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
-
     Set-Location $PSScriptRoot
 
-    Write-Host "Inspecting the code with inspectcode ..."
+    $artefactsDir = CreateAndGetArtefactsDir
+    $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
+    New-Item -ItemType Directory -Force -Path "$artefactsDir"|Out-Null
 
     $cachesHome = Join-Path $artefactsDir "inspectcode-caches"
     New-Item -ItemType Directory -Force -Path "$cachesHome"|Out-Null
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
+    
+    $pathToSolution = "AasxPackageExplorer.sln"
+
+    Write-Host "Inspecting the code with inspectcode ..."
+    Write-Host "* Output goes to: $codeInspectionPath"
+    Write-Host "* Caches home is at: $cachesHome"
+    Write-Host "* The working directory is: $(Get-Location)"
+    Write-Host "* The path to solution is: $pathToSolution"
+
     & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
         '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
-        AasxPackageExplorer.sln
+        "$pathToSolution"
 
     [xml]$inspection = Get-Content $codeInspectionPath
 
