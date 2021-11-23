@@ -227,7 +227,7 @@ namespace AasxPackageLogic
                         if (i == 0)
                         {
                             identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
                         }

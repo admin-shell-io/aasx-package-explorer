@@ -123,7 +123,7 @@ namespace AasxDictionaryImport
             {
                 identification = new AdminShellV20.Identification(
                         AdminShellV20.Identification.IRI,
-                        Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
+                        AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
             };
             env.AdministrationShells.Add(adminShell);
             return adminShell;

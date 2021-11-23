@@ -70,25 +70,29 @@ namespace AasxPluginExportTable
 
         public int Format = 0;
 
-        public int Rows = 1, Cols = 1;
+        public int RowsTop = 1, RowsBody = 1, Cols = 1;
 
         [JsonIgnore]
-        public int RealRows { get { return 1 + Rows; } }
+        public int RealRowsTop { get { return 1 + RowsTop; } }
+
         [JsonIgnore]
-        public int RealCols { get { return 1 + Rows; } }
+        public int RealRowsBody { get { return 1 + RowsBody; } }
+
+        [JsonIgnore]
+        public int RealCols { get { return 1 + Cols; } }
 
         public bool ReplaceFailedMatches = false;
         public string FailText = "";
 
         // Note: the records contains elements for 1 + Rows, 1 + Columns fields
-        public List<string> Header = new List<string>();
-        public List<string> Elements = new List<string>();
+        public List<string> Top = new List<string>();
+        public List<string> Body = new List<string>();
 
         public bool IsValid()
         {
-            return Rows >= 1 && Cols >= 1
-                && Header != null && Header.Count >= RealRows * RealCols
-                && Elements != null && Elements.Count >= RealRows * RealCols;
+            return RowsTop >= 1 && RowsBody >= 1 && Cols >= 1
+                && Top != null && Top.Count >= RealRowsTop * RealCols
+                && Body != null && Body.Count >= RealRowsBody * RealCols;
         }
 
         //
@@ -98,19 +102,20 @@ namespace AasxPluginExportTable
         public ExportTableRecord() { }
 
         public ExportTableRecord(
-            int rows, int cols, string name = "", IEnumerable<string> header = null,
+            int rowsTop, int rowsBody, int cols, string name = "", IEnumerable<string> header = null,
             IEnumerable<string> elements = null)
         {
-            this.Rows = rows;
+            this.RowsTop = rowsTop;
+            this.RowsBody = rowsBody;
             this.Cols = cols;
             if (name != null)
                 this.Name = name;
             if (header != null)
                 foreach (var h in header)
-                    this.Header.Add(h);
+                    this.Top.Add(h);
             if (elements != null)
                 foreach (var e in elements)
-                    this.Elements.Add(e);
+                    this.Body.Add(e);
         }
 
         public void SaveToFile(string fn)
@@ -150,27 +155,27 @@ namespace AasxPluginExportTable
             }
         }
 
-        public CellRecord GetHeaderCell(int row, int col)
+        public CellRecord GetTopCell(int row, int col)
         {
             var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Header == null || i >= this.Header.Count)
+            if (row < 0 || col < 0 || this.Top == null || i >= this.Top.Count)
                 return null;
-            var cr = new CellRecord(this.Header[i]);
+            var cr = new CellRecord(this.Top[i]);
             cr.TextWithHeaders =
-                this.Header[0] + " " + this.Header[(1 + row) * (1 + this.Cols)] + " " +
-                this.Header[1 + col] + " " + cr.Text;
+                this.Top[0] + " " + this.Top[(1 + row) * (1 + this.Cols)] + " " +
+                this.Top[1 + col] + " " + cr.Text;
             return cr;
         }
 
-        public CellRecord GetElementsCell(int row, int col)
+        public CellRecord GetBodyCell(int row, int col)
         {
             var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Elements == null || i >= this.Elements.Count)
+            if (row < 0 || col < 0 || this.Body == null || i >= this.Body.Count)
                 return null;
-            var cr = new CellRecord(this.Elements[i]);
+            var cr = new CellRecord(this.Body[i]);
             cr.TextWithHeaders =
-                this.Elements[0] + " " + this.Elements[(1 + row) * (1 + this.Cols)] + " " +
-                this.Elements[1 + col] + " " + cr.Text;
+                this.Body[0] + " " + this.Body[(1 + row) * (1 + this.Cols)] + " " +
+                this.Body[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -634,16 +639,16 @@ namespace AasxPluginExportTable
 
             using (var f = new StreamWriter(fn))
             {
-                // header
+                // top
                 var proc = new ItemProcessor(this, null);
-                for (int ri = 0; ri < this.Rows; ri++)
+                for (int ri = 0; ri < this.RowsTop; ri++)
                 {
                     var line = "";
 
                     for (int ci = 0; ci < this.Cols; ci++)
                     {
                         // get cell record
-                        var cr = GetHeaderCell(ri, ci);
+                        var cr = GetTopCell(ri, ci);
 
                         // process text
                         proc.ProcessCellRecord(cr);
@@ -668,14 +673,14 @@ namespace AasxPluginExportTable
                     var lines = new List<string>();
 
                     // all elements
-                    for (int ri = 0; ri < this.Rows; ri++)
+                    for (int ri = 0; ri < this.RowsBody; ri++)
                     {
                         var line = "";
 
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetElementsCell(ri, ci);
+                            var cr = GetBodyCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -824,12 +829,12 @@ namespace AasxPluginExportTable
                 var proc = new ItemProcessor(this, null);
                 proc.Start();
 
-                for (int ri = 0; ri < this.Rows; ri++)
+                for (int ri = 0; ri < this.RowsTop; ri++)
                 {
                     for (int ci = 0; ci < this.Cols; ci++)
                     {
                         // get cell record
-                        var cr = GetHeaderCell(ri, ci);
+                        var cr = GetTopCell(ri, ci);
 
                         // process text
                         proc.ProcessCellRecord(cr);
@@ -839,7 +844,7 @@ namespace AasxPluginExportTable
                     }
                 }
 
-                rowIdx += this.Rows;
+                rowIdx += this.RowsTop;
             }
 
             // elements
@@ -852,12 +857,12 @@ namespace AasxPluginExportTable
                     proc.Start();
 
                     // all elements
-                    for (int ri = 0; ri < this.Rows; ri++)
+                    for (int ri = 0; ri < this.RowsBody; ri++)
                     {
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetElementsCell(ri, ci);
+                            var cr = GetBodyCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -871,12 +876,12 @@ namespace AasxPluginExportTable
                     if (proc.NumberReplacements > 0)
                     {
                         // advance
-                        rowIdx += this.Rows;
+                        rowIdx += this.RowsBody;
                     }
                     else
                     {
                         // delete this out
-                        var rng = ws.Range(rowIdx, 1, rowIdx + this.Rows - 1, 1 + this.Cols - 1);
+                        var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
                         rng.Clear();
                     }
                 }
@@ -890,7 +895,7 @@ namespace AasxPluginExportTable
                     // do a explicit process of overall table cell
                     var proc = new ItemProcessor(this, null);
                     proc.Start();
-                    var cr = GetHeaderCell(0, 0);
+                    var cr = GetTopCell(0, 0);
                     proc.ProcessCellRecord(cr);
 
                     // borders?
@@ -1072,7 +1077,7 @@ namespace AasxPluginExportTable
                 {
                     var proc = new ItemProcessor(this, null);
                     proc.Start();
-                    var cr = GetHeaderCell(0, 0);
+                    var cr = GetTopCell(0, 0);
                     proc.ProcessCellRecord(cr);
 
                     // do some borders?
@@ -1140,7 +1145,7 @@ namespace AasxPluginExportTable
                     var proc = new ItemProcessor(this, null);
                     proc.Start();
 
-                    for (int ri = 0; ri < this.Rows; ri++)
+                    for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         // new row
                         TableRow tr = table.AppendChild(new TableRow());
@@ -1149,7 +1154,7 @@ namespace AasxPluginExportTable
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetHeaderCell(ri, ci);
+                            var cr = GetTopCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -1173,7 +1178,7 @@ namespace AasxPluginExportTable
                         var newRows = new List<TableRow>();
 
                         // all elements
-                        for (int ri = 0; ri < this.Rows; ri++)
+                        for (int ri = 0; ri < this.RowsBody; ri++)
                         {
                             // new row
                             TableRow tr = table.AppendChild(new TableRow());
@@ -1183,7 +1188,7 @@ namespace AasxPluginExportTable
                             for (int ci = 0; ci < this.Cols; ci++)
                             {
                                 // get cell record
-                                var cr = GetElementsCell(ri, ci);
+                                var cr = GetBodyCell(ri, ci);
 
                                 // process text
                                 proc.ProcessCellRecord(cr);

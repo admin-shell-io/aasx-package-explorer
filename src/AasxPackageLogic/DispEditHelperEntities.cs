@@ -313,7 +313,7 @@ namespace AasxPackageLogic
                                                 if (createNewIds)
                                                     destAsset.identification = new AdminShell.Identification(
                                                         AdminShell.Identification.IRI,
-                                                        Options.Curr.GenerateIdAccordingTemplate(
+                                                        AdminShellUtil.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAsset));
                                                 env.Assets.Add(destAsset);
                                             }
@@ -327,7 +327,7 @@ namespace AasxPackageLogic
                                             if (createNewIds)
                                                 destAAS.identification = new AdminShell.Identification(
                                                     AdminShell.Identification.IRI,
-                                                    Options.Curr.GenerateIdAccordingTemplate(
+                                                    AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
                                             env.AdministrationShells.Add(destAAS);
 
@@ -383,7 +383,7 @@ namespace AasxPackageLogic
                                                             srcSub, shallowCopy: false);
                                                         dstSub.identification = new AdminShell.Identification(
                                                             AdminShell.Identification.IRI,
-                                                            Options.Curr.GenerateIdAccordingTemplate(tid));
+                                                            AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                                         // make a new ref
                                                         var dstRef = AdminShell.SubmodelRef.CreateNew(
@@ -979,12 +979,12 @@ namespace AasxPackageLogic
                             submodel.identification.idType = AdminShell.Identification.IRI;
                             if (buttonNdx == 1)
                             {
-                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelTemplate);
                                 submodel.kind = AdminShell.ModelingKind.CreateAsTemplate();
                             }
                             else
-                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
@@ -1060,7 +1060,7 @@ namespace AasxPackageLogic
                                         var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
                                         dstSub.identification = new AdminShell.Identification(
                                             AdminShell.Identification.IRI,
-                                            Options.Curr.GenerateIdAccordingTemplate(tid));
+                                            AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
                                         var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
@@ -2082,7 +2082,7 @@ namespace AasxPackageLogic
 
                             // make an ID, automatically
                             cd.identification.idType = AdminShell.Identification.IRI;
-                            cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            cd.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
 
                             // store in AAS enviroment

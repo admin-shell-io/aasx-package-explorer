@@ -282,6 +282,56 @@ namespace AdminShellNS
                 return $"[{this.type}, {tlc}, {this.idType}, {this.value}]";
             }
 
+            public static Key Parse(string cell, string typeIfNotSet = null, 
+                bool allowFmtAll = false, bool allowFmt0 = false, 
+                bool allowFmt1 = false, bool allowFmt2 = false)
+            {
+                // access && defaults?
+                if (cell == null || cell.Trim().Length < 1)
+                    return null;
+                if (typeIfNotSet == null)
+                    typeIfNotSet = Key.GlobalReference;
+
+                // format == 1
+                if (allowFmtAll || allowFmt1)
+                {
+                    var m = Regex.Match(cell, @"\((\w+)\)\((\S+)\)\[(\w+)\]( ?)(.*)$");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                m.Groups[1].ToString(), m.Groups[2].ToString() == "local",
+                                m.Groups[3].ToString(), m.Groups[5].ToString());
+                    }
+                }
+
+                // format == 2
+                if (allowFmtAll || allowFmt2)
+                {
+                    var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                typeIfNotSet, true,
+                                m.Groups[1].ToString(), m.Groups[3].ToString());
+                    }
+                }
+
+                // format == 0
+                if (allowFmtAll || allowFmt0)
+                {
+                    var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                m.Groups[1].ToString(), !m.Groups[3].ToString().Contains("not"),
+                                m.Groups[5].ToString(), m.Groups[7].ToString());
+                    }
+                }
+
+                // no
+                return null;
+            }
+
             public static string KeyListToString(List<Key> keys)
             {
                 if (keys == null || keys.Count < 1)
@@ -547,7 +597,7 @@ namespace AdminShellNS
 
                 // may give result "to be deleted"
                 return res;
-            }
+            }            
         }
 
         public class KeyList : List<Key>
@@ -1442,6 +1492,12 @@ namespace AdminShellNS
         {
             public ListOfLangStr() { }
 
+            public ListOfLangStr(LangStr ls)
+            {
+                if (ls != null)
+                    this.Add(ls);
+            }
+
             public ListOfLangStr(ListOfLangStr src)
             {
                 if (src != null)
@@ -1496,6 +1552,66 @@ namespace AdminShellNS
                         return false;
 
                 return true;
+            }
+
+            //public static ListOfLangStr Parse(string cell)
+            //{
+            //    // access
+            //    if (cell == null)
+            //        return null;
+
+            //    // trivial
+            //    if (!cell.Contains("@"))
+            //        return new ListOfLangStr(new LangStr(LangStr.LANG_DEFAULT, cell));
+
+            //    // OK, split
+            //    var parts = cell.Split('@');
+            //    var res = new ListOfLangStr();
+            //    for (int i=0;  i < parts.Length; i += 2)
+            //    {
+            //        var str = parts[i];
+            //        var lang = LangStr.LANG_DEFAULT;
+            //        if (i + 1 < parts.Length)
+            //            lang = parts[i + 1];
+            //        res.Add(new LangStr(lang, str));
+            //    }
+                                
+            //    return res;
+            //}
+
+            public static ListOfLangStr Parse(string cell)
+            {
+                // access
+                if (cell == null)
+                    return null;
+
+                // iterative approach
+                var res = new ListOfLangStr();
+                while (true)
+                {
+                    // trivial case and finite end
+                    if (!cell.Contains("@"))
+                    {
+                        if (cell.Trim() != "")
+                            res.Add(new LangStr(LangStr.LANG_DEFAULT, cell));
+                        break;
+                    }
+
+                    // OK, pick the next couple
+                    var m = Regex.Match(cell, @"(.*?)@(\w+)", RegexOptions.Singleline);
+                    if (!m.Success)
+                    {
+                        // take emergency exit?
+                        res.Add(new LangStr("??", cell));
+                        break;
+                    }
+
+                    // use the match and shorten cell ..
+                    res.Add(new LangStr(m.Groups[2].ToString(), m.Groups[1].ToString().Trim()));
+                    cell = cell.Substring(m.Index + m.Length);
+                }
+
+                return res;
             }
         }
 
@@ -5379,6 +5495,10 @@ namespace AdminShellNS
             "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
             "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
+            public static string[] AdequateElementAbbrev = { null, "SMC", null,
+            "MLP", null, null, null, "Ref", "Rel",
+            "ARel", null, null, "Event", "Entity" };
+
             // constructors
 
             public SubmodelElementWrapper() { }
@@ -5446,6 +5566,9 @@ namespace AdminShellNS
                 return AdequateElementNames[(int)ae];
             }
 
+            /// <summary>
+            /// Deprecated. See below.
+            /// </summary>
             public static AdequateElementEnum GetAdequateEnum(string adequateName)
             {
                 if (adequateName == null)
@@ -5454,6 +5577,26 @@ namespace AdminShellNS
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
                     if (Enum.GetName(typeof(AdequateElementEnum), en)?.Trim().ToLower() ==
                         adequateName.Trim().ToLower())
+                        return en;
+
+                return AdequateElementEnum.Unknown;
+            }
+
+            /// <summary>
+            /// This version uses the element name array and allows using abbreviations
+            /// </summary>
+            public static AdequateElementEnum GetAdequateEnum2(string adequateName, bool useAbbrev = false)
+            {
+                if (adequateName == null)
+                    return AdequateElementEnum.Unknown;
+
+                foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                    if (( (int)en < AdequateElementNames.Length
+                          && AdequateElementNames[(int)en].Trim().ToLower() == adequateName.Trim().ToLower())
+                        || (useAbbrev
+                          && (int)en < AdequateElementAbbrev.Length
+                          && AdequateElementAbbrev[(int)en] != null
+                          && AdequateElementAbbrev[(int)en].Trim().ToLower() == adequateName.Trim().ToLower()))
                         return en;
 
                 return AdequateElementEnum.Unknown;

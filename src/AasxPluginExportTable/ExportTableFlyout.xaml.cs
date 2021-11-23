@@ -35,28 +35,35 @@ namespace AasxPluginExportTable
     {
         public event IFlyoutControlAction ControlClosed;
 
+        protected string _caption;
+
         public List<ExportTableRecord> Presets = null;
 
         public ExportTableRecord Result = null;
 
-        private int rows = 1, cols = 1;
+        private int _rowsTop = 1, _rowsBody, _cols = 1;
 
-        private List<TextBox> textBoxesHeader = new List<TextBox>();
-        private List<TextBox> textBoxesElements = new List<TextBox>();
+        private List<TextBox> _textBoxesTop = new List<TextBox>();
+        private List<TextBox> _textBoxesBody = new List<TextBox>();
 
         //
         // Init
         //
 
-        public ExportTableFlyout()
+        public ExportTableFlyout(string caption = null)
         {
             InitializeComponent();
+            _caption = caption;
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // init with defaults
-            this.ThisInit(1, 4);
+            this.ThisInit(1, 1, 4);
+
+            // caption
+            if (_caption != null)
+                TextBlockCaption.Text = _caption;
 
             // if preset, load first preset
             if (this.Presets != null && this.Presets.Count > 0)
@@ -126,23 +133,25 @@ namespace AasxPluginExportTable
         // Mechanics
         //
 
-        private void ThisInit(int rows, int cols)
+        private void ThisInit(int rowsTop, int rowsBody, int cols)
         {
-            this.rows = rows;
-            this.cols = cols;
+            _rowsTop = rowsTop;
+            _rowsBody = rowsBody;
+            _cols = cols;
 
-            TextBoxNumRows.Text = "" + this.rows;
-            TextBoxNumCols.Text = "" + this.cols;
+            TextBoxNumRowsTop.Text = "" + _rowsTop;
+            TextBoxNumRowsBody.Text = "" + _rowsBody;
+            TextBoxNumCols.Text = "" + _cols;
 
-            AdaptRowsCols(GridOuterHeader, textBoxesHeader, this.rows, this.cols);
-            AdaptRowsCols(GridOuterElements, textBoxesElements, this.rows, this.cols);
+            AdaptRowsCols(GridOuterTop, _textBoxesTop, _rowsTop, _cols);
+            AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);
         }
 
         private ExportTableRecord ThisToPreset()
         {
-            var x = new ExportTableRecord(this.rows, this.cols, "",
-                    this.textBoxesHeader.Select(tb => tb.Text),
-                    this.textBoxesElements.Select(tb => tb.Text)
+            var x = new ExportTableRecord(_rowsTop, _rowsBody, _cols, "",
+                    _textBoxesTop.Select(tb => tb.Text),
+                    _textBoxesBody.Select(tb => tb.Text)
                     );
 
             x.Format = ComboBoxFormat.SelectedIndex;
@@ -155,33 +164,35 @@ namespace AasxPluginExportTable
         private void ThisFromPreset(ExportTableRecord preset)
         {
             // access
-            if (preset == null || preset.Rows < 1 || preset.Cols < 1)
+            if (preset == null || preset.RowsTop < 1 || preset.RowsBody < 1 || preset.Cols < 1)
                 return;
 
             // take over
-            this.rows = preset.Rows;
-            this.cols = preset.Cols;
+            _rowsTop = preset.RowsTop;
+            _rowsBody   = preset.RowsBody;
+            _cols = preset.Cols;
 
             ComboBoxFormat.SelectedIndex = Math.Max(0, Math.Min(ComboBoxFormat.Items.Count - 1, preset.Format));
 
-            TextBoxNumRows.Text = "" + this.rows;
-            TextBoxNumCols.Text = "" + this.cols;
+            TextBoxNumRowsTop.Text = "" + _rowsTop;
+            TextBoxNumRowsBody.Text = "" + _rowsBody;
+            TextBoxNumCols.Text = "" + _cols;
 
             CheckBoxReplaceFailed.IsChecked = preset.ReplaceFailedMatches;
             TextBoxFailText.Text = "" + preset.FailText;
 
-            AdaptRowsCols(GridOuterHeader, textBoxesHeader, this.rows, this.cols);
-            AdaptRowsCols(GridOuterElements, textBoxesElements, this.rows, this.cols);
+            AdaptRowsCols(GridOuterTop, _textBoxesTop, _rowsTop, _cols);
+            AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);
 
-            if (preset.Header != null)
-                for (int i = 0; i < preset.Header.Count; i++)
-                    if (i < this.textBoxesHeader.Count)
-                        this.textBoxesHeader[i].Text = preset.Header[i];
+            if (preset.Top != null)
+                for (int i = 0; i < preset.Top.Count; i++)
+                    if (i < _textBoxesTop.Count)
+                        _textBoxesTop[i].Text = preset.Top[i];
 
-            if (preset.Elements != null)
-                for (int i = 0; i < preset.Elements.Count; i++)
-                    if (i < this.textBoxesElements.Count)
-                        this.textBoxesElements[i].Text = preset.Elements[i];
+            if (preset.Body != null)
+                for (int i = 0; i < preset.Body.Count; i++)
+                    if (i < _textBoxesBody.Count)
+                        _textBoxesBody[i].Text = preset.Body[i];
         }
 
         private void ComboBoxPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -195,7 +206,7 @@ namespace AasxPluginExportTable
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (sender == ButtonExport)
+            if (sender == ButtonStart)
             {
                 this.Result = this.ThisToPreset();
                 ControlClosed?.Invoke();
@@ -203,15 +214,40 @@ namespace AasxPluginExportTable
 
             if (sender == ButtonResize)
             {
-                if (!int.TryParse("" + TextBoxNumRows.Text, out int irows)
+                // save the old state
+                int oldRowsTop = _rowsTop, oldRowsBody = _rowsBody, oldCols = _cols;
+                var oldHeader = _textBoxesTop.Select(tb => tb.Text).ToList();
+                var oldElements = _textBoxesBody.Select(tb => tb.Text).ToList();
+
+                if (!int.TryParse("" + TextBoxNumRowsTop.Text, out int irowsT)
+                    || !int.TryParse("" + TextBoxNumRowsBody.Text, out int irowsB)
                     || !int.TryParse("" + TextBoxNumCols.Text, out int icols))
                     return;
 
-                this.rows = Math.Max(1, irows);
-                this.cols = Math.Max(1, icols);
+                _rowsTop = Math.Max(1, irowsT);
+                _rowsBody = Math.Max(1, irowsB);
+                _cols = Math.Max(1, icols);
 
-                AdaptRowsCols(GridOuterHeader, textBoxesHeader, this.rows, this.cols);
-                AdaptRowsCols(GridOuterElements, textBoxesElements, this.rows, this.cols);
+                AdaptRowsCols(GridOuterTop, _textBoxesTop, _rowsTop, _cols);
+                AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);
+
+                Action<List<TextBox>, List<string>, int, int> reAssign = (tbs, oldText, rows, oldrows) =>
+                {
+                    for (int nr=0; nr<1 + rows; nr++)
+                        for (int nc=0; nc<1 + _cols; nc++)
+                        {
+                            var txt = "";
+                            var oldNdx = nr * (1 + oldCols) + nc;
+                            if (nr < 1 + oldrows && nc < 1 + oldCols && oldNdx < oldText.Count)
+                                txt = oldText[oldNdx];
+
+                            var newNdx = nr * (1 + _cols) + nc;
+                            if (newNdx < tbs.Count)
+                                tbs[newNdx].Text = txt;
+                        }
+                };
+                reAssign(_textBoxesTop, oldHeader, _rowsTop, oldRowsTop);
+                reAssign(_textBoxesBody, oldElements, _rowsBody, oldRowsBody);
             }
 
             if (sender == ButtonSavePreset)
@@ -274,7 +310,8 @@ namespace AasxPluginExportTable
             while (grid.ColumnDefinitions.Count < cols)
             {
                 var gl = new ColumnDefinition();
-                gl.Width = new GridLength(1.0, GridUnitType.Star);
+                // gl.Width = new GridLength(1.0, GridUnitType.Star);
+                gl.Width = new GridLength(120.0, GridUnitType.Pixel);
                 grid.ColumnDefinitions.Add(gl);
             }
             while (grid.ColumnDefinitions.Count > cols)
@@ -287,6 +324,7 @@ namespace AasxPluginExportTable
             {
                 var gl = new RowDefinition();
                 gl.Height = new GridLength(1.0, GridUnitType.Star);
+                gl.MinHeight = 30;
                 grid.RowDefinitions.Add(gl);
             }
             while (grid.RowDefinitions.Count > rows)
@@ -336,10 +374,16 @@ namespace AasxPluginExportTable
                     }
                     else
                     {
-                        tb.Foreground = TextBoxNumRows.Foreground;
-                        tb.Background = TextBoxNumRows.Background;
+                        tb.Foreground = TextBoxNumCols.Foreground;
+                        tb.Background = TextBoxNumCols.Background;
                     }
             }
+
+            // the minimum width applies to the overall grid
+            // (in order to have the columns space evenly)
+            //grid.MinWidth = 100.0 * cols;
+            //grid.MaxWidth = 100.0 * cols;
+            //grid.Width = 100.0 * cols;
         }
 
         //

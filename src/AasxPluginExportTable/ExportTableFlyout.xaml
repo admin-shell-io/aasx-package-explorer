@@ -40,7 +40,9 @@
             <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
         </Viewbox>
 
-        <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Export AAS elements as Table"/></TextBlock>
+        <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="4" 
+                   FontSize="24" Foreground="White" HorizontalAlignment="Center" 
+                   TextWrapping="Wrap"><Run Text="Export SubmodelElements as Table"/></TextBlock>
 
         <!-- Background="#ff202e4c" -->
         <Grid Grid.Row="2" Grid.Column="2" Margin="4">
@@ -72,28 +74,46 @@
 
             <Label Grid.Row="1" Grid.Column="0" Foreground="White" FontWeight="Bold">General:</Label>
             <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                <Label Foreground="White">Rows:</Label>
-                <TextBox x:Name="TextBoxNumRows" Width="50" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
-                <Label Foreground="White">Col:</Label>
+                <Label Foreground="White">Rows Top:</Label>
+                <TextBox x:Name="TextBoxNumRowsTop" Width="30" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
+                <Label Foreground="White">Body:</Label>
+                <TextBox x:Name="TextBoxNumRowsBody" Width="30" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
+                <Label Foreground="White">Cols:</Label>
                 <TextBox x:Name="TextBoxNumCols" Width="50" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="3"/>
-                <Button x:Name="ButtonResize" Content="Resize" Padding="20,0,20,0" Margin="10,2,2,2" Click="Button_Click"/>
+                <Button x:Name="ButtonResize" Content="Resize" Padding="10,0,10,0" Margin="10,2,2,2" Click="Button_Click"/>
                 <CheckBox x:Name="CheckBoxReplaceFailed" Content="Replace failed matches: " Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
                 <TextBox x:Name="TextBoxFailText" Width="100" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="2" Text=""/>
             </WrapPanel>
-            
-            <TextBlock Grid.Row="3" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
-                <Bold>Top Section:</Bold><LineBreak/>
-                (including headers for each table row/ column)
-            </TextBlock>
-            <Grid x:Name="GridOuterHeader" Grid.Row="3" Grid.Column="1">
-            </Grid>
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
-                <Bold>Table body:</Bold><LineBreak/>
-                (including headers for each table row/ column)
-            </TextBlock>
-            <Grid x:Name="GridOuterElements" Grid.Row="5" Grid.Column="1" >
-            </Grid>
+            <ScrollViewer x:Name="ScrollViewGrids" Grid.Row="3" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2"
+                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="4"/>
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="4"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" MinWidth="50" MaxWidth="120"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
+                        <Bold>Table top:</Bold><LineBreak/>
+                        (including headers)
+                    </TextBlock>
+                    <Grid x:Name="GridOuterTop" Grid.Row="0" Grid.Column="1">
+                    </Grid>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
+                        <Bold>Table body:</Bold><LineBreak/>
+                        (including headers)
+                    </TextBlock>
+                    <Grid x:Name="GridOuterBody" Grid.Row="2" Grid.Column="1" >
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
 
             <Label Grid.Row="7" Grid.Column="0" Foreground="White" Margin="0,-5,0,0" FontWeight="Bold">Placeholders:</Label>
             <TextBox x:Name="TextBoxPlaceholders" Grid.Row="7" Grid.Column="1" Foreground="White" Background="Transparent" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" 
@@ -102,11 +122,20 @@
             </TextBox>
         </Grid>
 
-        <DockPanel Grid.Row="3" Grid.Column="2">
-            <Label Foreground="White" DockPanel.Dock="Left" VerticalContentAlignment="Center">Format:</Label>
-            <ComboBox x:Name="ComboBoxFormat" MinWidth="150" Height="20" Margin="10,4,20,4" DockPanel.Dock="Left"/>
-            <Button x:Name="ButtonExport" IsDefault="True" Content="Export!" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="Button_Click"/>
-        </DockPanel>
+        <Grid Grid.Row="3" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0" Foreground="White" DockPanel.Dock="Left" VerticalContentAlignment="Center">Format:</Label>
+            <ComboBox Grid.Column="1" x:Name="ComboBoxFormat" MinWidth="150" Height="20" Margin="10,4,20,4" DockPanel.Dock="Left"/>
+            <Button Grid.Column="2" x:Name="ButtonStart" IsDefault="True" Content="Start .." Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="Button_Click"/>
+        </Grid>
         
 
     </Grid>

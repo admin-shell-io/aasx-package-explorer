@@ -76,6 +76,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
+            res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             return res.ToArray();
         }
 
@@ -117,7 +118,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
-            if (action == "export-submodel" && args != null && args.Length >= 3 &&
+            if (( action == "export-submodel" || action == "import-submodel" )
+                && args != null && args.Length >= 3 &&
                 args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv &&
                 args[2] is AdminShell.Submodel)
             {
@@ -133,94 +135,21 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // the Submodel elements need to have parents
                 sm.SetAllParents();
 
-                // prepare list of items to be exported
-                var list = new ExportTableAasEntitiesList();
-                ExportTable_EnumerateSubmodel(list, env, broadSearch: false, depth: 1, sm: sm, sme: null);
-
                 // handle the export dialogue
-                var uc = new ExportTableFlyout();
+                var uc = new ExportTableFlyout( (action == "export-submodel") 
+                    ? "Export SubmodelElements as Table"
+                    : "Import SubmodelElements from Table");
                 uc.Presets = this.options.Presets;
                 fop?.StartFlyoverModal(uc);
+                fop?.CloseFlyover();
                 if (uc.Result == null)
                     return null;
-                var job = uc.Result;
 
-                // get the output file
-                var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select text file to be exported";
+                if (action == "export-submodel")
+                    Export(uc.Result, fop, sm, env);
 
-                if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                {
-                    dlg.FileName = "new.txt";
-                    dlg.DefaultExt = "*.txt";
-                    dlg.Filter =
-                        "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                {
-                    dlg.FileName = "new.tex";
-                    dlg.DefaultExt = "*.tex";
-                    dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                {
-                    dlg.FileName = "new.xlsx";
-                    dlg.DefaultExt = "*.xlsx";
-                    dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                {
-                    dlg.FileName = "new.docx";
-                    dlg.DefaultExt = "*.docx";
-                    dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                var res = dlg.ShowDialog(fop?.GetWin32Window());
-
-                try
-                {
-                    if (res == true)
-                    {
-                        Log.Info("Exporting table: {0}", dlg.FileName);
-                        var success = false;
-                        try
-                        {
-                            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                                success = job.ExportTabSeparated(dlg.FileName, list);
-                            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                                success = job.ExportLaTex(dlg.FileName, list);
-                            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                                success = job.ExportExcel(dlg.FileName, list);
-                            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                                success = job.ExportWord(dlg.FileName, list);
-                        }
-                        catch
-                        {
-                            success = false;
-                        }
-
-                        if (!success)
-                            fop?.MessageBoxFlyoutShow(
-                                "Some error occured while exporting the table. Please refer to the log messages.",
-                                "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "When exporting table, an error occurred");
-                }
-
-                fop?.CloseFlyover();
+                if (action == "import-submodel")
+                    Import(uc.Result, fop, sm, env);
             }
 
             // default
@@ -284,5 +213,169 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
         }
 
+        private void Export(ExportTableRecord job,
+            IFlyoutProvider fop,
+            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
+        {
+            // prepare list of items to be exported
+            var list = new ExportTableAasEntitiesList();
+            ExportTable_EnumerateSubmodel(list, env, broadSearch: false, depth: 1, sm: sm, sme: null);
+
+            // get the output file
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            try
+            {
+                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                    System.AppDomain.CurrentDomain.BaseDirectory);
+            }
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
+            dlg.Title = "Select text file to be exported";
+
+            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
+            {
+                dlg.FileName = "new.txt";
+                dlg.DefaultExt = "*.txt";
+                dlg.Filter =
+                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
+            {
+                dlg.FileName = "new.tex";
+                dlg.DefaultExt = "*.tex";
+                dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+            {
+                dlg.FileName = "new.xlsx";
+                dlg.DefaultExt = "*.xlsx";
+                dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+            {
+                dlg.FileName = "new.docx";
+                dlg.DefaultExt = "*.docx";
+                dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+            }
+
+            fop?.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog(fop?.GetWin32Window());
+            fop?.CloseFlyover();
+
+            try
+            {
+                if (res == true)
+                {
+                    Log.Info("Exporting table: {0}", dlg.FileName);
+                    var success = false;
+                    try
+                    {
+                        if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
+                            success = job.ExportTabSeparated(dlg.FileName, list);
+                        if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
+                            success = job.ExportLaTex(dlg.FileName, list);
+                        if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+                            success = job.ExportExcel(dlg.FileName, list);
+                        if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+                            success = job.ExportWord(dlg.FileName, list);
+                    }
+                    catch
+                    {
+                        success = false;
+                    }
+
+                    if (!success)
+                        fop?.MessageBoxFlyoutShow(
+                            "Some error occured while exporting the table. Please refer to the log messages.",
+                            "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "When exporting table, an error occurred");
+            }
+
+        }
+
+        private void Import(ExportTableRecord job,
+            IFlyoutProvider fop,
+            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
+        {
+            // get the import file
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            try
+            {
+                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                    System.AppDomain.CurrentDomain.BaseDirectory);
+            }
+            catch (Exception ex)
+            {
+                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            }
+            dlg.Title = "Select text file to be exported";
+
+            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
+            {
+                dlg.DefaultExt = "*.txt";
+                dlg.Filter =
+                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
+            {
+                dlg.DefaultExt = "*.tex";
+                dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+            {
+                dlg.DefaultExt = "*.xlsx";
+                dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+            }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+            {
+                dlg.DefaultExt = "*.docx";
+                dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+            }
+
+            fop?.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog(fop?.GetWin32Window());
+            fop?.CloseFlyover();
+
+            if (true != res)
+                return;
+
+            // try import
+            try
+            {
+                Log.Info("Importing table: {0}", dlg.FileName);
+                var success = false;
+                try
+                {
+                    if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+                    {
+                        success = true;
+                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
+                        foreach (var tp in ImportTableExcelProvider.CreateProviders(dlg.FileName))
+                            pop.PopulateBy(tp);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log?.Error(ex, "importing table");
+                    success = false;
+                }
+
+                if (!success)
+                    fop?.MessageBoxFlyoutShow(
+                        "Some error occured while importing the table. Please refer to the log messages.",
+                        "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "When exporting table, an error occurred");
+            }
+
+        }
     }
 }
