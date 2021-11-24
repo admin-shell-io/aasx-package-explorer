@@ -157,6 +157,7 @@ namespace AasxPluginExportTable
             x.Format = ComboBoxFormat.SelectedIndex;
             x.ReplaceFailedMatches = CheckBoxReplaceFailed.IsChecked == true;
             x.FailText = TextBoxFailText.Text;
+            x.ActInHierarchy = CheckBoxActInHierarchy.IsChecked == true;
 
             return x;
         }
@@ -180,6 +181,7 @@ namespace AasxPluginExportTable
 
             CheckBoxReplaceFailed.IsChecked = preset.ReplaceFailedMatches;
             TextBoxFailText.Text = "" + preset.FailText;
+            CheckBoxActInHierarchy.IsChecked = preset.ActInHierarchy;
 
             AdaptRowsCols(GridOuterTop, _textBoxesTop, _rowsTop, _cols);
             AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);

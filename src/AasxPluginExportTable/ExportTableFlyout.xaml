@@ -81,8 +81,11 @@
                 <Label Foreground="White">Cols:</Label>
                 <TextBox x:Name="TextBoxNumCols" Width="50" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="3"/>
                 <Button x:Name="ButtonResize" Content="Resize" Padding="10,0,10,0" Margin="10,2,2,2" Click="Button_Click"/>
-                <CheckBox x:Name="CheckBoxReplaceFailed" Content="Replace failed matches: " Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
-                <TextBox x:Name="TextBoxFailText" Width="100" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="2" Text=""/>
+                <CheckBox x:Name="CheckBoxActInHierarchy" Content="Act in hierarchy " Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="CheckBoxReplaceFailed" Content="Replace failed matches: " Foreground="White" VerticalContentAlignment="Center" Margin="10,0,0,0"/>
+                    <TextBox x:Name="TextBoxFailText" Width="100" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Margin="2" Text=""/>
+                </StackPanel>
             </WrapPanel>
 
             <ScrollViewer x:Name="ScrollViewGrids" Grid.Row="3" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2"

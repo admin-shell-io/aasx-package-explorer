@@ -157,8 +157,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         }
 
         private void ExportTable_EnumerateSubmodel(
-            ExportTableAasEntitiesList list, AdminShell.AdministrationShellEnv env,
-            bool broadSearch, int depth,
+            List<ExportTableAasEntitiesList> list, AdminShell.AdministrationShellEnv env,
+            bool broadSearch, bool actInHierarchy, int depth,
             AdminShell.Submodel sm, AdminShell.SubmodelElement sme)
         {
             // check
@@ -172,9 +172,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             AdminShell.IEnumerateChildren coll = null;
             if (sme == null)
             {
-
                 // yield SM
-                list.Add(new ExportTableAasEntitiesItem(depth, sm: sm));
+                // MIHO 21-11-24: IMHO this makes no sense
+                // list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
 
                 // use collection
                 coll = sm;
@@ -186,6 +186,22 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     coll = (sme as AdminShell.IEnumerateChildren);
             }
 
+            // prepare listItem
+            ExportTableAasEntitiesList listItem = null;
+            if (!actInHierarchy)
+            {
+                // add everything in one list
+                if (list.Count < 1)
+                    list.Add(new ExportTableAasEntitiesList());
+                listItem = list[0];
+            }
+            else
+            {
+                // create a new list for each recursion
+                listItem = new ExportTableAasEntitiesList();
+                list.Add(listItem);
+            }
+
             // pass 1: process value
             if (coll != null)
                 foreach (var ci in coll.EnumerateChildren())
@@ -193,13 +209,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     // gather data for this entity
                     var sme2 = ci.submodelElement;
                     var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
-                    list.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd));
+
+                    // add
+                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd, parentSm: sm, parentSme: sme));
 
                     // go directly deeper?
                     if (!broadSearch && ci.submodelElement != null &&
                         ci.submodelElement is AdminShell.IEnumerateChildren)
                         ExportTable_EnumerateSubmodel(
-                            list, env, broadSearch: false, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
+                            list, env, broadSearch: false, actInHierarchy, 
+                            depth: 1 + depth, sm: sm, sme: ci.submodelElement);
                 }
 
             // pass 2: go for recursion AFTER?
@@ -209,7 +228,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     foreach (var ci in coll.EnumerateChildren())
                         if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
                             ExportTable_EnumerateSubmodel(
-                                list, env, broadSearch: true, depth: 1 + depth, sm: sm, sme: ci.submodelElement);
+                                list, env, broadSearch: true, actInHierarchy, 
+                                depth: 1 + depth, sm: sm, sme: ci.submodelElement);
             }
         }
 
@@ -218,8 +238,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
         {
             // prepare list of items to be exported
-            var list = new ExportTableAasEntitiesList();
-            ExportTable_EnumerateSubmodel(list, env, broadSearch: false, depth: 1, sm: sm, sme: null);
+            var list = new List<ExportTableAasEntitiesList>();
+            ExportTable_EnumerateSubmodel(list, env, broadSearch: false, 
+                actInHierarchy: job.ActInHierarchy, depth: 1, sm: sm, sme: null);
 
             // get the output file
             var dlg = new Microsoft.Win32.SaveFileDialog();
@@ -272,14 +293,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var success = false;
                     try
                     {
+                        // TODO: change list[0]!!
+
                         if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                            success = job.ExportTabSeparated(dlg.FileName, list);
+                            success = job.ExportTabSeparated(dlg.FileName, list[0]);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                            success = job.ExportLaTex(dlg.FileName, list);
+                            success = job.ExportLaTex(dlg.FileName, list[0]);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
                             success = job.ExportExcel(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                            success = job.ExportWord(dlg.FileName, list);
+                            success = job.ExportWord(dlg.FileName, list[0]);
                     }
                     catch
                     {

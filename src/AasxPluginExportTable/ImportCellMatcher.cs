@@ -1,4 +1,13 @@
-﻿using AdminShellNS;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,10 +25,17 @@ namespace AasxPluginExportTable
     public class ImportCellMatchContextBase
     {
         /// <summary>
-        /// The information is collected as SubmodelElements in order to be re-factored accordingly
+        /// The information is collected as SubmodelElements in order to be re-factored accordingly.
+        /// Parent denotes the container, in which the SMEs are to be found (the "table head").
+        /// SME are expressed by single table rows.
         /// </summary>
         public AdminShell.SubmodelElement Parent, Sme;
         public AdminShell.ConceptDescription CD;
+
+        /// <summary>
+        /// For identification purposes, the parent even of the parent is to be specified.
+        /// </summary>
+        public string ParentParentName, SmeParentName;
 
         /// <summary>
         /// The desired element type will be evaluated AFTER the collection phase.
@@ -46,6 +62,8 @@ namespace AasxPluginExportTable
         {
             ParentElemName = "";
             SmeElemName = "";
+            ParentParentName = "";
+            SmeParentName = "";
             ParentValue = "";
             SmeValue = "";
             Parent = new AdminShell.SubmodelElement();
@@ -150,7 +168,7 @@ namespace AasxPluginExportTable
 
         private bool MatchEntity(
             AdminShell.SubmodelElement elem, string preset, string cell, 
-            ref string elemName, ref string valueStr,
+            ref string parentName, ref string elemName, ref string valueStr,
             bool allowMultiplicity = false)
         {
             // access
@@ -176,6 +194,9 @@ namespace AasxPluginExportTable
             // lambda trick to save {}
             var res = false;
             Func<string, string> commit = (s) => { res = true; return s; };
+
+            if (preset == "parent")
+                parentName = commit(cell);
 
             if (preset == "idShort")
                 elem.idShort = commit(cell);
@@ -244,11 +265,11 @@ namespace AasxPluginExportTable
             // try break down into pieces
             if (Preset.StartsWith("%Parent.") && Preset.EndsWith("%"))
                 return MatchEntity(context.Parent, Preset.Substring(8, Preset.Length - 9), cell, 
-                    ref context.ParentElemName, ref context.ParentValue);
+                    ref context.ParentParentName, ref context.ParentElemName, ref context.ParentValue);
 
             if (Preset.StartsWith("%SME.") && Preset.EndsWith("%"))
                 return MatchEntity(context.Sme, Preset.Substring(5, Preset.Length - 6), cell, 
-                    ref context.SmeElemName, ref context.SmeValue, allowMultiplicity: true);
+                    ref context.SmeParentName, ref context.SmeElemName, ref context.SmeValue, allowMultiplicity: true);
 
             if (Preset.StartsWith("%CD.") && Preset.EndsWith("%"))
                 return MatchEntity(context.CD, Preset.Substring(4, Preset.Length - 5), cell);

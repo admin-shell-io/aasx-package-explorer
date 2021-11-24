@@ -1,4 +1,13 @@
-﻿using AasxIntegrationBase;
+﻿/*
+Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using AasxIntegrationBase;
 using AdminShellNS;
 using System;
 using System.Collections.Generic;
@@ -176,7 +185,7 @@ namespace AasxPluginExportTable
 
         protected ContextResult CreateTopReferable(
             ImportCellMatchContextBase context,
-            bool addInHierarchy = false)
+            bool actInHierarchy = false)
         {
             // access
             if (context?.Parent == null || _sm == null)
@@ -203,24 +212,8 @@ namespace AasxPluginExportTable
                 };
 
                 // kind of manually take over data
-                if (context.Parent.description != null)
-                    _sm.description = context.Parent.description;
-
-                if (context.Parent.idShort.HasContent())
-                    _sm.idShort = context.Parent.idShort;
-
-                if (context.Parent.category.HasContent())
-                    _sm.category = context.Parent.category;
-
-                if (context.Parent.semanticId != null)
-                    _sm.semanticId = context.Parent.semanticId;
-
-                if (context.Parent.qualifiers != null)
-                {
-                    if (_sm.qualifiers == null)
-                        _sm.qualifiers = new AdminShell.QualifierCollection();
-                    _sm.qualifiers.AddRange(context.Parent.qualifiers);
-                }
+                // this changes the actual data of the Submodel the plugin is associated with!
+                AasConvertHelper.TakeOverSmeToSm(context.Parent, _sm);
 
                 // ok
                 return res;
@@ -241,15 +234,46 @@ namespace AasxPluginExportTable
                 Wrappers = smesmc.value
             };
 
-            if (!addInHierarchy)
+            // try to act within the hierarchy
+            // does only search SME but no SM, however, this is not a flaw, as adding to SM is the default
+            if (actInHierarchy && context.ParentParentName.HasContent() && context.Parent.idShort.HasContent())
             {
-                // simply add directly to SM
-                _sm.Add(sme);
-                return res;
+                foreach (var rootsmc in _sm.submodelElements.FindDeep<AdminShell.SubmodelElementCollection>((testsmc) =>
+                {
+                    // first condition is, that the parents match!
+                    if (!testsmc.idShort.HasContent() || testsmc.parent == null)
+                        return false;
+                    if (!context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim()))
+                        return false;
+
+                    // next is, that some part of of given idSHort match the idShort of children
+                    // of investigated SMC
+                    var parts = context.Parent.idShort.Split(new[] { ',', ';', '|' }, 
+                                    StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var part in parts)
+                        if (part?.Trim().ToLower() == testsmc.idShort.Trim().ToLower())
+                            return true;
+
+                    // not found
+                    return false;
+                }))
+                {
+                    // rootsmc contains a valid SMC to the above criteria
+                    // NOTHING needs to be added; found SMC needs to be given back
+                    res.Elem = rootsmc;
+                    res.Wrappers = rootsmc.value;
+
+                    // need to adopt the rootsmc further by parent information??
+                    ;
+
+                    // ok
+                    return res;
+                }
             }
 
-            // no!
-            throw new NotImplementedException("addInHierarchy");
+            // simply add new SMC directly to SM
+            _sm.Add(sme);
+            return res;
         }
 
         protected ContextResult CreateBodySme(
@@ -270,6 +294,7 @@ namespace AasxPluginExportTable
             // create, add
             var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(fen.NameEnum, context.Sme);
             refTop.Wrappers.Add(sme);
+            sme.parent = refTop.Elem; // unfortunately required, ass Wrapper.Add() cannot set parent :-(
             var res = new ContextResult() { Elem = sme };
 
             // allow a selection a values
@@ -393,7 +418,7 @@ namespace AasxPluginExportTable
                     _log?.Info($"  found matching TOP!");
 
                     // care for the (containg) top element
-                    var refTop = CreateTopReferable(contextTop);
+                    var refTop = CreateTopReferable(contextTop, actInHierarchy: _job.ActInHierarchy);
                     if (refTop == null)
                     {
                         _log?.Info($"  error creating data for TOP! Skipping!");

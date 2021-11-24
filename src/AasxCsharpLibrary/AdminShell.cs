@@ -1486,6 +1486,11 @@ namespace AdminShellNS
                 }
                 return r;
             }
+
+            public override string ToString()
+            {
+                return $"{str}@{lang}";
+            }
         }
 
         public class ListOfLangStr : List<LangStr>
@@ -1554,6 +1559,11 @@ namespace AdminShellNS
                 return true;
             }
 
+            public override string ToString()
+            {
+                return string.Join(", ", this.Select((ls) => ls.ToString()));
+            }
+
             //public static ListOfLangStr Parse(string cell)
             //{
             //    // access
@@ -1575,7 +1585,7 @@ namespace AdminShellNS
             //            lang = parts[i + 1];
             //        res.Add(new LangStr(lang, str));
             //    }
-                                
+
             //    return res;
             //}
 

@@ -22,6 +22,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
+using AasxIntegrationBase;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -33,18 +34,32 @@ namespace AasxPluginExportTable
     public class ExportTableAasEntitiesItem
     {
         public int depth;
+
+        /// <summary>
+        /// This element carries data from either SM or SME. Only a conveyor for the parent data.
+        /// </summary>
+        public AdminShell.Submodel Parent;
+
         public AdminShell.Submodel sm;
         public AdminShell.SubmodelElement sme;
         public AdminShell.ConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
             int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null,
-            AdminShell.ConceptDescription cd = null)
+            AdminShell.ConceptDescription cd = null, 
+            AdminShell.Submodel parentSm = null, AdminShell.SubmodelElement parentSme = null)
         {
             this.depth = depth;
             this.sm = sm;
             this.sme = sme;
             this.cd = cd;
+            if (parentSm != null)
+                this.Parent = parentSm;
+            if (parentSme != null)
+            {
+                this.Parent = new AdminShell.Submodel();
+                AasConvertHelper.TakeOverSmeToSm(parentSme, this.Parent);
+            }
         }
     }
 
@@ -83,6 +98,8 @@ namespace AasxPluginExportTable
 
         public bool ReplaceFailedMatches = false;
         public string FailText = "";
+
+        public bool ActInHierarchy = false;
 
         // Note: the records contains elements for 1 + Rows, 1 + Columns fields
         public List<string> Top = new List<string>();
@@ -231,6 +248,11 @@ namespace AasxPluginExportTable
             {
                 if (lss == null)
                     return;
+
+                // entity in total
+                rep(head, "" + lss.ToString());
+
+                // single entities
                 foreach (var ls in lss)
                     repLangStr(head, ls);
             }
@@ -355,6 +377,7 @@ namespace AasxPluginExportTable
                 if (this.Item != null)
                 {
                     // shortcuts
+                    var par = this.Item.Parent;
                     var sm = this.Item.sm;
                     var sme = this.Item.sme;
                     var cd = this.Item.cd;
@@ -362,6 +385,19 @@ namespace AasxPluginExportTable
                     // general for the item
                     rep("depth", "" + this.Item.depth);
                     rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
+
+                    //-1- {Parent}
+                    if (par != null)
+                    {
+                        var head = "Parent.";
+                        repReferable(head, par);
+                        repModelingKind(head, par.kind);
+                        repQualifiable(head, par.qualifiers);
+                        repMultiplicty(head, par.qualifiers);
+                        repIdentifiable(head, par);
+                        //-1- {Reference} = {semanticId, isCaseOf, unitId}
+                        repReference(head, "semanticId", par.semanticId);
+                    }
 
                     //-1- {Referable} = {SM, SME, CD}
                     if (sm != null)
@@ -801,10 +837,10 @@ namespace AasxPluginExportTable
             }
         }
 
-        public bool ExportExcel(string fn, ExportTableAasEntitiesList iterateAasEntities)
+        public bool ExportExcel(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (!IsValid() || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
                 return false;
 
             //
@@ -821,48 +857,27 @@ namespace AasxPluginExportTable
             //
 
             int rowIdx = 1;
-            int startRowIdx = rowIdx;
 
-            // header
-            if (true)
+            // over entities
+            foreach (var entities in iterateAasEntities)
             {
-                var proc = new ItemProcessor(this, null);
-                proc.Start();
+                // start
 
-                for (int ri = 0; ri < this.RowsTop; ri++)
+                int startRowIdx = rowIdx;
+
+                // header
+                if (true)
                 {
-                    for (int ci = 0; ci < this.Cols; ci++)
-                    {
-                        // get cell record
-                        var cr = GetTopCell(ri, ci);
-
-                        // process text
-                        proc.ProcessCellRecord(cr);
-
-                        // add
-                        ExportExcel_AppendTableCell(ws, cr, rowIdx + ri, 1 + ci);
-                    }
-                }
-
-                rowIdx += this.RowsTop;
-            }
-
-            // elements
-            if (true)
-            {
-                foreach (var item in iterateAasEntities)
-                {
-                    // create processing
-                    var proc = new ItemProcessor(this, item);
+                    // in order to access the parent information, take the first entity
+                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
                     proc.Start();
 
-                    // all elements
-                    for (int ri = 0; ri < this.RowsBody; ri++)
+                    for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetBodyCell(ri, ci);
+                            var cr = GetTopCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -872,59 +887,92 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    // export really?
-                    if (proc.NumberReplacements > 0)
-                    {
-                        // advance
-                        rowIdx += this.RowsBody;
-                    }
-                    else
-                    {
-                        // delete this out
-                        var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
-                        rng.Clear();
-                    }
+                    rowIdx += this.RowsTop;
                 }
-            }
 
-            // some modifications on the whole table?
-            if (true)
-            {
-                if (rowIdx > startRowIdx + 1)
+                // elements
+                if (true)
                 {
-                    // do a explicit process of overall table cell
-                    var proc = new ItemProcessor(this, null);
-                    proc.Start();
-                    var cr = GetTopCell(0, 0);
-                    proc.ProcessCellRecord(cr);
-
-                    // borders?
-                    if (cr.Frame != null)
+                    foreach (var item in entities)
                     {
-                        var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+                        // create processing
+                        var proc = new ItemProcessor(this, item);
+                        proc.Start();
 
-                        if (cr.Frame == "1")
+                        // all elements
+                        for (int ri = 0; ri < this.RowsBody; ri++)
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            for (int ci = 0; ci < this.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                ExportExcel_AppendTableCell(ws, cr, rowIdx + ri, 1 + ci);
+                            }
                         }
 
-                        if (cr.Frame == "2")
+                        // export really?
+                        if (proc.NumberReplacements > 0)
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            // advance
+                            rowIdx += this.RowsBody;
                         }
-
-                        if (cr.Frame == "3")
+                        else
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thick;
+                            // delete this out
+                            var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
+                            rng.Clear();
                         }
                     }
-
-                    // column widths
-                    ws.Columns(1, this.Cols).AdjustToContents();
                 }
+
+                // some modifications on the whole table?
+                if (true)
+                {
+                    if (rowIdx > startRowIdx + 1)
+                    {
+                        // do a explicit process of overall table cell
+                        var proc = new ItemProcessor(this, null);
+                        proc.Start();
+                        var cr = GetTopCell(0, 0);
+                        proc.ProcessCellRecord(cr);
+
+                        // borders?
+                        if (cr.Frame != null)
+                        {
+                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+
+                            if (cr.Frame == "1")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            }
+
+                            if (cr.Frame == "2")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            }
+
+                            if (cr.Frame == "3")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thick;
+                            }
+                        }
+
+                        // column widths
+                        ws.Columns(1, this.Cols).AdjustToContents();
+                    }
+                }
+
+                // leave some lines blank
+
+                rowIdx += 2;
             }
 
             //
