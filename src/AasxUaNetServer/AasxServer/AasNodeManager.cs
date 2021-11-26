@@ -177,13 +177,6 @@ namespace AasOpcUaServer
                         continue;
                     visitedNodeIds.Add(it.NodeId, 1);
 
-                    //if (it.BrowseName == "AASIrdiConceptDescriptionType")
-                    //{
-                    //    var x = it.References.ToList();
-                    //    x.RemoveAt(7);
-                    //    it.References = x.ToArray();
-                    //};
-
                     // try to remove double references
                     if (it.References != null)
                     {
@@ -309,7 +302,8 @@ namespace AasOpcUaServer
 
                     // Root of whole structure is special, needs to link to external reference
 
-                    builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, fakeObjects, "AASROOT");
+                    builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance,
+                        fakeObjects, "AASROOT");
                     builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
