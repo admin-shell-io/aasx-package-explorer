@@ -175,6 +175,7 @@ namespace AasxPluginExportTable
             if (elem == null || preset == null || cell == null)
                 return false;
 
+#if _not_anymore_required
             // elementName
             if (preset == "elementName")
             {
@@ -190,10 +191,14 @@ namespace AasxPluginExportTable
                 elemName = cell;
                 return true;
             }
+#endif
 
             // lambda trick to save {}
             var res = false;
             Func<string, string> commit = (s) => { res = true; return s; };
+
+            if (preset == "elementName")
+                elemName = commit(cell);
 
             if (preset == "parent")
                 parentName = commit(cell);

@@ -172,7 +172,7 @@ namespace AasxPluginExportTable
                 }
 
                 // has to be a SME type
-                var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum2(res.Name, useAbbrev: true);
+                var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum2(res.Name, useShortName: true);
                 if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                     return null;
 
@@ -332,6 +332,11 @@ namespace AasxPluginExportTable
             if (context?.Sme == null || context?.CD == null || env == null || _options == null)
                 return null;
 
+            // first test, if the CD already exists
+            var test = env.FindConceptDescription(context.Sme.semanticId);
+            if (test != null)
+                return new ContextResult() { Elem = test };
+
             // a semanticId is required to link the Sme and the CD together
             if (context.Sme.semanticId == null || context.Sme.semanticId.Count < 1)
             {
@@ -355,7 +360,11 @@ namespace AasxPluginExportTable
             if (sid == null)
                 // should not happen, see above
                 return null;
-            cd.identification = new AdminShell.Identification(sid.idType, sid.value);           
+            cd.identification = new AdminShell.Identification(sid.idType, sid.value);
+
+            // some further attributes
+            if (!cd.idShort.HasContent())
+                cd.idShort = context.Sme.idShort;
 
             // ok
             return res;

@@ -781,13 +781,19 @@ namespace AdminShellNS
         {
             public string ElementName = "";
             public string ElementAbbreviation = "";
+            public SubmodelElementWrapper.AdequateElementEnum ElementEnum = 
+                SubmodelElementWrapper.AdequateElementEnum.Unknown;
 
             public AasElementSelfDescription() { }
 
-            public AasElementSelfDescription(string ElementName, string ElementAbbreviation)
+            public AasElementSelfDescription(
+                string ElementName, string ElementAbbreviation, 
+                SubmodelElementWrapper.AdequateElementEnum elementEnum 
+                    = SubmodelElementWrapper.AdequateElementEnum.Unknown)
             {
                 this.ElementName = ElementName;
                 this.ElementAbbreviation = ElementAbbreviation;
+                this.ElementEnum = elementEnum;
             }
         }
 
@@ -5505,7 +5511,7 @@ namespace AdminShellNS
             "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
             "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
-            public static string[] AdequateElementAbbrev = { null, "SMC", null,
+            public static string[] AdequateElementShortName = { null, "SMC", null,
             "MLP", null, null, null, "Ref", "Rel",
             "ARel", null, null, "Event", "Entity" };
 
@@ -5593,9 +5599,9 @@ namespace AdminShellNS
             }
 
             /// <summary>
-            /// This version uses the element name array and allows using abbreviations
+            /// This version uses the element name array and allows using ShortName
             /// </summary>
-            public static AdequateElementEnum GetAdequateEnum2(string adequateName, bool useAbbrev = false)
+            public static AdequateElementEnum GetAdequateEnum2(string adequateName, bool useShortName = false)
             {
                 if (adequateName == null)
                     return AdequateElementEnum.Unknown;
@@ -5603,10 +5609,10 @@ namespace AdminShellNS
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
                     if (( (int)en < AdequateElementNames.Length
                           && AdequateElementNames[(int)en].Trim().ToLower() == adequateName.Trim().ToLower())
-                        || (useAbbrev
-                          && (int)en < AdequateElementAbbrev.Length
-                          && AdequateElementAbbrev[(int)en] != null
-                          && AdequateElementAbbrev[(int)en].Trim().ToLower() == adequateName.Trim().ToLower()))
+                        || (useShortName
+                          && (int)en < AdequateElementShortName.Length
+                          && AdequateElementShortName[(int)en] != null
+                          && AdequateElementShortName[(int)en].Trim().ToLower() == adequateName.Trim().ToLower()))
                         return en;
 
                 return AdequateElementEnum.Unknown;
@@ -5697,6 +5703,23 @@ namespace AdminShellNS
                 if (dsc?.ElementAbbreviation == null)
                     return ("Null");
                 return dsc.ElementAbbreviation;
+            }
+
+            public static string GetElementNameByAdequateType(SubmodelElement sme)
+            {
+                // access
+                var sd = sme.GetSelfDescription();
+                if (sd == null || sd.ElementEnum == AdequateElementEnum.Unknown)
+                    return null;
+                var en = sd.ElementEnum;
+
+                // get the names
+                string res = null;
+                if ((int)en < AdequateElementNames.Length)
+                    res = AdequateElementNames[(int)en].Trim();
+                if ((int)en < AdequateElementShortName.Length && AdequateElementShortName[(int)en] != null)
+                    res = AdequateElementShortName[(int)en].Trim();
+                return res;
             }
 
             public static ListOfSubmodelElement ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
@@ -6891,7 +6914,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Property", "Prop");
+                return new AasElementSelfDescription("Property", "Prop", 
+                    SubmodelElementWrapper.AdequateElementEnum.Property);
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -6980,7 +7004,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("MultiLanguageProperty", "MLP");
+                return new AasElementSelfDescription("MultiLanguageProperty", "MLP",
+                    SubmodelElementWrapper.AdequateElementEnum.MultiLanguageProperty);
             }
 
             public MultiLanguageProperty Set(LangStringSet ls)
@@ -7086,7 +7111,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Range", "Range");
+                return new AasElementSelfDescription("Range", "Range",
+                    SubmodelElementWrapper.AdequateElementEnum.Range);
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -7159,7 +7185,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Blob", "Blob");
+                return new AasElementSelfDescription("Blob", "Blob",
+                    SubmodelElementWrapper.AdequateElementEnum.Blob);
             }
 
         }
@@ -7227,7 +7254,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("File", "File");
+                return new AasElementSelfDescription("File", "File",
+                    SubmodelElementWrapper.AdequateElementEnum.File);
             }
 
             public static string[] GetPopularMimeTypes()
@@ -7309,7 +7337,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("ReferenceElement", "Ref");
+                return new AasElementSelfDescription("ReferenceElement", "Ref",
+                    SubmodelElementWrapper.AdequateElementEnum.ReferenceElement);
             }
 
         }
@@ -7378,7 +7407,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("RelationshipElement", "Rel");
+                return new AasElementSelfDescription("RelationshipElement", "Rel",
+                    SubmodelElementWrapper.AdequateElementEnum.RelationshipElement);
             }
         }
 
@@ -7519,7 +7549,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
+                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA",
+                    SubmodelElementWrapper.AdequateElementEnum.AnnotatedRelationshipElement);
             }
 
 
@@ -7535,7 +7566,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Capability", "Cap");
+                return new AasElementSelfDescription("Capability", "Cap",
+                    SubmodelElementWrapper.AdequateElementEnum.Capability);
             }
         }
 
@@ -7711,7 +7743,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
+                return new AasElementSelfDescription("SubmodelElementCollection", "SMC",
+                    SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection);
             }
 
         }
@@ -8014,7 +8047,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Operation", "Opr");
+                return new AasElementSelfDescription("Operation", "Opr", 
+                    SubmodelElementWrapper.AdequateElementEnum.Operation);
             }
         }
 
@@ -8195,7 +8229,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Entity", "Ent");
+                return new AasElementSelfDescription("Entity", "Ent",
+                    SubmodelElementWrapper.AdequateElementEnum.Entity);
             }
         }
 
@@ -8239,7 +8274,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("BasicEvent", "Evt");
+                return new AasElementSelfDescription("BasicEvent", "Evt",
+                    SubmodelElementWrapper.AdequateElementEnum.BasicEvent);
             }
         }
 

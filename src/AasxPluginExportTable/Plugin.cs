@@ -211,7 +211,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
 
                     // add
-                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd, parentSm: sm, parentSme: sme));
+                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd, parent: coll as AdminShell.Referable));
 
                     // go directly deeper?
                     if (!broadSearch && ci.submodelElement != null &&
@@ -302,7 +302,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
                             success = job.ExportExcel(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                            success = job.ExportWord(dlg.FileName, list[0]);
+                            success = job.ExportWord(dlg.FileName, list);
                     }
                     catch
                     {
