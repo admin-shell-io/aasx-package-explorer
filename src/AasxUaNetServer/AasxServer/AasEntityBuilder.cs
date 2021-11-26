@@ -323,7 +323,7 @@ namespace AasOpcUaServer
 
         public ReferenceTypeState CreateAddReferenceType(
             string browseDisplayName, string inverseName,
-            uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null)
+            uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null, ExpandedNodeId extraSubtype = null)
         {
             // create node itself
             var x = new ReferenceTypeState();
@@ -341,6 +341,9 @@ namespace AasOpcUaServer
             nodeMgr.AddExternalReferencePublic(sourceId, ReferenceTypeIds.HasSubtype, false,
                 x.NodeId, nodeMgrExternalReferences);
 
+            if (extraSubtype != null)
+                x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: false, extraSubtype);
+
             // done
             return x;
         }
@@ -349,7 +352,8 @@ namespace AasOpcUaServer
         //
 
         public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode,
-            NodeState parent, string browseDisplayName)
+            NodeState parent, string browseDisplayName,
+            NodeId extraParentNodeId = null)
         {
             var x = new FolderState(parent);
             x.BrowseName = browseDisplayName;
@@ -359,6 +363,7 @@ namespace AasOpcUaServer
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
+
             return x;
         }
 

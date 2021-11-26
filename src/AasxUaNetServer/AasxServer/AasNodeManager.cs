@@ -176,6 +176,44 @@ namespace AasOpcUaServer
                     if (visitedNodeIds.ContainsKey(it.NodeId))
                         continue;
                     visitedNodeIds.Add(it.NodeId, 1);
+
+                    //if (it.BrowseName == "AASIrdiConceptDescriptionType")
+                    //{
+                    //    var x = it.References.ToList();
+                    //    x.RemoveAt(7);
+                    //    it.References = x.ToArray();
+                    //};
+
+                    // try to remove double references
+                    if (it.References != null)
+                    {
+                        var newrefs = new List<Opc.Ua.Export.Reference>();
+                        foreach (var oldref in it.References)
+                        {
+                            // trivial
+                            if (oldref == null)
+                                continue;
+
+                            // brute force check if already there
+                            var found = false;
+                            foreach (var nr in newrefs)
+                                if (oldref.ReferenceType == nr.ReferenceType
+                                    && oldref.IsForward == nr.IsForward
+                                    && oldref.Value == nr.Value)
+                                {
+                                    found = true;
+                                    break;
+                                }
+
+                            // if not, add
+                            if (!found)
+                                newrefs.Add(oldref);
+                        }
+                        // only change when necessary (reduce the impact)
+                        if (it.References.Length != newrefs.Count)
+                            it.References = newrefs.ToArray();
+                    }
+
                     nodup.Add(it);
                 }
 #endif
@@ -264,8 +302,15 @@ namespace AasOpcUaServer
                 {
                     var builder = new AasEntityBuilder(this, thePackageEnv, null, this.theServerOptions);
 
+                    // Overall root node is "Objects"
+                    // Note: it would be better to already have the "Objects" NodeState, but not
+                    // clear how to find ..
+                    var fakeObjects = new BaseObjectState(null) { NodeId = new NodeId(85, 0) };
+
                     // Root of whole structure is special, needs to link to external reference
-                    builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, null, "AASROOT");
+
+                    builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance, fakeObjects, "AASROOT");
+                    builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
@@ -297,11 +342,13 @@ namespace AasOpcUaServer
 #pragma warning restore 162
 #else
                     {
-                        // create folder(s) under root
-                        var topOfDict = builder.CreateAddObject(null,
+                        // create folder(s) under "Objects"
+                        var topOfDict = builder.CreateAddObject(fakeObjects,
                             AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
                             referenceTypeFromParentId: null,
                             typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
+
                         // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                         // 2253 = Objects?
                         this.AddExternalReferencePublic(new NodeId(2253, 0),
