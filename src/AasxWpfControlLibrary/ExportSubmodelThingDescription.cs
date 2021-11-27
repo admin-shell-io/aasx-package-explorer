@@ -19,8 +19,8 @@ using System.Xml;
 using AdminShellNS;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace AasxPackageExplorer
 {
@@ -181,7 +181,8 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static List<JToken> enumELement(AdminShell.QualifierCollection qualCollection){
+        public static List<JToken> enumELement(AdminShell.QualifierCollection qualCollection)
+        {
 
             List<JToken> enums = new List<JToken>();
             foreach (AdminShell.Qualifier _enumQual in qualCollection)
@@ -224,7 +225,7 @@ namespace AasxPackageExplorer
                 }
                 else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems")
                 {
-                    semJObject[smQualifier.type] =  Convert.ToUInt32(smQualifier.value);
+                    semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
                 }
                 else
                 {
@@ -288,7 +289,7 @@ namespace AasxPackageExplorer
                 string dsType = semJObject["type"].ToString();
                 if (dsType == "array")
                 {
-                    JObject arrayObject =  createArraySchema(sem);
+                    JObject arrayObject = createArraySchema(sem);
                     if (arrayObject.ContainsKey("items"))
                     {
                         semJObject["items"] = arrayObject["items"];
@@ -309,13 +310,13 @@ namespace AasxPackageExplorer
                 if (dsType == "integer")
                 {
                     List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
-                    foreach(string elem in integerSchema)
+                    foreach (string elem in integerSchema)
                     {
                         foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                         {
                             if (elem == semQual.type)
                             {
-                                semJObject[semQual.type] =  (int) Convert.ToDouble(semQual.value);
+                                semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
                             }
                         }
                     }
@@ -355,7 +356,7 @@ namespace AasxPackageExplorer
                 }
             }
 
-                    return semJObject;
+            return semJObject;
         }
         public static JObject createTDProperties(AdminShell.SubmodelElement propertiesSem)
         {
@@ -364,7 +365,7 @@ namespace AasxPackageExplorer
             foreach (AdminShell.SubmodelElementWrapper _tempProperty in _tempCollection.EnumerateChildren())
             {
                 AdminShell.SubmodelElement _propoerty = _tempProperty.submodelElement;
-                JObject propetyJObject =  createInteractionAvoidance(_propoerty);
+                JObject propetyJObject = createInteractionAvoidance(_propoerty);
                 if (propetyJObject.ContainsKey("observable"))
                 {
                     propetyJObject["observable"] = Convert.ToBoolean(propetyJObject["observable"]);
@@ -382,7 +383,7 @@ namespace AasxPackageExplorer
                 AdminShell.SubmodelElement _action = _tempAction.submodelElement;
                 JObject actionJObject = createInteractionAvoidance(_action);
                 AdminShell.SubmodelElementCollection _actionItems = new AdminShell.SubmodelElementCollection(_action);
-                foreach(AdminShell.SubmodelElementWrapper _tempActionItem in _actionItems.EnumerateChildren())
+                foreach (AdminShell.SubmodelElementWrapper _tempActionItem in _actionItems.EnumerateChildren())
                 {
                     AdminShell.SubmodelElement _actionItem = _tempActionItem.submodelElement;
                     if (_actionItem.idShort == "input")
@@ -442,7 +443,7 @@ namespace AasxPackageExplorer
             {
                 AdminShell.SubmodelElement link = _tempLink.submodelElement;
                 JObject jObject = new JObject();
-                foreach(AdminShell.Qualifier linkItem in link.qualifiers)
+                foreach (AdminShell.Qualifier linkItem in link.qualifiers)
                 {
                     jObject[linkItem.type] = linkItem.value;
                 }
@@ -460,7 +461,7 @@ namespace AasxPackageExplorer
             {
                 securityList.Add(_security.value);
             }
-            JObject securityJObject = new JObject() ;
+            JObject securityJObject = new JObject();
             securityJObject["security"] = JToken.FromObject(securityList);
             return securityJObject;
         }
@@ -491,7 +492,7 @@ namespace AasxPackageExplorer
                 {
                     sschemaJOBject["description"] = tdDescription[0].str;
                 }
-                
+
             }
 
             return sschemaJOBject;
@@ -562,7 +563,8 @@ namespace AasxPackageExplorer
         public static JObject ExportSMtoJson(AdminShell.Submodel sm)
         {
             JObject exportData = new JObject();
-            try {
+            try
+            {
                 JObject TDJson = new JObject();
                 if (sm.qualifiers != null)
                 {
@@ -624,7 +626,7 @@ namespace AasxPackageExplorer
                             List<object> typeList = new List<object>();
                             foreach (AdminShell.Qualifier _typeQual in tdElement.qualifiers)
                             {
-                                 typeList.Add((_typeQual.value));
+                                typeList.Add((_typeQual.value));
 
                             }
                             TDJson["@type"] = JToken.FromObject(typeList);

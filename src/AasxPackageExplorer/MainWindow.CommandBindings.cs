@@ -539,7 +539,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "tdimport")
                 CommandBinding_TDImport();
-            
+
             if (cmd == "submodeltdexport")
                 CommandBinding_SubmodelTDExport();
 
@@ -669,7 +669,7 @@ namespace AasxPackageExplorer
                             "Unable to Import the JSON LD File", "Check the log"
                             ,
                             AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                            Log.Singleton.Error(importObject["error"].ToString(), "When importing the jsonld document");
+                        Log.Singleton.Error(importObject["error"].ToString(), "When importing the jsonld document");
                     }
                     else
                     {
@@ -2446,20 +2446,20 @@ namespace AasxPackageExplorer
             var res = dlg.ShowDialog();
             if (res == true)
             {
-                JObject exportData =  TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
+                JObject exportData = TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
                 if (exportData["status"].ToString() == "success")
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     using (var s = new StreamWriter(dlg.FileName))
                     {
                         string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"], Newtonsoft.Json.Formatting.Indented);
-                        s.WriteLine(output); 
+                        s.WriteLine(output);
                     }
                 }
                 else
                 {
                     MessageBoxFlyoutShow(
-                            "Unable to Import the JSON LD File" , exportData["data"].ToString(),
+                            "Unable to Import the JSON LD File", exportData["data"].ToString(),
                             AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 }
 

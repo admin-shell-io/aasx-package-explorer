@@ -19,14 +19,15 @@ using System.Xml;
 using AdminShellNS;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace AasxPackageExplorer
 {
     public static class TDSemanticId
     {
-        public static JObject semanticIDJObject = new JObject {
+        public static JObject semanticIDJObject = new JObject
+        {
             // td Schema
             ["Thing"] = "https://www.w3.org/2019/wot/td#Thing",
             ["@type"] = "tbd",
@@ -36,7 +37,7 @@ namespace AasxPackageExplorer
             ["titles"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#title",
             ["description"] = "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#description",
             ["descriptions"] = "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#description",
-            
+
             ["created"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#created",
             ["modified"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#modified",
             ["support"] = "tbd",
@@ -135,7 +136,7 @@ namespace AasxPackageExplorer
 
             ["profile"] = "tbd",
 
-            
+
             ["op"] = "tbd",
 
             ["success"] = "https://www.w3.org/2019/wot/hypermedia#isSuccess",
@@ -170,7 +171,7 @@ namespace AasxPackageExplorer
             ["actions"] = "tbd",
             ["scope"] = "tbd",
             ["uriVariables"] = "tbd",
-            
+
             ["scheme"] = "tbd",
 
 
@@ -190,7 +191,7 @@ namespace AasxPackageExplorer
         };
         public static string getSemanticID(string tdType)
         {
-            if(semanticIDJObject.ContainsKey(tdType))
+            if (semanticIDJObject.ContainsKey(tdType))
             {
                 return semanticIDJObject[tdType].ToString();
             }

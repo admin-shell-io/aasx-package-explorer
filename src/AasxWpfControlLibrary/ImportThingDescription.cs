@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,12 +17,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
-using System.Globalization;
 using AdminShellNS;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace AasxPackageExplorer
 {
@@ -33,12 +33,12 @@ namespace AasxPackageExplorer
             //bool idValid = tdJObject.IsValid(tdSchema);
             return false;
         }
-        
+
         // TD DataSchema Sub classes
-        public static AdminShell.SubmodelElementCollection BuildArraySchema( AdminShell.SubmodelElementCollection dsCollection, JObject arrayJObject)
+        public static AdminShell.SubmodelElementCollection BuildArraySchema(AdminShell.SubmodelElementCollection dsCollection, JObject arrayJObject)
         {
             AdminShell.QualifierCollection abDSQualifier = new AdminShell.QualifierCollection();
-            foreach(var arrayELement in arrayJObject)
+            foreach (var arrayELement in arrayJObject)
             {
                 string key = arrayELement.Key.ToString();
                 if (key == ("minItems"))
@@ -112,7 +112,7 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildIntegerSchema(AdminShell.SubmodelElementCollection dsCollection, JObject interJObject)
         {
-            foreach(var integerSElement in interJObject)
+            foreach (var integerSElement in interJObject)
             {
                 string key = integerSElement.Key.ToString();
                 if (key == ("minimum"))
@@ -140,7 +140,7 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildStringSchema(AdminShell.SubmodelElementCollection dsCollection, JObject stringjObject)
         {
-            foreach(var stringElement in stringjObject)
+            foreach (var stringElement in stringjObject)
             {
                 string key = stringElement.Key.ToString();
                 if (key == ("minLength"))
@@ -229,9 +229,9 @@ namespace AasxPackageExplorer
             _multiLanguageProperty.AddDescription("en", description);
             return _multiLanguageProperty;
         }
-        
+
         // TD Forms
-        public static AdminShell.SubmodelElementCollection BuildAdditionalResponse(JObject jobject,string idshort)
+        public static AdminShell.SubmodelElementCollection BuildAdditionalResponse(JObject jobject, string idshort)
         {
             AdminShell.SubmodelElementCollection arCollection = new AdminShell.SubmodelElementCollection();
             arCollection.idShort = idshort;
@@ -255,7 +255,7 @@ namespace AasxPackageExplorer
             }
             return arCollection;
         }
-        public static AdminShell.SubmodelElementCollection BuildTDForm(JObject formjObject,string idShort)
+        public static AdminShell.SubmodelElementCollection BuildTDForm(JObject formjObject, string idShort)
         {
             AdminShell.SubmodelElementCollection tdForm = new AdminShell.SubmodelElementCollection();
             tdForm.idShort = idShort;
@@ -431,7 +431,7 @@ namespace AasxPackageExplorer
             {
                 string key = dsELement.Key.ToString();
                 if (key == ("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
-                                                  // requires an example
+                                      // requires an example
                 {
                     abstractDS.qualifiers.Add(createAASQualifier("@type", dsjObject["@type"].ToString()));
                 }
@@ -560,25 +560,25 @@ namespace AasxPackageExplorer
         // TD Interaction Avoidance
         public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort)
         {
-            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema( jObject, idShort);
+            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(jObject, idShort);
             if (jObject.ContainsKey("uriVariables"))
             {
-                      AdminShell.SubmodelElementCollection _uriVariables = new AdminShell.SubmodelElementCollection();
-                      _uriVariables.idShort = "uriVariables";
-                      _uriVariables.category = "PARAMETER";
-                      _uriVariables.ordered = false;
-                      _uriVariables.allowDuplicates = false;
-                      _uriVariables.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                      _uriVariables.semanticId = createSemanticID("uriVariables");
-                      _uriVariables.qualifiers = new AdminShell.QualifierCollection();
-                      JObject _uriVariablesJObject = (JObject)jObject["uriVariables"];
-                      foreach (var x in _uriVariablesJObject)
-                      {
-                          JObject _uriVariable = JObject.FromObject(x.Value);
-                          AdminShell.SubmodelElementCollection _uriVariableC = BuildAbstractDataSchema(_uriVariable, x.Key.ToString());
-                          _uriVariableC.semanticId = createSemanticID("uriVariable");
-                          _uriVariables.Add(_uriVariableC);
-                      }
+                AdminShell.SubmodelElementCollection _uriVariables = new AdminShell.SubmodelElementCollection();
+                _uriVariables.idShort = "uriVariables";
+                _uriVariables.category = "PARAMETER";
+                _uriVariables.ordered = false;
+                _uriVariables.allowDuplicates = false;
+                _uriVariables.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                _uriVariables.semanticId = createSemanticID("uriVariables");
+                _uriVariables.qualifiers = new AdminShell.QualifierCollection();
+                JObject _uriVariablesJObject = (JObject)jObject["uriVariables"];
+                foreach (var x in _uriVariablesJObject)
+                {
+                    JObject _uriVariable = JObject.FromObject(x.Value);
+                    AdminShell.SubmodelElementCollection _uriVariableC = BuildAbstractDataSchema(_uriVariable, x.Key.ToString());
+                    _uriVariableC.semanticId = createSemanticID("uriVariable");
+                    _uriVariables.Add(_uriVariableC);
+                }
                 _interactionAffordance.Add(_uriVariables);
             }
             if (jObject.ContainsKey("forms"))
@@ -602,7 +602,7 @@ namespace AasxPackageExplorer
             }
             return _interactionAffordance;
         }
-        
+
         // TD Properties
         public static AdminShell.SubmodelElementCollection BuildTDProperty(JObject _propertyJObject, string propertyName)
         {
@@ -645,7 +645,7 @@ namespace AasxPackageExplorer
         {
             AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName);
             _tdEvent.semanticId = createSemanticID("event");
-            foreach(var eventElement in _eventJObject)
+            foreach (var eventElement in _eventJObject)
             {
                 string key = eventElement.Key.ToString();
                 if (key == ("subscription"))
@@ -748,9 +748,9 @@ namespace AasxPackageExplorer
             }
             return _tdAction;
         }
-       
+
         // TD Links
-        public static AdminShell.SubmodelElementCollection BuildTDLink(JObject linkJObject,string idShort)
+        public static AdminShell.SubmodelElementCollection BuildTDLink(JObject linkJObject, string idShort)
         {
             AdminShell.SubmodelElementCollection _tdLink = new AdminShell.SubmodelElementCollection();
             _tdLink.idShort = idShort;
@@ -801,7 +801,7 @@ namespace AasxPackageExplorer
             int index = 1;
             foreach (JObject ds in jObject["links"])
             {
-                tdLinks.Add(BuildTDLink(ds,"link"+index.ToString()));
+                tdLinks.Add(BuildTDLink(ds, "link" + index.ToString()));
                 index = index + 1;
             }
             return tdLinks;
@@ -834,7 +834,7 @@ namespace AasxPackageExplorer
                     _securityDefinition.AddDescription((x.Key).ToString(), (x.Value).ToString());
                 }
             }
-            if (jObject.ContainsKey("proxy")) 
+            if (jObject.ContainsKey("proxy"))
             {
                 _securityDefinition.qualifiers.Add(createAASQualifier("proxy", jObject["proxy"].ToString()));
             }
@@ -897,7 +897,7 @@ namespace AasxPackageExplorer
                     }
                     _securityDefinition.semanticId = createSemanticID("combo");
                 }
-                if (scheme =="basic" || scheme == "apikey")
+                if (scheme == "basic" || scheme == "apikey")
                 {
                     if (jObject.ContainsKey("name"))
                     {
@@ -915,7 +915,7 @@ namespace AasxPackageExplorer
                     {
                         _securityDefinition.semanticId = createSemanticID("apikey");
                     }
-                    
+
                 }
                 if (scheme == "digest")
                 {
@@ -961,7 +961,7 @@ namespace AasxPackageExplorer
                 {
                     _securityDefinition.semanticId = createSemanticID("nosec");
                 }
-                    if (scheme == "psk")
+                if (scheme == "psk")
                 {
                     if (jObject.ContainsKey("identity"))
                     {
@@ -1052,7 +1052,7 @@ namespace AasxPackageExplorer
 
             return tdSemanticId;
         }
-        
+
         // AAS Qualifier
         public static AdminShell.Qualifier createAASQualifier(string qualifierType, string qualifierValue)
         {
@@ -1060,12 +1060,12 @@ namespace AasxPackageExplorer
             aasQualifier.type = qualifierType;
             aasQualifier.value = qualifierValue;
             if (TDSemanticId.getSemanticID(qualifierType) != "empty")
-             {
+            {
                 aasQualifier.semanticId = createSemanticID(qualifierType);
             }
             return aasQualifier;
         }
-        
+
         public static JObject ImportTDJsontoSubModel(
             string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
         {
@@ -1077,13 +1077,13 @@ namespace AasxPackageExplorer
                 using (var tdStringReader = new StringReader(text))
                 using (var jsonTextReader = new JsonTextReader(tdStringReader) { DateParseHandling = DateParseHandling.None })
                 {
-                    tdJObject = JObject.FromObject( JToken.ReadFrom(jsonTextReader));
+                    tdJObject = JObject.FromObject(JToken.ReadFrom(jsonTextReader));
                 }
-                if (false) 
+                if (false)
                 {
                     //ValidateTDJson(tdJObject)
                     exportData["status"] = "error";
-                    exportData["error"] = "The JSON LD document is not valid"; 
+                    exportData["error"] = "The JSON LD document is not valid";
                     return exportData;
                 }
                 else
@@ -1109,7 +1109,7 @@ namespace AasxPackageExplorer
                                 _context.AddDescription("en", "JSON-LD keyword to label the object with semantic tags ");
                                 _context.semanticId = createSemanticID("@context");
                                 _context.qualifiers = new AdminShell.QualifierCollection();
-                                int index = 1;
+
                                 foreach (var x in tdJObject["@context"])
                                 {
                                     if ((x.Type).ToString() == "String")
@@ -1354,7 +1354,7 @@ namespace AasxPackageExplorer
                 exportData["status"] = "error";
                 exportData["error"] = (ex).ToString();
                 return exportData;
-            }   
+            }
 
 
 
