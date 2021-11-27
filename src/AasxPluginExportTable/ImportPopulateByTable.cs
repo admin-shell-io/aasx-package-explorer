@@ -148,11 +148,20 @@ namespace AasxPluginExportTable
 
                 // again an acceptable format
                 m = Regex.Match(str, @"(\w+)\s*/\s*(\w+)");
-                if (m.Success)
+                if (res == null && m.Success)
                     res = new FilteredElementName()
                     {
                         Name = m.Groups[1].ToString().Trim(),
                         ValueType = m.Groups[2].ToString().Trim()
+                    };
+
+                // nothing with slash, but maybe only square?
+                m = Regex.Match(str, @"\[\s*(\w+)\s*\]");
+                if (res == null && m.Success)
+                    res = new FilteredElementName()
+                    {
+                        Name = m.Groups[1].ToString().Trim(),
+                        ValueType = ""
                     };
 
                 // if not, best guess

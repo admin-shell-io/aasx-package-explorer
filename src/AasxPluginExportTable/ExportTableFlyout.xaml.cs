@@ -73,12 +73,12 @@ namespace AasxPluginExportTable
             TextBoxPlaceholders.Text =
                 AdminShellUtil.CleanHereStringWithNewlines(
                 @"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
-                {Referable}.{idShort, category, description[@en..], elementName, elementAbbreviation, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent
+                {Referable}.{idShort, category, description[@en..], elementName, elementShort, elementShort2, elementAbbreviation, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent}
                 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, {Qualifiable}.qualifiers, {Qualifiable}.multiplicity
                 {Reference}, {Reference}[0..n], {Reference}[0..n].{type, local, idType, value}, {Reference} = {semanticId, isCaseOf, unitId}
                 SME.value, Property.{value, valueType, valueId}, MultiLanguageProperty.{value, vlaueId}, Range.{valueType, min, max}, Blob.{mimeType, value}, File.{mimeType, value}, ReferenceElement.value, RelationshipElement.{first, second}, SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}, Entity.{entityType, asset}
                 CD.{preferredName[@en..], shortName[@en..], unit, unitId, sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
-
+                Special: %*% = match any, %stop% = stop if non-empty, %seq={ascii}% = split sequence by char {ascii}
                 Commands for header cells include: %fg={color}%, %bg={color}% with {color} = {#a030a0, Red, blue, ..}, %halign={left, center, right}%, %valign={top, center, bottom}%,
                 %font={bold, italic, underline}, %frame={0,1,2,3}% (only whole table)");
 
@@ -158,6 +158,10 @@ namespace AasxPluginExportTable
             x.ReplaceFailedMatches = CheckBoxReplaceFailed.IsChecked == true;
             x.FailText = TextBoxFailText.Text;
             x.ActInHierarchy = CheckBoxActInHierarchy.IsChecked == true;
+            if (int.TryParse(TextBoxNumRowsGap.Text, out var i))
+                x.RowsGap = i;
+            else
+                x.RowsGap = 0;
 
             return x;
         }
@@ -177,11 +181,14 @@ namespace AasxPluginExportTable
 
             TextBoxNumRowsTop.Text = "" + _rowsTop;
             TextBoxNumRowsBody.Text = "" + _rowsBody;
+            TextBoxNumRowsBody.Text = "" + _rowsBody;
             TextBoxNumCols.Text = "" + _cols;
 
             CheckBoxReplaceFailed.IsChecked = preset.ReplaceFailedMatches;
             TextBoxFailText.Text = "" + preset.FailText;
             CheckBoxActInHierarchy.IsChecked = preset.ActInHierarchy;
+
+            TextBoxNumRowsGap.Text = "" + preset.RowsGap;
 
             AdaptRowsCols(GridOuterTop, _textBoxesTop, _rowsTop, _cols);
             AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);
@@ -204,6 +211,45 @@ namespace AasxPluginExportTable
             {
                 this.ThisFromPreset(this.Presets[i]);
             }
+        }
+
+        private void GridOuterBody_SizeChanged(object sender, SizeChangedEventArgs e)
+        {            
+            //if (!(sender is Grid grd) || grd.ColumnDefinitions == null)
+            //    return;
+            //var gw = grd.ActualWidth;
+            //var nc = Math.Max(1, grd.ColumnDefinitions.Count);
+            //var cw = Math.Max(100.0, gw / nc);
+            //foreach (var cd in grd.ColumnDefinitions)
+            //{
+            //    cd.MinWidth = cw;
+            //    cd.MaxWidth = cw;
+            //    cd.Width = new GridLength(cw, GridUnitType.Pixel);
+            //}
+        }
+
+        private void GridTotal_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+        }
+
+        private void ScrollViewGrids_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!(sender is ScrollViewer scrvw))
+                return;
+
+            if (GridOuterBody.ColumnDefinitions == null)
+                return;
+            var nc = Math.Max(1, GridOuterBody.ColumnDefinitions.Count);
+
+            var gw = Math.Max((1 + nc) * 160, scrvw.ActualWidth - 26);
+
+            GridInScrollViewer.MinWidth = gw;
+            GridInScrollViewer.MaxWidth = gw;
+            GridInScrollViewer.Width = gw;
+
+            //GridOuterBody.MinWidth = gw;
+            //GridOuterBody.MaxWidth = gw;
+            //GridOuterBody.Width = gw;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -312,8 +358,9 @@ namespace AasxPluginExportTable
             while (grid.ColumnDefinitions.Count < cols)
             {
                 var gl = new ColumnDefinition();
-                // gl.Width = new GridLength(1.0, GridUnitType.Star);
-                gl.Width = new GridLength(120.0, GridUnitType.Pixel);
+                gl.Width = new GridLength(1.0, GridUnitType.Star);
+                // gl.MinWidth = 80;
+                // gl.Width = new GridLength(120.0, GridUnitType.Pixel);                
                 grid.ColumnDefinitions.Add(gl);
             }
             while (grid.ColumnDefinitions.Count > cols)

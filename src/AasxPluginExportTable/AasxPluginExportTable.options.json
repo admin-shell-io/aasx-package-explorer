@@ -7,6 +7,7 @@
       "RowsTop": 2,
       "RowsBody": 2,
       "Cols": 4,
+      "RowsGap": 2,
       "Top": [
         "%frame=1% %font=bold% %fg=#ffffff%",
         "",
@@ -51,6 +52,7 @@
       "ReplaceFailedMatches": true,
       "FailText": "-",
       "ActInHierarchy": true,
+      "RowsGap": 2,
       "Top": [
         "%frame=2% %bg=#002060% %font=bold% %fg=#ffffff%",
         "",
@@ -108,6 +110,7 @@
       "RowsBody": 1,
       "Cols": 7,
       "ReplaceFailedMatches": true,
+      "RowsGap": 2,
       "Top": [
         "%frame=1% %bg=LightGray% %font=bold%",
         "",
@@ -154,6 +157,7 @@
       "ReplaceFailedMatches": true,
       "FailText": "",
       "ActInHierarchy": true,
+      "RowsGap": 2,
       "Top": [
         "%frame=1% %font=bold% %fg=#ffffff%",
         "",
@@ -267,6 +271,7 @@
       "ReplaceFailedMatches": false,
       "FailText": "",
       "ActInHierarchy": true,
+      "RowsGap": 2,
       "Top": [
         "",
         "",
@@ -380,14 +385,15 @@
       "ReplaceFailedMatches": true,
       "FailText": "",
       "ActInHierarchy": true,
+      "RowsGap": 0,
       "Top": [
         "%frame=1% %font=bold% %bg=#2e74b5% %fg=#ffffff%",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
+        "%width=10%",
+        "%width=20%",
+        "%width=10%",
+        "%width=30%",
+        "%width=15%",
+        "%width=10%",
         "",
         "",
         "Class",
@@ -410,9 +416,9 @@
         "",
         "Attribute",
         "%SME.idShort%",
-        "%SME.elementName%",
+        "null",
         "%SME.description% / %CD.definition%",
-        "%Property.valueType% %CD.idShort%",
+        "%Property.valueType% %stop% %SME.elementShort2% %stop% %CD.idShort%",
         "null",
         "%SME.multiplicity%"
       ]

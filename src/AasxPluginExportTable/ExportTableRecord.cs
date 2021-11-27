@@ -23,6 +23,7 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
 using AasxIntegrationBase;
+using System.Globalization;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -79,7 +80,7 @@ namespace AasxPluginExportTable
 
         public int Format = 0;
 
-        public int RowsTop = 1, RowsBody = 1, Cols = 1;
+        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 1;
 
         [JsonIgnore]
         public int RealRowsTop { get { return 1 + RowsTop; } }
@@ -156,7 +157,7 @@ namespace AasxPluginExportTable
         public class CellRecord
         {
             public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
-                Text = "", TextWithHeaders = "";
+                Text = "", TextWithHeaders = "", Width = null;
 
             public CellRecord() { }
 
@@ -220,6 +221,7 @@ namespace AasxPluginExportTable
             //
 
             private Regex regexReplacements = null;
+            private Regex regexStop = null;
             private Regex regexCommands = null;
             private Dictionary<string, string> repDict = null;
 
@@ -264,7 +266,11 @@ namespace AasxPluginExportTable
                 rep(head + "elementName", "" + rf.GetElementName());
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
                 if (rf is AdminShell.SubmodelElement rfsme)
+                {
                     rep(head + "elementShort", "" + AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                    if (!(rf is AdminShell.Property || rf is AdminShell.SubmodelElementCollection))
+                        rep(head + "elementShort2", "" + AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                }
                 rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
             }
 
@@ -359,6 +365,7 @@ namespace AasxPluginExportTable
                 // init Regex
                 // nice tester: http://regexstorm.net/tester
                 regexReplacements = new Regex(@"%([a-zA-Z0-9.@\[\]]+)%", RegexOptions.IgnoreCase);
+                regexStop = new Regex(@"^(.*?)%stop%(.*)$", RegexOptions.IgnoreCase);
                 regexCommands = new Regex(@"%([A-Za-z0-9-_]+)=(.*?)%", RegexOptions.IgnoreCase);
 
                 // init dictionary
@@ -613,6 +620,12 @@ namespace AasxPluginExportTable
                         this.NumberReplacements++;
                     }
                     else
+                    if (tag == "stop")
+                    {
+                        // do nothing! see below!
+                        ;
+                    }
+                    else
                     {
                         // placeholder not found!
                         if (Record.ReplaceFailedMatches)
@@ -620,6 +633,21 @@ namespace AasxPluginExportTable
                             input = Replace(input, match.Index, match.Length, Record.FailText);
                         }
                     }
+                }
+
+                // special case
+                while (true)
+                { 
+                    var matchStop = regexStop.Match(input);
+                    if (!matchStop.Success)
+                        break;
+
+                    var left = matchStop.Groups[1].ToString().Trim();
+                    var right = matchStop.Groups[2].ToString().Trim();
+                    if (left != "")
+                        input = left;
+                    else
+                        input = right;
                 }
 
                 // commit back
@@ -660,6 +688,9 @@ namespace AasxPluginExportTable
                         case "frame":
                             cr.Frame = argtl;
                             break;
+                        case "width":
+                            cr.Width = argtl;
+                            break;
                     }
 
                     // in any case, replace the wohl match!
@@ -673,57 +704,28 @@ namespace AasxPluginExportTable
         // TAB separated
         //
 
-        public bool ExportTabSeparated(string fn, ExportTableAasEntitiesList iterateAasEntities, string tab = "\t")
+        public bool ExportTabSeparated(string fn, List<ExportTableAasEntitiesList> iterateAasEntities, string tab = "\t")
         {
             // access
             if (!IsValid())
                 return false;
 
-
             using (var f = new StreamWriter(fn))
             {
-                // top
-                var proc = new ItemProcessor(this, null);
-                for (int ri = 0; ri < this.RowsTop; ri++)
+
+                // over entities
+                foreach (var entities in iterateAasEntities)
                 {
-                    var line = "";
-
-                    for (int ci = 0; ci < this.Cols; ci++)
-                    {
-                        // get cell record
-                        var cr = GetTopCell(ri, ci);
-
-                        // process text
-                        proc.ProcessCellRecord(cr);
-
-                        // add
-                        if (line != "")
-                            line += tab;
-                        line += cr.Text;
-                    }
-
-                    f.WriteLine(line);
-                }
-
-                // elements
-                foreach (var item in iterateAasEntities)
-                {
-                    // create processing
-                    proc = new ItemProcessor(this, item);
-                    proc.Start();
-                    proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
-
-                    var lines = new List<string>();
-
-                    // all elements
-                    for (int ri = 0; ri < this.RowsBody; ri++)
+                    // top
+                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                    for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         var line = "";
 
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetBodyCell(ri, ci);
+                            var cr = GetTopCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -734,13 +736,50 @@ namespace AasxPluginExportTable
                             line += cr.Text;
                         }
 
-                        lines.Add(line);
+                        f.WriteLine(line);
                     }
 
-                    // export really?
-                    if (proc.NumberReplacements > 0)
-                        foreach (var line in lines)
-                            f.WriteLine(line);
+                    // elements
+                    foreach (var item in entities)
+                    {
+                        // create processing
+                        proc = new ItemProcessor(this, item);
+                        proc.Start();
+                        proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
+
+                        var lines = new List<string>();
+
+                        // all elements
+                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        {
+                            var line = "";
+
+                            for (int ci = 0; ci < this.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                if (line != "")
+                                    line += tab;
+                                line += cr.Text;
+                            }
+
+                            lines.Add(line);
+                        }
+
+                        // export really?
+                        if (proc.NumberReplacements > 0)
+                            foreach (var line in lines)
+                                f.WriteLine(line);
+                    }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                        f.WriteLine("");
                 }
             }
 
@@ -874,7 +913,7 @@ namespace AasxPluginExportTable
 
                 // header
                 if (true)
-                {
+                {                    
                     // in order to access the parent information, take the first entity
                     var proc = new ItemProcessor(this, entities.FirstOrDefault());
                     proc.Start();
@@ -974,12 +1013,26 @@ namespace AasxPluginExportTable
 
                         // column widths
                         ws.Columns(1, this.Cols).AdjustToContents();
+
+                        // custom column width
+                        for (int ci = 0; ci < this.Cols; ci++)
+                        {
+                            // get the cell width from the very first top row
+                            var cr2 = GetTopCell(0, ci);
+                            proc.ProcessCellRecord(cr2);
+                            if (cr2?.Width != null
+                                && double.TryParse(cr2.Width, NumberStyles.Float, 
+                                    CultureInfo.InvariantCulture, out var f2)
+                                && f2 > 0)
+                                ws.Column(1 + ci).Width = f2;
+                        }
+                            
                     }
                 }
 
                 // leave some lines blank
 
-                rowIdx += 2;
+                rowIdx += Math.Max(0, RowsGap);
             }
 
             //
@@ -1271,10 +1324,9 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    // empty row
-
-                    body.AppendChild(new Paragraph(new Run(new Text(" "))));
-                    body.AppendChild(new Paragraph(new Run(new Text(" "))));
+                    // empty rows
+                    for (int i=0; i<Math.Max(0, RowsGap); i++)
+                        body.AppendChild(new Paragraph(new Run(new Text(" "))));
 
                 }
 

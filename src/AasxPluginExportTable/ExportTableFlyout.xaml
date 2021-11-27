@@ -26,7 +26,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="6*"/>
-            <RowDefinition Height="36"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.3*"/>
@@ -57,10 +57,6 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="4"/>
-                <RowDefinition Height="1*" MinHeight="30"/>
-                <RowDefinition Height="4"/>
-                <RowDefinition Height="1*" MinHeight="30"/>
-                <RowDefinition Height="4"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
@@ -73,11 +69,13 @@
             </StackPanel>
 
             <Label Grid.Row="1" Grid.Column="0" Foreground="White" FontWeight="Bold">General:</Label>
-            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+            <WrapPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,5,0,219" Grid.RowSpan="3">
                 <Label Foreground="White">Rows Top:</Label>
                 <TextBox x:Name="TextBoxNumRowsTop" Width="30" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
                 <Label Foreground="White">Body:</Label>
                 <TextBox x:Name="TextBoxNumRowsBody" Width="30" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
+                <Label Foreground="White">Gap:</Label>
+                <TextBox x:Name="TextBoxNumRowsGap" Width="30" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="1"/>
                 <Label Foreground="White">Cols:</Label>
                 <TextBox x:Name="TextBoxNumCols" Width="50" Foreground="White" Background="#ff202e4c" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Margin="2" Text="3"/>
                 <Button x:Name="ButtonResize" Content="Resize" Padding="10,0,10,0" Margin="10,2,2,2" Click="Button_Click"/>
@@ -88,41 +86,66 @@
                 </StackPanel>
             </WrapPanel>
 
-            <ScrollViewer x:Name="ScrollViewGrids" Grid.Row="3" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2"
-                          HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="4"/>
-                        <RowDefinition Height="1*" />
-                        <RowDefinition Height="4"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*" MinWidth="50" MaxWidth="120"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+            <Border Grid.Row="3" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="2"
+                    BorderThickness="1" BorderBrush="#707070">
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
-                        <Bold>Table top:</Bold><LineBreak/>
-                        (including headers)
-                    </TextBlock>
-                    <Grid x:Name="GridOuterTop" Grid.Row="0" Grid.Column="1">
+                <Border.Resources>
+                </Border.Resources>
+
+                <ScrollViewer x:Name="ScrollViewGrids" 
+                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                              Background="#101010"
+                              Margin="2"
+                              SizeChanged="ScrollViewGrids_SizeChanged">
+
+                    <ScrollViewer.Resources>
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="Background" Value="#404040"/>
+                        </Style>
+
+                        <SolidColorBrush x:Key="ScrollBarThumbFill" Color="Gold"/>
+                        <SolidColorBrush x:Key="ScrollBarThumbFillPointerOver" Color="Orange"/>
+                        <SolidColorBrush x:Key="ScrollBarThumbFillPressed" Color="Red"/>
+                        <SolidColorBrush x:Key="ScrollBarThumbFillDisabled" Color="Pink"/>
+
+                    </ScrollViewer.Resources>
+
+                    <Grid x:Name="GridInScrollViewer">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="4"/>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="4"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="4"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" MinWidth="50" MaxWidth="120"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
+                            <Bold>Table top:</Bold><LineBreak/>
+                            (including headers)
+                        </TextBlock>
+                        <Grid x:Name="GridOuterTop" Grid.Row="0" Grid.Column="1">
+                        </Grid>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
+                            <Bold>Table body:</Bold><LineBreak/>
+                            (including headers)
+                        </TextBlock>
+                        <Grid x:Name="GridOuterBody" Grid.Row="2" Grid.Column="1" SizeChanged="GridOuterBody_SizeChanged">
+                        </Grid>
+
+                        <Label Grid.Row="4" Grid.Column="0" Foreground="White" Margin="0,-5,0,0" FontWeight="Bold">Placeholders:</Label>
+                        <TextBox x:Name="TextBoxPlaceholders" Grid.Row="4" Grid.Column="1" Foreground="White" Background="Transparent" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" 
+                         BorderThickness="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            xxsax xas xasx sax asx as xs ax xsa
+                        </TextBox>
                     </Grid>
-
-                    <TextBlock Grid.Row="2" Grid.Column="0" Foreground="White" Margin="5,5,0,0" TextWrapping="Wrap">
-                        <Bold>Table body:</Bold><LineBreak/>
-                        (including headers)
-                    </TextBlock>
-                    <Grid x:Name="GridOuterBody" Grid.Row="2" Grid.Column="1" >
-                    </Grid>
-                </Grid>
-            </ScrollViewer>
-
-            <Label Grid.Row="7" Grid.Column="0" Foreground="White" Margin="0,-5,0,0" FontWeight="Bold">Placeholders:</Label>
-            <TextBox x:Name="TextBoxPlaceholders" Grid.Row="7" Grid.Column="1" Foreground="White" Background="Transparent" IsReadOnly="True" IsReadOnlyCaretVisible="False" TextWrapping="Wrap" 
-                     BorderThickness="0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                xxsax xas xasx sax asx as xs ax xsa
-            </TextBox>
+                </ScrollViewer>
+            </Border>
         </Grid>
 
         <Grid Grid.Row="3" Grid.Column="2">
@@ -134,12 +157,12 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            
+
             <Label Grid.Column="0" Foreground="White" DockPanel.Dock="Left" VerticalContentAlignment="Center">Format:</Label>
             <ComboBox Grid.Column="1" x:Name="ComboBoxFormat" MinWidth="150" Height="20" Margin="10,4,20,4" DockPanel.Dock="Left"/>
             <Button Grid.Column="2" x:Name="ButtonStart" IsDefault="True" Content="Start .." Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="4" Click="Button_Click"/>
         </Grid>
-        
+
 
     </Grid>
 

@@ -296,7 +296,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         // TODO: change list[0]!!
 
                         if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                            success = job.ExportTabSeparated(dlg.FileName, list[0]);
+                            success = job.ExportTabSeparated(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
                             success = job.ExportLaTex(dlg.FileName, list[0]);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
@@ -304,8 +304,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
                             success = job.ExportWord(dlg.FileName, list);
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Log.Error(ex, "performing data format export");
                         success = false;
                     }
 
