@@ -181,7 +181,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (!Env.IsOpen || TempFn == null)
                 {
                     TempFn = CreateNewTempFn(Location, IsFormat);
-                    Env.SaveAs(TempFn);
+                    Env.SaveAs(TempFn, prefFmt: prefFmt);
                 }
 
                 // do a close, execute and re-open cycle

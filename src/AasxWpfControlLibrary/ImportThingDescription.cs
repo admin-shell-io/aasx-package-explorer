@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using System.Globalization;
 using AdminShellNS;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
@@ -549,7 +550,7 @@ namespace AasxPackageExplorer
                     }
                     if (dsType == "object")
                     {
-                        (abstractDS) = BuildObjectSchema(abstractDS, dsjObject);
+                        abstractDS = BuildObjectSchema(abstractDS, dsjObject);
                     }
                 }
             }
@@ -610,6 +611,10 @@ namespace AasxPackageExplorer
             if (_propertyJObject.ContainsKey("observable"))
             {
                 _tdProperty.qualifiers.Add(createAASQualifier("observable", (_propertyJObject["observable"]).ToString()));
+            }
+            if (_propertyJObject.ContainsKey("updateFrequencey"))
+            {
+                _tdProperty.qualifiers.Add(createAASQualifier("updateFrequencey", (_propertyJObject["updateFrequencey"]).ToString()));
             }
             return _tdProperty;
         }
@@ -1067,8 +1072,13 @@ namespace AasxPackageExplorer
             JObject exportData = new JObject();
             try
             {
+                JObject tdJObject;
                 string text = File.ReadAllText(inputFn);
-                JObject tdJObject = JObject.Parse(text);
+                using (var tdStringReader = new StringReader(text))
+                using (var jsonTextReader = new JsonTextReader(tdStringReader) { DateParseHandling = DateParseHandling.None })
+                {
+                    tdJObject = JObject.FromObject( JToken.ReadFrom(jsonTextReader));
+                }
                 if (false) 
                 {
                     //ValidateTDJson(tdJObject)
@@ -1078,9 +1088,9 @@ namespace AasxPackageExplorer
                 }
                 else
                 {
+                    sm.qualifiers = new AdminShell.QualifierCollection();
                     foreach (var tdkey in tdJObject)
                     {
-                        sm.qualifiers = new AdminShell.QualifierCollection();
                         string key = tdkey.Key.ToString();
                         if (key == ("@context"))
                         {
@@ -1128,7 +1138,29 @@ namespace AasxPackageExplorer
                         }
                         if (key == ("@type"))
                         {
-                            sm.qualifiers.Add(createAASQualifier("@type", tdJObject["@type"].ToString()));
+                            if ((tdJObject["@type"].Type).ToString() == "String")
+                            {
+                                sm.qualifiers.Add(createAASQualifier("@type", tdJObject["@type"].ToString()));
+                            }
+                            if ((tdJObject["@type"].Type).ToString() == "Array")
+                            {
+                                AdminShell.SubmodelElementCollection _types = new AdminShell.SubmodelElementCollection();
+                                _types.idShort = "@type";
+                                _types.category = "PARAMETER";
+                                _types.ordered = false;
+                                _types.allowDuplicates = false;
+                                _types.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                                _types.AddDescription("en", "JSON-LD keyword to label the object with semantic tags (or types).");
+                                _types.semanticId = createSemanticID("@type");
+                                _types.qualifiers = new AdminShell.QualifierCollection();
+                                int index = 1;
+                                foreach (var x in tdJObject["@type"])
+                                {
+                                    _types.qualifiers.Add(createAASQualifier("@type" + (index).ToString(), (x).ToString()));
+                                    index = index + 1;
+                                }
+                                sm.Add(_types);
+                            }
                         }
                         if (key == ("id"))
                         {

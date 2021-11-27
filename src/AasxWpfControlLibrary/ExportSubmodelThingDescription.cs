@@ -25,7 +25,7 @@ using Newtonsoft.Json.Linq;
 namespace AasxPackageExplorer
 {
     public static class TDJsonExport
-    { 
+    {
         public static JObject createForms(AdminShell.SubmodelElement formsSem)
         {
             List<JObject> forms = new List<JObject>();
@@ -44,11 +44,10 @@ namespace AasxPackageExplorer
                     AdminShell.SubmodelElement _formElement = _tempformElement.submodelElement;
                     if (_formElement.idShort == "security")
                     {
-                        AdminShell.SubmodelElementCollection _securityCollection = new AdminShell.SubmodelElementCollection(_formElement, false);
                         List<string> securityList = new List<string>();
-                        foreach (AdminShell.SubmodelElementWrapper _tempSec in _securityCollection.EnumerateChildren())
+                        foreach (AdminShell.Qualifier _secQual in _formElement.qualifiers)
                         {
-                            securityList.Add(_tempSec.submodelElement.ValueAsText());
+                            securityList.Add(_secQual.value);
                         }
                         formJObject["security"] = JToken.FromObject(securityList);
                     }
@@ -81,7 +80,7 @@ namespace AasxPackageExplorer
                                 arJObject["success"] = Convert.ToBoolean(_tempResponse.submodelElement.ValueAsText());
 
                             }
-                            else 
+                            else
                             {
                                 arJObject[_tempResponse.submodelElement.idShort] = _tempResponse.submodelElement.ValueAsText();
 
@@ -106,7 +105,7 @@ namespace AasxPackageExplorer
                 forms.Add(formJObject);
             }
             JObject formsjObject = new JObject();
-            formsjObject["forms"] = JToken.FromObject( forms);
+            formsjObject["forms"] = JToken.FromObject(forms);
             return formsjObject;
         }
         public static JObject createuriVariables(AdminShell.SubmodelElement uriSem)
@@ -118,7 +117,7 @@ namespace AasxPackageExplorer
                 AdminShell.SubmodelElement _uriVariable = _tempuriVarElement.submodelElement;
                 uriVarJObject[_uriVariable.idShort] = JToken.FromObject(createDataSchema(_uriVariable));
             }
-                return uriVarJObject;
+            return uriVarJObject;
         }
         public static JObject createArraySchema(AdminShell.SubmodelElement sem)
         {
@@ -145,10 +144,10 @@ namespace AasxPackageExplorer
                     {
                         semJObject["items"] = JToken.FromObject(itemsJObject);
                     }
-                    
+
                 }
             }
-                return semJObject;
+            return semJObject;
         }
         public static JObject createObjectSchema(AdminShell.SubmodelElement sem)
         {
@@ -181,6 +180,39 @@ namespace AasxPackageExplorer
             }
             return semJObject;
         }
+
+        public static List<JToken> enumELement(AdminShell.QualifierCollection qualCollection){
+
+            List<JToken> enums = new List<JToken>();
+            foreach (AdminShell.Qualifier _enumQual in qualCollection)
+            {
+                int numericValue;
+                float floatValue;
+                double doubleValue;
+                bool boolValue;
+                if (int.TryParse(_enumQual.value, out numericValue))
+                {
+                    enums.Add(numericValue);
+                }
+                else if (float.TryParse(_enumQual.value, out floatValue))
+                {
+                    enums.Add(floatValue);
+                }
+                else if (double.TryParse(_enumQual.value, out doubleValue))
+                {
+                    enums.Add(doubleValue);
+                }
+                else if (bool.TryParse(_enumQual.value, out boolValue))
+                {
+                    enums.Add(boolValue);
+                }
+                else
+                {
+                    enums.Add(_enumQual.value);
+                }
+            }
+            return enums;
+        }
         public static JObject createDataSchema(AdminShell.SubmodelElement sem)
         {
             JObject semJObject = new JObject();
@@ -189,6 +221,10 @@ namespace AasxPackageExplorer
                 if (smQualifier.type == "readOnly" || smQualifier.type == "writeOnly")
                 {
                     semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
+                }
+                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems")
+                {
+                    semJObject[smQualifier.type] =  Convert.ToUInt32(smQualifier.value);
                 }
                 else
                 {
@@ -244,13 +280,7 @@ namespace AasxPackageExplorer
                 }
                 if (dsElement.idShort == "enum")
                 {
-                    List<string> enums = new List<string>();
-                    AdminShell.SubmodelElementCollection _enumsCollection = new AdminShell.SubmodelElementCollection(dsElement);
-                    foreach(AdminShell.Qualifier _enumQual in _enumsCollection.qualifiers)
-                    {
-                        enums.Add(_enumQual.value);
-                    }
-                    semJObject["enum"] = JToken.FromObject(enums);
+                    semJObject["enum"] = JToken.FromObject(enumELement(dsElement.qualifiers));
                 }
             }
             if (semJObject.ContainsKey("type"))
@@ -266,10 +296,14 @@ namespace AasxPackageExplorer
                 }
                 if (dsType == "object")
                 {
-                    JObject propertiesObject = createObjectSchema(sem);
-                    if (propertiesObject.ContainsKey("properties"))
+                    JObject objectSchemaJObject = createObjectSchema(sem);
+                    if (objectSchemaJObject.ContainsKey("properties"))
                     {
-                        semJObject["properties"] = propertiesObject["properties"];
+                        semJObject["properties"] = objectSchemaJObject["properties"];
+                    }
+                    if (objectSchemaJObject.ContainsKey("required"))
+                    {
+                        semJObject["required"] = objectSchemaJObject["required"];
                     }
                 }
                 if (dsType == "integer")
@@ -277,9 +311,12 @@ namespace AasxPackageExplorer
                     List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
                     foreach(string elem in integerSchema)
                     {
-                        if (semJObject.ContainsKey(elem))
+                        foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                         {
-                            semJObject[elem] = Convert.ToDouble( semJObject[elem]);
+                            if (elem == semQual.type)
+                            {
+                                semJObject[semQual.type] =  (int) Convert.ToDouble(semQual.value);
+                            }
                         }
                     }
                 }
@@ -288,9 +325,12 @@ namespace AasxPackageExplorer
                     List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
                     foreach (string elem in numberSchema)
                     {
-                        if (semJObject.ContainsKey(elem))
+                        foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                         {
-                            semJObject[elem] = (semJObject[elem]);
+                            if (elem == semQual.type)
+                            {
+                                semJObject[semQual.type] = Convert.ToDouble(semQual.value);
+                            }
                         }
                     }
                 }
@@ -353,13 +393,12 @@ namespace AasxPackageExplorer
                     {
                         actionJObject["output"] = JToken.FromObject(createDataSchema(_actionItem));
                     }
-                    if (_actionItem.idShort == "safe")
+                }
+                foreach (AdminShell.Qualifier actionQual in _action.qualifiers)
+                {
+                    if (actionQual.type == "safe" || actionQual.type == "idempotent")
                     {
-                        actionJObject["safe"] = Convert.ToBoolean(actionJObject["safe"]);
-                    }
-                    if (_actionItem.idShort == "idempotent")
-                    {
-                        actionJObject["idempotent"] = Convert.ToBoolean(actionJObject["idempotent"]);
+                        actionJObject[actionQual.type] = Convert.ToBoolean(actionQual.value);
                     }
                 }
                 actionsJObject[_action.idShort] = JToken.FromObject(actionJObject);
@@ -529,7 +568,7 @@ namespace AasxPackageExplorer
                 {
                     foreach (AdminShell.Qualifier smQualifier in sm.qualifiers)
                     {
-                        TDJson[smQualifier.type] = smQualifier.value;
+                        TDJson[smQualifier.type] = smQualifier.value.ToString();
                     }
                 }
 
@@ -580,6 +619,16 @@ namespace AasxPackageExplorer
                     foreach (AdminShell.SubmodelElementWrapper tdElementWrapper in sm.submodelElements)
                     {
                         AdminShell.SubmodelElement tdElement = tdElementWrapper.submodelElement;
+                        if (tdElement.idShort == "@type")
+                        {
+                            List<object> typeList = new List<object>();
+                            foreach (AdminShell.Qualifier _typeQual in tdElement.qualifiers)
+                            {
+                                 typeList.Add((_typeQual.value));
+
+                            }
+                            TDJson["@type"] = JToken.FromObject(typeList);
+                        }
                         if (tdElement.idShort == "titles")
                         {
                             JObject _titlesJObject = new JObject();
@@ -604,9 +653,9 @@ namespace AasxPackageExplorer
                                 else
                                 {
                                     _conSemantic[_con.type] = _con.value;
+                                    contextList.Add(_conSemantic);
                                 }
                             }
-                            contextList.Add(_conSemantic);
                             TDJson["@context"] = JToken.FromObject(contextList);
                         }
                         if (tdElement.idShort == "properties")
@@ -623,7 +672,7 @@ namespace AasxPackageExplorer
                         }
                         else if (tdElement.idShort == "links")
                         {
-                            TDJson["links"] = createTDLinks(tdElement);
+                            TDJson["links"] = createTDLinks(tdElement)["links"];
                         }
                         else if (tdElement.idShort == "forms")
                         {

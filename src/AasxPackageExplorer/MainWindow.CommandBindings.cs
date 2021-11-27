@@ -665,7 +665,11 @@ namespace AasxPackageExplorer
                     JObject importObject = TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     if (importObject["status"].ToString() == "error")
                     {
-                        Log.Singleton.Error(importObject["error"].ToString());
+                        MessageBoxFlyoutShow(
+                            "Unable to Import the JSON LD File", "Check the log"
+                            ,
+                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                            Log.Singleton.Error(importObject["error"].ToString(), "When importing the jsonld document");
                     }
                     else
                     {
@@ -2448,12 +2452,15 @@ namespace AasxPackageExplorer
                     RememberForInitialDirectory(dlg.FileName);
                     using (var s = new StreamWriter(dlg.FileName))
                     {
-                        s.WriteLine(exportData["data"]);
+                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"], Newtonsoft.Json.Formatting.Indented);
+                        s.WriteLine(output); 
                     }
                 }
                 else
                 {
-                    Log.Singleton.Info(exportData["error"].ToString());
+                    MessageBoxFlyoutShow(
+                            "Unable to Import the JSON LD File" , exportData["data"].ToString(),
+                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 }
 
             }
