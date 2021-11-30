@@ -376,6 +376,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var success = false;
                 try
                 {
+                    if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+                    {
+                        success = true;
+                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
+                        foreach (var tp in ImportTableWordProvider.CreateProviders(dlg.FileName))
+                            pop.PopulateBy(tp);
+                    }
+
                     if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
                     {
                         success = true;

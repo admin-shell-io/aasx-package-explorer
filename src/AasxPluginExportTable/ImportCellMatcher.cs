@@ -93,10 +93,15 @@ namespace AasxPluginExportTable
             var tripre = preset.Trim();
             var percnum = tripre.Count(c => c == '%');
             
-            // try to do a quite strict check
-            
+            // strict: exactly one variable            
             if (percnum == 2 && tripre.Length > 2 && tripre.StartsWith("%") && tripre.EndsWith("%"))
                 return new ImportCellMatcherVariable(tripre);
+
+            // match a sequence?
+            var m = Regex.Match(tripre, @"^\s*%seq\s*=\s*(\d+)%(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            if (m.Success)
+                if (byte.TryParse(m.Groups[1].ToString(), out var b))
+                    return new ImportCellMatcherSequence("" + Convert.ToChar(b), m.Groups[2].ToString());
 
             return new ImportCellMatcherConstant(preset);
         }
@@ -281,6 +286,41 @@ namespace AasxPluginExportTable
 
             // for testing purposes
             return true;
+        }
+    }
+
+    /// <summary>
+    /// This matcher matches a constant cell
+    /// </summary>
+    public class ImportCellMatcherSequence : ImportCellMatcherBase
+    {
+        protected string _separator;
+        protected List<ImportCellMatcherBase> _sequence;
+
+        public ImportCellMatcherSequence(string separator, string preset)
+        {
+            // trivial
+            Preset = preset;
+            _separator = separator;
+            _sequence = new List<ImportCellMatcherBase>();
+
+            // now, split the preset iteratively
+            while (true)
+            {
+                var m = Regex.Match(preset, @"%([^%]+)%(.*)$", RegexOptions.Compiled);
+                if (!m.Success)
+                    break;
+
+                _sequence.Add(new ImportCellMatcherVariable("%" + m.Groups[1].ToString() + "%"));
+
+                preset = m.Groups[2].ToString();
+            }
+        }
+
+        public override bool Matches(ImportCellMatchContextBase context, string cell)
+        {
+            return
+                   true;
         }
     }
 }
