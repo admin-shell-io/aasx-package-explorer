@@ -21,7 +21,6 @@ function Main
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
-    
     $pathToSolution = "AasxPackageExplorer.sln"
 
     Write-Host "Inspecting the code with inspectcode ..."

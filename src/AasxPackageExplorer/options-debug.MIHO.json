@@ -132,45 +132,16 @@
         }
         /* Festo specific from here on */
         /*
-    {
-      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
-      "Args": [] /*,
-      "Options": {
-        "Records": [
-          {
-            "AllowSubmodelSemanticId": [
-              {
-                "type": "Submodel",
-                "local": false,
-                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
-                "index": 0,
-                "idType": "IRI"
-              }
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-      "Args": [] /*,
-      "Options": {
-        "Records": [
-          {
-            "AllowSubmodelSemanticId": [
-              {
-                "type": "Submodel",
-                "local": false,
-                "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
-                "index": 0,
-                "idType": "IRI"
-              }
-            ]
-          }
-        ]
-      } 
-    }
-    */
+        /*
+        {
+          "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+          "Args": []
+        },
+        {
+          "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+          "Args": [] 
+        }
+        */
     ],
     "SecureConnectPresets": [
         {
