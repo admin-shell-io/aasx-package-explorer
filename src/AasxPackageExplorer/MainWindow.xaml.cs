@@ -1811,9 +1811,7 @@ namespace AasxPackageExplorer
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?
-                var deltaSecs = 0.0;
-                if (_mainTimer_LastCheckForAnimationElements != null)
-                    deltaSecs = (DateTime.Now - _mainTimer_LastCheckForAnimationElements).TotalSeconds;
+                var deltaSecs = (DateTime.Now - _mainTimer_LastCheckForAnimationElements).TotalSeconds;
 
                 if (deltaSecs >= 0.1)
                 {

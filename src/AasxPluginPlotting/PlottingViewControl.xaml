@@ -15,6 +15,8 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
+    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+    
     <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>

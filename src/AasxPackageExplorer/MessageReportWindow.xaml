@@ -28,7 +28,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- <TextBox x:Name="TextReport" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" AcceptsReturn="true" AcceptsTab="true" Margin="2" Background="LightGray"/> -->
-        <RichTextBox x:Name="RichTextTextReport" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+        <RichTextBox x:Name="RichTextTextReport" Grid.Row="0" Grid.Column="0" 
                      IsDocumentEnabled="true" IsReadOnly="True" Margin="2" Background="LightGray"
                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" FontFamily="Lucida Console">
             <RichTextBox.Resources>

@@ -631,7 +631,7 @@ namespace AasxPluginPlotting
             // Note: this function originally was the WpfPlot_AxisChanged handler; however
             // this handler was frequently triggered by the widget system or axis change and
             // not by the user. So, the functionality was moved to the mouse handler
-            if (!(e.LeftButton == MouseButtonState.Pressed))
+            if (e.LeftButton != MouseButtonState.Pressed)
                 return;
 
             if (!(sender is ScottPlot.WpfPlot wpfPlot))
@@ -766,9 +766,9 @@ namespace AasxPluginPlotting
                     if (grp.UseOAaxis)
                         pi.Buffer?.Push(
                             x: timestamp.ToOADate(),
-                            y: val.HasValue ? val.Value : 0.0);
+                            y: val.Value);
                     else
-                        pi.Buffer?.Push(val.HasValue ? val.Value : 0.0);
+                        pi.Buffer?.Push(val.Value);
                 }
 
                 if (found && groupsToUpdate != null && !groupsToUpdate.ContainsKey(grp))

@@ -23,7 +23,7 @@ namespace AasxPackageLogic
     /// <summary>
     /// This attribute indicates a valid option for JSON or command line
     /// </summary>
-    [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = false)]
+    [System.AttributeUsage(System.AttributeTargets.Field)]
     public class OptionDescription : System.Attribute
     {
         public string Description = null;

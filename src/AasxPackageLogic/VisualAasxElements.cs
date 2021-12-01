@@ -1494,8 +1494,7 @@ namespace AasxPackageLogic
                         // make reference with NO submodel behind
                         var tiNoSm = new VisualElementSubmodelRef(
                             tiAas, cache, env, package, smr, sm: null);
-                        if (tiNoSm != null)
-                            tiAas.Members.Add(tiNoSm);
+                        tiAas.Members.Add(tiNoSm);
                     }
 
                     // generate

@@ -40,7 +40,7 @@
             </Style>
         </Grid.Resources>
 
-        <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"/>
+        <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
         <TextBox x:Name="TextboxInfo" Grid.Row="0" Grid.Column="0" Background="LightBlue"
                  Margin="1" Foreground="#ff303030" FontWeight="Bold" Text="Bla bla"

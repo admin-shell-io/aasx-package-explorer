@@ -33,7 +33,7 @@ using ScottPlot;
 
 namespace AasxPluginPlotting
 {
-    public class PlotHelpers
+    public static class PlotHelpers
     {
         public static Brush BrushFrom(System.Drawing.Color col)
         {

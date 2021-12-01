@@ -32,7 +32,6 @@ namespace AasxPluginPlotting
         public ScottPlot.WpfPlot WpfPlot { get { return WpfPlotItself; } }
         public ContentControl ContentControl => this;
 
-        public event Action<WpfPlotViewControlCumulative, int> ButtonClick;
         public event Action<WpfPlotViewControlCumulative, int> LatestSamplePositionChanged;
 
         public string Text { get { return TextboxInfo.Text; } set { TextboxInfo.Text = value; } }

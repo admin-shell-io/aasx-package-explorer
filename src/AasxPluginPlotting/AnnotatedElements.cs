@@ -122,6 +122,8 @@ namespace AasxIntegrationBase
                             foreach (var q in qs.FindAllQualifierType("Annotation.Args"))
                             {
                                 var a = AnnotatedElemArgs.Parse(q?.value);
+                                if (a == null)
+                                    continue;
 
                                 if (a.desc && rf is AdminShell.Submodel sm)
                                     a.Description = sm.description;
@@ -129,8 +131,7 @@ namespace AasxIntegrationBase
                                 if (a.desc && rf is AdminShell.SubmodelElement sme)
                                     a.Description = sme.description;
 
-                                if (a != null)
-                                    _args.Add(a);
+                                _args.Add(a);
                             }
                     }
                     return true;
@@ -141,6 +142,7 @@ namespace AasxIntegrationBase
         {
             foreach (var a in _args)
                 if (true == a?.pos.HasContent()
+
                     && a.pos.ToLower().Contains(hasPosition?.ToLower()))
                     yield return a;
         }
@@ -171,7 +173,7 @@ namespace AasxIntegrationBase
                 }
                 tb.BorderThickness = new Thickness(0.0);
                 tb.Margin = new Thickness(0.0, a.top, 0.0, a.bottom);
-                if (true == a.bold)
+                if (a.bold)
                     tb.FontWeight = FontWeights.Bold;
                 res.Children.Add(tb);
             }

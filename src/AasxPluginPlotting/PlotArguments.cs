@@ -149,7 +149,7 @@ namespace AasxPluginPlotting
 
         public ScottPlot.Drawing.Palette GetScottPalette()
         {
-            if (palette.HasContent() == true)
+            if (palette?.HasContent() == true)
                 foreach (var pl in ScottPlot.Palette.GetPalettes())
                     if (pl.Name.ToLower().Trim() == palette.ToLower().Trim())
                         return pl;
@@ -158,7 +158,7 @@ namespace AasxPluginPlotting
 
         public ScottPlot.Styles.IStyle GetScottStyle()
         {
-            if (style.HasContent() == true)
+            if (style?.HasContent() == true)
                 foreach (var st in ScottPlot.Style.GetStyles())
                     if (st.GetType().Name.ToLower().Trim() == style.ToLower().Trim())
                         return st;

@@ -31,6 +31,8 @@ using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 using ScottPlot;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
+
 namespace AasxPluginPlotting
 {
     public partial class PlottingViewControl : UserControl
@@ -233,18 +235,19 @@ namespace AasxPluginPlotting
                     StackPanelTimeSeries, defPlotHeight: 200, _defaultLang, _log);
 
                 // do post processing where we superior control
-                foreach (var pvc in pvcs)
-                {
-                    if (pvc is WpfPlotViewControlCumulative pvcc)
+                if (pvcs != null)
+                    foreach (var pvc in pvcs)
                     {
-                        pvcc.LatestSamplePositionChanged += (sender2, ndx2) =>
+                        if (pvc is WpfPlotViewControlCumulative pvcc)
                         {
-                            // re-rendering will access updated sample position from the widget
-                            _timeSeriesData?.RefreshRenderedTimeSeries(
-                                StackPanelTimeSeries, _defaultLang, _log);
-                        };
+                            pvcc.LatestSamplePositionChanged += (sender2, ndx2) =>
+                            {
+                                // re-rendering will access updated sample position from the widget
+                                _timeSeriesData?.RefreshRenderedTimeSeries(
+                                    StackPanelTimeSeries, _defaultLang, _log);
+                            };
+                        }
                     }
-                }
             }
             catch (Exception ex)
             {
@@ -614,7 +617,7 @@ namespace AasxPluginPlotting
                 }
 
                 // fill to the left?
-                if (fillTimeGaps)
+                if (fillTimeGaps && temp[0].Value.HasValue)
                 {
                     var startIndex = temp[0].Index;
                     var startVal = temp[0].Value.Value;
@@ -765,8 +768,8 @@ namespace AasxPluginPlotting
 
                 foreach (var ds in this)
                 {
-                    // do not allow empty or time acix data sets
-                    if (ds == null && ds.TimeAxis != TimeSeriesTimeAxis.None)
+                    // do not allow empty or time axis data sets
+                    if (ds == null || ds.TimeAxis != TimeSeriesTimeAxis.None)
                         continue;
 
                     // get the last sample
@@ -884,9 +887,9 @@ namespace AasxPluginPlotting
                 {
                     var pie = wpfPlot.Plot.AddPie(cumdi.Value.ToArray());
                     pie.SliceLabels = cumdi.Label.ToArray();
-                    pie.ShowLabels = true == args.labels;
-                    pie.ShowValues = true == args.values;
-                    pie.ShowPercentages = true == args.percent;
+                    pie.ShowLabels = args.labels;
+                    pie.ShowValues = args.values;
+                    pie.ShowPercentages = args.percent;
                     pie.SliceFont.Size = 9.0f;
                     return pie;
                 }
@@ -895,7 +898,7 @@ namespace AasxPluginPlotting
                 {
                     var bar = wpfPlot.Plot.AddBar(cumdi.Value.ToArray());
                     wpfPlot.Plot.XTicks(cumdi.Position.ToArray(), cumdi.Label.ToArray());
-                    bar.ShowValuesAboveBars = true == args.values;
+                    bar.ShowValuesAboveBars = args.values;
                     return bar;
                 }
 
@@ -1745,8 +1748,6 @@ namespace AasxPluginPlotting
         public void PushEvent(AasEventMsgEnvelope ev)
             => _eventStack?.PushEvent(ev);
 
-        private DateTime? _lastEventTimeProcessed = null;
-
         private enum _segmentProcessType { InspectAdd, Update }
 
         private void ProcessEvents()
@@ -1953,9 +1954,8 @@ namespace AasxPluginPlotting
 
                 if (tsd == null)
                 {
-                    // TODO (MIHO, 2021-11-09): AasxPlugPlotting dies not allow all options
+                    // TODO (MIHO, 2021-11-09): AasxPlugPlotting does not allow all options
                     return;
-                    throw new NotImplementedException("AasxPlugPlotting::PushEvent() does not allow new time series");
                 }
 
                 // ok, add / udate data to time series
@@ -1975,8 +1975,9 @@ namespace AasxPluginPlotting
             // Final: re-render some time series?
             //
 
-            foreach (var tsd in timeSeriesToRender)
-                _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, _defaultLang, _log);
+            // MIHO (2021-11-31): check if this can be optimized
+            //// foreach (var tsd in timeSeriesToRender)
+            _timeSeriesData?.RefreshRenderedTimeSeries(StackPanelTimeSeries, _defaultLang, _log);
         }
 
     }

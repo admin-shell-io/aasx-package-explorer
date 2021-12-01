@@ -53,7 +53,7 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public int Count()
         {
-            return _stack.Count();
+            return _stack.Count;
         }
 
         public void Clear()
