@@ -46,8 +46,12 @@ namespace AasxPluginExportTable
         /// The desired element values will be evaluated AFTER the collection phase.
         /// </summary>
         public string ParentValue, SmeValue;
-        
 
+        /// <summary>
+        /// Another special case to be parsed & set afterwards
+        /// </summary>
+        public string SmeValueType;
+        
         public ImportCellMatchContextBase()
         {
             Clear();
@@ -86,24 +90,50 @@ namespace AasxPluginExportTable
         public string Preset;
 
         /// <summary>
+        /// Successful match is optinal
+        /// </summary>
+        public bool Optional;
+
+        /// <summary>
         ///  Factory for new cell matchers
         /// </summary>
         public static ImportCellMatcherBase Create(string preset)
         {
+            // options - part 1
+            string options = null;
+            var m = Regex.Match(preset, @"%(opt)%(.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
+            if (m.Success)
+            {
+                options = m.Groups[1].ToString();
+                preset = m.Groups[2].ToString();
+            }
+
+            // prepare matching
             var tripre = preset.Trim();
             var percnum = tripre.Count(c => c == '%');
-            
+
             // strict: exactly one variable            
             if (percnum == 2 && tripre.Length > 2 && tripre.StartsWith("%") && tripre.EndsWith("%"))
-                return new ImportCellMatcherVariable(tripre);
+            return new ImportCellMatcherVariable(tripre);
 
             // match a sequence?
-            var m = Regex.Match(tripre, @"^\s*%seq\s*=\s*(\d+)%(.*)$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            m = Regex.Match(tripre, @"^\s*%seq\s*=\s*([^%]+)%(.*)$", 
+                    RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
             if (m.Success)
-                if (byte.TryParse(m.Groups[1].ToString(), out var b))
-                    return new ImportCellMatcherSequence("" + Convert.ToChar(b), m.Groups[2].ToString());
+                return new ImportCellMatcherSequence(m.Groups[1].ToString(), m.Groups[2].ToString());
 
-            return new ImportCellMatcherConstant(preset);
+            // create
+            var res = new ImportCellMatcherConstant(preset);
+
+            // options - part 2
+            if (options.HasContent())
+            {
+                if (options == "opt")
+                    res.Optional = true;
+            }
+
+            // ok
+            return res;
         }
 
         /// <summary>
@@ -222,6 +252,31 @@ namespace AasxPluginExportTable
             if (preset == "value")
                 valueStr = commit(cell);
 
+            if (preset == "valueType")
+            {
+                // value type can be distorted in many ways, so commit in each case
+                var vt = commit(cell);
+
+                // adopt
+                var m = Regex.Match(vt, @"^\s*\[(.*)\]");
+                if (m.Success)
+                    vt = m.Groups[1].ToString();
+
+                // exclude SMEs
+                foreach (var x in AdminShell.SubmodelElementWrapper.AdequateElementNames
+                                    .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
+                    if (x != null && vt.Trim().ToLower() == x.ToLower())
+                        return true;
+
+                // very special case
+                if (vt.Trim() == "n/a")
+                    return true;
+
+                // set
+                if (elem is AdminShell.Property prop)
+                    prop.valueType = vt;
+            }
+
             // very special
             if (allowMultiplicity && preset == "multiplicity")
             {
@@ -240,6 +295,39 @@ namespace AasxPluginExportTable
             }
 
             return res;
+        }
+
+        private void MatchSpecialCases(
+            ImportCellMatchContextBase context, string preset, string cell)
+        {
+            // access
+            if (context == null || preset == null || cell == null)
+                return;
+
+            // lambda trick to save {}
+            if (preset == "Property.valueType")
+            {
+                // value type can be distorted in many ways, so commit in each case
+                var vt = cell;
+
+                // adopt
+                var m = Regex.Match(vt, @"^\s*\[(.*)\]");
+                if (m.Success)
+                    vt = m.Groups[1].ToString();
+
+                // exclude SMEs
+                foreach (var x in AdminShell.SubmodelElementWrapper.AdequateElementNames
+                                    .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
+                    if (x != null && vt.Trim().ToLower() == x.ToLower())
+                        return;
+
+                // very special case
+                if (vt.Trim() == "n/a")
+                    return;
+
+                // set
+                context.SmeValueType = vt;
+            }
         }
 
         private bool MatchEntity(AdminShell.ConceptDescription cd, string preset, string cell)
@@ -277,6 +365,9 @@ namespace AasxPluginExportTable
                 return MatchEntity(context.Parent, Preset.Substring(8, Preset.Length - 9), cell, 
                     ref context.ParentParentName, ref context.ParentElemName, ref context.ParentValue);
 
+            if (Preset.StartsWith("%") && Preset.EndsWith("%") && Preset.Length > 2)
+                MatchSpecialCases(context, Preset.Substring(1, Preset.Length - 2), cell);
+
             if (Preset.StartsWith("%SME.") && Preset.EndsWith("%"))
                 return MatchEntity(context.Sme, Preset.Substring(5, Preset.Length - 6), cell, 
                     ref context.SmeParentName, ref context.SmeElemName, ref context.SmeValue, allowMultiplicity: true);
@@ -301,8 +392,21 @@ namespace AasxPluginExportTable
         {
             // trivial
             Preset = preset;
-            _separator = separator;
             _sequence = new List<ImportCellMatcherBase>();
+
+            // try to interpolate preset
+            _separator = null;
+            var septr = separator.Trim(' ');
+            if (byte.TryParse(septr, out byte b))
+                _separator = "" + Convert.ToChar(b);
+            if (septr == @"\n" || septr == "<NL>")
+                _separator = "\n";
+            if (septr == @"\r" || septr == "<CR>")
+                _separator = "\r";
+            if (septr == @"\t" || septr == "<TAB>")
+                _separator = "\t";
+            if (_separator == null)
+                _separator = separator;
 
             // now, split the preset iteratively
             while (true)
@@ -315,12 +419,28 @@ namespace AasxPluginExportTable
 
                 preset = m.Groups[2].ToString();
             }
+
+            ;
         }
 
         public override bool Matches(ImportCellMatchContextBase context, string cell)
         {
-            return
-                   true;
+            // trivial
+            if (context == null || cell == null || _separator == null || _sequence == null)
+                return false;
+
+            // try split cell in a sequence
+            var cellseq = cell.Split(new[] { _separator }, StringSplitOptions.None);
+            if (cellseq.Length == 0)
+                // zero is true
+                return true;
+
+            // go as far as we can
+            for (int i = 0; i < Math.Min(_sequence.Count, cellseq.Length); i++)
+                if (!_sequence[i].Matches(context, cellseq[i]) && !Optional)
+                    return false;
+
+            return true;
         }
     }
 }

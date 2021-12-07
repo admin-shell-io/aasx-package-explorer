@@ -380,8 +380,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         success = true;
                         var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        foreach (var tp in ImportTableWordProvider.CreateProviders(dlg.FileName))
-                            pop.PopulateBy(tp);
+                        using (var stream = File.Open(dlg.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
+                                pop.PopulateBy(tp);
                     }
 
                     if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)

@@ -162,9 +162,9 @@
         "",
         "",
         "",
-        "%seq=13% %SME.elementName% %SME.idShort%",
-        "%seq=13% %SME.semanticIde% %CD.definition%",
-        "%seq=13% [%Property.valueType%]\r\n%SME.value%",
+        "%seq=<NL>% %SME.elementName% %SME.idShort%",
+        "%seq=\n% %SME.semanticId% %CD.definition%",
+        "%opt% %seq=10% [%Property.valueType%] %SME.value%",
         "%SME.multiplicity%"
       ]
     },

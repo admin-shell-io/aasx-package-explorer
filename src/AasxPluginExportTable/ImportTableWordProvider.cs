@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,17 +61,16 @@ namespace AasxPluginExportTable
                     if (runs != null)
                         foreach (var r in runs)
                         {
-                            var texts = r.Elements<Text>();
-                            if (texts != null)
-                                foreach (var t in texts)
-                                {
-                                    sb.Append(t.Text);
-                                }
+                            if (r.ChildElements == null)
+                                continue;
 
-                            var breaks = r.Elements<Break>();
-                            if (breaks != null)
-                                foreach (var br in breaks)
+                            foreach (var rc in r.ChildElements)
+                            {
+                                if (rc is Text rct)
+                                    sb.Append(rct.Text);
+                                if (rc is Break rcb)
                                     sb.Append("\n");
+                            }
                         }
                     sb.Append("\n");
                 }
@@ -89,10 +89,10 @@ namespace AasxPluginExportTable
         // Factory
         //
 
-        public static IEnumerable<ImportTableWordProvider> CreateProviders(string fn)
+        public static IEnumerable<ImportTableWordProvider> CreateProviders(Stream stream)
         {
             // open word
-            var document = WordprocessingDocument.Open(fn, isEditable: false);
+            var document = WordprocessingDocument.Open(stream, isEditable: false) ;
             var docDoc = document.MainDocumentPart.Document;
             var tables = docDoc.Body.Elements<Table>();
             if (tables == null)

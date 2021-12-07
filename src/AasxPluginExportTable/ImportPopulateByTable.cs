@@ -310,7 +310,11 @@ namespace AasxPluginExportTable
             if (sme is AdminShell.Property prop)
             {
                 prop.value = context.SmeValue;
+
+                // demux
                 prop.valueType = fen.ValueType;
+                if (!fen.ValueType.HasContent() && context.SmeValueType.HasContent())
+                    prop.valueType = context.SmeValueType;
             }
 
             if (sme is AdminShell.MultiLanguageProperty mlp)
@@ -484,13 +488,10 @@ namespace AasxPluginExportTable
                                 continue;
                             }
 
-                            // find next row?
-                            rowofs2 += _job.RowsBody;
-                            continue;
                         }
 
-                        // if not, end
-                        break;
+                        // find next row?
+                        rowofs2 += _job.RowsBody;
                     }
 
                     // advance at least to last good row + 1
