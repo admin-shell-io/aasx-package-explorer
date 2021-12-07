@@ -303,7 +303,7 @@ namespace AasOpcUaServer
                     // Root of whole structure is special, needs to link to external reference
 
                     builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance,
-                        fakeObjects, "AASROOT");
+                        /* was fakeObjects -- now disabled for no HasComponent */ null, "AASROOT");
                     builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
@@ -337,7 +337,8 @@ namespace AasOpcUaServer
 #else
                     {
                         // create folder(s) under "Objects"
-                        var topOfDict = builder.CreateAddObject(fakeObjects,
+                        var topOfDict = builder.CreateAddObject(
+                            /* was fakeObjects -- now disabled for no HasComponent */ null,
                             AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
                             referenceTypeFromParentId: null,
                             typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());

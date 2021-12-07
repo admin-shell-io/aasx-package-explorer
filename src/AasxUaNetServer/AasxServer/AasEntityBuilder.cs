@@ -342,7 +342,7 @@ namespace AasOpcUaServer
                 x.NodeId, nodeMgrExternalReferences);
 
             if (extraSubtype != null)
-                x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: false, extraSubtype);
+                x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: true, extraSubtype);
 
             // done
             return x;
