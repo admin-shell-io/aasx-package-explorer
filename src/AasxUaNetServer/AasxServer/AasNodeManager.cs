@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Serialization;
 using AdminShellNS;
 using Opc.Ua;
 using Opc.Ua.Sample;
@@ -250,6 +251,89 @@ namespace AasOpcUaServer
                 nodeSet.Items = nodup.ToArray();
             }
 
+            //
+            // amend nodeset
+            //
+
+            var xyz = new[] { new Opc.Ua.Export.ModelTableEntry() {
+                ModelUri = "http://opcfoundation.org/UA/i4aas/",
+                RequiredModel = new [] {
+                    new Opc.Ua.Export.ModelTableEntry()
+                    {
+                        ModelUri = "http://opcfoundation.org/UA/",
+                        PublicationDate = DateTime.Now,
+                        Version = "1.04"
+                    }
+                } } };
+            XmlSerializer ser2 = new XmlSerializer(typeof(Opc.Ua.Export.ModelTableEntry[]));
+
+            using (StringWriter textWriter = new StringWriter())
+            {
+                ser2.Serialize(textWriter, xyz);
+                var test = textWriter.ToString();
+            }
+
+
+
+            var xmlAmendModels = @"<?xml version=""1.0"" encoding=""utf-16""?>
+                <ArrayOfModelTableEntry xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+                  <ModelTableEntry ModelUri=""http://opcfoundation.org/UA/i4aas/"">
+                    <RequiredModel ModelUri=""http://opcfoundation.org/UA/"" Version=""1.04"" xmlns=""http://opcfoundation.org/UA/2011/03/UANodeSet.xsd"" />
+                  </ModelTableEntry>
+                </ArrayOfModelTableEntry>
+            ";
+
+            if (xmlAmendModels != null)
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(Opc.Ua.Export.ModelTableEntry[]));
+                using (TextReader reader = new StringReader(xmlAmendModels))
+                {
+                    try
+                    {
+                        var objs = (Opc.Ua.Export.ModelTableEntry[])serializer.Deserialize(reader);
+                        nodeSet.Models = objs;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+
+                }
+            }
+
+            // ----------------------------------------
+
+            var xmlAmendExtensions = @"<?xml version=""1.0"" encoding=""utf-16""?>
+                <Extension>
+                    <si:Generator Product=""SiOME"" Edition=""Standard"" Version=""2.3.4""/>
+                </Extension>
+                <Extension>
+                    <si:GeneratorExtension Hash=""be8b5386ad86ba05da2a08fb1a3e6df9""/>
+                </Extension>
+            ";
+
+            if (xmlAmendExtensions != null)
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(System.Xml.XmlElement[]));
+                using (TextReader reader = new StringReader(xmlAmendExtensions))
+                {
+                    try
+                    {
+                        var objs = (System.Xml.XmlElement[])serializer.Deserialize(reader);
+                        nodeSet.Extensions = objs;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
+
+                }
+            }
+
+            //
+            // write
+            //
+
             Utils.Trace(Utils.TraceMasks.Operation, "Writing stream ..");
             nodeSet.Write(stream);
         }
@@ -303,7 +387,8 @@ namespace AasOpcUaServer
                     // Root of whole structure is special, needs to link to external reference
 
                     builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance,
-                        /* was fakeObjects -- now disabled for no HasComponent */ null, "AASROOT");
+                        /* was fakeObjects -- now disabled for no HasComponent */ fakeObjects, "AASROOT",
+                        doNotAddToParent: true);
                     builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow

@@ -353,7 +353,8 @@ namespace AasOpcUaServer
 
         public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode,
             NodeState parent, string browseDisplayName,
-            NodeId extraParentNodeId = null)
+            NodeId extraParentNodeId = null,
+            bool doNotAddToParent = false)
         {
             var x = new FolderState(parent);
             x.BrowseName = browseDisplayName;
@@ -361,7 +362,7 @@ namespace AasOpcUaServer
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
             x.TypeDefinitionId = ObjectTypeIds.FolderType;
             nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
-            if (parent != null)
+            if (parent != null && !doNotAddToParent)
                 parent.AddChild(x);
 
             return x;
