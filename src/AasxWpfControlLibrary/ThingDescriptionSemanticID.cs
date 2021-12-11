@@ -30,9 +30,10 @@ namespace AasxPackageExplorer
         {
             // td Schema
             ["Thing"] = "https://www.w3.org/2019/wot/td#Thing",
-            ["@type"] = "tbd",
+            ["@type"] = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
             ["@id"] = "tbd",
             ["id"] = "tbd",
+            ["@context"] = "https://www.w3.org/2019/wot/td/v1",
             ["title"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#title",
             ["titles"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#title",
             ["description"] = "https://www.dublincore.org/specifications/dublin-core/dcmi-terms/#description",
@@ -40,8 +41,8 @@ namespace AasxPackageExplorer
 
             ["created"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#created",
             ["modified"] = "https://dublincore.org/specifications/dublin-core/dcmi-terms/#modified",
-            ["support"] = "tbd",
-            ["base"] = "tbd",
+            ["support"] = "https://www.w3.org/2019/wot/td#supportContact",
+            ["base"] = "https://www.w3.org/2019/wot/td#baseURI",
 
             //Property
             ["properties"] = "https://www.w3.org/2019/wot/json-schema#properties",
@@ -49,7 +50,7 @@ namespace AasxPackageExplorer
             ["observable"] = "https://www.w3.org/2019/wot/td#isObservable",
 
             //action
-            ["actions"] = "tbd",
+            ["actions"] = "https://www.w3.org/2019/wot/td#hasActionAffordance",
             ["action"] = "https://www.w3.org/2019/wot/td#ActionAffordance",
             ["input"] = "https://www.w3.org/2019/wot/td#hasInputSchema",
             ["output"] = "https://www.w3.org/2019/wot/td#hasOutputSchema",
@@ -57,24 +58,24 @@ namespace AasxPackageExplorer
             ["idempotent"] = "https://www.w3.org/2019/wot/td#isIdempotent",
 
             //event
-            ["events"] = "tbd",
+            ["events"] = "https://www.w3.org/2019/wot/td#hasEventAffordance",
             ["event"] = "https://www.w3.org/2019/wot/td#EventAffordance",
             ["subscription"] = "https://www.w3.org/2019/wot/td#hasSubscriptionSchema",
             ["data"] = "https://www.w3.org/2019/wot/td#hasNotificationSchema",
             ["cancellation"] = "https://www.w3.org/2019/wot/td#hasCancellationSchema",
 
             //links
-            ["links"] = "tbd",
+            ["links"] = "https://www.w3.org/2019/wot/td#hasLink",
             ["link"] = "https://www.w3.org/2019/wot/hypermedia#Link",
 
             //forms
-            ["forms"] = "tbd",
+            ["forms"] = "https://www.w3.org/2019/wot/td#hasForm",
             ["form"] = "https://www.w3.org/2019/wot/hypermedia#Form",
 
-            ["security"] = "tbd",
+            ["security"] = "https://www.w3.org/2019/wot/td#hasSecurityConfiguration",
 
             //securityDefinitions
-            ["securityDefinitions"] = "tbd",
+            ["securityDefinitions"] = "https://www.w3.org/2019/wot/td#definesSecurityScheme",
             ["apikey"] = "https://www.w3.org/2019/wot/security#APIKeySecurityScheme",
             ["basic"] = "https://www.w3.org/2019/wot/security#BasicSecurityScheme",
             ["bearer"] = "https://www.w3.org/2019/wot/security#BearerSecurityScheme",
@@ -112,7 +113,7 @@ namespace AasxPackageExplorer
 
             //ArraySchema
             ["items"] = "https://www.w3.org/2019/wot/json-schema#items",
-            ["item"] = "",
+            ["item"] = "https://www.w3.org/2019/wot/json-schema#items",
             ["minItems"] = "https://www.w3.org/2019/wot/json-schema#minItems",
             ["maxItems"] = "https://www.w3.org/2019/wot/json-schema#maxItems",
 
@@ -134,16 +135,16 @@ namespace AasxPackageExplorer
             ["contentEncoding"] = "https://www.w3.org/2019/wot/json-schema#contentEncoding",
             ["contentMediaType"] = "https://www.w3.org/2019/wot/json-schema#contentMediaType",
 
-            ["profile"] = "tbd",
+            ["profile"] = "https://www.w3.org/2019/wot/td#hasProfile",
 
 
-            ["op"] = "tbd",
+            ["op"] = "https://www.w3.org/2019/wot/td#OperationType",
 
             ["success"] = "https://www.w3.org/2019/wot/hypermedia#isSuccess",
             ["ContentType"] = "https://www.w3.org/2019/wot/hypermedia#forContentType",
 
-            ["version"] = "tbd",
-            ["VersionInfo"] = "tbd",
+            ["version"] = "https://www.w3.org/2019/wot/td#versionInfo",
+            ["VersionInfo"] = "https://www.w3.org/2019/wot/td#versionInfo",
 
             ["invokeAction"] = "https://www.w3.org/2019/wot/td#invokeAction",
             ["observeAllProperties"] = "https://www.w3.org/2019/wot/td#observeAllProperties",
@@ -166,22 +167,17 @@ namespace AasxPackageExplorer
             ["anyOf"] = "https://www.w3.org/2019/wot/json-schema#anyOf",
             ["contentType"] = "https://www.w3.org/2019/wot/hypermedia#forContentType",
 
-            ["href"] = "tbd",
+            ["href"] = "https://www.w3.org/2019/wot/hypermedia#hasTarget",
 
-            ["actions"] = "tbd",
-            ["scope"] = "tbd",
-            ["uriVariables"] = "tbd",
-
-            ["scheme"] = "tbd",
-
+            ["scope"] = "https://www.w3.org/2019/wot/td#scope",
+            
+            ["uriVariables"] = "",
+            ["scheme"] = "",
 
 
-            ["schemaDefinitions"] = "tbd",
+
+            ["schemaDefinitions"] = "",
             ["propertyName"] = "https://www.w3.org/2019/wot/json-schema#propertyName",
-
-
-            //security
-
 
             //hypermedia
 
@@ -189,29 +185,77 @@ namespace AasxPackageExplorer
             ["ExpectedResponse"] = "https://www.w3.org/2019/wot/hypermedia#ExpectedResponse",
 
         };
+
+        public static JObject arrayListDescription = new JObject
+        {
+            ["security"] = "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.",
+            ["scopes"] = "	Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.",
+            ["op"] = "Indicates the semantic intention of performing the operation(s) described by the form. For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The op attribute indicates which form is for which and allows the client to select the correct form for the operation required. op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation."
+        };
+        public static JObject arrayListDesc = new JObject
+        {
+            ["enum"] = "Restricted set of values provided as an array.",
+            ["@type"] = "JSON-LD keyword to label the object with semantic tags (or types)."
+        };
+        public static string getarrayListDescription(string tdType)
+        {
+            try
+            {
+                foreach (var temp in (JToken)arrayListDescription)
+                {
+                    JProperty x = (JProperty)temp;
+                    if (x.Name.ToString() == tdType)
+                    {
+                        return x.Value.ToString();
+                    }
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+        public static string getarrayListDesc(string tdType)
+        {
+            try
+            {
+                foreach (var temp in (JToken)arrayListDesc)
+                {
+                    JProperty x = (JProperty)temp;
+                    if (x.Name.ToString() == tdType)
+                    {
+                        return x.Value.ToString();
+                    }
+                }
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
         public static string getSemanticID(string tdType)
         {
-            if (semanticIDJObject.ContainsKey(tdType))
+            try
             {
-                return semanticIDJObject[tdType].ToString();
+                foreach (var temp in (JToken)semanticIDJObject)
+                {
+                    JProperty x = (JProperty)temp;
+                    if (x.Name.ToString() == tdType)
+                    {
+                        return x.Value.ToString();
+                    }
+                }
+                return "";
             }
-            else
+            catch
             {
-                return "empty";
+                return "";
             }
 
         }
     }
 }
-/*
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-            { "" , ""},
-
- */

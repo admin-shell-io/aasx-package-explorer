@@ -66,7 +66,9 @@ namespace AasxPackageExplorer
                         AdminShell.SubmodelElementCollection _response = new AdminShell.SubmodelElementCollection(_formElement, false);
                         foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
                         {
-                            formJObject["response"]["contentType"] = _tempResponse.submodelElement.ValueAsText();
+                            JObject contentTypeObject = new JObject();
+                            contentTypeObject["contentType"] = (_tempResponse.submodelElement).ValueAsText();
+                            formJObject["response"] = contentTypeObject;
                         }
                     }
                     else if (_formElement.idShort == "additionalResponses")
@@ -77,12 +79,12 @@ namespace AasxPackageExplorer
                         {
                             if (_tempResponse.submodelElement.idShort == "success")
                             {
-                                arJObject["success"] = Convert.ToBoolean(_tempResponse.submodelElement.ValueAsText());
+                                arJObject["success"] = Convert.ToBoolean((_tempResponse.submodelElement).ValueAsText());
 
                             }
                             else
                             {
-                                arJObject[_tempResponse.submodelElement.idShort] = _tempResponse.submodelElement.ValueAsText();
+                                arJObject[_tempResponse.submodelElement.idShort] = (_tempResponse.submodelElement).ValueAsText();
 
                             }
                         }
@@ -187,23 +189,19 @@ namespace AasxPackageExplorer
             List<JToken> enums = new List<JToken>();
             foreach (AdminShell.Qualifier _enumQual in qualCollection)
             {
-                int numericValue;
-                float floatValue;
-                double doubleValue;
-                bool boolValue;
-                if (int.TryParse(_enumQual.value, out numericValue))
+                if (int.TryParse(_enumQual.value, out int numericValue))
                 {
                     enums.Add(numericValue);
                 }
-                else if (float.TryParse(_enumQual.value, out floatValue))
+                else if (float.TryParse(_enumQual.value, out float floatValue))
                 {
                     enums.Add(floatValue);
                 }
-                else if (double.TryParse(_enumQual.value, out doubleValue))
+                else if (double.TryParse(_enumQual.value, out double doubleValue))
                 {
                     enums.Add(doubleValue);
                 }
-                else if (bool.TryParse(_enumQual.value, out boolValue))
+                else if (bool.TryParse(_enumQual.value, out bool boolValue))
                 {
                     enums.Add(boolValue);
                 }
@@ -284,58 +282,64 @@ namespace AasxPackageExplorer
                     semJObject["enum"] = JToken.FromObject(enumELement(dsElement.qualifiers));
                 }
             }
-            if (semJObject.ContainsKey("type"))
+            foreach (var temp in (JToken)semJObject)
             {
-                string dsType = semJObject["type"].ToString();
-                if (dsType == "array")
-                {
-                    JObject arrayObject = createArraySchema(sem);
-                    if (arrayObject.ContainsKey("items"))
+                JProperty typeObject = (JProperty)temp;
+                string key = typeObject.Name.ToString();
+                if (key == ("type"))
+                {;
+                    string dsType = typeObject.Value.ToString();
+                    if (dsType == "array")
                     {
-                        semJObject["items"] = arrayObject["items"];
-                    }
-                }
-                if (dsType == "object")
-                {
-                    JObject objectSchemaJObject = createObjectSchema(sem);
-                    if (objectSchemaJObject.ContainsKey("properties"))
-                    {
-                        semJObject["properties"] = objectSchemaJObject["properties"];
-                    }
-                    if (objectSchemaJObject.ContainsKey("required"))
-                    {
-                        semJObject["required"] = objectSchemaJObject["required"];
-                    }
-                }
-                if (dsType == "integer")
-                {
-                    List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
-                    foreach (string elem in integerSchema)
-                    {
-                        foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                        JObject arrayObject = createArraySchema(sem);
+                        if (arrayObject.ContainsKey("items"))
                         {
-                            if (elem == semQual.type)
+                            semJObject["items"] = arrayObject["items"];
+                        }
+                    }
+                    if (dsType == "object")
+                    {
+                        JObject objectSchemaJObject = createObjectSchema(sem);
+                        if (objectSchemaJObject.ContainsKey("properties"))
+                        {
+                            semJObject["properties"] = objectSchemaJObject["properties"];
+                        }
+                        if (objectSchemaJObject.ContainsKey("required"))
+                        {
+                            semJObject["required"] = objectSchemaJObject["required"];
+                        }
+                    }
+                    if (dsType == "integer")
+                    {
+                        List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                        foreach (string elem in integerSchema)
+                        {
+                            foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                             {
-                                semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
+                                if (elem == semQual.type)
+                                {
+                                    semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
+                                }
                             }
                         }
                     }
-                }
-                if (dsType == "number")
-                {
-                    List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
-                    foreach (string elem in numberSchema)
+                    if (dsType == "number")
                     {
-                        foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                        List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                        foreach (string elem in numberSchema)
                         {
-                            if (elem == semQual.type)
+                            foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                             {
-                                semJObject[semQual.type] = Convert.ToDouble(semQual.value);
+                                if (elem == semQual.type)
+                                {
+                                    semJObject[semQual.type] = Convert.ToDouble(semQual.value);
+                                }
                             }
                         }
                     }
                 }
             }
+            
             return semJObject;
         }
         public static JObject createInteractionAvoidance(AdminShell.SubmodelElement sem)
@@ -506,36 +510,42 @@ namespace AasxPackageExplorer
                 AdminShell.SubmodelElement _securityDefinition = _tempSD.submodelElement;
                 JObject securityJObject = createSecurityScheme(_securityDefinition);
                 AdminShell.SubmodelElementCollection _securityDItems = new AdminShell.SubmodelElementCollection(_securityDefinition);
-                if (securityJObject.ContainsKey("scheme"))
+                foreach (var temp in (JToken)securityJObject)
                 {
-                    if (securityJObject["scheme"].ToString() == "combo")
+                    JProperty secObject = (JProperty) temp;
+                    string key = secObject.Name.ToString();
+                    if (key == "scheme")
                     {
-                        foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
+                        string securityScheme = (secObject.Value).ToString();
+                        if (securityScheme == "combo")
                         {
-                            AdminShell.SubmodelElementCollection csdItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
-                            List<string> csdItemList = new List<string>();
-                            foreach (AdminShell.Qualifier _csdQual in csdItem.qualifiers)
+                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
                             {
-                                csdItemList.Add(_csdQual.value);
-                            }
-                            securityJObject[csdItem.idShort] = JToken.FromObject(csdItemList);
+                                AdminShell.SubmodelElementCollection csdItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                List<string> csdItemList = new List<string>();
+                                foreach (AdminShell.Qualifier _csdQual in csdItem.qualifiers)
+                                {
+                                    csdItemList.Add(_csdQual.value);
+                                }
+                                securityJObject[csdItem.idShort] = JToken.FromObject(csdItemList);
 
-                        }
-                        securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
-                    }
-                    if (securityJObject["scheme"].ToString() == "oauth2")
-                    {
-                        foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
-                        {
-                            AdminShell.SubmodelElementCollection oauth2SDItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
-                            List<string> csdItemList = new List<string>();
-                            foreach (AdminShell.Qualifier _csdQual in oauth2SDItem.qualifiers)
-                            {
-                                csdItemList.Add(_csdQual.value);
                             }
-                            securityJObject[oauth2SDItem.idShort] = JToken.FromObject(csdItemList);
+                            securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
                         }
-                        securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
+                        if (securityScheme == "oauth2")
+                        {
+                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
+                            {
+                                AdminShell.SubmodelElementCollection oauth2SDItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                List<string> csdItemList = new List<string>();
+                                foreach (AdminShell.Qualifier _csdQual in oauth2SDItem.qualifiers)
+                                {
+                                    csdItemList.Add(_csdQual.value);
+                                }
+                                securityJObject[oauth2SDItem.idShort] = JToken.FromObject(csdItemList);
+                            }
+                            securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
+                        }
                     }
                 }
                 securityDefinitionsJObject[_securityDefinition.idShort] = securityJObject;

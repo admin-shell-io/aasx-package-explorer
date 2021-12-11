@@ -663,19 +663,24 @@ namespace AasxPackageExplorer
                     // do it
                     RememberForInitialDirectory(dlg.FileName);
                     JObject importObject = TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
-                    if (importObject["status"].ToString() == "error")
+                    foreach (var temp in (JToken)importObject)
                     {
-                        MessageBoxFlyoutShow(
+                        JProperty importProperty = (JProperty)temp;
+                        string key = importProperty.Name.ToString();
+                        if (key == "error")
+                        {
+                            MessageBoxFlyoutShow(
                             "Unable to Import the JSON LD File", "Check the log"
                             ,
                             AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                        Log.Singleton.Error(importObject["error"].ToString(), "When importing the jsonld document");
-                    }
-                    else
-                    {
-                        // redisplay
-                        RedrawAllAasxElements();
-                        RedrawElementView();
+                            Log.Singleton.Error(importProperty.Value.ToString(), "When importing the jsonld document");
+                        }
+                        else
+                        {
+                            // redisplay
+                            RedrawAllAasxElements();
+                            RedrawElementView();
+                        }
                     }
                 }
                 catch (Exception ex)
