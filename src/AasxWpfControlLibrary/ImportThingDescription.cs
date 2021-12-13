@@ -1,6 +1,6 @@
 ﻿/*
 Copyright (c) 2021-2022 Otto-von-Guericke-Universität Magdeburg, Lehrstuhl Integrierte Automation
-Author: Harish Kumar Pakala
+harish.pakala@ovgu.de, Author: Harish Kumar Pakala
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
