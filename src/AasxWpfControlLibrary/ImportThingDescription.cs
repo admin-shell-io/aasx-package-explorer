@@ -59,7 +59,7 @@ namespace AasxPackageExplorer
                         {
                             string jProperty = x.ToString();
                             JObject _jObject = JObject.Parse(jProperty);
-                            AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item" + (i).ToString(),"item");
+                            AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item" + (i).ToString(), "item");
                             i = i + 1;
                             _item.semanticId = createSemanticID("item");
                             items.Add(_item);
@@ -69,7 +69,7 @@ namespace AasxPackageExplorer
                     {
                         string jItem = (arrayJObject["items"]).ToString();
                         JObject _jObject = JObject.Parse(jItem);
-                        AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1","item");
+                        AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1", "item");
                         _item.semanticId = createSemanticID("item");
                         items.Add(_item);
                     }
@@ -113,7 +113,7 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildIntegerSchema(AdminShell.SubmodelElementCollection dsCollection, JToken interJObject)
         {
-            foreach (var temp  in interJObject)
+            foreach (var temp in interJObject)
             {
                 JProperty integerSElement = (JProperty)temp;
                 string key = integerSElement.Name.ToString();
@@ -206,7 +206,7 @@ namespace AasxPackageExplorer
                     {
                         JProperty x = (JProperty)temp1;
                         JObject _propertyJobject = JObject.FromObject(x.Value);
-                        AdminShell.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(_propertyJobject, x.Name.ToString(),"property");
+                        AdminShell.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(_propertyJobject, x.Name.ToString(), "property");
                         _propertyC.semanticId = createSemanticID("property");
                         _properties.Add(_propertyC);
                     }
@@ -262,7 +262,7 @@ namespace AasxPackageExplorer
         // ConstructCommon Elements
 
         // TD DataSchema
-        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject dsjObject, string idShort,string type)
+        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject dsjObject, string idShort, string type)
         {
             AdminShell.SubmodelElementCollection abstractDS = new AdminShell.SubmodelElementCollection();
             abstractDS.idShort = idShort;
@@ -277,8 +277,8 @@ namespace AasxPackageExplorer
             string[] dsArrayList = { "enum", "@type" };
             foreach (var temp in (JToken)dsjObject)
             {
-                JProperty dsELement = (JProperty) temp;
-                string key = dsELement.Name.ToString();                
+                JProperty dsELement = (JProperty)temp;
+                string key = dsELement.Name.ToString();
                 if (key == "title")
                 {
                     abstractDS.qualifiers.Add(createAASQualifier("title", dsELement.Value.ToString()));
@@ -325,10 +325,20 @@ namespace AasxPackageExplorer
                     }
                     abstractDS.Add(oneOf);
                 }
-                if (key == "type")
+                if (key == "data1" || key == "type")
                 {
-                    abstractDS.qualifiers.Add(createAASQualifier("type", dsjObject["type"].ToString()));
-                    string dsType = dsjObject["type"].ToString();
+                    string dsType = "";
+                    if (key == "data1")
+                    {
+                        dsType = dsjObject["data1"]["type"].ToString();
+                        abstractDS.qualifiers.Add(createAASQualifier("data1.type", dsType));
+                    }
+                    else
+                    {
+                        dsType = dsjObject["type"].ToString();
+                        abstractDS.qualifiers.Add(createAASQualifier("type", dsType));
+                    }
+
                     if (dsType == "array")
                     {
                         abstractDS = BuildArraySchema(abstractDS, dsjObject);
@@ -385,7 +395,7 @@ namespace AasxPackageExplorer
         }
 
         // TD Interaction Avoidance
-        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort,string type)
+        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort, string type)
         {
             AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(jObject, idShort, type);
             if (jObject.ContainsKey("uriVariables"))
@@ -415,7 +425,7 @@ namespace AasxPackageExplorer
         // TD Properties
         public static AdminShell.SubmodelElementCollection BuildTDProperty(JObject _propertyJObject, string propertyName)
         {
-            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName,"property");
+            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName, "property");
             _tdProperty.semanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
             {
@@ -452,7 +462,7 @@ namespace AasxPackageExplorer
         // TD Events
         public static AdminShell.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName,"event");
+            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName, "event");
             _tdEvent.semanticId = createSemanticID("event");
             string[] dsList = { "subscription", "data", "cancellation" };
             foreach (var temp in (JToken)_eventJObject)
@@ -461,7 +471,7 @@ namespace AasxPackageExplorer
                 string key = eventElement.Name.ToString();
                 if (dsList.Contains(key))
                 {
-                    _tdEvent.Add(BuildAbstractDataSchema(JObject.FromObject(_eventJObject[key]),key,key));
+                    _tdEvent.Add(BuildAbstractDataSchema(JObject.FromObject(_eventJObject[key]), key, key));
                 }
             }
             return _tdEvent;
@@ -504,9 +514,9 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName,"action");
+            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName, "action");
             _tdAction.semanticId = createSemanticID("action");
-            string[] dsList = {"input","output"};
+            string[] dsList = { "input", "output" };
             string[] qualList = { "safe", "idempotent" };
             foreach (var temp in (JToken)_actionJObject)
             {
@@ -587,7 +597,7 @@ namespace AasxPackageExplorer
             }
             if (jObject.ContainsKey("descriptions"))
             {
-                foreach ( var temp in jObject["descriptions"])
+                foreach (var temp in jObject["descriptions"])
                 {
                     JProperty x = (JProperty)temp;
                     _securityDefinition.AddDescription((x.Name).ToString(), (x.Value).ToString());
@@ -779,7 +789,7 @@ namespace AasxPackageExplorer
         }
         public static AdminShell.SubmodelElementCollection BuildTDSecurityDefinitions(JObject jObject)
         {
- 
+
             AdminShell.SubmodelElementCollection _securityDefinitions = new AdminShell.SubmodelElementCollection();
             _securityDefinitions.idShort = "securityDefinitions";
             _securityDefinitions.category = "PARAMETER";
@@ -811,7 +821,7 @@ namespace AasxPackageExplorer
             tdForm.semanticId = createSemanticID("form");
             tdForm.qualifiers = new AdminShell.QualifierCollection();
             string[] qualList = { "href", "contentType", "contentCoding", "subprotocol", "security", "scopes", "op" };
-            string[] qualArrayList = { "security", "scopes","op"};
+            string[] qualArrayList = { "security", "scopes", "op" };
 
             foreach (var temp in (JToken)formjObject)
             {
@@ -885,7 +895,7 @@ namespace AasxPackageExplorer
                     {
                         tdForm.qualifiers.Add(createAASQualifier(key, formElement.Value.ToString()));
                     }
-                    else 
+                    else
                     {
                         if ((formElement.Value.Type).ToString() == "String")
                         {
@@ -971,15 +981,15 @@ namespace AasxPackageExplorer
                 using (var jsonTextReader = new JsonTextReader(tdStringReader) { DateParseHandling = DateParseHandling.None })
                 {
                     tdJObject = JObject.FromObject(JToken.ReadFrom(jsonTextReader));
-                }                
+                }
                 sm.qualifiers = new AdminShell.QualifierCollection();
                 foreach (var tempThing in (JToken)tdJObject)
                 {
                     JProperty thingE = (JProperty)tempThing;
                     string key = thingE.Name.ToString();
-                    string[] qualList = { "@context","created", 
+                    string[] qualList = { "@context","created",
                                           "modified", "support", "base","security","@type" ,"title"};
-                    string[] tdArrayList = { "profile","security","@type"};
+                    string[] tdArrayList = { "profile", "security", "@type" };
                     if (key == "description")
                     {
                         sm.AddDescription("en", thingE.Value.ToString());

@@ -216,6 +216,7 @@ namespace AasxPackageExplorer
         {
             JObject semJObject = new JObject();
             AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
+            string dschemaType = "";
             foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
             {
                 AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
@@ -276,70 +277,74 @@ namespace AasxPackageExplorer
                 {
                     semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
                 }
+                else if (smQualifier.type == "data1.type" || smQualifier.type == "type")
+                {
+                    if (smQualifier.type == "type")
+                    {
+                        semJObject[smQualifier.type] = smQualifier.value;
+                    }
+                    if (smQualifier.type == "data1.type")
+                    {
+                        semJObject["data1"] = JToken.FromObject(new JObject { ["type"] = smQualifier.value });
+                    }
+                    dschemaType = smQualifier.value;
+                }
                 else
                 {
                     semJObject[smQualifier.type] = smQualifier.value;
                 }
             }
-            foreach (var temp in (JToken)semJObject)
+            if (dschemaType == "array")
             {
-                JProperty typeObject = (JProperty)temp;
-                string key = typeObject.Name.ToString();
-                if (key == "type")
+                JObject arrayObject = createArraySchema(sem);
+                if (arrayObject.ContainsKey("items"))
                 {
-                    string dsType = typeObject.Value.ToString();
-                    if (dsType == "array")
-                    {
-                        JObject arrayObject = createArraySchema(sem);
-                        if (arrayObject.ContainsKey("items"))
-                        {
-                            semJObject["items"] = arrayObject["items"];
-                        }
-                    }
-                    if (dsType == "object")
-                    {
-                        JObject objectSchemaJObject = createObjectSchema(sem);
-                        if (objectSchemaJObject.ContainsKey("properties"))
-                        {
-                            semJObject["properties"] = JToken.FromObject( objectSchemaJObject["properties"]);
-                        }
-                        if (objectSchemaJObject.ContainsKey("required"))
-                        {
-                            semJObject["required"] = JToken.FromObject(objectSchemaJObject["required"]);
-                        }
-                    }
-                    if (dsType == "integer")
-                    {
-                        List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
-                        foreach (string elem in integerSchema)
-                        {
-                            foreach (AdminShell.Qualifier semQual in sem.qualifiers)
-                            {
-                                if (elem == semQual.type)
-                                {
-                                    semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
-                                }
-                            }
-                        }
-                    }
-                    if (dsType == "number")
-                    {
-                        List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
-                        foreach (string elem in numberSchema)
-                        {
-                            foreach (AdminShell.Qualifier semQual in sem.qualifiers)
-                            {
-                                if (elem == semQual.type) 
-                                {
-                                    semJObject[semQual.type] = Convert.ToDecimal(semQual.value.ToString());
-                                }
-                            }
-                        }
-                    }
-                    break;
+                    semJObject["items"] = arrayObject["items"];
                 }
             }
-            
+            else if (dschemaType == "object")
+            {
+                JObject objectSchemaJObject = createObjectSchema(sem);
+                if (objectSchemaJObject.ContainsKey("properties"))
+                {
+                    semJObject["properties"] = JToken.FromObject(objectSchemaJObject["properties"]);
+                }
+                if (objectSchemaJObject.ContainsKey("required"))
+                {
+                    semJObject["required"] = JToken.FromObject(objectSchemaJObject["required"]);
+                }
+            }
+            else if (dschemaType == "integer")
+            {
+                List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                foreach (string elem in integerSchema)
+                {
+                    foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                    {
+                        if (elem == semQual.type)
+                        {
+                            semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
+                        }
+                    }
+                }
+            }
+            else if (dschemaType == "number")
+            {
+                List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                foreach (string elem in numberSchema)
+                {
+                    foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                    {
+                        if (elem == semQual.type)
+                        {
+                            semJObject[semQual.type] = Convert.ToDecimal(semQual.value.ToString());
+                        }
+                    }
+                }
+            }
+
+
+
             return semJObject;
         }
         public static JObject createInteractionAvoidance(AdminShell.SubmodelElement sem)
@@ -512,7 +517,7 @@ namespace AasxPackageExplorer
                 AdminShell.SubmodelElementCollection _securityDItems = new AdminShell.SubmodelElementCollection(_securityDefinition);
                 foreach (var temp in (JToken)securityJObject)
                 {
-                    JProperty secObject = (JProperty) temp;
+                    JProperty secObject = (JProperty)temp;
                     string key = secObject.Name.ToString();
                     if (key == "scheme")
                     {
@@ -662,11 +667,15 @@ namespace AasxPackageExplorer
                                     contextList.Add((_con.value));
                                 }
                                 else
-                                {   _conSemantic[_con.type] = _con.value;
-                                   
-                                }  
+                                {
+                                    _conSemantic[_con.type] = _con.value;
+
+                                }
                             }
-                            contextList.Add(_conSemantic);
+                            if (_conSemantic.Count != 0)
+                            {
+                                contextList.Add(_conSemantic);
+                            }
                             TDJson["@context"] = JToken.FromObject(contextList);
                         }
                         if (tdElement.idShort == "properties")

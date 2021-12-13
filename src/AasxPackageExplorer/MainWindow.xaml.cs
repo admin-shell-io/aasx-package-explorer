@@ -2223,6 +2223,7 @@ namespace AasxPackageExplorer
             Dispatcher.PushFrame(frame);
 
             // call the closing action (before releasing!)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (closingAction != null && !preventClosingAction)
                 closingAction();
 

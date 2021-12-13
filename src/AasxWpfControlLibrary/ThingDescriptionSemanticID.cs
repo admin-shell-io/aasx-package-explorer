@@ -170,7 +170,7 @@ namespace AasxPackageExplorer
             ["href"] = "https://www.w3.org/2019/wot/hypermedia#hasTarget",
 
             ["scope"] = "https://www.w3.org/2019/wot/td#scope",
-            
+
             ["uriVariables"] = "",
             ["scheme"] = "",
 
