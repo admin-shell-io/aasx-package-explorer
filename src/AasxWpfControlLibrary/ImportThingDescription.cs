@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
+Copyright (c) 2021-2022 Otto-von-Guericke-Universität Magdeburg, Lehrstuhl Integrierte Automation
+Author: Harish Kumar Pakala
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
@@ -260,44 +260,6 @@ namespace AasxPackageExplorer
         }
 
         // ConstructCommon Elements
-        public static AdminShell.SubmodelElementCollection BuildCommonELement(AdminShell.SubmodelElementCollection thingCollection, JObject jObject)
-        {
-            foreach (var tempThing in (JToken)jObject)
-            {
-                JProperty thingE = (JProperty)tempThing;
-                string key = thingE.Name.ToString();
-                if (key == "title")
-                {
-                    thingCollection.qualifiers.Add(createAASQualifier("title", thingE.Value.ToString()));
-                }
-                if (key == "description")
-                {
-                    thingCollection.AddDescription("en", thingE.Value.ToString());
-                }
-                if (key == "descriptions")
-                {
-                    foreach (var temp in thingE.Value)
-                    {
-                        JProperty x = (JProperty)temp;
-                        thingCollection.AddDescription((x.Name).ToString(), (x.Value).ToString());
-                    }
-                }
-                if (key == "titles")
-                {
-                    List<AdminShellV20.LangStr> titleList = new List<AdminShellV20.LangStr>();
-                    foreach (var temp in thingE.Value)
-                    {
-                        JProperty x = (JProperty)temp;
-                        AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(), (x.Value).ToString());
-                        titleList.Add(title);
-                    }
-                    AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
-                    thingCollection.Add(mlp);
-                }
-            }
-
-            return thingCollection;
-        }
 
         // TD DataSchema
         public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject dsjObject, string idShort,string type)
@@ -313,41 +275,37 @@ namespace AasxPackageExplorer
             string[] qualList = { "const","default",
                                           "unit", "readOnly", "writeOnly","format","@type" };
             string[] dsArrayList = { "enum", "@type" };
-            abstractDS = BuildCommonELement(abstractDS, dsjObject);
             foreach (var temp in (JToken)dsjObject)
             {
                 JProperty dsELement = (JProperty) temp;
-                string key = dsELement.Name.ToString();
-                if ((dsELement.Value.Type).ToString() == "Array")
+                string key = dsELement.Name.ToString();                
+                if (key == "title")
                 {
-
-                    if (dsArrayList.Contains(key))
+                    abstractDS.qualifiers.Add(createAASQualifier("title", dsELement.Value.ToString()));
+                }
+                if (key == "description")
+                {
+                    abstractDS.AddDescription("en", dsELement.Value.ToString());
+                }
+                if (key == "descriptions")
+                {
+                    foreach (var temp1 in dsELement.Value)
                     {
-                        AdminShell.SubmodelElementCollection arrayCollection = new AdminShell.SubmodelElementCollection();
-                        arrayCollection.idShort = key;
-                        arrayCollection.category = "PARAMETER";
-                        arrayCollection.ordered = false;
-                        arrayCollection.allowDuplicates = false;
-                        arrayCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                        arrayCollection.AddDescription("en", TDSemanticId.getarrayListDesc(key));
-                        arrayCollection.qualifiers = new AdminShell.QualifierCollection();
-                        int index = 1;
-                        foreach (var x in dsELement.Value)
-                        {
-                            AdminShell.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(), (x).ToString());
-                            arrayCollection.qualifiers.Add(_arrayCQual);
-                            index = index + 1;
-                        }
-                        abstractDS.Add(arrayCollection);
-
+                        JProperty x = (JProperty)temp1;
+                        abstractDS.AddDescription((x.Name).ToString(), (x.Value).ToString());
                     }
                 }
-                if ((dsELement.Value.Type).ToString() == "String")
+                if (key == "titles")
                 {
-                    if (qualList.Contains(key))
+                    List<AdminShellV20.LangStr> titleList = new List<AdminShellV20.LangStr>();
+                    foreach (var temp2 in dsELement.Value)
                     {
-                        abstractDS.qualifiers.Add(createAASQualifier(key, dsELement.Value.ToString()));
+                        JProperty x = (JProperty)temp2;
+                        AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(), (x.Value).ToString());
+                        titleList.Add(title);
                     }
+                    AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
+                    abstractDS.Add(mlp);
                 }
                 if (key == "oneOf")
                 {
@@ -392,6 +350,36 @@ namespace AasxPackageExplorer
                         abstractDS = BuildObjectSchema(abstractDS, dsjObject);
                     }
                 }
+                if ((dsELement.Value.Type).ToString() == "Array")
+                {
+                    if (dsArrayList.Contains(key))
+                    {
+                        AdminShell.SubmodelElementCollection arrayCollection = new AdminShell.SubmodelElementCollection();
+                        arrayCollection.idShort = key;
+                        arrayCollection.category = "PARAMETER";
+                        arrayCollection.ordered = false;
+                        arrayCollection.allowDuplicates = false;
+                        arrayCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                        arrayCollection.AddDescription("en", TDSemanticId.getarrayListDesc(key));
+                        arrayCollection.qualifiers = new AdminShell.QualifierCollection();
+                        int index = 1;
+                        foreach (var x in dsELement.Value)
+                        {
+                            AdminShell.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(), (x).ToString());
+                            arrayCollection.qualifiers.Add(_arrayCQual);
+                            index = index + 1;
+                        }
+                        abstractDS.Add(arrayCollection);
+
+                    }
+                }
+                else
+                {
+                    if (qualList.Contains(key))
+                    {
+                        abstractDS.qualifiers.Add(createAASQualifier(key, dsELement.Value.ToString()));
+                    }
+                }
             }
             return abstractDS;
         }
@@ -409,7 +397,6 @@ namespace AasxPackageExplorer
                 _uriVariables.allowDuplicates = false;
                 _uriVariables.kind = AdminShellV20.ModelingKind.CreateAsInstance();
                 _uriVariables.semanticId = createSemanticID("uriVariables");
-                _uriVariables.qualifiers = new AdminShell.QualifierCollection();
                 foreach (var temp in jObject["uriVariables"])
                 {
                     JProperty uriVarObject = (JProperty)temp;
@@ -430,7 +417,6 @@ namespace AasxPackageExplorer
         {
             AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName,"property");
             _tdProperty.semanticId = createSemanticID("property");
-            _tdProperty.qualifiers = new AdminShell.QualifierCollection();
             if (_propertyJObject.ContainsKey("observable"))
             {
                 _tdProperty.qualifiers.Add(createAASQualifier("observable", (_propertyJObject["observable"]).ToString()));
@@ -490,7 +476,6 @@ namespace AasxPackageExplorer
             tdEvents.kind = AdminShellV20.ModelingKind.CreateAsInstance();
             tdEvents.AddDescription("en", "All Event-based Interaction Affordances of the Thing.");
             tdEvents.semanticId = createSemanticID("events");
-            tdEvents.qualifiers = new AdminShell.QualifierCollection();
             foreach (var temp in jObject["events"])
             {
                 JProperty eventObject = (JProperty)temp;
@@ -521,7 +506,6 @@ namespace AasxPackageExplorer
         {
             AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName,"action");
             _tdAction.semanticId = createSemanticID("action");
-            _tdAction.qualifiers = new AdminShell.QualifierCollection();
             string[] dsList = {"input","output"};
             string[] qualList = { "safe", "idempotent" };
             foreach (var temp in (JToken)_actionJObject)
@@ -621,10 +605,6 @@ namespace AasxPackageExplorer
                 {
                     if (jObject.ContainsKey("oneOf"))
                     {
-                        if ((jObject["oneOf"].Type).ToString() == "String")
-                        {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", (jObject["oneOf"]).ToString()));
-                        }
                         if ((jObject["oneOf"].Type).ToString() == "Array")
                         {
                             AdminShell.SubmodelElementCollection _oneOf = new AdminShell.SubmodelElementCollection();
@@ -644,13 +624,13 @@ namespace AasxPackageExplorer
                             }
                             _securityDefinition.Add(_oneOf);
                         }
+                        else
+                        {
+                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", (jObject["oneOf"]).ToString()));
+                        }
                     }
                     if (jObject.ContainsKey("allOf"))
                     {
-                        if ((jObject["allOf"].Type).ToString() == "String")
-                        {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", (jObject["allOf"]).ToString()));
-                        }
                         if ((jObject["allOf"].Type).ToString() == "Array")
                         {
                             AdminShell.SubmodelElementCollection _allOf = new AdminShell.SubmodelElementCollection();
@@ -668,6 +648,10 @@ namespace AasxPackageExplorer
                                 _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(), (x).ToString()));
                                 index = index + 1;
                             }
+                        }
+                        else
+                        {
+                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", (jObject["allOf"]).ToString()));
                         }
                     }
                     _securityDefinition.semanticId = createSemanticID("combo");
@@ -870,14 +854,6 @@ namespace AasxPackageExplorer
                     }
                     tdForm.Add(_response);
                 }
-
-                if ((formElement.Value.Type).ToString() == "String")
-                {
-                    if (qualList.Contains(key))
-                    {
-                        tdForm.qualifiers.Add(createAASQualifier(key, formElement.Value.ToString()));
-                    }
-                }
                 if ((formElement.Value.Type).ToString() == "Array")
                 {
                     if (qualArrayList.Contains(formElement.Name))
@@ -901,6 +877,20 @@ namespace AasxPackageExplorer
                             index = index + 1;
                         }
                         tdForm.Add(_arrayElement);
+                    }
+                }
+                else
+                {
+                    if (qualList.Contains(key))
+                    {
+                        tdForm.qualifiers.Add(createAASQualifier(key, formElement.Value.ToString()));
+                    }
+                    else 
+                    {
+                        if ((formElement.Value.Type).ToString() == "String")
+                        {
+                            tdForm.qualifiers.Add(createAASQualifier(key, formElement.Value.ToString()));
+                        }
                     }
                 }
 
@@ -1094,14 +1084,13 @@ namespace AasxPackageExplorer
                             _context.qualifiers = new AdminShell.QualifierCollection();
                             foreach (var temp in thingE.Value)
                             {
-                                JProperty listElement = (JProperty) temp;
-                                if ((listElement.Type).ToString() == "String")
+                                if ((temp.Type).ToString() == "String")
                                 {
-                                    _context.qualifiers.Add(createAASQualifier(key, listElement.ToString()));
+                                    _context.qualifiers.Add(createAASQualifier(key, temp.ToString()));
                                 }
                                 else
                                 {
-                                    JObject _contextJobject = JObject.FromObject(listElement);
+                                    JObject _contextJobject = JObject.FromObject(temp);
                                     foreach (var y in _contextJobject)
                                     {
                                         _context.qualifiers.Add(createAASQualifier((y.Key).ToString(), (y.Value).ToString()));

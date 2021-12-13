@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
+Copyright (c) 2021-2022 Otto-von-Guericke-Universität Magdeburg, Lehrstuhl Integrierte Automation
+Author: Harish Kumar Pakala
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
@@ -215,42 +215,6 @@ namespace AasxPackageExplorer
         public static JObject createDataSchema(AdminShell.SubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            foreach (AdminShell.Qualifier smQualifier in sem.qualifiers)
-            {
-                if (smQualifier.type == "readOnly" || smQualifier.type == "writeOnly")
-                {
-                    semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
-                }
-                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems")
-                {
-                    semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
-                }
-                else
-                {
-                    semJObject[smQualifier.type] = smQualifier.value;
-                }
-            }
-            if (sem.description != null)
-            {
-                AdminShell.ListOfLangStr tdDescription = sem.description.langString;
-                if (tdDescription.Count != 1)
-                {
-                    semJObject["description"] = tdDescription[0].str;
-                    int index = 1;
-                    JObject descriptions = new JObject();
-                    for (index = 1; index < tdDescription.Count; index++)
-                    {
-                        AdminShell.LangStr desc = tdDescription[index];
-                        descriptions[desc.lang] = desc.str;
-                    }
-                    semJObject["descriptions"] = descriptions;
-                }
-                else
-                {
-                    semJObject["description"] = tdDescription[0].str;
-                }
-            }
-
             AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
             foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
             {
@@ -282,12 +246,47 @@ namespace AasxPackageExplorer
                     semJObject["enum"] = JToken.FromObject(enumELement(dsElement.qualifiers));
                 }
             }
+            if (sem.description != null)
+            {
+                AdminShell.ListOfLangStr tdDescription = sem.description.langString;
+                if (tdDescription.Count != 1)
+                {
+                    semJObject["description"] = tdDescription[0].str;
+                    int index = 1;
+                    JObject descriptions = new JObject();
+                    for (index = 1; index < tdDescription.Count; index++)
+                    {
+                        AdminShell.LangStr desc = tdDescription[index];
+                        descriptions[desc.lang] = desc.str;
+                    }
+                    semJObject["descriptions"] = JToken.FromObject(descriptions);
+                }
+                else
+                {
+                    semJObject["description"] = tdDescription[0].str;
+                }
+            }
+            foreach (AdminShell.Qualifier smQualifier in sem.qualifiers)
+            {
+                if (smQualifier.type == "readOnly" || smQualifier.type == "writeOnly")
+                {
+                    semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
+                }
+                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" || smQualifier.type == "minLength" || smQualifier.type == "maxLength")
+                {
+                    semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
+                }
+                else
+                {
+                    semJObject[smQualifier.type] = smQualifier.value;
+                }
+            }
             foreach (var temp in (JToken)semJObject)
             {
                 JProperty typeObject = (JProperty)temp;
                 string key = typeObject.Name.ToString();
-                if (key == ("type"))
-                {;
+                if (key == "type")
+                {
                     string dsType = typeObject.Value.ToString();
                     if (dsType == "array")
                     {
@@ -302,11 +301,11 @@ namespace AasxPackageExplorer
                         JObject objectSchemaJObject = createObjectSchema(sem);
                         if (objectSchemaJObject.ContainsKey("properties"))
                         {
-                            semJObject["properties"] = objectSchemaJObject["properties"];
+                            semJObject["properties"] = JToken.FromObject( objectSchemaJObject["properties"]);
                         }
                         if (objectSchemaJObject.ContainsKey("required"))
                         {
-                            semJObject["required"] = objectSchemaJObject["required"];
+                            semJObject["required"] = JToken.FromObject(objectSchemaJObject["required"]);
                         }
                     }
                     if (dsType == "integer")
@@ -330,13 +329,14 @@ namespace AasxPackageExplorer
                         {
                             foreach (AdminShell.Qualifier semQual in sem.qualifiers)
                             {
-                                if (elem == semQual.type)
+                                if (elem == semQual.type) 
                                 {
-                                    semJObject[semQual.type] = Convert.ToDouble(semQual.value);
+                                    semJObject[semQual.type] = Convert.ToDecimal(semQual.value.ToString());
                                 }
                             }
                         }
                     }
+                    break;
                 }
             }
             
@@ -604,7 +604,6 @@ namespace AasxPackageExplorer
                     {
                         TDJson["description"] = tdDescription[0].str;
                     }
-
                 }
                 //version
                 if (sm.administration != null)
@@ -663,11 +662,11 @@ namespace AasxPackageExplorer
                                     contextList.Add((_con.value));
                                 }
                                 else
-                                {
-                                    _conSemantic[_con.type] = _con.value;
-                                    contextList.Add(_conSemantic);
-                                }
+                                {   _conSemantic[_con.type] = _con.value;
+                                   
+                                }  
                             }
+                            contextList.Add(_conSemantic);
                             TDJson["@context"] = JToken.FromObject(contextList);
                         }
                         if (tdElement.idShort == "properties")

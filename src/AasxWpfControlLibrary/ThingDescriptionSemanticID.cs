@@ -1,6 +1,6 @@
 ﻿/*
-Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
-Author: Michael Hoffmeister
+Copyright (c) 2021-2022 Otto-von-Guericke-Universität Magdeburg, Lehrstuhl Integrierte Automation
+Author: Harish Kumar Pakala
 
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
