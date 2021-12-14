@@ -1538,11 +1538,11 @@ namespace AasxPackageExplorer
                 // inform current Flyover?
                 if (currentFlyoutControl is IFlyoutAgent fosc)
                     fosc.GetAgent()?.PushEvent(ev);
-
+                // dead-csharp off
                 // inform agents?
-                foreach (var fa in UserControlAgentsView.Children)
-                    fa.GetAgent()?.PushEvent(ev);
-
+                //  foreach (var fa in UserControlAgentsView.Children)
+                //     fa.GetAgent()?.PushEvent(ev); 
+                // dead-csharp on
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
                 if (foundObservable == null)
@@ -2174,47 +2174,48 @@ namespace AasxPackageExplorer
 
             // agent behaviour
             var preventClosingAction = false;
-            if (uc is IFlyoutAgent ucag)
-            {
-                // register for minimize
-                ucag.ControlMinimize += () =>
-                {
-                    // only execute if preconditions are well
-                    if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
-                    {
-                        // do not execute directly
-                        preventClosingAction = true;
+            // dead-csharp off
+            //  if (uc is IFlyoutAgent ucag)
+            // {
+            //    // register for minimize
+            //   ucag.ControlMinimize += () =>
+            //{
+            // only execute if preconditions are well
+            // if (ucag.GetAgent() != null && ucag.GetAgent().GenerateFlyoutMini != null)
+            //{
+            // do not execute directly
+            // preventClosingAction = true;
 
-                        // make a mini
-                        var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
+            // make a mini
+            // var mini = ucag.GetAgent().GenerateFlyoutMini.Invoke();
 
-                        // be careful
-                        if (mini is UserControl miniUc)
-                        {
-                            // push the agent
-                            UserControlAgentsView.Add(miniUc);
+            // be careful
+            // if (mini is UserControl miniUc)
+            // {
+            // push the agent
+            //    UserControlAgentsView.Add(miniUc);
 
-                            // wrap provided closing action in own closing action
-                            if (ucag.GetAgent() != null)
-                                ucag.GetAgent().ClosingAction = () =>
-                                {
-                                    // 1st delete agent
-                                    UserControlAgentsView.Remove(miniUc);
+            // wrap provided closing action in own closing action
+            //    if (ucag.GetAgent() != null)
+            //        ucag.GetAgent().ClosingAction = () =>
+            //   {
+            // 1st delete agent
+            //         UserControlAgentsView.Remove(miniUc);
 
-                                    // finally, call user provided closing action
-                                    closingAction?.Invoke();
-                                };
+            // finally, call user provided closing action
+            //           closingAction?.Invoke();
+            //         };
 
-                            // show the panel
-                            PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
+            // show the panel
+            //       PanelConcurrentSetVisibleIfRequired(true, targetAgents: true);
 
-                            // remove the flyover
-                            frame.Continue = false; // stops the frame
-                        }
-                    }
-                };
-            }
-
+            // remove the flyover
+            //         frame.Continue = false; // stops the frame
+            //       }
+            //     }
+            //   };
+            //} */
+            // dead-csharp on
             // start (focus)
             ucfoc.ControlStart();
 
@@ -2223,6 +2224,7 @@ namespace AasxPackageExplorer
             Dispatcher.PushFrame(frame);
 
             // call the closing action (before releasing!)
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (closingAction != null && !preventClosingAction)
                 closingAction();
 
