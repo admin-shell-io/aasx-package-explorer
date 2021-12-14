@@ -1163,7 +1163,8 @@ namespace AasxPackageExplorer
                             ["profile"] = "Indicates the WoT Profile mechanisms followed by this" +
                             "Thing Description and the corresponding Thing implementation.",
                             ["security"] = "security definition names",
-                            ["@type"] = "JSON-LD keyword to label the object with semantic tags (or types)."
+                            ["@type"] = "JSON-LD keyword to label the object with semantic " +
+                            "tags (or types)."
                         };
                         if (key == "@context")
                         {
