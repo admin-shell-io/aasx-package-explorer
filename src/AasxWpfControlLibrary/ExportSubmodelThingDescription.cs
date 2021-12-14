@@ -66,7 +66,7 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.idShort == "response")
                     {
-                        AdminShell.SubmodelElementCollection _response = 
+                        AdminShell.SubmodelElementCollection _response =
                             new AdminShell.SubmodelElementCollection(_formElement, false);
                         foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
                         {
@@ -77,7 +77,7 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.idShort == "additionalResponses")
                     {
-                        AdminShell.SubmodelElementCollection _response = 
+                        AdminShell.SubmodelElementCollection _response =
                             new AdminShell.SubmodelElementCollection(_formElement, false);
                         JObject arJObject = new JObject();
                         foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
                             }
                             else
                             {
-                                arJObject[_tempResponse.submodelElement.idShort] = 
+                                arJObject[_tempResponse.submodelElement.idShort] =
                                     (_tempResponse.submodelElement).ValueAsText();
 
                             }
@@ -108,7 +108,7 @@ namespace AasxPackageExplorer
                     }
                     else
                     {
-                        formJObject[_formElement.idShort] = 
+                        formJObject[_formElement.idShort] =
                             _tempformElement.GetAs<AdminShell.Property>().value.ToString();
                     }
                 }
@@ -283,7 +283,7 @@ namespace AasxPackageExplorer
                 {
                     semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
                 }
-                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" || 
+                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" ||
                     smQualifier.type == "minLength" || smQualifier.type == "maxLength")
                 {
                     semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
@@ -542,10 +542,10 @@ namespace AasxPackageExplorer
                         string securityScheme = (secObject.Value).ToString();
                         if (securityScheme == "combo")
                         {
-                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in 
+                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in
                                 _securityDItems.EnumerateChildren())
                             {
-                                AdminShell.SubmodelElementCollection csdItem = 
+                                AdminShell.SubmodelElementCollection csdItem =
                                     new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
                                 List<string> csdItemList = new List<string>();
                                 foreach (AdminShell.Qualifier _csdQual in csdItem.qualifiers)
@@ -555,7 +555,7 @@ namespace AasxPackageExplorer
                                 securityJObject[csdItem.idShort] = JToken.FromObject(csdItemList);
 
                             }
-                            securityDefinitionsJObject[_securityDefinition.idShort] = 
+                            securityDefinitionsJObject[_securityDefinition.idShort] =
                                 JToken.FromObject(securityJObject);
                         }
                         if (securityScheme == "oauth2")

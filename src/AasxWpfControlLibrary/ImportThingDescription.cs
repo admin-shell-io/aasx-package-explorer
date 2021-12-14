@@ -34,7 +34,7 @@ namespace AasxPackageExplorer
 
         // TD DataSchema Sub classes
         public static AdminShell.SubmodelElementCollection BuildArraySchema(
-                AdminShell.SubmodelElementCollection dsCollection,JToken arrayJObject)
+                AdminShell.SubmodelElementCollection dsCollection, JToken arrayJObject)
         {
             foreach (var temp in arrayJObject)
             {
@@ -95,7 +95,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMinimum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", 
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum",
                                                                     numberJObject["exclusiveMinimum"].ToString()));
                 }
                 if (key == ("maximum"))
@@ -128,7 +128,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMinimum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", 
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum",
                                                                     interJObject["exclusiveMinimum"].ToString()));
                 }
                 if (key == ("maximum"))
@@ -142,7 +142,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("multipleOf"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf", 
+                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf",
                                                                     interJObject["multipleOf"].ToString()));
                 }
             }
@@ -388,7 +388,7 @@ namespace AasxPackageExplorer
                 {
                     if (dsArrayList.Contains(key))
                     {
-                        AdminShell.SubmodelElementCollection arrayCollection = new 
+                        AdminShell.SubmodelElementCollection arrayCollection = new
                                                         AdminShell.SubmodelElementCollection();
                         arrayCollection.idShort = key;
                         arrayCollection.category = "PARAMETER";
@@ -460,12 +460,12 @@ namespace AasxPackageExplorer
             _tdProperty.semanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
             {
-                _tdProperty.qualifiers.Add(createAASQualifier("observable", 
+                _tdProperty.qualifiers.Add(createAASQualifier("observable",
                                                         (_propertyJObject["observable"]).ToString()));
             }
             if (_propertyJObject.ContainsKey("updateFrequencey"))
             {
-                _tdProperty.qualifiers.Add(createAASQualifier("updateFrequencey", 
+                _tdProperty.qualifiers.Add(createAASQualifier("updateFrequencey",
                                                         (_propertyJObject["updateFrequencey"]).ToString()));
             }
             if (_propertyJObject.ContainsKey("updatable"))
@@ -681,7 +681,7 @@ namespace AasxPackageExplorer
                         }
                         else
                         {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", 
+                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf",
                                                                     (jObject["oneOf"]).ToString()));
                         }
                     }
@@ -702,14 +702,14 @@ namespace AasxPackageExplorer
                             _allOf.qualifiers = new AdminShell.QualifierCollection();
                             foreach (var x in jObject["allOf"])
                             {
-                                _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(), 
+                                _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(),
                                     (x).ToString()));
                                 index = index + 1;
                             }
                         }
                         else
                         {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", 
+                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf",
                                 (jObject["allOf"]).ToString()));
                         }
                     }
@@ -929,7 +929,7 @@ namespace AasxPackageExplorer
                         foreach (var arJObject in formjObject["additionalResponses"])
                         {
                             index = index + 1;
-                            _response.Add(BuildAdditionalResponse(JObject.FromObject(arJObject), 
+                            _response.Add(BuildAdditionalResponse(JObject.FromObject(arJObject),
                                 "additionalResponse" + index.ToString()));
                         }
                     }
