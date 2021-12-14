@@ -29,13 +29,12 @@ namespace AasxPackageExplorer
     {
         public static bool ValidateTDJson(JObject tdJObject)
         {
-            //JsonSchema tdSchema = JsonSchema.Parse(File.ReadAllText(@"td-json-schema-validation.json"));
-            //bool idValid = tdJObject.IsValid(tdSchema);
             return false;
         }
 
         // TD DataSchema Sub classes
-        public static AdminShell.SubmodelElementCollection BuildArraySchema(AdminShell.SubmodelElementCollection dsCollection, JToken arrayJObject)
+        public static AdminShell.SubmodelElementCollection BuildArraySchema(
+                AdminShell.SubmodelElementCollection dsCollection,JToken arrayJObject)
         {
             foreach (var temp in arrayJObject)
             {
@@ -59,7 +58,8 @@ namespace AasxPackageExplorer
                         {
                             string jProperty = x.ToString();
                             JObject _jObject = JObject.Parse(jProperty);
-                            AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item" + (i).ToString(), "item");
+                            AdminShell.SubmodelElementCollection _item = BuildAbstractDataSchema
+                                                                        (_jObject, "item" + (i).ToString(), "item");
                             i = i + 1;
                             _item.semanticId = createSemanticID("item");
                             items.Add(_item);
@@ -82,7 +82,8 @@ namespace AasxPackageExplorer
 
             return dsCollection;
         }
-        public static AdminShell.SubmodelElementCollection BuildNumberSchema(AdminShell.SubmodelElementCollection dsCollection, JToken numberJObject)
+        public static AdminShell.SubmodelElementCollection BuildNumberSchema(
+            AdminShell.SubmodelElementCollection dsCollection, JToken numberJObject)
         {
             foreach (var temp in numberJObject)
             {
@@ -94,7 +95,8 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMinimum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", numberJObject["exclusiveMinimum"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", 
+                                                                    numberJObject["exclusiveMinimum"].ToString()));
                 }
                 if (key == ("maximum"))
                 {
@@ -102,16 +104,19 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMaximum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum", numberJObject["exclusiveMaximum"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum",
+                                                                   numberJObject["exclusiveMaximum"].ToString()));
                 }
                 if (key == ("multipleOf"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf", numberJObject["multipleOf"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf",
+                                                                   numberJObject["multipleOf"].ToString()));
                 }
             }
             return dsCollection;
         }
-        public static AdminShell.SubmodelElementCollection BuildIntegerSchema(AdminShell.SubmodelElementCollection dsCollection, JToken interJObject)
+        public static AdminShell.SubmodelElementCollection BuildIntegerSchema(
+            AdminShell.SubmodelElementCollection dsCollection, JToken interJObject)
         {
             foreach (var temp in interJObject)
             {
@@ -123,7 +128,8 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMinimum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", interJObject["exclusiveMinimum"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMinimum", 
+                                                                    interJObject["exclusiveMinimum"].ToString()));
                 }
                 if (key == ("maximum"))
                 {
@@ -131,16 +137,19 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("exclusiveMaximum"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum", interJObject["exclusiveMaximum"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("exclusiveMaximum",
+                                                                    interJObject["exclusiveMaximum"].ToString()));
                 }
                 if (key == ("multipleOf"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf", interJObject["multipleOf"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("multipleOf", 
+                                                                    interJObject["multipleOf"].ToString()));
                 }
             }
             return dsCollection;
         }
-        public static AdminShell.SubmodelElementCollection BuildStringSchema(AdminShell.SubmodelElementCollection dsCollection, JToken stringjObject)
+        public static AdminShell.SubmodelElementCollection BuildStringSchema(
+            AdminShell.SubmodelElementCollection dsCollection, JToken stringjObject)
         {
             foreach (var temp in stringjObject)
             {
@@ -148,29 +157,35 @@ namespace AasxPackageExplorer
                 string key = stringElement.Name.ToString();
                 if (key == ("minLength"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("minLength", stringjObject["minLength"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("minLength",
+                                                                    stringjObject["minLength"].ToString()));
                 }
                 if (key == ("maxLength"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("maxLength", stringjObject["maxLength"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("maxLength",
+                                                                   stringjObject["maxLength"].ToString()));
                 }
                 if (key == ("pattern"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("pattern", stringjObject["pattern"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("pattern",
+                                                                    stringjObject["pattern"].ToString()));
                 }
                 if (key == ("contentEncoding"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("contentEncoding", stringjObject["contentEncoding"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("contentEncoding",
+                                                                    stringjObject["contentEncoding"].ToString()));
                 }
                 if (key == ("contentMediaType"))
                 {
-                    dsCollection.qualifiers.Add(createAASQualifier("contentMediaType", stringjObject["contentMediaType"].ToString()));
+                    dsCollection.qualifiers.Add(createAASQualifier("contentMediaType",
+                                                                    stringjObject["contentMediaType"].ToString()));
                 }
             }
 
             return dsCollection;
         }
-        public static AdminShell.SubmodelElementCollection BuildObjectSchema(AdminShell.SubmodelElementCollection dsCollection, JToken objectjObject)
+        public static AdminShell.SubmodelElementCollection BuildObjectSchema(
+            AdminShell.SubmodelElementCollection dsCollection, JToken objectjObject)
         {
             foreach (var temp in objectjObject)
             {
@@ -206,7 +221,8 @@ namespace AasxPackageExplorer
                     {
                         JProperty x = (JProperty)temp1;
                         JObject _propertyJobject = JObject.FromObject(x.Value);
-                        AdminShell.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(_propertyJobject, x.Name.ToString(), "property");
+                        AdminShell.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(
+                                                                    _propertyJobject, x.Name.ToString(), "property");
                         _propertyC.semanticId = createSemanticID("property");
                         _properties.Add(_propertyC);
                     }
@@ -219,7 +235,8 @@ namespace AasxPackageExplorer
         }
 
         // AAS SubmodelMultiLanguage Property
-        public static AdminShell.MultiLanguageProperty BuildMultiLanguageProperty(string idShort, List<AdminShellV20.LangStr> texts, string description)
+        public static AdminShell.MultiLanguageProperty BuildMultiLanguageProperty(
+            string idShort, List<AdminShellV20.LangStr> texts, string description)
         {
             AdminShell.MultiLanguageProperty _multiLanguageProperty = new AdminShell.MultiLanguageProperty();
             _multiLanguageProperty.idShort = idShort;
@@ -242,7 +259,8 @@ namespace AasxPackageExplorer
             arCollection.ordered = false;
             arCollection.allowDuplicates = false;
             arCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            arCollection.AddDescription("en", "Communication metadata describing the expected response message for additional responses.");
+            arCollection.AddDescription("en", "Communication metadata describing the expected response message " +
+                "                              for additional responses.");
             arCollection.qualifiers = new AdminShell.QualifierCollection();
             if (jobject.ContainsKey("success"))
             {
@@ -262,7 +280,8 @@ namespace AasxPackageExplorer
         // ConstructCommon Elements
 
         // TD DataSchema
-        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(JObject dsjObject, string idShort, string type)
+        public static AdminShell.SubmodelElementCollection BuildAbstractDataSchema(
+            JObject dsjObject, string idShort, string type)
         {
             AdminShell.SubmodelElementCollection abstractDS = new AdminShell.SubmodelElementCollection();
             abstractDS.idShort = idShort;
@@ -301,10 +320,14 @@ namespace AasxPackageExplorer
                     foreach (var temp2 in dsELement.Value)
                     {
                         JProperty x = (JProperty)temp2;
-                        AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(), (x.Value).ToString());
+                        AdminShellV20.LangStr title = new AdminShellV20.LangStr(
+                                                            (x.Name).ToString(), (x.Value).ToString());
                         titleList.Add(title);
                     }
-                    AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
+                    AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(
+                                                          key, titleList, "Provides multi-language " +
+                                                          "human-readable titles (e.g., display a text for " +
+                                                          "UI representation in different languages)");
                     abstractDS.Add(mlp);
                 }
                 if (key == "oneOf")
@@ -315,7 +338,8 @@ namespace AasxPackageExplorer
                     oneOf.ordered = false;
                     oneOf.allowDuplicates = false;
                     oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                    oneOf.AddDescription("en", "Used to ensure that the data is valid against one of the specified schemas in the array.");
+                    oneOf.AddDescription("en", "Used to ensure that the data is valid " +
+                                                "against one of the specified schemas in the array.");
                     oneOf.qualifiers = new AdminShell.QualifierCollection();
                     int i = 0;
                     foreach (var ds in dsjObject["oneOf"])
@@ -364,7 +388,8 @@ namespace AasxPackageExplorer
                 {
                     if (dsArrayList.Contains(key))
                     {
-                        AdminShell.SubmodelElementCollection arrayCollection = new AdminShell.SubmodelElementCollection();
+                        AdminShell.SubmodelElementCollection arrayCollection = new 
+                                                        AdminShell.SubmodelElementCollection();
                         arrayCollection.idShort = key;
                         arrayCollection.category = "PARAMETER";
                         arrayCollection.ordered = false;
@@ -375,7 +400,8 @@ namespace AasxPackageExplorer
                         int index = 1;
                         foreach (var x in dsELement.Value)
                         {
-                            AdminShell.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(), (x).ToString());
+                            AdminShell.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(),
+                                (x).ToString());
                             arrayCollection.qualifiers.Add(_arrayCQual);
                             index = index + 1;
                         }
@@ -395,9 +421,11 @@ namespace AasxPackageExplorer
         }
 
         // TD Interaction Avoidance
-        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(JObject jObject, string idShort, string type)
+        public static AdminShell.SubmodelElementCollection BuildAbstractInteractionAvoidance(
+            JObject jObject, string idShort, string type)
         {
-            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(jObject, idShort, type);
+            AdminShell.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(
+                                                        jObject, idShort, type);
             if (jObject.ContainsKey("uriVariables"))
             {
                 AdminShell.SubmodelElementCollection _uriVariables = new AdminShell.SubmodelElementCollection();
@@ -411,7 +439,8 @@ namespace AasxPackageExplorer
                 {
                     JProperty uriVarObject = (JProperty)temp;
                     string key = uriVarObject.Name.ToString();
-                    _uriVariables.Add(BuildAbstractDataSchema(JObject.FromObject(uriVarObject.Value), key, "uriVariables"));
+                    _uriVariables.Add(BuildAbstractDataSchema(
+                        JObject.FromObject(uriVarObject.Value), key, "uriVariables"));
                 }
                 _interactionAffordance.Add(_uriVariables);
             }
@@ -423,21 +452,26 @@ namespace AasxPackageExplorer
         }
 
         // TD Properties
-        public static AdminShell.SubmodelElementCollection BuildTDProperty(JObject _propertyJObject, string propertyName)
+        public static AdminShell.SubmodelElementCollection BuildTDProperty(
+                                                JObject _propertyJObject, string propertyName)
         {
-            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(_propertyJObject, propertyName, "property");
+            AdminShell.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(
+                                                                _propertyJObject, propertyName, "property");
             _tdProperty.semanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
             {
-                _tdProperty.qualifiers.Add(createAASQualifier("observable", (_propertyJObject["observable"]).ToString()));
+                _tdProperty.qualifiers.Add(createAASQualifier("observable", 
+                                                        (_propertyJObject["observable"]).ToString()));
             }
             if (_propertyJObject.ContainsKey("updateFrequencey"))
             {
-                _tdProperty.qualifiers.Add(createAASQualifier("updateFrequencey", (_propertyJObject["updateFrequencey"]).ToString()));
+                _tdProperty.qualifiers.Add(createAASQualifier("updateFrequencey", 
+                                                        (_propertyJObject["updateFrequencey"]).ToString()));
             }
             if (_propertyJObject.ContainsKey("updatable"))
             {
-                _tdProperty.qualifiers.Add(createAASQualifier("updatable", (_propertyJObject["updatable"]).ToString()));
+                _tdProperty.qualifiers.Add(createAASQualifier("updatable",
+                                                         (_propertyJObject["updatable"]).ToString()));
             }
             return _tdProperty;
         }
@@ -454,7 +488,8 @@ namespace AasxPackageExplorer
             foreach (var temp in tdObject["properties"])
             {
                 JProperty propertyObject = (JProperty)temp;
-                tdProperties.Add(BuildTDProperty(JObject.FromObject(propertyObject.Value), (propertyObject.Name).ToString()));
+                tdProperties.Add(BuildTDProperty(JObject.FromObject(propertyObject.Value),
+                                                    (propertyObject.Name).ToString()));
             }
             return tdProperties;
         }
@@ -462,7 +497,8 @@ namespace AasxPackageExplorer
         // TD Events
         public static AdminShell.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(_eventJObject, actionName, "event");
+            AdminShell.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(
+                _eventJObject, actionName, "event");
             _tdEvent.semanticId = createSemanticID("event");
             string[] dsList = { "subscription", "data", "cancellation" };
             foreach (var temp in (JToken)_eventJObject)
@@ -508,13 +544,15 @@ namespace AasxPackageExplorer
             foreach (var temp in jObject["actions"])
             {
                 JProperty actionObject = (JProperty)temp;
-                tdActions.Add(BuildTDAction(JObject.FromObject(actionObject.Value), (actionObject.Name).ToString()));
+                tdActions.Add(BuildTDAction(JObject.FromObject(actionObject.Value),
+                                                (actionObject.Name).ToString()));
             }
             return tdActions;
         }
         public static AdminShell.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
         {
-            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(_actionJObject, actionName, "action");
+            AdminShell.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(
+                _actionJObject, actionName, "action");
             _tdAction.semanticId = createSemanticID("action");
             string[] dsList = { "input", "output" };
             string[] qualList = { "safe", "idempotent" };
@@ -543,7 +581,9 @@ namespace AasxPackageExplorer
             _tdLink.ordered = false;
             _tdLink.allowDuplicates = false;
             _tdLink.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            _tdLink.AddDescription("en", "A link can be viewed as a statement of the form link context has a relation type resource at link target, where the optional target attributes may further describe the resource");
+            _tdLink.AddDescription("en", "A link can be viewed as a statement of the form link" +
+                "context has a relation type resource at link target, " +
+                "where the optional target attributes may further describe the resource");
             _tdLink.semanticId = createSemanticID("link");
             _tdLink.qualifiers = new AdminShell.QualifierCollection();
             string[] linkElemList = { "href", "type", "rel", "anchor", "sizes" };
@@ -552,7 +592,8 @@ namespace AasxPackageExplorer
                 JProperty linkElement = (JProperty)temp;
                 if (linkElemList.Contains(linkElement.Name))
                 {
-                    _tdLink.qualifiers.Add(createAASQualifier(linkElement.Name.ToString(), linkElement.Value.ToString()));
+                    _tdLink.qualifiers.Add(createAASQualifier(
+                            linkElement.Name.ToString(), linkElement.Value.ToString()));
                 }
             }
             return _tdLink;
@@ -565,7 +606,8 @@ namespace AasxPackageExplorer
             tdLinks.ordered = false;
             tdLinks.allowDuplicates = false;
             tdLinks.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            tdLinks.AddDescription("en", "Provides Web links to arbitrary resources that relate to the specified Thing Description.");
+            tdLinks.AddDescription("en", "Provides Web links to arbitrary resources that relate to" +
+                                    "the specified Thing Description.");
             tdLinks.semanticId = createSemanticID("links");
             int index = 1;
             foreach (var linkObject in jObject["links"])
@@ -577,7 +619,8 @@ namespace AasxPackageExplorer
         }
 
         // TD Security Definition
-        public static AdminShell.SubmodelElementCollection BuildSecurityDefinition(JObject jObject, string definitionName)
+        public static AdminShell.SubmodelElementCollection BuildSecurityDefinition(
+                    JObject jObject, string definitionName)
         {
             AdminShell.SubmodelElementCollection _securityDefinition = new AdminShell.SubmodelElementCollection();
             _securityDefinition.idShort = definitionName;
@@ -623,7 +666,9 @@ namespace AasxPackageExplorer
                             _oneOf.ordered = false;
                             _oneOf.allowDuplicates = false;
                             _oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                            _oneOf.AddDescription("en", "	Array of two or more strings identifying other named security scheme definitions, any one of which, when satisfied, will allow access. Only one may be chosen for use.");
+                            _oneOf.AddDescription("en", "	Array of two or more strings identifying other" +
+                                "named security scheme definitions, any one of which, when satisfied, " +
+                                "will allow access. Only one may be chosen for use.");
                             _oneOf.semanticId = createSemanticID("oneOf");
                             int index = 1;
                             _oneOf.qualifiers = new AdminShell.QualifierCollection();
@@ -636,7 +681,8 @@ namespace AasxPackageExplorer
                         }
                         else
                         {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", (jObject["oneOf"]).ToString()));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("oneOf", 
+                                                                    (jObject["oneOf"]).ToString()));
                         }
                     }
                     if (jObject.ContainsKey("allOf"))
@@ -649,19 +695,22 @@ namespace AasxPackageExplorer
                             _allOf.ordered = false;
                             _allOf.allowDuplicates = false;
                             _allOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                            _allOf.AddDescription("en", "Array of two or more strings identifying other named security scheme definitions, all of which must be satisfied for access.");
+                            _allOf.AddDescription("en", "Array of two or more strings identifying other" +
+                                "named security scheme definitions, all of which must be satisfied for access.");
                             _allOf.semanticId = createSemanticID("allOf");
                             int index = 1;
                             _allOf.qualifiers = new AdminShell.QualifierCollection();
                             foreach (var x in jObject["allOf"])
                             {
-                                _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(), (x).ToString()));
+                                _allOf.qualifiers.Add(createAASQualifier("allOf" + (index).ToString(), 
+                                    (x).ToString()));
                                 index = index + 1;
                             }
                         }
                         else
                         {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", (jObject["allOf"]).ToString()));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("allOf", 
+                                (jObject["allOf"]).ToString()));
                         }
                     }
                     _securityDefinition.semanticId = createSemanticID("combo");
@@ -714,7 +763,8 @@ namespace AasxPackageExplorer
                     }
                     if (jObject.ContainsKey("authorization"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization", jObject["authorization"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization",
+                                                                    jObject["authorization"].ToString()));
                     }
                     if (jObject.ContainsKey("alg"))
                     {
@@ -734,7 +784,8 @@ namespace AasxPackageExplorer
                 {
                     if (jObject.ContainsKey("identity"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("identity", jObject["identity"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("identity",
+                                            jObject["identity"].ToString()));
                     }
                     _securityDefinition.semanticId = createSemanticID("psk");
                 }
@@ -742,25 +793,30 @@ namespace AasxPackageExplorer
                 {
                     if (jObject.ContainsKey("authorization"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization", jObject["authorization"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("authorization",
+                                                jObject["authorization"].ToString()));
                     }
                     if (jObject.ContainsKey("token"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("token", jObject["token"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("token",
+                                                jObject["token"].ToString()));
                     }
                     if (jObject.ContainsKey("refresh"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("refresh", jObject["refresh"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("refresh",
+                                                jObject["refresh"].ToString()));
                     }
                     if (jObject.ContainsKey("flow"))
                     {
-                        _securityDefinition.qualifiers.Add(createAASQualifier("flow", jObject["flow"].ToString()));
+                        _securityDefinition.qualifiers.Add(createAASQualifier("flow",
+                                                jObject["flow"].ToString()));
                     }
                     if (jObject.ContainsKey("scopes"))
                     {
                         if ((jObject["scopes"].Type).ToString() == "String")
                         {
-                            _securityDefinition.qualifiers.Add(createAASQualifier("scopes", (jObject["scopes"]).ToString()));
+                            _securityDefinition.qualifiers.Add(createAASQualifier("scopes",
+                                                (jObject["scopes"]).ToString()));
                         }
                         if ((jObject["scopes"].Type).ToString() == "Array")
                         {
@@ -770,13 +826,19 @@ namespace AasxPackageExplorer
                             _scopes.ordered = false;
                             _scopes.allowDuplicates = false;
                             _scopes.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                            _scopes.AddDescription("en", "Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.");
+                            _scopes.AddDescription("en", "Set of authorization scope identifiers " +
+                                "provided as an array. These are provided in tokens returned " +
+                                "by an authorization server and associated with forms in order to " +
+                                "identify what resources a client may access and how. The values " +
+                                "associated with a form should be chosen from those defined in an " +
+                                "OAuth2SecurityScheme active on that form.");
                             _scopes.semanticId = createSemanticID("scopes");
                             _scopes.qualifiers = new AdminShell.QualifierCollection();
                             int index = 1;
                             foreach (var x in jObject["scopes"])
                             {
-                                _scopes.qualifiers.Add(createAASQualifier("scopes" + (index).ToString(), (x).ToString()));
+                                _scopes.qualifiers.Add(createAASQualifier("scopes" + (index).ToString(),
+                                                            (x).ToString()));
                                 index = index + 1;
                             }
                             _securityDefinition.Add(_scopes);
@@ -796,7 +858,8 @@ namespace AasxPackageExplorer
             _securityDefinitions.ordered = false;
             _securityDefinitions.allowDuplicates = false;
             _securityDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            _securityDefinitions.AddDescription("en", "Set of named security configurations (definitions only). Not actually applied unless names are used in a security name-value pair.");
+            _securityDefinitions.AddDescription("en", "Set of named security configurations" +
+                "(definitions only). Not actually applied unless names are used in a security name-value pair.");
             _securityDefinitions.semanticId = createSemanticID("securityDefinitions");
             _securityDefinitions.qualifiers = new AdminShell.QualifierCollection();
             foreach (var temp in jObject["securityDefinitions"])
@@ -817,7 +880,8 @@ namespace AasxPackageExplorer
             tdForm.ordered = false;
             tdForm.allowDuplicates = false;
             tdForm.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            tdForm.AddDescription("en", "Hypermedia controls that describe how an operation can be performed. Form is a  serializations of Protocol Bindings");
+            tdForm.AddDescription("en", "Hypermedia controls that describe how an operation can be performed." +
+                                        " Form is a  serializations of Protocol Bindings");
             tdForm.semanticId = createSemanticID("form");
             tdForm.qualifiers = new AdminShell.QualifierCollection();
             string[] qualList = { "href", "contentType", "contentCoding", "subprotocol", "security", "scopes", "op" };
@@ -835,7 +899,10 @@ namespace AasxPackageExplorer
                     _response.ordered = false;
                     _response.allowDuplicates = false;
                     _response.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                    _response.AddDescription("en", "This optional term can be used if, e.g., the output communication metadata differ from input metadata (e.g., output contentType differ from the input contentType). The response name contains metadata that is only valid for the primary response messages.");
+                    _response.AddDescription("en", "This optional term can be used if, e.g., the output" +
+                        "communication metadata differ from input metadata (e.g., output contentType differ" +
+                        "from the input contentType). The response name contains metadata that is only valid for" +
+                        "the primary response messages.");
                     JObject contentTypeJObject = JObject.FromObject(formjObject["response"]);
                     _response.Add(BuildTDProperty(contentTypeJObject, "contentType"));
                 }
@@ -847,7 +914,10 @@ namespace AasxPackageExplorer
                     _response.ordered = false;
                     _response.allowDuplicates = false;
                     _response.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-                    _response.AddDescription("en", "This optional term can be used if additional expected responses are possible, e.g. for error reporting. Each additional response needs to be distinguished from others in some way (for example, by specifying a protocol-specific error code), and may also have its own data schema");
+                    _response.AddDescription("en", "This optional term can be used if additional" +
+                        "expected responses are possible, e.g. for error reporting. Each additional" +
+                        "response needs to be distinguished from others in some way (for example, by" +
+                        "specifying a protocol-specific error code), and may also have its own data schema");
                     if ((formjObject["additionalResponses"].Type).ToString() == "String")
                     {
                         JObject aRJObject = JObject.FromObject(formjObject["additionalResponses"]);
@@ -859,7 +929,8 @@ namespace AasxPackageExplorer
                         foreach (var arJObject in formjObject["additionalResponses"])
                         {
                             index = index + 1;
-                            _response.Add(BuildAdditionalResponse(JObject.FromObject(arJObject), "additionalResponse" + index.ToString()));
+                            _response.Add(BuildAdditionalResponse(JObject.FromObject(arJObject), 
+                                "additionalResponse" + index.ToString()));
                         }
                     }
                     tdForm.Add(_response);
@@ -915,7 +986,9 @@ namespace AasxPackageExplorer
             forms.ordered = false;
             forms.allowDuplicates = false;
             forms.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation can be performed. Forms are serializations of Protocol Bindings");
+            forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation" +
+                                           "can be performed." +
+                                        "Forms are serializations of Protocol Bindings");
             int i = 0;
             foreach (var formObject in tdJObject["forms"])
             {
@@ -959,18 +1032,21 @@ namespace AasxPackageExplorer
             _schemaDefinitions.ordered = false;
             _schemaDefinitions.allowDuplicates = false;
             _schemaDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
-            _schemaDefinitions.AddDescription("en", "Set of named data schemas. To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
+            _schemaDefinitions.AddDescription("en", "Set of named data schemas." +
+                                "To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
             _schemaDefinitions.qualifiers = new AdminShell.QualifierCollection();
             _schemaDefinitions.semanticId = createSemanticID("schemaDefinitions");
             foreach (var sdKey in tdJObject["schemaDefinitions"])
             {
                 JObject _schemaDefinition = new JObject(tdJObject["schemaDefinitions"][sdKey]);
-                _schemaDefinitions.value.Add(BuildAbstractDataSchema(_schemaDefinition, sdKey.ToString(), "schemaDefinitions"));
+                _schemaDefinitions.value.Add(BuildAbstractDataSchema(_schemaDefinition, sdKey.ToString(),
+                    "schemaDefinitions"));
             }
             return _schemaDefinitions;
         }
         public static JObject ImportTDJsontoSubModel(
-            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
+            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
+            AdminShell.SubmodelRef smref)
         {
             JObject exportData = new JObject();
             try
@@ -978,7 +1054,8 @@ namespace AasxPackageExplorer
                 JObject tdJObject;
                 string text = File.ReadAllText(inputFn);
                 using (var tdStringReader = new StringReader(text))
-                using (var jsonTextReader = new JsonTextReader(tdStringReader) { DateParseHandling = DateParseHandling.None })
+                using (var jsonTextReader = new JsonTextReader(tdStringReader)
+                { DateParseHandling = DateParseHandling.None })
                 {
                     tdJObject = JObject.FromObject(JToken.ReadFrom(jsonTextReader));
                 }
@@ -1008,10 +1085,13 @@ namespace AasxPackageExplorer
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(), (x.Value).ToString());
+                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(),
+                                (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
+                        AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                            "Provides multi-language human-readable titles (e.g., display a text for UI" +
+                            "representation in different languages)");
                         sm.Add(mlp);
                     }
 
@@ -1052,10 +1132,13 @@ namespace AasxPackageExplorer
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(), (x.Value).ToString());
+                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(),
+                                (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList, "Provides multi-language human-readable titles (e.g., display a text for UI representation in different languages)");
+                        AdminShell.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                            "Provides multi-language human-readable titles (e.g., display a text for UI " +
+                            "representation in different languages)");
                         sm.Add(mlp);
                     }
                     if (key == "version")
@@ -1077,7 +1160,8 @@ namespace AasxPackageExplorer
                     {
                         JObject secProfile = new JObject
                         {
-                            ["profile"] = "Indicates the WoT Profile mechanisms followed by this Thing Description and the corresponding Thing implementation.",
+                            ["profile"] = "Indicates the WoT Profile mechanisms followed by this" +
+                            "Thing Description and the corresponding Thing implementation.",
                             ["security"] = "security definition names",
                             ["@type"] = "JSON-LD keyword to label the object with semantic tags (or types)."
                         };
@@ -1103,7 +1187,8 @@ namespace AasxPackageExplorer
                                     JObject _contextJobject = JObject.FromObject(temp);
                                     foreach (var y in _contextJobject)
                                     {
-                                        _context.qualifiers.Add(createAASQualifier((y.Key).ToString(), (y.Value).ToString()));
+                                        _context.qualifiers.Add(createAASQualifier((y.Key).ToString(),
+                                            (y.Value).ToString()));
                                     }
                                 }
                             }

@@ -125,7 +125,6 @@ namespace AasxPackageExplorer
             ["multipleOf"] = "https://www.w3.org/2019/wot/json-schema#multipleOf",
 
             //ObjectSchema 
-            //["properties"] 
             ["required"] = "https://www.w3.org/2019/wot/json-schema#required",
 
             //StringSchema
@@ -188,9 +187,18 @@ namespace AasxPackageExplorer
 
         public static JObject arrayListDescription = new JObject
         {
-            ["security"] = "Set of security definition names, chosen from those defined in securityDefinitions. These must all be satisfied for access to resources.",
-            ["scopes"] = "	Set of authorization scope identifiers provided as an array. These are provided in tokens returned by an authorization server and associated with forms in order to identify what resources a client may access and how. The values associated with a form should be chosen from those defined in an OAuth2SecurityScheme active on that form.",
-            ["op"] = "Indicates the semantic intention of performing the operation(s) described by the form. For example, the Property interaction allows get and set operations. The protocol binding may contain a form for the get operation and a different form for the set operation. The op attribute indicates which form is for which and allows the client to select the correct form for the operation required. op can be assigned one or more interaction verb(s) each representing a semantic intention of an operation."
+            ["security"] = "Set of security definition names, chosen from those defined in securityDefinitions." +
+            "These must all be satisfied for access to resources.",
+            ["scopes"] = "	Set of authorization scope identifiers provided as an array." +
+            "These are provided in tokens returned by an authorization server and associated with forms in" +
+            "order to identify what resources a client may access and how. The values associated with a" +
+            "form should be chosen from those defined in an OAuth2SecurityScheme active on that form.",
+            ["op"] = "Indicates the semantic intention of performing the operation(s) described by" +
+            "the form. For example, the Property interaction allows get and set operations." +
+            "The protocol binding may contain a form for the get operation and a different form for the" +
+            "set operation. The op attribute indicates which form is for which and allows the client to select" +
+            "the correct form for the operation required. op can be assigned one or more interaction verb(s) " +
+            "representing a semantic intention of an operation."
         };
         public static JObject arrayListDesc = new JObject
         {

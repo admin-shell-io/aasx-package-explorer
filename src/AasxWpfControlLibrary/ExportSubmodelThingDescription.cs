@@ -38,8 +38,10 @@ namespace AasxPackageExplorer
                 {
                     formJObject[smQualifier.type] = smQualifier.value;
                 }
-                AdminShell.SubmodelElementCollection _formElementCollection = new AdminShell.SubmodelElementCollection(form);
-                foreach (AdminShell.SubmodelElementWrapper _tempformElement in _formElementCollection.EnumerateChildren())
+                AdminShell.SubmodelElementCollection _formElementCollection =
+                                    new AdminShell.SubmodelElementCollection(form);
+                foreach (AdminShell.SubmodelElementWrapper _tempformElement in
+                        _formElementCollection.EnumerateChildren())
                 {
                     AdminShell.SubmodelElement _formElement = _tempformElement.submodelElement;
                     if (_formElement.idShort == "security")
@@ -53,7 +55,8 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.idShort == "scopes")
                     {
-                        AdminShell.SubmodelElementCollection _scopesCollection = new AdminShell.SubmodelElementCollection(_formElement, false);
+                        AdminShell.SubmodelElementCollection _scopesCollection =
+                                    new AdminShell.SubmodelElementCollection(_formElement, false);
                         List<string> scopesList = new List<string>();
                         foreach (AdminShell.Qualifier _scopeQual in _scopesCollection.qualifiers)
                         {
@@ -63,7 +66,8 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.idShort == "response")
                     {
-                        AdminShell.SubmodelElementCollection _response = new AdminShell.SubmodelElementCollection(_formElement, false);
+                        AdminShell.SubmodelElementCollection _response = 
+                            new AdminShell.SubmodelElementCollection(_formElement, false);
                         foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
                         {
                             JObject contentTypeObject = new JObject();
@@ -73,7 +77,8 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.idShort == "additionalResponses")
                     {
-                        AdminShell.SubmodelElementCollection _response = new AdminShell.SubmodelElementCollection(_formElement, false);
+                        AdminShell.SubmodelElementCollection _response = 
+                            new AdminShell.SubmodelElementCollection(_formElement, false);
                         JObject arJObject = new JObject();
                         foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
                         {
@@ -84,14 +89,16 @@ namespace AasxPackageExplorer
                             }
                             else
                             {
-                                arJObject[_tempResponse.submodelElement.idShort] = (_tempResponse.submodelElement).ValueAsText();
+                                arJObject[_tempResponse.submodelElement.idShort] = 
+                                    (_tempResponse.submodelElement).ValueAsText();
 
                             }
                         }
                     }
                     else if (_formElement.idShort == "op")
                     {
-                        AdminShell.SubmodelElementCollection _opCollection = new AdminShell.SubmodelElementCollection(_formElement, false);
+                        AdminShell.SubmodelElementCollection _opCollection =
+                            new AdminShell.SubmodelElementCollection(_formElement, false);
                         List<string> opList = new List<string>();
                         foreach (AdminShell.Qualifier _opQual in _opCollection.qualifiers)
                         {
@@ -101,7 +108,8 @@ namespace AasxPackageExplorer
                     }
                     else
                     {
-                        formJObject[_formElement.idShort] = _tempformElement.GetAs<AdminShell.Property>().value.ToString();
+                        formJObject[_formElement.idShort] = 
+                            _tempformElement.GetAs<AdminShell.Property>().value.ToString();
                     }
                 }
                 forms.Add(formJObject);
@@ -160,7 +168,8 @@ namespace AasxPackageExplorer
                 AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
                 if (dsElement.idShort == "properties")
                 {
-                    AdminShell.SubmodelElementCollection _properties = new AdminShell.SubmodelElementCollection(dsElement);
+                    AdminShell.SubmodelElementCollection _properties =
+                        new AdminShell.SubmodelElementCollection(dsElement);
                     JObject propertiesJObject = new JObject();
                     foreach (AdminShell.SubmodelElementWrapper _itemTemp in _properties.EnumerateChildren())
                     {
@@ -234,7 +243,8 @@ namespace AasxPackageExplorer
                 if (dsElement.idShort == "oneOf")
                 {
                     List<JObject> oneOfJObjects = new List<JObject>();
-                    AdminShell.SubmodelElementCollection _enumCOllection = new AdminShell.SubmodelElementCollection(dsElement);
+                    AdminShell.SubmodelElementCollection _enumCOllection =
+                        new AdminShell.SubmodelElementCollection(dsElement);
                     foreach (AdminShell.SubmodelElementWrapper _temponeOf in _enumCOllection.EnumerateChildren())
                     {
                         AdminShell.SubmodelElement _oneOf = _temponeOf.submodelElement;
@@ -273,7 +283,8 @@ namespace AasxPackageExplorer
                 {
                     semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
                 }
-                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" || smQualifier.type == "minLength" || smQualifier.type == "maxLength")
+                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" || 
+                    smQualifier.type == "minLength" || smQualifier.type == "maxLength")
                 {
                     semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
                 }
@@ -316,7 +327,8 @@ namespace AasxPackageExplorer
             }
             else if (dschemaType == "integer")
             {
-                List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                List<string> integerSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum",
+                    "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in integerSchema)
                 {
                     foreach (AdminShell.Qualifier semQual in sem.qualifiers)
@@ -330,7 +342,8 @@ namespace AasxPackageExplorer
             }
             else if (dschemaType == "number")
             {
-                List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum", "exclusiveMaximum", "multipleOf" };
+                List<string> numberSchema = new List<string> { "minimum", "exclusiveMinimum", "maximum",
+                    "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in numberSchema)
                 {
                     foreach (AdminShell.Qualifier semQual in sem.qualifiers)
@@ -370,7 +383,8 @@ namespace AasxPackageExplorer
         public static JObject createTDProperties(AdminShell.SubmodelElement propertiesSem)
         {
             JObject propertiesJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(propertiesSem);
+            AdminShell.SubmodelElementCollection _tempCollection =
+                new AdminShell.SubmodelElementCollection(propertiesSem);
             foreach (AdminShell.SubmodelElementWrapper _tempProperty in _tempCollection.EnumerateChildren())
             {
                 AdminShell.SubmodelElement _propoerty = _tempProperty.submodelElement;
@@ -418,12 +432,14 @@ namespace AasxPackageExplorer
         public static JObject createTDEvents(AdminShell.SubmodelElement eventsSem)
         {
             JObject eventsJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(eventsSem);
+            AdminShell.SubmodelElementCollection _tempCollection =
+                new AdminShell.SubmodelElementCollection(eventsSem);
             foreach (AdminShell.SubmodelElementWrapper _tempEvent in _tempCollection.EnumerateChildren())
             {
                 AdminShell.SubmodelElement _event = _tempEvent.submodelElement;
                 JObject actionJObject = createInteractionAvoidance(_event);
-                AdminShell.SubmodelElementCollection _eventItems = new AdminShell.SubmodelElementCollection(_event);
+                AdminShell.SubmodelElementCollection _eventItems =
+                    new AdminShell.SubmodelElementCollection(_event);
                 foreach (AdminShell.SubmodelElementWrapper _tempEventItem in _eventItems.EnumerateChildren())
                 {
                     AdminShell.SubmodelElement _eventItem = _tempEventItem.submodelElement;
@@ -464,7 +480,8 @@ namespace AasxPackageExplorer
         }
         public static JObject createTDSecurity(AdminShell.SubmodelElement securitySem)
         {
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(securitySem);
+            AdminShell.SubmodelElementCollection _tempCollection =
+                new AdminShell.SubmodelElementCollection(securitySem);
             List<string> securityList = new List<string>();
             foreach (AdminShell.Qualifier _security in _tempCollection.qualifiers)
             {
@@ -514,7 +531,8 @@ namespace AasxPackageExplorer
             {
                 AdminShell.SubmodelElement _securityDefinition = _tempSD.submodelElement;
                 JObject securityJObject = createSecurityScheme(_securityDefinition);
-                AdminShell.SubmodelElementCollection _securityDItems = new AdminShell.SubmodelElementCollection(_securityDefinition);
+                AdminShell.SubmodelElementCollection _securityDItems =
+                    new AdminShell.SubmodelElementCollection(_securityDefinition);
                 foreach (var temp in (JToken)securityJObject)
                 {
                     JProperty secObject = (JProperty)temp;
@@ -524,9 +542,11 @@ namespace AasxPackageExplorer
                         string securityScheme = (secObject.Value).ToString();
                         if (securityScheme == "combo")
                         {
-                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
+                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in 
+                                _securityDItems.EnumerateChildren())
                             {
-                                AdminShell.SubmodelElementCollection csdItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                AdminShell.SubmodelElementCollection csdItem = 
+                                    new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
                                 List<string> csdItemList = new List<string>();
                                 foreach (AdminShell.Qualifier _csdQual in csdItem.qualifiers)
                                 {
@@ -535,13 +555,16 @@ namespace AasxPackageExplorer
                                 securityJObject[csdItem.idShort] = JToken.FromObject(csdItemList);
 
                             }
-                            securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
+                            securityDefinitionsJObject[_securityDefinition.idShort] = 
+                                JToken.FromObject(securityJObject);
                         }
                         if (securityScheme == "oauth2")
                         {
-                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in _securityDItems.EnumerateChildren())
+                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in
+                                _securityDItems.EnumerateChildren())
                             {
-                                AdminShell.SubmodelElementCollection oauth2SDItem = new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                AdminShell.SubmodelElementCollection oauth2SDItem =
+                                    new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
                                 List<string> csdItemList = new List<string>();
                                 foreach (AdminShell.Qualifier _csdQual in oauth2SDItem.qualifiers)
                                 {
@@ -549,7 +572,8 @@ namespace AasxPackageExplorer
                                 }
                                 securityJObject[oauth2SDItem.idShort] = JToken.FromObject(csdItemList);
                             }
-                            securityDefinitionsJObject[_securityDefinition.idShort] = JToken.FromObject(securityJObject);
+                            securityDefinitionsJObject[_securityDefinition.idShort] =
+                                JToken.FromObject(securityJObject);
                         }
                     }
                 }
@@ -560,7 +584,8 @@ namespace AasxPackageExplorer
         public static JObject createTDProfile(AdminShell.SubmodelElement profileSem)
         {
             JObject profileJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(profileSem);
+            AdminShell.SubmodelElementCollection _tempCollection =
+                new AdminShell.SubmodelElementCollection(profileSem);
             List<string> profileList = new List<string>();
             foreach (AdminShell.Qualifier _profileQual in _tempCollection.qualifiers)
             {

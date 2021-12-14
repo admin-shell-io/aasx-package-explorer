@@ -662,7 +662,8 @@ namespace AasxPackageExplorer
                 {
                     // do it
                     RememberForInitialDirectory(dlg.FileName);
-                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
+                        (dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     foreach (var temp in (JToken)importObject)
                     {
                         JProperty importProperty = (JProperty)temp;
@@ -2457,7 +2458,8 @@ namespace AasxPackageExplorer
                     RememberForInitialDirectory(dlg.FileName);
                     using (var s = new StreamWriter(dlg.FileName))
                     {
-                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"], Newtonsoft.Json.Formatting.Indented);
+                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
+                            Newtonsoft.Json.Formatting.Indented);
                         s.WriteLine(output);
                     }
                 }
