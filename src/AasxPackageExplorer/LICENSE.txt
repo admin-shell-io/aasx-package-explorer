@@ -16,6 +16,10 @@ author: Marco Mendes
 
 Copyright (c) 2020 SICK AG <info@sick.de>
 
+Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+author: Monisha Macharla Vasu
+
+
 The AASX Package Explorer is licensed under the Apache License 2.0
 (Apache-2.0, see below).
 

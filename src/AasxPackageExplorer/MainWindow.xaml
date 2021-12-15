@@ -55,6 +55,7 @@
                     <RoutedUICommand x:Key="ImportSubmodel" Text="ImportSubmodel" />
                     <RoutedUICommand x:Key="ImportSubmodelElements" Text="ImportSubmodelElements" />
                     <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
+                    <RoutedUICommand x:Key="RDFRead" Text="RDFRead" />
                     <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />
                     <RoutedUICommand x:Key="SubmodelRead" Text="SubmodelRead" />
                     <RoutedUICommand x:Key="SubmodelGet" Text="SubmodelGet" />
@@ -199,7 +200,7 @@
     </Window.InputBindings>
 
     <Window.CommandBindings>
-		<CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Open}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Save}" Executed="CommandBinding_Executed"/>
@@ -225,6 +226,7 @@
         <CommandBinding Command="{StaticResource ImportSubmodel}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportSubmodelElements}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCRead}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource RDFRead}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelWrite}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelRead}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelPut}" Executed="CommandBinding_Executed"/>
@@ -302,7 +304,8 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <!-- Initially, the concurrent activities (events, plugins) are initially hidden -->
-                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" /> <!-- Set to 150 to see events in XAML -->
+                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" />
+                <!-- Set to 150 to see events in XAML -->
                 <RowDefinition Height="28" />
             </Grid.RowDefinitions>
 
@@ -371,6 +374,7 @@
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
                             <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
+                            <MenuItem Header="Import BAMM RDF into AASX .." Command="{StaticResource RDFRead}"/>
                             <MenuItem Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
                         </MenuItem>
                         <MenuItem Header="Export ..">
@@ -384,6 +388,7 @@
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+                            <MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
 							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
                             <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
@@ -565,7 +570,7 @@
                 <!-- MIHO1 -->
                 <local:DiplayVisualAasxElements Grid.Row="0" Grid.Column="2" x:Name="DisplayElements" SelectedItemChanged="DisplayElements_SelectedItemChanged" MouseDoubleClick="DisplayElements_MouseDoubleClick">
                 </local:DiplayVisualAasxElements>
-               
+
                 <TabControl x:Name="ElementTabControl" Grid.Column="4" MinWidth="320">
                     <TabItem x:Name="elementTabItem" Header="Element">
                         <Grid>
@@ -673,7 +678,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                
+
                 <TabControl x:Name="TabControlConcurrent" TabStripPlacement="Left">
                     <TabItem Header="Events" x:Name="TabItemConcurrentEvents">
                         <events:AasEventCollectionViewer x:Name="UserContrlEventCollection" />
@@ -683,7 +688,7 @@
                     </TabItem>
                 </TabControl>
             </Grid>
-            
+
             <!-- Footer area -->
 
             <DockPanel Grid.Row="5" Margin="0,2,0,0">
