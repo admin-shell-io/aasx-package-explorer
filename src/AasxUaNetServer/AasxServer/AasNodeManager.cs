@@ -325,7 +325,7 @@ namespace AasOpcUaServer
                         doNotAddToParent: true);
                     if (!theServerOptions.LinkRootAsComponent)
                     {
-                        builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
+                        builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects?.NodeId);
                     }
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
@@ -372,7 +372,7 @@ namespace AasOpcUaServer
                                 typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                         }
 
-                        topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
+                        topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeServer?.NodeId);
 
                         // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                         // 2253 = Server.Dictionaries ?
