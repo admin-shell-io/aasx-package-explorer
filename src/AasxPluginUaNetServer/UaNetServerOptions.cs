@@ -26,7 +26,7 @@ namespace AasxUaNetServer
 
     public class UaNetServerOptions : AasxIntegrationBase.AasxPluginOptionsBase
     {
-        public string[] Args;       
+        public string[] Args;
 
         public List<UaNetServerOptionsRecord> Records = new List<UaNetServerOptionsRecord>();
 

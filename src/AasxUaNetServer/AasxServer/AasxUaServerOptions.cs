@@ -68,6 +68,17 @@ namespace AasOpcUaServer
         public bool SimpleDataTypes = false;
 
         /// <summary>
+        /// Set true, if descendants from "Object" (AASROOT, CDs) shall be linked as components, not
+        /// via Organizes - relationship.
+        /// </summary>
+        public bool LinkRootAsComponent = false;
+
+        /// <summary>
+        /// Seemingly, in older versions, the dictionaries folder was missing
+        /// </summary>
+        public bool CeateDictionariesFolder = true;
+
+        /// <summary>
         /// Parse args given by command line or plug-in arguments
         /// </summary>
         public void ParseArgs(string[] args)
@@ -102,6 +113,12 @@ namespace AasOpcUaServer
                 if (arg == "-add-root-item")
                 {
                     AddRootItem = true;
+                    continue;
+                }
+
+                if (arg == "-link-root-as-component")
+                {
+                    LinkRootAsComponent = true;
                     continue;
                 }
 

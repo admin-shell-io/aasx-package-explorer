@@ -33,6 +33,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using System.Xml.Serialization;
 using AdminShellNS;
 using Opc.Ua;
@@ -214,6 +215,9 @@ namespace AasOpcUaServer
 
                 if (addRootItem)
                 {
+                    // manually a root item
+                    // lessons learnt: not required; do not use!
+
                     Utils.Trace(Utils.TraceMasks.Operation, "Adding root item..");
 
                     var rootItemSt = "ns=2;i=95"; // weird default
@@ -235,13 +239,15 @@ namespace AasOpcUaServer
                         NodeId = "ns=0;i=85",
                         References = new[]
                         {
+                            //// It would have been nice to use symbols, but this did not work;
+                            //// Opc.Ua.ReferenceTypeIds.HierarchicalReferences.Format() -> "ns=2;i=95"
+                            //// Opc.Ua.ReferenceTypeIds.HasTypeDefinition.Format() -> FoldersType!! */ /* "i=68" ??
+
                             new Opc.Ua.Export.Reference() {
-                                ReferenceType = /* "" + Opc.Ua.ReferenceTypeIds.HierarchicalReferences.Format() */
-                                    "i=33", Value = rootItemSt /* "ns=2;i=95" */ /* rootItemSt */ },
+                                ReferenceType = "i=33", Value = rootItemSt },
                             new Opc.Ua.Export.Reference() {
-                                ReferenceType = /* "" + Opc.Ua.ReferenceTypeIds.HasTypeDefinition.Format() */
-                                    "i=40",
-                                Value = "i=61" /* FoldersType!! */ /* "i=68" */ }
+                                ReferenceType = "i=40",
+                                Value = "i=61" }
                         },
                     };
 
@@ -304,13 +310,23 @@ namespace AasOpcUaServer
                     // Note: it would be better to already have the "Objects" NodeState, but not
                     // clear how to find ..
                     var fakeObjects = new BaseObjectState(null) { NodeId = new NodeId(85, 0) };
+                    var fakeServer = new BaseObjectState(null) { NodeId = new NodeId(2253, 0) };
+
+                    // remark: set parent to null, to disable for no HasComponent
+                    if (!theServerOptions.LinkRootAsComponent)
+                    {
+                        fakeObjects = null;
+                        fakeServer = null;
+                    }
 
                     // Root of whole structure is special, needs to link to external reference
-
                     builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance,
-                        /* was fakeObjects -- now disabled for no HasComponent */ fakeObjects, "AASROOT",
+                        fakeObjects, "AASROOT",
                         doNotAddToParent: true);
-                    builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
+                    if (!theServerOptions.LinkRootAsComponent)
+                    {
+                        builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
+                    }
 
                     // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
                     this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
@@ -343,15 +359,23 @@ namespace AasOpcUaServer
 #else
                     {
                         // create folder(s) under "Objects"
-                        var topOfDict = builder.CreateAddObject(
-                            /* was fakeObjects -- now disabled for no HasComponent */ null,
-                            AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
-                            referenceTypeFromParentId: null,
-                            typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        var topOfDict = new BaseObjectState(null) { NodeId = new NodeId(17594, 0) };
+
+                        // it seems, that CeateDictionariesFolder always have to be true!
+                        // adding references to a node outside the own node space seems not to work
+                        if (theServerOptions.CeateDictionariesFolder)
+                        {
+                            topOfDict = builder.CreateAddObject(
+                                fakeServer,
+                                AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
+                                referenceTypeFromParentId: null,
+                                typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                        }
+
                         topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects.NodeId);
 
                         // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
-                        // 2253 = Objects?
+                        // 2253 = Server.Dictionaries ?
                         this.AddExternalReferencePublic(new NodeId(2253, 0),
                             ReferenceTypeIds.HasComponent, false, topOfDict.NodeId, externalReferences);
                         this.AddExternalReferencePublic(topOfDict.NodeId,

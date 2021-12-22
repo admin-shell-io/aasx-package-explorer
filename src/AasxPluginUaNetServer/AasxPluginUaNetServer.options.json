@@ -2,9 +2,10 @@
   /* This plug-ins comes with this sample options to show, how multiple Submodel semantic ids can
      be matched. This could be used, e.g., to enable a general "operational data" with this feature. */
   "Args": [
-    "-single-nodeids",
-    "-single-keys",
-    // "-add-root-item",
+    "-single-nodeids", // recommended for SiOME & Open62541
+    "-single-keys", // recommended for SiOME & Open62541
+    // "-add-root-item", // do not use!
+    "-link-root-as-component", // recommended for SiOME & Open62541
     "-simple-data-types",
     "-ns",
     "2",
