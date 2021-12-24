@@ -94,7 +94,7 @@ namespace AasxIntegrationBase
                 {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
-        }        
+        }
     }
 
     //
@@ -146,7 +146,7 @@ namespace AasxIntegrationBase
         {
             if (records == null)
                 return;
-            
+
             foreach (var rec in records)
                 if (rec?.AllowSubmodelSemanticId != null)
                     foreach (var a2 in rec.AllowSubmodelSemanticId)

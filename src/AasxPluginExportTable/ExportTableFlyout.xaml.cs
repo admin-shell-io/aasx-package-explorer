@@ -174,7 +174,7 @@ namespace AasxPluginExportTable
 
             // take over
             _rowsTop = preset.RowsTop;
-            _rowsBody   = preset.RowsBody;
+            _rowsBody = preset.RowsBody;
             _cols = preset.Cols;
 
             ComboBoxFormat.SelectedIndex = Math.Max(0, Math.Min(ComboBoxFormat.Items.Count - 1, preset.Format));
@@ -214,7 +214,7 @@ namespace AasxPluginExportTable
         }
 
         private void GridOuterBody_SizeChanged(object sender, SizeChangedEventArgs e)
-        {            
+        {
             //if (!(sender is Grid grd) || grd.ColumnDefinitions == null)
             //    return;
             //var gw = grd.ActualWidth;
@@ -281,8 +281,8 @@ namespace AasxPluginExportTable
 
                 Action<List<TextBox>, List<string>, int, int> reAssign = (tbs, oldText, rows, oldrows) =>
                 {
-                    for (int nr=0; nr<1 + rows; nr++)
-                        for (int nc=0; nc<1 + _cols; nc++)
+                    for (int nr = 0; nr < 1 + rows; nr++)
+                        for (int nc = 0; nc < 1 + _cols; nc++)
                         {
                             var txt = "";
                             var oldNdx = nr * (1 + oldCols) + nc;

@@ -92,12 +92,12 @@ namespace AasxPluginExportTable
         public static IEnumerable<ImportTableWordProvider> CreateProviders(Stream stream)
         {
             // open word
-            var document = WordprocessingDocument.Open(stream, isEditable: false) ;
+            var document = WordprocessingDocument.Open(stream, isEditable: false);
             var docDoc = document.MainDocumentPart.Document;
             var tables = docDoc.Body.Elements<Table>();
             if (tables == null)
                 yield break;
-            
+
             foreach (var table in tables)
             {
                 // query table dimensions

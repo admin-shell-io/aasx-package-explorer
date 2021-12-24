@@ -332,6 +332,23 @@ namespace AasxPackageExplorer
                 return;
             }
 
+            // TODO remove
+            if (true)
+            {
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
+                timer.Tick += (sender, args) =>
+                {
+                    timer.Stop();
+                    var pluginName = "AasxPluginExportTable";
+                    var actionName = "export-uml";
+                    var pi = Plugins.FindPluginInstance(pluginName);
+                    pi?.InvokeAction(actionName, this, _packageCentral?.Main?.AasEnv,
+                        _packageCentral?.Main?.AasEnv?.Submodels[0], "test.xml");
+
+                };
+                timer.Start();
+            }
+
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
         }

@@ -9,12 +9,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
 using ClosedXML.Excel;
@@ -22,8 +24,6 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
-using AasxIntegrationBase;
-using System.Globalization;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -47,14 +47,14 @@ namespace AasxPluginExportTable
 
         public ExportTableAasEntitiesItem(
             int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null,
-            AdminShell.ConceptDescription cd = null, 
+            AdminShell.ConceptDescription cd = null,
             AdminShell.Referable parent = null)
         {
             this.depth = depth;
             this.sm = sm;
             this.sme = sme;
             this.cd = cd;
-            this.Parent = parent;            
+            this.Parent = parent;
         }
     }
 
@@ -401,7 +401,7 @@ namespace AasxPluginExportTable
                         //-1- {Reference} = {semanticId, isCaseOf, unitId}
                         repReference(head, "semanticId", parsm.semanticId);
                     }
-                    
+
                     if (par is AdminShell.SubmodelElement parsme)
                     {
                         var head = "Parent.";
@@ -637,7 +637,7 @@ namespace AasxPluginExportTable
 
                 // special case
                 while (true)
-                { 
+                {
                     var matchStop = regexStop.Match(input);
                     if (!matchStop.Success)
                         break;
@@ -913,7 +913,7 @@ namespace AasxPluginExportTable
 
                 // header
                 if (true)
-                {                    
+                {
                     // in order to access the parent information, take the first entity
                     var proc = new ItemProcessor(this, entities.FirstOrDefault());
                     proc.Start();
@@ -1021,12 +1021,12 @@ namespace AasxPluginExportTable
                             var cr2 = GetTopCell(0, ci);
                             proc.ProcessCellRecord(cr2);
                             if (cr2?.Width != null
-                                && double.TryParse(cr2.Width, NumberStyles.Float, 
+                                && double.TryParse(cr2.Width, NumberStyles.Float,
                                     CultureInfo.InvariantCulture, out var f2)
                                 && f2 > 0)
                                 ws.Column(1 + ci).Width = f2;
                         }
-                            
+
                     }
                 }
 
@@ -1325,7 +1325,7 @@ namespace AasxPluginExportTable
                     }
 
                     // empty rows
-                    for (int i=0; i<Math.Max(0, RowsGap); i++)
+                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
                         body.AppendChild(new Paragraph(new Run(new Text(" "))));
 
                 }

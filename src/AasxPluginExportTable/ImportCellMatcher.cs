@@ -7,14 +7,14 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using System.Text.RegularExpressions;
+using AdminShellNS;
 
 namespace AasxPluginExportTable
 {
@@ -51,7 +51,7 @@ namespace AasxPluginExportTable
         /// Another special case to be parsed & set afterwards
         /// </summary>
         public string SmeValueType;
-        
+
         public ImportCellMatchContextBase()
         {
             Clear();
@@ -114,10 +114,10 @@ namespace AasxPluginExportTable
 
             // strict: exactly one variable            
             if (percnum == 2 && tripre.Length > 2 && tripre.StartsWith("%") && tripre.EndsWith("%"))
-            return new ImportCellMatcherVariable(tripre);
+                return new ImportCellMatcherVariable(tripre);
 
             // match a sequence?
-            m = Regex.Match(tripre, @"^\s*%seq\s*=\s*([^%]+)%(.*)$", 
+            m = Regex.Match(tripre, @"^\s*%seq\s*=\s*([^%]+)%(.*)$",
                     RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
             if (m.Success)
                 return new ImportCellMatcherSequence(m.Groups[1].ToString(), m.Groups[2].ToString());
@@ -155,7 +155,7 @@ namespace AasxPluginExportTable
         public ImportCellMatcherConstant(string preset)
         {
             Preset = preset;
-            
+
             if (Preset.StartsWith("^"))
             {
                 MatchStart = true;
@@ -193,7 +193,7 @@ namespace AasxPluginExportTable
             if (!cell.HasContent())
                 return null;
 
-            var key = AdminShell.Key.Parse(cell, AdminShell.Key.ConceptDescription, 
+            var key = AdminShell.Key.Parse(cell, AdminShell.Key.ConceptDescription,
                         allowFmtAll: true);
             if (key == null)
                 return null;
@@ -202,7 +202,7 @@ namespace AasxPluginExportTable
         }
 
         private bool MatchEntity(
-            AdminShell.SubmodelElement elem, string preset, string cell, 
+            AdminShell.SubmodelElement elem, string preset, string cell,
             ref string parentName, ref string elemName, ref string valueStr,
             bool allowMultiplicity = false)
         {
@@ -362,14 +362,14 @@ namespace AasxPluginExportTable
 
             // try break down into pieces
             if (Preset.StartsWith("%Parent.") && Preset.EndsWith("%"))
-                return MatchEntity(context.Parent, Preset.Substring(8, Preset.Length - 9), cell, 
+                return MatchEntity(context.Parent, Preset.Substring(8, Preset.Length - 9), cell,
                     ref context.ParentParentName, ref context.ParentElemName, ref context.ParentValue);
 
             if (Preset.StartsWith("%") && Preset.EndsWith("%") && Preset.Length > 2)
                 MatchSpecialCases(context, Preset.Substring(1, Preset.Length - 2), cell);
 
             if (Preset.StartsWith("%SME.") && Preset.EndsWith("%"))
-                return MatchEntity(context.Sme, Preset.Substring(5, Preset.Length - 6), cell, 
+                return MatchEntity(context.Sme, Preset.Substring(5, Preset.Length - 6), cell,
                     ref context.SmeParentName, ref context.SmeElemName, ref context.SmeValue, allowMultiplicity: true);
 
             if (Preset.StartsWith("%CD.") && Preset.EndsWith("%"))

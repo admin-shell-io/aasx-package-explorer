@@ -690,6 +690,6 @@ namespace AasxPackageLogic
                 Log.Singleton.Error(ex, "Reading options file: " + filename);
             }
         }
-        
+
     }
 }

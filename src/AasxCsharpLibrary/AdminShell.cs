@@ -282,8 +282,8 @@ namespace AdminShellNS
                 return $"[{this.type}, {tlc}, {this.idType}, {this.value}]";
             }
 
-            public static Key Parse(string cell, string typeIfNotSet = null, 
-                bool allowFmtAll = false, bool allowFmt0 = false, 
+            public static Key Parse(string cell, string typeIfNotSet = null,
+                bool allowFmtAll = false, bool allowFmt0 = false,
                 bool allowFmt1 = false, bool allowFmt2 = false)
             {
                 // access && defaults?
@@ -597,7 +597,7 @@ namespace AdminShellNS
 
                 // may give result "to be deleted"
                 return res;
-            }            
+            }
         }
 
         public class KeyList : List<Key>
@@ -781,14 +781,14 @@ namespace AdminShellNS
         {
             public string ElementName = "";
             public string ElementAbbreviation = "";
-            public SubmodelElementWrapper.AdequateElementEnum ElementEnum = 
+            public SubmodelElementWrapper.AdequateElementEnum ElementEnum =
                 SubmodelElementWrapper.AdequateElementEnum.Unknown;
 
             public AasElementSelfDescription() { }
 
             public AasElementSelfDescription(
-                string ElementName, string ElementAbbreviation, 
-                SubmodelElementWrapper.AdequateElementEnum elementEnum 
+                string ElementName, string ElementAbbreviation,
+                SubmodelElementWrapper.AdequateElementEnum elementEnum
                     = SubmodelElementWrapper.AdequateElementEnum.Unknown)
             {
                 this.ElementName = ElementName;
@@ -5607,7 +5607,7 @@ namespace AdminShellNS
                     return AdequateElementEnum.Unknown;
 
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
-                    if (( (int)en < AdequateElementNames.Length
+                    if (((int)en < AdequateElementNames.Length
                           && AdequateElementNames[(int)en].Trim().ToLower() == adequateName.Trim().ToLower())
                         || (useShortName
                           && (int)en < AdequateElementShortName.Length
@@ -6914,7 +6914,7 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Property", "Prop", 
+                return new AasElementSelfDescription("Property", "Prop",
                     SubmodelElementWrapper.AdequateElementEnum.Property);
             }
 
@@ -8047,7 +8047,7 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Operation", "Opr", 
+                return new AasElementSelfDescription("Operation", "Opr",
                     SubmodelElementWrapper.AdequateElementEnum.Operation);
             }
         }

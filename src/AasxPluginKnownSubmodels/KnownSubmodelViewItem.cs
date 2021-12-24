@@ -20,7 +20,7 @@ namespace AasxPluginKnownSubmodels
         private BitmapImage _imageData = null;
         public BitmapImage DisplayImageData
         {
-            get { TryLoadImageData();  return _imageData; }
+            get { TryLoadImageData(); return _imageData; }
             set { _imageData = value; }
         }
 
@@ -46,7 +46,8 @@ namespace AasxPluginKnownSubmodels
             try
             {
                 _imageData = new BitmapImage(new Uri(ImagePath, UriKind.RelativeOrAbsolute));
-            } catch { ; }
+            }
+            catch {; }
         }
     }
 

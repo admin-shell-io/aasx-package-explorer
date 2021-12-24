@@ -77,6 +77,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     "get-events", "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
+            res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
             return res.ToArray();
         }
 
@@ -118,7 +119,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return this.eventStack.PopEvent();
             }
 
-            if (( action == "export-submodel" || action == "import-submodel" )
+            if ((action == "export-submodel" || action == "import-submodel")
                 && args != null && args.Length >= 3 &&
                 args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv &&
                 args[2] is AdminShell.Submodel)
@@ -136,7 +137,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 sm.SetAllParents();
 
                 // handle the export dialogue
-                var uc = new ExportTableFlyout( (action == "export-submodel") 
+                var uc = new ExportTableFlyout((action == "export-submodel")
                     ? "Export SubmodelElements as Table"
                     : "Import SubmodelElements from Table");
                 uc.Presets = this.options.Presets;
@@ -150,6 +151,28 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 if (action == "import-submodel")
                     Import(uc.Result, fop, sm, env);
+            }
+
+            if (action == "export-uml"
+                && args != null && args.Length >= 4 
+                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv 
+                && args[2] is AdminShell.Submodel
+                && args[3] is string fn)
+            {
+                // flyout provider (will be required in the future)
+                var fop = args[0] as IFlyoutProvider;
+
+                // which Submodel
+                var env = args[1] as AdminShell.AdministrationShellEnv;
+                var sm = args[2] as AdminShell.Submodel;
+                if (env == null || sm == null)
+                    return null;
+
+                // the Submodel elements need to have parents
+                sm.SetAllParents();
+
+                // use functionality
+                ExportUml.ExportUmlToFile(env, sm, fn);
             }
 
             // default
@@ -217,7 +240,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     if (!broadSearch && ci.submodelElement != null &&
                         ci.submodelElement is AdminShell.IEnumerateChildren)
                         ExportTable_EnumerateSubmodel(
-                            list, env, broadSearch: false, actInHierarchy, 
+                            list, env, broadSearch: false, actInHierarchy,
                             depth: 1 + depth, sm: sm, sme: ci.submodelElement);
                 }
 
@@ -228,7 +251,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     foreach (var ci in coll.EnumerateChildren())
                         if (ci.submodelElement != null && ci.submodelElement is AdminShell.IEnumerateChildren)
                             ExportTable_EnumerateSubmodel(
-                                list, env, broadSearch: true, actInHierarchy, 
+                                list, env, broadSearch: true, actInHierarchy,
                                 depth: 1 + depth, sm: sm, sme: ci.submodelElement);
             }
         }
@@ -239,7 +262,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             // prepare list of items to be exported
             var list = new List<ExportTableAasEntitiesList>();
-            ExportTable_EnumerateSubmodel(list, env, broadSearch: false, 
+            ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
                 actInHierarchy: job.ActInHierarchy, depth: 1, sm: sm, sme: null);
 
             // get the output file

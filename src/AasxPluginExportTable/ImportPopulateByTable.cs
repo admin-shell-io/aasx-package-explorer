@@ -7,17 +7,17 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasxIntegrationBase;
-using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
+using AdminShellNS;
 
 namespace AasxPluginExportTable
-{       
+{
     /// <summary>
     /// This class create a context to a Submodel, which shall be incrementally popoulated by
     /// table contents.
@@ -40,7 +40,7 @@ namespace AasxPluginExportTable
         public ImportPopulateByTable(
             LogInstance log,
             ExportTableRecord job,
-            AdminShell.Submodel sm, 
+            AdminShell.Submodel sm,
             AdminShell.AdministrationShellEnv env,
             ExportTableOptions options)
         {
@@ -91,8 +91,8 @@ namespace AasxPluginExportTable
             if (rowofs + matcherRows > table.MaxRows)
                 return false;
 
-            for (int r=0; r< matcherRows; r++)
-                for (int c=0; c<_job.Cols; c++)
+            for (int r = 0; r < matcherRows; r++)
+                for (int c = 0; c < _job.Cols; c++)
                 {
                     var cell = table.Cell(r + rowofs, c);
                     if (cell == null)
@@ -102,7 +102,7 @@ namespace AasxPluginExportTable
                     var mat = (mi >= matcher.Count) ? null : matcher[mi];
                     if (mat == null)
                     {
-                        _log?.Info($"    invalid matcher at top ({1+r}, {1+c})");
+                        _log?.Info($"    invalid matcher at top ({1 + r}, {1 + c})");
                         return false;
                     }
                     if (!mat.Matches(context, cell))
@@ -126,7 +126,7 @@ namespace AasxPluginExportTable
         {
             public string Name = "";
             public string ValueType = "";
-            
+
             public AdminShell.SubmodelElementWrapper.AdequateElementEnum NameEnum;
 
             public static FilteredElementName Parse(string str)
@@ -205,8 +205,8 @@ namespace AasxPluginExportTable
             if (fen == null)
                 return null;
             if (fen.Name != AdminShell.Key.Submodel
-                && fen.NameEnum != AdminShellV20.SubmodelElementWrapper.AdequateElementEnum.Unknown
-                && fen.NameEnum != AdminShellV20.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection)
+                && fen.NameEnum != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
+                && fen.NameEnum != AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection)
                 return null;
 
             // special case: directly into the (existing) Submodel
@@ -228,7 +228,7 @@ namespace AasxPluginExportTable
                 return res;
             }
 
-            // ok, if not, then ordinary case: create a SME and it it (somewhere) to the SM
+            // ok, if not, then ordinary case: create a SME and add it (somewhere) to the SM
             // this ALREADY should take over the most of the data
             // Note: value data is not required, as fixed to SMC!
             var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(fen.NameEnum, context.Parent);
@@ -252,16 +252,25 @@ namespace AasxPluginExportTable
                     // first condition is, that the parents match!
                     if (!testsmc.idShort.HasContent() || testsmc.parent == null)
                         return false;
+
+                    // TODO BIG PROBLEM!!!(testsmc.parent.idShort == "ItemOfChange" !!!
+
                     if (!context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim()))
                         return false;
 
-                    // next is, that some part of of given idSHort match the idShort of children
+                    // next is, that some part of of given idShort match the idShort of children
                     // of investigated SMC
-                    var parts = context.Parent.idShort.Split(new[] { ',', ';', '|' }, 
+                    var parts = context.Parent.idShort.Split(new[] { ',', ';', '|' },
                                     StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
                         if (part?.Trim().ToLower() == testsmc.idShort.Trim().ToLower())
                             return true;
+
+                    // or, maybe more meaningful, if the semantic ids are the same?
+                    if (context.Parent.semanticId?.IsEmpty == false
+                        && testsmc.semanticId?.IsEmpty == false
+                        && testsmc.semanticId.Matches(context.Parent.semanticId, AdminShell.Key.MatchMode.Relaxed))
+                        return true;
 
                     // not found
                     return false;
@@ -471,7 +480,18 @@ namespace AasxPluginExportTable
                             // remember to never visit again
                             lastGoodRow = rowofs2;
 
-                            // create stuff
+                            // an CD with empty identification will cause a new id, therefore
+                            // the SME.semanticId will be altered accordingly and will be
+                            // written later
+                            var cdBody = CreateBodyCD(contextBody, _env);
+                            if (cdBody == null)
+                            {
+                                _log?.Info($"  error creating ConceptDescription for BODY! Skipping!");
+                                rowofs2 += _job.RowsBody;
+                                continue;
+                            }
+
+                            // create SME
                             var refBody = CreateBodySme(contextBody, refTop);
                             if (refBody == null)
                             {
@@ -480,13 +500,6 @@ namespace AasxPluginExportTable
                                 continue;
                             }
 
-                            var cdBody = CreateBodyCD(contextBody, _env);
-                            if (cdBody == null)
-                            {
-                                _log?.Info($"  error creating ConceptDescription for BODY! Skipping!");
-                                rowofs2 += _job.RowsBody;
-                                continue;
-                            }
 
                         }
 

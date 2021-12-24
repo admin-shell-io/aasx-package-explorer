@@ -23,7 +23,7 @@ namespace AasxPluginExportTable
         //
 
         public int MaxRows => (_worksheet?
-            .LastRowUsed(XLCellsUsedOptions.Contents) == null) 
+            .LastRowUsed(XLCellsUsedOptions.Contents) == null)
             ? 0 : _worksheet.LastRowUsed(XLCellsUsedOptions.Contents).RowNumber();
 
         public int MaxCols => (_worksheet?
@@ -36,7 +36,7 @@ namespace AasxPluginExportTable
                 return null;
             // try
             // {
-                return _worksheet.Cell(1 + row, 1 + col)?.Value?.ToString();
+            return _worksheet.Cell(1 + row, 1 + col)?.Value?.ToString();
             //}
             //catch
             //{

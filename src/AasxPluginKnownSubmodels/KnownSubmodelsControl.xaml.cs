@@ -176,13 +176,14 @@ namespace AasxPluginKnownSubmodels
 
                 ScrollMainContent.ItemsSource = _viewModel;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _log?.Error(ex, "when preparing display items");
             }
         }
 
-#endregion
+        #endregion
 
         private void CanvasContent_SizeChanged(object sender, SizeChangedEventArgs e)
         {
