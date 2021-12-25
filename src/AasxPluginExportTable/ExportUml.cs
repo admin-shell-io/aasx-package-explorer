@@ -139,27 +139,25 @@ namespace AasxPluginExportTable
 
                 //var modelowned = CreateAppendElement(xmicontent, UMLNS, "Namespace.ownedElement");
 
-                Package = CreateAppendElement(xmicontent, UMLNS, "Model",
+                var model = CreateAppendElement(xmicontent, UMLNS, "Model",
                     new[] {
                         "name", "EA Model",
                         "xmi.id", GenerateId("MX_EAID_")
-                    },
-                    CreateAppendElement(null, UMLNS, "Namespace.ownedElement",
-                        child: CreateAppendElement(null, UMLNS, "Package",
-                        new[] {
-                            "name", "Package1",
-                            "xmi.id", GenerateId("EAPK_"),
-                            "isRoot", "false",
-                            "isLeaf", "false",
-                            "isAbstract", "false",
-                            "visibility", "public"
-                        },
-                        CreateAppendElement(null, UMLNS, "Namespace.ownedElement",
-                            null
-                            )
-                        )
-                    )
-                );
+                    });
+
+                var modeloe = CreateAppendElement(model, UMLNS, "Namespace.ownedElement");
+
+                var pack = CreateAppendElement(modeloe, UMLNS, "Package",
+                            new[] {
+                                "name", "Package1",
+                                "xmi.id", GenerateId("EAPK_"),
+                                "isRoot", "false",
+                                "isLeaf", "false",
+                                "isAbstract", "false",
+                                "visibility", "public"
+                            });
+
+                Package = CreateAppendElement(pack, UMLNS, "Namespace.ownedElement2");
             }
 
             public string EvalFeatureType(AdminShell.SubmodelElement sme)
@@ -174,9 +172,32 @@ namespace AasxPluginExportTable
                 return AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(sme);
             }
 
+            // TODO (MIHO, 2021-12-24): check if to refactor multiplicity handling as utility
+
+            public string EvalUmlMultiplicity(AdminShell.SubmodelElement sme)
+            {                
+                string res = null;
+                var q = sme?.qualifiers.FindType("Multiplicity");
+                if (q != null)
+                {
+                    foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
+                        if (("" + q.value) == Enum.GetName(typeof(FormMultiplicity), m))
+                            res = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
+                }
+                return res;
+            }
+
+            public Tuple<string, string> EvalMultiplicityBounds(AdminShell.SubmodelElement sme)
+            {
+                var mul = EvalUmlMultiplicity(sme);
+                if (mul == null || mul.Length < 4)
+                    return new Tuple<string, string>("1", "1");
+                return new Tuple<string, string>("" + mul[0], "" + mul[3]);
+            }
+
             public void AddFeatures(
                 XmlElement featureContainer, 
-                AdminShell.SubmodelElementWrapperCollection features)
+                List<AdminShell.SubmodelElementWrapper> features)
             {
                 if (featureContainer == null || features == null)
                     return;
@@ -185,10 +206,10 @@ namespace AasxPluginExportTable
                     if (smw?.submodelElement is AdminShell.SubmodelElement sme)
                     {
                         var type = EvalFeatureType(sme);
-                        var lowerBound = "1";
-                        var upperBound = "1";
-                        var initialValue = "43";
-                        if (sme is AdminShell.Property || sme is AdminShell.Range)
+                        var multiplicity = EvalMultiplicityBounds(sme);
+                        var initialValue = "";
+                        if (sme is AdminShell.Property || sme is AdminShell.Range 
+                            || sme is AdminShell.MultiLanguageProperty)
                             initialValue = sme.ValueAsText();
 
                         var attribute = CreateAppendElement(featureContainer, UMLNS, "Attribute",
@@ -208,26 +229,27 @@ namespace AasxPluginExportTable
                                 })
                             );
 
-                        CreateAppendElement(attribute, UMLNS, "ModelElement.taggedValue",
-                            new[] {
-                                "type", type,
-                                "lowerBound", lowerBound,
-                                "upperBound", upperBound
-                            });
+                        var tv = CreateAppendElement(attribute, UMLNS, "ModelElement.taggedValue");
+                        CreateAppendElement(tv, UMLNS, "TaggedValue",
+                            new[] { "tag", "type", "value", type });
+                        CreateAppendElement(tv, UMLNS, "TaggedValue",
+                            new[] { "tag", "lowerBound", "value", multiplicity.Item1 });
+                        CreateAppendElement(tv, UMLNS, "TaggedValue",
+                            new[] { "tag", "upperBound", "value", multiplicity.Item2 });
                     }
             }
 
-            public void AddClass(AdminShell.Submodel sm)
+            public void AddClass(AdminShell.Referable rf)
             {
-                // access 
-                if (sm == null)
+                // the Referable shall enumerate children (if not, then its not a class)
+                if (!(rf is AdminShell.IEnumerateChildren rfec))
                     return;
+                var features = rfec.EnumerateChildren().ToList();
 
                 // add
                 var featureContainer = CreateAppendElement(Package, UMLNS, "Class",
                     new[] {
-                        "name", "" + sm.idShort,
-                        "xmi.id", GenerateId("MX_EAID_"),
+                        "name", "" + rf.idShort,
                         "visibility", "public",
                         "isRoot", "false",
                         "isLeaf", "false",
@@ -236,7 +258,26 @@ namespace AasxPluginExportTable
                     },
                     CreateAppendElement(null, UMLNS, "Classifier.feature"));
 
-                AddFeatures(featureContainer, sm.submodelElements);
+                AddFeatures(featureContainer, features);
+            }
+
+            public void ProcessEntity(AdminShell.Referable parent, AdminShell.Referable rf)
+            {
+                // access
+                if (rf == null)
+                    return;
+
+                // act flexible                
+                AddClass(rf);
+
+                // recurse
+                if (rf is AdminShell.IEnumerateChildren rfec)
+                {
+                    var childs = rfec.EnumerateChildren();
+                    if (childs != null)
+                        foreach (var c in childs)
+                            ProcessEntity(rf, c.submodelElement);
+                }
             }
 
             public void SaveDoc(string fn)
@@ -272,7 +313,7 @@ namespace AasxPluginExportTable
             {
                 var xmi = new XmiWriter();
                 xmi.StartDoc();
-                xmi.AddClass(submodel);
+                xmi.ProcessEntity(null, submodel);
                 xmi.SaveDoc(fn);
             }
         }
