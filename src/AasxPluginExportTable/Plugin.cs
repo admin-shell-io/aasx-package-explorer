@@ -150,7 +150,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         // give over to event stack
                         var evt = new AasxPluginResultEventDisplayContentFile();
-                        evt.fn = "https://github.com/admin-shell-io";
+                        evt.fn = "https://github.com/admin-shell-io/aasx-package-explorer/tree/" +
+                            "MIHO/AddPluginForKnownSubmodels/src/AasxPluginExportTable/help";
                         evt.mimeType = System.Net.Mime.MediaTypeNames.Text.Html;
                         _eventStack?.PushEvent(evt);
                     }

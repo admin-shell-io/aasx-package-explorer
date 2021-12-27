@@ -57,9 +57,19 @@ namespace AasxPluginExportTable.Uml
             Writeln("");
         }
 
-        public string FormatAs(string name, string id)
+        protected int _noNameIndex = 1;
+
+        public string ClearName(string name)
         {
             name = "" + name.Replace("\"", "");
+            if (!name.HasContent())
+                name = "NN" + _noNameIndex++.ToString("D3");
+            return name;
+        }
+
+        public string FormatAs(string name, string id)
+        {
+            name = ClearName(name);
             return $"\"{name}\" as {id}";
         }
 
@@ -136,7 +146,7 @@ namespace AasxPluginExportTable.Uml
                                 if (multiplicity.HasContent())
                                     multiplicity = "\"" + multiplicity + "\"";
                                 Writeln(post: true,
-                                    line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} : {sme.idShort}");
+                                    line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} : \"{ClearName(sme.idShort)}\"");
                             }
                         }
             }

@@ -355,7 +355,7 @@
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
                             <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
-                            <MenuItem Header="Import SubmodelElements from table .." Command="{StaticResource ImportTable}"/>
+                            <MenuItem Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
                         </MenuItem>
                         <MenuItem Header="Export ..">
                             <MenuItem Header="Export AutomationML .." Command="{StaticResource ExportAML}"/>
@@ -366,10 +366,10 @@
                             <MenuItem Header="Copy selected element JSON to clipboard" InputGestureText="Shift+Ctrl+C" Command="{StaticResource CopyClipboardElementJson}"/>
                             <MenuItem Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
+                            <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+							<MenuItem Header="Export TeDZ Simulation ´Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
                             <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
-                            <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
-							<MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">

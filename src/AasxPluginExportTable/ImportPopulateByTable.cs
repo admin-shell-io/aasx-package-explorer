@@ -193,6 +193,9 @@ namespace AasxPluginExportTable
             }
         }
 
+        protected MultiValueDictionary<string, string> _idShortToParentName =
+            new MultiValueDictionary<string, string>();
+
         protected ContextResult CreateTopReferable(
             ImportCellMatchContextBase context,
             bool actInHierarchy = false)
@@ -256,7 +259,13 @@ namespace AasxPluginExportTable
 
                     // TODO BIG PROBLEM!!!(testsmc.parent.idShort == "ItemOfChange" !!!
 
-                    if (!context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim()))
+                    var test1 = context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim());
+                    var test2 = false;
+                    if (_idShortToParentName.ContainsKey(testsmc.parent.idShort))
+                        foreach (var pn in _idShortToParentName[testsmc.parent.idShort])
+                            test2 = test2 || context.ParentParentName.ToLower().Contains(pn.ToLower().Trim());
+
+                    if (!(test1 || test2))
                         return false;
 
                     // next is, that some part of of given idShort match the idShort of children
@@ -281,6 +290,10 @@ namespace AasxPluginExportTable
                     // NOTHING needs to be added; found SMC needs to be given back
                     res.Elem = rootsmc;
                     res.Wrappers = rootsmc.value;
+
+                    // this seems to be a valid ParentName, which is now "renamed" by the idShort
+                    // of the SMC
+                    _idShortToParentName.Add(rootsmc.idShort, context.Parent.idShort);
 
                     // need to adopt the rootsmc further by parent information??
                     ;
