@@ -123,19 +123,21 @@ namespace AasxPackageExplorer
         #region Functions to the outside
         //==============================
 
-        // Note: this is a copy of the Array in AdminShell.cs
+        // Note (update 2021-12-27): restrict to images, as only these
+        // can be handled internally
         public static string[] GetHandableMimeTypes()
         {
             return
                 new[] {
-                    System.Net.Mime.MediaTypeNames.Text.Plain,
-                    System.Net.Mime.MediaTypeNames.Text.Xml,
-                    System.Net.Mime.MediaTypeNames.Text.Html,
-                    "application/json",
-                    "application/rdf+xml",
-                    System.Net.Mime.MediaTypeNames.Application.Pdf,
+                    ////System.Net.Mime.MediaTypeNames.Text.Plain,
+                    ////System.Net.Mime.MediaTypeNames.Text.Xml,
+                    ////System.Net.Mime.MediaTypeNames.Text.Html,
+                    ////"application/json",
+                    ////"application/rdf+xml",
+                    ////System.Net.Mime.MediaTypeNames.Application.Pdf,
                     System.Net.Mime.MediaTypeNames.Image.Jpeg,
                     "image/png",
+                    "image/jpg",
                     System.Net.Mime.MediaTypeNames.Image.Gif
                 };
         }

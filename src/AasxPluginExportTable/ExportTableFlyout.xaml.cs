@@ -41,6 +41,8 @@ namespace AasxPluginExportTable
 
         public ExportTableRecord Result = null;
 
+        public bool CloseForHelp = false;
+
         private int _rowsTop = 1, _rowsBody, _cols = 1;
 
         private List<TextBox> _textBoxesTop = new List<TextBox>();
@@ -129,6 +131,13 @@ namespace AasxPluginExportTable
             ControlClosed?.Invoke();
         }
 
+        private void ButtonHelp_Click(object sender, RoutedEventArgs e)
+        {
+            this.Result = null;
+            this.CloseForHelp = true;
+            ControlClosed?.Invoke();
+        }
+
         //
         // Mechanics
         //
@@ -213,25 +222,6 @@ namespace AasxPluginExportTable
             }
         }
 
-        private void GridOuterBody_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            //if (!(sender is Grid grd) || grd.ColumnDefinitions == null)
-            //    return;
-            //var gw = grd.ActualWidth;
-            //var nc = Math.Max(1, grd.ColumnDefinitions.Count);
-            //var cw = Math.Max(100.0, gw / nc);
-            //foreach (var cd in grd.ColumnDefinitions)
-            //{
-            //    cd.MinWidth = cw;
-            //    cd.MaxWidth = cw;
-            //    cd.Width = new GridLength(cw, GridUnitType.Pixel);
-            //}
-        }
-
-        private void GridTotal_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-        }
-
         private void ScrollViewGrids_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (!(sender is ScrollViewer scrvw))
@@ -246,10 +236,6 @@ namespace AasxPluginExportTable
             GridInScrollViewer.MinWidth = gw;
             GridInScrollViewer.MaxWidth = gw;
             GridInScrollViewer.Width = gw;
-
-            //GridOuterBody.MinWidth = gw;
-            //GridOuterBody.MaxWidth = gw;
-            //GridOuterBody.Width = gw;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

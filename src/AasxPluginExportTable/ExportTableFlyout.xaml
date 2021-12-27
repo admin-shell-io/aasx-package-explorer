@@ -37,9 +37,14 @@
             <ColumnDefinition Width="0.3*"/>
         </Grid.ColumnDefinitions>
 
-        <Viewbox Grid.Row="0" Grid.Column="3" Margin="2" HorizontalAlignment="Right">
-            <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
-        </Viewbox>
+        <StackPanel Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Margin="2" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Viewbox Margin="4,0,4,0">
+                <Button x:Name="ButtonHelp" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonHelp_Click">?</Button>
+            </Viewbox>
+            <Viewbox Margin="4,0,4,0">
+                <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
+            </Viewbox>
+        </StackPanel>
 
         <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Margin="4" 
                    FontSize="24" Foreground="White" HorizontalAlignment="Center" 
@@ -136,7 +141,7 @@
                             <Bold>Table body:</Bold><LineBreak/>
                             (including headers)
                         </TextBlock>
-                        <Grid x:Name="GridOuterBody" Grid.Row="2" Grid.Column="1" SizeChanged="GridOuterBody_SizeChanged">
+                        <Grid x:Name="GridOuterBody" Grid.Row="2" Grid.Column="1">
                         </Grid>
 
                         <Label Grid.Row="4" Grid.Column="0" Foreground="White" Margin="0,-5,0,0" FontWeight="Bold">Placeholders:</Label>

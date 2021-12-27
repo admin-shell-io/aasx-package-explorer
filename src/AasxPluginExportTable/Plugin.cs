@@ -19,6 +19,7 @@ using AasxPluginExportTable;
 using AdminShellNS;
 using AnyUi;
 using JetBrains.Annotations;
+using AasxPluginExportTable.Uml;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -144,7 +145,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 fop?.StartFlyoverModal(uc);
                 fop?.CloseFlyover();
                 if (uc.Result == null)
+                {
+                    if (uc.CloseForHelp)
+                    {
+                        // give over to event stack
+                        var evt = new AasxPluginResultEventDisplayContentFile();
+                        evt.fn = "https://github.com/admin-shell-io";
+                        evt.mimeType = System.Net.Mime.MediaTypeNames.Text.Html;
+                        this.eventStack.PushEvent(evt);
+                    }
+                    
                     return null;
+                }
 
                 if (action == "export-submodel")
                     Export(uc.Result, fop, sm, env);
@@ -154,11 +166,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
             if (action == "export-uml"
-                && args != null && args.Length >= 4 
+                && args != null && args.Length >= 3 
                 && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv 
-                && args[2] is AdminShell.Submodel
-                && args[3] is string fn)
+                && args[2] is AdminShell.Submodel)
             {
+                var fn = (args.Length >= 4) ? args[3] as string : null;
+
                 // flyout provider (will be required in the future)
                 var fop = args[0] as IFlyoutProvider;
 
@@ -171,8 +184,71 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // the Submodel elements need to have parents
                 sm.SetAllParents();
 
+                // prep options
+                var exop = options.UmlExport;
+                if (exop == null)
+                    exop = new ExportUmlOptions();
+
+                // dialogue for user options
+                var uc = new ExportUmlFlyout();
+                uc.Result = exop;
+                fop?.StartFlyoverModal(uc);
+                fop?.CloseFlyover();
+                if (uc.Result == null)
+                    return null;
+
+                // ask for filename
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+                try
+                {
+                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                        System.AppDomain.CurrentDomain.BaseDirectory);
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+                dlg.Title = "Select file for UML export ..";
+
+                if (uc.Result.Format == ExportUmlOptions.ExportFormat.PlantUml)
+                {
+                    dlg.FileName = "new.uml";
+                    dlg.DefaultExt = "*.uml";
+                    dlg.Filter =
+                        "PlantUML text file (*.uml)|*.uml|All files (*.*)|*.*";
+                }
+                else
+                {
+                    dlg.FileName = "new.xml";
+                    dlg.DefaultExt = "*.xml";
+                    dlg.Filter =
+                        "XMI file (*.xml)|*.xml|All files (*.*)|*.*";
+                }
+
+                fop?.StartFlyover(new EmptyFlyout());
+                var fnres = dlg.ShowDialog(fop?.GetWin32Window());
+                fop?.CloseFlyover();
+                if (fnres != true)
+                    return null;
+                fn = dlg.FileName;
+
                 // use functionality
-                ExportUml.ExportUmlToFile(env, sm, fn);
+                ExportUml.ExportUmlToFile(env, sm, uc.Result, fn);
+                Log.Info($"Export UML data to file: {fn}");
+
+                // copy?
+                if (uc.Result.CopyToPasteBuffer)
+                    try
+                    {
+                        var lines = File.ReadAllText(fn);
+                        Clipboard.SetData(DataFormats.Text, lines);
+                        Log.Info("Export UML data copied to paste buffer.");
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+
             }
 
             // default
