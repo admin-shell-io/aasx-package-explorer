@@ -332,7 +332,9 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            // TODO remove
+            /* TODO (MIHO, 2021-12-27): consider extending for better testing or
+             * script running */
+#if __leave_in_for_accelerated_tet
             if (false)
             {
                 var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
@@ -348,6 +350,7 @@ namespace AasxPackageExplorer
                 };
                 timer.Start();
             }
+#endif
 
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);

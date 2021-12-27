@@ -16,10 +16,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using AasxPluginExportTable;
+using AasxPluginExportTable.Uml;
 using AdminShellNS;
 using AnyUi;
 using JetBrains.Annotations;
-using AasxPluginExportTable.Uml;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -28,7 +28,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     public class AasxPlugin : IAasxPluginInterface
     {
         public LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
+        private PluginEventStack _eventStack = new PluginEventStack();
         private AasxPluginExportTable.ExportTableOptions options = new AasxPluginExportTable.ExportTableOptions();
 
         public string GetPluginName()
@@ -114,10 +114,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && _eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return _eventStack.PopEvent();
             }
 
             if ((action == "export-submodel" || action == "import-submodel")
@@ -152,9 +152,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         var evt = new AasxPluginResultEventDisplayContentFile();
                         evt.fn = "https://github.com/admin-shell-io";
                         evt.mimeType = System.Net.Mime.MediaTypeNames.Text.Html;
-                        this.eventStack.PushEvent(evt);
+                        _eventStack?.PushEvent(evt);
                     }
-                    
+
                     return null;
                 }
 
@@ -166,8 +166,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
             if (action == "export-uml"
-                && args != null && args.Length >= 3 
-                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv 
+                && args != null && args.Length >= 3
+                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv
                 && args[2] is AdminShell.Submodel)
             {
                 var fn = (args.Length >= 4) ? args[3] as string : null;
@@ -273,7 +273,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // yield SM
                 // MIHO 21-11-24: IMHO this makes no sense
-                // list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
+                //// list.Add(new ExportTableAasEntitiesItem(depth, sm: sm, parentSm: sm));
 
                 // use collection
                 coll = sm;
@@ -310,7 +310,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
 
                     // add
-                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd, parent: coll as AdminShell.Referable));
+                    listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
+                        parent: coll as AdminShell.Referable));
 
                     // go directly deeper?
                     if (!broadSearch && ci.submodelElement != null &&
@@ -392,12 +393,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var success = false;
                     try
                     {
-                        // TODO: change list[0]!!
-
                         if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
                             success = job.ExportTabSeparated(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                            success = job.ExportLaTex(dlg.FileName, list[0]);
+                            success = job.ExportLaTex(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
                             success = job.ExportExcel(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
@@ -479,7 +478,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         success = true;
                         var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        using (var stream = File.Open(dlg.FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        using (var stream = File.Open(dlg.FileName, FileMode.Open,
+                                    FileAccess.Read, FileShare.ReadWrite))
                             foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
                                 pop.PopulateBy(tp);
                     }

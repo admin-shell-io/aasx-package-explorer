@@ -286,7 +286,7 @@ namespace AdminShellNS
                 bool allowFmtAll = false, bool allowFmt0 = false,
                 bool allowFmt1 = false, bool allowFmt2 = false)
             {
-                // access && defaults?
+                // access and defaults?
                 if (cell == null || cell.Trim().Length < 1)
                     return null;
                 if (typeIfNotSet == null)
@@ -1569,31 +1569,6 @@ namespace AdminShellNS
             {
                 return string.Join(", ", this.Select((ls) => ls.ToString()));
             }
-
-            //public static ListOfLangStr Parse(string cell)
-            //{
-            //    // access
-            //    if (cell == null)
-            //        return null;
-
-            //    // trivial
-            //    if (!cell.Contains("@"))
-            //        return new ListOfLangStr(new LangStr(LangStr.LANG_DEFAULT, cell));
-
-            //    // OK, split
-            //    var parts = cell.Split('@');
-            //    var res = new ListOfLangStr();
-            //    for (int i=0;  i < parts.Length; i += 2)
-            //    {
-            //        var str = parts[i];
-            //        var lang = LangStr.LANG_DEFAULT;
-            //        if (i + 1 < parts.Length)
-            //            lang = parts[i + 1];
-            //        res.Add(new LangStr(lang, str));
-            //    }
-
-            //    return res;
-            //}
 
             public static ListOfLangStr Parse(string cell)
             {

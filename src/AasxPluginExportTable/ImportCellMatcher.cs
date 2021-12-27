@@ -210,25 +210,7 @@ namespace AasxPluginExportTable
             if (elem == null || preset == null || cell == null)
                 return false;
 
-#if _not_anymore_required
-            // elementName
-            if (preset == "elementName")
-            {
-                // in square brackets?
-                var m = Regex.Match(cell, @"\[(\w+)\]");
-                if (m.Success)
-                {
-                    elemName = m.Groups[1].ToString();
-                    return true;
-                }
-
-                // plain -> full string
-                elemName = cell;
-                return true;
-            }
-#endif
-
-            // lambda trick to save {}
+            // lambda trick to save lines of code
             var res = false;
             Func<string, string> commit = (s) => { res = true; return s; };
 
@@ -304,7 +286,7 @@ namespace AasxPluginExportTable
             if (context == null || preset == null || cell == null)
                 return;
 
-            // lambda trick to save {}
+            // lambda trick to lines of code
             if (preset == "Property.valueType")
             {
                 // value type can be distorted in many ways, so commit in each case
@@ -336,7 +318,7 @@ namespace AasxPluginExportTable
             if (cd == null || preset == null || cell == null)
                 return false;
 
-            // lambda trick to save {}
+            // lambda trick to save lines of code
             var res = false;
             Func<string, string> commit = (s) => { res = true; return s; };
 

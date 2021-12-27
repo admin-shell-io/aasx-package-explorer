@@ -267,9 +267,11 @@ namespace AasxPluginExportTable
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
                 if (rf is AdminShell.SubmodelElement rfsme)
                 {
-                    rep(head + "elementShort", "" + AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                    rep(head + "elementShort", "" +
+                        AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
                     if (!(rf is AdminShell.Property || rf is AdminShell.SubmodelElementCollection))
-                        rep(head + "elementShort2", "" + AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                        rep(head + "elementShort2", "" +
+                            AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
                 }
                 rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
             }
@@ -704,7 +706,10 @@ namespace AasxPluginExportTable
         // TAB separated
         //
 
-        public bool ExportTabSeparated(string fn, List<ExportTableAasEntitiesList> iterateAasEntities, string tab = "\t")
+        public bool ExportTabSeparated(
+            string fn,
+            List<ExportTableAasEntitiesList> iterateAasEntities,
+            string tab = "\t")
         {
             // access
             if (!IsValid())
@@ -790,7 +795,7 @@ namespace AasxPluginExportTable
         // LaTex
         //
 
-        public bool ExportLaTex(string fn, ExportTableAasEntitiesList iterateAasEntities)
+        public bool ExportLaTex(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
             if (!IsValid())

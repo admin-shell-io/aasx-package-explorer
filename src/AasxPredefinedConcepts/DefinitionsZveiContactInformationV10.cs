@@ -76,7 +76,8 @@ namespace AasxPredefinedConcepts
 
             // Referable
             this.ReadLibrary(
-                Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiContactInformationV10.json");
+                Assembly.GetExecutingAssembly(),
+                "AasxPredefinedConcepts.Resources." + "ZveiContactInformationV10.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiContactInformationV10), useFieldNames: true);
         }
     }

@@ -26,9 +26,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxPluginExportTable.Uml;
 using AdminShellNS;
 using Newtonsoft.Json;
-using AasxPluginExportTable.Uml;
 
 namespace AasxPluginExportTable
 {
@@ -58,7 +58,7 @@ namespace AasxPluginExportTable
                 ComboBoxFormat.Items.Add("" + f);
 
             // set given values
-            ThisFromPreset(Result);            
+            ThisFromPreset(Result);
         }
 
         //

@@ -34,14 +34,7 @@ namespace AasxPluginExportTable
         {
             if (_worksheet == null)
                 return null;
-            // try
-            // {
             return _worksheet.Cell(1 + row, 1 + col)?.Value?.ToString();
-            //}
-            //catch
-            //{
-            //    return null;
-            //}
         }
 
         //
@@ -58,7 +51,7 @@ namespace AasxPluginExportTable
         {
             // open excel
             var wb = new XLWorkbook(fn);
-            if (wb?.Worksheets?.Count < 1)
+            if (wb?.Worksheets == null || wb.Worksheets.Count < 1)
                 yield break;
 
             foreach (var ws in wb.Worksheets)

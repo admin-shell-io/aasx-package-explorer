@@ -18,7 +18,7 @@ using AdminShellNS;
 
 namespace AasxPluginExportTable
 {
-    public class AasConvertHelper
+    public static class AasConvertHelper
     {
         public static void TakeOverSmeToSm(AdminShell.SubmodelElement sme, AdminShell.Submodel sm)
         {

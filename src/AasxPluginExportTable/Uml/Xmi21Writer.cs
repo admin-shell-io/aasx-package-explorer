@@ -52,7 +52,7 @@ namespace AasxPluginExportTable.Uml
             public string Name = "";
             public string Multiplicity = "1";
             public XmiHandle SrcTuple, DstTuple;
-            public bool Valid => 
+            public bool Valid =>
                 AssocType.HasContent() && Name.HasContent()
                 && SrcTuple?.Valid == true && DstTuple?.Valid == true;
         }
@@ -84,7 +84,7 @@ namespace AasxPluginExportTable.Uml
 
             // Note: if the info below is altered, then EA will NOT import type tags of the attributes!
             CreateAppendElement(root, XMINS, "Documentation",
-                new[] { 
+                new[] {
                     "exporter", "Enterprise Architect",
                     "exporterVersion", "6.5"
                 });
@@ -285,12 +285,12 @@ namespace AasxPluginExportTable.Uml
                             "aggregation", "none"
                         });
 
-                        CreateAppendElement(attribute, "type",
-                        new[] {
+                    CreateAppendElement(attribute, "type",
+                    new[] {
                             "xmi:idref", "" + job.DstTuple.Id
-                        });
+                    });
 
-                        //// AddMultiplicity(attribute, assocAttrId, job.Multiplicity);
+                    //// AddMultiplicity(attribute, assocAttrId, job.Multiplicity);
 
                     // create the association itself
                     var assoc = CreateAppendElement(Package, "packagedElement",
@@ -300,7 +300,7 @@ namespace AasxPluginExportTable.Uml
                             "name", job.Name,
                             "visibility", "public"
                         });
-                    
+
                     // position of memberEnd(s) before ownedEnd seem to influence
                     // the directionality of the association
 

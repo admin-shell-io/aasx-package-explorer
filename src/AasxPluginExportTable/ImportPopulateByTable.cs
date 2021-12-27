@@ -107,7 +107,8 @@ namespace AasxPluginExportTable
                     }
                     if (!mat.Matches(context, cell))
                     {
-                        _log?.Info("{0}", $"    matcher was false ({1 + r}, {1 + c}) preset='{mat.Preset}' cell='{cell}'");
+                        _log?.Info("{0}", $"    matcher was false ({1 + r}, {1 + c}) " +
+                            $"preset='{mat.Preset}' cell='{cell}'");
                         return false;
                     }
                 }
@@ -312,7 +313,7 @@ namespace AasxPluginExportTable
             // create, add
             var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(fen.NameEnum, context.Sme);
             refTop.Wrappers.Add(sme);
-            sme.parent = refTop.Elem; // unfortunately required, ass Wrapper.Add() cannot set parent :-(
+            sme.parent = refTop.Elem; // unfortunately required, ass Wrapper.Add() cannot set parent
             var res = new ContextResult() { Elem = sme };
 
             // allow a selection a values
@@ -464,7 +465,8 @@ namespace AasxPluginExportTable
                     while (rowofs2 < table.MaxRows)
                     {
                         // log
-                        _log?.Info("{0}", $"  check row {rowofs2} starting with {"" + table.Cell(rowofs2, 0)} for body ..");
+                        _log?.Info("{0}", $"  check row {rowofs2} starting with " +
+                            $"{"" + table.Cell(rowofs2, 0)} for body ..");
 
                         // be definition, a completely empty line will break the matching
                         if (CheckRowIsEmpty(table, rowofs2))

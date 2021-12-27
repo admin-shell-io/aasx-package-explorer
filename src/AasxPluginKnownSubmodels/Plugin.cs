@@ -26,7 +26,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         private LogInstance _log = new LogInstance();
         private PluginEventStack _eventStack = new PluginEventStack();
-        private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
+        private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options
+            = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
 
         private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl
             = new AasxPluginKnownSubmodels.KnownSubmodelsControl();
@@ -49,8 +50,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             try
             {
                 var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly());
+                    AasxPluginOptionsBase
+                        .LoadDefaultOptionsFromAssemblyDir<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
+                            this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
                     _options = newOpt;
 
@@ -134,7 +136,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
-                var newOpt = JsonConvert.DeserializeObject<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(args[0] as string);
+                var newOpt = JsonConvert.DeserializeObject<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
+                    args[0] as string);
                 if (newOpt != null)
                     _options = newOpt;
             }
@@ -176,7 +179,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // call
-                var resobj = AasxPluginKnownSubmodels.KnownSubmodelsControl.FillWithWpfControls(_log, args?[0], args?[1],
+                var resobj = AasxPluginKnownSubmodels.KnownSubmodelsControl.FillWithWpfControls(
+                    _log, args?[0], args?[1],
                     _options, _eventStack, args?[2]);
 
                 // give object back

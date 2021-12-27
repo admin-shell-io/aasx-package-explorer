@@ -50,13 +50,12 @@ namespace AasxPluginExportTable.Uml
             for (int i = 0; i < attrs.Length / 2; i++)
             {
                 var aname = attrs[2 * i + 0];
-                var anskey = "";
 
                 var p = aname.IndexOf(':');
                 if (p >= 0)
                 {
                     // split
-                    anskey = aname.Substring(0, p);
+                    var anskey = aname.Substring(0, p);
                     aname = aname.Substring(p).TrimStart(' ', ':');
 
                     // search
@@ -64,13 +63,13 @@ namespace AasxPluginExportTable.Uml
                         continue;
 
                     var ansuri = _namespaceKeyToUri[anskey];
-                    
+
                     node.SetAttribute(aname, ansuri, attrs[2 * i + 1]);
                 }
                 else
                 {
                     node.SetAttribute(aname, attrs[2 * i + 1]);
-                }                
+                }
             }
 
         }

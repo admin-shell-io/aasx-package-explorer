@@ -32,11 +32,11 @@ namespace AasxPluginExportTable.Uml
     /// domain is quite the same and maybe special file format dependencies will 
     /// be re equired in the future.
     /// </summary>
-    public class ExportUml
-    {               
+    public static class ExportUml
+    {
         public static void ExportUmlToFile(
             AdminShell.AdministrationShellEnv env,
-            AdminShell.Submodel submodel, 
+            AdminShell.Submodel submodel,
             ExportUmlOptions options,
             string fn)
         {

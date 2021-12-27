@@ -68,7 +68,7 @@ namespace AasxPluginExportTable
                             {
                                 if (rc is Text rct)
                                     sb.Append(rct.Text);
-                                if (rc is Break rcb)
+                                if (rc is Break)
                                     sb.Append("\n");
                             }
                         }
@@ -101,12 +101,14 @@ namespace AasxPluginExportTable
             foreach (var table in tables)
             {
                 // query table dimensions
+                if (table == null)
+                    continue;
                 var mr = table?.Elements<TableRow>()?.Count() ?? -1;
                 if (mr < 0)
                     continue;
 
                 var mc = -1;
-                foreach (var row in table?.Elements<TableRow>())
+                foreach (var row in table.Elements<TableRow>())
                 {
                     var cls = row?.Elements<TableCell>()?.Count() ?? -1;
                     if (cls > mc)

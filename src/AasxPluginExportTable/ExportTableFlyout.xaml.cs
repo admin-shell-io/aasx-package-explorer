@@ -227,8 +227,6 @@ namespace AasxPluginExportTable
             if (!(sender is ScrollViewer scrvw))
                 return;
 
-            if (GridOuterBody.ColumnDefinitions == null)
-                return;
             var nc = Math.Max(1, GridOuterBody.ColumnDefinitions.Count);
 
             var gw = Math.Max((1 + nc) * 160, scrvw.ActualWidth - 26);
@@ -345,8 +343,6 @@ namespace AasxPluginExportTable
             {
                 var gl = new ColumnDefinition();
                 gl.Width = new GridLength(1.0, GridUnitType.Star);
-                // gl.MinWidth = 80;
-                // gl.Width = new GridLength(120.0, GridUnitType.Pixel);                
                 grid.ColumnDefinitions.Add(gl);
             }
             while (grid.ColumnDefinitions.Count > cols)
@@ -413,16 +409,6 @@ namespace AasxPluginExportTable
                         tb.Background = TextBoxNumCols.Background;
                     }
             }
-
-            // the minimum width applies to the overall grid
-            // (in order to have the columns space evenly)
-            //grid.MinWidth = 100.0 * cols;
-            //grid.MaxWidth = 100.0 * cols;
-            //grid.Width = 100.0 * cols;
         }
-
-        //
-        // Business logic
-        //
     }
 }

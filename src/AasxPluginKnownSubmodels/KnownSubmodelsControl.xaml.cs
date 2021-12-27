@@ -200,7 +200,7 @@ namespace AasxPluginKnownSubmodels
             {
                 // give over to event stack
                 var evt = new AasxPluginResultEventDisplayContentFile();
-                evt.fn = "" + lnk.Tag;
+                evt.fn = "" + furtherUrl;
                 evt.preferInternalDisplay = true;
                 _eventStack?.PushEvent(evt);
             }
