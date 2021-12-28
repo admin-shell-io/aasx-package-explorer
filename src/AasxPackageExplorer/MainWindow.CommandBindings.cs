@@ -562,6 +562,12 @@ namespace AasxPackageExplorer
             if (cmd == "csvimport")
                 CommandBinding_CSVImport();
 
+            if (cmd == "tdimport")
+                CommandBinding_TDImport();
+
+            if (cmd == "submodeltdexport")
+                CommandBinding_SubmodelTDExport();
+
             if (cmd == "opcuaimportnodeset")
                 CommandBinding_OpcUaImportNodeSet();
 
@@ -654,6 +660,62 @@ namespace AasxPackageExplorer
             }
         }
 
+        public void CommandBinding_TDImport()
+        {
+            VisualElementSubmodelRef ve = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid SubModel is selected.", "Unable to import TD JSON LD Document",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+                try
+                {
+                    // do it
+                    RememberForInitialDirectory(dlg.FileName);
+                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
+                        (dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    foreach (var temp in (JToken)importObject)
+                    {
+                        JProperty importProperty = (JProperty)temp;
+                        string key = importProperty.Name.ToString();
+                        if (key == "error")
+                        {
+                            MessageBoxFlyoutShow(
+                            "Unable to Import the JSON LD File", "Check the log"
+                            ,
+                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                            Log.Singleton.Error(importProperty.Value.ToString(), "When importing the jsonld document");
+                        }
+                        else
+                        {
+                            // redisplay
+                            RedrawAllAasxElements();
+                            RedrawElementView();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "When importing the jsonld document");
+                }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
         public bool PanelConcurrentCheckIsVisible()
         {
             return MenuItemWorkspaceEventsShowLog.IsChecked;
@@ -2389,6 +2451,55 @@ namespace AasxPackageExplorer
 
             // try activate plugin
             pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel);
+        }
+
+        public void CommandBinding_SubmodelTDExport()
+        {
+            VisualElementSubmodelRef ve1 = null;
+
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid SubModel is selected.", "Unable to create TD JSON LD document",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+            var obj = ve1.theSubmodel;
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.FileName = "Submodel_" + obj.idShort + ".jsonld";
+            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+            {
+                JObject exportData = TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
+                if (exportData["status"].ToString() == "success")
+                {
+                    RememberForInitialDirectory(dlg.FileName);
+                    using (var s = new StreamWriter(dlg.FileName))
+                    {
+                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
+                            Newtonsoft.Json.Formatting.Indented);
+                        s.WriteLine(output);
+                    }
+                }
+                else
+                {
+                    MessageBoxFlyoutShow(
+                            "Unable to Import the JSON LD File", exportData["data"].ToString(),
+                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                }
+
+            }
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_NewSubmodelFromPlugin()
