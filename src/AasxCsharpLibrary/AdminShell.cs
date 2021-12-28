@@ -661,6 +661,26 @@ namespace AdminShellNS
                 return res.TrimEnd(',');
             }
 
+            public static KeyList Parse(string input)
+            {
+                // access
+                if (input == null)
+                    return null;
+
+                // split
+                var parts = input.Split(',', ';');
+                var kl = new KeyList();
+
+                foreach (var p in parts)
+                {
+                    var k = Key.Parse(p);
+                    if (k != null)
+                        kl.Add(k);
+                }
+
+                return kl;
+            }
+
             public string MostSignificantInfo()
             {
                 if (this.Count < 1)
@@ -1030,6 +1050,11 @@ namespace AdminShellNS
             public string ToString(int format = 0, string delimiter = ",")
             {
                 return keys?.ToString(format, delimiter);
+            }
+
+            public static Reference Parse(string input)
+            {
+                return CreateNew(KeyList.Parse(input));
             }
 
             public string ListOfValues(string delim)
@@ -1851,6 +1876,10 @@ namespace AdminShellNS
                 return res;
             }
 
+            public static new SemanticId Parse(string input)
+            {
+                return (SemanticId)CreateNew(KeyList.Parse(input));
+            }
         }
 
         /// <summary>
@@ -3204,6 +3233,8 @@ namespace AdminShellNS
 
             public static UnitId CreateNew(Reference src)
             {
+                if (src == null)
+                    return null;
                 var res = new UnitId();
                 if (src != null && src.Keys != null)
                     foreach (var k in src.Keys)
@@ -5077,6 +5108,21 @@ namespace AdminShellNS
             }
             // ReSharper enable MethodOverloadWithOptionalParameter
             // ReSharper enable RedundantArgumentDefaultValue
+
+            public static Qualifier Parse(string input)
+            {
+                var m = Regex.Match(input, @"\s*([^,]*)(,[^=]+){0,1}\s*=\s*([^,]*)(,.+){0,1}\s*");
+                if (!m.Success)
+                    return null;
+
+                return new Qualifier()
+                {
+                    type = m.Groups[1].ToString().Trim(),
+                    semanticId = SemanticId.Parse(m.Groups[1].ToString().Trim()),
+                    value = m.Groups[3].ToString().Trim(),
+                    valueId = Reference.Parse(m.Groups[1].ToString().Trim())
+                };
+            }
         }
 
         /// <summary>

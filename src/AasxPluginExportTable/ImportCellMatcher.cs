@@ -223,6 +223,12 @@ namespace AasxPluginExportTable
             if (preset == "idShort")
                 elem.idShort = commit(cell);
 
+            if (preset == "category")
+                elem.category = commit(cell);
+
+            if (preset == "kind")
+                elem.kind = new AdminShell.ModelingKind(commit(cell));
+
             if (preset == "semanticId")
                 elem.semanticId = CreateSemanticId(commit(cell));
 
@@ -276,6 +282,25 @@ namespace AasxPluginExportTable
                 return true;
             }
 
+            // very crazy to split in multiple Qualifiers
+            // idea: use '|' to delimit Qualifiers, use 't,s=v,id' to parse Qualifiers,
+            //       use ',' to delimit keys (after first ','), use xx[yy]zzz to parse keys
+            if (preset == "qualifiers")
+            {
+                var qstr = commit(cell);
+                if (qstr != null)
+                {
+                    var qparts = qstr.Split(new[] { '|', '*', '\r', '\n', '\t' }, 
+                        StringSplitOptions.RemoveEmptyEntries);
+                    foreach(var qp in qparts)
+                    {
+                        var q = AdminShell.Qualifier.Parse(qp);
+                        if (q != null)
+                            elem.qualifiers.Add(q);
+                    }
+                }
+            }
+
             return res;
         }
 
@@ -326,12 +351,29 @@ namespace AasxPluginExportTable
                 cd.IEC61360Content.preferredName = new AdminShell.LangStringSetIEC61360(
                     AdminShell.ListOfLangStr.Parse(commit(cell)));
 
+            if (preset == "shortName")
+                cd.IEC61360Content.shortName = new AdminShell.LangStringSetIEC61360(
+                    AdminShell.ListOfLangStr.Parse(commit(cell)));
+
             if (preset == "definition")
                 cd.IEC61360Content.definition = new AdminShell.LangStringSetIEC61360(
                     AdminShell.ListOfLangStr.Parse(commit(cell)));
 
             if (preset == "unit")
                 cd.IEC61360Content.unit = commit(cell);
+
+            if (preset == "unitId")
+                cd.IEC61360Content.unitId = AdminShell.UnitId.CreateNew(
+                    AdminShell.Reference.Parse(commit(cell)));
+
+            if (preset == "sourceOfDefinition")
+                cd.IEC61360Content.sourceOfDefinition = commit(cell);
+
+            if (preset == "symbol")
+                cd.IEC61360Content.symbol = commit(cell);
+
+            if (preset == "dataType")
+                cd.IEC61360Content.dataType = commit(cell);
 
             return res;
         }
