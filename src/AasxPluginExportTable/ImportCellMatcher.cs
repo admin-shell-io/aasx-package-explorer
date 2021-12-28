@@ -290,9 +290,9 @@ namespace AasxPluginExportTable
                 var qstr = commit(cell);
                 if (qstr != null)
                 {
-                    var qparts = qstr.Split(new[] { '|', '*', '\r', '\n', '\t' }, 
+                    var qparts = qstr.Split(new[] { '|', '*', '\r', '\n', '\t' },
                         StringSplitOptions.RemoveEmptyEntries);
-                    foreach(var qp in qparts)
+                    foreach (var qp in qparts)
                     {
                         var q = AdminShell.Qualifier.Parse(qp);
                         if (q != null)

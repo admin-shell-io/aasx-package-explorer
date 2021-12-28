@@ -1876,7 +1876,7 @@ namespace AdminShellNS
                 return res;
             }
 
-            public static new SemanticId Parse(string input)
+            public new static SemanticId Parse(string input)
             {
                 return (SemanticId)CreateNew(KeyList.Parse(input));
             }
@@ -3236,7 +3236,7 @@ namespace AdminShellNS
                 if (src == null)
                     return null;
                 var res = new UnitId();
-                if (src != null && src.Keys != null)
+                if (src.Keys != null)
                     foreach (var k in src.Keys)
                         res.keys.Add(k);
                 return res;

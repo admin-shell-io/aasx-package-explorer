@@ -67,7 +67,7 @@ namespace AasxPluginDocumentShelf
             var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
             if (semIdDocumentation != null)
                 rec.AllowSubmodelSemanticId.Add(semIdDocumentation);
-                
+
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
                 AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());

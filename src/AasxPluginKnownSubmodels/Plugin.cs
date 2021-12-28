@@ -54,7 +54,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         .LoadDefaultOptionsFromAssemblyDir<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    _options = newOpt;                
+                    _options = newOpt;
             }
             catch (Exception ex)
             {

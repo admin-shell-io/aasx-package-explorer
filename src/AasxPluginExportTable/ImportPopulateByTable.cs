@@ -257,8 +257,7 @@ namespace AasxPluginExportTable
                     if (!testsmc.idShort.HasContent() || testsmc.parent == null)
                         return false;
 
-                    // TODO BIG PROBLEM!!!(testsmc.parent.idShort == "ItemOfChange" !!!
-
+                    // try testing of allowed parent names
                     var test1 = context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim());
                     var test2 = false;
                     if (_idShortToParentName.ContainsKey(testsmc.parent.idShort))

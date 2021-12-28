@@ -115,7 +115,8 @@ namespace AasxPluginDocumentShelf
                 img.Source = bi;
                 ImgContainer.Child = img;
                 return bi;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LogInternally.That.SilentlyIgnoredError(ex);
             }
@@ -216,19 +217,18 @@ namespace AasxPluginDocumentShelf
 
                         // evaluate, if in selection
                         var okDocClass =
-                            (selectedDocClass < 1 || classId == null || classId.Trim().Length < 1 ||
+                            selectedDocClass < 1 || classId.Trim().Length < 1 ||
                             classId.Trim()
                                 .StartsWith(
                                     DefinitionsVDI2770.GetDocClass(
-                                        (DefinitionsVDI2770.Vdi2770DocClass)selectedDocClass)));
+                                        (DefinitionsVDI2770.Vdi2770DocClass)selectedDocClass));
 
                         var okLanguage =
-                            (selectedLanguage == AasxLanguageHelper.LangEnum.Any ||
-                            countryCodesEnum == null ||
+                            selectedLanguage == AasxLanguageHelper.LangEnum.Any ||
                             // make only exception, if no language not all (not only the preferred
                             // of LanguageSelectionToISO639String) are in the property
                             countryCodesStr.Count < 1 ||
-                            countryCodesEnum.Contains(selectedLanguage));
+                            countryCodesEnum.Contains(selectedLanguage);
 
                         if (!okDocClass || !okLanguage)
                             continue;

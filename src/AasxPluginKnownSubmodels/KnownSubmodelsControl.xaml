@@ -7,8 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="400">
     
-    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
-    
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
     Author: Michael Hoffmeister
@@ -17,6 +15,8 @@
 
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
+
+    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 
     <!-- There seems to be an issue to load the CountryFlag.dll for the Relase version of the binaries in XAML-->
     <!-- Solution: do everything in code behind -->

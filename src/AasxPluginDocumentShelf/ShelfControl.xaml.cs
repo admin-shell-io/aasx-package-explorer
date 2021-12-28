@@ -292,8 +292,8 @@ namespace AasxPluginDocumentShelf
                                 }
 
                         // remember in the cache
-                        if (bi != null 
-                            && referableHashToCachedBitmap != null 
+                        if (bi != null
+                            && referableHashToCachedBitmap != null
                             && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
                             referableHashToCachedBitmap[de.ReferableHash] = bi;
                     }
@@ -420,7 +420,7 @@ namespace AasxPluginDocumentShelf
                 ScrollMainContent.ItemsSource = null;
 
                 // access
-                if (subModel == null || options == null)
+                if (subModel?.semanticId == null || options == null)
                     return;
 
                 // make sure for the right Submodel
@@ -474,7 +474,7 @@ namespace AasxPluginDocumentShelf
 
                     // if a preview file exists, try load directly, but not interfere
                     // we delayed load logic, as these images might get more detailed
-                        if (ent.PreviewFile?.Path?.HasContent() == true)
+                    if (ent.PreviewFile?.Path?.HasContent() == true)
                     {
                         var inputFn = ent.PreviewFile.Path;
 
@@ -483,7 +483,7 @@ namespace AasxPluginDocumentShelf
                             inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
 
                         ent.LoadImageFromPath(inputFn);
-                    }                    
+                    }
 
                     // delayed load logic
                     // can already put a generated image into the viewbox?
@@ -655,7 +655,8 @@ namespace AasxPluginDocumentShelf
                 try
                 {
                     File.Copy(inputFn, dlg.FileName);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
                     Log.Error(ex, "while saveing digital file to user specified loacation");
                 }
@@ -674,7 +675,8 @@ namespace AasxPluginDocumentShelf
         private void DocumentEntity_DoubleClick(DocumentEntity e)
         {
             // first check
-            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1 || this.theEventStack == null)
+            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1
+                || this.theEventStack == null)
                 return;
 
             try

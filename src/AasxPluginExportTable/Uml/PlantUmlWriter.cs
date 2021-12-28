@@ -146,7 +146,8 @@ namespace AasxPluginExportTable.Uml
                                 if (multiplicity.HasContent())
                                     multiplicity = "\"" + multiplicity + "\"";
                                 Writeln(post: true,
-                                    line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} : \"{ClearName(sme.idShort)}\"");
+                                    line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
+                                          $": \"{ClearName(sme.idShort)}\"");
                             }
                         }
             }

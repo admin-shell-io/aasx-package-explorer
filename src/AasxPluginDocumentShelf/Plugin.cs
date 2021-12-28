@@ -120,6 +120,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
+                // ReSharper disable once UnusedVariable
                 foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
                     sm.semanticId?.GetAsExactlyOneKey()))
                     found = true;
