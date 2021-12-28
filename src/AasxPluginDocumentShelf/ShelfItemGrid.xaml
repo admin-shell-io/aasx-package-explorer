@@ -35,6 +35,8 @@
                 <ContextMenu x:Key="ContextMenuItem">
                     <MenuItem Header="Edit" Icon="{StaticResource ResourceKey=IconPencil}" Click="MenuItem_Click"/>
                     <MenuItem Header="Delete" Icon="{StaticResource ResourceKey=IconDelete}" Click="MenuItem_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Save file .." Icon="&#x1F4BE;" Click="MenuItem_Click"/>
                 </ContextMenu>
                 <!-- ReSharper enable Xaml.RedundantResource -->
             </Grid.Resources>

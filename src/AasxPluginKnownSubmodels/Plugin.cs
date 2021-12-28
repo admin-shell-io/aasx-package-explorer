@@ -54,15 +54,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         .LoadDefaultOptionsFromAssemblyDir<AasxPluginKnownSubmodels.KnownSubmodelsOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    _options = newOpt;
-
-                // index them!
-                _options.IndexListOfRecords(_options.Records);
+                    _options = newOpt;                
             }
             catch (Exception ex)
             {
                 _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public object CheckForLogMessage()
