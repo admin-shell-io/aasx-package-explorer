@@ -98,7 +98,7 @@ namespace AasxPackageExplorer
             if (cmd == "new")
             {
                 if (AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
-                    "Create new Adminshell environment? This operation can not be reverted!", "AASX",
+                    "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                 {
                     try
@@ -165,12 +165,22 @@ namespace AasxPackageExplorer
                 {
                     // save
                     await _packageCentral.MainItem.SaveAsAsync(runtimeOptions: _packageCentral.CentralRuntimeOptions);
+
                     // backup
                     if (Options.Curr.BackupDir != null)
                         _packageCentral.MainItem.Container.BackupInDir(
                             System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                             Options.Curr.BackupFiles,
                             PackageContainerBase.BackupType.FullCopy);
+
+                    // may be was saved to index
+                    if (_packageCentral?.MainItem?.Container?.Env?.AasEnv != null)
+                        _packageCentral.MainItem.Container.SignificantElements
+                            = new IndexOfSignificantAasElements(_packageCentral.MainItem.Container.Env.AasEnv);
+
+                    // may be was saved to flush events
+                    CheckIfToFlushEvents();
+
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }
@@ -185,7 +195,7 @@ namespace AasxPackageExplorer
             if (cmd == "saveas")
             {
                 // open?
-                if (!_packageCentral.MainAvailable)
+                if (!_packageCentral.MainAvailable || _packageCentral.MainItem.Container == null)
                 {
                     MessageBoxFlyoutShow(
                         "No open AASX file to be saved.",
@@ -467,6 +477,20 @@ namespace AasxPackageExplorer
                     @"https://github.com/admin-shell-io/questions-and-answers/blob/master/README.md");
             }
 
+            if (cmd == "helpissues")
+            {
+                BrowserDisplayLocalFile(
+                    @"https://github.com/admin-shell-io/aasx-package-explorer/issues");
+            }
+
+            if (cmd == "helpoptionsinfo")
+            {
+                var st = Options.ReportOptions(Options.ReportOptionsFormat.Markdown, Options.Curr);
+                var dlg = new MessageReportWindow(st,
+                    windowTitle: "Report on active and possible options");
+                dlg.ShowDialog();
+            }
+
             if (cmd == "editkey")
                 MenuItemWorkspaceEdit.IsChecked = !MenuItemWorkspaceEdit.IsChecked;
 
@@ -607,7 +631,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "serverpluginopcua")
                 CommandBinding_ExecutePluginServer(
-                    "Net46AasxServerPlugin", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
+                    "AasxPluginUaNetServer", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
 
             if (cmd == "serverpluginmqtt")
                 CommandBinding_ExecutePluginServer(
@@ -713,7 +737,10 @@ namespace AasxPackageExplorer
             else
             {
                 if (RowDefinitionConcurrent.Height.Value < 1.0)
-                    RowDefinitionConcurrent.Height = new GridLength(140);
+                {
+                    var desiredH = Math.Max(140.0, this.Height / 3.0);
+                    RowDefinitionConcurrent.Height = new GridLength(desiredH);
+                }
 
                 if (targetEvents)
                     TabControlConcurrent.SelectedItem = TabItemConcurrentEvents;
@@ -2143,7 +2170,7 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     CommandBinding_ExecutePluginServer(
-                        "Net46AasxServerPlugin",
+                        "AasxPluginUaNetServer",
                         "server-start",
                         "server-stop",
                         "Export Nodeset2 via OPC UA Server...",

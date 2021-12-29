@@ -9,13 +9,28 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
+using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic
 {
+    /// <summary>
+    /// This attribute indicates a valid option for JSON or command line
+    /// </summary>
+    [System.AttributeUsage(System.AttributeTargets.Field)]
+    public class OptionDescription : System.Attribute
+    {
+        public string Description = null;
+        public string Cmd = null;
+        public string Arg = null;
+    }
+
     /// <summary>
     /// This attribute indicates, that it should e.g. serialized in JSON.
     /// </summary>
@@ -62,6 +77,125 @@ namespace AasxPackageLogic
                 instance = io;
             }
         }
+
+        public enum ReportOptionsFormat { Markdown }
+
+        private static string MdEsc(string st)
+        {
+            st = "" + st;
+            st = st.Replace("<", @"\<");
+            st = st.Replace("<", @"\<");
+            return st;
+        }
+
+        public static string ReportOptions(ReportOptionsFormat fmt,
+            OptionsInformation options = null)
+        {
+            var sb = new StringBuilder();
+
+            //
+            // small lambdas
+            //
+
+            Action appendTableHeader = () =>
+            {
+                sb.AppendLine($"| {"JSON option",-35} | {"Command line",-20} " +
+                                    $"| {"Argument",-20} | Description |");
+                sb.AppendLine($"|-{new String('-', 35)}-|-{new String('-', 20)}-" +
+                    $"|-{new String('-', 20)}-|-------------|");
+            };
+
+            Action<string, string, string, string> appendTableRow = (json, cmd, arg, description) =>
+            {
+                sb.AppendLine($"| {MdEsc(json),-35} | {MdEsc(cmd),-20} " +
+                    $"| {MdEsc(arg),-20} | {MdEsc(description)} |");
+            };
+
+            //
+            // Regular options
+            //
+
+            if (fmt == ReportOptionsFormat.Markdown)
+            {
+                sb.AppendLine("# Regular options for JSON and command line");
+                sb.AppendLine();
+                sb.AppendLine(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"The following options can be used either directly in the command line of the 
+                    exectable or in a JSON-file for configuration (via the ""-read-json"" option)."));
+                sb.AppendLine();
+            }
+
+            var fields = typeof(OptionsInformation).GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var first = true;
+            foreach (var fi in fields)
+            {
+                foreach (var fia in fi.GetCustomAttributes(typeof(OptionDescription), true))
+                    if (fia is OptionDescription fiaod)
+                    {
+                        if (fmt == ReportOptionsFormat.Markdown)
+                        {
+                            if (first)
+                            {
+                                first = false;
+                                appendTableHeader();
+                            }
+                            appendTableRow(fi.Name, fiaod.Cmd, fiaod.Arg, fiaod.Description);
+                        }
+                    }
+            }
+
+            sb.AppendLine();
+
+            //
+            // Special options
+            //
+
+            if (fmt == ReportOptionsFormat.Markdown)
+            {
+                sb.AppendLine("# Special options for JSON and command line");
+                sb.AppendLine();
+                sb.AppendLine(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"The following options are also be provided."));
+                sb.AppendLine();
+
+                appendTableHeader();
+                appendTableRow("", "-read-json", "<path>", "Reads a JSON formatted options file.");
+                appendTableRow("", "-write-json", "<path>", "Writes the currently loaded options " +
+                    "into a JSON formatted file.");
+            }
+
+            sb.AppendLine();
+
+            //
+            // Report current options?
+            //
+
+            if (options != null)
+            {
+                var jsonStr = JsonConvert.SerializeObject(options, Formatting.Indented);
+
+                if (fmt == ReportOptionsFormat.Markdown)
+                {
+                    sb.AppendLine("# Current options");
+                    sb.AppendLine();
+                    sb.AppendLine(AdminShellUtil.CleanHereStringWithNewlines(
+                        @"The following options are currently loaded or set by default."));
+                    sb.AppendLine();
+
+                    sb.AppendLine("```");
+                    sb.AppendLine(jsonStr);
+                    sb.AppendLine("```");
+
+                    sb.AppendLine();
+                }
+            }
+
+            //
+            // End of report
+            //
+
+            return sb.ToString();
+        }
     }
 
 
@@ -70,149 +204,132 @@ namespace AasxPackageLogic
     /// </summary>
     public class OptionsInformation
     {
-        /// <summary>
-        /// This file shall be loaded at start of application
-        /// </summary>
+
+        [OptionDescription(Description = "This file shall be loaded at start of application")]
         [SettableOption]
         public string AasxToLoad = null;
 
-        /// <summary>
-        /// if not -1, the left of window
-        /// </summary>
+        [OptionDescription(Description = "if not -1, the left of window",
+            Cmd = "-left", Arg = "<pixel>")]
         public int WindowLeft = -1;
 
-        /// <summary>
-        /// if not -1, the top of window
-        /// </summary>
+        [OptionDescription(Description = "if not -1, the top of window",
+            Cmd = "-top", Arg = "<pixel>")]
         public int WindowTop = -1;
 
-        /// <summary>
-        /// if not -1, the width of window
-        /// </summary>
+        [OptionDescription(Description = "if not -1, the width of window",
+            Cmd = "-width", Arg = "<pixel>")]
         public int WindowWidth = -1;
 
-        /// <summary>
-        /// if not -1, the height of window
-        /// </summary>
+        [OptionDescription(Description = "if not -1, the height of window",
+            Cmd = "-height", Arg = "<pixel>")]
         public int WindowHeight = -1;
 
-        /// <summary>
-        /// if True, then maximize window on application startup
-        /// </summary>
+        [OptionDescription(Description = "if set, then maximize window on application startup",
+            Cmd = "-maximized")]
         public bool WindowMaximized = false;
 
-        /// <summary>
-        /// Template string for the id of an AAS. Could contain up to 16 placeholders of:
-        /// D = decimal digit, X = hex digit, A = alphanumerical digit
-        /// </summary>
+        [OptionDescription(Description = "Template string for the id of an AAS. " +
+            "Could contain up to 16 placeholders of: " +
+            "D = decimal digit, X = hex digit, A = alphanumerical digit",
+            Cmd = "-id-aas", Arg = "<string>")]
         public string TemplateIdAas = "https://example.com/ids/aas/DDDD_DDDD_DDDD_DDDD";
 
-        /// <summary>
-        /// Template string for the id of an aaset. Could contain up to 16 placeholders of:
-        /// D = decimal digit, X = hex digit, A = alphanumerical digit
-        /// </summary>
+        [OptionDescription(Description = "Template string for the id of an aaset. " +
+            "Could contain up to 16 placeholders of: " +
+            "D = decimal digit, X = hex digit, A = alphanumerical digit",
+            Cmd = "-id-asset", Arg = "<string>")]
         public string TemplateIdAsset = "https://example.com/ids/asset/DDDD_DDDD_DDDD_DDDD";
 
-        /// <summary>
-        /// Template string for the id of an submodel of kind instance. Could contain up to 16 placeholders of:
-        /// D = decimal digit, X = hex digit, A = alphanumerical digit
-        /// </summary>
+        [OptionDescription(Description = "Template string for the id of an submodel of kind instance. " +
+            "Could contain up to " +
+            "16 placeholders of: D = decimal digit, X = hex digit, A = alphanumerical digit",
+            Cmd = "-id-sm-instance", Arg = "<string>")]
         public string TemplateIdSubmodelInstance = "https://example.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
 
-        /// <summary>
-        /// Template string for the id of an submodel of kind type. Could contain up to 16 placeholders of:
-        /// D = decimal digit, X = hex digit, A = alphanumerical digit
-        /// </summary>
+        [OptionDescription(Description = "Template string for the id of an submodel of kind type. " +
+            "Could contain up to " +
+            "16 placeholders of: D = decimal digit, X = hex digit, A = alphanumerical digit",
+            Cmd = "-id-sm-template", Arg = "<string>")]
         public string TemplateIdSubmodelTemplate = "https://example.com/ids/sm/DDDD_DDDD_DDDD_DDDD";
 
-        /// <summary>
-        /// Template string for the id of a concept description. Could contain up to 16 placeholders of:
-        /// D = decimal digit, X = hex digit, A = alphanumerical digit
-        /// </summary>
+        [OptionDescription(Description = "Template string for the id of a concept description. " +
+            "Could contain up to 16 " +
+            "placeholders of: D = decimal digit, X = hex digit, A = alphanumerical digit",
+            Cmd = "-id-cd", Arg = "<string>")]
         public string TemplateIdConceptDescription = "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
-        /// <summary>
-        /// Path to ECLASS files
-        /// </summary>
+        [OptionDescription(Description = "Path to ECLASS files",
+            Cmd = "-eclass", Arg = "<path>")]
         public string EclassDir = null;
 
-        /// <summary>
-        /// Path to the directory with the default sources for the Dictionary Import feature (see
-        /// AasxDictionaryImport).  If this option is not set, the current working directory is used.
-        /// </summary>
+        [OptionDescription(Description =
+            "Path to the directory with the default sources for the Dictionary Import " +
+            "feature (see AasxDictionaryImport).  If this option is not set, the current working directory " +
+            "is used.",
+            Cmd = "-dict-import-dir", Arg = "<path>")]
         public string DictImportDir = System.IO.Directory.GetCurrentDirectory();
 
-        /// <summary>
-        /// Path to an image to be displayed as logo
-        /// </summary>
+        [OptionDescription(Description = "Path to an image to be displayed as logo",
+            Cmd = "-logo", Arg = "<path>")]
         public string LogoFile = null;
 
-        /// <summary>
-        /// Path to JSON file defining qualifier presets.
-        /// </summary>
+        [OptionDescription(Description = "Path to JSON file defining qualifier presets.",
+            Cmd = "-qualifiers", Arg = "<path>")]
         public string QualifiersFile = null;
 
-        /// <summary>
-        /// Path to a JSON, defining a set of AasxPackage-Files, which serve as repository
-        /// </summary>
+        [OptionDescription(Description = "Path to a JSON, defining a set of AasxPackage-Files, which serve as " +
+            "repository",
+            Cmd = "-aasxrepo", Arg = "<path>")]
         public string AasxRepositoryFn = null;
 
-        /// <summary>
-        /// Home address of the content browser on startup, on change of AASX
-        /// </summary>
+        [OptionDescription(Description = "Home address of the content browser on startup, on change of AASX",
+            Cmd = "-contenthome", Arg = "<URL>")]
         public string ContentHome = @"https://github.com/admin-shell/io/blob/master/README.md";
 
-        /// <summary>
-        /// If true, use transparent flyover dialogs, where possible
-        /// </summary>
+        [OptionDescription(Description = "If unset, use transparent flyover dialogs, where possible",
+            Cmd = "-noflyouts")]
         public bool UseFlyovers = true;
 
-        /// <summary>
-        /// If other then -1, then time in ms for the splash window to stay on the screen.
-        /// </summary>
+        [OptionDescription(Description = "If other then -1, then time in ms for the splash window to " +
+            "stay on the screen.",
+            Cmd = "-splash", Arg = "<milli-secs>")]
         public int SplashTime = -1;
 
-        /// <summary>
-        /// If true, use always internal browser
-        /// </summary>
+        [OptionDescription(Description = "If true, use always internal browser",
+            Cmd = "-intbrowse")]
         public bool InternalBrowser = false;
 
-        /// <summary>
-        /// If true, apply second search operation to join multi-language information.
-        /// </summary>
+        [OptionDescription(Description = "If true, apply second search operation to join multi-language " +
+            "information.",
+            Cmd = "-twopass")]
         public bool EclassTwoPass = false;
 
-        /// <summary>
-        /// If not null, enables backing up XML files of the AAS-ENV in some files under BackupDir,
-        /// which could be relative
-        /// </summary>
+        [OptionDescription(Description = "If not null, enables backing up XML files of the AAS-ENV in " +
+            "some files under BackupDir, which could be relative",
+            Cmd = "-backupdir", Arg = "<path>")]
         public string BackupDir = null;
 
-        /// <summary>
-        /// At max such much different files are used for backing up
-        /// </summary>
+        [OptionDescription(Description = "At max such much different files are used for backing up")]
         public int BackupFiles = 10;
 
-        /// <summary>
-        /// Load and store AASX files via temporary package to avoid corruptions.
-        /// EXPERIMENTAL!
-        /// </summary>
+        [OptionDescription(Description = "If set, load and store AASX files via temporary package to " +
+            "avoid corruptions. RECOMMENDED!",
+            Cmd = "-indirect-load-save")]
         public bool IndirectLoadSave = false;
 
-        /// <summary>
-        /// Hostname for the REST server. If other than "localhost", use of admin rights might be required.
-        /// </summary>
+        [OptionDescription(Description = "Hostname for the REST server. If other than \"localhost\", " +
+            "use of admin rights might be required.",
+            Cmd = "-resthost", Arg = "<host>")]
         public string RestServerHost = "localhost";
 
-        /// <summary>
-        /// Port for the REST server. Port numbers below 1023 may not work.
-        /// </summary>
+        [OptionDescription(Description = "Port for the REST server. Port numbers below 1023 may not work.",
+            Cmd = "-restport", Arg = "<port>")]
         public string RestServerPort = "1111";
 
-        /// <summary>
-        /// If not null, will retrieved the options of all instantiated plugins and
-        /// will write these into JSON option file
-        /// </summary>
+        [OptionDescription(Description = "If not null, will retrieve the (default?) options of all instantiated " +
+            "plugins and will write this large data set into JSON option file.",
+            Cmd = "-write-all-json", Arg = "<path>")]
         public string WriteDefaultOptionsFN = null;
 
         /// <summary>
@@ -223,9 +340,7 @@ namespace AasxPackageLogic
             LightAccentColor = 0, DarkAccentColor, DarkestAccentColor, FocusErrorBrush, FocusErrorColor
         };
 
-        /// <summary>
-        /// Dictionary of override colors
-        /// </summary>
+        [OptionDescription(Description = "Dictionary of override colors")]
         [SettableOption]
         public Dictionary<ColorNames, AnyUiColor> AccentColors =
             new Dictionary<ColorNames, AnyUiColor>();
@@ -237,75 +352,77 @@ namespace AasxPackageLogic
             return AnyUiColors.Black;
         }
 
-        /// <summary>
-        /// Contains a list of remarks. Intended use: disabling lines of preferences.
-        /// </summary>
+        [OptionDescription(Description =
+            "Contains a list of remarks. Intended use: disabling lines of preferences.",
+            Cmd = "-rem")]
         public List<string> Remarks = new List<string>();
 
-        /// <summary>
-        /// If not null points to the dir, where plugins are (recursively) searched
-        /// </summary>
+        [OptionDescription(Description =
+            "If not null points to the dir, where plugins are (recursively) searched",
+            Cmd = "-plugin-dir")]
         public string PluginDir = null;
 
-        /// <summary>
-        /// For such operations as query repository, do load a new AASX file without
-        /// prompting the user.
-        /// </summary>
+        [OptionDescription(Description =
+            "For such operations as query repository, do load a new AASX file without " +
+            "prompting the user.",
+            Cmd = "-load-without-prompt")]
         public bool LoadWithoutPrompt = false;
 
-        /// <summary>
-        /// When activated, the UI will check if identifications and other texts are
-        /// starting with schemes like http:// and will render IRIs for them
-        /// </summary>
+        [OptionDescription(Description =
+            "When activated, the UI will check if identifications and other texts are " +
+            "starting with schemes like http:// and will render IRIs for them",
+            Cmd = "-show-id-as-iri")]
         public bool ShowIdAsIri = false;
 
-        /// <summary>
-        /// When activated, the UI will show verbose information on (secure) connect procedures.
-        /// When de-activated, default answers to questions within these procedures will be given
-        /// </summary>
+        [OptionDescription(Description =
+            "When activated, the UI will show verbose information on (secure) connect procedures. " +
+            "When de-activated, default answers to questions within these procedures will be given",
+            Cmd = "-verbose-connect")]
         public bool VerboseConnect = false;
 
-        /// <summary>
-        /// Default value for the StayConnected options of PackageContainer.
-        /// That is, a loaded container will automatically try receive events, e.g. for value update.
-        /// </summary>
+        [OptionDescription(Description = "When activated, the UI will initially show the event viewer. The use can " +
+            "hide the  panel, if required.")]
+        public bool ShowEvents = false;
+
+        [OptionDescription(Description = "When activated, the UI will detect SubmodelElements which feature " +
+            "qualifiers of type \"Animate.Args\" and will cyclically animate its values.")]
+        public bool AnimateElements = false;
+
+        [OptionDescription(Description = "When activated, the UI will observe AAS events, which are subsequently " +
+            "emited by the editor. AAS events are emited, when \"take over\" or load/ save is activiated.")]
+        public bool ObserveEvents = false;
+
+        [OptionDescription(Description = "When activated, the UI will compress events, which are emited by " +
+            "the editor. ")]
+        public bool CompressEvents = false;
+
+        [OptionDescription(Description = "Default value for the StayConnected options of PackageContainer. " +
+            "That is, a loaded container will automatically try receive events, e.g. for value update.",
+            Cmd = "-stay-connected")]
         public bool DefaultStayConnected = false;
 
-        /// <summary>
-        /// CONSTANT for the DefaultUpdatePeriod option.
-        /// </summary>
+        [OptionDescription(Description = "CONSTANT for the DefaultUpdatePeriod option.")]
         public const int MinimumUpdatePeriod = 200;
 
-        /// <summary>
-        /// Default value for the update period in [ms] for StayConnect containers.
-        /// </summary>
+        [OptionDescription(Description = "Default value for the update period in [ms] for StayConnect containers.")]
         public int DefaultUpdatePeriod = 0;
 
-        /// <summary>
-        /// Preset shown in the file repo connect to AAS repository dialogue
-        /// </summary>
+        [OptionDescription(Description = "Preset shown in the file repo connect to AAS repository dialogue")]
         public string DefaultConnectRepositoryLocation = "";
 
-        /// <summary>
-        /// May contain different string-based options for stay connect, event update mechanisms
-        /// </summary>
+        [OptionDescription(Description = "May contain different string-based options for stay connect, " +
+            "event update mechanisms")]
         public string StayConnectOptions = "";
 
-        /// <summary>
-        /// Point to a list of SecureConnectPresets for the respective dialogue
-        /// </summary>
+        [OptionDescription(Description = "Point to a list of SecureConnectPresets for the respective dialogue")]
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken SecureConnectPresets;
 
-        /// <summary>
-        /// Point to a set of options for MQTT publish
-        /// </summary>
+        [OptionDescription(Description = "Point to a set of options for MQTT publish")]
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken MqttPublisherOptions;
 
-        /// <summary>
-        /// Point to a list of SecureConnectPresets for the respective dialogue
-        /// </summary>
+        [OptionDescription(Description = "Point to a list of SecureConnectPresets for the respective dialogue")]
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken IntegratedConnectPresets;
 
@@ -339,13 +456,9 @@ namespace AasxPackageLogic
             }
         }
 
-        /// <summary>
-        /// Contains a list of tuples (filenames, args) of plugins to be loaded.
-        /// </summary>
+        [OptionDescription(Description = "Contains a list of tuples (filenames, args) of plugins to be loaded.")]
         [SettableOption]
         public List<PluginDllInfo> PluginDll = new List<PluginDllInfo>();
-
-
 
         /// <summary>
         /// Will save options to a file. Catches exceptions.

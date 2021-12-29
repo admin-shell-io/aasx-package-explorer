@@ -97,12 +97,22 @@ namespace AasOpcUaServer
             this.typeObject = this.entityBuilder.CreateAddObjectType("AASIdentifierType",
                 ObjectTypeIds.BaseObjectType, preferredTypeNumId, descriptionKey: "AAS:Identifier");
             // add some elements
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "IdType",
-                DataTypeIds.String, null, defaultSettings: true,
-                modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Id",
-                DataTypeIds.String, null, defaultSettings: true,
-                modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
+
+            if (true == entityBuilder.theServerOptions?.SimpleDataTypes)
+            {
+                this.entityBuilder.CreateAddDataType("IdType", DataTypeIds.String);
+                this.entityBuilder.CreateAddDataType("Id", DataTypeIds.String);
+            }
+            else
+            {
+                // this is the original code, which gets not imported by SiOME
+                this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "IdType",
+                    DataTypeIds.String, null, defaultSettings: true,
+                    modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
+                this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Id",
+                    DataTypeIds.String, null, defaultSettings: true,
+                    modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
+            }
         }
 
         public NodeState CreateAddElements(NodeState parent, CreateMode mode,
@@ -1135,12 +1145,22 @@ namespace AasOpcUaServer
                 preferredTypeNumId, descriptionKey: "AAS:File");
 
             // some elements
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "MimeType",
-                this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(), null, defaultSettings: true,
+            this.entityBuilder.CreateAddPropertyState<string>(
+                this.typeObject, CreateMode.Type, "MimeType",
+                (this.entityBuilder.theServerOptions?.SimpleDataTypes == true)
+                    ? DataTypeIds.String
+                    : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(),
+                null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Value",
-                this.entityBuilder.AasTypes.PathType.GetTypeNodeId(), null, defaultSettings: true,
+
+            this.entityBuilder.CreateAddPropertyState<string>(
+                this.typeObject, CreateMode.Type, "Value",
+                 (true == this.entityBuilder?.theServerOptions?.SimpleDataTypes)
+                    ? DataTypeIds.String
+                    : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(),
+                null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
+
             this.entityBuilder.AasTypes.FileType.CreateAddElements(this.typeObject, CreateMode.Type);
         }
 
@@ -1158,10 +1178,18 @@ namespace AasOpcUaServer
             base.PopulateInstanceObject(o, file);
 
             // own attributes
-            this.entityBuilder.CreateAddPropertyState<string>(o, CreateMode.Instance, "MimeType",
-                this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(), file.mimeType, defaultSettings: true);
-            this.entityBuilder.CreateAddPropertyState<string>(o, CreateMode.Instance, "Value",
-                this.entityBuilder.AasTypes.PathType.GetTypeNodeId(), file.value, defaultSettings: true);
+            this.entityBuilder.CreateAddPropertyState<string>(
+                o, CreateMode.Instance, "MimeType",
+                (this.entityBuilder.theServerOptions?.SimpleDataTypes == true)
+                    ? DataTypeIds.String
+                    : this.entityBuilder.AasTypes.MimeType.GetTypeNodeId(),
+                file.mimeType, defaultSettings: true);
+            this.entityBuilder.CreateAddPropertyState<string>(
+                o, CreateMode.Instance, "Value",
+                (true == this.entityBuilder?.theServerOptions?.SimpleDataTypes)
+                    ? DataTypeIds.String
+                    : this.entityBuilder.AasTypes.PathType.GetTypeNodeId(),
+                file.value, defaultSettings: true);
 
             // wonderful working
             if (this.entityBuilder.AasTypes.FileType.CheckSuitablity(this.entityBuilder.package, file))
@@ -1184,7 +1212,8 @@ namespace AasOpcUaServer
                 descriptionKey: "AAS:Blob");
 
             // some elements
-            this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "MimeType",
+            this.entityBuilder.CreateAddPropertyState<string>(
+                this.typeObject, CreateMode.Type, "MimeType",
                 DataTypeIds.String, null, defaultSettings: true,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
             this.entityBuilder.CreateAddPropertyState<string>(this.typeObject, CreateMode.Type, "Value",
@@ -1206,7 +1235,8 @@ namespace AasOpcUaServer
             base.PopulateInstanceObject(o, blob);
 
             // own attributes
-            this.entityBuilder.CreateAddPropertyState<string>(o, CreateMode.Instance, "MimeType",
+            this.entityBuilder.CreateAddPropertyState<string>(
+                o, CreateMode.Instance, "MimeType",
                 DataTypeIds.String, blob.mimeType, defaultSettings: true);
             this.entityBuilder.CreateAddPropertyState<string>(o, CreateMode.Instance, "Value",
                 DataTypeIds.String, blob.value, defaultSettings: true);
@@ -1808,11 +1838,9 @@ namespace AasOpcUaServer
         public NodeState GetTypeObjectFor(AdminShell.Identification identification)
         {
             var to = this.typeObject; // shall be NULL
-            if (identification != null && identification.idType != null
-                && identification.idType.Trim().ToUpper() == "URI")
+            if (true == identification?.IsIRI())
                 to = this.typeObjectUri;
-            if (identification != null && identification.idType != null
-                && identification.idType.Trim().ToUpper() == "IRDI")
+            if (true == identification?.IsIRDI())
                 to = this.typeObjectIrdi;
             if (identification != null && identification.idType != null
                 && identification.idType.Trim().ToUpper() == "CUSTOM")
@@ -1950,7 +1978,9 @@ namespace AasOpcUaServer
         {
             // create type object
             this.typeObject = this.entityBuilder.CreateAddReferenceType("AASReference", "AASReferencedBy",
-                preferredTypeNumId, useZeroNS: false);
+                preferredTypeNumId, useZeroNS: false,
+                extraSubtype: new NodeId(31, 0) /* request Florian */
+            );
         }
 
         public NodeState CreateAddInstanceReference(NodeState parent)

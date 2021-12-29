@@ -57,6 +57,28 @@ namespace AasOpcUaServer
         public Action FinalizeAction = null;
 
         /// <summary>
+        /// If true, a nodeset export will try to explicetely include the root item link within the 
+        /// export. Try this for SiOME usage.
+        /// </summary>
+        public bool AddRootItem = false;
+
+        /// <summary>
+        /// If true, usage of customised data types will be reduced
+        /// </summary>
+        public bool SimpleDataTypes = false;
+
+        /// <summary>
+        /// Set true, if descendants from "Object" (AASROOT, CDs) shall be linked as components, not
+        /// via Organizes - relationship.
+        /// </summary>
+        public bool LinkRootAsComponent = false;
+
+        /// <summary>
+        /// Seemingly, in older versions, the dictionaries folder was missing
+        /// </summary>
+        public bool CeateDictionariesFolder = true;
+
+        /// <summary>
         /// Parse args given by command line or plug-in arguments
         /// </summary>
         public void ParseArgs(string[] args)
@@ -79,6 +101,24 @@ namespace AasOpcUaServer
                 if (arg == "-single-nodeids")
                 {
                     FilterForSingleNodeIds = true;
+                    continue;
+                }
+
+                if (arg == "-simple-data-types")
+                {
+                    SimpleDataTypes = true;
+                    continue;
+                }
+
+                if (arg == "-add-root-item")
+                {
+                    AddRootItem = true;
+                    continue;
+                }
+
+                if (arg == "-link-root-as-component")
+                {
+                    LinkRootAsComponent = true;
                     continue;
                 }
 

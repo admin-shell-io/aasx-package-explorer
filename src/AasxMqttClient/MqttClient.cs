@@ -268,11 +268,11 @@ namespace AasxMqttClient
                 return;
 
             // give this to (recursive) function
-            sm.submodelElements?.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+            sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
             {
                 // assumption is, the sme is now "leaf" of a SME-hierarchy
                 if (sme is AdminShell.IEnumerateChildren)
-                    return;
+                    return true;
 
                 // value of the leaf
                 var valStr = sme.ValueAsText();
@@ -287,7 +287,7 @@ namespace AasxMqttClient
 
                 var msg = new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
-                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                                 aasIdShort: aas.idShort, aasId: aas.identification,
                                 smIdShort: sm.idShort, smId: sm.identification,
                                 path: pathStr))
@@ -297,6 +297,9 @@ namespace AasxMqttClient
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
                 LogStatus(incSingleValue: 1);
+
+                // recurse
+                return true;
             });
         }
 
@@ -311,8 +314,7 @@ namespace AasxMqttClient
                 return;
 
             // only specific reasons
-            if (!(ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create
-                  || ci.Reason == AasPayloadStructuralChangeItem.ChangeReason.Modify))
+            if (!(ci.Reason == StructuralChangeReason.Create || ci.Reason == StructuralChangeReason.Modify))
                 return;
 
             // need a payload
@@ -326,11 +328,12 @@ namespace AasxMqttClient
             if (dataRef is AdminShell.SubmodelElement dataSme)
             {
                 var smwc = new AdminShell.SubmodelElementWrapperCollection(dataSme);
-                smwc.RecurseOnSubmodelElements(null, null, (o, parents, sme) =>
+                smwc.RecurseOnReferables(null, null, (o, parents, rf) =>
                 {
                     // assumption is, the sme is now "leaf" of a SME-hierarchy
-                    if (sme is AdminShell.IEnumerateChildren)
-                        return;
+                    var sme = rf as AdminShell.SubmodelElement;
+                    if (sme == null || sme is AdminShell.IEnumerateChildren)
+                        return true;
 
                     // value of the leaf
                     var valStr = sme.ValueAsText();
@@ -345,7 +348,7 @@ namespace AasxMqttClient
                     messages.Add(
                         new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
-                                _diaData.EventTopic, defaultIfNull: "SingleValue",
+                                _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                                 aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
                                 smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                                 path: pathStr))
@@ -353,6 +356,9 @@ namespace AasxMqttClient
                             .WithExactlyOnceQoS()
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build());
+
+                    // recurse
+                    return true;
                 });
             }
 
@@ -389,7 +395,7 @@ namespace AasxMqttClient
                 _logger?.Info("Publish single value (update value)");
             var message = new MqttApplicationMessageBuilder()
                     .WithTopic(GenerateTopic(
-                        _diaData.EventTopic, defaultIfNull: "SingleValue",
+                        _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
                         aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
                         smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                         path: pathStr))
@@ -460,8 +466,8 @@ namespace AasxMqttClient
                 if (_diaData.LogDebug)
                     _logger?.Info("Publish single values ..");
 
-                if (ev.Payloads != null)
-                    foreach (var epl in ev.Payloads)
+                if (ev.PayloadItems != null)
+                    foreach (var epl in ev.PayloadItems)
                     {
                         if (epl is AasPayloadStructuralChange apsc && apsc.Changes != null)
                             foreach (var ci in apsc.Changes)

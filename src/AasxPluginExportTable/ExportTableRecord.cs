@@ -265,6 +265,7 @@ namespace AasxPluginExportTable
                     repListOfLangStr(head + "description", rf.description.langString);
                 rep(head + "elementName", "" + rf.GetElementName());
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
+
                 if (rf is AdminShell.SubmodelElement rfsme)
                 {
                     rep(head + "elementShort", "" +

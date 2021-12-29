@@ -87,6 +87,9 @@
                     <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
                     <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
                     <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
+                    <RoutedUICommand x:Key="AnimateElements" Text="AnimateElements" />
+                    <RoutedUICommand x:Key="ObserveEvents" Text="ObserveEvents" />
+                    <RoutedUICommand x:Key="CompressEvents" Text="CompressEvents" />
                     <RoutedUICommand x:Key="Test" Text="Test" />
                     <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
                     <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
@@ -101,6 +104,8 @@
                     <RoutedUICommand x:Key="About" Text="About" />
                     <RoutedUICommand x:Key="HelpGithub" Text="HelpGithub" />
                     <RoutedUICommand x:Key="FaqGithub" Text="FaqGithub" />
+                    <RoutedUICommand x:Key="HelpIssues" Text="HelpIssues" />
+                    <RoutedUICommand x:Key="HelpOptionsInfo" Text="HelpOptionsInfo" />
 
                     <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
                     <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
@@ -251,6 +256,9 @@
         <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource AnimateElements}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ObserveEvents}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource CompressEvents}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BufferClear}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
@@ -265,6 +273,8 @@
         <CommandBinding Command="{StaticResource About}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HelpGithub}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FaqGithub}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpIssues}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpOptionsInfo}" Executed="CommandBinding_Executed"/>
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
@@ -416,11 +426,16 @@
                         <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
                         <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                        <MenuItem x:Name="MenuItemOptionsAnimateElems" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
+                        <MenuItem x:Name="MenuItemOptionsObserveEvents" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
+                        <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
                         <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
                         <MenuItem x:Name="MenuItemFaqGithub" Header="FAQ on Github .." Command="{StaticResource FaqGithub}"/>
+                        <MenuItem x:Name="MenuItemFaqIssues" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
+                        <MenuItem x:Name="MenuItemGenerateOptionInfo" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
                 </Menu>
 
