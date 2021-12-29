@@ -301,4 +301,37 @@ zero based). It is spanning exactly one tile. There seems no
 `ConceptDescription`available, therfore a unit in Volts is
 attached. The linewidth of the chart is 1.0 pixels.
 
+> Note: `style` and `palette` could be set for plot items but
+> also globally for the Submodel.
+
+> Note: The settings for `style` and `palette` seem not to 
+> work, as of today.
+
+#### Descriptions
+
+As Submodels might use the `ConceptDescriptions` for the same
+data point (example: "phase voltage L1, L2, L3"), it might be
+reasonable to give individual explanations. This can be done
+by giving the `description` attribute of the respective SME of
+the data point. It is recommended to provide multi-language
+descriptions.
+
+### Working sample for TimeSeries.Args 
+
+#### SMC for /TimeSeriesData/TimeSeries/1/0
+
+The topmost SMC is qualified with some information:
+
+Qualifier name: `TimeSeries.Args`
+
+Qualifier value: 
+`{ height: 400, palette: "Category10" }`
+
+The plot area of this chart has a height of 400 pixel. During 
+display, the height can be resized, as well. A color palette
+is selected from the given enum names (see above).
+
+> Note: The settings for `style` and `palette` seem not to 
+> work, as of today.
+
 .
