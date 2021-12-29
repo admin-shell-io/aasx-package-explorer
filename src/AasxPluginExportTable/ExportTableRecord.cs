@@ -274,7 +274,8 @@ namespace AasxPluginExportTable
                         rep(head + "elementShort2", "" +
                             AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
                 }
-                rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
+                if (rf is AdminShell.Referable rfpar)
+                    rep(head + "parent", "" + ((rfpar.idShort != null) ? rfpar.idShort : "-"));
             }
 
             private void repModelingKind(string head, AdminShell.ModelingKind k)

@@ -258,10 +258,12 @@ namespace AasxPluginExportTable
                         return false;
 
                     // try testing of allowed parent names
-                    var test1 = context.ParentParentName.ToLower().Contains(testsmc.parent.idShort.ToLower().Trim());
+                    if (!(testsmc.parent is AdminShell.Referable testsmcpar))
+                        return false;
+                    var test1 = context.ParentParentName.ToLower().Contains(testsmcpar.idShort.ToLower().Trim());
                     var test2 = false;
-                    if (_idShortToParentName.ContainsKey(testsmc.parent.idShort))
-                        foreach (var pn in _idShortToParentName[testsmc.parent.idShort])
+                    if (_idShortToParentName.ContainsKey(testsmcpar.idShort))
+                        foreach (var pn in _idShortToParentName[testsmcpar.idShort])
                             test2 = test2 || context.ParentParentName.ToLower().Contains(pn.ToLower().Trim());
 
                     if (!(test1 || test2))
