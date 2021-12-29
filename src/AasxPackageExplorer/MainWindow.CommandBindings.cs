@@ -617,7 +617,13 @@ namespace AasxPackageExplorer
                 CommandBinding_ExportPredefineConcepts();
 
             if (cmd == "exporttable")
-                CommandBinding_ExportTable();
+                CommandBinding_ExportImportTableUml(import: false);
+
+            if (cmd == "importtable")
+                CommandBinding_ExportImportTableUml(import: true);
+
+            if (cmd == "exportuml")
+                CommandBinding_ExportImportTableUml(exportUml: true);
 
             if (cmd == "serverpluginemptysample")
                 CommandBinding_ExecutePluginServer(
@@ -2406,7 +2412,7 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(bo));
         }
 
-        public void CommandBinding_ExportTable()
+        public void CommandBinding_ExportImportTableUml(bool import = false, bool exportUml = false)
         {
             // trivial things
             if (!_packageCentral.MainAvailable)
@@ -2425,14 +2431,16 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid SubModel selected for exporting table.", "Export Table",
+                    "No valid Submodel selected for exporting/ importing.", "Export table or UML",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
 
             // check, if required plugin can be found
             var pluginName = "AasxPluginExportTable";
-            var actionName = "export-submodel";
+            var actionName = (!import) ? "export-submodel" : "import-submodel";
+            if (exportUml)
+                actionName = "export-uml";
             var pi = Plugins.FindPluginInstance(pluginName);
             if (pi == null || !pi.HasAction(actionName))
             {
@@ -2451,6 +2459,9 @@ namespace AasxPackageExplorer
 
             // try activate plugin
             pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel);
+
+            // redraw
+            CommandExecution_RedrawAll();
         }
 
         public void CommandBinding_SubmodelTDExport()
@@ -2615,10 +2626,10 @@ namespace AasxPackageExplorer
                     // Submodel needs an identification
                     smres.identification = new AdminShell.Identification("IRI", "");
                     if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
-                        smres.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add Submodel

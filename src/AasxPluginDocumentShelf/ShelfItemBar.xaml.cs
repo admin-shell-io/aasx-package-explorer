@@ -93,6 +93,27 @@ namespace AasxPluginDocumentShelf
 
         }
 
+        private Point dragStartPoint = new Point(0, 0);
+
+        private void DragSource_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            var dataEnt = this.DataContext as DocumentEntity;
+            if (e.LeftButton == MouseButtonState.Pressed && dataEnt != null)
+            {
+                Point position = e.GetPosition(null);
+                if (Math.Abs(position.X - dragStartPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
+                    Math.Abs(position.Y - dragStartPoint.Y) > SystemParameters.MinimumVerticalDragDistance)
+                {
+                    dataEnt.RaiseDragStart();
+                }
+            }
+        }
+
+        private void DragSource_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            dragStartPoint = e.GetPosition(null);
+        }
+
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
@@ -110,8 +131,8 @@ namespace AasxPluginDocumentShelf
                 return;
 
             // clear old items (very stupid)
-            while (cm.Items.Count > 2)
-                cm.Items.RemoveAt(2);
+            while (cm.Items.Count > 4)
+                cm.Items.RemoveAt(4);
 
             // add new items
             if (data.Relations != null && data.Relations.Count > 0)

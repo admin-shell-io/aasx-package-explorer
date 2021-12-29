@@ -1,0 +1,2604 @@
+﻿/* official Submodel Template Spec ZVEI Nameplate V1.0 from 13 APR 2021 */
+{
+  "SM_ContactInformation": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": true,
+          "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation"
+    },
+    "administration": null,
+    "idShort": "ContactInformation",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Template",
+    "descriptions": null
+  },
+  "CD_ContactInformation": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": true,
+              "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Kontackt Informationen"
+            },
+            {
+              "language": "en",
+              "text": "Contact information"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "ContactInformation"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Liste von Kontackt Informationen"
+            },
+            {
+              "language": "en",
+              "text": "List of Contact information"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": true,
+            "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation",
+            "index": 0,
+            "idType": "IRI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Dep": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO127#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Abteilung"
+            },
+            {
+              "language": "en",
+              "text": "department"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Dep"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "administrative Abteilung einer Organisation, in der ein Geschäftspartner vertreten ist"
+            },
+            {
+              "language": "en",
+              "text": "administrative section within an organization where a business partner is located"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO127#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Str": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO128#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "street"
+            },
+            {
+              "language": "de",
+              "text": "Straße"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Str"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "street name and house number"
+            },
+            {
+              "language": "de",
+              "text": "Straßenname und Hausnummer"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO128#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ZipCod": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO129#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "zip code"
+            },
+            {
+              "language": "de",
+              "text": "Postleitzahl"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "ZipCod"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of address"
+            },
+            {
+              "language": "de",
+              "text": "Postleitzahl der Anschrift"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO129#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_POBox": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO130#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "PO box"
+            },
+            {
+              "language": "de",
+              "text": "Postfach"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "POBox"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "P.O. box number"
+            },
+            {
+              "language": "de",
+              "text": "Nummer des Postfachs"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO130#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ZipCodOfPOBox": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO131#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "zip code of PO box"
+            },
+            {
+              "language": "de",
+              "text": "Postleitzahl des Postfachs"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "ZipCodOfPOBox"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "ZIP code of P.O. box address"
+            },
+            {
+              "language": "de",
+              "text": "Postleitzahl der Postfachadresse"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO131#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_CitTow": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO132#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "city/town"
+            },
+            {
+              "language": "de",
+              "text": "Ort"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "CitTow"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "town or city"
+            },
+            {
+              "language": "de",
+              "text": "Ortsangabe"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO132#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_StaCou": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO133#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "state/county"
+            },
+            {
+              "language": "de",
+              "text": "Bundesland"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "StaCou"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "federal state a part of a state"
+            },
+            {
+              "language": "de",
+              "text": "Teil eines Bundesstaats"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO133#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_NatCod": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO134#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "national code"
+            },
+            {
+              "language": "de",
+              "text": "Ländercode"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "NatCod"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "code of a country"
+            },
+            {
+              "language": "de",
+              "text": "Code eines Landes"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO134#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_AddRem": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO202#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "address remarks"
+            },
+            {
+              "language": "de",
+              "text": "Anmerkungen zu Adresse"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "AddRem"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "plain text characterizing address information for which there is no property"
+            },
+            {
+              "language": "de",
+              "text": "einfacher Text, der Adressinformationen kennzeichnet, bei denen kein Merkmal zur Verfügung steht"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO202#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_AddOfAddLin": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAQ326#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "address of additional link"
+            },
+            {
+              "language": "de",
+              "text": "zusätzlicher Online-Verweis"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "AddOfAddLin"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "web site address where information about the product or contact is given"
+            },
+            {
+              "language": "de",
+              "text": "Angabe einer Web-Adresse, die zusätzliche Informationen zum Produkt oder Kontaktdaten enthält"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAQ326#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Pho": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAQ833#005"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Phone"
+            },
+            {
+              "language": "de",
+              "text": "Telefon"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Pho"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Phone number including type"
+            },
+            {
+              "language": "de",
+              "text": "Telefonnummer mit Angabe der Art des Anschlusses"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAQ833#005",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TelNum": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO136#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "telephone number"
+            },
+            {
+              "language": "de",
+              "text": "Telefonnummer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TelNum"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner"
+            },
+            {
+              "language": "de",
+              "text": "vollständige Telefonnummer, unter der ein Geschäftspartner erreichbar ist"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO136#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TypOfTel": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO137#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of telephone"
+            },
+            {
+              "language": "de",
+              "text": "Art der Telefonnummer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TypOfTel"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a telephone according to its location or usage"
+            },
+            {
+              "language": "de",
+              "text": "Charakterisierung einer Telefonnummer bezüglich ihres Orts oder ihrer Verwendung"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO137#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Fax": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAQ834#005"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Fax"
+            },
+            {
+              "language": "de",
+              "text": "Fax"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Fax"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Fax number including type"
+            },
+            {
+              "language": "de",
+              "text": "Faxnummer mit Angabe der Art des Anschlusses"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAQ834#005",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_FaxNum": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO195#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "fax number"
+            },
+            {
+              "language": "de",
+              "text": "Faxnummer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "FaxNum"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "complete telephone number to be called to reach a business partner's fax machine"
+            },
+            {
+              "language": "de",
+              "text": "vollständige Telefonnummer, unter der das Faxgerät eines Geschäftspartners erreichbar ist"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO195#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TypOfFaxNum": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO196#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of fax number"
+            },
+            {
+              "language": "de",
+              "text": "Art der Faxnummer"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TypOfFaxNum"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of the fax according its location or usage"
+            },
+            {
+              "language": "de",
+              "text": "Charakterisierung des Fax bezüglich seines Orts oder Gebrauchs"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO196#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Ema": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAQ836#005"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "E-mail"
+            },
+            {
+              "language": "de",
+              "text": "E-Mail"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Ema"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "en",
+              "text": "E-mail address and encryption method"
+            },
+            {
+              "language": "de",
+              "text": "E-Mail-Adresse und Angaben zur Verschlüsselung"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAQ836#005",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_EmaAdd": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO198#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "e-mail address"
+            },
+            {
+              "language": "de",
+              "text": "E-Mailadresse"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "EmaAdd"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "electronic mail address of a business partner"
+            },
+            {
+              "language": "de",
+              "text": "E-Mailadresse eines Geschäftspartners"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO198#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_PubKey": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO200#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "public key"
+            },
+            {
+              "language": "de",
+              "text": "öffentlicher Schlüssel"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "PubKey"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "public part of an unsymmetrical key pair to sign or encrypt text or messages"
+            },
+            {
+              "language": "de",
+              "text": "öffentlicher Teil eines unsymmetrischen Schlüsselpaares zur Unterzeichnung oder Verschlüsselung von Text oder Meldungen"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO200#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TypOfEmaAdd": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO199#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of e-mail address"
+            },
+            {
+              "language": "de",
+              "text": "Art der E-Mailadresse"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TypOfEmaAdd"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of an e-mail address according its location or usage"
+            },
+            {
+              "language": "de",
+              "text": "Charakterisierung einer E-Mail-Adresse bezüglich ihres Orts oder Gebrauchs"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO199#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TypOfPubKey": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO201#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of public key"
+            },
+            {
+              "language": "de",
+              "text": "Art des öffentlichen Schlüssels"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TypOfPubKey"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "characterization of a public key according to its encryption process"
+            },
+            {
+              "language": "de",
+              "text": "Charakterisierung eines öffentlichen Schlüssels bezüglich seines Verschlüsselungsprozesses"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO201#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_RolOfConPer": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO204#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "role of contact person"
+            },
+            {
+              "language": "de",
+              "text": "Rolle des Kontakts"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "RolOfConPer"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "function of a contact person in a process"
+            },
+            {
+              "language": "de",
+              "text": "Funktion, die eine Kontaktperson in einem Prozess ausüben soll"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO204#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Lan": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation/Language"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "Language"
+            },
+            {
+              "language": "de",
+              "text": "Sprache"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Lan"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Available languages"
+            },
+            {
+              "language": "de",
+              "text": "Vorhandene Sprachen"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO118#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_NamOfSup": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO735#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "name of supplier"
+            },
+            {
+              "language": "de",
+              "text": "Lieferantenname"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "NamOfSup"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "name of supplier which provides the customer with a product or a service"
+            },
+            {
+              "language": "de",
+              "text": "Name des Lieferanten, welcher dem Kunden ein Produkt oder eine Dienstleistung bereitstellt"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO735#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_NamOfCon": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO205#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "name of contact"
+            },
+            {
+              "language": "de",
+              "text": "Name des Kontakts"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "NamOfCon"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "surname of a contact person"
+            },
+            {
+              "language": "de",
+              "text": "Nachname einer Kontaktperson"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO205#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_FirNam": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO206#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "first name"
+            },
+            {
+              "language": "de",
+              "text": "Vorname"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "FirNam"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "first name of a contact person"
+            },
+            {
+              "language": "de",
+              "text": "Vorname einer Kontaktperson"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO206#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_MidNam": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO207#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "middle names"
+            },
+            {
+              "language": "de",
+              "text": "Mittelnamen"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "MidNam"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "middle names of contact person"
+            },
+            {
+              "language": "de",
+              "text": "mittlere Vornamen der Kontaktperson"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO207#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_Tit": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO208#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "title"
+            },
+            {
+              "language": "de",
+              "text": "Anrede"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "Tit"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "common, formal, religious, or other title preceding a contact person's name"
+            },
+            {
+              "language": "de",
+              "text": "gewöhnliche, förmliche oder religiöse Anrede oder sonstiger Titel, der dem Namen einer Kontaktperson vorangestellt ist"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO208#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_ActTit": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO209#003"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "academic title"
+            },
+            {
+              "language": "de",
+              "text": "Akademischer Titel"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "ActTit"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "academic title preceding a contact person's name"
+            },
+            {
+              "language": "de",
+              "text": "akademischer Titel, der dem Namen einer Kontaktperson vorangestellt ist"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO209#003",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_FurDetOfCon": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "0173-1#02-AAO210#002"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "further details of contact"
+            },
+            {
+              "language": "de",
+              "text": "zusätzliche Angaben zum Kontakt"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "FurDetOfCon"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "additional information of the contact person"
+            },
+            {
+              "language": "de",
+              "text": "weitere Anmerkungen zum Kontakt"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAO210#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_IPCom": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation/IPCommunication"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "IP communication"
+            },
+            {
+              "language": "de",
+              "text": "IP-Kommunikation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "IPCom"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": "IP-based communication channels, e.g. chat or video call"
+            },
+            {
+              "language": "de",
+              "text": "IP-basierte Kommunikationskanäle, z.B. Chat oder Videoanruf"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation/IPCommunication",
+            "index": 0,
+            "idType": "IRI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  },
+  "CD_TypOfCom": {
+    "identification": {
+      "idType": "IRDI",
+      "id": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation/IPCommunication/TypeOfCommunication"
+    },
+    "administration": {
+      "version": "",
+      "revision": "1"
+    },
+    "idShort": "",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": [
+            {
+              "type": "GlobalReference",
+              "local": false,
+              "value": "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0",
+              "index": 0,
+              "idType": "IRI"
+            }
+          ]
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "en",
+              "text": "type of communication"
+            },
+            {
+              "language": "de",
+              "text": "Art des Kommunikation"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "en",
+              "text": "TypOfCom"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "en",
+              "text": ""
+            },
+            {
+              "language": "de",
+              "text": ""
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [
+      {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "https://admin-shell.io/zvei/nameplate/1/0/ContactInformation/IPCommunication/TypeOfCommunication",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      }
+    ],
+    "descriptions": null
+  }
+}

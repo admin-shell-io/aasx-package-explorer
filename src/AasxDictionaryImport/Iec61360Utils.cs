@@ -51,8 +51,8 @@ namespace AasxDictionaryImport
             var submodel = new AdminShellV20.Submodel()
             {
                 identification = new AdminShellV20.Identification(
-                    AdminShellV20.Identification.IRI,
-                    Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
+                    AdminShell.Identification.IRI,
+                    AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
                 idShort = data.IdShort,
                 kind = AdminShellV20.ModelingKind.CreateAsInstance(),
             };

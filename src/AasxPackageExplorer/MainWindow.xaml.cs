@@ -340,6 +340,26 @@ namespace AasxPackageExplorer
                 return;
             }
 
+            /* TODO (MIHO, 2021-12-27): consider extending for better testing or
+             * script running */
+#if __leave_in_for_accelerated_tet
+            if (false)
+            {
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(4) };
+                timer.Tick += (sender, args) =>
+                {
+                    timer.Stop();
+                    var pluginName = "AasxPluginExportTable";
+                    var actionName = "export-uml";
+                    var pi = Plugins.FindPluginInstance(pluginName);
+                    pi?.InvokeAction(actionName, this, _packageCentral?.Main?.AasEnv,
+                        _packageCentral?.Main?.AasEnv?.Submodels[0], "test.uml");
+
+                };
+                timer.Start();
+            }
+#endif
+
             // done
             Log.Singleton.Info("AASX {0} loaded.", info);
         }

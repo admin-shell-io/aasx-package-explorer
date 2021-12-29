@@ -1334,7 +1334,6 @@ namespace AdminShellNS
             // get input stream
             using (var input = GetLocalStreamFromPackage(packageUri))
             {
-
                 // generate tempfile name
                 string tempext = System.IO.Path.GetExtension(packageUri);
                 string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);

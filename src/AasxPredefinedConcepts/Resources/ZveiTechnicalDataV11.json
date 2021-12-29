@@ -658,25 +658,11 @@
           {
             "type": "GlobalReference",
             "local": false,
-            "value": "0173-1#02-AAO676#003",
+            "value": "0173-1#02-AAO227#002",
             "index": 0,
             "idType": "IRDI"
           }
-        ],
-        "First": {
-          "type": "GlobalReference",
-          "local": false,
-          "value": "0173-1#02-AAO676#003",
-          "index": 0,
-          "idType": "IRDI"
-        },
-        "Last": {
-          "type": "GlobalReference",
-          "local": false,
-          "value": "0173-1#02-AAO676#003",
-          "index": 0,
-          "idType": "IRDI"
-        }
+        ]
       }
     ],
     "descriptions": null

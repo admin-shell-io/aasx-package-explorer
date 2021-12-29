@@ -293,6 +293,56 @@ namespace AdminShellNS
                 return $"[{this.type}, {tlc}, {this.idType}, {this.value}]";
             }
 
+            public static Key Parse(string cell, string typeIfNotSet = null,
+                bool allowFmtAll = false, bool allowFmt0 = false,
+                bool allowFmt1 = false, bool allowFmt2 = false)
+            {
+                // access and defaults?
+                if (cell == null || cell.Trim().Length < 1)
+                    return null;
+                if (typeIfNotSet == null)
+                    typeIfNotSet = Key.GlobalReference;
+
+                // format == 1
+                if (allowFmtAll || allowFmt1)
+                {
+                    var m = Regex.Match(cell, @"\((\w+)\)\((\S+)\)\[(\w+)\]( ?)(.*)$");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                m.Groups[1].ToString(), m.Groups[2].ToString() == "local",
+                                m.Groups[3].ToString(), m.Groups[5].ToString());
+                    }
+                }
+
+                // format == 2
+                if (allowFmtAll || allowFmt2)
+                {
+                    var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                typeIfNotSet, true,
+                                m.Groups[1].ToString(), m.Groups[3].ToString());
+                    }
+                }
+
+                // format == 0
+                if (allowFmtAll || allowFmt0)
+                {
+                    var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
+                    if (m.Success)
+                    {
+                        return new AdminShell.Key(
+                                m.Groups[1].ToString(), !m.Groups[3].ToString().Contains("not"),
+                                m.Groups[5].ToString(), m.Groups[7].ToString());
+                    }
+                }
+
+                // no
+                return null;
+            }
+
             public static string KeyListToString(List<Key> keys)
             {
                 if (keys == null || keys.Count < 1)
@@ -636,6 +686,26 @@ namespace AdminShellNS
                 return res.TrimEnd(',');
             }
 
+            public static KeyList Parse(string input)
+            {
+                // access
+                if (input == null)
+                    return null;
+
+                // split
+                var parts = input.Split(',', ';');
+                var kl = new KeyList();
+
+                foreach (var p in parts)
+                {
+                    var k = Key.Parse(p);
+                    if (k != null)
+                        kl.Add(k);
+                }
+
+                return kl;
+            }
+
             public string MostSignificantInfo()
             {
                 if (this.Count < 1)
@@ -768,13 +838,19 @@ namespace AdminShellNS
         {
             public string ElementName = "";
             public string ElementAbbreviation = "";
+            public SubmodelElementWrapper.AdequateElementEnum ElementEnum =
+                SubmodelElementWrapper.AdequateElementEnum.Unknown;
 
             public AasElementSelfDescription() { }
 
-            public AasElementSelfDescription(string ElementName, string ElementAbbreviation)
+            public AasElementSelfDescription(
+                string ElementName, string ElementAbbreviation,
+                SubmodelElementWrapper.AdequateElementEnum elementEnum
+                    = SubmodelElementWrapper.AdequateElementEnum.Unknown)
             {
                 this.ElementName = ElementName;
                 this.ElementAbbreviation = ElementAbbreviation;
+                this.ElementEnum = elementEnum;
             }
         }
 
@@ -1011,6 +1087,11 @@ namespace AdminShellNS
             public string ToString(int format = 0, string delimiter = ",")
             {
                 return keys?.ToString(format, delimiter);
+            }
+
+            public static Reference Parse(string input)
+            {
+                return CreateNew(KeyList.Parse(input));
             }
 
             public string ListOfValues(string delim)
@@ -1475,11 +1556,22 @@ namespace AdminShellNS
                 }
                 return r;
             }
+
+            public override string ToString()
+            {
+                return $"{str}@{lang}";
+            }
         }
 
         public class ListOfLangStr : List<LangStr>
         {
             public ListOfLangStr() { }
+
+            public ListOfLangStr(LangStr ls)
+            {
+                if (ls != null)
+                    this.Add(ls);
+            }
 
             public ListOfLangStr(ListOfLangStr src)
             {
@@ -1535,6 +1627,46 @@ namespace AdminShellNS
                         return false;
 
                 return true;
+            }
+
+            public override string ToString()
+            {
+                return string.Join(", ", this.Select((ls) => ls.ToString()));
+            }
+
+            public static ListOfLangStr Parse(string cell)
+            {
+                // access
+                if (cell == null)
+                    return null;
+
+                // iterative approach
+                var res = new ListOfLangStr();
+                while (true)
+                {
+                    // trivial case and finite end
+                    if (!cell.Contains("@"))
+                    {
+                        if (cell.Trim() != "")
+                            res.Add(new LangStr(LangStr.LANG_DEFAULT, cell));
+                        break;
+                    }
+
+                    // OK, pick the next couple
+                    var m = Regex.Match(cell, @"(.*?)@(\w+)", RegexOptions.Singleline);
+                    if (!m.Success)
+                    {
+                        // take emergency exit?
+                        res.Add(new LangStr("??", cell));
+                        break;
+                    }
+
+                    // use the match and shorten cell ..
+                    res.Add(new LangStr(m.Groups[2].ToString(), m.Groups[1].ToString().Trim()));
+                    cell = cell.Substring(m.Index + m.Length);
+                }
+
+                return res;
             }
         }
 
@@ -1787,6 +1919,10 @@ namespace AdminShellNS
                 return res;
             }
 
+            public new static SemanticId Parse(string input)
+            {
+                return (SemanticId)CreateNew(KeyList.Parse(input));
+            }
         }
 
         /// <summary>
@@ -3274,8 +3410,10 @@ namespace AdminShellNS
 
             public static UnitId CreateNew(Reference src)
             {
+                if (src == null)
+                    return null;
                 var res = new UnitId();
-                if (src != null && src.Keys != null)
+                if (src.Keys != null)
                     foreach (var k in src.Keys)
                         res.keys.Add(k);
                 return res;
@@ -5222,6 +5360,21 @@ namespace AdminShellNS
             }
             // ReSharper enable MethodOverloadWithOptionalParameter
             // ReSharper enable RedundantArgumentDefaultValue
+
+            public static Qualifier Parse(string input)
+            {
+                var m = Regex.Match(input, @"\s*([^,]*)(,[^=]+){0,1}\s*=\s*([^,]*)(,.+){0,1}\s*");
+                if (!m.Success)
+                    return null;
+
+                return new Qualifier()
+                {
+                    type = m.Groups[1].ToString().Trim(),
+                    semanticId = SemanticId.Parse(m.Groups[1].ToString().Trim()),
+                    value = m.Groups[3].ToString().Trim(),
+                    valueId = Reference.Parse(m.Groups[1].ToString().Trim())
+                };
+            }
         }
 
         /// <summary>
@@ -5671,6 +5824,10 @@ namespace AdminShellNS
             "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
             "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
+            public static string[] AdequateElementShortName = { null, "SMC", null,
+            "MLP", null, null, null, "Ref", "Rel",
+            "ARel", null, null, "Event", "Entity" };
+
             // constructors
 
             public SubmodelElementWrapper() { }
@@ -5741,6 +5898,9 @@ namespace AdminShellNS
                 return AdequateElementNames[(int)ae];
             }
 
+            /// <summary>
+            /// Deprecated. See below.
+            /// </summary>
             public static AdequateElementEnum GetAdequateEnum(string adequateName)
             {
                 if (adequateName == null)
@@ -5749,6 +5909,26 @@ namespace AdminShellNS
                 foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
                     if (Enum.GetName(typeof(AdequateElementEnum), en)?.Trim().ToLower() ==
                         adequateName.Trim().ToLower())
+                        return en;
+
+                return AdequateElementEnum.Unknown;
+            }
+
+            /// <summary>
+            /// This version uses the element name array and allows using ShortName
+            /// </summary>
+            public static AdequateElementEnum GetAdequateEnum2(string adequateName, bool useShortName = false)
+            {
+                if (adequateName == null)
+                    return AdequateElementEnum.Unknown;
+
+                foreach (var en in (AdequateElementEnum[])Enum.GetValues(typeof(AdequateElementEnum)))
+                    if (((int)en < AdequateElementNames.Length
+                          && AdequateElementNames[(int)en].Trim().ToLower() == adequateName.Trim().ToLower())
+                        || (useShortName
+                          && (int)en < AdequateElementShortName.Length
+                          && AdequateElementShortName[(int)en] != null
+                          && AdequateElementShortName[(int)en].Trim().ToLower() == adequateName.Trim().ToLower()))
                         return en;
 
                 return AdequateElementEnum.Unknown;
@@ -5839,6 +6019,23 @@ namespace AdminShellNS
                 if (dsc?.ElementAbbreviation == null)
                     return ("Null");
                 return dsc.ElementAbbreviation;
+            }
+
+            public static string GetElementNameByAdequateType(SubmodelElement sme)
+            {
+                // access
+                var sd = sme.GetSelfDescription();
+                if (sd == null || sd.ElementEnum == AdequateElementEnum.Unknown)
+                    return null;
+                var en = sd.ElementEnum;
+
+                // get the names
+                string res = null;
+                if ((int)en < AdequateElementNames.Length)
+                    res = AdequateElementNames[(int)en].Trim();
+                if ((int)en < AdequateElementShortName.Length && AdequateElementShortName[(int)en] != null)
+                    res = AdequateElementShortName[(int)en].Trim();
+                return res;
             }
 
             public static ListOfSubmodelElement ListOfWrappersToListOfElems(List<SubmodelElementWrapper> wrappers)
@@ -7176,7 +7373,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Property", "Prop");
+                return new AasElementSelfDescription("Property", "Prop",
+                    SubmodelElementWrapper.AdequateElementEnum.Property);
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -7265,7 +7463,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("MultiLanguageProperty", "MLP");
+                return new AasElementSelfDescription("MultiLanguageProperty", "MLP",
+                    SubmodelElementWrapper.AdequateElementEnum.MultiLanguageProperty);
             }
 
             public MultiLanguageProperty Set(LangStringSet ls)
@@ -7371,7 +7570,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Range", "Range");
+                return new AasElementSelfDescription("Range", "Range",
+                    SubmodelElementWrapper.AdequateElementEnum.Range);
             }
 
             public override string ValueAsText(string defaultLang = null)
@@ -7444,7 +7644,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Blob", "Blob");
+                return new AasElementSelfDescription("Blob", "Blob",
+                    SubmodelElementWrapper.AdequateElementEnum.Blob);
             }
 
         }
@@ -7512,7 +7713,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("File", "File");
+                return new AasElementSelfDescription("File", "File",
+                    SubmodelElementWrapper.AdequateElementEnum.File);
             }
 
             public static string[] GetPopularMimeTypes()
@@ -7594,7 +7796,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("ReferenceElement", "Ref");
+                return new AasElementSelfDescription("ReferenceElement", "Ref",
+                    SubmodelElementWrapper.AdequateElementEnum.ReferenceElement);
             }
 
         }
@@ -7663,7 +7866,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("RelationshipElement", "Rel");
+                return new AasElementSelfDescription("RelationshipElement", "Rel",
+                    SubmodelElementWrapper.AdequateElementEnum.RelationshipElement);
             }
         }
 
@@ -7806,7 +8010,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA");
+                return new AasElementSelfDescription("AnnotatedRelationshipElement", "RelA",
+                    SubmodelElementWrapper.AdequateElementEnum.AnnotatedRelationshipElement);
             }
 
 
@@ -7822,7 +8027,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Capability", "Cap");
+                return new AasElementSelfDescription("Capability", "Cap",
+                    SubmodelElementWrapper.AdequateElementEnum.Capability);
             }
         }
 
@@ -8009,7 +8215,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("SubmodelElementCollection", "SMC");
+                return new AasElementSelfDescription("SubmodelElementCollection", "SMC",
+                    SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection);
             }
 
             // Recursing
@@ -8360,7 +8567,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Operation", "Opr");
+                return new AasElementSelfDescription("Operation", "Opr",
+                    SubmodelElementWrapper.AdequateElementEnum.Operation);
             }
         }
 
@@ -8550,7 +8758,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("Entity", "Ent");
+                return new AasElementSelfDescription("Entity", "Ent",
+                    SubmodelElementWrapper.AdequateElementEnum.Entity);
             }
         }
 
@@ -8594,7 +8803,8 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("BasicEvent", "Evt");
+                return new AasElementSelfDescription("BasicEvent", "Evt",
+                    SubmodelElementWrapper.AdequateElementEnum.BasicEvent);
             }
         }
 

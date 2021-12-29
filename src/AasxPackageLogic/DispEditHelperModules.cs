@@ -255,7 +255,7 @@ namespace AasxPackageLogic
                         {
                             var dr = new DiaryReference(identifiable);
                             identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
