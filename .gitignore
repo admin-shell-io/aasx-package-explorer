@@ -23,3 +23,5 @@ sample-aasx/
 /src/BlazorUI/12_Pepperl+Fuchs.aasx
 /src/BlazorUI/08_SchneiderElectric.aasx
 /src/BlazorUI/09_SchneiderElectric.aasx
+/.vs/aasx-package-explorer/v16/.suo
+/.vs/slnx.sqlite

@@ -296,7 +296,7 @@ namespace AasxPackageExplorer.Tests
                 var loadedPlugins = App.LoadAndActivatePlugins(optionsInformation.PluginDll);
 
                 // TODO (Marko Ristin, 2021-07-09): not clear, how this test could pass. As of today,
-                // it is failing and therefore disabled.
+                // it is failing and therefore disabled
                 //// Assert.AreEqual(new[] { "AasxPluginGenericForms" }, loadedPlugins.Keys.ToList());
 
                 // TODO (Marko Ristin, 2021-07-09): could not fix

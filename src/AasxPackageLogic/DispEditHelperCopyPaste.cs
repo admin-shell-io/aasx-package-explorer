@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
@@ -247,7 +248,7 @@ namespace AasxPackageLogic
                                     cpbi.entity.identification.idType, cpbi.entity.identification.id));
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
-                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetSemanticKey());
+                        bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetReference()?.First);
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
@@ -537,27 +538,35 @@ namespace AasxPackageLogic
                             // apply info
                             var smw2 = new AdminShell.SubmodelElementWrapper(item.sme, shallowCopy: false);
                             nextBusObj = smw2.submodelElement;
+                            var createAtIndex = -1;
+
+                            // make this unique (e.g. for event following)
+                            if (cpb.Duplicate || cpb.ExternalSource)
+                                this.MakeNewReferableUnique(smw2.submodelElement);
 
                             // insertation depends on parent container
                             if (buttonNdx == 2)
                             {
+                                // handle parent explicitely, as not covered by AddElementInListBefore/after
+                                smw2.submodelElement.parent = parentContainer;
+
                                 if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                         pcsm.submodelElements, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                         pcsmc.value, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.Entity pcent &&
                                         wrapper != null)
-                                    this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                         pcent.statements, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
                                         pcarel.annotations, smw2, wrapper);
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
@@ -569,7 +578,7 @@ namespace AasxPackageLogic
                                     {
                                         var op = new AdminShell.OperationVariable();
                                         op.value = smw2;
-                                        this.AddElementInListBefore<AdminShell.OperationVariable>(
+                                        createAtIndex = this.AddElementInListBefore<AdminShell.OperationVariable>(
                                             pcop[place.Direction], op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
@@ -578,22 +587,25 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 3)
                             {
+                                // handle parent explicitely, as not covered by AddElementInListBefore/after
+                                smw2.submodelElement.parent = parentContainer;
+
                                 if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                         pcsm.submodelElements, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                         pcsmc.value, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.Entity pcent && wrapper != null)
-                                    this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                         pcent.statements, smw2, wrapper);
 
                                 if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
+                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
                                         pcarel.annotations, smw2, wrapper);
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
@@ -605,7 +617,7 @@ namespace AasxPackageLogic
                                     {
                                         var op = new AdminShell.OperationVariable();
                                         op.value = smw2;
-                                        this.AddElementInListAfter<AdminShell.OperationVariable>(
+                                        createAtIndex = this.AddElementInListAfter<AdminShell.OperationVariable>(
                                             pcop[place.Direction], op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
@@ -614,14 +626,24 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 4)
                             {
+                                // aprent set automatically
+                                // TODO (MIHO, 2021-08-18): createAtIndex missing here
                                 if (sme is AdminShell.IEnumerateChildren smeec)
                                     smeec.AddChild(smw2, item.Placement);
                             }
+
+                            // emit event
+                            this.AddDiaryEntry(smw2.submodelElement,
+                                new DiaryEntryStructChange(StructuralChangeReason.Create,
+                                    createAtIndex: createAtIndex));
 
                             // may delete original
                             if (!cpb.Duplicate && !cpb.ExternalSource)
                             {
                                 DispDeleteCopyPasteItem(item);
+
+                                this.AddDiaryEntry(item.sme,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
 
@@ -757,6 +779,10 @@ namespace AasxPackageLogic
                             object entity2 = cloneEntity((T)src);
                             nextBusObj = entity2;
 
+                            // emit event
+                            this.AddDiaryEntry(entity2 as AdminShell.Referable,
+                                new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                             // different cases
                             if (buttonNdx == 2)
                                 this.AddElementInListBefore<T>(parentContainer, (T)entity2, entity);
@@ -772,6 +798,8 @@ namespace AasxPackageLogic
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)src, null);
 
+                                this.AddDiaryEntry(src as AdminShell.Referable,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
 
@@ -832,10 +860,16 @@ namespace AasxPackageLogic
                             if (sm is AdminShell.IEnumerateChildren smeec)
                                 smeec.AddChild(smw2);
 
+                            // emit event
+                            this.AddDiaryEntry(item.sme, new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                             // may delete original
                             if (!cpb.Duplicate)
                             {
                                 DispDeleteCopyPasteItem(item);
+
+                                this.AddDiaryEntry(item.sme,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }
 
@@ -937,11 +971,20 @@ namespace AasxPackageLogic
                             object entity2 = cloneEntity((T)item.entity);
                             nextBusObj = entity2;
 
+                            // make this pseudo-unique
+                            this.MakeNewIdentifiableUnique((T)entity2);
+
                             // different cases
+                            int ndx = -1;
                             if (buttonNdx == 2)
-                                this.AddElementInListBefore<T>(parentContainer, (T)entity2, entity);
+                                ndx = this.AddElementInListBefore<T>(parentContainer, (T)entity2, entity);
                             if (buttonNdx == 3)
-                                this.AddElementInListAfter<T>(parentContainer, (T)entity2, entity);
+                                ndx = this.AddElementInListAfter<T>(parentContainer, (T)entity2, entity);
+
+                            // Identifiable: just state as newly created
+                            this.AddDiaryEntry((T)entity2, new DiaryEntryStructChange(
+                                AasxIntegrationBase.AdminShellEvents.StructuralChangeReason.Create,
+                                createAtIndex: ndx));
 
                             // may delete original
                             if (!cpb.Duplicate)
@@ -949,6 +992,8 @@ namespace AasxPackageLogic
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)item.entity, null);
 
+                                this.AddDiaryEntry((T)entity, new DiaryEntryStructChange(
+                                    AasxIntegrationBase.AdminShellEvents.StructuralChangeReason.Delete));
                             }
                         }
 

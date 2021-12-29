@@ -264,11 +264,15 @@ namespace AasxPluginSmdExporter
 
             AdminShellNS.AdminShell.Entity entity = new AdminShellNS.AdminShell.Entity();
             entity.idShort = simulationModel.Name;
-            entity.parent = new AdminShellNS.AdminShell.Referable();
-            entity.parent.idShort = nameSubmodel;
             entity.entityType = "CoManagedEntity";
             entity.semanticId = simulationModel.SemanticId;
 
+            // make new parent
+            var newpar = new AdminShellNS.AdminShell.Referable();
+            newpar.idShort = nameSubmodel;
+            entity.parent = newpar;
+
+            // to be processed further
             return entity;
         }
 

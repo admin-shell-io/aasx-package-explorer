@@ -242,7 +242,8 @@ namespace AasxPluginExportTable
                     repListOfLangStr(head + "description", rf.description.langString);
                 rep(head + "elementName", "" + rf.GetElementName());
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
-                rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
+                if (rf.parent is AdminShell.Referable rfpar)
+                    rep(head + "parent", "" + ((rfpar.idShort != null) ? rfpar.idShort : "-"));
             }
 
             private void repModelingKind(string head, AdminShell.ModelingKind k)

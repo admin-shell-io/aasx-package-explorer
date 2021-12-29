@@ -26,6 +26,7 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Event emitted by the Flyout in order to minimize the dialogue.
         /// </summary>
+        // ReSharper disable once EventNeverSubscribedTo.Global
         event IFlyoutControlAction ControlMinimize;
 
         /// <summary>
@@ -65,6 +66,8 @@ namespace AasxIntegrationBase
         /// If the Flyout is executed as Agent, minimized and then closed, the closing
         /// action needs to be retained.
         /// </summary>
+        /// 
+        // ReSharper disable once UnassignedField.Global
         public Action ClosingAction;
 
         /// <summary>

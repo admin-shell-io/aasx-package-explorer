@@ -538,7 +538,10 @@ namespace AnyUi
                         // callbacks
                         cntl.originalValue = "" + cntl.Text;
                         System.Windows.Controls.TextChangedEventHandler tceh = (sender, e) => {
-                            cntl.setValueLambda?.Invoke(wpf.Text);
+                            // for AAS events: only invoke, if required
+                            if (cntl.Text != wpf.Text)
+                                cntl.setValueLambda?.Invoke(wpf.Text);
+                            cntl.Text = wpf.Text;
                         };
                         wpf.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent, tceh);
                         if (!wpf.IsEditable)
@@ -547,6 +550,7 @@ namespace AnyUi
                             wpf.SelectionChanged += (sender, e) => {
                                 cntl.SelectedIndex = wpf.SelectedIndex;
                                 cntl.setValueLambda((string) wpf.SelectedItem);
+                                cntl.Text = wpf.Text;
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 // Note for MIHO: this was the dangerous outside event loop!
                                 EmitOutsideAction(cntl.takeOverLambda);

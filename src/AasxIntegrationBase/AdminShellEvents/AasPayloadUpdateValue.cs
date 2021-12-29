@@ -31,7 +31,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// single payloads.
     /// </summary>
     [DisplayName("AasPayloadUpdateValueItem")]
-    public class AasPayloadUpdateValueItem
+    public class AasPayloadUpdateValueItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
     {
         /// <summary>
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
@@ -42,12 +42,19 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Serialized updated value of the updated element.
         /// </summary>
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// ValueId of the update element.
         /// </summary>
         public AdminShell.Reference ValueId { get; set; }
+
+        /// <summary>
+        /// Direct reference to Referable, when value item was successfully processed.
+        /// Note: only runtime value; not specified; not interoperable
+        /// </summary>
+        [JsonIgnore]
+        public AdminShell.Referable FoundReferable;
 
         //
         // Constructor
@@ -98,6 +105,11 @@ namespace AasxIntegrationBase.AdminShellEvents
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
                 new MiniMarkupRun(right));
         }
+
+        public string GetDetailsText()
+        {
+            return "";
+        }
 #endif
     }
 
@@ -136,6 +148,12 @@ namespace AasxIntegrationBase.AdminShellEvents
         {
             if (value != null)
                 Values.Add(value);
+        }
+
+        public AasPayloadUpdateValue(AasPayloadUpdateValue other)
+        {
+            if (other.Values != null)
+                Values.AddRange(other.Values);
         }
 
         //
