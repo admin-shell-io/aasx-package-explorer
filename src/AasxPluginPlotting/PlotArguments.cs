@@ -22,7 +22,7 @@ namespace AasxPluginPlotting
         // ReSharper disable UnassignedField.Global
 
         /// <summary>
-        /// Display title of the respective entity to be shown in the panel
+        /// Display title of the respective entity to be shown in the panel.
         /// </summary>
         public string title;
 
@@ -68,8 +68,8 @@ namespace AasxPluginPlotting
         public double? linewidth, markersize;
 
         /// <summary>
-        /// In order to display more than one bar plottable, set the bar-width to 0.5 or 0.33
-        /// and the bar-offset to -0.5 .. +0.5
+        /// In order to display more than one bar plottable, set the 
+        /// bar-width to 0.5 or 0.33 and the bar-offset to -0.5 .. +0.5
         /// </summary>
         public double? barwidth, barofs;
 
@@ -79,16 +79,18 @@ namespace AasxPluginPlotting
         public double? height, width;
 
         /// <summary>
-        /// For pie/bar-charts: initially display labels, values or percent values
+        /// For pie/bar-charts: initially display labels, values or percent 
+        /// values.
         /// </summary>
         public bool labels, values, percent;
 
         /// <summary>
         /// Assign a predefined palette or style
-        /// Palette: Aurora, Category10, Category20, ColorblindFriendly, Dark, DarkPastel, Frost, Microcharts, 
-        ///          Nord, OneHalf, OneHalfDark, PolarNight, Redness, SnowStorm, Tsitsulin 
-        /// Style: Black, Blue1, Blue2, Blue3, Burgundy, Control, Default, Gray1, Gray2, Light1, Light2, 
-        ///        Monospace, Pink, Seaborn
+        /// Palette: Aurora, Category10, Category20, ColorblindFriendly, Dark, 
+        ///          DarkPastel, Frost, Microcharts, Nord, OneHalf, OneHalfDark, 
+        ///          PolarNight, Redness, SnowStorm, Tsitsulin 
+        /// Style: Black, Blue1, Blue2, Blue3, Burgundy, Control, Default, 
+        ///        Gray1, Gray2, Light1, Light2, Monospace, Pink, Seaborn
         /// </summary>
         public string palette, style;
 

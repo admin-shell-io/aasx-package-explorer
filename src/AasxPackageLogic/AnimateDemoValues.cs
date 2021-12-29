@@ -37,22 +37,26 @@ namespace AasxPackageLogic
             public TypeDef type;
 
             /// <summary>
-            /// Frequency. Multiplier to the input of the mapping function. Normalized frequency is 1.0 seconds.
+            /// Frequency. Multiplier to the input of the mapping function. 
+            /// Normalized frequency is 1.0 seconds.
             /// </summary>
             public double freq = 0.1;
 
             /// <summary>
-            /// Scale. Multiplier to the output of the mapping function. Default is +/- 1.0.
+            /// Scale. Multiplier to the output of the mapping function. 
+            /// Default is +/- 1.0.
             /// </summary>
             public double scale = 1.0;
 
             /// <summary>
-            /// Offset to the scaled output of the mapping function. Default is 0.0.
+            /// Offset to the scaled output of the mapping function. 
+            /// Default is 0.0.
             /// </summary>
             public double ofs = 0.0;
 
             /// <summary>
-            /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
+            /// Specifies the timer interval in milli-seconds. 
+            /// Minimum value 100ms.
             /// Applicable on: Submodel
             /// </summary>
             public int timer = 1000;
