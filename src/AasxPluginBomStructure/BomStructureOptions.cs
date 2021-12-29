@@ -33,7 +33,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference() { return new AdminShell.Reference(Match); }
+        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -61,7 +61,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference() { return new AdminShell.Reference(Match); }
+        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>

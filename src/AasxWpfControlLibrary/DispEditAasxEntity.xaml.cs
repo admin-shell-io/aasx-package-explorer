@@ -29,7 +29,6 @@ namespace AasxPackageExplorer
 {
     public partial class DispEditAasxEntity : UserControl
     {
-
         private PackageCentral _packages = null;
         private ListOfVisualElementBasic _theEntities = null;
         private DispEditHelperMultiElement _helper = new DispEditHelperMultiElement();
@@ -76,7 +75,9 @@ namespace AasxPackageExplorer
                         // redraw ourselves?
                         if (_packages != null && _theEntities != null)
                             DisplayOrEditVisualAasxElement(
-                                _packages, _theEntities, _helper.editMode, _helper.hintMode);
+                                _packages, _theEntities, _helper.editMode, _helper.hintMode,
+                                flyoutProvider: _displayContext?.FlyoutProvider,
+                                appEventProvider: _helper?.appEventsProvider);
                     }
 
                     // all other elements refer to superior functionality
@@ -285,6 +286,9 @@ namespace AasxPackageExplorer
             _helper.showIriMode = showIriMode;
             _helper.context = _displayContext;
 
+            // inform plug that their potential panel might not shown anymore
+            Plugins.AllPluginsInvoke("clear-panel-visual-extension");
+
             //
             // Test for Blazor
             //
@@ -329,6 +333,13 @@ namespace AasxPackageExplorer
                 //
                 var entity = entities.First();
 
+                // maintain parent. If in doubt, set null
+                ListOfVisualElement.SetParentsBasedOnChildHierarchy(entity);
+
+                //
+                // Dispatch
+                //
+
                 if (entity is VisualElementEnvironmentItem veei)
                 {
                     _helper.DisplayOrEditAasEntityAasEnv(
@@ -346,14 +357,17 @@ namespace AasxPackageExplorer
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
+                    // data
                     AdminShell.AdministrationShell aas = null;
                     if (vesmref.Parent is VisualElementAdminShell xpaas)
                         aas = xpaas.theAas;
+
+                    // edit
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
                         hintMode: hintMode);
                 }
-                else if (entity is VisualElementSubmodel vesm)
+                else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
                 {
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,

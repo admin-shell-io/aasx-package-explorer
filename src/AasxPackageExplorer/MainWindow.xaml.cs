@@ -29,6 +29,7 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
@@ -54,6 +55,8 @@ namespace AasxPackageExplorer
         private BrowserContainer theContentBrowser = new BrowserContainer();
 
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
+
+        private AasEventCompressor _eventCompressor = new AasEventCompressor();
 
         #endregion
         #region Init Component
@@ -253,7 +256,8 @@ namespace AasxPackageExplorer
             bool onlyAuxiliary = false,
             bool doNotNavigateAfterLoaded = false,
             PackageContainerBase takeOverContainer = null,
-            string storeFnToLRU = null)
+            string storeFnToLRU = null,
+            bool indexItems = false)
         {
             // access
             if (packItem == null)
@@ -308,8 +312,12 @@ namespace AasxPackageExplorer
             try
             {
                 // TODO (MIHO, 2020-12-31): check for ANYUI MIHO
-                ////if (!doNotNavigateAfterLoaded)
-                //// 
+                if (!doNotNavigateAfterLoaded)
+                    UiCheckIfActivateLoadedNavTo();
+
+                if (indexItems && packItem?.Container?.Env?.AasEnv != null)
+                    packItem.Container.SignificantElements
+                        = new IndexOfSignificantAasElements(packItem.Container.Env.AasEnv);
             }
             catch (Exception ex)
             {
@@ -387,6 +395,9 @@ namespace AasxPackageExplorer
                 var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
                 if (bo == null)
                     return false;
+
+                // make sure that Submodel is expanded
+                this.DisplayElements.ExpandAllItems();
 
                 // still proceed?
                 var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(bo,
@@ -675,6 +686,9 @@ namespace AasxPackageExplorer
             RepoListControl.ManageVisuElems = DisplayElements;
             this.UiAssertFileRepository(visible: false);
 
+            // event viewer
+            UserContrlEventCollection.FlyoutProvider = this;
+
             // LRU repository?
             var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
             try
@@ -808,8 +822,11 @@ namespace AasxPackageExplorer
             MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
             MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
             MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
+            MenuItemOptionsAnimateElems.IsChecked = Options.Curr.AnimateElements;
+            MenuItemOptionsObserveEvents.IsChecked = Options.Curr.ObserveEvents;
+            MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
 
-            // the UI application might receive events from items in th package central
+            // the UI application might receive events from items in the package central
             _packageCentral.ChangeEventHandler = (data) =>
             {
                 if (data.Reason == PackCntChangeEventReason.Exception)
@@ -824,6 +841,10 @@ namespace AasxPackageExplorer
             // start with a new file
             _packageCentral.MainItem.New();
             RedrawAllAasxElements();
+
+            // pump all pending log messages (from plugins) into the
+            // log / status line, before setting the last information
+            MainTimer_HandleLogMessages();
 
             // Try to load?            
             if (Options.Curr.AasxToLoad != null)
@@ -846,7 +867,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error($"Failed to auto-load AASX from {location}");
                     else
                         UiLoadPackageWithNew(_packageCentral.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false);
+                            takeOverContainer: container, onlyAuxiliary: false, indexItems: true);
 
                     Log.Singleton.Info($"Successfully auto-loaded AASX {location}");
                 }
@@ -856,6 +877,9 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // open last UI elements
+            if (Options.Curr.ShowEvents)
+                PanelConcurrentSetVisibleIfRequired(true, targetEvents: true);
         }
 
         private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
@@ -970,7 +994,7 @@ namespace AasxPackageExplorer
                     this.DisplayElements.ExpandAllItems();
 
                     // now: search
-                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded == true);
+                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
                 }
                 // fake selection
                 RedrawElementView(hightlightField: wish.HighlightField);
@@ -1362,6 +1386,193 @@ namespace AasxPackageExplorer
             }
         }
 
+        private AnimateDemoValues _mainTimer_AnimateDemoValues = new AnimateDemoValues();
+
+        private void MainTimer_CheckAnimationElements(
+            double deltaSecs,
+            AdminShell.AdministrationShellEnv env,
+            IndexOfSignificantAasElements significantElems)
+        {
+            // trivial
+            if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
+                return;
+
+            // find elements?
+            foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.QualifiedAnimation))
+            {
+                // valid?
+                if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                    continue;
+
+                // which SME?
+                if (rec.LiveObject is AdminShell.Property prop)
+                {
+                    _mainTimer_AnimateDemoValues.Animate(prop,
+                        emitEvent: (prop2, evi2) =>
+                        {
+                            // Animate the event visually; create a change event for this.
+                            // Note: this might by not ideal, final state
+                            /* TODO (MIHO, 2021-10-28): Check, if a better solution exists 
+                             * to instrument event updates in a way that they're automatically
+                             * visualized */
+                            DisplayElements.PushEvent(new AnyUiLambdaActionPackCntChange()
+                            {
+                                Change = new PackCntChangeEventData()
+                                {
+                                    Container = _packageCentral.MainItem.Container,
+                                    Reason = PackCntChangeEventReason.ValueUpdateSingle,
+                                    ThisElem = prop2,
+                                    ParentElem = prop2?.parent,
+                                    Info = "Animated value update"
+                                }
+                            });
+                        });
+                }
+            }
+        }
+
+        private void MainTimer_CheckDiaryDateToEmitEvents(
+            DateTime lastTime,
+            AdminShell.AdministrationShellEnv env,
+            IndexOfSignificantAasElements significantElems,
+            bool directEmit)
+        {
+            // trivial
+            if (env == null || significantElems == null || !MenuItemOptionsObserveEvents.IsChecked)
+                return;
+
+            // do this twice
+            for (int i = 0; i < 2; i++)
+            {
+                // divider
+                var see = (new[] {
+                    SignificantAasElement.EventStructureChangeOutwards,
+                    SignificantAasElement.EventUpdateValueOutwards})[i];
+
+                // update events?
+                foreach (var rec in significantElems.Retrieve(env, see))
+                {
+                    // valid?
+                    if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                        continue;
+                    var refEv = rec.LiveObject as AdminShell.BasicEvent;
+                    if (refEv == null)
+                        continue;
+
+                    // now, find the observable (with timestamping!)
+                    var observable = (AdminShell.IDiaryData)env.FindReferableByReference(refEv.observed);
+
+                    // some special cases
+                    if (true == refEv.observed?.Matches(
+                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV",
+                            AdminShell.Key.MatchMode.Relaxed))
+                    {
+                        observable = env;
+                    }
+
+                    // diary data available
+                    if (observable?.DiaryData == null)
+                        continue;
+
+                    // get the flags
+                    var newCreate = observable.DiaryData
+                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] >= lastTime;
+
+                    var newUpdate = observable.DiaryData
+                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update] >= lastTime;
+
+                    // first check
+                    if (!newCreate && !newUpdate)
+                        continue;
+
+                    // prepare event payloads
+                    var plStruct = new AasPayloadStructuralChange();
+                    var plUpdate = new AasPayloadUpdateValue();
+
+                    // for the overall change check, we rely on the timestamping
+                    if ((i == 0) || ((i == 1) && newUpdate))
+                    {
+                        // closure logic
+                        var storedI = i;
+
+                        if (observable is AdminShell.IRecurseOnReferables recurse)
+                            recurse.RecurseOnReferables(null,
+                                includeThis: true,
+                                lambda: (o, parents, rf) =>
+                                {
+                                    // further interest?
+                                    if (rf == null || rf.DiaryData == null ||
+                                    ((rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create]
+                                       < lastTime)
+                                      &&
+                                      (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
+                                       < lastTime)))
+                                        return false;
+
+                                    // yes, inspect further and also go deeper
+                                    if (rf.DiaryData.Entries != null)
+                                    {
+                                        var todel = new List<AdminShell.IAasDiaryEntry>();
+                                        foreach (var de in rf.DiaryData.Entries)
+                                        {
+                                            if (storedI == 0 && de is AasPayloadStructuralChangeItem sci)
+                                            {
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
+
+                                                // queue event
+                                                plStruct.Changes.Add(sci);
+
+                                                // delete
+                                                todel.Add(de);
+                                            }
+
+                                            if (storedI == 1 && de is AasPayloadUpdateValueItem uvi)
+                                            {
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
+
+                                                // queue event
+                                                plUpdate.Values.Add(uvi);
+
+                                                // delete
+                                                todel.Add(de);
+                                            }
+                                        }
+                                        foreach (var de in todel)
+                                            rf.DiaryData.Entries.Remove(de);
+                                    }
+
+                                    // deeper
+                                    return true;
+                                });
+                    }
+
+                    // send event?
+                    if (plStruct.Changes.Count < 1 && plUpdate.Values.Count < 1)
+                        continue;
+
+                    // send event
+                    var ev = new AasEventMsgEnvelope(
+                        DateTime.UtcNow,
+                        source: refEv.GetReference(),
+                        sourceSemanticId: refEv.semanticId,
+                        observableReference: refEv.observed,
+                        observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
+
+                    if (plStruct.Changes.Count >= 1)
+                        ev.PayloadItems.Add(plStruct);
+
+                    if (plUpdate.Values.Count >= 1)
+                        ev.PayloadItems.Add(plUpdate);
+
+                    // emit it to PackageCentral or to buffer?
+                    if (directEmit)
+                        _packageCentral?.PushEvent(ev);
+                    else
+                        _eventCompressor?.Push(ev);
+                }
+            }
+        }
+
         protected EventHandlingStatus _eventHandling = new EventHandlingStatus();
 
         private void MainTimer_PeriodicalTaskForSelectedEntity()
@@ -1540,9 +1751,12 @@ namespace AasxPackageExplorer
                     fosc.GetAgent()?.PushEvent(ev);
                 // dead-csharp off
                 // inform agents?
-                //  foreach (var fa in UserControlAgentsView.Children)
-                //     fa.GetAgent()?.PushEvent(ev); 
-                // dead-csharp on
+                foreach (var fa in UserControlAgentsView.Children)
+                    fa.GetAgent()?.PushEvent(ev);
+
+                // push into plugins
+                Plugins.PushEventIntoPlugins(ev);
+
                 // to be applicable, the event message Observable has to relate into Main's environment
                 var foundObservable = _packageCentral?.Main?.AasEnv?.FindReferableByReference(ev?.ObservableReference);
                 if (foundObservable == null)
@@ -1578,11 +1792,37 @@ namespace AasxPackageExplorer
             }
         }
 
+        private DateTime _mainTimer_LastCheckForDiaryEvents;
+        private DateTime _mainTimer_LastCheckForAnimationElements = DateTime.Now;
+
         private async Task MainTimer_Tick(object sender, EventArgs e)
         {
             MainTimer_HandleLogMessages();
             await MainTimer_HandleEntityPanel();
             await MainTimer_HandleApplicationEvents();
+
+            if (_packageCentral?.MainItem?.Container?.SignificantElements != null)
+            {
+                MainTimer_CheckDiaryDateToEmitEvents(
+                    _mainTimer_LastCheckForDiaryEvents,
+                    _packageCentral.MainItem.Container.Env?.AasEnv,
+                    _packageCentral.MainItem.Container.SignificantElements,
+                    directEmit: !MenuItemOptionsCompressEvents.IsChecked);
+                _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
+
+                // do animation?
+                var deltaSecs = (DateTime.Now - _mainTimer_LastCheckForAnimationElements).TotalSeconds;
+
+                if (deltaSecs >= 0.1)
+                {
+                    MainTimer_CheckAnimationElements(
+                        deltaSecs,
+                        _packageCentral.MainItem.Container.Env?.AasEnv,
+                        _packageCentral.MainItem.Container.SignificantElements);
+                    _mainTimer_LastCheckForAnimationElements = DateTime.Now;
+                }
+            }
+
             MainTimer_PeriodicalTaskForSelectedEntity();
             MainTaimer_HandleIncomingAasEvents();
             DisplayElements.UpdateFromQueuedEvents();
@@ -1722,6 +1962,7 @@ namespace AasxPackageExplorer
                 Message.FontWeight = FontWeights.Normal;
                 SetProgressBar();
             }
+
             if (sender == ButtonReport)
             {
                 // report on message / exception
@@ -1743,8 +1984,7 @@ namespace AasxPackageExplorer
                 |Please consider attaching the AASX package (you might rename this to .zip),
                 |you were working on, as well as an screen shot.
                 |
-                |Please mail your report to: michael.hoffmeister@festo.com
-                |or you can directly add it at github: https://github.com/admin-shell/aasx-package-explorer/issues
+                |Please issue directly to github: https://github.com/admin-shell/aasx-package-explorer/issues
                 |
                 |Below, you're finding the history of log messages. Please check, if non-public information
                 |is contained here.
@@ -1754,18 +1994,6 @@ namespace AasxPackageExplorer
                 head += "\n";
                 head = head.Replace("{0}", "" + Message?.Content);
                 head = Regex.Replace(head, @"^(\s+)\|", "", RegexOptions.Multiline);
-
-                // test
-#if FALSE
-                {
-                    Log.Info(0, StoredPrint.ColorBlue, "This is blue");
-                    Log.Info(0, StoredPrint.ColorRed, "This is red");
-                    Log.Error("This is an error!");
-                    Log.InfoWithHyperlink(0, "This is an link", "(Link)", "https://www.google.de");
-                }
-#endif
-
-
 
                 // Collect all the stored log prints
                 IEnumerable<StoredPrint> Prints()
@@ -1823,6 +2051,9 @@ namespace AasxPackageExplorer
             {
                 ButtonHistory.Push(DisplayElements.SelectedItem);
             }
+
+            // may be flush events
+            CheckIfToFlushEvents();
 
             // redraw view
             RedrawElementView();
@@ -1971,8 +2202,23 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.CallUndo();
         }
 
+        private void CheckIfToFlushEvents()
+        {
+            if (MenuItemOptionsCompressEvents.IsChecked)
+            {
+                var evs = _eventCompressor?.Flush();
+                if (evs != null)
+                    foreach (var ev in evs)
+                        _packageCentral?.PushEvent(ev);
+            }
+        }
+
         private void ContentTakeOver_Click(object sender, RoutedEventArgs e)
         {
+            // some more "OK, good to go" 
+            CheckIfToFlushEvents();
+
+            // refresh display
             var x = DisplayElements.SelectedItem;
             if (x == null)
             {
@@ -1982,6 +2228,8 @@ namespace AasxPackageExplorer
             }
             x?.RefreshFromMainData();
             DisplayElements.Refresh();
+
+            // re-enable
             ContentTakeOver.IsEnabled = false;
         }
 
