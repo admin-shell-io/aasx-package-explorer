@@ -111,6 +111,17 @@ namespace AdminShellNS
                     && this.id.Trim().ToLower() == other.id.Trim().ToLower());
             }
 
+            public bool IsIRI()
+            {
+                return idType?.Trim().ToUpper() == "URI"
+                    || idType?.Trim().ToUpper() == IRI;
+            }
+
+            public bool IsIRDI()
+            {
+                return idType?.Trim().ToUpper() == IRDI;
+            }
+
             public override string ToString()
             {
                 return $"[{this.idType}] {this.id}";

@@ -625,7 +625,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "serverpluginopcua")
                 CommandBinding_ExecutePluginServer(
-                    "Net46AasxServerPlugin", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
+                    "AasxPluginUaNetServer", "server-start", "server-stop", "Plug-in for OPC UA Server for AASX.");
 
             if (cmd == "serverpluginmqtt")
                 CommandBinding_ExecutePluginServer(
@@ -2164,7 +2164,7 @@ namespace AasxPackageExplorer
                 {
                     RememberForInitialDirectory(dlg.FileName);
                     CommandBinding_ExecutePluginServer(
-                        "Net46AasxServerPlugin",
+                        "AasxPluginUaNetServer",
                         "server-start",
                         "server-stop",
                         "Export Nodeset2 via OPC UA Server...",
