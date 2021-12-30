@@ -203,31 +203,31 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return identifiable.identification == null; },
+                    () => { return identifiable.id == null; },
                     "Providing a worldwide unique identification is mandatory.",
                     breakIfTrue: true),
                 new HintCheck(
-                    () => { return identifiable.identification.id.Trim() == ""; },
+                    () => { return identifiable.id.value.Trim() == ""; },
                     "Identification id shall not be empty. You could use the 'Generate' button in order to " +
                         "generate a worldwide unique id. " +
                         "The template of this id could be set by commandline arguments." )
 
             });
             if (this.SafeguardAccess(
-                    stack, repo, identifiable.identification, "identification:", "Create data element!",
+                    stack, repo, identifiable.id, "identification:", "Create data element!",
                     v =>
                     {
-                        identifiable.identification = new AdminShell.Identification();
+                        identifiable.id = new AdminShell.Identifier();
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "id", identifiable, ref identifiable.identification.id, null, repo,
+                    stack, "id", identifiable, ref identifiable.id.value, null, repo,
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
-                        identifiable.identification.id = v as string;
+                        identifiable.id.value = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                         return new AnyUiLambdaActionNone();
                     },
@@ -237,8 +237,7 @@ namespace AasxPackageLogic
                         if (i == 0)
                         {
                             var dr = new DiaryReference(identifiable);
-                            identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            identifiable.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);

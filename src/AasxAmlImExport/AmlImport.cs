@@ -387,7 +387,7 @@ namespace AasxAmlImExport
                     aas.idShort = ie.Name;
                     if (idShort != null)
                         aas.idShort = idShort;
-                    aas.identification = new AdminShell.Identification(id);
+                    aas.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         aas.administration = new AdminShell.Administration(version, revision);
                     aas.category = cat;
@@ -431,7 +431,7 @@ namespace AasxAmlImExport
                     asset.idShort = ie.Name;
                     if (idShort != null)
                         asset.idShort = idShort;
-                    asset.identification = new AdminShell.Identification(id);
+                    asset.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         asset.administration = new AdminShell.Administration(version, revision);
                     asset.category = cat;
@@ -559,7 +559,7 @@ namespace AasxAmlImExport
                     sm.idShort = ie.Name;
                     if (idShort != null)
                         sm.idShort = idShort;
-                    sm.identification = new AdminShell.Identification(id);
+                    sm.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         sm.administration = new AdminShell.Administration(version, revision);
                     sm.category = cat;
@@ -880,7 +880,7 @@ namespace AasxAmlImExport
                 {
                     // set normal data
                     cd.idShort = idShort;
-                    cd.identification = new AdminShell.Identification(id);
+                    cd.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         cd.administration = new AdminShell.Administration(version, revision);
                     if (desc != null)
@@ -1057,7 +1057,7 @@ namespace AasxAmlImExport
                             // existing.
                             // If so, that switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
+                            var existSm = this.package.AasEnv.FindSubmodel(sm.id);
                             if (existSm != null)
                                 sm = existSm;
 
@@ -1068,7 +1068,7 @@ namespace AasxAmlImExport
                             // this will be the parent for child elements
                             // Remark: add only, if not a SM with the same ID is existing. This could have the
                             // consequences that additional properties in the 2nd SM with the same SM get lost!
-                            if (null == this.package.AasEnv.FindSubmodel(sm.identification))
+                            if (null == this.package.AasEnv.FindSubmodel(sm.id))
                                 this.package.AasEnv.Submodels.Add(sm);
                             currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
                             currentSmeCollection = sm;
@@ -1086,7 +1086,7 @@ namespace AasxAmlImExport
                         if (targetSm != null && this.package != null && this.package.AasEnv != null)
                         {
                             // try use Identification to find existing Submodel
-                            var existSm = package.AasEnv.FindSubmodel(targetSm.identification);
+                            var existSm = package.AasEnv.FindSubmodel(targetSm.id);
 
                             // if so, add a SubmodelRef
                             currentAas.AddSubmodelRef(existSm.GetReference() as AdminShell.SubmodelRef);
@@ -1333,7 +1333,7 @@ namespace AasxAmlImExport
                             // AAS might already exist by parsing instance, therefore check for existance
                             // If so, then switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existAas = this.package.AasEnv.FindAAS(aas.identification);
+                            var existAas = this.package.AasEnv.FindAAS(aas.id);
                             if (existAas != null)
                                 aas = existAas;
                             else
@@ -1363,7 +1363,7 @@ namespace AasxAmlImExport
                             // there might be the case, that a submodel with the same identification already exists.
                             // If so, that switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
+                            var existSm = this.package.AasEnv.FindSubmodel(sm.id);
                             if (existSm != null)
                                 sm = existSm;
 
@@ -1415,7 +1415,7 @@ namespace AasxAmlImExport
                         if (cd != null)
                         {
                             // add
-                            Debug(indentation, " .. added as {0}", cd.identification.ToString());
+                            Debug(indentation, " .. added as {0}", cd.id.ToString());
                             this.package.AasEnv.ConceptDescriptions.Add(cd);
 
                             // look for direct descendants = Data Specifcations

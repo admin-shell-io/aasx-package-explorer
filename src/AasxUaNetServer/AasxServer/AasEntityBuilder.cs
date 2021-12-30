@@ -66,7 +66,7 @@ namespace AasOpcUaServer
         {
             public NodeState uanode = null;
             public AdminShell.Referable referable = null;
-            public AdminShell.Identification identification = null;
+            public AdminShell.Identifier identification = null;
 
             public NodeRecord() { }
             public NodeRecord(NodeState uanode, AdminShell.Referable referable)
@@ -74,7 +74,7 @@ namespace AasOpcUaServer
                 this.uanode = uanode;
                 this.referable = referable;
             }
-            public NodeRecord(NodeState uanode, AdminShell.Identification identification)
+            public NodeRecord(NodeState uanode, AdminShell.Identifier identification)
             {
                 this.uanode = uanode;
                 this.identification = identification;
@@ -95,9 +95,9 @@ namespace AasOpcUaServer
             if (nr.referable != null && !NodeRecordFromReferable.ContainsKey(nr.referable))
                 NodeRecordFromReferable.Add(nr.referable, nr);
 
-            if (nr.identification != null && nr.identification.id != null)
+            if (nr.identification != null && nr.identification.value != null)
             {
-                var hash = "" + nr.identification.id.Trim().ToUpper();
+                var hash = "" + nr.identification.value.Trim().ToUpper();
                 if (!NodeRecordFromIdentificationHash.ContainsKey(hash))
                     NodeRecordFromIdentificationHash.Add(hash, nr);
             }
@@ -120,9 +120,9 @@ namespace AasOpcUaServer
         /// </summary>
         /// <param name="identification"></param>
         /// <returns></returns>
-        public NodeRecord LookupNodeRecordFromIdentification(AdminShell.Identification identification)
+        public NodeRecord LookupNodeRecordFromIdentification(AdminShell.Identifier identification)
         {
-            var hash = "" + identification.id.Trim().ToUpper();
+            var hash = "" + identification.value.Trim().ToUpper();
             if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
                 return null;
             return NodeRecordFromIdentificationHash[hash];
@@ -243,7 +243,7 @@ namespace AasOpcUaServer
                     if (!foundAtAll && lax.targetReference.Keys.Count == 1)
                     {
                         // can turn the targetReference to a simple identification
-                        var targetId = new AdminShell.Identification(lax.targetReference.Keys[0].value);
+                        var targetId = new AdminShell.Identifier(lax.targetReference.Keys[0].value);
 
                         // we might have such an (empty) target already available as uanode
                         var nr = this.LookupNodeRecordFromIdentification(targetId);
@@ -262,7 +262,7 @@ namespace AasOpcUaServer
                                 var miss = this.CreateAddObject(
                                     this.RootMissingDictionaryEntries,
                                     AasUaBaseEntity.CreateMode.Instance,
-                                    targetId.id,
+                                    targetId.value,
                                     ReferenceTypeIds.HasComponent,
                                     this.AasTypes.ConceptDescription.GetTypeObjectFor(targetId)?.NodeId);
 
@@ -277,7 +277,7 @@ namespace AasOpcUaServer
                             {
                                 // just create the missing link
                                 // TODO (MIHO, 2020-08-06): check, which namespace shall be used
-                                var missingTarget = new ExpandedNodeId("" + targetId.id, 99);
+                                var missingTarget = new ExpandedNodeId("" + targetId.value, 99);
                                 lax.uanode.AddReference(this.AasTypes.HasDictionaryEntry.GetTypeNodeId(), false,
                                     missingTarget);
                             }

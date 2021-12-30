@@ -138,10 +138,10 @@ namespace AasxIntegrationBase.AasForms
                     if (env != null && cds != null && smw?.submodelElement?.semanticId?.Keys != null)
                     {
                         var masterCd = env.FindConceptDescription(smw?.submodelElement?.semanticId?.Keys);
-                        if (masterCd != null && masterCd.identification != null)
+                        if (masterCd != null && masterCd.id != null)
                         {
                             // already in cds?
-                            var copyCd = cds.Find(masterCd.identification);
+                            var copyCd = cds.Find(masterCd.id);
                             if (copyCd == null)
                             {
                                 // add clone

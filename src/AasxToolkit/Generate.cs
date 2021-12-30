@@ -247,7 +247,7 @@ namespace AasxToolkit
             );
 
             var cdFormat = AdminShell.ConceptDescription.CreateNew(
-                "FileFormat", AdminShell.Identification.IRDI, "0173-1#02-ZAA120#007");
+                "FileFormat", AdminShell.Identifier.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
                 preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
@@ -298,7 +298,7 @@ namespace AasxToolkit
                 propType.value = AdminShell.Reference.CreateNew(
                     AdminShell.Key.CreateNew(
                         "GlobalReference", false,
-                        AdminShell.Identification.IRDI, "" + fr.args[0]));
+                        AdminShell.Identifier.IRDI, "" + fr.args[0]));
             }
 
             return sub1;
@@ -585,7 +585,7 @@ namespace AasxToolkit
 
             // CONCEPT: Manufacturer
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Manufacturer", AdminShell.Identification.IRDI, "0173-1#02-AAO677#001"))
+                "Manufacturer", AdminShell.Identifier.IRDI, "0173-1#02-AAO677#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -607,7 +607,7 @@ namespace AasxToolkit
 
             // CONCEPT: Width
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Width", AdminShell.Identification.IRDI, "0173-1#02-BAF016#005"))
+                "Width", AdminShell.Identifier.IRDI, "0173-1#02-BAF016#005"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -633,7 +633,7 @@ namespace AasxToolkit
 
             // CONCEPT: Height
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Height", AdminShell.Identification.IRDI, "0173-1#02-BAA020#008"))
+                "Height", AdminShell.Identifier.IRDI, "0173-1#02-BAA020#008"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -660,7 +660,7 @@ namespace AasxToolkit
 
             // CONCEPT: Depth
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Depth", AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
+                "Depth", AdminShell.Identifier.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -686,7 +686,7 @@ namespace AasxToolkit
 
             // CONCEPT: Weight
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Weight", AdminShell.Identification.IRDI, "0173-1#02-AAS627#001"))
+                "Weight", AdminShell.Identifier.IRDI, "0173-1#02-AAS627#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -705,10 +705,10 @@ namespace AasxToolkit
                 sub1.Add(p);
                 p.AddQualifier("life cycle qual", "SPEC",
                     AdminShell.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "GlobalReference", false, AdminShell.Identifier.IRDI,
                         "0112/2///61360_4#AAF575"),
                     AdminShell.Reference.CreateNew(
-                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "GlobalReference", false, AdminShell.Identifier.IRDI,
                         "0112/2///61360_4#AAF579"));
                 p.valueType = "double";
                 p.value = "23.1";
@@ -719,10 +719,10 @@ namespace AasxToolkit
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
                     AdminShell.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "GlobalReference", false, AdminShell.Identifier.IRDI,
                         "0112/2///61360_4#AAF575"),
                     AdminShell.Reference.CreateNew(
-                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "GlobalReference", false, AdminShell.Identifier.IRDI,
                         "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";
@@ -730,7 +730,7 @@ namespace AasxToolkit
 
             // CONCEPT: Material
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                "Material", AdminShell.Identification.IRDI, "0173-1#02-BAB577#007"))
+                "Material", AdminShell.Identifier.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -748,7 +748,7 @@ namespace AasxToolkit
                 sub1.Add(p);
                 p.value = p.value = AdminShell.Reference.CreateNew(
                     AdminShell.Key.CreateNew(
-                        "GlobalReference", false, AdminShell.Identification.IRDI,
+                        "GlobalReference", false, AdminShell.Identifier.IRDI,
                         "0173-1#07-AAA878#004")); // Polyamide (PA)
             }
 
@@ -774,7 +774,7 @@ namespace AasxToolkit
             // CONCEPT: MultiLanguageProperty
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "DocuName",
-                idType: AdminShell.Identification.IRDI,                  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                  // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -800,7 +800,7 @@ namespace AasxToolkit
             // CONCEPT: Range
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "VoltageRange",
-                idType: AdminShell.Identification.IRDI,                  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                  // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -826,7 +826,7 @@ namespace AasxToolkit
             // CONCEPT: AnnotatedRelationship
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "VerConn",
-                idType: AdminShell.Identification.IRDI,  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,  // immer IRDI für ECLASS
                 id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -876,7 +876,7 @@ namespace AasxToolkit
             AdminShell.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,        // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,        // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ993#001",
                 idShort: "E-CAD"))                             // die ID des Merkmales bei ECLASS
             {
@@ -895,7 +895,7 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                         // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ982#001",
                 idShort: "single pole connection"))                             // die ID des Merkmales bei ECLASS
             {
@@ -914,7 +914,7 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,    // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,    // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ994#001",
                 idShort: "1"))                             // die ID des Merkmales bei ECLASS
             {
@@ -933,7 +933,7 @@ namespace AasxToolkit
             }
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ995#001",
                 idShort: "2"))                             // die ID des Merkmales bei ECLASS
             {
@@ -1026,7 +1026,7 @@ namespace AasxToolkit
             AdminShell.ConceptDescription cdIsPartOf;
 
             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                idType: AdminShell.Identification.IRDI,                         // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ998#002",
                 idShort: "isPartOf"))                             // die ID des Merkmales bei ECLASS
             {
@@ -1110,7 +1110,7 @@ namespace AasxToolkit
             var theOp = new AdminShell.Operation();
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "SetMode",
-                idType: AdminShell.Identification.IRDI,
+                idType: AdminShell.Identifier.IRDI,
                 id: "0173-1#02-AAS999#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -1130,7 +1130,7 @@ namespace AasxToolkit
             // CONCEPT: Mode
             using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "mode",
-                idType: AdminShell.Identification.IRDI,
+                idType: AdminShell.Identifier.IRDI,
                 id: "0173-1#02-AAX777#002"))
             {
                 aasenv.ConceptDescriptions.Add(cd);

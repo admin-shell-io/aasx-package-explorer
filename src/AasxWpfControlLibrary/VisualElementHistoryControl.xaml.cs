@@ -29,11 +29,11 @@ namespace AasxPackageExplorer
     public class VisualElementHistoryItem
     {
         public VisualElementGeneric VisualElement = null;
-        public AdminShell.Identification ReferableAasId = null;
+        public AdminShell.Identifier ReferableAasId = null;
         public AdminShell.Reference ReferableReference = null;
 
         public VisualElementHistoryItem(VisualElementGeneric VisualElement,
-            AdminShell.Identification ReferableAasId = null, AdminShell.Reference ReferableReference = null)
+            AdminShell.Identifier ReferableAasId = null, AdminShell.Reference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
             this.ReferableAasId = ReferableAasId;
@@ -94,12 +94,12 @@ namespace AasxPackageExplorer
             }, includeThis: true).FirstOrDefault();
 
             // check, if ve can identify a Referable, to which a symbolic link can be done ..
-            AdminShell.Identification aasid = null;
+            AdminShell.Identifier aasid = null;
             AdminShell.Reference refref = null;
 
             if (veAas != null && veRef != null)
             {
-                aasid = (veAas as VisualElementAdminShell)?.theAas?.identification;
+                aasid = (veAas as VisualElementAdminShell)?.theAas?.id;
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
                 refref = (derefdo as AdminShell.IGetReference)?.GetReference();

@@ -242,7 +242,7 @@ namespace AasxPluginMtpViewer
 
                 // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
                 // How to get from subModel to AAS?
-                var instanceAas = env.FindAASwithSubmodel(this.theSubmodel.identification);
+                var instanceAas = env.FindAASwithSubmodel(this.theSubmodel.id);
                 var typeAas = env.FindReferableByReference(instanceAas?.derivedFrom) as AdminShell.AdministrationShell;
                 if (instanceAas?.derivedFrom != null && typeAas != null)
                     foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>

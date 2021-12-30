@@ -928,9 +928,9 @@ namespace AasxPluginDocumentShelf
                 foreach (var x in theCds)
                 {
                     var cd = x as AdminShell.ConceptDescription;
-                    if (cd == null || cd.identification == null)
+                    if (cd == null || cd.id == null)
                         continue;
-                    var cdFound = env.FindConceptDescription(cd.identification);
+                    var cdFound = env.FindConceptDescription(cd.id);
                     if (cdFound != null)
                         continue;
                     // ok, add

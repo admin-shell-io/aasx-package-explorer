@@ -88,12 +88,12 @@ namespace AasxAmlImExport
             return a;
         }
 
-        private static void SetIdentification(AttributeSequence aseq, AdminShell.Identification id)
+        private static void SetIdentification(AttributeSequence aseq, AdminShell.Identifier id)
         {
             if (id == null)
                 return;
             var a0 = AppendAttributeNameAndRole(aseq, "identification", AmlConst.Attributes.Identification);
-            AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id.id);
+            AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id.value);
         }
 
         private static void SetAdministration(AttributeSequence aseq, AdminShell.Administration adm)
@@ -577,7 +577,7 @@ namespace AasxAmlImExport
                 return;
 
             // set some data
-            SetIdentification(parent.Attribute, sm.identification);
+            SetIdentification(parent.Attribute, sm.id);
             SetAdministration(parent.Attribute, sm.administration);
             SetReferable(parent.Attribute, sm);
             SetModelingKind(parent.Attribute, sm.kind);
@@ -628,7 +628,7 @@ namespace AasxAmlImExport
             var ie = AppendIeNameAndRole(ieseq, name: asset.idShort, altName: "Asset", role: AmlConst.Roles.Asset);
 
             // set some data
-            SetIdentification(ie.Attribute, asset.identification);
+            SetIdentification(ie.Attribute, asset.id);
             SetAdministration(ie.Attribute, asset.administration);
             SetReferable(ie.Attribute, asset);
             SetAssetKind(ie.Attribute, asset.kind, attributeRole: AmlConst.Attributes.Asset_Kind);
@@ -715,7 +715,7 @@ namespace AasxAmlImExport
                 insthier.InternalElement, name: aas.idShort, altName: "AAS", role: AmlConst.Roles.AAS);
 
             // set some data
-            SetIdentification(aasIE.Attribute, aas.identification);
+            SetIdentification(aasIE.Attribute, aas.id);
             SetAdministration(aasIE.Attribute, aas.administration);
             SetReferable(aasIE.Attribute, aas);
             SetHasDataSpecification(aasIE.Attribute, aas.hasDataSpecification);
@@ -764,7 +764,7 @@ namespace AasxAmlImExport
                     rq.RefRoleClassPath = AmlConst.Roles.Submodel;
 
                     // set same data data, in order to correlate, but not asset
-                    SetIdentification(aasSUC.Attribute, aas.identification);
+                    SetIdentification(aasSUC.Attribute, aas.id);
                     SetAdministration(aasSUC.Attribute, aas.administration);
                     SetReferable(aasSUC.Attribute, aas);
                     SetHasDataSpecification(aasSUC.Attribute, aas.hasDataSpecification);
@@ -849,7 +849,7 @@ namespace AasxAmlImExport
                 name = cd.idShort;
 
             // set data for identifiable
-            SetIdentification(aseqOuter, cd.identification);
+            SetIdentification(aseqOuter, cd.id);
             SetAdministration(aseqOuter, cd.administration);
             SetReferable(aseqOuter, cd);
 
@@ -966,7 +966,7 @@ namespace AasxAmlImExport
                 SetAttributesForConceptDescription(ieCD.Attribute, ieDSC.Attribute, cd, ref name);
 
                 // set the final name
-                name += "_" + ToAmlName(cd.identification.ToString());
+                name += "_" + ToAmlName(cd.id.ToString());
                 ieCD.Name = name;
             }
         }
@@ -992,7 +992,7 @@ namespace AasxAmlImExport
                                 if (smkt.kind != null && smkt.kind.IsTemplate &&
                                     smki.semanticId.Matches(
                                         AdminShell.Key.Submodel, true, "",
-                                        smkt.identification.id))
+                                        smkt.id.value))
                                 {
                                     // we have a match: Submodel kind = Instance -> Submodel kind = Type
                                     var smki_aml = matcher.GetAmlObject(smki) as InternalElementType;

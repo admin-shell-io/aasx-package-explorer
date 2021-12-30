@@ -121,7 +121,7 @@ namespace AasxDictionaryImport
         {
             var adminShell = new AdminShell.AdministrationShell()
             {
-                identification = new AdminShell.Identification(
+                id = new AdminShell.Identifier(
                         AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
             };
             env.AdministrationShells.Add(adminShell);

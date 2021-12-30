@@ -521,7 +521,7 @@ namespace AasxPackageLogic
                 if (i == 0)
                 {
                     // identification
-                    res.identification.id = input[i].IRDI;
+                    res.id.value = input[i].IRDI;
 
                     // isCase of
                     res.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(input[i].IRDI));
@@ -570,7 +570,7 @@ namespace AasxPackageLogic
                                         {
                                             ds.unitId = AdminShell.UnitId.CreateNew(
                                                 "GlobalReference", false,
-                                                AdminShell.Identification.IRDI, urefIrdi.Trim());
+                                                AdminShell.Identifier.IRDI, urefIrdi.Trim());
                                             ds.unit = xiun.InnerText.Trim();
                                         }
                                 }

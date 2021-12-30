@@ -50,7 +50,7 @@ namespace AasxDictionaryImport
             Thread.Sleep(1000);
             var submodel = new AdminShell.Submodel()
             {
-                identification = new AdminShell.Identification(
+                id = new AdminShell.Identifier(
                     AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
                 idShort = data.IdShort,
                 kind = AdminShell.ModelingKind.CreateAsInstance(),
@@ -152,7 +152,7 @@ namespace AasxDictionaryImport
             AdminShell.AdministrationShellEnv env, Iec61360Data data)
         {
             var cd = AdminShell.ConceptDescription.CreateNew(
-                data.IdShort, AdminShell.Identification.IRDI, data.Irdi);
+                data.IdShort, AdminShell.Identifier.IRDI, data.Irdi);
 
             // TODO (Robin, 2020-09-03): check this code
             cd.IEC61360Content = data.ToDataSpecification();
@@ -412,7 +412,7 @@ namespace AasxDictionaryImport
             if (UnitIrdi.Length > 0)
                 ds.unitId = AdminShell.UnitId.CreateNew(
                     AdminShell.Key.GlobalReference, false,
-                    AdminShell.Identification.IRDI, UnitIrdi);
+                    AdminShell.Identifier.IRDI, UnitIrdi);
             if (DataType.Length > 0)
                 ds.dataType = DataType;
             if (DataFormat.Length > 0)

@@ -1135,9 +1135,9 @@ namespace AasxPackageExplorer
 
             try
             {
-                if (asset.identification != null)
+                if (asset.id != null)
                 {
-                    AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                    AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.id.value, asset.idShort);
                 }
             }
             catch (Exception ex)
@@ -1663,7 +1663,7 @@ namespace AasxPackageExplorer
 
             if (res == true)
             {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.id);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1689,7 +1689,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
+                if (submodel == null || submodel.id == null)
                 {
                     MessageBoxFlyoutShow(
                         "Identification of SubModel is (null).", "Submodel Read",
@@ -1707,7 +1707,7 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.id);
                 if (existingSm != null)
                     _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
                 _packageCentral.Main.AasEnv.Submodels.Add(submodel);
@@ -1715,7 +1715,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, "", submodel.identification.id);
+                    "Submodel", true, "", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1818,7 +1818,7 @@ namespace AasxPackageExplorer
             }
 
             {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.id);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1841,7 +1841,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
+                if (submodel == null || submodel.id == null)
                 {
                     MessageBoxFlyoutShow(
                         "Identification of SubModel is (null).", "Submodel Read",
@@ -1859,7 +1859,7 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.id);
                 if (existingSm != null)
                     _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
                 _packageCentral.Main.AasEnv.Submodels.Add(submodel);
@@ -1867,7 +1867,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, "", submodel.identification.id);
+                    "Submodel", true, "", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -2691,12 +2691,12 @@ namespace AasxPackageExplorer
                 try
                 {
                     // Submodel needs an identification
-                    smres.identification = new AdminShell.Identification("");
+                    smres.id = new AdminShell.Identifier("");
                     if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                        smres.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                        smres.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add Submodel
@@ -2710,9 +2710,9 @@ namespace AasxPackageExplorer
                         int nr = 0;
                         foreach (var cd in cdres)
                         {
-                            if (cd == null || cd.identification == null)
+                            if (cd == null || cd.id == null)
                                 continue;
-                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
+                            var cdFound = ve1.theEnv.FindConceptDescription(cd.id);
                             if (cdFound != null)
                                 continue;
                             // ok, add

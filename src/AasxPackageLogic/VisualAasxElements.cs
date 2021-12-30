@@ -329,18 +329,18 @@ namespace AasxPackageLogic
                             AdminShell.Key.CreateNew(
                                 smr.theSubmodel.GetElementName(), true,
                                 "",
-                                smr.theSubmodel.identification.id));
+                                smr.theSubmodel.id.value));
 
                     // include aas
                     if (includeAas && ve.Parent is VisualElementAdminShell veAas
-                        && veAas.theAas?.identification != null)
+                        && veAas.theAas?.id != null)
                     {
                         res.Insert(
                             0,
                             AdminShell.Key.CreateNew(
                                 AdminShell.Key.AAS, true,
                                 "",
-                                veAas.theAas.identification.id));
+                                veAas.theAas.id.value));
                     }
 
                     break;
@@ -352,7 +352,7 @@ namespace AasxPackageLogic
                     res.Insert(
                         0,
                         AdminShell.Key.CreateNew(
-                            iddata.GetElementName(), true, "", iddata.identification.id));
+                            iddata.GetElementName(), true, "", iddata.id.value));
                     break;
                 }
                 else
@@ -633,7 +633,7 @@ namespace AasxPackageLogic
                 this.Info = ci.Item2;
                 var asset = theEnv.FindAsset(theAas.assetRef);
                 if (asset != null)
-                    this.Info += $" of [{asset.identification.id}, {asset.kind.kind}]";
+                    this.Info += $" of [{asset.id.value}, {asset.kind.kind}]";
             }
         }
     }
@@ -1128,15 +1128,15 @@ namespace AasxPackageLogic
         {
             public int Compare(VisualElementGeneric a, VisualElementGeneric b)
             {
-                var id1 = (a as VisualElementConceptDescription)?.theCD?.identification;
-                var id2 = (b as VisualElementConceptDescription)?.theCD?.identification;
+                var id1 = (a as VisualElementConceptDescription)?.theCD?.id;
+                var id2 = (b as VisualElementConceptDescription)?.theCD?.id;
 
                 if (id1 == null)
                     return -1;
                 if (id2 == null)
                     return +1;
 
-                return String.Compare(id1.id, id2.id,
+                return String.Compare(id1.value, id2.value,
                     CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
             }
         }
@@ -2286,7 +2286,7 @@ namespace AasxPackageLogic
                             continue;
 
                         // figure out the SubmodelRef
-                        var smr = parentAas.FindSubmodelRef(thisSm.identification);
+                        var smr = parentAas.FindSubmodelRef(thisSm.id);
                         if (smr == null)
                             continue;
 

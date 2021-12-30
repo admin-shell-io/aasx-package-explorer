@@ -322,11 +322,11 @@ namespace AasxPluginExportTable
             {
                 if (ifi == null)
                     return;
-                if (ifi.identification != null)
+                if (ifi.id != null)
                 {
                     //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", "" + ifi.identification.id);
-                    rep(head + "identification.id", "" + ifi.identification.id);
+                    rep(head + "identification", "" + ifi.id.value);
+                    rep(head + "identification.id", "" + ifi.id.value);
                 }
                 if (ifi.administration != null)
                 {

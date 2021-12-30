@@ -579,7 +579,7 @@ namespace AasxPackageExplorer
 
                 // what is AAS specific?
                 this.AasId.Text = WpfStringAddWrapChars(
-                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.identification.id, "<id missing!>"));
+                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.id.value, "<id missing!>"));
 
                 // what is asset specific?
                 this.AssetPic.Source = null;
@@ -589,9 +589,9 @@ namespace AasxPackageExplorer
                 {
 
                     // text id
-                    if (asset.identification != null)
+                    if (asset.id != null)
                         this.AssetId.Text = WpfStringAddWrapChars(
-                            AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
+                            AdminShellUtil.EvalToNonNullString("{0}", asset.id.value));
 
                     // asset thumbnail
                     try
@@ -1947,17 +1947,17 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.id != null
+                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.value != null
                     && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.value.Trim());
                     if (fi == null)
                     {
                         Log.Singleton.Error(
-                            $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
+                            $"Cannot lookup aas id {hi.ReferableAasId.value} in file repository.");
                         return;
                     }
 
@@ -1973,7 +1973,7 @@ namespace AasxPackageExplorer
                     catch (Exception ex)
                     {
                         Log.Singleton.Error(
-                            ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
+                            ex, $"While retrieving file for {hi.ReferableAasId.value} from file repository");
                     }
 
                     // still proceed?

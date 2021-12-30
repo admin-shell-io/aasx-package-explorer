@@ -73,7 +73,7 @@ namespace AasxPluginExportTable
             Parent = new AdminShell.SubmodelElement();
             Sme = new AdminShell.SubmodelElement();
             CD = new AdminShell.ConceptDescription();
-            CD.identification = null;
+            CD.id = null;
             CD.CreateDataSpecWithContentIec61360();
         }
     }
