@@ -321,7 +321,7 @@ namespace AasxPluginExportTable
             var fen = FilteredElementName.Parse(context.SmeElemName);
             if (fen == null)
                 return null;
-            if (fen.NameEnum == AdminShellV20.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+            if (fen.NameEnum == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
                 return null;
 
             // create, add
@@ -380,11 +380,10 @@ namespace AasxPluginExportTable
                 // generate a new one for SME + CD
                 // this modifies the SME!
                 var id = new AdminShell.Identification(
-                    AdminShell.Identification.IRI,
                     AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription));
 
                 context.Sme.semanticId = new AdminShell.SemanticId(
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, id.idType, id.id));
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, "", id.id));
             }
 
             // create, add
@@ -397,7 +396,7 @@ namespace AasxPluginExportTable
             if (sid == null)
                 // should not happen, see above
                 return null;
-            cd.identification = new AdminShell.Identification(sid.idType, sid.value);
+            cd.identification = new AdminShell.Identification(sid.value);
 
             // some further attributes
             if (!cd.idShort.HasContent())

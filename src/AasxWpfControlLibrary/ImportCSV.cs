@@ -75,11 +75,11 @@ namespace AasxPackageExplorer
                             sm.Add(propGroup[0]);
                             if (rows.Length > 3)
                             {
-                                if (rows[7] != "") propGroup[0].semanticId = new AdminShellV20.SemanticId(
+                                if (rows[7] != "") propGroup[0].semanticId = new AdminShell.SemanticId(
                                      AdminShell.Reference.CreateNew(
                                          "ConceptDescription", false, "IRI", rows[7]));
                             }
-                            propGroup[0].kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            propGroup[0].kind = AdminShell.ModelingKind.CreateAsInstance();
                         }
                         else
                         {
@@ -100,7 +100,7 @@ namespace AasxPackageExplorer
                             p.category = rows[4];
                             if (rows[5] != "") p.AddDescription("en", rows[5]);
                             if (rows[6] != "") p.AddDescription("de", rows[6]);
-                            p.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            p.kind = AdminShell.ModelingKind.CreateAsInstance();
                             if (rows[7] != "")
                                 p.semanticId = new AdminShell.SemanticId(
                                     AdminShell.Reference.CreateNew(

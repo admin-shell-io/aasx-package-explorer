@@ -36,7 +36,7 @@ namespace AasxFormatCst
         public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
         protected Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>
-            _cdToProp = new Dictionary<AdminShellV20.ConceptDescription, CstPropertyDef.PropertyDefinition>();
+            _cdToProp = new Dictionary<AdminShell.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
         protected CstIdStore _knownIdStore = new CstIdStore();
 

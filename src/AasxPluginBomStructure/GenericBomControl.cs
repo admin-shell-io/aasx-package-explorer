@@ -37,7 +37,7 @@ namespace AasxPluginBomStructure
         private PluginEventStack eventStack = null;
 
         private Dictionary<AdminShell.Referable, int> preferredPresetIndex =
-            new Dictionary<AdminShellV20.Referable, int>();
+            new Dictionary<AdminShell.Referable, int>();
 
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 

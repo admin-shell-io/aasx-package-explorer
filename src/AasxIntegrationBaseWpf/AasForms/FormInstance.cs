@@ -368,7 +368,7 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare list of original source elements
             if (this.InitialSourceElements == null)
-                this.InitialSourceElements = new List<AdminShellV20.SubmodelElement>();
+                this.InitialSourceElements = new List<AdminShell.SubmodelElement>();
             foreach (var inst in this.SubInstances)
                 if (inst != null && inst is FormInstanceSubmodelElement &&
                     (inst as FormInstanceSubmodelElement).sourceSme != null)
@@ -443,7 +443,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             // add
                             if (smec.value == null)
-                                smec.value = new AdminShellV20.SubmodelElementWrapperCollection();
+                                smec.value = new AdminShell.SubmodelElementWrapperCollection();
                             smec.value.AddRange(newElems);
 
                             // make smec unique

@@ -41,26 +41,25 @@ namespace AasxDictionaryImport
         /// <param name="adminShell">The admin shell to add the submodel to</param>
         /// <param name="data">The IEC 61360 data to create the submodel from</param>
         /// <returns>A new submodel with the given data</returns>
-        public static AdminShellV20.Submodel CreateSubmodel(
-            AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell, Iec61360Data data)
+        public static AdminShell.Submodel CreateSubmodel(
+            AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell adminShell, Iec61360Data data)
         {
             // We need this to ensure that we don't use the same AAS ID twice when importing multiple submodels (as
             // GenerateIdAccordingTemplate uses the timestamp as part of the ID).
             Thread.Sleep(1000);
-            var submodel = new AdminShellV20.Submodel()
+            var submodel = new AdminShell.Submodel()
             {
-                identification = new AdminShellV20.Identification(
-                    AdminShell.Identification.IRI,
+                identification = new AdminShell.Identification(
                     AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
                 idShort = data.IdShort,
-                kind = AdminShellV20.ModelingKind.CreateAsInstance(),
+                kind = AdminShell.ModelingKind.CreateAsInstance(),
             };
 
             AddDescriptions(submodel, data);
             AddDataSpecification(env, submodel, data);
 
-            adminShell.AddSubmodelRef(new AdminShell.SubmodelRef(submodel.GetReference()));
+            adminShell.AddSubmodelRef(submodel.GetReference() as AdminShell.SubmodelRef);
             env.Submodels.Add(submodel);
 
             return submodel;
@@ -72,13 +71,13 @@ namespace AasxDictionaryImport
         /// <param name="env">The AAS environment to add the collection to</param>
         /// <param name="data">The IEC 61360 data to create the collection from</param>
         /// <returns>A new submodel element collection with the given data</returns>
-        public static AdminShellV20.SubmodelElementCollection CreateCollection(
-            AdminShellV20.AdministrationShellEnv env, Iec61360Data data)
+        public static AdminShell.SubmodelElementCollection CreateCollection(
+            AdminShell.AdministrationShellEnv env, Iec61360Data data)
         {
-            var collection = new AdminShellV20.SubmodelElementCollection()
+            var collection = new AdminShell.SubmodelElementCollection()
             {
                 idShort = data.IdShort,
-                kind = AdminShellV20.ModelingKind.CreateAsInstance(),
+                kind = AdminShell.ModelingKind.CreateAsInstance(),
             };
             InitSubmodelElement(env, collection, data);
             return collection;
@@ -91,34 +90,34 @@ namespace AasxDictionaryImport
         /// <param name="data">The IEC 61360 data to create the property from</param>
         /// <param name="valueType">The value type of the property</param>
         /// <returns>A new property with the given data</returns>
-        public static AdminShellV20.Property CreateProperty(
-            AdminShellV20.AdministrationShellEnv env, Iec61360Data data, string valueType)
+        public static AdminShell.Property CreateProperty(
+            AdminShell.AdministrationShellEnv env, Iec61360Data data, string valueType)
         {
-            var property = new AdminShellV20.Property()
+            var property = new AdminShell.Property()
             {
                 idShort = data.IdShort,
-                kind = AdminShellV20.ModelingKind.CreateAsInstance(),
+                kind = AdminShell.ModelingKind.CreateAsInstance(),
                 valueType = valueType,
             };
             InitSubmodelElement(env, property, data);
             return property;
         }
 
-        private static void InitSubmodelElement(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.SubmodelElement submodelElement, Iec61360Data data)
+        private static void InitSubmodelElement(AdminShell.AdministrationShellEnv env,
+            AdminShell.SubmodelElement submodelElement, Iec61360Data data)
         {
             AddDescriptions(submodelElement, data);
             AddDataSpecification(env, submodelElement, data);
         }
 
-        private static void AddDescriptions(AdminShellV20.Referable r, Iec61360Data data)
+        private static void AddDescriptions(AdminShell.Referable r, Iec61360Data data)
         {
             foreach (var lang in data.PreferredName.AvailableLanguages)
                 r.AddDescription(lang, data.PreferredName.Get(lang));
         }
 
-        private static void AddDataSpecification(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.Submodel submodel, Iec61360Data data)
+        private static void AddDataSpecification(AdminShell.AdministrationShellEnv env,
+            AdminShell.Submodel submodel, Iec61360Data data)
         {
             var cd = CreateConceptDescription(env, data);
 
@@ -127,14 +126,14 @@ namespace AasxDictionaryImport
             var eds = cd.IEC61360DataSpec;
             if (eds != null)
             {
-                eds.dataSpecification = new AdminShellV20.DataSpecificationRef(cd.GetReference());
+                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetReference());
             }
 
-            submodel.semanticId = new AdminShellV20.SemanticId(cd.GetReference());
+            submodel.semanticId = new AdminShell.SemanticId(cd.GetReference());
         }
 
-        private static void AddDataSpecification(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.SubmodelElement submodelElement, Iec61360Data data)
+        private static void AddDataSpecification(AdminShell.AdministrationShellEnv env,
+            AdminShell.SubmodelElement submodelElement, Iec61360Data data)
         {
             var cd = CreateConceptDescription(env, data);
 
@@ -143,31 +142,31 @@ namespace AasxDictionaryImport
             var eds = cd.IEC61360DataSpec;
             if (eds != null)
             {
-                eds.dataSpecification = new AdminShellV20.DataSpecificationRef(cd.GetReference());
+                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetReference());
             }
 
-            submodelElement.semanticId = new AdminShellV20.SemanticId(cd.GetReference());
+            submodelElement.semanticId = new AdminShell.SemanticId(cd.GetReference());
         }
 
-        private static AdminShellV20.ConceptDescription CreateConceptDescription(
-            AdminShellV20.AdministrationShellEnv env, Iec61360Data data)
+        private static AdminShell.ConceptDescription CreateConceptDescription(
+            AdminShell.AdministrationShellEnv env, Iec61360Data data)
         {
-            var cd = AdminShellV20.ConceptDescription.CreateNew(
-                data.IdShort, AdminShellV20.Identification.IRDI, data.Irdi);
+            var cd = AdminShell.ConceptDescription.CreateNew(
+                data.IdShort, AdminShell.Identification.IRDI, data.Irdi);
 
             // TODO (Robin, 2020-09-03): check this code
             cd.IEC61360Content = data.ToDataSpecification();
             // dead-csharp off
-            //cd.embeddedDataSpecification = new AdminShellV20.EmbeddedDataSpecification()
+            //cd.embeddedDataSpecification = new AdminShell.EmbeddedDataSpecification()
             //{
-            //    dataSpecificationContent = new AdminShellV20.DataSpecificationContent()
+            //    dataSpecificationContent = new AdminShell.DataSpecificationContent()
             //    {
             //        dataSpecificationIEC61360 = data.ToDataSpecification(),
             //    },
             //};
             // dead-csharp on
 
-            cd.AddIsCaseOf(AdminShellV20.Reference.CreateIrdiReference(data.Irdi));
+            cd.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(data.Irdi));
             env.ConceptDescriptions.Add(cd);
             return cd;
         }
@@ -288,14 +287,14 @@ namespace AasxDictionaryImport
         /// are added to the set.
         /// </summary>
         /// <returns>A LangStringSet with the values form this multi string</returns>
-        public AdminShellV20.LangStringSetIEC61360 ToLangStringSet()
+        public AdminShell.LangStringSetIEC61360 ToLangStringSet()
         {
-            var set = new AdminShellV20.LangStringSetIEC61360();
+            var set = new AdminShell.LangStringSetIEC61360();
             foreach (var lang in Languages)
             {
                 var value = Get(lang);
                 if (value.Length > 0)
-                    set.Add(new AdminShellV20.LangStr(lang, value));
+                    set.Add(new AdminShell.LangStr(lang, value));
             }
             return set;
         }
@@ -395,9 +394,9 @@ namespace AasxDictionaryImport
         /// Converts this data to a DataSpecification object used by the AAS data model.  Empty fields are ignored.
         /// </summary>
         /// <returns>The AAS DataSpecification with the data stored in this element</returns>
-        public AdminShellV20.DataSpecificationIEC61360 ToDataSpecification()
+        public AdminShell.DataSpecificationIEC61360 ToDataSpecification()
         {
-            var ds = new AdminShellV20.DataSpecificationIEC61360()
+            var ds = new AdminShell.DataSpecificationIEC61360()
             {
                 definition = Definition.ToLangStringSet(),
                 preferredName = PreferredName.ToLangStringSet(),
@@ -411,9 +410,9 @@ namespace AasxDictionaryImport
             if (Unit.Length > 0)
                 ds.unit = Unit;
             if (UnitIrdi.Length > 0)
-                ds.unitId = AdminShellV20.UnitId.CreateNew(
-                    AdminShellV20.Key.GlobalReference, false,
-                    AdminShellV20.Identification.IRDI, UnitIrdi);
+                ds.unitId = AdminShell.UnitId.CreateNew(
+                    AdminShell.Key.GlobalReference, false,
+                    AdminShell.Identification.IRDI, UnitIrdi);
             if (DataType.Length > 0)
                 ds.dataType = DataType;
             if (DataFormat.Length > 0)

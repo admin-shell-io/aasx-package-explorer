@@ -1715,7 +1715,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                    "Submodel", true, "", submodel.identification.id);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1867,7 +1867,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                    "Submodel", true, "", submodel.identification.id);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -2691,7 +2691,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // Submodel needs an identification
-                    smres.identification = new AdminShell.Identification("IRI", "");
+                    smres.identification = new AdminShell.Identification("");
                     if (smres.kind == null || smres.kind.IsInstance)
                         smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
@@ -2823,7 +2823,7 @@ namespace AasxPackageExplorer
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
-                foreach (AdminShellV20.Asset ass in _packageCentral.Main.AasEnv.Assets)
+                foreach (AdminShell.Asset ass in _packageCentral.Main.AasEnv.Assets)
                 {
                     UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
                 }

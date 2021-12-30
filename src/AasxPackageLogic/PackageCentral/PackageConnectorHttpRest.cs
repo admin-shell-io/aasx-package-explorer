@@ -658,7 +658,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(
                         "", false, AdminShell.Key.IdShort, sme0.idShort,
-                        AdminShellV20.Key.MatchMode.Identification))
+                        AdminShell.Key.MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
@@ -758,7 +758,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     AdminShell.SubmodelRef smrefFound = null;
                     foreach (var smref in parentAas.submodelRefs)
-                        if (smref.Matches(targetKl.Last(), AdminShellV20.Key.MatchMode.Relaxed))
+                        if (smref.Matches(targetKl.Last(), AdminShell.Key.MatchMode.Relaxed))
                             smrefFound = smref;
 
                     if (smrefFound == null)

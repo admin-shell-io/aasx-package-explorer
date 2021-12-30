@@ -14,7 +14,7 @@ using AasValidationRecordList = AdminShellNS.AasValidationRecordList;
 using AdminShell = AdminShellNS.AdminShell;
 using AdminShellPackageEnv = AdminShellNS.AdminShellPackageEnv;
 using AdminShellUtil = AdminShellNS.AdminShellUtil;
-using AdminShellV20 = AdminShellNS.AdminShellV20;
+// using AdminShellV20 = AdminShellNS.AdminShellV30RC02;
 using AmlExport = AasxAmlImExport.AmlExport;
 using AmlImport = AasxAmlImExport.AmlImport;
 using Console = System.Console;
@@ -348,15 +348,15 @@ namespace AasxToolkit
                                     return -1;
                                 }
 
-                                var prop = AdminShellV20.Property.CreateNew("test", "cat01");
-                                prop.semanticId = new AdminShellV20.SemanticId(
-                                    AdminShellV20.Reference.CreateNew(
+                                var prop = AdminShell.Property.CreateNew("test", "cat01");
+                                prop.semanticId = new AdminShell.SemanticId(
+                                    AdminShell.Reference.CreateNew(
                                         "GlobalReference", false, "IRI",
                                         "www.admin-shell.io/nonsense"));
 
-                                var fil = AdminShellV20.File.CreateNew("test", "cat01");
-                                fil.semanticId = new AdminShellV20.SemanticId(
-                                    AdminShellV20.Reference.CreateNew(
+                                var fil = AdminShell.File.CreateNew("test", "cat01");
+                                fil.semanticId = new AdminShell.SemanticId(
+                                    AdminShell.Reference.CreateNew(
                                         "GlobalReference", false, "IRI",
                                         "www.admin-shell.io/nonsense"));
                                 fil.parent = fil;

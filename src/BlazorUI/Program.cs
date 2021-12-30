@@ -39,8 +39,8 @@ namespace BlazorUI
         public object parent { get; set; }
         public string Type { get; set; }
         public object Tag { get; set; }
-        public AdminShellV20.Referable ParentContainer { get; set; }
-        public AdminShellV20.SubmodelElementWrapper Wrapper { get; set; }
+        public AdminShell.Referable ParentContainer { get; set; }
+        public AdminShell.SubmodelElementWrapper Wrapper { get; set; }
         public int envIndex { get; set; }
 
         public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)

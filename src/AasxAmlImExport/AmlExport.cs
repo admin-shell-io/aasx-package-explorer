@@ -93,7 +93,6 @@ namespace AasxAmlImExport
             if (id == null)
                 return;
             var a0 = AppendAttributeNameAndRole(aseq, "identification", AmlConst.Attributes.Identification);
-            AppendAttributeNameAndRole(a0.Attribute, "idType", AmlConst.Attributes.Identification_idType, id.idType);
             AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id.id);
         }
 
@@ -992,7 +991,7 @@ namespace AasxAmlImExport
                             {
                                 if (smkt.kind != null && smkt.kind.IsTemplate &&
                                     smki.semanticId.Matches(
-                                        AdminShell.Key.Submodel, true, smkt.identification.idType,
+                                        AdminShell.Key.Submodel, true, "",
                                         smkt.identification.id))
                                 {
                                     // we have a match: Submodel kind = Instance -> Submodel kind = Type

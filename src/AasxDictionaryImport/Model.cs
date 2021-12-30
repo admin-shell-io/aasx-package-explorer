@@ -238,8 +238,8 @@ namespace AasxDictionaryImport.Model
         /// <param name="adminShell">The admin shell to add the submodel to</param>
         /// <returns>true if the import was successful, or false if the import failed or if this element cannot be
         /// converted to an AAS submodel</returns>
-        bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell);
+        bool ImportSubmodelInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell adminShell);
 
         /// <summary>
         /// Converts this element into a AAS submodel element (i. e. a property or a collection) and adds it to the
@@ -434,8 +434,8 @@ namespace AasxDictionaryImport.Model
         public virtual Uri? GetDetailsUrl() => null;
 
         /// <inheritdoc/>
-        public virtual bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell) => false;
+        public virtual bool ImportSubmodelInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell adminShell) => false;
 
         /// <inheritdoc/>
         public virtual bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,

@@ -192,9 +192,7 @@ namespace AasxPackageLogic
             AdminShell.AdministrationShellEnv env, AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
-            DispEditInjectAction injectToId = null,
-            bool checkForIri = true)
-            where T : AdminShell.Identifiable
+            DispEditInjectAction injectToId = null)
         {
             // access
             if (stack == null || identifiable == null)
@@ -208,12 +206,6 @@ namespace AasxPackageLogic
                     () => { return identifiable.identification == null; },
                     "Providing a worldwide unique identification is mandatory.",
                     breakIfTrue: true),
-                new HintCheck(
-                    () => { return checkForIri
-                        && identifiable.identification.idType != AdminShell.Identification.IRI;
-                    },
-                    "Check if identification type is correct. Use of IRIs is usual here.",
-                    severityLevel: HintCheck.Severity.Notice ),
                 new HintCheck(
                     () => { return identifiable.identification.id.Trim() == ""; },
                     "Identification id shall not be empty. You could use the 'Generate' button in order to " +
@@ -231,17 +223,6 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
-                    v =>
-                    {
-                        var dr = new DiaryReference(identifiable);
-                        identifiable.identification.idType = v as string;
-                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                        return new AnyUiLambdaActionNone();
-                    },
-                    comboBoxItems: AdminShell.Key.IdentifierTypeNames);
-
-                this.AddKeyValueRef(
                     stack, "id", identifiable, ref identifiable.identification.id, null, repo,
                     v =>
                     {
@@ -255,58 +236,12 @@ namespace AasxPackageLogic
                     {
                         if (i == 0)
                         {
-                            var res = this.context.MessageBoxFlyoutShow(
-                                    "When generating new identification, rename all occurences " +
-                                    "in the AAS environment? " + Environment.NewLine +
-                                    "(This operation cannot be reverted!)",
-                                    "Identifiable", AnyUiMessageBoxButton.YesNoCancel, AnyUiMessageBoxImage.Warning);
-
-                            if (res == AnyUiMessageBoxResult.Yes && env != null)
-                            {
-                                // new id
-                                var newId = new AdminShell.Identification(
-                                    AdminShell.Identification.IRI,
-                                    AdminShellUtil.GenerateIdAccordingTemplate(templateForIdString));
-
-                                // rename
-                                var lrf = env.RenameIdentifiable<T>(
-                                    identifiable.identification,
-                                    newId);
-
-                                // diary
-                                var dr = new DiaryReference(identifiable);
-                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-
-                                // use this information to emit events
-                                if (lrf != null)
-                                {
-                                    foreach (var rf in lrf)
-                                    {
-                                        var rfi = rf.FindParentFirstIdentifiable();
-                                        if (rfi != null)
-                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
-                                    }
-                                }
-
-                                Log.Singleton.Info("Generating and renamimg performed.");
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
-                            }
-
-                            if (res == AnyUiMessageBoxResult.No)
-                            {
-                                // single rename
-                                var dr = new DiaryReference(identifiable);
-                                identifiable.identification.idType = AdminShell.Identification.IRI;
-                                identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
-                                    templateForIdString);
-                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-
-                                Log.Singleton.Info("New id generated.");
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
-                            }
-
-                            // nope
-                            return new AnyUiLambdaActionNone();
+                            var dr = new DiaryReference(identifiable);
+                            identifiable.identification.idType = AdminShell.Identification.IRI;
+                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                templateForIdString);
+                            this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
                         }
                         if (i >= 1)
                         {

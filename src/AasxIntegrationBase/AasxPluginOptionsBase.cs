@@ -87,6 +87,7 @@ namespace AasxIntegrationBase
                 try
                 {
                     var optText = File.ReadAllText(fn);
+                    optText = AdminShellSerializationHelper.FixSerializedVersionedEntities(optText);
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }

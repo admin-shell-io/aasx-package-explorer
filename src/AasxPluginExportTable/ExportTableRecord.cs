@@ -325,8 +325,7 @@ namespace AasxPluginExportTable
                 if (ifi.identification != null)
                 {
                     //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", "[" + ifi.identification.idType + "]" + ifi.identification.id);
-                    rep(head + "identification.idType", "" + ifi.identification.idType);
+                    rep(head + "identification", "" + ifi.identification.id);
                     rep(head + "identification.id", "" + ifi.identification.id);
                 }
                 if (ifi.administration != null)

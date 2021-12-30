@@ -151,8 +151,8 @@ namespace AasxPredefinedConcepts
             // create CD
             var cd = AdminShell.ConceptDescription.CreateNew(idShort, idType, id);
             var dsiec = cd.CreateDataSpecWithContentIec61360();
-            dsiec.preferredName = new AdminShellV20.LangStringSetIEC61360(lang, "" + idShort);
-            dsiec.definition = new AdminShellV20.LangStringSetIEC61360(lang,
+            dsiec.preferredName = new AdminShell.LangStringSetIEC61360(lang, "" + idShort);
+            dsiec.definition = new AdminShell.LangStringSetIEC61360(lang,
                 "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
 
             // options

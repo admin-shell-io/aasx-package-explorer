@@ -90,7 +90,7 @@ namespace AasxRestServerLibrary
                         var vl = v.Split(',');
                         if (vl.Length == 2)
                         {
-                            var id = new AdminShell.Identification(vl[0], vl[1]);
+                            var id = new AdminShell.Identification(vl[1]);
                             var h = new AasxHttpHandleIdentification(id, "@" + k);
                             res.Add(h);
                         }
@@ -134,7 +134,7 @@ namespace AasxRestServerLibrary
                         var idt = m2.Groups[2].ToString();
                         var ids = m2.Groups[3].ToString();
 
-                        var id = new AdminShell.Identification(idt, ids);
+                        var id = new AdminShell.Identification(ids);
                         var h = new AasxHttpHandleIdentification(id, "@" + k);
                         res.Add(h);
                     }
@@ -811,7 +811,7 @@ namespace AasxRestServerLibrary
 
             // add SubmodelRef to AAS
             var newsmr = AdminShell.SubmodelRef.CreateNew(
-                "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                "Submodel", true, "", submodel.identification.id);
             var existsmr = aas.HasSubmodelRef(newsmr);
             if (!existsmr)
             {

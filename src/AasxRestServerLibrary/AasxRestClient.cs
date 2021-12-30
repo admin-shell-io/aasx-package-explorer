@@ -103,7 +103,7 @@ namespace AasxRestServerLibrary
             var res = "";
             if (tag != null)
                 res += tag.Trim() + "=";
-            res += entity.identification.idType.Trim() + "," + entity.identification.id.Trim();
+            res += "" + entity.identification.id.Trim();
             return res;
         }
 

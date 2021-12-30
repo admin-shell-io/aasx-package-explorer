@@ -328,7 +328,7 @@ namespace AasxPackageLogic
                             0,
                             AdminShell.Key.CreateNew(
                                 smr.theSubmodel.GetElementName(), true,
-                                smr.theSubmodel.identification.idType,
+                                "",
                                 smr.theSubmodel.identification.id));
 
                     // include aas
@@ -339,7 +339,7 @@ namespace AasxPackageLogic
                             0,
                             AdminShell.Key.CreateNew(
                                 AdminShell.Key.AAS, true,
-                                veAas.theAas.identification.idType,
+                                "",
                                 veAas.theAas.identification.id));
                     }
 
@@ -352,7 +352,7 @@ namespace AasxPackageLogic
                     res.Insert(
                         0,
                         AdminShell.Key.CreateNew(
-                            iddata.GetElementName(), true, iddata.identification.idType, iddata.identification.id));
+                            iddata.GetElementName(), true, "", iddata.identification.id));
                     break;
                 }
                 else
@@ -633,7 +633,7 @@ namespace AasxPackageLogic
                 this.Info = ci.Item2;
                 var asset = theEnv.FindAsset(theAas.assetRef);
                 if (asset != null)
-                    this.Info += $" of [{asset.identification.idType}, {asset.identification.id}, {asset.kind.kind}]";
+                    this.Info += $" of [{asset.identification.id}, {asset.kind.kind}]";
             }
         }
     }
@@ -1136,11 +1136,6 @@ namespace AasxPackageLogic
                 if (id2 == null)
                     return +1;
 
-                var vc = String.Compare(id1.idType, id2.idType,
-                        CultureInfo.InvariantCulture, CompareOptions.IgnoreCase);
-                if (vc != 0)
-                    return vc;
-
                 return String.Compare(id1.id, id2.id,
                     CultureInfo.InvariantCulture, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace);
             }
@@ -1568,7 +1563,7 @@ namespace AasxPackageLogic
         }
 
         private void GenerateInnerElementsForConceptDescriptions(
-            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
             VisualElementEnvironmentItem tiCDs,
             VisualElementGeneric root,
             bool doSort = true)
@@ -1840,7 +1835,7 @@ namespace AasxPackageLogic
         }
 
         private void SetElementToLazyLoading(
-            TreeViewLineCache cache, AdminShellV20.AdministrationShellEnv env, AdminShellPackageEnv package,
+            TreeViewLineCache cache, AdminShell.AdministrationShellEnv env, AdminShellPackageEnv package,
             VisualElementGeneric parent)
         {
             var tiDummy = new VisualElementEnvironmentItem(parent, cache, package, env,

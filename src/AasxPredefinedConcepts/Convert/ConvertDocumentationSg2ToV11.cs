@@ -124,10 +124,10 @@ namespace AasxPredefinedConcepts.Convert
                         // Domain?
                         var s1 = smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defsSg2.CD_VDI2770_DomainId.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    AdminShell.Key.MatchMode.Relaxed)?.value;
                         var s2 = smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defsSg2.CD_VDI2770_DocumentId.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    AdminShell.Key.MatchMode.Relaxed)?.value;
                         if (s1 != null || s2 != null)
                         {
                             var smcV11Dom = smcV11Doc.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -142,13 +142,13 @@ namespace AasxPredefinedConcepts.Convert
                         // Classification (3 properties)
                         s1 = smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassificationSystem.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    AdminShell.Key.MatchMode.Relaxed)?.value;
                         s2 = smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassId.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    AdminShell.Key.MatchMode.Relaxed)?.value;
                         var s3 = smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassName.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    AdminShell.Key.MatchMode.Relaxed)?.value;
                         if (s2 != null || s3 != null)
                         {
                             var smcV11Cls = smcV11Doc.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -168,7 +168,7 @@ namespace AasxPredefinedConcepts.Convert
 
                         foreach (var o in smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_Language.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed))
+                                AdminShell.Key.MatchMode.Relaxed))
                             smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
                                 defsV11.CD_Language, addSme: true)?.Set("string", "" + o);
 
@@ -176,25 +176,25 @@ namespace AasxPredefinedConcepts.Convert
                             defsV11.CD_DocumentVersionId, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_DocumentVersionIdValue.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
+                                AdminShell.Key.MatchMode.Relaxed)?.value);
 
                         var mlp1 = smcVer.value.FindFirstSemanticIdAs<AdminShell.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Title.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed);
+                                    AdminShell.Key.MatchMode.Relaxed);
                         if (mlp1 != null)
                             smcV11Ver.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(
                                 defsV11.CD_Title, addSme: true).value = mlp1.value;
 
                         mlp1 = smcVer.value.FindFirstSemanticIdAs<AdminShell.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Summary.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed);
+                                    AdminShell.Key.MatchMode.Relaxed);
                         if (mlp1 != null)
                             smcV11Ver.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(
                                 defsV11.CD_Summary, addSme: true).value = mlp1.value;
 
                         mlp1 = smcVer.value.FindFirstSemanticIdAs<AdminShell.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Keywords.GetSingleKey(),
-                                    AdminShellV20.Key.MatchMode.Relaxed);
+                                    AdminShell.Key.MatchMode.Relaxed);
                         if (mlp1 != null)
                             smcV11Ver.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(
                                 defsV11.CD_KeyWords, addSme: true).value = mlp1.value;
@@ -203,29 +203,29 @@ namespace AasxPredefinedConcepts.Convert
                             defsV11.CD_SetDate, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_Date.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
+                                AdminShell.Key.MatchMode.Relaxed)?.value);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
                             defsV11.CD_StatusValue, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_StatusValue.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
+                                AdminShell.Key.MatchMode.Relaxed)?.value);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
                             defsV11.CD_OrganizationName, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_OrganizationName.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
+                                AdminShell.Key.MatchMode.Relaxed)?.value);
 
                         smcV11Ver.value.CreateSMEForCD<AdminShell.Property>(
                             defsV11.CD_OrganizationOfficialName, addSme: true)?.
                             Set("string", "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                 defsSg2.CD_VDI2770_OrganizationOfficialName.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value);
+                                AdminShell.Key.MatchMode.Relaxed)?.value);
 
                         foreach (var o in smcVer.value.FindAllSemanticIdAs<AdminShell.File>(
                                 defsSg2.CD_VDI2770_DigitalFile.GetSingleKey(),
-                                AdminShellV20.Key.MatchMode.Relaxed))
+                                AdminShell.Key.MatchMode.Relaxed))
                             smcV11Ver.value.CreateSMEForCD<AdminShell.File>(
                                 defsV11.CD_DigitalFile, addSme: true)?.Set(o.mimeType, o.value);
                     }

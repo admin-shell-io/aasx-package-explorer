@@ -95,9 +95,9 @@ namespace AasOpcUaServer
             if (nr.referable != null && !NodeRecordFromReferable.ContainsKey(nr.referable))
                 NodeRecordFromReferable.Add(nr.referable, nr);
 
-            if (nr.identification != null && nr.identification.idType != null && nr.identification.id != null)
+            if (nr.identification != null && nr.identification.id != null)
             {
-                var hash = nr.identification.idType.Trim().ToUpper() + "|" + nr.identification.id.Trim().ToUpper();
+                var hash = "" + nr.identification.id.Trim().ToUpper();
                 if (!NodeRecordFromIdentificationHash.ContainsKey(hash))
                     NodeRecordFromIdentificationHash.Add(hash, nr);
             }
@@ -122,7 +122,7 @@ namespace AasOpcUaServer
         /// <returns></returns>
         public NodeRecord LookupNodeRecordFromIdentification(AdminShell.Identification identification)
         {
-            var hash = identification.idType.Trim().ToUpper() + "|" + identification.id.Trim().ToUpper();
+            var hash = "" + identification.id.Trim().ToUpper();
             if (NodeRecordFromReferable == null || !NodeRecordFromIdentificationHash.ContainsKey(hash))
                 return null;
             return NodeRecordFromIdentificationHash[hash];
@@ -243,8 +243,7 @@ namespace AasOpcUaServer
                     if (!foundAtAll && lax.targetReference.Keys.Count == 1)
                     {
                         // can turn the targetReference to a simple identification
-                        var targetId = new AdminShell.Identification(lax.targetReference.Keys[0].idType,
-                            lax.targetReference.Keys[0].value);
+                        var targetId = new AdminShell.Identification(lax.targetReference.Keys[0].value);
 
                         // we might have such an (empty) target already available as uanode
                         var nr = this.LookupNodeRecordFromIdentification(targetId);

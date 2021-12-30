@@ -140,7 +140,7 @@ namespace AasxPluginImageMap
             // file?
             var fe = this.theSubmodel.submodelElements.FindFirstSemanticIdAs<AdminShell.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile.GetReference(),
-                AdminShellV20.Key.MatchMode.Relaxed);
+                AdminShell.Key.MatchMode.Relaxed);
             if (fe == null)
                 return;
 
@@ -305,7 +305,7 @@ namespace AasxPluginImageMap
             int index = -1;
             foreach (var ent in this.theSubmodel.submodelElements.FindAllSemanticIdAs<AdminShell.Entity>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_EntityOfImageMap.GetReference(),
-                AdminShellV20.Key.MatchMode.Relaxed))
+                AdminShell.Key.MatchMode.Relaxed))
             {
                 // access
                 if (ent?.statements == null)
@@ -314,7 +314,7 @@ namespace AasxPluginImageMap
                 // find all regions known
                 foreach (var prect in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    AdminShell.Key.MatchMode.Relaxed))
                 {
                     // access
                     if (!(prect?.value.HasContent() == true))
@@ -343,7 +343,7 @@ namespace AasxPluginImageMap
 
                 foreach (var pcirc in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    AdminShell.Key.MatchMode.Relaxed))
                 {
                     // access
                     if (!(pcirc?.value.HasContent() == true))
@@ -372,7 +372,7 @@ namespace AasxPluginImageMap
 
                 foreach (var ppoly in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    AdminShell.Key.MatchMode.Relaxed))
                 {
                     // access
                     if (!(ppoly?.value.HasContent() == true))
@@ -468,7 +468,7 @@ namespace AasxPluginImageMap
                     // first check, if a navigate to reference element can be found
                     var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
                         AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
-                        AdminShellV20.Key.MatchMode.Relaxed);
+                        AdminShell.Key.MatchMode.Relaxed);
                     if (navTo?.value != null)
                     {
                         // try activate
@@ -479,7 +479,7 @@ namespace AasxPluginImageMap
                     }
 
                     // if not, have a look to the Entity itself
-                    if (ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity
+                    if (ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity
                         && ent.assetRef != null && ent.assetRef.Count > 0)
                     {
                         // try activate

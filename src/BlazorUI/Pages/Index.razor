@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using AdminShellNS
-@using static AdminShellNS.AdminShellV20;
+@using static AdminShellNS.AdminShellV30;
 @*using BlazorUI*@
 @using AnyUi
 @using BlazorUI.Shared
@@ -837,7 +837,7 @@
         {
             ret += "Opr";
         }
-        if (o is AdminShellV20.File)
+        if (o is AdminShell.File)
         {
             ret += "File";
         }
@@ -845,7 +845,7 @@
         {
             ret += "Blob";
         }
-        if (o is AdminShellNS.AdminShellV20.Range)
+        if (o is AdminShellNS.AdminShell.Range)
         {
             ret += "Range";
         }
@@ -865,7 +865,7 @@
         {
             ret += "Ent";
         }
-        if (o is AdminShellNS.AdminShellV20.BasicEvent)
+        if (o is AdminShellNS.AdminShell.BasicEvent)
         {
             ret += "Evt";
         }
@@ -905,9 +905,9 @@
                 ret += "<T> ";
             ret += sme.idShort;
         }
-        if (o is AdminShellV20.File)
+        if (o is AdminShell.File)
         {
-            var f = o as AdminShellV20.File;
+            var f = o as AdminShell.File;
             ret = "";
             if (f.kind != null && f.kind.IsTemplate)
                 ret += "<T> ";
@@ -921,9 +921,9 @@
                 ret += "<T> ";
             ret += b.idShort;
         }
-        if (o is AdminShellNS.AdminShellV20.Range)
+        if (o is AdminShellNS.AdminShell.Range)
         {
-            var r = o as AdminShellNS.AdminShellV20.Range;
+            var r = o as AdminShellNS.AdminShell.Range;
             ret = "";
             if (r.kind != null && r.kind.IsTemplate)
                 ret += "<T> ";
@@ -988,9 +988,9 @@
                     ret += " @QUALIFIERS";
                 }
             }
-            if (o is AdminShellV20.File)
+            if (o is AdminShell.File)
             {
-                var f = o as AdminShellV20.File;
+                var f = o as AdminShell.File;
                 ret = " = " + f.value;
                 if (f.qualifiers != null && f.qualifiers.Count > 0)
                 {
@@ -998,9 +998,9 @@
                 }
             }
         }
-        if (o is AdminShellNS.AdminShellV20.Range)
+        if (o is AdminShellNS.AdminShell.Range)
         {
-            var r = o as AdminShellNS.AdminShellV20.Range;
+            var r = o as AdminShellNS.AdminShell.Range;
             ret = " = " + r.min + " .. " + r.max;
             if (r.qualifiers != null && r.qualifiers.Count > 0)
             {
