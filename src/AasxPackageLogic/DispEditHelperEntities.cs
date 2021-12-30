@@ -79,7 +79,7 @@ namespace AasxPackageLogic
                     this.context?.StartFlyover(uc);
                     try
                     {
-                        this.context?.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                        this.context?.PrintSingleAssetCodeSheet(asset.id.value, asset.idShort);
                     }
                     catch (Exception ex)
                     {
@@ -112,7 +112,7 @@ namespace AasxPackageLogic
                             AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
                         if (this.context.StartFlyoverModal(uc))
                         {
-                            asset.identification.id = uc.Text;
+                            asset.id.value = uc.Text;
                             this.AddDiaryEntry(asset, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
@@ -124,7 +124,7 @@ namespace AasxPackageLogic
                             "New ID:",
                             symbol: AnyUiMessageBoxImage.Question,
                             maxWidth: 1400,
-                            text: asset.identification.id);
+                            text: asset.id.value);
                         if (this.context.StartFlyoverModal(uc))
                         {
                             var res = false;
@@ -133,8 +133,8 @@ namespace AasxPackageLogic
                             {
                                 // rename
                                 var lrf = env.RenameIdentifiable<AdminShell.Asset>(
-                                    asset.identification,
-                                    new AdminShell.Identification(uc.Text));
+                                    asset.id,
+                                    new AdminShell.Identifier(uc.Text));
 
                                 // use this information to emit events
                                 if (lrf != null)
@@ -335,7 +335,7 @@ namespace AasxPackageLogic
                                             {
                                                 destAsset = new AdminShell.Asset(sourceAsset);
                                                 if (createNewIds)
-                                                    destAsset.identification = new AdminShell.Identification(
+                                                    destAsset.id = new AdminShell.Identifier(
                                                         AdminShellUtil.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAsset));
 
@@ -351,7 +351,7 @@ namespace AasxPackageLogic
                                             if (copyRecursively)
                                                 destAAS.assetRef = new AdminShell.AssetRef(destAsset.GetReference());
                                             if (createNewIds)
-                                                destAAS.identification = new AdminShell.Identification(
+                                                destAAS.id = new AdminShell.Identifier(
                                                     AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
 
@@ -409,7 +409,7 @@ namespace AasxPackageLogic
                                                         // with new id from scratch
                                                         var dstSub = new AdminShell.Submodel(
                                                             srcSub, shallowCopy: false);
-                                                        dstSub.identification = new AdminShell.Identification(
+                                                        dstSub.id = new AdminShell.Identifier(
                                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                                         // make a new ref
@@ -1045,19 +1045,19 @@ namespace AasxPackageLogic
                             // directly create identification, as we need it!
                             if (buttonNdx == 1)
                             {
-                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                submodel.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelTemplate);
                                 submodel.kind = AdminShell.ModelingKind.CreateAsTemplate();
                             }
                             else
-                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                submodel.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
                             var smr = new AdminShell.SubmodelRef();
                             smr.Keys.Add(
                                 new AdminShell.Key(
-                                    "Submodel", true, "", submodel.identification.id));
+                                    "Submodel", true, "", submodel.id.value));
                             aas.submodelRefs.Add(smr);
 
                             // event for AAS
@@ -1128,7 +1128,7 @@ namespace AasxPackageLogic
                                         // create Submodel as deep copy 
                                         // with new id from scratch
                                         var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
-                                        dstSub.identification = new AdminShell.Identification(
+                                        dstSub.id = new AdminShell.Identifier(
                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
@@ -1614,7 +1614,7 @@ namespace AasxPackageLogic
                                     "New ID:",
                                     symbol: AnyUiMessageBoxImage.Question,
                                     maxWidth: 1400,
-                                    text: submodel.identification.id);
+                                    text: submodel.id.value);
                                 if (this.context.StartFlyoverModal(uc))
                                 {
                                     var res = false;
@@ -1623,8 +1623,8 @@ namespace AasxPackageLogic
                                     {
                                         // rename
                                         var lrf = env.RenameIdentifiable<AdminShell.Submodel>(
-                                            submodel.identification,
-                                            new AdminShell.Identification(uc.Text));
+                                            submodel.id,
+                                            new AdminShell.Identifier(uc.Text));
 
                                         // use this information to emit events
                                         if (lrf != null)
@@ -1780,7 +1780,7 @@ namespace AasxPackageLogic
                             "New ID:",
                             symbol: AnyUiMessageBoxImage.Question,
                             maxWidth: 1400,
-                            text: cd.identification.id);
+                            text: cd.id.value);
                         if (this.context.StartFlyoverModal(uc))
                         {
                             var res = false;
@@ -1789,8 +1789,8 @@ namespace AasxPackageLogic
                             {
                                 // rename
                                 var lrf = env.RenameIdentifiable<AdminShell.ConceptDescription>(
-                                    cd.identification,
-                                    new AdminShell.Identification(uc.Text));
+                                    cd.id,
+                                    new AdminShell.Identifier(uc.Text));
 
                                 // use this information to emit events
                                 if (lrf != null)
@@ -2236,7 +2236,7 @@ namespace AasxPackageLogic
                             var cd = new AdminShell.ConceptDescription();
 
                             // make an ID, automatically
-                            cd.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            cd.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
 
                             // store in AAS enviroment
@@ -2246,7 +2246,7 @@ namespace AasxPackageLogic
                             // set the semantic id
                             sme.semanticId = AdminShell.SemanticId.CreateFromKey(
                                 new AdminShell.Key(
-                                    "ConceptDescription", true, "", cd.identification.id));
+                                    "ConceptDescription", true, "", cd.id.value));
 
                             // can set kind?
                             if (parentKind != null && sme.kind == null)
@@ -2288,7 +2288,7 @@ namespace AasxPackageLogic
                                     if (null == env.FindConceptDescription(
                                             AdminShell.Key.CreateNew(
                                                 AdminShell.Key.ConceptDescription, true,
-                                                "", newcd.identification.id)))
+                                                "", newcd.id.value)))
                                         env.ConceptDescriptions.Add(newcd);
                                 }
 
@@ -2296,7 +2296,7 @@ namespace AasxPackageLogic
                                 sme.semanticId = AdminShell.SemanticId.CreateFromKey(
                                     new AdminShell.Key(
                                         AdminShell.Key.ConceptDescription, true,
-                                        AdminShell.Identification.IRDI, resIRDI));
+                                        AdminShell.Identifier.IRDI, resIRDI));
 
                                 // if empty take over shortName
                                 var cd = env.FindConceptDescription(sme.semanticId.Keys);

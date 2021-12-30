@@ -654,7 +654,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 // id
-                TDJson["id"] = sm.identification.id;
+                TDJson["id"] = sm.id.value;
                 if (sm.submodelElements != null)
                 {
                     foreach (AdminShell.SubmodelElementWrapper tdElementWrapper in sm.submodelElements)

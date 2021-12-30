@@ -163,13 +163,13 @@ namespace AasxUANodesetImExport
                             CreateProperty(shell.idShort, "PropertyType", "idShort", "String")));
                 }
 
-                if (shell.identification != null)
+                if (shell.id != null)
                 {
                     refs.Add(
                         CreateReference(
                             "HasComponent",
                             CreateIdentifiableIdentification(
-                                shell.identification.id, "")));
+                                shell.id.value, "")));
                 }
 
                 if (shell.hasDataSpecification != null)
@@ -214,9 +214,9 @@ namespace AasxUANodesetImExport
                 refs.Add(
                     CreateReference(
                         "HasInterface",
-                        CreateIdentifiable(submodel.identification.id, "", null, null)));
+                        CreateIdentifiable(submodel.id.value, "", null, null)));
             }
-            else if (submodel.identification == null)
+            else if (submodel.id == null)
             {
                 refs.Add(
                     CreateReference(
@@ -231,7 +231,7 @@ namespace AasxUANodesetImExport
                     CreateReference(
                         "HasInterface",
                         CreateIdentifiable(
-                            submodel.identification.id, "",
+                            submodel.id.value, "",
                             submodel.administration.version, submodel.administration.revision)));
             }
 
@@ -859,9 +859,9 @@ namespace AasxUANodesetImExport
                 refs.Add(
                     CreateReference(
                         "HasComponent",
-                        CreateIdentifiable(asset.identification.id, "", null, null)));
+                        CreateIdentifiable(asset.id.value, "", null, null)));
             }
-            else if (asset.identification == null)
+            else if (asset.id == null)
             {
                 refs.Add(
                     CreateReference(
@@ -874,7 +874,7 @@ namespace AasxUANodesetImExport
                     CreateReference(
                         "HasComponent",
                         CreateIdentifiable(
-                            asset.identification.id, "", asset.administration.version,
+                            asset.id.value, "", asset.administration.version,
                             asset.administration.revision)));
             }
 
@@ -927,7 +927,7 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("DictionaryEntryType"));
 
-            if (concept.identification.IsIRI())
+            if (concept.id.IsIRI())
             {
                 refs.Add(CreateReference("HasComponent", CreateUriConceptDescription(concept)));
             }
@@ -954,7 +954,7 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateIdentifiable(concept.identification.id, "", null, null)));
+                    CreateIdentifiable(concept.id.value, "", null, null)));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
@@ -974,7 +974,7 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateIdentifiable(concept.identification.id, "", null, null)));
+                    CreateIdentifiable(concept.id.value, "", null, null)));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);

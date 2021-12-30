@@ -97,7 +97,7 @@ namespace AasxUANodesetImExport
                                 var smr = new AdminShell.SubmodelRef();
                                 smr.Keys.Add(
                                     new AdminShell.Key(
-                                        "Submodel", true, "", submodel.identification.id));
+                                        "Submodel", true, "", submodel.id.value));
                                 aas.submodelRefs.Add(smr);
                             }
 
@@ -138,7 +138,7 @@ namespace AasxUANodesetImExport
                         else if (node.BrowseName == "1:Identification" &&
                                 getTypeDefinition(node) == "1:AASIdentifierType")
                         {
-                            aas.identification = createIdentification(node);
+                            aas.id = createIdentification(node);
                         }
 
                     }
@@ -172,7 +172,7 @@ namespace AasxUANodesetImExport
             return null;
         }
 
-        private static Identification GetIdentification(UANode submodel)
+        private static Identifier GetIdentification(UANode submodel)
         {
             //AASIdentifiable
             //  -> AASIdentifierType
@@ -187,7 +187,7 @@ namespace AasxUANodesetImExport
                     iden = findNode(_ref.Value);
             }
 
-            Identification identification = new Identification();
+            Identifier identification = new Identifier();
             foreach (Reference _ref in iden.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -200,7 +200,7 @@ namespace AasxUANodesetImExport
                             if (_refref.ReferenceType == "HasProperty")
                             {
                                 UAVariable node = (UAVariable)findNode(_refref.Value);
-                                if (node.BrowseName == "1:Id") identification.id = node.Value.InnerText;
+                                if (node.BrowseName == "1:Id") identification.value = node.Value.InnerText;
                             }
                         }
                     }
@@ -221,8 +221,8 @@ namespace AasxUANodesetImExport
             if (isSubmodel(submodel))
             {
                 //set Submodelparameters
-                Identification iden = GetIdentification(submodel);
-                Submodel sub = Submodel.CreateNew("", iden.id);
+                Identifier iden = GetIdentification(submodel);
+                Submodel sub = Submodel.CreateNew("", iden.value);
                 sub.idShort = makePretty(submodel.BrowseName);
                 sub.kind = getKind(submodel);
 
@@ -726,7 +726,7 @@ namespace AasxUANodesetImExport
 
             ConceptDescription desc = new ConceptDescription();
             Administration admin = new Administration();
-            Identification iden = new Identification();
+            Identifier iden = new Identifier();
 
             var esc = EmbeddedDataSpecification.CreateIEC61360WithContent();
             esc.dataSpecificationContent.dataSpecificationIEC61360.shortName =
@@ -768,7 +768,7 @@ namespace AasxUANodesetImExport
                 }
             }
 
-            desc.identification = iden;
+            desc.id = iden;
             desc.administration = admin;
             return desc;
         }
@@ -824,19 +824,19 @@ namespace AasxUANodesetImExport
                 "URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
         }
 
-        private static Identification createIdentification(UANode node)
+        private static Identifier createIdentification(UANode node)
         {
             //Identification
             //  -> Id
             //  -> IdType
 
-            Identification iden = new Identification();
+            Identifier iden = new Identifier();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     var val = (UAVariable)findNode(_ref.Value);
-                    if (val.BrowseName == "1:Id") iden.id = val.Value.InnerText;
+                    if (val.BrowseName == "1:Id") iden.value = val.Value.InnerText;
                 }
 
             }
@@ -904,7 +904,7 @@ namespace AasxUANodesetImExport
                         asset.administration = createAdmninistration(var);
 
                     if (getTypeDefinition(var) == "1:AASIdentifierType")
-                        asset.identification = createIdentification(var);
+                        asset.id = createIdentification(var);
                 }
             }
         }

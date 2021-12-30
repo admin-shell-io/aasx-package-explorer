@@ -57,7 +57,7 @@ namespace AasxPredefinedConcepts
             get
             {
                 if (Ref is AdminShell.Identifiable id)
-                    return "" + id.identification?.ToString();
+                    return "" + id.id?.ToString();
                 return "";
             }
         }

@@ -1395,9 +1395,9 @@ namespace AasxPackageLogic
                             if (uc.Result &&
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
                                 && pe.Ref is AdminShell.Identifiable id
-                                && id.identification != null)
+                                && id.id != null)
                                 keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,
-                                    "", id.identification.id));
+                                    "", id.id.value));
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1424,7 +1424,7 @@ namespace AasxPackageLogic
                                 keys.Add(
                                     AdminShell.Key.CreateNew(
                                         AdminShell.Key.GlobalReference, false,
-                                        AdminShell.Identification.IRDI, resIRDI));
+                                        AdminShell.Identifier.IRDI, resIRDI));
                             }
 
                             emitCustomEvent?.Invoke(relatedReferable);
@@ -2254,7 +2254,7 @@ namespace AasxPackageLogic
                     if (null == env.FindConceptDescription(
                             AdminShell.Key.CreateNew(
                                 AdminShell.Key.ConceptDescription, true, "",
-                                newcd.identification.id)))
+                                newcd.id.value)))
                     {
                         env.ConceptDescriptions.Add(newcd);
 
@@ -2414,31 +2414,31 @@ namespace AasxPackageLogic
             if (idf == null)
                 return;
 
-            if (idf.identification == null)
-                idf.identification = new AdminShell.Identification();
+            if (idf.id == null)
+                idf.id = new AdminShell.Identifier();
 
             // random add
             var r = new Random();
             var addStr = "---" + r.Next(0, 0x7fffffff).ToString("X8");
 
             // completely blank?
-            if (idf.identification.id.Trim() == "")
+            if (idf.id.value.Trim() == "")
             {
                 // empty!
-                idf.identification.id = idf.GetElementName() + addStr;
+                idf.id.value = idf.GetElementName() + addStr;
                 return;
             }
 
             // already existing?
-            var p = idf.identification.id.LastIndexOf("---", StringComparison.Ordinal);
+            var p = idf.id.value.LastIndexOf("---", StringComparison.Ordinal);
             if (p >= 0)
             {
-                idf.identification.id = idf.identification.id.Substring(0, p) + addStr;
+                idf.id.value = idf.id.value.Substring(0, p) + addStr;
                 return;
             }
 
             // simply add
-            idf.identification.id += addStr;
+            idf.id.value += addStr;
         }
 
         /// <summary>

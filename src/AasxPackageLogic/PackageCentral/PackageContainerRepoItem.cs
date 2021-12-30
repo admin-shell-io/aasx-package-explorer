@@ -430,20 +430,20 @@ namespace AasxPackageLogic.PackageCentral
 
             Env?.AasEnv?.Assets?.ForEach((x) =>
             {
-                if (true == x?.identification?.id.HasContent())
-                    _assetIds.Add(x?.identification.id);
+                if (true == x?.id?.value.HasContent())
+                    _assetIds.Add(x?.id.value);
             });
 
             Env?.AasEnv?.AdministrationShells?.ForEach((x) =>
             {
-                if (true == x?.identification?.id.HasContent())
-                    _aasIds.Add(x?.identification.id);
+                if (true == x?.id?.value.HasContent())
+                    _aasIds.Add(x?.id.value);
             });
 
             Env?.AasEnv?.Submodels?.ForEach((x) =>
             {
-                if (true == x?.identification?.id.HasContent())
-                    _submodelIds.Add(x?.identification.id);
+                if (true == x?.id?.value.HasContent())
+                    _submodelIds.Add(x?.id.value);
             });
 
             // get some descriptiive data

@@ -465,8 +465,8 @@ namespace AasxPackageLogic.PackageCentral
                         Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.idShort).SubstringMax(0, 3)
                     };
-                    fi.AasIds.Add("" + x.Item1?.identification?.id);
-                    fi.AssetIds.Add("" + x.Item2?.identification?.id);
+                    fi.AasIds.Add("" + x.Item1?.id?.value);
+                    fi.AssetIds.Add("" + x.Item2?.id?.value);
                     res.Add(fi);
                 }
                 catch (Exception ex)

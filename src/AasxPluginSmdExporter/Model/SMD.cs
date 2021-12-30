@@ -73,7 +73,7 @@ namespace AasxPluginSmdExporter
         {
             Bom = new AdminShellNS.AdminShell.Submodel();
             Bom.idShort = name_sm;
-            Bom.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
+            Bom.id.value = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
             Bom.semanticId = new AdminShellNS.AdminShell.SemanticId();
             Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
             Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
@@ -103,7 +103,7 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.AdministrationShell aas = new AdminShellNS.AdminShell.AdministrationShell();
 
             aas.idShort = name;
-            aas.identification.id = "urn:itsowl.tedz.com:demo:aas:1:1:123";
+            aas.id.value = "urn:itsowl.tedz.com:demo:aas:1:1:123";
 
             String smd = Newtonsoft.Json.JsonConvert.SerializeObject(aas);
 
@@ -286,7 +286,7 @@ namespace AasxPluginSmdExporter
 
             AdminShellNS.AdminShell.Submodel submodel = new AdminShellNS.AdminShell.Submodel();
 
-            submodel.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
+            submodel.id.value = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
 
 
             // Finden der zugehörigen properties der in und out

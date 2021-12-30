@@ -285,9 +285,9 @@ namespace AasxPluginGenericForms
                 int nr = 0;
                 foreach (var cd in currentFormRecord.ConceptDescriptions)
                 {
-                    if (cd == null || cd.identification == null)
+                    if (cd == null || cd.id == null)
                         continue;
-                    var cdFound = env.FindConceptDescription(cd.identification);
+                    var cdFound = env.FindConceptDescription(cd.id);
                     if (cdFound != null)
                         continue;
                     // ok, add

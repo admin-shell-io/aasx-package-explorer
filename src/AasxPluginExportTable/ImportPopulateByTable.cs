@@ -379,11 +379,11 @@ namespace AasxPluginExportTable
             {
                 // generate a new one for SME + CD
                 // this modifies the SME!
-                var id = new AdminShell.Identification(
+                var id = new AdminShell.Identifier(
                     AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription));
 
                 context.Sme.semanticId = new AdminShell.SemanticId(
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, "", id.id));
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, "", id.value));
             }
 
             // create, add
@@ -396,7 +396,7 @@ namespace AasxPluginExportTable
             if (sid == null)
                 // should not happen, see above
                 return null;
-            cd.identification = new AdminShell.Identification(sid.value);
+            cd.id = new AdminShell.Identifier(sid.value);
 
             // some further attributes
             if (!cd.idShort.HasContent())
