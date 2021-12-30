@@ -138,7 +138,7 @@ namespace AdminShellNS
                     typeof(AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv),
                     "http://www.admin-shell.io/aas/1/0");
                 var v10 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv;
-                res = new AdminShellV20.AdministrationShellEnv(v10);
+                res = new AdminShell.AdministrationShellEnv(v10);
                 return res;
 #else
                 throw (new Exception("Cannot handle AAS file format http://www.admin-shell.io/aas/1/0 !"));
@@ -148,8 +148,23 @@ namespace AdminShellNS
             // read V2.0?
             if (nsuri != null && nsuri.Trim() == "http://www.admin-shell.io/aas/2/0")
             {
+#if !DoNotUseAasxCompatibilityModels
                 XmlSerializer serializer = new XmlSerializer(
-                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
+                    typeof(AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv),
+                    "http://www.admin-shell.io/aas/2/0");
+                var v20 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv;
+                res = new AdminShell.AdministrationShellEnv(v20);
+                return res;
+#else
+                throw (new Exception("Cannot handle AAS file format http://www.admin-shell.io/aas/1/0 !"));
+#endif
+            }
+
+            // read V3.0?
+            if (nsuri != null && nsuri.Trim() == "http://www.admin-shell.io/aas/3/0")
+            {
+                XmlSerializer serializer = new XmlSerializer(
+                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/3/0");
                 res = serializer.Deserialize(s) as AdminShell.AdministrationShellEnv;
                 return res;
             }
@@ -165,6 +180,12 @@ namespace AdminShellNS
                 new AdminShellConverters.JsonAasxConverter(
                     "modelType", "name"));
             return serializer;
+        }
+
+        public static string FixSerializedVersionedEntities(string txt)
+        {
+            txt = txt.Replace(".AdminShellV20+", ".AdminShellV30+");
+            return txt;
         }
 
         public static T DeserializeFromJSON<T>(TextReader textReader) where T : AdminShell.Referable

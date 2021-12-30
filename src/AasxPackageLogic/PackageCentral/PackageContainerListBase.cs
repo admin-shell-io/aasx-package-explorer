@@ -259,8 +259,7 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
                         aas.AddDescription("en?", "" + fi.Description);
-                        aas.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
+                        aas.identification = new AdminShell.Identification("" + id);
                         pkg.AasEnv?.AdministrationShells.Add(aas);
                     }
 
@@ -270,8 +269,7 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
                         asset.AddDescription("en?", "" + fi.Description);
-                        asset.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
+                        asset.identification = new AdminShell.Identification("" + id);
                         pkg.AasEnv?.Assets.Add(asset);
                     }
             }

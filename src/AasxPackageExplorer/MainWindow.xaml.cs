@@ -1051,7 +1051,7 @@ namespace AasxPackageExplorer
                             continue;
 
                         foreach (var aas in pe.AasEnv.AdministrationShells)
-                            if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                            if (aas.assetRef?.Matches(rf, AdminShell.Key.MatchMode.Relaxed) == true)
                             {
                                 rf = aas.GetReference();
                                 break;
@@ -1641,7 +1641,7 @@ namespace AasxPackageExplorer
                         foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
                             (true == x?.semanticId?.Matches(
                                 AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                                AdminShellV20.Key.MatchMode.Relaxed))))
+                                AdminShell.Key.MatchMode.Relaxed))))
                         {
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
@@ -1650,7 +1650,7 @@ namespace AasxPackageExplorer
                             // no, klSelected shall lie in klObserved
                             if (klObserved != null && klSelected != null &&
                                 klSelected.StartsWith(klObserved,
-                                emptyIsTrue: false, matchMode: AdminShellV20.Key.MatchMode.Relaxed))
+                                emptyIsTrue: false, matchMode: AdminShell.Key.MatchMode.Relaxed))
                             {
                                 // take a shortcut
                                 if (_packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp

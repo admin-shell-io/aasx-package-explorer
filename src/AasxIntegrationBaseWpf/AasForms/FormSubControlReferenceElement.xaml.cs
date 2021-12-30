@@ -113,7 +113,7 @@ namespace AasxIntegrationBase.AasForms
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
                 // TEST
-                //// dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
+                //// dc.refElem.value = new AdminShell.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
                 //// UpdateDisplay();
 
                 // try find topmost instance

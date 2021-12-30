@@ -30,7 +30,7 @@ namespace AasxDictionaryImport.Cdd
     /// </summary>
     internal class Importer
     {
-        private readonly AdminShellV20.AdministrationShellEnv _env;
+        private readonly AdminShell.AdministrationShellEnv _env;
         private readonly Context _context;
         private readonly bool _all;
 
@@ -39,7 +39,7 @@ namespace AasxDictionaryImport.Cdd
         /// </summary>
         /// <param name="env">The environment to import the data into</param>
         /// <param name="context">The data context of the IEC CDD data</param>
-        public Importer(AdminShellV20.AdministrationShellEnv env, Context context)
+        public Importer(AdminShell.AdministrationShellEnv env, Context context)
         {
             _env = env;
             _context = context;
@@ -52,7 +52,7 @@ namespace AasxDictionaryImport.Cdd
         /// <param name="cls">The IEC CDD class to import</param>
         /// <param name="adminShell">The admin shell to import the submodel into</param>
         /// <returns>true if the class was imported successfully</returns>
-        public bool ImportSubmodel(ClassWrapper cls, AdminShellV20.AdministrationShell adminShell)
+        public bool ImportSubmodel(ClassWrapper cls, AdminShell.AdministrationShell adminShell)
         {
             if (!cls.IsSelected)
                 return false;
@@ -85,7 +85,7 @@ namespace AasxDictionaryImport.Cdd
         }
 
         private void AddProperties<T>(T elements, IEnumerable<Model.IElement> properties)
-            where T : AdminShellV20.IManageSubmodelElements
+            where T : AdminShell.IManageSubmodelElements
         {
             foreach (var property in properties)
             {
@@ -98,7 +98,7 @@ namespace AasxDictionaryImport.Cdd
             }
         }
 
-        private AdminShellV20.SubmodelElement? CreateSubmodelElement(Model.IElement e)
+        private AdminShell.SubmodelElement? CreateSubmodelElement(Model.IElement e)
         {
             if (e is ClassWrapper cls)
                 return CreatePropertyCollection(cls.Element, cls.Children);
@@ -107,7 +107,7 @@ namespace AasxDictionaryImport.Cdd
             return null;
         }
 
-        private AdminShellV20.SubmodelElementCollection CreatePropertyCollection(Class cls,
+        private AdminShell.SubmodelElementCollection CreatePropertyCollection(Class cls,
             IEnumerable<Model.IElement> properties)
         {
             var collection = Iec61360Utils.CreateCollection(_env, cls.GetIec61360Data(_all));
@@ -115,7 +115,7 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.SubmodelElement? CreatePropertySubmodelElement(PropertyWrapper wrapper)
+        private AdminShell.SubmodelElement? CreatePropertySubmodelElement(PropertyWrapper wrapper)
         {
             var reference = wrapper.Element.DataType.GetClassReference();
             if (reference != null)
@@ -130,7 +130,7 @@ namespace AasxDictionaryImport.Cdd
             return CreateProperty(wrapper.Element);
         }
 
-        private AdminShellV20.SubmodelElementCollection CreateAggregateCollection(
+        private AdminShell.SubmodelElementCollection CreateAggregateCollection(
             PropertyWrapper wrapper, AggregateType aggregateType)
         {
             var collection = Iec61360Utils.CreateCollection(_env, wrapper.Element.GetIec61360Data(_all));
@@ -155,7 +155,7 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.SubmodelElementCollection CreateLevelCollection(Property property, LevelType levelType)
+        private AdminShell.SubmodelElementCollection CreateLevelCollection(Property property, LevelType levelType)
         {
             var data = property.GetIec61360Data(_all);
             var collection = Iec61360Utils.CreateCollection(_env, data);
@@ -169,22 +169,22 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.Property CreateProperty(Property property)
+        private AdminShell.Property CreateProperty(Property property)
         {
             return Iec61360Utils.CreateProperty(_env, property.GetIec61360Data(_all),
                 GetValueType(property.DataType));
         }
 
-        private AdminShellV20.Property CreateLevelProperty(Iec61360Data data, LevelType levelType,
+        private AdminShell.Property CreateLevelProperty(Iec61360Data data, LevelType levelType,
             LevelType.Type levelValue)
         {
             // idShort for the level property: <Level><Property>, e. g. MinimumOperatingTemperature,
             // MaximumOperatingTemperature
             var idShort = levelValue.ToString() + data.IdShort;
-            return new AdminShellV20.Property()
+            return new AdminShell.Property()
             {
                 idShort = idShort,
-                kind = AdminShellV20.ModelingKind.CreateAsInstance(),
+                kind = AdminShell.ModelingKind.CreateAsInstance(),
                 valueType = GetValueType(levelType.Subtype),
             };
         }

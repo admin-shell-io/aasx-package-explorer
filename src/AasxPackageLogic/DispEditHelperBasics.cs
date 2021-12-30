@@ -1397,7 +1397,7 @@ namespace AasxPackageLogic
                                 && pe.Ref is AdminShell.Identifiable id
                                 && id.identification != null)
                                 keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,
-                                    id.identification.idType, id.identification.id));
+                                    "", id.identification.id));
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -2253,7 +2253,7 @@ namespace AasxPackageLogic
                     // add?
                     if (null == env.FindConceptDescription(
                             AdminShell.Key.CreateNew(
-                                AdminShell.Key.ConceptDescription, true, newcd.identification.idType,
+                                AdminShell.Key.ConceptDescription, true, "",
                                 newcd.identification.id)))
                     {
                         env.ConceptDescriptions.Add(newcd);
@@ -2425,7 +2425,6 @@ namespace AasxPackageLogic
             if (idf.identification.id.Trim() == "")
             {
                 // empty!
-                idf.identification.idType = AdminShell.Key.Custom;
                 idf.identification.id = idf.GetElementName() + addStr;
                 return;
             }

@@ -22,7 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using AdminShellNS;
-using static AdminShellNS.AdminShellV20;
+using static AdminShellNS.AdminShellV30;
 
 // TODO (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper settings to be OK
 
@@ -97,7 +97,7 @@ namespace AasxUANodesetImExport
                                 var smr = new AdminShell.SubmodelRef();
                                 smr.Keys.Add(
                                     new AdminShell.Key(
-                                        "Submodel", true, submodel.identification.idType, submodel.identification.id));
+                                        "Submodel", true, "", submodel.identification.id));
                                 aas.submodelRefs.Add(smr);
                             }
 
@@ -201,7 +201,6 @@ namespace AasxUANodesetImExport
                             {
                                 UAVariable node = (UAVariable)findNode(_refref.Value);
                                 if (node.BrowseName == "1:Id") identification.id = node.Value.InnerText;
-                                if (node.BrowseName == "1:IdType") identification.idType = node.Value.InnerText;
                             }
                         }
                     }
@@ -223,7 +222,7 @@ namespace AasxUANodesetImExport
             {
                 //set Submodelparameters
                 Identification iden = GetIdentification(submodel);
-                Submodel sub = Submodel.CreateNew(iden.idType, iden.id);
+                Submodel sub = Submodel.CreateNew("", iden.id);
                 sub.idShort = makePretty(submodel.BrowseName);
                 sub.kind = getKind(submodel);
 
@@ -329,7 +328,7 @@ namespace AasxUANodesetImExport
             return cat;
         }
 
-        private static AdminShellV20.ModelingKind getKind(UANode node)
+        private static AdminShell.ModelingKind getKind(UANode node)
         {
             //Parent (node)
             // -> Kind (Property)
@@ -476,12 +475,12 @@ namespace AasxUANodesetImExport
             return kind;
         }
 
-        private static AdminShellV20.Reference createReference(string val)
+        private static AdminShell.Reference createReference(string val)
         {
             //Refereces are saved as Strings: [type,local,idtype,value]
 
 
-            AdminShellV20.Reference reference = new AdminShellV20.Reference();
+            AdminShell.Reference reference = new AdminShell.Reference();
             //convert String to an actual Reference
             var mep = val.Split(',');
             if (mep.Length == 4)
@@ -490,14 +489,14 @@ namespace AasxUANodesetImExport
                 bool local = (mep[1].Trim() == "not Local") ? false : true;
                 string idType = mep[2].Trim();
                 string value = mep[3].Trim().TrimEnd(']');
-                reference = AdminShellV20.Reference.CreateNew(type, local, idType, value);
+                reference = AdminShell.Reference.CreateNew(type, local, idType, value);
             }
             return reference;
         }
 
         //Create Submodel Elements
 
-        private static AdminShellV20.SubmodelElementWrapper createSubmodelElement(UANode node)
+        private static AdminShell.SubmodelElementWrapper createSubmodelElement(UANode node)
         {
             //Parent (node)
             //  -> SemanticId
@@ -506,7 +505,7 @@ namespace AasxUANodesetImExport
             //  -> Kind (Property)
             //  -> DataNode (Same name as Type)
 
-            AdminShellV20.SubmodelElementWrapper wrapper = new AdminShellV20.SubmodelElementWrapper();
+            AdminShell.SubmodelElementWrapper wrapper = new AdminShell.SubmodelElementWrapper();
             wrapper.submodelElement = new SubmodelElement();
             List<Key> keys = new List<Key>();
             QualifierCollection quals = new QualifierCollection();
@@ -570,7 +569,7 @@ namespace AasxUANodesetImExport
             }
         }
 
-        private static AdminShellV20.Property setPropertyType(UANode node)
+        private static AdminShell.Property setPropertyType(UANode node)
         {
             //Property
             //  -> Value
@@ -838,7 +837,6 @@ namespace AasxUANodesetImExport
                 {
                     var val = (UAVariable)findNode(_ref.Value);
                     if (val.BrowseName == "1:Id") iden.id = val.Value.InnerText;
-                    if (val.BrowseName == "1:IdType") iden.idType = val.Value.InnerText;
                 }
 
             }
@@ -986,14 +984,14 @@ namespace AasxUANodesetImExport
             return data;
         }
 
-        private static AdminShellV20.Reference createReference(UANode node)
+        private static AdminShell.Reference createReference(UANode node)
         {
             //Reference (node)
             //  -> Key (multiple)
 
             List<Key> keys = new List<Key>();
             keys = addSemanticID(node);
-            AdminShellV20.Reference refe = AdminShellV20.Reference.CreateNew(keys);
+            AdminShell.Reference refe = AdminShell.Reference.CreateNew(keys);
             return refe;
         }
 
@@ -1018,7 +1016,7 @@ namespace AasxUANodesetImExport
         {
             //
 
-            Views views = new AdminShellV20.Views();
+            Views views = new AdminShell.Views();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")

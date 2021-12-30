@@ -18,7 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AdminShellNS;
 using BlazorUI;
-using static AdminShellNS.AdminShellV20;
+using static AdminShellNS.AdminShellV30;
 
 namespace BlazorUI.Data
 {

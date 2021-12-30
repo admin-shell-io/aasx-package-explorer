@@ -134,8 +134,7 @@ namespace AasxPackageLogic
                                 // rename
                                 var lrf = env.RenameIdentifiable<AdminShell.Asset>(
                                     asset.identification,
-                                    new AdminShell.Identification(
-                                        asset.identification.idType, uc.Text));
+                                    new AdminShell.Identification(uc.Text));
 
                                 // use this information to emit events
                                 if (lrf != null)
@@ -167,8 +166,7 @@ namespace AasxPackageLogic
                     }
                     return new AnyUiLambdaActionNone();
 
-                }),
-                checkForIri: true);
+                }));
 
             // Kind
             this.DisplayOrEditEntityAssetKind(stack, asset.kind,
@@ -338,7 +336,6 @@ namespace AasxPackageLogic
                                                 destAsset = new AdminShell.Asset(sourceAsset);
                                                 if (createNewIds)
                                                     destAsset.identification = new AdminShell.Identification(
-                                                        AdminShell.Identification.IRI,
                                                         AdminShellUtil.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAsset));
 
@@ -355,7 +352,6 @@ namespace AasxPackageLogic
                                                 destAAS.assetRef = new AdminShell.AssetRef(destAsset.GetReference());
                                             if (createNewIds)
                                                 destAAS.identification = new AdminShell.Identification(
-                                                    AdminShell.Identification.IRI,
                                                     AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
 
@@ -364,7 +360,7 @@ namespace AasxPackageLogic
                                                 StructuralChangeReason.Create));
 
                                             // clear, copy Submodels?
-                                            destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
+                                            destAAS.submodelRefs = new List<AdminShell.SubmodelRef>();
                                             if (copyRecursively && sourceAAS.submodelRefs != null)
                                             {
                                                 foreach (var smr in sourceAAS.submodelRefs)
@@ -414,7 +410,6 @@ namespace AasxPackageLogic
                                                         var dstSub = new AdminShell.Submodel(
                                                             srcSub, shallowCopy: false);
                                                         dstSub.identification = new AdminShell.Identification(
-                                                            AdminShell.Identification.IRI,
                                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                                         // make a new ref
@@ -956,7 +951,7 @@ namespace AasxPackageLogic
 
                         // duplicate
                         foreach (var x in aas.submodelRefs)
-                            if (x?.Matches(item.smref, AdminShellV20.Key.MatchMode.Identification) == true)
+                            if (x?.Matches(item.smref, AdminShell.Key.MatchMode.Identification) == true)
                                 return null;
 
                         // add 
@@ -1048,7 +1043,6 @@ namespace AasxPackageLogic
                             env.Submodels.Add(submodel);
 
                             // directly create identification, as we need it!
-                            submodel.identification.idType = AdminShell.Identification.IRI;
                             if (buttonNdx == 1)
                             {
                                 submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
@@ -1063,7 +1057,7 @@ namespace AasxPackageLogic
                             var smr = new AdminShell.SubmodelRef();
                             smr.Keys.Add(
                                 new AdminShell.Key(
-                                    "Submodel", true, submodel.identification.idType, submodel.identification.id));
+                                    "Submodel", true, "", submodel.identification.id));
                             aas.submodelRefs.Add(smr);
 
                             // event for AAS
@@ -1135,7 +1129,6 @@ namespace AasxPackageLogic
                                         // with new id from scratch
                                         var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
                                         dstSub.identification = new AdminShell.Identification(
-                                            AdminShell.Identification.IRI,
                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
@@ -1187,8 +1180,7 @@ namespace AasxPackageLogic
             this.DisplayOrEditEntityIdentifiable(
                 stack, aas,
                 Options.Curr.TemplateIdAas,
-                null,
-                checkForIri: true);
+                null);
 
             // use some asset reference
             var asset = env.FindAsset(aas.assetRef);
@@ -1360,7 +1352,7 @@ namespace AasxPackageLogic
                     checkEquality: (r1, r2) =>
                     {
                         if (r1 != null && r2 != null)
-                            return (r1.Matches(r2, AdminShellV20.Key.MatchMode.Identification));
+                            return (r1.Matches(r2, AdminShell.Key.MatchMode.Identification));
                         return false;
                     },
                     extraAction: (cpi) =>
@@ -1434,7 +1426,7 @@ namespace AasxPackageLogic
                                 var smw = new AdminShell.SubmodelElementWrapper();
                                 smw.submodelElement = sme2;
                                 if (submodel.submodelElements == null)
-                                    submodel.submodelElements = new AdminShellV20.SubmodelElementWrapperCollection();
+                                    submodel.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
                                 submodel.submodelElements.Add(smw);
 
                                 // emit event
@@ -1477,7 +1469,7 @@ namespace AasxPackageLogic
 
                                     if (submodel.submodelElements == null)
                                         submodel.submodelElements =
-                                            new AdminShellV20.SubmodelElementWrapperCollection();
+                                            new AdminShell.SubmodelElementWrapperCollection();
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
@@ -1632,8 +1624,7 @@ namespace AasxPackageLogic
                                         // rename
                                         var lrf = env.RenameIdentifiable<AdminShell.Submodel>(
                                             submodel.identification,
-                                            new AdminShell.Identification(
-                                                submodel.identification.idType, uc.Text));
+                                            new AdminShell.Identification(uc.Text));
 
                                         // use this information to emit events
                                         if (lrf != null)
@@ -1663,8 +1654,7 @@ namespace AasxPackageLogic
                                 }
                             }
                             return new AnyUiLambdaActionNone();
-                        }),
-                    checkForIri: submodel.kind != null && submodel.kind.IsInstance);
+                        }));
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
@@ -1756,7 +1746,7 @@ namespace AasxPackageLogic
                         var ds = cd.GetIEC61360();
                         if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
                         {
-                            ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", cd.idShort);
+                            ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", cd.idShort);
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
                         }
@@ -1800,7 +1790,7 @@ namespace AasxPackageLogic
                                 // rename
                                 var lrf = env.RenameIdentifiable<AdminShell.ConceptDescription>(
                                     cd.identification,
-                                    new AdminShell.Identification(cd.identification.idType, uc.Text));
+                                    new AdminShell.Identification(uc.Text));
 
                                 // use this information to emit events
                                 if (lrf != null)
@@ -1830,8 +1820,7 @@ namespace AasxPackageLogic
                         }
                     }
                     return new AnyUiLambdaActionNone();
-                }),
-                checkForIri: false);
+                }));
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
@@ -2247,7 +2236,6 @@ namespace AasxPackageLogic
                             var cd = new AdminShell.ConceptDescription();
 
                             // make an ID, automatically
-                            cd.identification.idType = AdminShell.Identification.IRI;
                             cd.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
 
@@ -2258,7 +2246,7 @@ namespace AasxPackageLogic
                             // set the semantic id
                             sme.semanticId = AdminShell.SemanticId.CreateFromKey(
                                 new AdminShell.Key(
-                                    "ConceptDescription", true, cd.identification.idType, cd.identification.id));
+                                    "ConceptDescription", true, "", cd.identification.id));
 
                             // can set kind?
                             if (parentKind != null && sme.kind == null)
@@ -2300,7 +2288,7 @@ namespace AasxPackageLogic
                                     if (null == env.FindConceptDescription(
                                             AdminShell.Key.CreateNew(
                                                 AdminShell.Key.ConceptDescription, true,
-                                                newcd.identification.idType, newcd.identification.id)))
+                                                "", newcd.identification.id)))
                                         env.ConceptDescriptions.Add(newcd);
                                 }
 
@@ -2749,7 +2737,7 @@ namespace AasxPackageLogic
 
                                     var ds = cd.IEC61360Content;
                                     if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
-                                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sme.idShort);
+                                        ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", sme.idShort);
 
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
@@ -3624,7 +3612,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => {
                                 return ent.entityType == null ||
-                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.Undef;
+                                    ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.Undef;
                             },
                             "EntityType needs to be either CoManagedEntity (no assigned Asset reference) " +
                                 "or SelfManagedEntity (with assigned Asset reference)",
@@ -3647,7 +3635,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => {
                                 return ent.entityType != null &&
-                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity &&
+                                    ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity &&
                                     (ent.assetRef == null || ent.assetRef.Count < 1);
                             },
                             "Please choose the Asset for the SelfManagedEntity.",

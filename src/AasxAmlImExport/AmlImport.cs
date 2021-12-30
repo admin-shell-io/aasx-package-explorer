@@ -69,7 +69,7 @@ namespace AasxAmlImExport
                 public AdminShell.View View;
                 public CAEXObject AmlTarget;
 
-                public IeViewAmlTarget(InternalElementType ie, AdminShellV20.View view, CAEXObject amlTarget)
+                public IeViewAmlTarget(InternalElementType ie, AdminShell.View view, CAEXObject amlTarget)
                 {
                     Ie = ie;
                     View = view;
@@ -314,7 +314,7 @@ namespace AasxAmlImExport
 
                             // add
                             if (res == null)
-                                res = new AdminShellV20.QualifierCollection();
+                                res = new AdminShell.QualifierCollection();
                             res.Add(q);
                         }
                     }
@@ -387,7 +387,7 @@ namespace AasxAmlImExport
                     aas.idShort = ie.Name;
                     if (idShort != null)
                         aas.idShort = idShort;
-                    aas.identification = new AdminShell.Identification(idType, id);
+                    aas.identification = new AdminShell.Identification(id);
                     if (version != null && revision != null)
                         aas.administration = new AdminShell.Administration(version, revision);
                     aas.category = cat;
@@ -431,7 +431,7 @@ namespace AasxAmlImExport
                     asset.idShort = ie.Name;
                     if (idShort != null)
                         asset.idShort = idShort;
-                    asset.identification = new AdminShell.Identification(idType, id);
+                    asset.identification = new AdminShell.Identification(id);
                     if (version != null && revision != null)
                         asset.administration = new AdminShell.Administration(version, revision);
                     asset.category = cat;
@@ -559,7 +559,7 @@ namespace AasxAmlImExport
                     sm.idShort = ie.Name;
                     if (idShort != null)
                         sm.idShort = idShort;
-                    sm.identification = new AdminShell.Identification(idType, id);
+                    sm.identification = new AdminShell.Identification(id);
                     if (version != null && revision != null)
                         sm.administration = new AdminShell.Administration(version, revision);
                     sm.category = cat;
@@ -880,7 +880,7 @@ namespace AasxAmlImExport
                 {
                     // set normal data
                     cd.idShort = idShort;
-                    cd.identification = new AdminShell.Identification(idType, id);
+                    cd.identification = new AdminShell.Identification(id);
                     if (version != null && revision != null)
                         cd.administration = new AdminShell.Administration(version, revision);
                     if (desc != null)

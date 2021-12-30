@@ -601,11 +601,11 @@ namespace AasxPluginBomStructure
                         node1.Label.FontSize = 12;
 
                         // what type?
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity)
+                        if (sme.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity)
                         {
                             node1.Attr.FillColor = AssetSelfManagedColor;
                         }
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity)
+                        if (sme.GetEntityType() == AdminShell.Entity.EntityTypeEnum.CoManagedEntity)
                         {
                             node1.Attr.FillColor = AssetCoManagedColor;
                         }

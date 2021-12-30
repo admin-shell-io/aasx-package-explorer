@@ -659,8 +659,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell adminShell)
         {
             if (!IsSelected)
                 return false;
@@ -688,8 +688,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.IManageSubmodelElements parent)
         {
             if (!IsSelected)
                 return false;
@@ -786,8 +786,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
+            AdminShell.IManageSubmodelElements parent)
         {
             if (!IsSelected)
                 return false;

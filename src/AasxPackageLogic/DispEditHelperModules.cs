@@ -191,8 +191,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityIdentifiable(AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
-            DispEditInjectAction injectToId = null,
-            bool checkForIri = true)
+            DispEditInjectAction injectToId = null)
         {
             // access
             if (stack == null || identifiable == null)
@@ -206,12 +205,6 @@ namespace AasxPackageLogic
                     () => { return identifiable.identification == null; },
                     "Providing a worldwide unique identification is mandatory.",
                     breakIfTrue: true),
-                new HintCheck(
-                    () => { return checkForIri
-                        && identifiable.identification.idType != AdminShell.Identification.IRI;
-                    },
-                    "Check if identification type is correct. Use of IRIs is usual here.",
-                    severityLevel: HintCheck.Severity.Notice ),
                 new HintCheck(
                     () => { return identifiable.identification.id.Trim() == ""; },
                     "Identification id shall not be empty. You could use the 'Generate' button in order to " +
@@ -229,17 +222,6 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
-                    v =>
-                    {
-                        var dr = new DiaryReference(identifiable);
-                        identifiable.identification.idType = v as string;
-                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                        return new AnyUiLambdaActionNone();
-                    },
-                    comboBoxItems: AdminShell.Key.IdentifierTypeNames);
-
-                this.AddKeyValueRef(
                     stack, "id", identifiable, ref identifiable.identification.id, null, repo,
                     v =>
                     {
@@ -254,7 +236,6 @@ namespace AasxPackageLogic
                         if (i == 0)
                         {
                             var dr = new DiaryReference(identifiable);
-                            identifiable.identification.idType = AdminShell.Identification.IRI;
                             identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);

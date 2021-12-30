@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
 
             var sm = currentReferable as AdminShell.Submodel;
             if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey(),
-                AdminShellV20.Key.MatchMode.Relaxed))
+                AdminShell.Key.MatchMode.Relaxed))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Digital Nameplate HSU to ZVEI V1.0"));
 

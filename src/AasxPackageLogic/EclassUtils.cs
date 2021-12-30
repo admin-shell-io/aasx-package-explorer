@@ -516,7 +516,6 @@ namespace AasxPackageLogic
                 if (i == 0)
                 {
                     // identification
-                    res.identification.idType = AdminShell.Identification.IRDI;
                     res.identification.id = input[i].IRDI;
 
                     // isCase of
@@ -531,7 +530,7 @@ namespace AasxPackageLogic
                     // short name -> TBD in future
                     FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", ls.str);
+                        ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", ls.str);
                         res.idShort = ls.str;
                     });
 
@@ -644,7 +643,7 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sn);
+                            ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", sn);
                         }
                     }
                 }

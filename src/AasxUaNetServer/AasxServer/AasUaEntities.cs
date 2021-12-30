@@ -129,8 +129,6 @@ namespace AasOpcUaServer
             {
                 if (identification != null)
                 {
-                    this.entityBuilder.CreateAddPropertyState<string>(o, mode, "IdType",
-                        DataTypeIds.String, "" + "" + identification.idType, defaultSettings: true);
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "Id",
                         DataTypeIds.String, "" + "" + identification.id, defaultSettings: true);
                 }
@@ -1637,7 +1635,7 @@ namespace AasOpcUaServer
             this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
             this.entityBuilder.AasTypes.Identification.CreateAddElements(this.typeObject, CreateMode.Instance,
                 new AdminShell.Identification(
-                    "URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"),
+                    "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360"),
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
             this.entityBuilder.AasTypes.Administration.CreateAddElements(this.typeObject, CreateMode.Instance,
                 new AdminShell.Administration("1", "0"),
@@ -1838,13 +1836,15 @@ namespace AasOpcUaServer
         public NodeState GetTypeObjectFor(AdminShell.Identification identification)
         {
             var to = this.typeObject; // shall be NULL
+            
             if (true == identification?.IsIRI())
                 to = this.typeObjectUri;
+            else
             if (true == identification?.IsIRDI())
                 to = this.typeObjectIrdi;
-            if (identification != null && identification.idType != null
-                && identification.idType.Trim().ToUpper() == "CUSTOM")
-                to = this.typeObjectCustom;
+
+            // TODO (MIHO, 2021-12-30): before V3.0, there was a compare to "custom" here.
+            
             return to;
         }
 
