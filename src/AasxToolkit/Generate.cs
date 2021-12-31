@@ -318,7 +318,7 @@ namespace AasxToolkit
 
             // SUB MODEL
             var sub1 = new AdminShell.Submodel(preDefs.SM_VDI2770_Documentation);
-            sub1.SetIdentification("IRI", repo.CreateOneTimeId());
+            sub1.SetIdentification(repo.CreateOneTimeId());
             aasenv.Submodels.Add(sub1);
 
             // execute LAMBDA on different data sources

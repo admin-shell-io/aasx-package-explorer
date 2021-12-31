@@ -1484,7 +1484,7 @@ namespace AasxPackageExplorer
 
                     // some special cases
                     if (true == refEv.observed?.Matches(
-                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV",
+                            AdminShell.Key.GlobalReference, false, "", "AASENV",
                             AdminShell.Key.MatchMode.Relaxed))
                     {
                         observable = env;

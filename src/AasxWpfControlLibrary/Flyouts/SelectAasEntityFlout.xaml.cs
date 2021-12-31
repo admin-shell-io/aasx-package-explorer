@@ -161,7 +161,7 @@ namespace AasxPackageExplorer
 
                     // .. enriched by a last element
                     DiaData.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
-                        AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag));
+                        "", "Plugin:" + vepe.theExt.Tag));
 
                     // ok
                     return true;

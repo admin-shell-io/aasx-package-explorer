@@ -1002,8 +1002,6 @@ namespace AasxPackageExplorer
         {
             AdminShell.Key tdSemanticKey = new AdminShell.Key();
             tdSemanticKey.type = "GlobalReference";
-            tdSemanticKey.local = true;
-            tdSemanticKey.idType = "IRI";
             tdSemanticKey.value = TDSemanticId.getSemanticID(tdType);
             AdminShell.SemanticId tdSemanticId = new AdminShell.SemanticId(tdSemanticKey);
 
@@ -1098,8 +1096,7 @@ namespace AasxPackageExplorer
                     if (key == "id")
                     {
                         string id = thingE.Value.ToString();
-                        sm.SetIdentification("IRI", id);
-                        smref.First.idType = "IRI";
+                        sm.SetIdentification(id);
                         smref.First.value = id;
                     }
                     if (key == "properties")

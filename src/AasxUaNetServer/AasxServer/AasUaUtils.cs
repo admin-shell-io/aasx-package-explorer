@@ -44,8 +44,8 @@ namespace AasOpcUaServer
             {
                 if (semstr != "")
                     semstr += ",";
-                semstr += String.Format("({0})({1})[{2}]{3}",
-                            k.type, k.local ? "local" : "no-local", k.idType, k.value);
+                semstr += String.Format("({0}){1}",
+                            k.type, k.value);
             }
 
             return semstr;
@@ -59,8 +59,8 @@ namespace AasOpcUaServer
             var res = new List<string>();
             foreach (var k in refid.Keys)
             {
-                res.Add(String.Format("({0})({1})[{2}]{3}",
-                            k.type, k.local ? "local" : "no-local", k.idType, k.value));
+                res.Add(String.Format("({0}){1}",
+                            k.type, k.value));
             }
 
             return res;

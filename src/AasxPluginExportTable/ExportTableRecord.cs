@@ -356,8 +356,6 @@ namespace AasxPluginExportTable
                         // but also in separate parts
                         //-9- {Reference}[0..n].{type, local, idType, value}
                         rep(head + refName + $"[{ki}].type", "" + k.type);
-                        rep(head + refName + $"[{ki}].local", (!k.local) ? "no-local" : "local");
-                        rep(head + refName + $"[{ki}].idType", "" + k.idType);
                         rep(head + refName + $"[{ki}].value", "" + k.value);
                     }
                 }

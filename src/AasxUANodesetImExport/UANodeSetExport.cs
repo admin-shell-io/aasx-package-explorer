@@ -340,7 +340,7 @@ namespace AasxUANodesetImExport
                 {
                     refs.Add(
                         CreateReference(
-                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                            "HasComponent", CreateKey("", "true", key.type, key.value)));
                 }
             }
 
@@ -792,7 +792,7 @@ namespace AasxUANodesetImExport
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", key.type, key.value)));
             }
 
             ident.References = refs.ToArray();
@@ -802,6 +802,8 @@ namespace AasxUANodesetImExport
 
         private static string CreateKey(string idtype, string local, string type, string value)
         {
+            // TODO: REMOVE IDTYPE && LOCAL
+
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
             ident.BrowseName = "1:AASKey";
@@ -1123,7 +1125,7 @@ namespace AasxUANodesetImExport
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", key.type, key.value)));
             }
 
             obj.References = refs.ToArray();
@@ -1164,7 +1166,7 @@ namespace AasxUANodesetImExport
                 {
                     refs.Add(
                         CreateReference(
-                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                            "HasComponent", CreateKey("", "true", key.type, key.value)));
                 }
 
             obj.References = refs.ToArray();
@@ -1185,7 +1187,7 @@ namespace AasxUANodesetImExport
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", key.type, key.value)));
             }
 
             obj.References = refs.ToArray();
@@ -1206,7 +1208,7 @@ namespace AasxUANodesetImExport
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", key.type, key.value)));
             }
 
             var.References = refs.ToArray();

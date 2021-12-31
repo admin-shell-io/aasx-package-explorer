@@ -117,7 +117,7 @@ namespace AasxPackageExplorer
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
                 refref += new AdminShell.Key(AdminShell.Key.FragmentReference, false,
-                    AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag);
+                    "", "Plugin:" + vepe.theExt.Tag);
             }
 
             // add, only if not already there

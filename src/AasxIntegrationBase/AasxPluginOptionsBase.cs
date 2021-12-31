@@ -126,8 +126,7 @@ namespace AasxIntegrationBase
         {
             if (key == null)
                 return null;
-            // eliminate "local"
-            var k = new AdminShell.Key(key) { local = false };
+            var k = new AdminShell.Key(key);
             var ndx = k?.ToString(format: 1);
             return ndx;
         }

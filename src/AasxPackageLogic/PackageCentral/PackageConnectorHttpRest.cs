@@ -316,7 +316,7 @@ namespace AasxPackageLogic.PackageCentral
                         {
                             // KeyList from path
                             var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
-                                        AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
+                                        "", tuple.path.ToObject<string[]>());
                             // goal (1)
                             pluv.Values.Add(
                                 new AasPayloadUpdateValueItem(kl, "" + tuple.value));
@@ -656,7 +656,7 @@ namespace AasxPackageLogic.PackageCentral
                 // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(
-                        "", false, AdminShell.Key.IdShort, sme0.idShort,
+                        "", false, "", sme0.idShort,
                         AdminShell.Key.MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,

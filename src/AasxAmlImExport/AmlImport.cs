@@ -131,7 +131,7 @@ namespace AasxAmlImExport
                     var id = m.Groups[4].ToString();
 
                     // verify: ke has to be in allowed range
-                    if (!AdminShell.Key.IsInKeyElements(ke))
+                    if (!AdminShell.Key.IsInNamedElementsList(AdminShell.Key.KeyElements, ke))
                         return null;
                     var islocal = local == "local";
 

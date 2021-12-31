@@ -54,9 +54,6 @@ namespace AasxPluginBomStructure
                     var bs = System.Text.Encoding.UTF8.GetBytes(k.type.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.idType.Trim().ToLower());
-                    mems.Write(bs, 0, bs.Length);
-
                     bs = System.Text.Encoding.UTF8.GetBytes(k.value.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
                 }
