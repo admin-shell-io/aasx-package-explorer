@@ -991,8 +991,7 @@ namespace AasxAmlImExport
                             {
                                 if (smkt.kind != null && smkt.kind.IsTemplate &&
                                     smki.semanticId.Matches(
-                                        AdminShell.Key.Submodel, true, "",
-                                        smkt.id.value))
+                                        AdminShell.Key.Submodel, smkt.id.value))
                                 {
                                     // we have a match: Submodel kind = Instance -> Submodel kind = Type
                                     var smki_aml = matcher.GetAmlObject(smki) as InternalElementType;

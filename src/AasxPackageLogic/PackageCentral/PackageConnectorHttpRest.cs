@@ -657,7 +657,7 @@ namespace AasxPackageLogic.PackageCentral
                 // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(
-                        "", false, "", sme0.idShort,
+                        "", sme0.idShort,
                         AdminShell.Key.MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
