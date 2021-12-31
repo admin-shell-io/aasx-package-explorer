@@ -76,8 +76,7 @@ namespace AasxPackageExplorer
                             if (rows.Length > 3)
                             {
                                 if (rows[7] != "") propGroup[0].semanticId = new AdminShell.SemanticId(
-                                     AdminShell.Reference.CreateNew(
-                                         "ConceptDescription", false, "IRI", rows[7]));
+                                     AdminShell.Reference.CreateNew("ConceptDescription", rows[7]));
                             }
                             propGroup[0].kind = AdminShell.ModelingKind.CreateAsInstance();
                         }
@@ -104,7 +103,7 @@ namespace AasxPackageExplorer
                             if (rows[7] != "")
                                 p.semanticId = new AdminShell.SemanticId(
                                     AdminShell.Reference.CreateNew(
-                                        "ConceptDescription", false, "IRI", rows[7]));
+                                        "ConceptDescription", rows[7]));
                         }
                         if (i_propGroup == 0)
                         {

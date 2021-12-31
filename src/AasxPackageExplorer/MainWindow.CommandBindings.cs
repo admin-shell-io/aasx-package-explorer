@@ -1694,8 +1694,7 @@ namespace AasxPackageExplorer
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, "", submodel.id.value);
+                var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1847,7 +1846,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, "", submodel.id.value);
+                    "Submodel", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {

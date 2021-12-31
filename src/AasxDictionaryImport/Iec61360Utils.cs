@@ -411,8 +411,7 @@ namespace AasxDictionaryImport
                 ds.unit = Unit;
             if (UnitIrdi.Length > 0)
                 ds.unitId = AdminShell.UnitId.CreateNew(
-                    AdminShell.Key.GlobalReference, false,
-                    AdminShell.Identifier.IRDI, UnitIrdi);
+                    AdminShell.Key.GlobalReference, UnitIrdi);
             if (DataType.Length > 0)
                 ds.dataType = DataType;
             if (DataFormat.Length > 0)

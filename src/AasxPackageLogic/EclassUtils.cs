@@ -564,8 +564,7 @@ namespace AasxPackageLogic
                                         if (xiun != null)
                                         {
                                             ds.unitId = AdminShell.UnitId.CreateNew(
-                                                "GlobalReference", false,
-                                                AdminShell.Identifier.IRDI, urefIrdi.Trim());
+                                                AdminShell.Key.GlobalReference, urefIrdi.Trim());
                                             ds.unit = xiun.InnerText.Trim();
                                         }
                                 }

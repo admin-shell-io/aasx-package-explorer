@@ -2285,8 +2285,7 @@ namespace AasxPackageLogic
                                     var newcd = resCD;
                                     if (null == env.FindConceptDescription(
                                             AdminShell.Key.CreateNew(
-                                                AdminShell.Key.ConceptDescription, true,
-                                                "", newcd.id.value)))
+                                                AdminShell.Key.ConceptDescription, newcd.id.value)))
                                         env.ConceptDescriptions.Add(newcd);
                                 }
 

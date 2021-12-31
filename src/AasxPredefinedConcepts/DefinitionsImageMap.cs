@@ -43,8 +43,6 @@ namespace AasxPredefinedConcepts
             SEM_ImageMapSubmodel = new AdminShell.SemanticId(
                 AdminShell.Key.CreateNew(
                     type: "Submodel",
-                    local: false,
-                    idType: "IRI",
                     value: "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0"));
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",

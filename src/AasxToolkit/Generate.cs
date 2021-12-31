@@ -263,8 +263,7 @@ namespace AasxToolkit
             sub1.idShort = "CAD";
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(
-                AdminShell.Key.CreateNew(
-                    "Submodel", false, "IRI", "http://example.com/id/type/submodel/cad/1/1"));
+                AdminShell.Key.CreateNew("Submodel", "http://example.com/id/type/submodel/cad/1/1"));
 
             // for each cad file in prefs
             int ndx = 0;
@@ -297,8 +296,7 @@ namespace AasxToolkit
                 propGroup.Add(propType);
                 propType.value = AdminShell.Reference.CreateNew(
                     AdminShell.Key.CreateNew(
-                        "GlobalReference", false,
-                        AdminShell.Identifier.IRDI, "" + fr.args[0]));
+                        AdminShell.Key.GlobalReference, "" + fr.args[0]));
             }
 
             return sub1;
@@ -579,9 +577,7 @@ namespace AasxToolkit
             sub1.idShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(
-                AdminShell.Key.CreateNew(
-                    "Submodel", false, "IRI",
-                    "http://example.com/id/type/submodel/datasheet/1/1"));
+                AdminShell.Key.CreateNew("Submodel", "http://example.com/id/type/submodel/datasheet/1/1"));
 
             // CONCEPT: Manufacturer
             using (var cd = AdminShell.ConceptDescription.CreateNew(
@@ -705,10 +701,9 @@ namespace AasxToolkit
                 sub1.Add(p);
                 p.AddQualifier("life cycle qual", "SPEC",
                     AdminShell.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShell.Identifier.IRDI,
-                        "0112/2///61360_4#AAF575"),
+                        AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
                     AdminShell.Reference.CreateNew(
-                        "GlobalReference", false, AdminShell.Identifier.IRDI,
+                        AdminShell.Key.GlobalReference, 
                         "0112/2///61360_4#AAF579"));
                 p.valueType = "double";
                 p.value = "23.1";
@@ -719,10 +714,9 @@ namespace AasxToolkit
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
                     AdminShell.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShell.Identifier.IRDI,
-                        "0112/2///61360_4#AAF575"),
+                        AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
                     AdminShell.Reference.CreateNew(
-                        "GlobalReference", false, AdminShell.Identifier.IRDI,
+                        AdminShell.Key.GlobalReference, 
                         "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";
@@ -748,8 +742,7 @@ namespace AasxToolkit
                 sub1.Add(p);
                 p.value = p.value = AdminShell.Reference.CreateNew(
                     AdminShell.Key.CreateNew(
-                        "GlobalReference", false, AdminShell.Identifier.IRDI,
-                        "0173-1#07-AAA878#004")); // Polyamide (PA)
+                        AdminShell.Key.GlobalReference, "0173-1#07-AAA878#004")); // Polyamide (PA)
             }
 
             // Nice
@@ -765,8 +758,6 @@ namespace AasxToolkit
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew(
                 type: "Submodel",
-                local: false,
-                idType: "IRI",
                 value: "http://example.com/id/type/submodel/various/1/1"));
 
             AdminShell.SubmodelElement sme1, sme2;
@@ -867,8 +858,6 @@ namespace AasxToolkit
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew(
                 type: "Submodel",
-                local: false,
-                idType: "IRI",
                 value: "http://example.com/id/type/submodel/BOM/1/1"));
 
             // CONCEPT: electrical plan
@@ -977,7 +966,7 @@ namespace AasxToolkit
                 AdminShell.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
                 new AdminShell.AssetRef(
                     AdminShell.Reference.CreateNew(
-                        "Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
+                        "Asset", "example.com/assets/23224234234232342343234")));
             sub1.Add(la001);
             var la001_1 = AdminShell.Property.CreateNew(
                 "1", "CONSTANT", cdContact1.GetCdReference()[0]);
@@ -1017,8 +1006,6 @@ namespace AasxToolkit
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew(
                 type: "Submodel",
-                local: false,
-                idType: "IRI",
                 value: "http://example.com/id/type/submodel/BOM/1/1"));
 
             // CONCEPT: Generic asset decomposition
@@ -1102,8 +1089,6 @@ namespace AasxToolkit
             aasenv.Submodels.Add(sub1);
             sub1.semanticId.Keys.Add(AdminShell.Key.CreateNew(
                 type: "Submodel",
-                local: false,
-                idType: "IRI",
                 value: "http://example.com/id/type/submodel/energymode/1/1"));
 
             // CONCEPT: SetMode

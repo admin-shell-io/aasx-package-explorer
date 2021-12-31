@@ -68,7 +68,7 @@ namespace AasxPredefinedConcepts.Convert
             sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
             sm.semanticId = new AdminShell.SemanticId(
                     AdminShell.Key.CreateNew(
-                    AdminShell.Key.Submodel, false, AdminShell.Identifier.IRI,
+                    AdminShell.Key.Submodel, 
                     "http://admin-shell.io/sandbox/technical-data-flat/sm"));
 
             // find all technical properties

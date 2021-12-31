@@ -810,8 +810,7 @@ namespace AasxRestServerLibrary
             this.Package.AasEnv.Submodels.Add(submodel);
 
             // add SubmodelRef to AAS
-            var newsmr = AdminShell.SubmodelRef.CreateNew(
-                "Submodel", true, "", submodel.id.value);
+            var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", submodel.id.value);
             var existsmr = aas.HasSubmodelRef(newsmr);
             if (!existsmr)
             {

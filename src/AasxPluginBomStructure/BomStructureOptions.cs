@@ -149,8 +149,6 @@ namespace AasxPluginBomStructure
             var rec = new BomStructureOptionsRecord();
             rec.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
                 type: "Submodel",
-                local: false,
-                idType: "IRI",
                 value: "http://smart.festo.com/id/type/submodel/BOM/1/1"));
 
             var opt = new BomStructureOptions();

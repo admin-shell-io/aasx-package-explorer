@@ -476,19 +476,15 @@ namespace AasxUANodesetImExport
 
         private static AdminShell.Reference createReference(string val)
         {
-            //Refereces are saved as Strings: [type,local,idtype,value]
-
-
+            // Refereces are saved as Strings: [type, value]
             AdminShell.Reference reference = new AdminShell.Reference();
             //convert String to an actual Reference
             var mep = val.Split(',');
-            if (mep.Length == 4)
+            if (mep.Length == 2)
             {
                 string type = mep[0].Trim().TrimStart('[');
-                bool local = (mep[1].Trim() == "not Local") ? false : true;
-                string idType = mep[2].Trim();
-                string value = mep[3].Trim().TrimEnd(']');
-                reference = AdminShell.Reference.CreateNew(type, local, idType, value);
+                string value = mep[1].Trim().TrimEnd(']');
+                reference = AdminShell.Reference.CreateNew(type, value);
             }
             return reference;
         }

@@ -1396,8 +1396,7 @@ namespace AasxPackageLogic
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
                                 && pe.Ref is AdminShell.Identifiable id
                                 && id.id != null)
-                                keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), false,
-                                    "", id.id.value));
+                                keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), id.id.value));
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1423,8 +1422,7 @@ namespace AasxPackageLogic
                             {
                                 keys.Add(
                                     AdminShell.Key.CreateNew(
-                                        AdminShell.Key.GlobalReference, false,
-                                        AdminShell.Identifier.IRDI, resIRDI));
+                                        AdminShell.Key.GlobalReference, resIRDI));
                             }
 
                             emitCustomEvent?.Invoke(relatedReferable);
@@ -2200,7 +2198,7 @@ namespace AasxPackageLogic
                     // add?
                     if (null == env.FindConceptDescription(
                             AdminShell.Key.CreateNew(
-                                AdminShell.Key.ConceptDescription, true, "",
+                                AdminShell.Key.ConceptDescription,
                                 newcd.id.value)))
                     {
                         env.ConceptDescriptions.Add(newcd);

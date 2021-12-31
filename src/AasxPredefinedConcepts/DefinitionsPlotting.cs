@@ -39,8 +39,6 @@ namespace AasxPredefinedConcepts
             SEM_PlottingSubmodel = new AdminShell.SemanticId(
                 AdminShell.Key.CreateNew(
                     type: "Submodel",
-                    local: false,
-                    idType: "IRI",
                     value: "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0"));
 
             // dummy .. to be replaced later
