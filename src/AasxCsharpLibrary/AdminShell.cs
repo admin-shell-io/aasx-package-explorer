@@ -422,7 +422,7 @@ namespace AdminShellNS
             }
 #endif
 
-            public Key(string type, bool local, string idType, string value)
+            public Key(string type, string value)
             {
                 this.type = type;
                 this.value = value;
@@ -476,6 +476,8 @@ namespace AdminShellNS
                 if (typeIfNotSet == null)
                     typeIfNotSet = Key.GlobalReference;
 
+                // TODO: REWORK OLD & NEW FORMATS!!
+
                 // OLD format == 1
                 if (allowFmtAll || allowFmt1)
                 {
@@ -483,8 +485,7 @@ namespace AdminShellNS
                     if (m.Success)
                     {
                         return new AdminShell.Key(
-                                m.Groups[1].ToString(), m.Groups[2].ToString() == "local",
-                                m.Groups[3].ToString(), m.Groups[5].ToString());
+                                m.Groups[1].ToString(), m.Groups[5].ToString());
                     }
                 }
 
@@ -494,9 +495,7 @@ namespace AdminShellNS
                     var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
                     if (m.Success)
                     {
-                        return new AdminShell.Key(
-                                typeIfNotSet, true,
-                                m.Groups[1].ToString(), m.Groups[3].ToString());
+                        return new AdminShell.Key(typeIfNotSet, m.Groups[3].ToString());
                     }
                 }
 
@@ -506,9 +505,7 @@ namespace AdminShellNS
                     var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
                     if (m.Success)
                     {
-                        return new AdminShell.Key(
-                                m.Groups[1].ToString(), !m.Groups[3].ToString().Contains("not"),
-                                m.Groups[5].ToString(), m.Groups[7].ToString());
+                        return new AdminShell.Key(m.Groups[1].ToString(), m.Groups[7].ToString());
                     }
                 }
 
@@ -819,7 +816,7 @@ namespace AdminShellNS
                 // prepare
                 var kl = new AdminShell.KeyList();
                 foreach (var x in valueItems)
-                    kl.Add(new AdminShell.Key(type, local, idType, "" + x));
+                    kl.Add(new AdminShell.Key(type, "" + x));
                 return kl;
             }
 
@@ -1149,7 +1146,7 @@ namespace AdminShellNS
                 if (irdi == null)
                     return null;
                 var r = new Reference();
-                r.keys.Add(new Key(Key.GlobalReference, false, Identifier.IRDI, irdi));
+                r.keys.Add(new Key(Key.GlobalReference, irdi));
                 return r;
             }
 
@@ -1176,7 +1173,7 @@ namespace AdminShellNS
                 if (keys == null || keys.Count != 1)
                     return null;
                 var k = keys[0];
-                return new Key(k.type, false, "", k.value);
+                return new Key(k.type, k.value);
             }
 
             public bool MatchesExactlyOneKey(
@@ -2371,8 +2368,7 @@ namespace AdminShellNS
             public virtual Reference GetReference(bool includeParents = true)
             {
                 return new Reference(
-                    new AdminShell.Key(
-                        this.GetElementName(), false, "", "" + this.idShort));
+                    new AdminShell.Key(this.GetElementName(), "" + this.idShort));
             }
 
             public void CollectReferencesByParent(List<Key> refs)
@@ -2433,7 +2429,7 @@ namespace AdminShellNS
 
             public virtual Key ToKey()
             {
-                return new Key(GetElementName(), true, "", idShort);
+                return new Key(GetElementName(), idShort);
             }
 
             // hash functionality
@@ -2744,7 +2740,7 @@ namespace AdminShellNS
 
             public override Key ToKey()
             {
-                return new Key(GetElementName(), true, "", "" + id?.value);
+                return new Key(GetElementName(), "" + id?.value);
             }
 
             // self description

@@ -73,14 +73,14 @@ namespace AasxPluginGenericForms
 
             rec.FormSubmodel = new FormDescSubmodel(
                 "Submodel Root",
-                new AdminShell.Key("Submodel", false, "IRI", "www.exmaple.com/sms/1112"),
+                new AdminShell.Key("Submodel", "www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
                 formText: "Sample Property",
                 multiplicity: FormMultiplicity.OneToMany,
-                smeSemanticId: new AdminShell.Key("ConceptDescription", false, "IRI", "www.example.com/cds/1113"),
+                smeSemanticId: new AdminShell.Key("ConceptDescription", "www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",
                 valueType: "string",
                 presetValue: "123"));

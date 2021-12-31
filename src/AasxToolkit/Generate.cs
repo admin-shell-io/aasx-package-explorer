@@ -163,7 +163,7 @@ namespace AasxToolkit
                 var aas1 = AdminShell.AdministrationShell.CreateNew(
                     "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(
-                    new AdminShell.Key("AssetAdministrationShell", false, "IRI",
+                    new AdminShell.Key("AssetAdministrationShell", 
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
                 aas1.assetRef = asset1.GetAssetReference();

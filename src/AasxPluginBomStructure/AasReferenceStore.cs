@@ -115,7 +115,7 @@ namespace AasxPluginBomStructure
             // add to the currRef
             currRef.Keys.Add(
                 new AdminShell.Key(
-                    sme.GetElementName(), false, AdminShell.Identifier.IdShort, sme.idShort));
+                    sme.GetElementName(), sme.idShort));
 
             // index
             var hk = ComputeHashOnReference(currRef);

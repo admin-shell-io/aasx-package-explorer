@@ -160,8 +160,8 @@ namespace AasxPackageExplorer
                     DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
-                    DiaData.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
-                        "", "Plugin:" + vepe.theExt.Tag));
+                    DiaData.ResultKeys.Add(
+                        new AdminShell.Key(AdminShell.Key.FragmentReference, "Plugin:" + vepe.theExt.Tag));
 
                     // ok
                     return true;

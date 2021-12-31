@@ -119,6 +119,8 @@ namespace AasxAmlImExport
                 // over all entries
                 foreach (var rs in refstrs)
                 {
+                    // TODO: REWORK OLD FORMATS!
+
                     var m = Regex.Match(rs.Trim(), @"^\(([^)]+)\)\s*\(([^)]+)\)\s*\[(\w+)\](.*)$");
                     if (!m.Success)
                         // immediate fail or next try?
@@ -126,17 +128,14 @@ namespace AasxAmlImExport
 
                     // get string data
                     var ke = m.Groups[1].ToString();
-                    var local = m.Groups[2].ToString().Trim().ToLower();
-                    var idtype = m.Groups[3].ToString();
                     var id = m.Groups[4].ToString();
 
                     // verify: ke has to be in allowed range
                     if (!AdminShell.Key.IsInNamedElementsList(AdminShell.Key.KeyElements, ke))
                         return null;
-                    var islocal = local == "local";
 
                     // create key and make on refece
-                    var k = new AdminShell.Key(ke, islocal, idtype, id);
+                    var k = new AdminShell.Key(ke, id);
                     res.Keys.Add(k);
                 }
                 return res;

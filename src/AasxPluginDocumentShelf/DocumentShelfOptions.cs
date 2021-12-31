@@ -84,8 +84,7 @@ namespace AasxPluginDocumentShelf
             opt.Records.Add(rec);
 
             rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identifier.IRI,
-                "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+                AdminShell.Key.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
 
             return opt;
         }

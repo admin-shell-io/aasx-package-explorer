@@ -96,8 +96,7 @@ namespace AasxUANodesetImExport
                                 env.Submodels.Add(submodel);
                                 var smr = new AdminShell.SubmodelRef();
                                 smr.Keys.Add(
-                                    new AdminShell.Key(
-                                        "Submodel", true, "", submodel.id.value));
+                                    new AdminShell.Key("Submodel", submodel.id.value));
                                 aas.submodelRefs.Add(smr);
                             }
 
