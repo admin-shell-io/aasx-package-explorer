@@ -1992,8 +1992,7 @@ namespace AasxPackageLogic
 
             // plug-in?
             var srl = sri.CleanReference.Last;
-            if (srl?.type == AdminShell.Key.FragmentReference && srl?.idType == AdminShell.Key.Custom
-                && srl?.value?.StartsWith("Plugin:") == true)
+            if (srl?.type == AdminShell.Key.FragmentReference && srl?.value?.StartsWith("Plugin:") == true)
             {
                 sri.SearchPluginTag = srl.value.Substring("Plugin:".Length);
                 sri.CleanReference.Keys.Remove(srl);

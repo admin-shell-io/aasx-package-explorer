@@ -1300,7 +1300,7 @@ namespace AdminShellNS
                     return null;
                 // and we're picky
                 var key = keys[0];
-                if (!key.local || key.type.ToLower().Trim() != "conceptdescription")
+                if (key.type.ToLower().Trim() != "conceptdescription")
                     return null;
                 // brute force
                 foreach (var cd in this)

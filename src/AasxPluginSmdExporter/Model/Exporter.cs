@@ -560,9 +560,7 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
             key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum");
             key.type = "ConceptDescription";
-            key.local = true;
             key.index = 0;
-            key.idType = "IRI";
             semanticId.Keys.Add(key);
             return semanticId;
         }
@@ -662,9 +660,7 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
             key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult");
             key.type = "ConceptDescription";
-            key.local = true;
             key.index = 0;
-            key.idType = "IRI";
             semanticId.Keys.Add(key);
 
             foreach (var simmod in SimulationsModels.Values)
@@ -834,9 +830,7 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
             key.value = "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033";
             key.type = "ConceptDescription";
-            key.local = true;
             key.index = 0;
-            key.idType = "IRI";
             semanticId.Keys.Add(key);
 
             List<List<IOput>> nodeLists = new List<List<IOput>>();

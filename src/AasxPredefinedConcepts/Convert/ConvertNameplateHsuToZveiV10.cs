@@ -193,7 +193,7 @@ namespace AasxPredefinedConcepts.Convert
                     if (mkNameProp != null
                         && other?.submodelElement?.semanticId != null
                         && !other.submodelElement.semanticId.IsEmpty
-                        && other.submodelElement.semanticId[0].IsIdType(AdminShell.Identifier.IRDI))
+                        && other.submodelElement.semanticId[0].IsIRDI())
                     {
                         mkNameProp.valueId = other.submodelElement.semanticId;
                     }

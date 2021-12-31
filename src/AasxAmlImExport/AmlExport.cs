@@ -177,7 +177,7 @@ namespace AasxAmlImExport
             var semstr = "";
             foreach (var k in semid.Keys)
                 semstr += String.Format(
-                    "({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
+                    "({0}){1}", k.type, k.value);
 
             return semstr;
         }
@@ -193,7 +193,7 @@ namespace AasxAmlImExport
                 if (semstr != "")
                     semstr += ",";
                 semstr += String.Format(
-                    "({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
+                    "({0}){1}", k.type, k.value);
             }
 
             return semstr;

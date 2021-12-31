@@ -947,7 +947,6 @@ namespace AasxRestServerLibrary
                 }
                 else
                 {
-                    row.semIdType = sme.semanticId.Keys[0].idType;
                     row.semId = sme.semanticId.Keys[0].value;
                 }
 

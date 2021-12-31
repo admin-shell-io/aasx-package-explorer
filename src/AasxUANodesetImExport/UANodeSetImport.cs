@@ -404,14 +404,14 @@ namespace AasxUANodesetImExport
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
+                            // TODO: REMOVE IDTYPE && LOCAL
+
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)
                             {
                                 case "1:IdType":
-                                    _key.idType = value.Value.InnerText;
                                     break;
                                 case "1:Local":
-                                    _key.local = bool.Parse(value.Value.InnerText);
                                     break;
                                 case "1:Type":
                                     _key.type = value.Value.InnerText;
@@ -442,14 +442,14 @@ namespace AasxUANodesetImExport
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
+                            // TODO: REMOVE IDTYPE && LOCAL
+
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)
                             {
                                 case "1:IdType":
-                                    _key.idType = value.Value.InnerText;
                                     break;
                                 case "1:Local":
-                                    _key.local = bool.Parse(value.Value.InnerText);
                                     break;
                                 case "1:Type":
                                     _key.type = value.Value.InnerText;

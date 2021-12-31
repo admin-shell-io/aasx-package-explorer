@@ -1530,18 +1530,6 @@ namespace AasxPackageLogic
                             padding: new AnyUiThickness(2, 0, 0, 0),
                             content: "(" + keys[i].type + ")");
 
-                        // local
-                        AddSmallLabelTo(
-                            g, 0 + i + rowOfs, 2,
-                            padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "" + ((keys[i].local) ? "(local)" : "(no-local)"));
-
-                        // id type
-                        AddSmallLabelTo(
-                            g, 0 + i + rowOfs, 3,
-                            padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "[" + keys[i].idType + "]");
-
                         // value
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 4,
@@ -1596,46 +1584,6 @@ namespace AasxPackageLogic
                                 this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
                                 keys[currentI] == this.highlightField.containingObject)
                             this.HighligtStateElement(cbType, true);
-
-                        // local
-                        AnyUiUIElement.RegisterControl(
-                            AddSmallCheckBoxTo(
-                                g, 0 + i + rowOfs, 2,
-                                margin: new AnyUiThickness(2, 2, 2, 2),
-                                content: "local",
-                                isChecked: keys[currentI].local,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                            (o) =>
-                            {
-                                keys[currentI].local = (bool)o;
-                                emitCustomEvent?.Invoke(relatedReferable);
-                                return new AnyUiLambdaActionNone();
-                            },
-                            takeOverLambda: takeOverLambdaAction);
-
-                        // id type
-                        var cbIdType = AddSmallComboBoxTo(
-                            g, 0 + i + rowOfs, 3,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            text: "" + keys[currentI].idType,
-                            minWidth: 100,
-                            items: AdminShell.Key.IdentifierTypeNames,
-                            isEditable: false,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.RegisterControl(
-                            cbIdType,
-                            (o) =>
-                            {
-                                keys[currentI].idType = o as string;
-                                emitCustomEvent?.Invoke(relatedReferable);
-                                return new AnyUiLambdaActionNone();
-                            }, takeOverLambda: takeOverLambdaAction);
-
-                        // check here, if to hightlight
-                        if (cbIdType != null && this.highlightField != null && keys[currentI].idType != null &&
-                                this.highlightField.fieldHash == keys[currentI].idType.GetHashCode() &&
-                                keys[currentI] == this.highlightField.containingObject)
-                            this.HighligtStateElement(cbIdType, true);
 
                         // value
                         var tbValue = AddSmallTextBoxTo(
@@ -2173,7 +2121,6 @@ namespace AasxPackageLogic
                 // sort all the non-fitting
                 if (elem.semanticId != null && !elem.semanticId.IsEmpty && elem.semanticId.Count == 1
                     && elem.semanticId[0].type == AdminShell.Key.ConceptDescription
-                    && elem.semanticId[0].idType == "IRDI"
                     && elem.semanticId[0].value.StartsWith("0173"))
                 {
                     // already in CDs?
@@ -2204,7 +2151,7 @@ namespace AasxPackageLogic
             var fullfn = System.IO.Path.GetFullPath(Options.Curr.EclassDir);
             var jobData = new EclassUtils.SearchJobData(fullfn);
             foreach (var t in targets)
-                if (t != null && t.semanticId != null && t.semanticId.Count == 1 && t.semanticId[0].idType == "IRDI")
+                if (t != null && t.semanticId != null && t.semanticId.Count == 1 && t.semanticId[0].IsIRDI())
                     jobData.searchIRDIs.Add(t.semanticId[0].value.ToLower().Trim());
             // still valid?
             if (jobData.searchIRDIs.Count < 1)

@@ -659,8 +659,7 @@ namespace AdminShellNS
                     return null;
 
                 // as SubmodelElements are not Identifiables, the actual key shall be IdShort
-                if (rf[keyIndex].idType.Trim().ToLower() != Key.GetIdentifierTypeName(
-                                                                Key.IdentifierType.IdShort).Trim().ToLower())
+                if (!rf[keyIndex].IsInSubmodelElements())
                     return null;
 
                 // over all wrappers

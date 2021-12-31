@@ -269,7 +269,7 @@ namespace AdminShellNS
                 return this.value.Trim().ToLower() == other.value.Trim().ToLower();
             }
 
-            public bool IsIRI()
+            public static bool IsIRI(string value)
             {
                 if (value == null)
                     return false;
@@ -277,12 +277,22 @@ namespace AdminShellNS
                 return m.Success;
             }
 
-            public bool IsIRDI()
+            public bool IsIRI()
+            {
+                return IsIRI(value);
+            }
+
+            public static bool IsIRDI(string value)
             {
                 if (value == null)
                     return false;
                 var m = Regex.Match(value, @"\s*(\d{3,4})(:|-|/)");
                 return m.Success;
+            }
+
+            public bool IsIRDI()
+            {
+                return IsIRDI(value);
             }
 
             public override string ToString()
@@ -356,25 +366,26 @@ namespace AdminShellNS
             [CountForHash]
             public string type = "";
 
-            [XmlAttribute]
-            [CountForHash]
-            public bool local = false;
+            //TODO: REMOVE
+            //[XmlAttribute]
+            //[CountForHash]
+            //public bool local = false;
 
-            [MetaModelName("Key.idType")]
-            [TextSearchable]
-            [XmlAttribute]
-            [JsonIgnore]
-            [CountForHash]
-            public string idType = "";
+            //[MetaModelName("Key.idType")]
+            //[TextSearchable]
+            //[XmlAttribute]
+            //[JsonIgnore]
+            //[CountForHash]
+            //public string idType = "";
 
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "idType")]
-            public string JsonIdType
-            {
-                // adapt idShort <-> IdShort
-                get => (idType == "idShort") ? "IdShort" : idType;
-                set => idType = (value == "idShort") ? "IdShort" : value;
-            }
+            //[XmlIgnore]
+            //[JsonProperty(PropertyName = "idType")]
+            //public string JsonIdType
+            //{
+            //    // adapt idShort <-> IdShort
+            //    get => (idType == "idShort") ? "IdShort" : idType;
+            //    set => idType = (value == "idShort") ? "IdShort" : value;
+            //}
 
             [MetaModelName("Key.value")]
             [TextSearchable]
@@ -394,8 +405,6 @@ namespace AdminShellNS
             public Key(Key src)
             {
                 this.type = src.type;
-                this.local = src.local;
-                this.idType = src.idType;
                 this.value = src.value;
             }
 
@@ -403,20 +412,12 @@ namespace AdminShellNS
             public Key(AasxCompatibilityModels.AdminShellV10.Key src)
             {
                 this.type = src.type;
-                this.local = src.local;
-                this.idType = src.idType;
-                if (this.idType.Trim().ToLower() == "uri")
-                    this.idType = Identifier.IRI;
-                if (this.idType.Trim().ToLower() == "idshort")
-                    this.idType = Identifier.IdShort;
                 this.value = src.value;
             }
 
             public Key(AasxCompatibilityModels.AdminShellV20.Key src)
             {
                 this.type = src.type;
-                this.local = src.local;
-                this.idType = src.idType;
                 this.value = src.value;
             }
 #endif
@@ -424,8 +425,6 @@ namespace AdminShellNS
             public Key(string type, bool local, string idType, string value)
             {
                 this.type = type;
-                this.local = local;
-                this.idType = idType;
                 this.value = value;
             }
 
@@ -434,8 +433,6 @@ namespace AdminShellNS
                 var k = new Key()
                 {
                     type = type,
-                    local = local,
-                    idType = idType,
                     value = value
                 };
                 return (k);
@@ -458,16 +455,15 @@ namespace AdminShellNS
                 if (format == 1)
                 {
                     return String.Format(
-                        "({0})({1})[{2}]{3}", this.type, this.local ? "local" : "no-local", this.idType, this.value);
+                        "({0}){1}", this.type, this.value);
                 }
                 if (format == 2)
                 {
-                    return String.Format("[{0}]{1}", this.idType, this.value);
+                    return String.Format("{0}", this.value);
                 }
 
                 // (old) default
-                var tlc = (this.local) ? "Local" : "not Local";
-                return $"[{this.type}, {tlc}, {this.idType}, {this.value}]";
+                return $"[{this.type}, {this.value}]";
             }
 
             public static Key Parse(string cell, string typeIfNotSet = null,
@@ -480,7 +476,7 @@ namespace AdminShellNS
                 if (typeIfNotSet == null)
                     typeIfNotSet = Key.GlobalReference;
 
-                // format == 1
+                // OLD format == 1
                 if (allowFmtAll || allowFmt1)
                 {
                     var m = Regex.Match(cell, @"\((\w+)\)\((\S+)\)\[(\w+)\]( ?)(.*)$");
@@ -492,7 +488,7 @@ namespace AdminShellNS
                     }
                 }
 
-                // format == 2
+                // OLD format == 2
                 if (allowFmtAll || allowFmt2)
                 {
                     var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
@@ -504,7 +500,7 @@ namespace AdminShellNS
                     }
                 }
 
-                // format == 0
+                // OLD format == 0
                 if (allowFmtAll || allowFmt0)
                 {
                     var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
@@ -539,86 +535,93 @@ namespace AdminShellNS
             }
 
             public static string[] KeyElements = new string[] {
-            "GlobalReference",
-            "FragmentReference",
-            "AccessPermissionRule",
-            "Asset",
-            "AssetAdministrationShell",
-            "ConceptDescription",
-            "Submodel",
-            "SubmodelRef", // not completely right, but used by Package Explorer
-            "Blob",
-            "ConceptDictionary",
-            "DataElement",
-            "File",
-            "Operation",
-            "OperationVariable",
-            "BasicEvent",
-            "Entity",
-            "Property",
-            "MultiLanguageProperty",
-            "Range",
-            "ReferenceElement",
-            "RelationshipElement",
-            "AnnotatedRelationshipElement",
-            "Capability",
-            "SubmodelElement",
-            "SubmodelElementCollection",
-            "View" };
+                "AnnotatedRelationshipElement",
+                "AssetAdministrationShell",
+                "BasicEvent",
+                "Blob",
+                "Capability",
+                "ConceptDescription",
+                "DataElement",
+                "Entity",
+                "Event",
+                "File",
+                "FragmentReference",
+                "GlobalElementReference",
+                "ModelElementReference",
+                "MultiLanguageProperty",
+                "Operation",
+                "OperationVariable", // not specified, but used by AASX Package Explorer
+                "Property",
+                "Range",
+                "ReferenceElement",
+                "RelationshipElement",
+                "Submodel",
+                "SubmodelElement",
+                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
+                "SubmodelElementList",
+                "SubmodelElementStructure",
+                "SubmodelRef" // not specified, but used by AASX Package Explorer
+            };
 
             public static string[] ReferableElements = new string[] {
-            "AccessPermissionRule",
-            "Asset",
-            "AssetAdministrationShell",
-            "ConceptDescription",
-            "Submodel",
-            "Blob",
-            "ConceptDictionary",
-            "DataElement",
-            "File",
-            "Operation",
-            "OperationVariable",
-            "Entity",
-            "BasicEvent",
-            "Property",
-            "MultiLanguageProperty",
-            "Range",
-            "ReferenceElement",
-            "RelationshipElement",
-            "AnnotatedRelationshipElement",
-            "Capability",
-            "SubmodelElement",
-            "SubmodelElementCollection",
-            "View" };
+                "AnnotatedRelationshipElement",
+                "AssetAdministrationShell",
+                "BasicEvent",
+                "Blob",
+                "Capability",
+                "ConceptDescription",
+                "DataElement",
+                "Entity",
+                "Event",
+                "File",
+                "FragmentReference",
+                "GlobalElementReference",
+                "ModelElementReference",
+                "MultiLanguageProperty",
+                "Operation",
+                "OperationVariable", // not specified, but used by AASX Package Explorer
+                "Property",
+                "Range",
+                "ReferenceElement",
+                "RelationshipElement",
+                "Submodel",
+                "SubmodelElement",
+                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
+                "SubmodelElementList",
+                "SubmodelElementStructure"
+            };
 
             public static string[] SubmodelElements = new string[] {
-            "DataElement",
-            "File",
-            "Event",
-            "Operation",
-            "Property",
-            "MultiLanguageProperty",
-            "Range",
-            "ReferenceElement",
-            "RelationshipElement",
-            "AnnotatedRelationshipElement",
-            "Capability",
-            "BasicEvent",
-            "Entity",
-            "SubmodelElementCollection"};
-
-            public static string[] IdentifiableElements = new string[] {
-            "Asset",
-            "AssetAdministrationShell",
-            "ConceptDescription",
-            "Submodel" };
+                "AnnotatedRelationshipElement",
+                "BasicEvent",
+                "Blob",
+                "Capability",
+                "DataElement",
+                "Entity",
+                "Event",
+                "File",
+                // "GlobalElementReference", // in spec, but not expected by AASX Package Explorer
+                // "ModelElementReference", // in spec, but not expected by AASX Package Explorer
+                "MultiLanguageProperty",
+                "Operation",
+                "Property",
+                "Range",
+                "ReferenceElement",
+                "RelationshipElement",
+                "Submodel",
+                // "SubmodelElement", // in spec, but not expected by AASX Package Explorer
+                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
+                "SubmodelElementList",
+                "SubmodelElementStructure"
+            };
 
             // use this in list to designate all of the above elements
             public static string AllElements = "All";
 
             // use this in list to designate the GlobalReference
             // Resharper disable MemberHidesStaticFromOuterClass
-            public static string GlobalReference = "GlobalReference";
+            public static string GlobalReference = "GlobalElementReference";
+            public static string ModelReference = "ModelElementReference";
             public static string FragmentReference = "FragmentReference";
             public static string ConceptDescription = "ConceptDescription";
             public static string SubmodelRef = "SubmodelRef";
@@ -630,43 +633,57 @@ namespace AdminShellNS
             public static string View = "View";
             // Resharper enable MemberHidesStaticFromOuterClass
 
-            public static string[] IdentifierTypeNames = new string[] {
-                Identifier.IdShort, "FragmentId", "Custom", Identifier.IRDI, Identifier.IRI };
+            // TODO: REMOVE
+            //public static string[] IdentifierTypeNames = new string[] {
+            //    Identifier.IdShort, "FragmentId", "Custom", Identifier.IRDI, Identifier.IRI };
+            //public enum IdentifierType { IdShort = 0, FragmentId, Custom, IRDI, IRI };
 
-            public enum IdentifierType { IdShort = 0, FragmentId, Custom, IRDI, IRI };
+            //public static string GetIdentifierTypeName(IdentifierType t)
+            //{
+            //    return IdentifierTypeNames[(int)t];
+            //}
 
-            public static string GetIdentifierTypeName(IdentifierType t)
-            {
-                return IdentifierTypeNames[(int)t];
-            }
-
-            public static string IdShort = "IdShort";
-            public static string FragmentId = "FragmentId";
-            public static string Custom = "Custom";
+            //public static string IdShort = "IdShort";
+            //public static string FragmentId = "FragmentId";
+            //public static string Custom = "Custom";
 
             // some helpers
 
-            public static bool IsInKeyElements(string ke)
+            public static bool IsInNamedElementsList(string[] elementsList, string ke)
             {
-                var res = false;
-                foreach (var s in KeyElements)
+                if (elementsList == null || ke == null)
+                    return false;
+
+                foreach (var s in elementsList)
                     if (s.Trim().ToLower() == ke.Trim().ToLower())
-                        res = true;
-                return res;
+                        return true;
+
+                return false;
             }
 
-            public bool IsIdType(string[] value)
+            public bool IsInKeyElements()
             {
-                if (value == null || idType == null || idType.Trim() == "")
-                    return false;
-                return value.Contains(idType.Trim());
+                return IsInNamedElementsList(KeyElements, this.type);
             }
 
-            public bool IsIdType(string value)
+            public bool IsInReferableElements()
             {
-                if (value == null || idType == null || idType.Trim() == "")
-                    return false;
-                return value.Trim().Equals(idType.Trim());
+                return IsInNamedElementsList(ReferableElements, this.type);
+            }
+
+            public bool IsInSubmodelElements()
+            {
+                return IsInNamedElementsList(SubmodelElements, this.type);
+            }
+
+            public bool IsIRI()
+            {
+                return Identifier.IsIRI(value);
+            }
+
+            public bool IsIRDI()
+            {
+                return Identifier.IsIRDI(value);
             }
 
             public bool IsType(string value)
@@ -680,22 +697,17 @@ namespace AdminShellNS
             {
                 return IsType(Key.GlobalReference)
                     || IsType(Key.AAS)
-                    || IsType(Key.Asset)
                     || IsType(Key.Submodel);
             }
 
             public bool Matches(
-                string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Strict)
+                string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Relaxed)
             {
-                if (matchMode == MatchMode.Strict)
-                    return this.type == type && this.local == local && this.idType == idType && this.value == id;
-
                 if (matchMode == MatchMode.Relaxed)
-                    return (this.type == type || this.type == Key.GlobalReference || type == Key.GlobalReference)
-                        && this.idType == idType && this.value == id;
+                    return this.type == type && this.value == id;
 
                 if (matchMode == MatchMode.Identification)
-                    return this.idType == idType && this.value == id;
+                    return this.value == id;
 
                 return false;
             }
@@ -707,11 +719,11 @@ namespace AdminShellNS
                 return this.Matches(Key.GlobalReference, false, "", id.value, MatchMode.Identification);
             }
 
-            public bool Matches(Key key, MatchMode matchMode = MatchMode.Strict)
+            public bool Matches(Key key, MatchMode matchMode = MatchMode.Relaxed)
             {
                 if (key == null)
                     return false;
-                return this.Matches(key.type, key.local, key.idType, key.value, matchMode);
+                return this.Matches(key.type, false, "", key.value, matchMode);
             }
 
             // validation
@@ -738,28 +750,6 @@ namespace AdminShellNS
                 }
                 else
                 {
-                    // check IdType
-                    var idf = AdminShellUtil.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
-                    if (idf == AdminShellUtil.ConstantFoundEnum.No)
-                        // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
-                            "Key: idType is not in allowed enumeration values",
-                            () =>
-                            {
-                                k.idType = Custom;
-                            }));
-                    if (idf == AdminShellUtil.ConstantFoundEnum.AnyCase)
-                        // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
-                            "Key: idType in wrong casing",
-                            () =>
-                            {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
-                                    IdentifierTypeNames, k.idType);
-                            }));
-
                     // check type
                     var tf = AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
                     if (tf == AdminShellUtil.ConstantFoundEnum.No)
@@ -778,7 +768,7 @@ namespace AdminShellNS
                             "Key: type in wrong casing",
                             () =>
                             {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                k.type = AdminShellUtil.CorrectCasingForConstantStringArray(
                                     KeyElements, k.type);
                             }));
                 }
@@ -889,7 +879,7 @@ namespace AdminShellNS
                     return "-";
                 var i = this.Count - 1;
                 var res = this[i].value;
-                if (this[i].IsIdType(new[] { Key.FragmentId }) && i > 0)
+                if (this[i].IsType(Key.FragmentReference) && i > 0)
                     res += this[i - 1].value;
                 return res;
             }
@@ -1000,7 +990,8 @@ namespace AdminShellNS
                 for (int i = startPos; i < this.Count && nr < count; i++)
                 {
                     nr++;
-                    if (this[i].idType.Trim().ToLower() == Key.IdShort.Trim().ToLower())
+                    // V3RC02: quite expensive check: if SME -> then treat as idShort
+                    if (this[i].IsInSubmodelElements())
                     {
                         if (res != "")
                             res += "/";
@@ -1185,7 +1176,7 @@ namespace AdminShellNS
                 if (keys == null || keys.Count != 1)
                     return null;
                 var k = keys[0];
-                return new Key(k.type, k.local, k.idType, k.value);
+                return new Key(k.type, false, "", k.value);
             }
 
             public bool MatchesExactlyOneKey(
@@ -1201,7 +1192,7 @@ namespace AdminShellNS
             {
                 if (key == null)
                     return false;
-                return this.MatchesExactlyOneKey(key.type, key.local, key.idType, key.value, matchMode);
+                return this.MatchesExactlyOneKey(key.type, true, "", key.value, matchMode);
             }
 
             public bool Matches(
@@ -2402,7 +2393,7 @@ namespace AdminShellNS
             {
                 return new Reference(
                     new AdminShell.Key(
-                        this.GetElementName(), false, Key.IdShort, "" + this.idShort));
+                        this.GetElementName(), false, "", "" + this.idShort));
             }
 
             public void CollectReferencesByParent(List<Key> refs)
@@ -2463,7 +2454,7 @@ namespace AdminShellNS
 
             public virtual Key ToKey()
             {
-                return new Key(GetElementName(), true, Key.IdShort, idShort);
+                return new Key(GetElementName(), true, "", idShort);
             }
 
             // hash functionality
@@ -3346,7 +3337,7 @@ namespace AdminShellNS
                     return null;
                 // and we're picky
                 var key = aref[0];
-                if (!key.local || key.type.ToLower().Trim() != "asset")
+                if (key.type.ToLower().Trim() != "asset")
                     return null;
                 // brute force
                 foreach (var a in assets)
@@ -3376,7 +3367,7 @@ namespace AdminShellNS
                     return null;
                 // and we're picky
                 var key = smref.Keys[0];
-                if (!key.local || key.type.ToLower().Trim() != "submodel")
+                if (key.type.ToLower().Trim() != "submodel")
                     return null;
                 // brute force
                 foreach (var sm in this.Submodels)
@@ -3658,7 +3649,7 @@ namespace AdminShellNS
                     return null;
                 // and we're picky
                 var key = keys[0];
-                if (!key.local || key.type.ToLower().Trim() != "conceptdescription")
+                if (key.type.ToLower().Trim() != "conceptdescription")
                     return null;
                 // brute force
                 foreach (var cd in conceptDescriptions)
@@ -3855,7 +3846,6 @@ namespace AdminShellNS
                         return (s != null && s.semanticId != null && s.semanticId.Matches(oldId));
                     }))
                     {
-                        sme.semanticId[0].idType = "";
                         sme.semanticId[0].value = newId.value;
                         res.Add(sme);
                     }
@@ -3880,7 +3870,6 @@ namespace AdminShellNS
                                 if (r[i].Matches(Key.Submodel, false, "", oldId.value, Key.MatchMode.Relaxed))
                                 {
                                     // directly replace
-                                    r[i].idType = "";
                                     r[i].value = newId.value;
                                     if (res.Contains(lr.Identifiable))
                                         res.Add(lr.Identifiable);
@@ -3910,7 +3899,6 @@ namespace AdminShellNS
                                 if (r[i].Matches(Key.Asset, false, "", oldId.value, Key.MatchMode.Relaxed))
                                 {
                                     // directly replace
-                                    r[i].idType = "";
                                     r[i].value = newId.value;
                                     if (res.Contains(lr.Identifiable))
                                         res.Add(lr.Identifiable);

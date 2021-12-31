@@ -78,7 +78,6 @@ namespace AasxPluginSmdExporter
             Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
             Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
             Bom.semanticId.Keys[0].type = "Submodel";
-            Bom.semanticId.Keys[0].idType = "IRI";
 
             String bom_json = Newtonsoft.Json.JsonConvert.SerializeObject(Bom);
 
@@ -333,9 +332,7 @@ namespace AasxPluginSmdExporter
         {
             AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId();
             AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.idType = "IRI";
             key.index = 0;
-            key.local = true;
             key.type = "ConceptDescription";
             switch (type)
             {
