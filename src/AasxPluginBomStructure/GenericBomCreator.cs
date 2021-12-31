@@ -76,7 +76,7 @@ namespace AasxPluginBomStructure
         {
             if (_refStore == null)
                 return this._env?.FindReferableByReference(r);
-            return _refStore.FindElementByReference(r, AdminShell.Key.MatchMode.Relaxed);
+            return _refStore.FindElementByReference(r);
         }
 
         private string GenerateNodeID()

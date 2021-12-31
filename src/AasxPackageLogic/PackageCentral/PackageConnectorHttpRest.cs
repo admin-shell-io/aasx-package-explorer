@@ -757,7 +757,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     AdminShell.SubmodelRef smrefFound = null;
                     foreach (var smref in parentAas.submodelRefs)
-                        if (smref.Matches(targetKl.Last(), AdminShell.Key.MatchMode.Relaxed))
+                        if (smref.Matches(targetKl.Last()))
                             smrefFound = smref;
 
                     if (smrefFound == null)

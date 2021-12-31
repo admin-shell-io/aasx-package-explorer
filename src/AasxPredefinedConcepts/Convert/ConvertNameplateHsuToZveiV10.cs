@@ -37,8 +37,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey(),
-                AdminShell.Key.MatchMode.Relaxed))
+            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey()))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Digital Nameplate HSU to ZVEI V1.0"));
 

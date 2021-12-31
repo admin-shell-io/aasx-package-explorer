@@ -356,7 +356,7 @@ namespace AdminShellNS
         {
             // Constants
 
-            public enum MatchMode { Strict, Relaxed, Identification };
+            public enum MatchMode { Relaxed, Identification }; // in V3.0RC02: Strict not anymore
 
             // Members
 
@@ -822,7 +822,7 @@ namespace AdminShellNS
 
             // matches
 
-            public bool Matches(KeyList other, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(KeyList other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (other == null || other.Count != this.Count)
                     return false;
@@ -905,7 +905,7 @@ namespace AdminShellNS
             }
 
             public bool StartsWith(KeyList head, bool emptyIsTrue = false,
-                Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 // access
                 if (head == null)
@@ -1237,12 +1237,12 @@ namespace AdminShellNS
                 return same;
             }
 
-            public bool Matches(SemanticId other, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(SemanticId other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 return Matches(new Reference(other), matchMode);
             }
 
-            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 return Matches(cd?.GetReference(), matchMode);
             }
@@ -3365,7 +3365,7 @@ namespace AdminShellNS
             }
 
             public IEnumerable<Submodel> FindAllSubmodelBySemanticId(
-                Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 // access
                 if (semId == null)

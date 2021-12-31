@@ -98,7 +98,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // ok, go thru the old == HSU records
             foreach (var smcSource in smcOldHsu.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsHsu.CD_DocumentationItem.GetSingleKey(), AdminShell.Key.MatchMode.Relaxed))
+                        defsHsu.CD_DocumentationItem.GetSingleKey()))
             {
                 // access
                 if (smcSource == null || smcSource.value == null)

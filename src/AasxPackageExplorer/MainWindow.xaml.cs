@@ -403,8 +403,7 @@ namespace AasxPackageExplorer
             {
                 // check for ReferenceElement
                 var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
-                    AdminShell.Key.MatchMode.Relaxed);
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference());
                 if (navTo?.value == null)
                     continue;
 
@@ -1051,7 +1050,7 @@ namespace AasxPackageExplorer
                             continue;
 
                         foreach (var aas in pe.AasEnv.AdministrationShells)
-                            if (aas.assetRef?.Matches(rf, AdminShell.Key.MatchMode.Relaxed) == true)
+                            if (aas.assetRef?.Matches(rf) == true)
                             {
                                 rf = aas.GetReference();
                                 break;
@@ -1484,8 +1483,7 @@ namespace AasxPackageExplorer
 
                     // some special cases
                     if (true == refEv.observed?.Matches(
-                            AdminShell.Key.GlobalReference, "AASENV",
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AdminShell.Key.GlobalReference, "AASENV"))
                     {
                         observable = env;
                     }
@@ -1640,8 +1638,7 @@ namespace AasxPackageExplorer
                         // check, if the Submodel has interesting events
                         foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
                             (true == x?.semanticId?.Matches(
-                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                                AdminShell.Key.MatchMode.Relaxed))))
+                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards))))
                         {
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
@@ -1650,7 +1647,7 @@ namespace AasxPackageExplorer
                             // no, klSelected shall lie in klObserved
                             if (klObserved != null && klSelected != null &&
                                 klSelected.StartsWith(klObserved,
-                                emptyIsTrue: false, matchMode: AdminShell.Key.MatchMode.Relaxed))
+                                emptyIsTrue: false))
                             {
                                 // take a shortcut
                                 if (_packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp

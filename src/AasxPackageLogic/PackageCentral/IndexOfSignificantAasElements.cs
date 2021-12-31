@@ -97,13 +97,11 @@ namespace AasxPackageLogic.PackageCentral
                     if (sme is AdminShell.BasicEvent)
                     {
                         if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards))
                             Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
                         if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 

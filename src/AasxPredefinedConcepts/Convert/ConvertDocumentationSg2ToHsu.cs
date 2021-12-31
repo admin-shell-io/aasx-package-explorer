@@ -43,7 +43,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // MIHO, 2020-07-31: temporary have code to allow conversion of Festo MCAD / ECAD models as well
             //// if (sm != null && true == sm.GetSemanticKey()?.Matches("Submodel", false, "IRI", 
-            ////       "http://smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0", AdminShell.Key.MatchMode.Relaxed))
+            ////       "http://smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"))
             ////     res.Add(new ConvertOfferDocumentationSg2ToHsu(this, 
             ////       $"Convert Submodel '{"" + sm.idShort}' for Documentation SG2 to HSU"));
 

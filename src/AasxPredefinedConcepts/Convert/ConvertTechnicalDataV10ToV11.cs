@@ -100,8 +100,7 @@ namespace AasxPredefinedConcepts.Convert
 
                     // do some fix for "non-standardized"
                     if (sme.submodelElement.semanticId?
-                        .MatchesExactlyOneKey(defsV10.CD_NonstandardizedProperty.GetSingleKey(),
-                            AdminShell.Key.MatchMode.Relaxed) == true)
+                        .MatchesExactlyOneKey(defsV10.CD_NonstandardizedProperty.GetSingleKey()) == true)
                     {
                         // fix
                         sme.submodelElement.semanticId = new AdminShell.SemanticId(
