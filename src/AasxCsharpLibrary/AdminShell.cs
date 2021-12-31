@@ -698,7 +698,7 @@ namespace AdminShellNS
             }
 
             public bool Matches(
-                string type, bool local, string idType, string id, MatchMode matchMode = MatchMode.Relaxed)
+                string type, string id, MatchMode matchMode = MatchMode.Relaxed)
             {
                 if (matchMode == MatchMode.Relaxed)
                     return this.type == type && this.value == id;
@@ -713,14 +713,14 @@ namespace AdminShellNS
             {
                 if (id == null)
                     return false;
-                return this.Matches(Key.GlobalReference, false, "", id.value, MatchMode.Identification);
+                return this.Matches(Key.GlobalReference, id.value, MatchMode.Identification);
             }
 
             public bool Matches(Key key, MatchMode matchMode = MatchMode.Relaxed)
             {
                 if (key == null)
                     return false;
-                return this.Matches(key.type, false, "", key.value, matchMode);
+                return this.Matches(key.type, key.value, matchMode);
             }
 
             // validation
@@ -1177,33 +1177,33 @@ namespace AdminShellNS
             }
 
             public bool MatchesExactlyOneKey(
-                string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                string type, string id, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (keys == null || keys.Count != 1)
                     return false;
                 var k = keys[0];
-                return k.Matches(type, local, idType, id, matchMode);
+                return k.Matches(type, id, matchMode);
             }
 
-            public bool MatchesExactlyOneKey(Key key, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool MatchesExactlyOneKey(Key key, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (key == null)
                     return false;
-                return this.MatchesExactlyOneKey(key.type, true, "", key.value, matchMode);
+                return this.MatchesExactlyOneKey(key.type, key.value, matchMode);
             }
 
             public bool Matches(
-                string type, bool local, string idType, string id, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                string type, string id, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (this.Count == 1)
                 {
                     var k = keys[0];
-                    return k.Matches(type, local, idType, id, matchMode);
+                    return k.Matches(type, id, matchMode);
                 }
                 return false;
             }
 
-            public bool Matches(Key key, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(Key key, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (this.Count == 1)
                 {
@@ -1220,12 +1220,12 @@ namespace AdminShellNS
                 if (this.Count == 1)
                 {
                     var k = keys[0];
-                    return k.Matches(Key.GlobalReference, false, "", other.value, Key.MatchMode.Identification);
+                    return k.Matches(Key.GlobalReference, other.value, Key.MatchMode.Identification);
                 }
                 return false;
             }
 
-            public bool Matches(Reference other, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public bool Matches(Reference other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (this.keys == null || other == null || other.keys == null || other.Count != this.Count)
                     return false;
@@ -3840,7 +3840,7 @@ namespace AdminShellNS
                         var r = lr?.Reference;
                         if (r != null)
                             for (int i = 0; i < r.Count; i++)
-                                if (r[i].Matches(Key.Submodel, false, "", oldId.value, Key.MatchMode.Relaxed))
+                                if (r[i].Matches(Key.Submodel, oldId.value, Key.MatchMode.Relaxed))
                                 {
                                     // directly replace
                                     r[i].value = newId.value;
@@ -3869,7 +3869,7 @@ namespace AdminShellNS
                         var r = lr?.Reference;
                         if (r != null)
                             for (int i = 0; i < r.Count; i++)
-                                if (r[i].Matches(Key.Asset, false, "", oldId.value, Key.MatchMode.Relaxed))
+                                if (r[i].Matches(Key.Asset, oldId.value, Key.MatchMode.Relaxed))
                                 {
                                     // directly replace
                                     r[i].value = newId.value;
