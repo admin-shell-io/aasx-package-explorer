@@ -417,7 +417,11 @@ namespace AdminShellNS
 
             public Key(AasxCompatibilityModels.AdminShellV20.Key src)
             {
-                this.type = src.type;
+                var stll = src?.type?.Trim().ToLower();
+                if (stll == AasxCompatibilityModels.AdminShellV20.Key.GlobalReference.ToLower())
+                    this.type = Key.GlobalReference;
+                else
+                    this.type = src.type;
                 this.value = src.value;
             }
 #endif
