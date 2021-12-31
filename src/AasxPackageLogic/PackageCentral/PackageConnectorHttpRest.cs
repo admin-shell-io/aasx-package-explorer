@@ -316,8 +316,8 @@ namespace AasxPackageLogic.PackageCentral
                         if (tuple.path != null)
                         {
                             // KeyList from path
-                            var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
-                                        "", tuple.path.ToObject<string[]>());
+                            var kl = AdminShell.KeyList.CreateNew(
+                                        AdminShell.Key.SubmodelElement, tuple.path.ToObject<string[]>());
                             // goal (1)
                             pluv.Values.Add(
                                 new AasPayloadUpdateValueItem(kl, "" + tuple.value));

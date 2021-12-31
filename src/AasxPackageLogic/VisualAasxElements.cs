@@ -327,9 +327,7 @@ namespace AasxPackageLogic
                         res.Insert(
                             0,
                             AdminShell.Key.CreateNew(
-                                smr.theSubmodel.GetElementName(), true,
-                                "",
-                                smr.theSubmodel.id.value));
+                                smr.theSubmodel.GetElementName(), smr.theSubmodel.id.value));
 
                     // include aas
                     if (includeAas && ve.Parent is VisualElementAdminShell veAas
@@ -338,9 +336,7 @@ namespace AasxPackageLogic
                         res.Insert(
                             0,
                             AdminShell.Key.CreateNew(
-                                AdminShell.Key.AAS, true,
-                                "",
-                                veAas.theAas.id.value));
+                                AdminShell.Key.AAS, veAas.theAas.id.value));
                     }
 
                     break;
@@ -351,8 +347,7 @@ namespace AasxPackageLogic
                     // a Identifiable will terminate the list of keys
                     res.Insert(
                         0,
-                        AdminShell.Key.CreateNew(
-                            iddata.GetElementName(), true, "", iddata.id.value));
+                        AdminShell.Key.CreateNew(iddata.GetElementName(), iddata.id.value));
                     break;
                 }
                 else
@@ -361,7 +356,7 @@ namespace AasxPackageLogic
                     // add a key and go up ..
                     res.Insert(
                         0,
-                        AdminShell.Key.CreateNew(rf.GetElementName(), true, "IdShort", rf.idShort));
+                        AdminShell.Key.CreateNew(rf.GetElementName(), rf.idShort));
                 }
                 else
                 // uups!

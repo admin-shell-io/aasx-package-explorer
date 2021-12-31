@@ -388,8 +388,7 @@ namespace AdminShellNS
             {
                 var r = new AssetRef();
                 r.Keys.Add(
-                    Key.CreateNew(
-                        this.GetElementName(), true, "", this.id.value));
+                    Key.CreateNew(this.GetElementName(), this.id.value));
                 return r;
             }
 
@@ -566,10 +565,10 @@ namespace AdminShellNS
             }
 #endif
 
-            public static UnitId CreateNew(string type, bool local, string idType, string value)
+            public static UnitId CreateNew(string type, string value)
             {
                 var u = new UnitId();
-                u.keys.Add(Key.CreateNew(type, local, idType, value));
+                u.keys.Add(Key.CreateNew(type, value));
                 return u;
             }
 
@@ -743,7 +742,7 @@ namespace AdminShellNS
             public static Key GetKey()
             {
                 return Key.CreateNew(
-                            "GlobalReference", false, "IRI",
+                            "GlobalReference", 
                             "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
             }
 
@@ -1059,15 +1058,14 @@ namespace AdminShellNS
 
             public Key GetSingleKey()
             {
-                return Key.CreateNew(this.GetElementName(), true, "", this.id.value);
+                return Key.CreateNew(this.GetElementName(), this.id.value);
             }
 
             public ConceptDescriptionRef GetCdReference()
             {
                 var r = new ConceptDescriptionRef();
                 r.Keys.Add(
-                    Key.CreateNew(
-                        this.GetElementName(), true, "", this.id.value));
+                    Key.CreateNew(this.GetElementName(), this.id.value));
                 return r;
             }
 
@@ -1285,7 +1283,7 @@ namespace AdminShellNS
 
             public ConceptDescription Find(Identifier id)
             {
-                var cdr = ConceptDescriptionRef.CreateNew("Conceptdescription", true, "", id.value);
+                var cdr = ConceptDescriptionRef.CreateNew("Conceptdescription", id.value);
                 return Find(cdr);
             }
 
@@ -1660,8 +1658,7 @@ namespace AdminShellNS
             {
                 SubmodelRef l = new SubmodelRef();
                 l.Keys.Add(
-                    Key.CreateNew(
-                        this.GetElementName(), true, "", this.id.value));
+                    Key.CreateNew(this.GetElementName(), this.id.value));
                 return l;
             }
 

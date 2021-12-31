@@ -1001,7 +1001,7 @@ namespace AasxPackageExplorer
         public static AdminShell.SemanticId createSemanticID(string tdType)
         {
             AdminShell.Key tdSemanticKey = new AdminShell.Key();
-            tdSemanticKey.type = "GlobalReference";
+            tdSemanticKey.type = AdminShell.Key.GlobalReference;
             tdSemanticKey.value = TDSemanticId.getSemanticID(tdType);
             AdminShell.SemanticId tdSemanticId = new AdminShell.SemanticId(tdSemanticKey);
 

@@ -351,14 +351,12 @@ namespace AasxToolkit
                                 var prop = AdminShell.Property.CreateNew("test", "cat01");
                                 prop.semanticId = new AdminShell.SemanticId(
                                     AdminShell.Reference.CreateNew(
-                                        "GlobalReference", false, "IRI",
-                                        "www.admin-shell.io/nonsense"));
+                                        AdminShell.Key.GlobalReference, "www.admin-shell.io/nonsense"));
 
                                 var fil = AdminShell.File.CreateNew("test", "cat01");
                                 fil.semanticId = new AdminShell.SemanticId(
                                     AdminShell.Reference.CreateNew(
-                                        "GlobalReference", false, "IRI",
-                                        "www.admin-shell.io/nonsense"));
+                                        AdminShell.Key.GlobalReference, "www.admin-shell.io/nonsense"));
                                 fil.parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();

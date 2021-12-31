@@ -220,7 +220,7 @@ namespace AdminShellNS
             {
                 Reference r = new Reference();
                 // this is the tail of our referencing chain ..
-                r.Keys.Add(Key.CreateNew(GetElementName(), true, "IdShort", this.idShort));
+                r.Keys.Add(Key.CreateNew(GetElementName(), this.idShort));
                 // try to climb up ..
                 var current = this.parent;
                 while (includeParents && current != null)
@@ -230,8 +230,6 @@ namespace AdminShellNS
                         // add big information set
                         r.Keys.Insert(0, Key.CreateNew(
                             current.GetElementName(),
-                            true,
-                            "",
                             cid.id.value));
                     }
                     else
@@ -240,8 +238,7 @@ namespace AdminShellNS
                         // reference via idShort
                         r.Keys.Insert(0, Key.CreateNew(
                             current.GetElementName(),
-                            true,
-                            "IdShort", crf.idShort));
+                            crf.idShort));
                     }
 
                     if (current is Referable crf2)
@@ -1520,9 +1517,9 @@ namespace AdminShellNS
                 return this;
             }
 
-            public Property Set(string type, bool local, string idType, string value)
+            public Property SetValueId(string type, string value)
             {
-                this.valueId = Reference.CreateNew(Key.CreateNew(type, local, idType, value));
+                this.valueId = Reference.CreateNew(Key.CreateNew(type, value));
                 return this;
             }
 

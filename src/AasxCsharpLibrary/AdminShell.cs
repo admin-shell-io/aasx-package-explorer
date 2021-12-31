@@ -428,7 +428,7 @@ namespace AdminShellNS
                 this.value = value;
             }
 
-            public static Key CreateNew(string type, bool local, string idType, string value)
+            public static Key CreateNew(string type, string value)
             {
                 var k = new Key()
                 {
@@ -799,15 +799,15 @@ namespace AdminShellNS
                 return kl;
             }
 
-            public static KeyList CreateNew(string type, bool local, string idType, string value)
+            public static KeyList CreateNew(string type, string value)
             {
                 var kl = new KeyList() {
-                    Key.CreateNew(type, local, idType, value)
+                    Key.CreateNew(type, value)
                 };
                 return kl;
             }
 
-            public static KeyList CreateNew(string type, bool local, string idType, string[] valueItems)
+            public static KeyList CreateNew(string type, string[] valueItems)
             {
                 // access
                 if (valueItems == null)
@@ -1132,12 +1132,12 @@ namespace AdminShellNS
                 return r;
             }
 
-            public static Reference CreateNew(string type, bool local, string idType, string value)
+            public static Reference CreateNew(string type, string value)
             {
-                if (type == null || idType == null || value == null)
+                if (type == null || value == null)
                     return null;
                 var r = new Reference();
-                r.keys.Add(Key.CreateNew(type, local, idType, value));
+                r.keys.Add(Key.CreateNew(type, value));
                 return r;
             }
 
@@ -1354,10 +1354,10 @@ namespace AdminShellNS
             public SubmodelRef(AasxCompatibilityModels.AdminShellV20.SubmodelRef src) : base(src) { }
 #endif
 
-            public new static SubmodelRef CreateNew(string type, bool local, string idType, string value)
+            public new static SubmodelRef CreateNew(string type, string value)
             {
                 var r = new SubmodelRef();
-                r.Keys.Add(Key.CreateNew(type, local, idType, value));
+                r.Keys.Add(Key.CreateNew(type, value));
                 return r;
             }
 
@@ -1397,10 +1397,10 @@ namespace AdminShellNS
 
             // further methods
 
-            public new static ConceptDescriptionRef CreateNew(string type, bool local, string idType, string value)
+            public new static ConceptDescriptionRef CreateNew(string type, string value)
             {
                 var r = new ConceptDescriptionRef();
-                r.Keys.Add(Key.CreateNew(type, local, idType, value));
+                r.Keys.Add(Key.CreateNew(type, value));
                 return r;
             }
 
@@ -2404,14 +2404,13 @@ namespace AdminShellNS
                     var idf = this as Identifiable;
                     if (idf != null)
                     {
-                        var k = Key.CreateNew(
-                            idf.GetElementName(), true, "", idf.id?.value);
+                        var k = Key.CreateNew(idf.GetElementName(), idf.id?.value);
                         refs.Insert(0, k);
                     }
                 }
                 else
                 {
-                    var k = Key.CreateNew(this.GetElementName(), true, "IdShort", this.idShort);
+                    var k = Key.CreateNew(this.GetElementName(), this.idShort);
                     refs.Insert(0, k);
                     // recurse upwards!
                     if (this.parent is Referable prf)
@@ -2770,8 +2769,7 @@ namespace AdminShellNS
             {
                 var r = new Reference();
                 r.Keys.Add(
-                    Key.CreateNew(
-                        this.GetElementName(), true, "", this.id.value));
+                    Key.CreateNew(this.GetElementName(), this.id.value));
                 return r;
             }
 
@@ -3631,7 +3629,7 @@ namespace AdminShellNS
 
             public ConceptDescription FindConceptDescription(Identifier id)
             {
-                var cdr = ConceptDescriptionRef.CreateNew("Conceptdescription", true, "", id.value);
+                var cdr = ConceptDescriptionRef.CreateNew(Key.ConceptDescription, id.value);
                 return FindConceptDescription(cdr);
             }
 
