@@ -96,14 +96,14 @@ namespace AasxPluginBomStructure
         {
             if (semId == null)
                 return null;
-            return LinkStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return LinkStyles.Store.FindElementByReference(semId);
         }
 
         public BomNodeStyle FindFirstNodeStyle(AdminShell.SemanticId semId)
         {
             if (semId == null)
                 return null;
-            return NodeStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return NodeStyles.Store.FindElementByReference(semId);
         }
 
     }

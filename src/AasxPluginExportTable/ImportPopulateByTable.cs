@@ -280,7 +280,7 @@ namespace AasxPluginExportTable
                     // or, maybe more meaningful, if the semantic ids are the same?
                     if (context.Parent.semanticId?.IsEmpty == false
                         && testsmc.semanticId?.IsEmpty == false
-                        && testsmc.semanticId.Matches(context.Parent.semanticId, AdminShell.Key.MatchMode.Relaxed))
+                        && testsmc.semanticId.Matches(context.Parent.semanticId))
                         return true;
 
                     // not found

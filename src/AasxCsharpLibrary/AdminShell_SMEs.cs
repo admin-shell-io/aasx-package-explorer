@@ -286,8 +286,7 @@ namespace AdminShellNS
                 bool includeThis = false, bool includeSubmodel = false, bool passOverMiss = false)
             {
                 return (FindAllParents(
-                    (rf) => (true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId,
-                        matchMode: Key.MatchMode.Relaxed)),
+                    (rf) => true == (rf as IGetSemanticId)?.GetSemanticId()?.Matches(semId),
                     includeThis: includeThis, includeSubmodel: includeSubmodel, passOverMiss: passOverMiss));
             }
 
@@ -845,7 +844,7 @@ namespace AdminShellNS
             }
 
             public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(
-                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement.semanticId != null)
@@ -865,7 +864,7 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 foreach (var smw in this)
@@ -876,7 +875,7 @@ namespace AdminShellNS
             }
 
             public IEnumerable<T> FindAllSemanticIdAs<T>(Reference semId,
-                Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 foreach (var smw in this)
@@ -887,13 +886,13 @@ namespace AdminShellNS
             }
 
             public SubmodelElementWrapper FindFirstSemanticId(
-                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 return FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
             public SubmodelElementWrapper FindFirstAnySemanticId(
-                Key[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Strict)
+                Key[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (semId == null)
                     return null;
@@ -907,13 +906,13 @@ namespace AdminShellNS
                 return null;
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
 
-            public T FindFirstAnySemanticIdAs<T>(Key[] semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public T FindFirstAnySemanticIdAs<T>(Key[] semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 if (semId == null)
@@ -927,7 +926,7 @@ namespace AdminShellNS
                 return null;
             }
 
-            public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Strict)
+            public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
@@ -937,7 +936,7 @@ namespace AdminShellNS
              * this old function: FindFirstAnySemanticId(Key[] semId ..
              * clarify/ refactor */
             public IEnumerable<T> FindAllSemanticId<T>(
-                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Strict,
+                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 bool invertAllowed = false)
                 where T : SubmodelElement
             {
@@ -973,7 +972,7 @@ namespace AdminShellNS
             }
 
             public T FindFirstAnySemanticId<T>(
-                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Strict,
+                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 bool invertAllowed = false)
                 where T : SubmodelElement
             {

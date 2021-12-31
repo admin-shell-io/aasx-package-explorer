@@ -44,8 +44,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 return null;
 
             // basically a unfold state machine
-            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                    AdminShell.Key.MatchMode.Relaxed)
+            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards)
                 // a in special format
                 && ev.PayloadItems != null && ev.PayloadItems.Count == 1
                 && ev.PayloadItems[0] is AasPayloadStructuralChange evplsc
@@ -72,7 +71,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 else
                 if (currKey != null
                     && stateIn is TraceStateStructuralChangeOneModify stateCurr
-                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, AdminShell.Key.MatchMode.Relaxed))
+                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath))
                 {
                     // happy path: continue state
                     stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey));

@@ -1462,7 +1462,6 @@ namespace AasxPluginPlotting
         protected Tuple<TimeSeriesTimeAxis, AdminShell.Property>
             DetectTimeSpecifier(
                 ZveiTimeSeriesDataV10 pcts,
-                AdminShell.Key.MatchMode mm,
                 AdminShell.SubmodelElementCollection smc)
         {
             // access
@@ -1471,19 +1470,19 @@ namespace AasxPluginPlotting
 
             // detect
             AdminShell.Property prop = null;
-            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_UtcTime.GetReference(), mm);
+            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_UtcTime.GetReference());
             if (prop != null)
                 return new Tuple<TimeSeriesTimeAxis, AdminShell.Property>(TimeSeriesTimeAxis.Utc, prop);
 
-            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_TaiTime.GetReference(), mm);
+            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_TaiTime.GetReference());
             if (prop != null)
                 return new Tuple<TimeSeriesTimeAxis, AdminShell.Property>(TimeSeriesTimeAxis.Tai, prop);
 
-            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_Time.GetReference(), mm);
+            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_Time.GetReference());
             if (prop != null)
                 return new Tuple<TimeSeriesTimeAxis, AdminShell.Property>(TimeSeriesTimeAxis.Plain, prop);
 
-            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_TimeDuration.GetReference(), mm);
+            prop = smc.value.FindFirstSemanticIdAs<AdminShell.Property>(pcts.CD_TimeDuration.GetReference());
             if (prop != null)
                 return new Tuple<TimeSeriesTimeAxis, AdminShell.Property>(TimeSeriesTimeAxis.Plain, prop);
 
@@ -1498,7 +1497,6 @@ namespace AasxPluginPlotting
         /// </summary>
         private void TimeSeriesAddSegmentData(
             ZveiTimeSeriesDataV10 pcts,
-            AdminShell.Key.MatchMode mm,
             TimeSeriesData tsd,
             AdminShell.SubmodelElementCollection smcseg)
         {
@@ -1530,17 +1528,17 @@ namespace AasxPluginPlotting
 
             // find variables?
             foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                pcts.CD_TimeSeriesVariable.GetReference(), mm))
+                pcts.CD_TimeSeriesVariable.GetReference()))
             {
                 // makes only sense with record id
                 var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                    pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                    pcts.CD_RecordId.GetReference())?.value?.Trim();
                 if (recid.Length < 1)
                     continue;
 
                 // add need a value array as well!
                 var valarr = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Blob>(
-                    pcts.CD_ValueArray.GetReference(), mm)?.value?.Trim();
+                    pcts.CD_ValueArray.GetReference())?.value?.Trim();
                 if (valarr.Length < 1)
                     continue;
 
@@ -1553,13 +1551,13 @@ namespace AasxPluginPlotting
                     tsd.DataSet.Add(ds);
 
                     // at this very moment, check if this is a time series
-                    var timeSpec = DetectTimeSpecifier(pcts, mm, smcvar);
+                    var timeSpec = DetectTimeSpecifier(pcts, smcvar);
                     if (timeSpec != null)
                         ds.TimeAxis = timeSpec.Item1;
 
                     // find a DataPoint description?
-                    var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, mm,
-                        invertAllowed: true);
+                    var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, 
+                                invertAllowed: true);
                     if (pdp != null && ds.DataPoint == null)
                     {
                         ds.DataPoint = pdp;
@@ -1576,11 +1574,11 @@ namespace AasxPluginPlotting
 
             // find records?
             foreach (var smcrec in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                pcts.CD_TimeSeriesRecord.GetReference(), mm))
+                pcts.CD_TimeSeriesRecord.GetReference()))
             {
                 // makes only sense with a numerical record id
                 var recid = "" + smcrec.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                    pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                    pcts.CD_RecordId.GetReference())?.value?.Trim();
                 if (recid.Length < 1)
                     continue;
                 if (!int.TryParse(recid, out var dataIndex))
@@ -1592,7 +1590,7 @@ namespace AasxPluginPlotting
 
                 // but, in this case, the dataset id's and data comes from individual
                 // data points
-                foreach (var pdp in smcrec.value.FindAllSemanticId<AdminShell.Property>(tsrAllowed, mm,
+                foreach (var pdp in smcrec.value.FindAllSemanticId<AdminShell.Property>(tsrAllowed,
                         invertAllowed: true))
                 {
                     // the dataset id is?
@@ -1601,7 +1599,7 @@ namespace AasxPluginPlotting
                         continue;
 
                     // query avilable information on the time
-                    var timeSpec = DetectTimeSpecifier(pcts, mm, smcrec);
+                    var timeSpec = DetectTimeSpecifier(pcts, smcrec);
                     if (timeSpec == null)
                         continue;
 
@@ -1665,7 +1663,6 @@ namespace AasxPluginPlotting
         /// </summary>
         private void TimeSeriesUpdateSegmentData(
             ZveiTimeSeriesDataV10 pcts,
-            AdminShell.Key.MatchMode mm,
             TimeSeriesData tsd,
             AdminShell.SubmodelElementCollection smcseg)
         {
@@ -1675,17 +1672,17 @@ namespace AasxPluginPlotting
 
             // find variables?
             foreach (var smcvar in smcseg.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                pcts.CD_TimeSeriesVariable.GetReference(), mm))
+                pcts.CD_TimeSeriesVariable.GetReference()))
             {
                 // makes only sense with record id (required to identify data set)
                 var recid = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                    pcts.CD_RecordId.GetReference(), mm)?.value?.Trim();
+                    pcts.CD_RecordId.GetReference())?.value?.Trim();
                 if (recid.Length < 1)
                     continue;
 
                 // add need a value array as well!
                 var valarr = "" + smcvar.value.FindFirstSemanticIdAs<AdminShell.Blob>(
-                    pcts.CD_ValueArray.GetReference(), mm)?.value?.Trim();
+                    pcts.CD_ValueArray.GetReference())?.value?.Trim();
                 if (valarr.Length < 1)
                     continue;
 
@@ -1705,14 +1702,13 @@ namespace AasxPluginPlotting
             if (sm?.submodelElements == null)
                 return;
             var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
 
             // clear
             _timeSeriesData.Clear();
 
             // find SMC for TimeSeries itself -> this will result in a plot
             foreach (var smcts in sm.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                pcts.CD_TimeSeries.GetReference(), mm))
+                pcts.CD_TimeSeries.GetReference()))
             {
                 // make initial data for time series
                 var tsd = new TimeSeriesData() { SourceTimeSeries = smcts };
@@ -1782,7 +1778,6 @@ namespace AasxPluginPlotting
         {
             // need prefs
             var pcts = AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
 
 #if __non
 
@@ -1907,7 +1902,7 @@ namespace AasxPluginPlotting
                         {
                             // only interested, if a value array is updated
                             if (!(uvi?.FoundReferable is AdminShell.Blob foundValArray)
-                                || (true != foundValArray.semanticId?.Matches(pcts.CD_ValueArray.GetReference(), mm)))
+                                || (true != foundValArray.semanticId?.Matches(pcts.CD_ValueArray.GetReference())))
                                 continue;
 
                             // find segment of ValueArr
@@ -1988,10 +1983,10 @@ namespace AasxPluginPlotting
 
                 // ok, add / udate data to time series
                 if (segmentsToProcess[smcseg] == _segmentProcessType.InspectAdd)
-                    TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
+                    TimeSeriesAddSegmentData(pcts, tsd, smcseg);
 
                 if (segmentsToProcess[smcseg] == _segmentProcessType.Update)
-                    TimeSeriesUpdateSegmentData(pcts, mm, tsd, smcseg);
+                    TimeSeriesUpdateSegmentData(pcts, tsd, smcseg);
 
                 // redisplay
                 if (!timeSeriesToRender.Contains(tsd))

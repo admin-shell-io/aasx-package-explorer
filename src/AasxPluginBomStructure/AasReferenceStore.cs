@@ -86,7 +86,7 @@ namespace AasxPluginBomStructure
 
         public T FindElementByReference(
             AdminShell.Reference r,
-            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Strict)
+            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Relaxed)
         {
             var hk = ComputeHashOnReference(r);
             if (hk == 0 || !dict.ContainsKey(hk))
