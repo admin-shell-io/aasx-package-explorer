@@ -343,8 +343,7 @@ namespace AasxPluginMtpViewer
                 // Search for FileToNavigateElement
                 //
 
-                var firstFtn = first + (new AdminShell.Key(
-                        AdminShell.Key.GlobalReference, true, "", searchId));
+                var firstFtn = first + (new AdminShell.Key(AdminShell.Key.GlobalReference, searchId));
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFtn.ToString(1)}");
 
                 foreach (var fileToNav in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(
@@ -362,8 +361,7 @@ namespace AasxPluginMtpViewer
                 // Search for FileToEntity
                 //
 
-                var firstFte = first + (new AdminShell.Key(
-                        AdminShell.Key.GlobalReference, true, "", searchId));
+                var firstFte = first + (new AdminShell.Key(AdminShell.Key.GlobalReference, searchId));
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFte.ToString(1)}");
 
                 foreach (var fileToEnt in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(

@@ -1074,8 +1074,7 @@ namespace AasxPackageLogic
                             // create ref
                             var smr = new AdminShell.SubmodelRef();
                             smr.Keys.Add(
-                                new AdminShell.Key(
-                                    "Submodel", true, "", submodel.id.value));
+                                new AdminShell.Key("Submodel", submodel.id.value));
                             aas.submodelRefs.Add(smr);
 
                             // event for AAS
@@ -2263,8 +2262,7 @@ namespace AasxPackageLogic
                             // go over to SubmodelElement
                             // set the semantic id
                             sme.semanticId = AdminShell.SemanticId.CreateFromKey(
-                                new AdminShell.Key(
-                                    "ConceptDescription", true, "", cd.id.value));
+                                new AdminShell.Key("ConceptDescription", cd.id.value));
 
                             // can set kind?
                             if (parentKind != null && sme.kind == null)
@@ -2312,9 +2310,7 @@ namespace AasxPackageLogic
 
                                 // set the semantic key
                                 sme.semanticId = AdminShell.SemanticId.CreateFromKey(
-                                    new AdminShell.Key(
-                                        AdminShell.Key.ConceptDescription, true,
-                                        AdminShell.Identifier.IRDI, resIRDI));
+                                    new AdminShell.Key(AdminShell.Key.ConceptDescription, resIRDI));
 
                                 // if empty take over shortName
                                 var cd = env.FindConceptDescription(sme.semanticId.Keys);

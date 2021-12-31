@@ -1095,8 +1095,7 @@ namespace AdminShellNS
                 this.embeddedDataSpecification.Add(eds);
 
                 this.AddIsCaseOf(
-                    Reference.CreateNew(
-                        new Key("ConceptDescription", false, "", this.id.value)));
+                    Reference.CreateNew(new Key("ConceptDescription", this.id.value)));
             }
 
             public DataSpecificationIEC61360 GetIEC61360()
@@ -1674,7 +1673,7 @@ namespace AdminShellNS
             public Key GetSemanticKey()
             {
                 if (true == this.kind?.IsTemplate)
-                    return new Key(this.GetElementName(), true, "", this.id?.value);
+                    return new Key(this.GetElementName(), this.id?.value);
                 else
                     return this.semanticId?.GetAsExactlyOneKey();
             }

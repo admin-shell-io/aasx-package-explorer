@@ -117,28 +117,28 @@ namespace AasxPredefinedConcepts.Convert
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_Str,
                     smcHSUadd.value, new[] {
                         defsHSU.CD_Street.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identifier.IRI,
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
                         "https://www.hsu-hh.de/aut/aas/street")},
                     createDefault: true, addSme: true, idShort: "Street");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ZipCod,
                     smcHSUadd.value, new[] {
                         defsHSU.CD_Zip.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identifier.IRI,
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
                         "https://www.hsu-hh.de/aut/aas/postalcode")},
                     createDefault: true, addSme: true, idShort: "Zipcode");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_CitTow,
                     smcHSUadd.value, new[] {
                         defsHSU.CD_CityTown.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identifier.IRI,
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
                         "https://www.hsu-hh.de/aut/aas/city")},
                     createDefault: true, addSme: true, idShort: "CityTown");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_StaCou,
                     smcHSUadd.value, new[] {
                         defsHSU.CD_StateCounty.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identifier.IRI,
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
                         "https://www.hsu-hh.de/aut/aas/statecounty")},
                     createDefault: true, addSme: true, idShort: "StateCounty");
 

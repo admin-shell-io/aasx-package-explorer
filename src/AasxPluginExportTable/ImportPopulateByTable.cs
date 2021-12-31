@@ -383,7 +383,7 @@ namespace AasxPluginExportTable
                     AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription));
 
                 context.Sme.semanticId = new AdminShell.SemanticId(
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, "", id.value));
+                    new AdminShell.Key(AdminShell.Key.ConceptDescription, id.value));
             }
 
             // create, add

@@ -134,8 +134,8 @@ namespace AasxPackageLogic
             {
                 if (smref == null && sm?.id != null)
                 {
-                    smref = new AdminShell.SubmodelRef(new AdminShell.Reference(new AdminShell.Key(
-                    AdminShell.Key.Submodel, true, "", sm.id.value)));
+                    smref = new AdminShell.SubmodelRef(new AdminShell.Reference(
+                        new AdminShell.Key(AdminShell.Key.Submodel, sm.id.value)));
                 }
             }
 
@@ -244,8 +244,7 @@ namespace AasxPackageLogic
                 {
                     if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.id != null)
                         bufferKey = AdminShell.KeyList.CreateNew(
-                            new AdminShell.Key("" + cpbi.entity.GetElementName(), false,
-                                    "", cpbi.entity.id.value));
+                            new AdminShell.Key("" + cpbi.entity.GetElementName(), cpbi.entity.id.value));
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
                         bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetReference()?.First);
