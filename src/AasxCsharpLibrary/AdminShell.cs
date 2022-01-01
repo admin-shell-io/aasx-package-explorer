@@ -3710,17 +3710,6 @@ namespace AdminShellNS
                                 if (sm != null)
                                     filterForSubmodel.Add(sm);
                             }
-
-                        if (aas.conceptDictionaries != null)
-                            foreach (var cdd in aas.conceptDictionaries)
-                                if (cdd.conceptDescriptionsRefs != null &&
-                                    cdd.conceptDescriptionsRefs.conceptDescriptions != null)
-                                    foreach (var cdr in cdd.conceptDescriptionsRefs.conceptDescriptions)
-                                    {
-                                        var cd = src.FindConceptDescription(cdr);
-                                        if (cd != null)
-                                            filterForCD.Add(cd);
-                                    }
                     }
 
                 // take over Assets

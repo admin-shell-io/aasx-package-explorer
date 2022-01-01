@@ -613,9 +613,6 @@ namespace AasOpcUaServer
             // associated submodels
             this.entityBuilder.AasTypes.Submodel.CreateAddElements(this.typeObject, CreateMode.Type,
                 modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-            // concept dictionary
-            this.entityBuilder.AasTypes.ConceptDictionary.CreateAddElements(this.typeObject, CreateMode.Type,
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
         }
 
         public NodeState CreateAddInstanceObject(NodeState parent,
@@ -674,17 +671,6 @@ namespace AasOpcUaServer
                         this.entityBuilder.AasTypes.Submodel.CreateAddElements(
                             o, CreateMode.Instance, sm);
                 }
-
-            // make up CD dictionaries
-            if (aas.conceptDictionaries != null && aas.conceptDictionaries.Count > 0)
-            {
-                // ReSharper disable once UnusedVariable
-                foreach (var cdd in aas.conceptDictionaries)
-                {
-                    // TODO (MIHO, 2020-08-06): check (again) if reference to CDs is done are shall be done
-                    // here. They are stored separately.
-                }
-            }
 
             // results
             return o;
@@ -1462,54 +1448,6 @@ namespace AasOpcUaServer
             }
 
             // result
-            return o;
-        }
-    }
-
-    public class AasUaEntityConceptDictionary : AasUaBaseEntity
-    {
-        public AasUaEntityConceptDictionary(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
-            : base(entityBuilder)
-        {
-            // create type object
-            this.typeObject = this.entityBuilder.CreateAddObjectType("AASConceptDictionaryType",
-                ObjectTypeIds.BaseObjectType, preferredTypeNumId, descriptionKey: "AAS:ConceptDictionary");
-            this.entityBuilder.AasTypes.HasInterface.CreateAddInstanceReference(this.typeObject, false,
-                this.entityBuilder.AasTypes.IAASReferableType.GetTypeNodeId());
-
-            // add necessary type information
-            // Referable
-            this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
-            // Dictionary Entries
-            this.entityBuilder.CreateAddObject(this.typeObject, CreateMode.Type, "DictionaryEntry",
-                ReferenceTypeIds.HasComponent, this.entityBuilder.AasTypes.DictionaryEntryType.GetTypeNodeId(),
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-        }
-
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode,
-            AdminShell.ConceptDictionary cdd = null,
-            AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
-        {
-            if (parent == null)
-                return null;
-            // Create whole object only if required
-            if (mode == CreateMode.Instance && cdd == null)
-                return null;
-
-            // containing element
-            var o = this.entityBuilder.CreateAddObject(parent, mode, "ConceptDictionary",
-                ReferenceTypeIds.HasComponent, GetTypeObject().NodeId, modellingRule: modellingRule);
-
-            if (mode == CreateMode.Instance)
-            {
-                // access
-                if (cdd == null)
-                    return null;
-
-                // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, cdd);
-            }
-
             return o;
         }
     }
