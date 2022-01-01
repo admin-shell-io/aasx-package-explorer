@@ -56,9 +56,6 @@ namespace AdminShellNS
             [SkipForSearch]
             public List<SubmodelRef> submodelRefs = new List<SubmodelRef>();
 
-            [JsonProperty(PropertyName = "conceptDictionaries")]
-            public List<ConceptDictionary> conceptDictionaries = null;
-
             // constructors
 
             public AdministrationShell() { }
@@ -82,13 +79,6 @@ namespace AdminShellNS
                     if (src.submodelRefs != null)
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
-
-                    if (src.conceptDictionaries != null)
-                    {
-                        this.conceptDictionaries = new List<ConceptDictionary>();
-                        foreach (var cdd in src.conceptDictionaries)
-                            this.conceptDictionaries.Add(new ConceptDictionary(cdd));
-                    }
                 }
             }
 
@@ -108,13 +98,6 @@ namespace AdminShellNS
                 if (src.submodelRefs != null)
                     foreach (var smr in src.submodelRefs)
                         this.submodelRefs.Add(new SubmodelRef(smr));
-
-                if (src.conceptDictionaries != null)
-                {
-                    this.conceptDictionaries = new List<ConceptDictionary>();
-                    foreach (var cdd in src.conceptDictionaries)
-                        this.conceptDictionaries.Add(new ConceptDictionary(cdd));
-                }
             }
 
             public AdministrationShell(AasxCompatibilityModels.AdminShellV20.AdministrationShell src)
@@ -134,13 +117,6 @@ namespace AdminShellNS
                     if (src.submodelRefs != null)
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
-
-                    if (src.conceptDictionaries != null)
-                    {
-                        this.conceptDictionaries = new List<ConceptDictionary>();
-                        foreach (var cdd in src.conceptDictionaries)
-                            this.conceptDictionaries.Add(new ConceptDictionary(cdd));
-                    }
                 }
             }
 #endif
@@ -157,13 +133,6 @@ namespace AdminShellNS
             }
 
             // add
-
-            public void AddConceptDictionary(ConceptDictionary d)
-            {
-                if (conceptDictionaries == null)
-                    conceptDictionaries = new List<ConceptDictionary>();
-                conceptDictionaries.Add(d);
-            }
 
             public void AddDataSpecification(Key k)
             {
@@ -1304,59 +1273,6 @@ namespace AdminShellNS
             // sorting
 
 
-        }
-
-        public class ConceptDictionary : Referable
-        {
-            [XmlElement(ElementName = "conceptDescriptions")]
-            public ConceptDescriptionRefs conceptDescriptionsRefs = null;
-
-            // constructors
-
-            public ConceptDictionary() { }
-
-            public ConceptDictionary(ConceptDictionary src)
-            {
-                if (src.conceptDescriptionsRefs != null)
-                    this.conceptDescriptionsRefs = new ConceptDescriptionRefs(src.conceptDescriptionsRefs);
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public ConceptDictionary(AasxCompatibilityModels.AdminShellV10.ConceptDictionary src)
-            {
-                if (src.conceptDescriptionsRefs != null)
-                    this.conceptDescriptionsRefs = new ConceptDescriptionRefs(src.conceptDescriptionsRefs);
-            }
-
-            public ConceptDictionary(AasxCompatibilityModels.AdminShellV20.ConceptDictionary src)
-            {
-                if (src.conceptDescriptionsRefs != null)
-                    this.conceptDescriptionsRefs = new ConceptDescriptionRefs(src.conceptDescriptionsRefs);
-            }
-#endif
-
-            public static ConceptDictionary CreateNew(string idShort = null)
-            {
-                var d = new ConceptDictionary();
-                if (idShort != null)
-                    d.idShort = idShort;
-                return (d);
-            }
-
-            // add
-
-            public void AddReference(Reference r)
-            {
-                var cdr = (ConceptDescriptionRef)(ConceptDescriptionRef.CreateNew(r.Keys));
-                if (conceptDescriptionsRefs == null)
-                    conceptDescriptionsRefs = new ConceptDescriptionRefs();
-                conceptDescriptionsRefs.conceptDescriptions.Add(cdr);
-            }
-
-            public override AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("ConceptDictionary", "CDic");
-            }
         }
 
         //

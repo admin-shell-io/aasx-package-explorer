@@ -376,7 +376,6 @@
         <Value>
             <uax:ListOfString>
                 <uax:String>GlobalReference</uax:String>
-                <uax:String>ConceptDictionary</uax:String>
                 <uax:String>DataElement</uax:String>
                 <uax:String>Property</uax:String>
                 <uax:String>SubmodelElement</uax:String>
