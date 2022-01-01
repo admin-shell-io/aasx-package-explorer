@@ -2261,10 +2261,8 @@ namespace AasxPackageExplorer
                 || ve is VisualElementAdminShell
                 || ve is VisualElementAsset
                 || ve is VisualElementOperationVariable
-                || ve is VisualElementReference
                 || ve is VisualElementSubmodel
-                || ve is VisualElementSubmodelRef
-                || ve is VisualElementView))
+                || ve is VisualElementSubmodelRef))
                 ve = null;
 
             // need to have business object

@@ -110,7 +110,6 @@ namespace AdminShellNS
         /// </summary>
         public class AdaptiveFilterContractResolver : DefaultContractResolver
         {
-            public bool AasHasViews = true;
             public bool BlobHasValue = true;
             public bool SubmodelHasElements = true;
             public bool SmcHasValue = true;
@@ -128,7 +127,6 @@ namespace AdminShellNS
                 }
                 if (!complete)
                 {
-                    this.AasHasViews = false;
                     this.BlobHasValue = false;
                 }
 
@@ -152,10 +150,6 @@ namespace AdminShellNS
 
                 if (!OpHasVariables && property.DeclaringType == typeof(AdminShell.Operation) &&
                     (property.PropertyName == "in" || property.PropertyName == "out"))
-                    property.ShouldSerialize = instance => { return false; };
-
-                if (!AasHasViews && property.DeclaringType == typeof(AdminShell.AdministrationShell) &&
-                    property.PropertyName == "views")
                     property.ShouldSerialize = instance => { return false; };
 
                 return property;

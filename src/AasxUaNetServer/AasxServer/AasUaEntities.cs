@@ -610,9 +610,6 @@ namespace AasOpcUaServer
             // assets
             this.entityBuilder.AasTypes.Asset.CreateAddElements(this.typeObject, CreateMode.Type,
                 modellingRule: AasUaNodeHelper.ModellingRule.Mandatory);
-            // associated views
-            this.entityBuilder.AasTypes.View.CreateAddElements(this.typeObject, CreateMode.Type,
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
             // associated submodels
             this.entityBuilder.AasTypes.Submodel.CreateAddElements(this.typeObject, CreateMode.Type,
                 modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
@@ -667,12 +664,6 @@ namespace AasOpcUaServer
                     this.entityBuilder.AasTypes.Asset.CreateAddElements(
                         o, CreateMode.Instance, asset);
             }
-
-            // associated views
-            if (aas.views != null)
-                foreach (var vw in aas.views.views)
-                    this.entityBuilder.AasTypes.View.CreateAddElements(
-                        o, CreateMode.Instance, vw);
 
             // associated submodels
             if (aas.submodelRefs != null && aas.submodelRefs.Count > 0)
@@ -1472,88 +1463,6 @@ namespace AasOpcUaServer
 
             // result
             return o;
-        }
-    }
-
-    public class AasUaEntityView : AasUaBaseEntity
-    {
-        public AasUaEntityView(AasEntityBuilder entityBuilder, uint preferredTypeNumId = 0)
-            : base(entityBuilder)
-        {
-            // create type object
-            this.typeObject = this.entityBuilder.CreateAddObjectType("AASViewType", ObjectTypeIds.BaseObjectType,
-                preferredTypeNumId, descriptionKey: "AAS:View");
-            this.entityBuilder.AasTypes.HasInterface.CreateAddInstanceReference(this.typeObject, false,
-                this.entityBuilder.AasTypes.IAASReferableType.GetTypeNodeId());
-
-            // add some elements
-            // Referable
-            this.entityBuilder.AasTypes.Referable.CreateAddElements(this.typeObject, CreateMode.Type);
-            // HasSemantics
-            this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                this.typeObject, CreateMode.Type, null, "SemanticId",
-                modellingRule: AasUaNodeHelper.ModellingRule.Optional);
-            // HasDataSpecification
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                this.typeObject, CreateMode.Type, null, "DataSpecification",
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-            // contained elements
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                this.typeObject, CreateMode.Type, null, "ContainedElement",
-                modellingRule: AasUaNodeHelper.ModellingRule.OptionalPlaceholder);
-        }
-
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.View view = null,
-            AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
-        {
-            if (parent == null)
-                return null;
-
-            if (mode == CreateMode.Type)
-            {
-                // create only containing element with generic name
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "View",
-                    ReferenceTypeIds.HasComponent, this.GetTypeNodeId(), modellingRule: modellingRule);
-                return o;
-
-            }
-            else
-            {
-                // access
-                if (view == null)
-                    return null;
-
-                // containing element
-                var o = this.entityBuilder.CreateAddObject(parent, mode, "" + view.idShort,
-                    ReferenceTypeIds.HasComponent, GetTypeObject().NodeId, extraName: "View:" + view.idShort);
-
-                // register node record
-                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, view));
-
-                // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(
-                    o, CreateMode.Instance, view);
-                // HasSemantics
-                this.entityBuilder.AasTypes.SemanticId.CreateAddInstanceObject(
-                    o, CreateMode.Instance, view.semanticId, "SemanticId");
-                // HasDataSpecification
-                if (view.hasDataSpecification != null && view.hasDataSpecification != null)
-                    foreach (var ds in view.hasDataSpecification)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
-
-                // contained elements
-                for (int i = 0; i < view.Count; i++)
-                {
-                    var cer = view[i];
-                    if (cer != null)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, cer, "ContainedElement");
-                }
-
-                // OK
-                return o;
-            }
         }
     }
 

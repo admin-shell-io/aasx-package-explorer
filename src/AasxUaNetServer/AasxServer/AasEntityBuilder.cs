@@ -669,7 +669,6 @@ namespace AasOpcUaServer
             public AasUaEntityOperation Operation;
             public AasUaEntityConceptDictionary ConceptDictionary;
             public AasUaEntityConceptDescription ConceptDescription;
-            public AasUaEntityView View;
             public AasUaEntityAsset Asset;
             public AasUaEntityAAS AAS;
 
@@ -746,7 +745,6 @@ namespace AasOpcUaServer
                 Operation = new AasUaEntityOperation(builder, 1019);
                 ConceptDictionary = new AasUaEntityConceptDictionary(builder, 1020);
                 ConceptDescription = new AasUaEntityConceptDescription(builder, 1021);
-                View = new AasUaEntityView(builder, 1022);
                 Asset = new AasUaEntityAsset(builder, 1023);
                 AAS = new AasUaEntityAAS(builder, 1024);
             }

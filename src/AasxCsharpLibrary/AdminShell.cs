@@ -189,7 +189,20 @@ namespace AdminShellNS
         {
         }
 
+        //
+        // Serialization helpers
+        //
 
+        public class JsonModelTypeWrapper
+        {
+            public string name = "";
+
+            public JsonModelTypeWrapper(string name = "") { this.name = name; }
+        }
+
+        //
+        // Important sub types
+        //
 
         /// <summary>
         /// V30
@@ -631,7 +644,6 @@ namespace AdminShellNS
             public static string Asset = "Asset";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
-            public static string View = "View";
             // Resharper enable MemberHidesStaticFromOuterClass
 
             // TODO: REMOVE
@@ -1487,39 +1499,6 @@ namespace AdminShellNS
 #endif
         }
 
-        [XmlType(TypeName = "containedElementRef")]
-        public class ContainedElementRef : Reference
-        {
-            // constructors
-
-            public ContainedElementRef() { }
-
-            public ContainedElementRef(ContainedElementRef src) : base(src) { }
-
-#if !DoNotUseAasxCompatibilityModels
-            public ContainedElementRef(AasxCompatibilityModels.AdminShellV10.ContainedElementRef src) : base(src) { }
-
-            public ContainedElementRef(AasxCompatibilityModels.AdminShellV20.ContainedElementRef src) : base(src) { }
-#endif
-
-            public static ContainedElementRef CreateNew(Reference src)
-            {
-                if (src == null || src.Keys == null)
-                    return null;
-                var r = new ContainedElementRef();
-                r.Keys.AddRange(src.Keys);
-                return r;
-            }
-
-            // further methods
-
-            public override AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("ContainedElementRef", "CERef");
-            }
-
-        }
-
         // Note: In versions prior to V2.0.1, the SDK has "HasDataSpecification" containing only a Reference.
         // Iv 2.0.1, theoretically each entity with HasDataSpecification could also conatin a 
         // EmbeddedDataSpecification. 
@@ -1614,65 +1593,7 @@ namespace AdminShellNS
             }
 
         }
-#endif
-
-        [XmlType(TypeName = "ContainedElements")]
-        public class ContainedElements
-        {
-
-            // members
-
-            [XmlElement(ElementName = "containedElementRef")] // make "reference" go away by magic?!
-            public List<ContainedElementRef> reference = new List<ContainedElementRef>();
-
-            // getter / setter
-
-            public bool IsEmpty { get { return reference == null || reference.Count < 1; } }
-            public int Count { get { if (reference == null) return 0; return reference.Count; } }
-            public ContainedElementRef this[int index] { get { return reference[index]; } }
-
-            // Creators
-
-            public ContainedElements() { }
-
-            public ContainedElements(ContainedElements src)
-            {
-                if (src.reference != null)
-                    foreach (var r in src.reference)
-                        this.reference.Add(new ContainedElementRef(r));
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public ContainedElements(AasxCompatibilityModels.AdminShellV10.ContainedElements src)
-            {
-                if (src.reference != null)
-                    foreach (var r in src.reference)
-                        this.reference.Add(new ContainedElementRef(r));
-            }
-
-            public ContainedElements(AasxCompatibilityModels.AdminShellV20.ContainedElements src)
-            {
-                if (src.reference != null)
-                    foreach (var r in src.reference)
-                        this.reference.Add(new ContainedElementRef(r));
-            }
-#endif
-
-            public static ContainedElements CreateOrSetInner(ContainedElements outer, ContainedElementRef[] inner)
-            {
-                var res = outer;
-                if (res == null)
-                    res = new ContainedElements();
-                if (inner == null)
-                {
-                    res.reference = null;
-                    return res;
-                }
-                res.reference = new List<ContainedElementRef>(inner);
-                return res;
-            }
-
-        }
+#endif        
 
         [XmlType(TypeName = "langString", Namespace = "http://www.admin-shell.io/2/0")]
         public class LangStr
@@ -2363,8 +2284,6 @@ namespace AdminShellNS
                     return new ConceptDescription();
                 if (elementName == Key.Submodel)
                     return new Submodel();
-                if (elementName == Key.View)
-                    return new View();
                 return SubmodelElementWrapper.CreateAdequateType(elementName);
             }
 
@@ -2797,230 +2716,6 @@ namespace AdminShellNS
 
         }
 
-        public class JsonModelTypeWrapper
-        {
-            public string name = "";
-
-            public JsonModelTypeWrapper(string name = "") { this.name = name; }
-        }
-
-        public class View : Referable
-        {
-            // for JSON only
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "modelType")]
-            public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
-
-            // members
-
-            // from hasSemanticId:
-            [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = null;
-
-            // from hasDataSpecification
-            [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
-
-            // from this very class
-            [JsonIgnore]
-            [SkipForSearch]
-            public ContainedElements containedElements = null;
-            [XmlIgnore]
-            [SkipForSearch]
-            [JsonProperty(PropertyName = "containedElements")]
-            public ContainedElementRef[] JsonContainedElements
-            {
-                get { return containedElements?.reference.ToArray(); }
-                set { containedElements = ContainedElements.CreateOrSetInner(containedElements, value); }
-            }
-
-            // getter / setter
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public bool IsEmpty { get { return containedElements == null || containedElements.Count < 1; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public int Count { get { if (containedElements == null) return 0; return containedElements.Count; } }
-
-            public ContainedElementRef this[int index]
-            {
-                get { if (containedElements == null) return null; return containedElements[index]; }
-            }
-
-            // constructors / creators
-
-            public View() { }
-
-            public View(View src)
-                : base(src)
-            {
-                if (src.semanticId != null)
-                    this.semanticId = new SemanticId(src.semanticId);
-                if (src.hasDataSpecification != null)
-                    this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                if (src.containedElements != null)
-                    this.containedElements = new ContainedElements(src.containedElements);
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public View(AasxCompatibilityModels.AdminShellV10.View src)
-                : base(src)
-            {
-                if (src.semanticId != null)
-                    this.semanticId = new SemanticId(src.semanticId);
-                if (src.hasDataSpecification != null)
-                    this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                if (src.containedElements != null)
-                    this.containedElements = new ContainedElements(src.containedElements);
-            }
-
-            public View(AasxCompatibilityModels.AdminShellV20.View src)
-                : base(src)
-            {
-                if (src.semanticId != null)
-                    this.semanticId = new SemanticId(src.semanticId);
-                if (src.hasDataSpecification != null)
-                    this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                if (src.containedElements != null)
-                    this.containedElements = new ContainedElements(src.containedElements);
-            }
-#endif
-
-            public static View CreateNew(string idShort)
-            {
-                var v = new View() { idShort = idShort };
-                return (v);
-            }
-
-            public void AddDataSpecification(Key k)
-            {
-                if (hasDataSpecification == null)
-                    hasDataSpecification = new HasDataSpecification();
-                var r = new Reference();
-                r.Keys.Add(k);
-                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
-            }
-
-            public void AddContainedElement(Key k)
-            {
-                if (containedElements == null)
-                    containedElements = new ContainedElements();
-                var r = new ContainedElementRef();
-                r.Keys.Add(k);
-                containedElements.reference.Add(r);
-            }
-
-            public void AddContainedElement(List<Key> keys)
-            {
-                if (containedElements == null)
-                    containedElements = new ContainedElements();
-                var r = new ContainedElementRef();
-                foreach (var k in keys)
-                    r.Keys.Add(k);
-                containedElements.reference.Add(r);
-            }
-
-            public void AddContainedElement(Reference r)
-            {
-                if (containedElements == null)
-                    containedElements = new ContainedElements();
-                containedElements.reference.Add(ContainedElementRef.CreateNew(r));
-            }
-
-            public void AddContainedElement(List<Reference> rlist)
-            {
-                if (containedElements == null)
-                    containedElements = new ContainedElements();
-                foreach (var r in rlist)
-                    containedElements.reference.Add(ContainedElementRef.CreateNew(r));
-            }
-
-            public override AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("View", "View");
-            }
-
-            public Tuple<string, string> ToCaptionInfo()
-            {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
-                var info = "";
-                if (this.semanticId != null)
-                    info = Key.KeyListToString(this.semanticId.Keys);
-                if (this.containedElements != null && this.containedElements.reference != null)
-                    info = (info + " ").Trim() +
-                        String.Format("({0} elements)", this.containedElements.reference.Count);
-                return Tuple.Create(caption, info);
-            }
-
-            public override string ToString()
-            {
-                var ci = ToCaptionInfo();
-                return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
-            }
-
-            // validation
-
-            public override void Validate(AasValidationRecordList results)
-            {
-                // access
-                if (results == null)
-                    return;
-
-                // check
-                base.Validate(results);
-                KeyList.Validate(results, semanticId?.Keys, this);
-            }
-        }
-
-        public class Views
-        {
-            [XmlElement(ElementName = "view")]
-            [JsonIgnore]
-            public List<View> views = new List<View>();
-
-            // constructors
-
-            public Views() { }
-
-            public Views(Views src)
-            {
-                if (src != null && src.views != null)
-                    foreach (var v in src.views)
-                        this.views.Add(new View(v));
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public Views(AasxCompatibilityModels.AdminShellV10.Views src)
-            {
-                if (src != null && src.views != null)
-                    foreach (var v in src.views)
-                        this.views.Add(new View(v));
-            }
-
-            public Views(AasxCompatibilityModels.AdminShellV20.Views src)
-            {
-                if (src != null && src.views != null)
-                    foreach (var v in src.views)
-                        this.views.Add(new View(v));
-            }
-#endif
-
-            public static Views CreateOrSetInnerViews(Views outer, View[] inner)
-            {
-                var res = outer;
-                if (res == null)
-                    res = new Views();
-                if (inner == null)
-                {
-                    res.views = null;
-                    return res;
-                }
-                res.views = new List<View>(inner);
-                return res;
-            }
-        }
-
         /// <summary>
         /// Multiple lang string for the AAS namespace
         /// </summary>
@@ -3420,14 +3115,6 @@ namespace AdminShellNS
                         {
                             // AAS itself
                             yield return aas;
-
-                            if (!onlyIdentifiables)
-                            {
-                                // Views
-                                if (aas.views?.views != null)
-                                    foreach (var view in aas.views.views)
-                                        yield return view;
-                            }
                         }
 
                 if (this.Assets != null)

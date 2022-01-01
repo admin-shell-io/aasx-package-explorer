@@ -1169,21 +1169,7 @@ namespace AasxPackageLogic
                         }
 
                         return new AnyUiLambdaActionNone();
-                    });
-
-                // let the user control the number of entities
-                this.AddAction(stack, "Entities:", new[] { "Add View" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx == 0)
-                    {
-                        var view = new AdminShell.View();
-                        aas.AddView(view);
-                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
-                    }
-
-                    return new AnyUiLambdaActionNone();
-                });
+                    });               
             }
 
             // Referable
@@ -3776,107 +3762,5 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Submodel Element is unknown!", this.levelColors.MainSection);
         }
 
-        //
-        //
-        // --- View
-        //
-        //
-
-        public void DisplayOrEditAasEntityView(
-            PackageCentral.PackageCentral packages,
-            AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, AnyUiStackPanel stack,
-            bool hintMode = false)
-        {
-            //
-            // View
-            //
-            this.AddGroup(stack, "View", this.levelColors.MainSection);
-
-            if (editMode)
-            {
-                // Up/ down/ del
-                this.EntityListUpDownDeleteHelper<AdminShell.View>(
-                    stack, repo, shell.views.views, view, env, "View:");
-
-                // let the user control the number of references
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return view.containedElements == null || view.containedElements.Count < 1; },
-                            "This View currently has no references to SubmodelElements, yet. " +
-                                "You could create them by clicking the 'Add ..' button below.",
-                            severityLevel: HintCheck.Severity.Notice)
-                });
-                this.AddAction(
-                    stack, "containedElements:", new[] { "Add Reference to SubmodelElement", }, repo,
-                    (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0)
-                        {
-                            var ks = this.SmartSelectAasEntityKeys(
-                                        packages, PackageCentral.PackageCentral.Selector.Main, "SubmodelElement");
-                            if (ks != null)
-                            {
-                                this.AddDiaryEntry(view, new DiaryEntryStructChange());
-                                view.AddContainedElement(ks);
-                            }
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
-                        }
-
-                        return new AnyUiLambdaActionNone();
-                    });
-            }
-            else
-            {
-                int num = 0;
-                if (view.containedElements != null && view.containedElements.reference != null)
-                    num = view.containedElements.reference.Count;
-
-                var g = this.AddSmallGrid(1, 1, new[] { "*" });
-                this.AddSmallLabelTo(g, 0, 0, content: $"# of containedElements: {num}");
-                stack.Children.Add(g);
-            }
-
-            // Referable
-            this.DisplayOrEditEntityReferable(stack, view, categoryUsual: false);
-
-            // HasSemantics
-            this.DisplayOrEditEntitySemanticId(stack, view.semanticId,
-                (sid) => { view.semanticId = sid; },
-                "Only by adding this, a computer can distinguish, for what the view is really meant for.",
-                checkForCD: false,
-                addExistingEntities: AdminShell.Key.ConceptDescription,
-                relatedReferable: view);
-
-            // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, view.hasDataSpecification,
-                (ds) => { view.hasDataSpecification = ds; },
-                relatedReferable: view);
-
-        }
-
-        public void DisplayOrEditAasEntityViewReference(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
-            AdminShell.ContainedElementRef reference, bool editMode, AnyUiStackPanel stack)
-        {
-            //
-            // View
-            //
-            this.AddGroup(stack, "Reference (containedElement) of View ", this.levelColors.MainSection);
-
-            if (editMode)
-            {
-                // Up/ down/ del
-                this.EntityListUpDownDeleteHelper<AdminShell.ContainedElementRef>(
-                    stack, repo, view.containedElements.reference, reference, null, "Reference:");
-            }
-
-            // normal reference
-            this.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
-                packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements,
-                relatedReferable: view);
-        }
     }
 }

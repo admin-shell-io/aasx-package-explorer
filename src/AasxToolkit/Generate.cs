@@ -154,10 +154,6 @@ namespace AasxToolkit
                 Log.WriteLine(2, "Creating submodel BOM for Asset Structure..");
                 var subBOM2 = CreateSubmodelBOMforAssetStructure(repo, aasenv1);
 
-                // VIEW1
-                var view1 = CreateStochasticViewOnSubmodels(
-                    new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
-
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShell.AdministrationShell.CreateNew(
@@ -177,7 +173,6 @@ namespace AasxToolkit
                 aas1.submodelRefs.Add(subVars.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subBOM.GetReference() as AdminShell.SubmodelRef);
                 aas1.submodelRefs.Add(subBOM2.GetReference() as AdminShell.SubmodelRef);
-                aas1.AddView(view1);
             }
             catch (Exception ex)
             {
@@ -1140,51 +1135,6 @@ namespace AasxToolkit
 
             // Nice
             return sub1;
-        }
-
-        private static void CreateStochasticViewOnSubmodelsRecurse(
-            AdminShell.View vw, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme)
-        {
-            if (vw == null || sme == null)
-                return;
-
-            var isSmc = (sme is AdminShell.SubmodelElementCollection);
-
-            // spare out some of the leafs of the tree ..
-            if (!isSmc)
-                if (Math.Abs(sme.idShort.GetHashCode() % 100) > 50)
-                    return;
-
-            // ok, create
-            var ce = new AdminShell.ContainedElementRef();
-            sme.CollectReferencesByParent(ce.Keys);
-            vw.AddContainedElement(ce.Keys);
-            // recurse
-            if (isSmc)
-                foreach (var sme2wrap in (sme as AdminShell.SubmodelElementCollection).value)
-                    CreateStochasticViewOnSubmodelsRecurse(vw, submodel, sme2wrap.submodelElement);
-        }
-
-        public static AdminShell.View CreateStochasticViewOnSubmodels(AdminShell.Submodel[] sms, string idShort)
-        {
-            // create
-            var vw = new AdminShell.View();
-            vw.idShort = idShort;
-
-            // over all submodel elements
-            if (sms != null)
-                foreach (var sm in sms)
-                {
-                    // parent-ize submodel
-                    sm.SetAllParents();
-
-                    // loop in
-                    if (sm.submodelElements != null)
-                        foreach (var sme in sm.submodelElements)
-                            CreateStochasticViewOnSubmodelsRecurse(vw, sm, sme.submodelElement);
-                }
-            // done
-            return vw;
         }
 
         // ReSharper disable ClassNeverInstantiated.Global

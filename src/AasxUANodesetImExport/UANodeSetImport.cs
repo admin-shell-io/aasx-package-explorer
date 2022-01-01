@@ -69,8 +69,6 @@ namespace AasxUANodesetImExport
             //Initialize everything needed
             AdminShell.AdministrationShellEnv env = thePackageEnv.AasEnv;
             var aas = new AdminShell.AdministrationShell();
-            aas.views = new Views();
-            aas.views.views = new List<View>();
             env.AdministrationShells.Add(aas);
 
             //search for the root Node
@@ -112,11 +110,6 @@ namespace AasxUANodesetImExport
                             Asset ass = createAsset(node);
                             thePackageEnv.AasEnv.Assets.Add(ass);
 
-                        }
-                        //create Views
-                        else if (getTypeDefinition(node) == "1:AASViewType")
-                        {
-                            aas.views.views.Add(createView(node));
                         }
                         //set DerivedFrom
                         else if (node.BrowseName == "1:DerivedFrom")
@@ -1004,45 +997,6 @@ namespace AasxUANodesetImExport
             }
             return ass;
         }
-
-        //Create Views
-
-        private static Views createViews(UANode node)
-        {
-            //
-
-            Views views = new AdminShell.Views();
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    views.views.Add(createView(findNode(_ref.Value)));
-                }
-            }
-
-            return views;
-        }
-
-        private static View createView(UANode node)
-        {
-            //View (node)
-            //  -> ContainedElementRef 
-            //      -> Key (multiple)
-
-            View view = new View();
-            view.idShort = makePretty(node.BrowseName);
-
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    view.AddContainedElement(addSemanticID(findNode(_ref.Value)));
-                }
-            }
-
-            return view;
-        }
-
 
         private static string makePretty(string str)
         {

@@ -773,89 +773,6 @@ namespace AasxPackageLogic
 
     }
 
-    public class VisualElementView : VisualElementGeneric
-    {
-        public AdminShell.AdministrationShellEnv theEnv = null;
-        public AdminShell.View theView = null;
-
-        public VisualElementView(
-            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
-            AdminShell.View vw)
-            : base()
-        {
-            this.Parent = parent;
-            this.Cache = cache;
-            this.theEnv = env;
-            this.theView = vw;
-
-            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
-            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
-            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
-            this.TagFg = AnyUiColors.White;
-
-            this.TagString = "View";
-            RefreshFromMainData();
-            RestoreFromCache();
-        }
-
-        public override object GetMainDataObject()
-        {
-            return theView;
-        }
-
-        public override void RefreshFromMainData()
-        {
-            if (theView != null)
-            {
-                var ci = theView.ToCaptionInfo();
-                this.Caption = "" + ci.Item1;
-                this.Info = ci.Item2;
-            }
-        }
-
-    }
-
-    public class VisualElementReference : VisualElementGeneric
-    {
-        public AdminShell.AdministrationShellEnv theEnv = null;
-        public AdminShell.Reference theReference = null;
-
-        public VisualElementReference(
-            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
-            AdminShell.Reference rf)
-            : base()
-        {
-            this.Parent = parent;
-            this.Cache = cache;
-            this.theEnv = env;
-            this.theReference = rf;
-
-            this.Background = AnyUiColors.White;
-            this.Border = AnyUiColors.White;
-            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
-            this.TagFg = AnyUiColors.White;
-
-            this.TagString = "\u2b95";
-            RefreshFromMainData();
-            RestoreFromCache();
-        }
-
-        public override object GetMainDataObject()
-        {
-            return theReference;
-        }
-
-        public override void RefreshFromMainData()
-        {
-            if (theReference != null && theReference.Keys != null)
-            {
-                this.Caption = "";
-                this.Info = theReference.ListOfValues("/ ");
-            }
-        }
-
-    }
-
     public class VisualElementSubmodelElement : VisualElementGeneric
     {
         public AdminShell.AdministrationShellEnv theEnv = null;
@@ -1522,25 +1439,6 @@ namespace AasxPackageLogic
                         tiAas.Members.Add(tiSm);
                 }
 
-            // have views?
-            if (aas.views != null && aas.views.views != null)
-                foreach (var vw in aas.views.views)
-                {
-                    // item
-                    var tiVw = new VisualElementView(tiAas, cache, env, vw);
-                    tiVw.SetIsExpandedIfNotTouched(OptionExpandMode > 1);
-
-                    // recursion -> submodel elements
-                    if (vw.containedElements != null && vw.containedElements.reference != null)
-                        foreach (var ce in vw.containedElements.reference)
-                        {
-                            var tiRf = new VisualElementReference(tiVw, cache, env, ce);
-                            tiVw.Members.Add(tiRf);
-                        }
-                    // add
-                    tiAas.Members.Add(tiVw);
-                }
-
             // ok
             return tiAas;
         }
@@ -2129,26 +2027,6 @@ namespace AasxPackageLogic
             {
                 // maintain parent. If in doubt, set null
                 vecd.theCD.parent = vecd.theEnv;
-            }
-            else if (entity is VisualElementView vevw && vevw.theView != null)
-            {
-                // be careful
-                vevw.theView.parent = null;
-
-                // try get parent data
-                if (entity.Parent is VisualElementAdminShell parVe
-                    && parVe.GetMainDataObject() is AdminShell.AdministrationShell parVeAas)
-                {
-                    // set parent
-                    vevw.theView.parent = parVeAas;
-
-                    // recurse?
-                    SetParentsBasedOnChildHierarchy(entity.Parent);
-                }
-            }
-            else if (entity is VisualElementReference verf)
-            {
-                // not applicable
             }
             else
             if (entity is VisualElementSupplementalFile vesf)
