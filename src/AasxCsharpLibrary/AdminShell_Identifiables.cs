@@ -56,16 +56,6 @@ namespace AdminShellNS
             [SkipForSearch]
             public List<SubmodelRef> submodelRefs = new List<SubmodelRef>();
 
-            [JsonIgnore]
-            public Views views = null;
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "views")]
-            public View[] JsonViews
-            {
-                get { return views?.views.ToArray(); }
-                set { views = Views.CreateOrSetInnerViews(views, value); }
-            }
-
             [JsonProperty(PropertyName = "conceptDictionaries")]
             public List<ConceptDictionary> conceptDictionaries = null;
 
@@ -93,9 +83,6 @@ namespace AdminShellNS
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
 
-                    if (src.views != null)
-                        this.views = new Views(src.views);
-
                     if (src.conceptDictionaries != null)
                     {
                         this.conceptDictionaries = new List<ConceptDictionary>();
@@ -121,9 +108,6 @@ namespace AdminShellNS
                 if (src.submodelRefs != null)
                     foreach (var smr in src.submodelRefs)
                         this.submodelRefs.Add(new SubmodelRef(smr));
-
-                if (src.views != null)
-                    this.views = new Views(src.views);
 
                 if (src.conceptDictionaries != null)
                 {
@@ -151,9 +135,6 @@ namespace AdminShellNS
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
 
-                    if (src.views != null)
-                        this.views = new Views(src.views);
-
                     if (src.conceptDictionaries != null)
                     {
                         this.conceptDictionaries = new List<ConceptDictionary>();
@@ -176,13 +157,6 @@ namespace AdminShellNS
             }
 
             // add
-
-            public void AddView(View v)
-            {
-                if (views == null)
-                    views = new Views();
-                views.views.Add(v);
-            }
 
             public void AddConceptDictionary(ConceptDictionary d)
             {
@@ -263,13 +237,6 @@ namespace AdminShellNS
                 if (this.submodelRefs != null)
                     foreach (var r in this.submodelRefs)
                         yield return new LocatedReference(this, r);
-
-                // Views
-                if (this.views?.views != null)
-                    foreach (var vw in this.views.views)
-                        if (vw?.containedElements?.reference != null)
-                            foreach (var r in vw.containedElements.reference)
-                                yield return new LocatedReference(this, r);
             }
         }
 

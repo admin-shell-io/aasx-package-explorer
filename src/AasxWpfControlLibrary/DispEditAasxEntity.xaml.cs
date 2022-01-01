@@ -395,24 +395,6 @@ namespace AasxPackageExplorer
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
                 }
-                else if (entity is VisualElementView vevw)
-                {
-                    if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
-                        _helper.DisplayOrEditAasEntityView(
-                            packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
-                            hintMode: hintMode);
-                    else
-                        _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
-                }
-                else if (entity is VisualElementReference verf)
-                {
-                    if (verf.Parent != null && verf.Parent is VisualElementView xpev)
-                        _helper.DisplayOrEditAasEntityViewReference(
-                            packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
-                            editMode, stack);
-                    else
-                        _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
-                }
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {

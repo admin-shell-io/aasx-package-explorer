@@ -646,53 +646,6 @@ namespace AasxAmlImExport
                 AmlConst.Attributes.Asset_BillOfMaterialRef, ToAmlReference(asset.billOfMaterialRef));
         }
 
-        private static void ExportView(
-            AasAmlMatcher matcher, InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env,
-            AdminShell.View view)
-        {
-            if (ieseq == null || env == null || view == null)
-                return;
-
-            // directly add internal element
-            var ie = AppendIeNameAndRole(ieseq, name: view.idShort, altName: "View", role: AmlConst.Roles.View);
-
-            // set some data
-            SetReferable(ie.Attribute, view);
-            SetSemanticId(ie.Attribute, view.semanticId);
-            SetHasDataSpecification(ie.Attribute, view.hasDataSpecification);
-
-            // view references
-            // from the Meeting: Views sind Listen von "Mirror-Elementen",
-            // die auf die Properties.. (IEs) der AAS verweisen.
-            // Views hängen unter der jeweiligen AAS (Referable)
-            for (int i = 0; i < view.Count; i++)
-            {
-                // access contained element
-                var ce = view[i];
-                if (ce == null)
-                    continue;
-
-                // find the referenced element
-                var targetReferable = env.FindReferableByReference(ce);
-                if (targetReferable == null)
-                    continue;
-
-                // rely on the "hope", that there is a match
-                var targetAml = matcher.GetAmlObject(targetReferable);
-                if (targetAml == null)
-                    continue;
-
-                // for the time being, make an IE
-                // Note: it is "forbidden" to set Roles for mirror elements
-                var iece = AppendIeNameAndRole(
-                    ie.InternalElement, name: ce.ListOfValues("/"), altName: "Reference",
-                    role: null);
-
-                // just convert it to an mirror element
-                iece.RefBaseSystemUnitPath = "" + targetAml.ID;
-            }
-        }
-
         private static void ExportAAS(
             AasAmlMatcher matcher, InstanceHierarchyType insthier, SystemUnitClassLibType suchier,
             AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell aas,
@@ -814,14 +767,6 @@ namespace AasxAmlImExport
                 }
 
             }
-
-            //
-            // Views
-            //
-
-            if (aas.views != null && aas.views.views != null)
-                foreach (var view in aas.views.views)
-                    ExportView(matcher, aasIE.InternalElement, env, view);
 
             //
             // Internal Links

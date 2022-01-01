@@ -66,21 +66,14 @@ namespace AasxAmlImExport
             private class IeViewAmlTarget
             {
                 public InternalElementType Ie;
-                public AdminShell.View View;
                 public CAEXObject AmlTarget;
 
-                public IeViewAmlTarget(InternalElementType ie, AdminShell.View view, CAEXObject amlTarget)
+                public IeViewAmlTarget(InternalElementType ie, CAEXObject amlTarget)
                 {
                     Ie = ie;
-                    View = view;
                     AmlTarget = amlTarget;
                 }
             }
-
-            /// <summary>
-            /// Remember contained element refs for Views, to be assiciated later with AAS entities
-            /// </summary>
-            private List<IeViewAmlTarget> latePopoulationViews = new List<IeViewAmlTarget>();
 
             /// <summary>
             /// Hold available all IDs of input AML
@@ -469,66 +462,6 @@ namespace AasxAmlImExport
                 if (!idDict.ContainsKey(ID))
                     return null;
                 return idDict[ID];
-            }
-
-            private AdminShell.View TryParseViewFromIe(InstanceHierarchyType insthier, InternalElementType ie)
-            {
-                // access
-                if (insthier == null || ie == null)
-                    return null;
-
-                //
-                // make up local data management
-                //
-
-                // begin new (temporary) objects
-                var view = new AdminShell.View();
-
-                // gather important attributes
-                var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
-                var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
-                var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
-                var semid = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.SemanticId);
-
-                // we need to have some important information
-                if (ie.Name != null)
-                {
-                    // set data
-                    view.idShort = ie.Name;
-                    if (idShort != null)
-                        view.idShort = idShort;
-                    view.category = cat;
-                    if (desc != null)
-                        view.description = desc;
-                    if (semid != null)
-                        view.semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(semid)?.Keys);
-                    if (ds != null)
-                        view.hasDataSpecification = ds;
-
-                    // check for direct descendents to be "Mirror-Elements"
-                    if (ie.InternalElement != null)
-                        foreach (var mie in ie.InternalElement)
-                            if (mie.RefBaseSystemUnitPath.HasContent())
-                            {
-                                // candidate .. try identify target
-                                var el = FindInternalElementByID(mie.RefBaseSystemUnitPath);
-                                if (el != null)
-                                {
-                                    // for the View's contain element references, all targets of the references
-                                    // shall exists.
-                                    // This is not already the case, therefore store the AML IE / View Information
-                                    // for later parsing
-                                    this.latePopoulationViews.Add(new IeViewAmlTarget(ie, view, el));
-                                }
-                            }
-
-                    // result
-                    return view;
-                }
-                else
-                    // uups!
-                    return null;
             }
 
             private AdminShell.Submodel TryParseSubmodelFromIe(SystemUnitClassType ie)
@@ -1021,25 +954,6 @@ namespace AasxAmlImExport
                     }
 
                     //
-                    // View
-                    //
-                    if (currentAas != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.View))
-                    {
-                        // begin new (temporary) object
-                        var view = TryParseViewFromIe(insthier, ie);
-                        if (view != null)
-                        {
-                            Debug(indentation, "  VIEW with required attributes recognised. Collecting references..");
-
-                            // make temporary object official
-                            currentAas.AddView(view);
-                            matcher.AddMatch(view, ie);
-                        }
-                        else
-                            Debug(indentation, "  VIEW with insufficient attributes. Skipping");
-                    }
-
-                    //
                     // Submodel
                     //
                     if (currentAas != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.Submodel))
@@ -1498,32 +1412,6 @@ namespace AasxAmlImExport
             }
 
             /// <summary>
-            /// Populate views with contained elements refs.
-            /// Precondition: AAS entities exist, matcher up to data, parents up to date
-            /// </summary>
-            public void LatePopulateViews()
-            {
-                foreach (var ieViewAmlTarget in this.latePopoulationViews)
-                {
-                    // access
-                    if (ieViewAmlTarget.Ie == null || ieViewAmlTarget.View == null || ieViewAmlTarget.AmlTarget == null)
-                        continue;
-
-                    // we need to identify the target with respect to the AAS
-                    var aasTarget = matcher.GetAasObject(ieViewAmlTarget.AmlTarget);
-                    if (aasTarget == null)
-                        continue;
-
-                    // get a "real" reference of this
-                    var theref = new AdminShell.Reference();
-                    aasTarget.CollectReferencesByParent(theref.Keys);
-
-                    // add
-                    ieViewAmlTarget.View.AddContainedElement(theref);
-                }
-            }
-
-            /// <summary>
             /// Build up internal data structures
             /// </summary>
             /// <param name="caex">Input AML / CAEX file</param>
@@ -1561,9 +1449,6 @@ namespace AasxAmlImExport
             // the following steps will require valid parent information
             foreach (var sm in package.AasEnv.Submodels)
                 sm.SetAllParents();
-
-            // do the late population of views
-            parser.LatePopulateViews();
 
             // the different parse stages might have reegistered actions to be source or
             // destination of AML internal links

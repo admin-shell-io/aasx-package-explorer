@@ -142,14 +142,6 @@ namespace AasxUANodesetImExport
             //map AAS Information
             foreach (AdminShell.AdministrationShell shell in env.AdministrationShells)
             {
-                if (shell.views != null)
-                {
-                    foreach (AdminShell.View view in shell.views.views)
-                    {
-                        refs.Add(CreateReference("HasComponent", CreateView(view)));
-                    }
-                }
-
                 if (shell.derivedFrom != null)
                 {
                     refs.Add(CreateReference("HasComponent", CreateDerivedFrom(shell.derivedFrom.Keys)));
@@ -1086,32 +1078,6 @@ namespace AasxUANodesetImExport
 
         //Asset Creation
 
-        private static string CreateView(AdminShell.View view)
-        {
-            UAVariable var = new UAVariable();
-            var.NodeId = "ns=1;i=" + masterID.ToString();
-            var.BrowseName = "1:" + view.idShort;
-            masterID++;
-            List<Reference> refs = new List<Reference>();
-            refs.Add(CreateHasTypeDefinition("1:AASViewType"));
-
-            if (view.description != null)
-            {
-                refs.Add(CreateReference("HasComponent", CreateReferable(view.category, view.description.langString)));
-
-            }
-
-            foreach (AdminShell.ContainedElementRef con in view.containedElements.reference)
-            {
-                refs.Add(CreateReference("HasComponent", createContainedElement(con)));
-            }
-
-
-            var.References = refs.ToArray();
-            root.Add((UANode)var);
-            return var.NodeId;
-        }
-
         private static string CreateDerivedFrom(List<AdminShell.Key> keys)
         {
             UAObject obj = new UAObject();
@@ -1193,27 +1159,6 @@ namespace AasxUANodesetImExport
             obj.References = refs.ToArray();
             root.Add((UANode)obj);
             return obj.NodeId;
-        }
-
-        private static string createContainedElement(AdminShell.ContainedElementRef ele)
-        {
-            UAVariable var = new UAVariable();
-            var.NodeId = "ns=1;i=" + masterID.ToString();
-            var.BrowseName = "1:ContainedElementRef";
-            masterID++;
-            List<Reference> refs = new List<Reference>();
-            refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
-
-            foreach (AdminShell.Key key in ele.Keys)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateKey("", "true", key.type, key.value)));
-            }
-
-            var.References = refs.ToArray();
-            root.Add((UANode)var);
-            return var.NodeId;
         }
 
     }
