@@ -2888,7 +2888,7 @@ namespace AdminShellNS
             public string entityType = "";
 
             [JsonProperty(PropertyName = "asset")]
-            public AssetRef assetRef = null;
+            public ModelReference assetRef = null;
 
             // enumerates its children
 
