@@ -43,9 +43,9 @@ namespace AdminShellNS
                 return res;
             }
 
-            public Reference GetReference()
+            public ModelReference GetReference()
             {
-                return Reference.CreateNew(ToKeyList());
+                return ModelReference.CreateNew(ToKeyList());
             }
         }
 
@@ -184,7 +184,7 @@ namespace AdminShellNS
                 return res;
             }
 
-            public void CreateNewLogic(string idShort = null, string category = null, Key semanticIdKey = null)
+            public void CreateNewLogic(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 if (idShort != null)
                     this.idShort = idShort;
@@ -194,13 +194,13 @@ namespace AdminShellNS
                 {
                     if (this.semanticId == null)
                         this.semanticId = new SemanticId();
-                    this.semanticId.Keys.Add(semanticIdKey);
+                    this.semanticId.Value.Add(semanticIdKey);
                 }
             }
 
             public void AddQualifier(
                 string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
-                Reference qualifierValueId = null)
+                GlobalReference qualifierValueId = null)
             {
                 QualifierCollection.AddQualifier(
                     ref this.qualifiers, qualifierType, qualifierValue, semanticKeys, qualifierValueId);
@@ -216,9 +216,11 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("SubmodelElement", "SME");
             }
 
-            public override Reference GetReference(bool includeParents = true)
+            public override ModelReference GetReference(bool includeParents = true)
             {
-                Reference r = new Reference();
+                var r = new ModelReference();
+                // semantic id
+                r.referredSemanticId = new GlobalReference(semanticId);
                 // this is the tail of our referencing chain ..
                 r.Keys.Add(Key.CreateNew(GetElementName(), this.idShort));
                 // try to climb up ..
@@ -332,7 +334,7 @@ namespace AdminShellNS
                 // check
                 base.Validate(results);
                 ModelingKind.Validate(results, kind, this);
-                KeyList.Validate(results, semanticId?.Keys, this);
+                ListOfIdentifier.Validate(results, semanticId?.Value, this);
             }
         }
 
@@ -642,7 +644,7 @@ namespace AdminShellNS
             }
 
             public static Referable FindReferableByReference(
-                List<SubmodelElementWrapper> wrappers, Reference rf, int keyIndex)
+                List<SubmodelElementWrapper> wrappers, ModelReference rf, int keyIndex)
             {
                 return FindReferableByReference(wrappers, rf?.Keys, keyIndex);
             }
@@ -844,7 +846,7 @@ namespace AdminShellNS
             }
 
             public IEnumerable<SubmodelElementWrapper> FindAllSemanticId(
-                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+                Identifier semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement.semanticId != null)
@@ -859,22 +861,22 @@ namespace AdminShellNS
                                 continue;
                         }
 
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneId(semId, matchMode))
                             yield return smw;
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+            public IEnumerable<T> FindAllSemanticIdAs<T>(Identifier semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 foreach (var smw in this)
                     if (smw.submodelElement != null && smw.submodelElement is T
                         && smw.submodelElement.semanticId != null)
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneId(semId, matchMode))
                             yield return smw.submodelElement as T;
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Reference semId,
+            public IEnumerable<T> FindAllSemanticIdAs<T>(GlobalReference semId,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
@@ -886,13 +888,13 @@ namespace AdminShellNS
             }
 
             public SubmodelElementWrapper FindFirstSemanticId(
-                Key semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+                Identifier semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 return FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<SubmodelElementWrapper>();
             }
 
             public SubmodelElementWrapper FindFirstAnySemanticId(
-                Key[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+                Identifier[] semId, Type[] allowedTypes = null, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
                 if (semId == null)
                     return null;
@@ -906,13 +908,13 @@ namespace AdminShellNS
                 return null;
             }
 
-            public T FindFirstSemanticIdAs<T>(Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+            public T FindFirstSemanticIdAs<T>(Identifier semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
             }
 
-            public T FindFirstAnySemanticIdAs<T>(Key[] semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+            public T FindFirstAnySemanticIdAs<T>(Identifier[] semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 if (semId == null)
@@ -926,17 +928,11 @@ namespace AdminShellNS
                 return null;
             }
 
-            public T FindFirstSemanticIdAs<T>(Reference semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-                where T : SubmodelElement
-            {
-                return FindAllSemanticIdAs<T>(semId, matchMode)?.FirstOrDefault<T>();
-            }
-
             /* TODO (MIHO, 2021-10-18): there are overlaps of this new function with
              * this old function: FindFirstAnySemanticId(Key[] semId ..
              * clarify/ refactor */
             public IEnumerable<T> FindAllSemanticId<T>(
-                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                Identifier[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 bool invertAllowed = false)
                 where T : SubmodelElement
             {
@@ -957,7 +953,7 @@ namespace AdminShellNS
 
                     var found = false;
                     foreach (var semId in allowedSemId)
-                        if (smw.submodelElement.semanticId.MatchesExactlyOneKey(semId, matchMode))
+                        if (smw.submodelElement.semanticId.MatchesExactlyOneId(semId, matchMode))
                         {
                             found = true;
                             break;
@@ -972,7 +968,7 @@ namespace AdminShellNS
             }
 
             public T FindFirstAnySemanticId<T>(
-                Key[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
+                Identifier[] allowedSemId, Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 bool invertAllowed = false)
                 where T : SubmodelElement
             {
@@ -1240,8 +1236,8 @@ namespace AdminShellNS
                 return null;
             }
 
-            public T CopyOneSMEbyCopy<T>(Key destSemanticId,
-                SubmodelElementWrapperCollection sourceSmc, Key[] sourceSemanticId,
+            public T CopyOneSMEbyCopy<T>(Identifier destSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Identifier[] sourceSemanticId,
                 ConceptDescription createDefault = null, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 string idShort = null, bool addSme = false) where T : SubmodelElement, new()
@@ -1299,22 +1295,22 @@ namespace AdminShellNS
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
-                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, new[] { sourceCD?.GetSingleKey() },
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleId(), sourceSmc, new[] { sourceCD?.GetSingleId() },
                     createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
             }
 
             public T CopyOneSMEbyCopy<T>(ConceptDescription destCD,
-                SubmodelElementWrapperCollection sourceSmc, Key[] sourceKeys,
+                SubmodelElementWrapperCollection sourceSmc, Identifier[] sourceIds,
                 bool createDefault = false, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed,
                 string idShort = null, bool addSme = false) where T : SubmodelElement, new()
             {
-                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleKey(), sourceSmc, sourceKeys,
+                return this.CopyOneSMEbyCopy<T>(destCD?.GetSingleId(), sourceSmc, sourceIds,
                     createDefault ? destCD : null, setDefault, matchMode, idShort, addSme);
             }
 
-            public void CopyManySMEbyCopy<T>(Key destSemanticId,
-                SubmodelElementWrapperCollection sourceSmc, Key sourceSemanticId,
+            public void CopyManySMEbyCopy<T>(Identifier destSemanticId,
+                SubmodelElementWrapperCollection sourceSmc, Identifier sourceSemanticId,
                 ConceptDescription createDefault = null, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed) where T : SubmodelElement, new()
             {
@@ -1362,7 +1358,7 @@ namespace AdminShellNS
                 bool createDefault = false, Action<T> setDefault = null,
                 Key.MatchMode matchMode = Key.MatchMode.Relaxed) where T : SubmodelElement, new()
             {
-                CopyManySMEbyCopy(destCD.GetSingleKey(), sourceSmc, sourceCD.GetSingleKey(),
+                CopyManySMEbyCopy(destCD.GetSingleId(), sourceSmc, sourceCD.GetSingleId(),
                     createDefault ? destCD : null, setDefault, matchMode);
             }
         }
@@ -1458,7 +1454,7 @@ namespace AdminShellNS
             [MetaModelName("Property.value")]
             [TextSearchable]
             public string value = "";
-            public Reference valueId = null;
+            public GlobalReference valueId = null;
 
             // constructors
 
@@ -1472,7 +1468,7 @@ namespace AdminShellNS
                 this.valueType = p.valueType;
                 this.value = p.value;
                 if (p.valueId != null)
-                    valueId = new Reference(p.valueId);
+                    valueId = new GlobalReference(p.valueId);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -1485,7 +1481,7 @@ namespace AdminShellNS
                 this.valueType = src.valueType;
                 this.value = src.value;
                 if (src.valueId != null)
-                    this.valueId = new Reference(src.valueId);
+                    this.valueId = new GlobalReference(src.valueId);
             }
 
             public Property(AasxCompatibilityModels.AdminShellV20.Property src)
@@ -1497,12 +1493,12 @@ namespace AdminShellNS
                 this.valueType = src.valueType;
                 this.value = src.value;
                 if (src.valueId != null)
-                    this.valueId = new Reference(src.valueId);
+                    this.valueId = new GlobalReference(src.valueId);
             }
 
 #endif
 
-            public static Property CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static Property CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Property();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1516,9 +1512,9 @@ namespace AdminShellNS
                 return this;
             }
 
-            public Property SetValueId(string type, string value)
+            public Property SetValueId(string valueId)
             {
-                this.valueId = Reference.CreateNew(Key.CreateNew(type, value));
+                this.valueId = GlobalReference.CreateNew(value);
                 return this;
             }
 
@@ -1583,7 +1579,7 @@ namespace AdminShellNS
             // members
 
             public LangStringSet value = new LangStringSet();
-            public Reference valueId = null;
+            public GlobalReference valueId = null;
 
             // constructors
 
@@ -1597,7 +1593,7 @@ namespace AdminShellNS
 
                 this.value = new LangStringSet(mlp.value);
                 if (mlp.valueId != null)
-                    valueId = new Reference(mlp.valueId);
+                    valueId = new GlobalReference(mlp.valueId);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -1607,12 +1603,12 @@ namespace AdminShellNS
             {
                 this.value = new LangStringSet(src.value);
                 if (src.valueId != null)
-                    valueId = new Reference(src.valueId);
+                    valueId = new GlobalReference(src.valueId);
             }
 #endif
 
             public static MultiLanguageProperty CreateNew(
-                string idShort = null, string category = null, Key semanticIdKey = null)
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new MultiLanguageProperty();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1727,7 +1723,7 @@ namespace AdminShellNS
             }
 #endif
 
-            public static Range CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static Range CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Range();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1805,7 +1801,7 @@ namespace AdminShellNS
             }
 #endif
 
-            public static Blob CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static Blob CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Blob();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1884,7 +1880,7 @@ namespace AdminShellNS
             }
 #endif
 
-            public static File CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static File CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new File();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1927,6 +1923,7 @@ namespace AdminShellNS
             }
         }
 
+        // TODO: MAKE to ModelRefElm!!!
         public class ReferenceElement : DataElement
         {
             // for JSON only
@@ -1939,7 +1936,7 @@ namespace AdminShellNS
 
             // members
 
-            public Reference value = new Reference();
+            public ModelReference value = new ModelReference();
 
             // constructors
 
@@ -1952,7 +1949,7 @@ namespace AdminShellNS
                     return;
 
                 if (re.value != null)
-                    this.value = new Reference(re.value);
+                    this.value = new ModelReference(re.value);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -1963,7 +1960,7 @@ namespace AdminShellNS
                     return;
 
                 if (src.value != null)
-                    this.value = new Reference(src.value);
+                    this.value = new ModelReference(src.value);
             }
 
             public ReferenceElement(AasxCompatibilityModels.AdminShellV20.ReferenceElement src)
@@ -1973,19 +1970,19 @@ namespace AdminShellNS
                     return;
 
                 if (src.value != null)
-                    this.value = new Reference(src.value);
+                    this.value = new ModelReference(src.value);
             }
 #endif
 
             public static ReferenceElement CreateNew(
-                string idShort = null, string category = null, Key semanticIdKey = null)
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new ReferenceElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
                 return (x);
             }
 
-            public void Set(Reference value = null)
+            public void Set(ModelReference value = null)
             {
                 this.value = value;
             }
@@ -2010,8 +2007,8 @@ namespace AdminShellNS
 
             // members
 
-            public Reference first = new Reference();
-            public Reference second = new Reference();
+            public ModelReference first = new ModelReference();
+            public ModelReference second = new ModelReference();
 
             // constructors
 
@@ -2024,9 +2021,9 @@ namespace AdminShellNS
                     return;
 
                 if (rel.first != null)
-                    this.first = new Reference(rel.first);
+                    this.first = new ModelReference(rel.first);
                 if (rel.second != null)
-                    this.second = new Reference(rel.second);
+                    this.second = new ModelReference(rel.second);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -2037,9 +2034,9 @@ namespace AdminShellNS
                     return;
 
                 if (src.first != null)
-                    this.first = new Reference(src.first);
+                    this.first = new ModelReference(src.first);
                 if (src.second != null)
-                    this.second = new Reference(src.second);
+                    this.second = new ModelReference(src.second);
             }
 
             public RelationshipElement(AasxCompatibilityModels.AdminShellV20.RelationshipElement src)
@@ -2049,15 +2046,15 @@ namespace AdminShellNS
                     return;
 
                 if (src.first != null)
-                    this.first = new Reference(src.first);
+                    this.first = new ModelReference(src.first);
                 if (src.second != null)
-                    this.second = new Reference(src.second);
+                    this.second = new ModelReference(src.second);
             }
 #endif
 
             public static RelationshipElement CreateNew(
-                string idShort = null, string category = null, Key semanticIdKey = null, Reference first = null,
-                Reference second = null)
+                string idShort = null, string category = null, Identifier semanticIdKey = null, ModelReference first = null,
+                ModelReference second = null)
             {
                 var x = new RelationshipElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -2066,7 +2063,7 @@ namespace AdminShellNS
                 return (x);
             }
 
-            public void Set(Reference first = null, Reference second = null)
+            public void Set(ModelReference first = null, ModelReference second = null)
             {
                 this.first = first;
                 this.second = second;
@@ -2136,9 +2133,9 @@ namespace AdminShellNS
                 if (!(src is AnnotatedRelationshipElement arel))
                     return;
                 if (arel.first != null)
-                    this.first = new Reference(arel.first);
+                    this.first = new ModelReference(arel.first);
                 if (arel.second != null)
-                    this.second = new Reference(arel.second);
+                    this.second = new ModelReference(arel.second);
                 if (arel.annotations != null)
                     this.annotations = new DataElementWrapperCollection(arel.annotations);
             }
@@ -2148,17 +2145,17 @@ namespace AdminShellNS
                 : base(src)
             {
                 if (src.first != null)
-                    this.first = new Reference(src.first);
+                    this.first = new ModelReference(src.first);
                 if (src.second != null)
-                    this.second = new Reference(src.second);
+                    this.second = new ModelReference(src.second);
                 if (src.annotations != null)
                     this.annotations = new DataElementWrapperCollection(src.annotations);
             }
 #endif
 
             public new static AnnotatedRelationshipElement CreateNew(
-                string idShort = null, string category = null, Key semanticIdKey = null,
-                Reference first = null, Reference second = null)
+                string idShort = null, string category = null, Identifier semanticIdKey = null,
+                ModelReference first = null, ModelReference second = null)
             {
                 var x = new AnnotatedRelationshipElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -2223,7 +2220,7 @@ namespace AdminShellNS
 
             // further 
 
-            public new void Set(Reference first = null, Reference second = null)
+            public new void Set(ModelReference first = null, ModelReference second = null)
             {
                 this.first = first;
                 this.second = second;
@@ -2388,7 +2385,7 @@ namespace AdminShellNS
 #endif
 
             public static SubmodelElementCollection CreateNew(
-                string idShort = null, string category = null, Key semanticIdKey = null)
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new SubmodelElementCollection();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -2941,7 +2938,7 @@ namespace AdminShellNS
             }
 
             public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null,
-                string category = null, Key semanticIdKey = null)
+                string category = null, Identifier semanticIdKey = null)
             {
                 CreateNewLogic(idShort, null, semanticIdKey);
 
@@ -2967,7 +2964,7 @@ namespace AdminShellNS
             }
 #endif
 
-            public static Entity CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static Entity CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Entity();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -3048,7 +3045,8 @@ namespace AdminShellNS
             }
 
             // from this very class
-            public Reference observed = new Reference();
+            // TODO (MIHO, 2022-01-03): check if default to null??
+            public ModelReference observed = new ModelReference();
 
             // constructors
 
@@ -3061,7 +3059,7 @@ namespace AdminShellNS
                     return;
 
                 if (be.observed != null)
-                    this.observed = new Reference(be.observed);
+                    this.observed = new ModelReference(be.observed);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -3071,11 +3069,11 @@ namespace AdminShellNS
                 : base(src)
             {
                 if (src.observed != null)
-                    this.observed = new Reference(src.observed);
+                    this.observed = new ModelReference(src.observed);
             }
 #endif
 
-            public static BasicEvent CreateNew(string idShort = null, string category = null, Key semanticIdKey = null)
+            public static BasicEvent CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new BasicEvent();
                 x.CreateNewLogic(idShort, category, semanticIdKey);

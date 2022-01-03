@@ -137,13 +137,11 @@ namespace AdminShellNS
 
             // add
 
-            public void AddDataSpecification(Key k)
+            public void AddDataSpecification(Identifier id)
             {
                 if (hasDataSpecification == null)
                     hasDataSpecification = new HasDataSpecification();
-                var r = new Reference();
-                r.Keys.Add(k);
-                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
+                hasDataSpecification.Add(new EmbeddedDataSpecification(new GlobalReference(id)));
             }
 
             public override AasElementSelfDescription GetSelfDescription()
@@ -322,7 +320,7 @@ namespace AdminShellNS
                     this.assetKind = new AssetKind(src.kind);
 
                 if (src.identification != null)
-                    globalAssetId = new GlobalReference(new Key(Key.AssetInformation, src.identification.id));
+                    SetIdentification(src.identification.id);
             }
 
             public AssetInformation(AasxCompatibilityModels.AdminShellV20.Asset src)
@@ -334,7 +332,7 @@ namespace AdminShellNS
                     this.assetKind = new AssetKind(src.kind);
 
                 if (src.identification != null)
-                    globalAssetId = new GlobalReference(new Key(Key.AssetInformation, src.identification.id));
+                    SetIdentification(src.identification.id);
             }
 #endif
 
@@ -374,7 +372,7 @@ namespace AdminShellNS
             {
                 if (id == null)
                     return;
-                globalAssetId = new GlobalReference(new Key(Key.AssetInformation, id));
+                globalAssetId = new GlobalReference(new Identifier(id));
             }
         }
 
@@ -440,86 +438,20 @@ namespace AdminShellNS
 
         }
 
-        public class UnitId
+        public class UnitId : GlobalReference 
         {
-
-            // members
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public KeyList keys = new KeyList();
-
-            // getter / setters
-
-            [XmlArray("keys")]
-            [XmlArrayItem("key")]
-            [JsonIgnore]
-            public KeyList Keys { get { return keys; } }
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "keys")]
-            public KeyList JsonKeys
-            {
-                get
-                {
-                    keys?.NumberIndices();
-                    return keys;
-                }
-            }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public bool IsEmpty { get { return keys == null || keys.IsEmpty; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public int Count { get { if (keys == null) return 0; return keys.Count; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public Key this[int index] { get { return keys[index]; } }
-
             // constructors / creators
 
-            public UnitId() { }
+            public UnitId() : base() { }
+            public UnitId(Identifier id) : base(id) { }
+            public UnitId(UnitId src) : base(src) { }
 
-            public UnitId(UnitId src)
-            {
-                if (src.keys != null)
-                    foreach (var k in src.Keys)
-                        this.keys.Add(new Key(k));
-            }
+            public UnitId(Reference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
-            public UnitId(AasxCompatibilityModels.AdminShellV10.UnitId src)
-            {
-                if (src.keys != null)
-                    foreach (var k in src.Keys)
-                        this.keys.Add(new Key(k));
-            }
-
-            public UnitId(AasxCompatibilityModels.AdminShellV20.UnitId src)
-            {
-                if (src.keys != null)
-                    foreach (var k in src.Keys)
-                        this.keys.Add(new Key(k));
-            }
+            public UnitId(AasxCompatibilityModels.AdminShellV10.UnitId src) : base(src?.Keys) { }
+            public UnitId(AasxCompatibilityModels.AdminShellV20.UnitId src) : base(src?.Keys) { }
 #endif
-
-            public static UnitId CreateNew(string type, string value)
-            {
-                var u = new UnitId();
-                u.keys.Add(Key.CreateNew(type, value));
-                return u;
-            }
-
-            public static UnitId CreateNew(Reference src)
-            {
-                if (src == null)
-                    return null;
-                var res = new UnitId();
-                if (src.Keys != null)
-                    foreach (var k in src.Keys)
-                        res.keys.Add(k);
-                return res;
-            }
         }
 
         [XmlRoot(Namespace = "http://www.admin-shell.io/IEC61360/2/0")]
@@ -684,6 +616,12 @@ namespace AdminShellNS
                             "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
             }
 
+            public static Identifier GetIdentifier()
+            {
+                return new Identifier(
+                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
+            }
+
             // validation
 
             public void Validate(AasValidationRecordList results, ConceptDescription cd)
@@ -821,7 +759,7 @@ namespace AdminShellNS
                     this.dataSpecificationContent = new DataSpecificationContent(src.dataSpecificationContent);
             }
 
-            public EmbeddedDataSpecification(Reference src)
+            public EmbeddedDataSpecification(GlobalReference src)
             {
                 if (src != null)
                     this.dataSpecification = new DataSpecificationRef(src);
@@ -855,7 +793,7 @@ namespace AdminShellNS
             {
                 var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
 
-                eds.dataSpecification.Keys.Add(DataSpecificationIEC61360.GetKey());
+                eds.dataSpecification.Value.Add(DataSpecificationIEC61360.GetIdentifier());
 
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
                     AdminShell.DataSpecificationIEC61360.CreateNew();
@@ -915,13 +853,13 @@ namespace AdminShellNS
 
             // this class
             [XmlIgnore]
-            private List<Reference> isCaseOf = null;
+            private List<ModelReference> isCaseOf = null;
 
             // getter / setter
 
             [XmlElement(ElementName = "isCaseOf")]
             [JsonProperty(PropertyName = "isCaseOf")]
-            public List<Reference> IsCaseOf
+            public List<ModelReference> IsCaseOf
             {
                 get { return isCaseOf; }
                 set { isCaseOf = value; }
@@ -940,8 +878,8 @@ namespace AdminShellNS
                     foreach (var ico in src.isCaseOf)
                     {
                         if (this.isCaseOf == null)
-                            this.isCaseOf = new List<Reference>();
-                        this.isCaseOf.Add(new Reference(ico));
+                            this.isCaseOf = new List<ModelReference>();
+                        this.isCaseOf.Add(new ModelReference(ico));
                     }
             }
 
@@ -958,8 +896,8 @@ namespace AdminShellNS
                     foreach (var ico in src.IsCaseOf)
                     {
                         if (this.isCaseOf == null)
-                            this.isCaseOf = new List<Reference>();
-                        this.isCaseOf.Add(new Reference(ico));
+                            this.isCaseOf = new List<ModelReference>();
+                        this.isCaseOf.Add(new ModelReference(ico));
                     }
             }
 
@@ -972,8 +910,8 @@ namespace AdminShellNS
                     foreach (var ico in src.IsCaseOf)
                     {
                         if (this.isCaseOf == null)
-                            this.isCaseOf = new List<Reference>();
-                        this.isCaseOf.Add(new Reference(ico));
+                            this.isCaseOf = new List<ModelReference>();
+                        this.isCaseOf.Add(new ModelReference(ico));
                     }
             }
 #endif
@@ -999,6 +937,11 @@ namespace AdminShellNS
                 return Key.CreateNew(this.GetElementName(), this.id.value);
             }
 
+            public Identifier GetSingleId()
+            {
+                return new Identifier(this.id.value);
+            }
+
             public ConceptDescriptionRef GetCdReference()
             {
                 var r = new ConceptDescriptionRef();
@@ -1020,8 +963,8 @@ namespace AdminShellNS
             )
             {
                 var eds = new EmbeddedDataSpecification(new DataSpecificationRef(), new DataSpecificationContent());
-                eds.dataSpecification.Keys.Add(
-                    DataSpecificationIEC61360.GetKey());
+                eds.dataSpecification.Value.Add(
+                    DataSpecificationIEC61360.GetIdentifier());
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
                     AdminShell.DataSpecificationIEC61360.CreateNew(
                         preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
@@ -1031,7 +974,7 @@ namespace AdminShellNS
                 this.embeddedDataSpecification.Add(eds);
 
                 this.AddIsCaseOf(
-                    Reference.CreateNew(new Key("ConceptDescription", this.id.value)));
+                    ModelReference.CreateNew(new Key("ConceptDescription", this.id.value)));
             }
 
             public DataSpecificationIEC61360 GetIEC61360()
@@ -1137,10 +1080,10 @@ namespace AdminShellNS
                 return string.Format("{0}{1}", ci.Item1, (ci.Item2 != "") ? " / " + ci.Item2 : "");
             }
 
-            public void AddIsCaseOf(Reference ico)
+            public void AddIsCaseOf(ModelReference ico)
             {
                 if (isCaseOf == null)
-                    isCaseOf = new List<Reference>();
+                    isCaseOf = new List<ModelReference>();
                 isCaseOf.Add(ico);
             }
 
@@ -1166,7 +1109,7 @@ namespace AdminShellNS
                 {
                     // check data spec
                     if (eds61360.dataSpecification == null ||
-                        !(eds61360.dataSpecification.MatchesExactlyOneKey(DataSpecificationIEC61360.GetKey())))
+                        !(eds61360.dataSpecification.MatchesExactlyOneId(DataSpecificationIEC61360.GetIdentifier())))
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SpecViolation, this,
                             "HasDataSpecification: data specification content set to IEC61360, but no " +
@@ -1174,8 +1117,8 @@ namespace AdminShellNS
                             () =>
                             {
                                 eds61360.dataSpecification = new DataSpecificationRef(
-                                    new Reference(
-                                        DataSpecificationIEC61360.GetKey()));
+                                    new GlobalReference(
+                                        DataSpecificationIEC61360.GetIdentifier()));
                             }));
 
                     // validate content
@@ -1202,7 +1145,7 @@ namespace AdminShellNS
 
             // more find
 
-            public IEnumerable<Reference> FindAllReferences()
+            public IEnumerable<ModelReference> FindAllReferences()
             {
                 yield break;
             }
@@ -1522,7 +1465,7 @@ namespace AdminShellNS
 
             public void AddQualifier(
                 string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
-                Reference qualifierValueId = null)
+                GlobalReference qualifierValueId = null)
             {
                 QualifierCollection.AddQualifier(
                     ref this.qualifiers, qualifierType, qualifierValue, semanticKeys, qualifierValueId);
@@ -1548,7 +1491,7 @@ namespace AdminShellNS
             }
 
             /// <summary>
-            ///  If instance, return semanticId as on key.
+            ///  If instance, return semanticId as one key.
             ///  If template, return identification as key.
             /// </summary>
             /// <returns></returns>
@@ -1560,13 +1503,11 @@ namespace AdminShellNS
                     return this.semanticId?.GetAsExactlyOneKey();
             }
 
-            public void AddDataSpecification(Key k)
+            public void AddDataSpecification(Identifier id)
             {
                 if (hasDataSpecification == null)
                     hasDataSpecification = new HasDataSpecification();
-                var r = new Reference();
-                r.Keys.Add(k);
-                hasDataSpecification.Add(new EmbeddedDataSpecification(r));
+                hasDataSpecification.Add(new EmbeddedDataSpecification(new GlobalReference(id)));
             }
 
             public SubmodelElementWrapper FindSubmodelElementWrapper(string idShort)
@@ -1704,7 +1645,7 @@ namespace AdminShellNS
                 // check
                 base.Validate(results);
                 ModelingKind.Validate(results, kind, this);
-                KeyList.Validate(results, semanticId?.Keys, this);
+                ListOfIdentifier.Validate(results, semanticId?.Value, this);
             }
 
             // find
@@ -1712,7 +1653,7 @@ namespace AdminShellNS
             public IEnumerable<LocatedReference> FindAllReferences()
             {
                 // not nice: use temp list
-                var temp = new List<Reference>();
+                var temp = new List<ModelReference>();
 
                 // recurse
                 this.RecurseOnSubmodelElements(null, (state, parents, sme) =>

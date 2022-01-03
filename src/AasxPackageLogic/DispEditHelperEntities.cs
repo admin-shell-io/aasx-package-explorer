@@ -296,11 +296,9 @@ namespace AasxPackageLogic
 
                                                 if (destAAS.assetInformation != null)
                                                 {
-                                                    destAAS.assetInformation.globalAssetId
-                                                        = new AdminShell.GlobalReference(new AdminShell.Key(
-                                                            AdminShell.Key.AssetInformation,
-                                                            AdminShellUtil.GenerateIdAccordingTemplate(
-                                                                Options.Curr.TemplateIdAsset)));
+                                                    destAAS.assetInformation.SetIdentification(
+                                                        AdminShellUtil.GenerateIdAccordingTemplate(
+                                                                Options.Curr.TemplateIdAsset));
                                                 }
                                             }
 
@@ -1143,7 +1141,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                 };
 
                 this.AddKeyListKeys(
@@ -1732,8 +1730,8 @@ namespace AasxPackageLogic
                 new[] {
                     new HintCheck(
                         () => { return esc != null && (esc.dataSpecification == null
-                            || !esc.dataSpecification.MatchesExactlyOneKey(
-                                AdminShell.DataSpecificationIEC61360.GetKey())); },
+                            || !esc.dataSpecification.MatchesExactlyOneId(
+                                AdminShell.DataSpecificationIEC61360.GetIdentifier())); },
                         "IEC61360 content present, but data specification missing. Please add according reference.",
                         breakIfTrue: true),
                 });
@@ -2106,7 +2104,7 @@ namespace AasxPackageLogic
                                 sme.semanticId = AdminShell.SemanticId.CreateFromKeys(ks);
 
                                 // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                 {
                                     sme.idShort = "" + cd.idShort;
@@ -2345,7 +2343,7 @@ namespace AasxPackageLogic
 
             AdminShell.ConceptDescription jumpToCD = null;
             if (sme.semanticId != null && sme.semanticId.Count > 0)
-                jumpToCD = env.FindConceptDescription(sme.semanticId.Keys);
+                jumpToCD = env.FindConceptDescription(sme.semanticId);
 
             if (jumpToCD != null && editMode)
             {
@@ -2620,7 +2618,7 @@ namespace AasxPackageLogic
                         {
                             if (sme.semanticId != null && sme.semanticId.Count > 0)
                             {
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if (cd != null)
                                 {
                                     if (cd.idShort == null || cd.idShort.Trim() == "")
@@ -2691,7 +2689,7 @@ namespace AasxPackageLogic
 
                 if (sme.semanticId != null && sme.semanticId.Count > 0 && !nestedCds)
                 {
-                    var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                    var cd = env.FindConceptDescription(sme.semanticId);
                     if (cd == null)
                     {
                         this.AddGroup(
@@ -2800,14 +2798,14 @@ namespace AasxPackageLogic
                         stack, repo, p.valueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            p.valueId = new AdminShell.Reference();
+                            p.valueId = new AdminShell.GlobalReference();
                             this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListKeys(
-                        stack, "valueId", p.valueId.Keys, repo,
+                    this.AddKeyListOfIdentifers(
+                        stack, "valueId", p.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference,
                         relatedReferable: p,
