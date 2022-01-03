@@ -1277,6 +1277,382 @@ namespace AasxPackageLogic
             return null;
         }
 
+        //public void AddKeyListKeys(
+        //    AnyUiStackPanel view, string key,
+        //    AdminShell.KeyList keys,
+        //    ModifyRepo repo = null,
+        //    PackageCentral.PackageCentral packages = null,
+        //    PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
+        //    string addExistingEntities = null,
+        //    bool addEclassIrdi = false,
+        //    bool addFromPool = false,
+        //    string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
+        //    Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
+        //    AnyUiLambdaActionBase takeOverLambdaAction = null,
+        //    Func<AdminShell.KeyList, AnyUiLambdaActionBase> noEditJumpLambda = null,
+        //    AdminShell.Referable relatedReferable = null,
+        //    Action<AdminShell.Referable> emitCustomEvent = null)
+        //{
+        //    // sometimes needless to show
+        //    if (repo == null && (keys == null || keys.Count < 1))
+        //        return;
+        //    int rows = 1; // default!
+        //    if (keys != null && keys.Count > 1)
+        //        rows = keys.Count;
+        //    int rowOfs = 0;
+        //    if (repo != null)
+        //        rowOfs = 1;
+        //    if (jumpLambda != null)
+        //        rowOfs = 1;
+
+        //    // default
+        //    if (emitCustomEvent == null)
+        //        emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
+
+        //    // Grid
+        //    var g = new AnyUiGrid();
+        //    g.Margin = new AnyUiThickness(0, 0, 0, 0);
+
+        //    // 0 key
+        //    var gc = new AnyUiColumnDefinition();
+        //    gc.Width = AnyUiGridLength.Auto;
+        //    gc.MinWidth = this.standardFirstColWidth;
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // 1 type
+        //    gc = new AnyUiColumnDefinition();
+        //    gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // 2 local
+        //    gc = new AnyUiColumnDefinition();
+        //    gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // 3 id type
+        //    gc = new AnyUiColumnDefinition();
+        //    gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // 4 value
+        //    gc = new AnyUiColumnDefinition();
+        //    gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // 5 .. buttons behind it
+        //    gc = new AnyUiColumnDefinition();
+        //    gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+        //    g.ColumnDefinitions.Add(gc);
+
+        //    // rows
+        //    for (int r = 0; r < rows + rowOfs; r++)
+        //    {
+        //        var gr = new AnyUiRowDefinition();
+        //        gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+        //        g.RowDefinitions.Add(gr);
+        //    }
+
+        //    // populate key
+        //    AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
+
+        //    // presets?
+        //    var presetNo = 0;
+        //    if (addPresetNames != null && addPresetKeyLists != null
+        //        && addPresetNames.Length == addPresetKeyLists.Length)
+        //        presetNo = addPresetNames.Length;
+
+        //    if (repo == null)
+        //    {
+        //        // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??
+        //    }
+        //    else
+        //    if (keys != null)
+        //    {
+        //        // populate [+], [Select], [ECLASS], [Copy] buttons
+        //        var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
+        //        for (int i = 0; i < presetNo; i++)
+        //            colDescs.Add("#");
+
+        //        var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
+        //        AnyUiGrid.SetRow(g2, 0);
+        //        AnyUiGrid.SetColumn(g2, 1);
+        //        AnyUiGrid.SetColumnSpan(g2, 7);
+        //        g.Children.Add(g2);
+
+        //        if (addFromPool)
+        //            AnyUiUIElement.RegisterControl(
+        //                AddSmallButtonTo(
+        //                    g2, 0, 1,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    padding: new AnyUiThickness(5, 0, 5, 0),
+        //                    content: "Add known"),
+        //                (o) =>
+        //                {
+        //                    var uc = new AnyUiDialogueDataSelectReferableFromPool(
+        //                        caption: "Select known entity");
+        //                    this.context.StartFlyoverModal(uc);
+
+        //                    if (uc.Result &&
+        //                        uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
+        //                        && pe.Ref is AdminShell.Identifiable id
+        //                        && id.id != null)
+        //                        keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), id.id.value));
+
+        //                    emitCustomEvent?.Invoke(relatedReferable);
+
+        //                    if (takeOverLambdaAction != null)
+        //                        return takeOverLambdaAction;
+        //                    else
+        //                        return new AnyUiLambdaActionRedrawEntity();
+        //                });
+
+        //        if (addEclassIrdi)
+        //            AnyUiUIElement.RegisterControl(
+        //                AddSmallButtonTo(
+        //                    g2, 0, 2,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    padding: new AnyUiThickness(5, 0, 5, 0),
+        //                    content: "Add ECLASS"),
+        //                (o) =>
+        //                {
+        //                    string resIRDI = null;
+        //                    AdminShell.ConceptDescription resCD = null;
+        //                    if (this.SmartSelectEclassEntity(
+        //                            AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
+        //                    {
+        //                        keys.Add(
+        //                            AdminShell.Key.CreateNew(
+        //                                AdminShell.Key.GlobalReference, resIRDI));
+        //                    }
+
+        //                    emitCustomEvent?.Invoke(relatedReferable);
+
+        //                    if (takeOverLambdaAction != null)
+        //                        return takeOverLambdaAction;
+        //                    else
+        //                        return new AnyUiLambdaActionRedrawEntity();
+        //                });
+
+        //        if (addExistingEntities != null && packages.MainAvailable)
+        //            AnyUiUIElement.RegisterControl(
+        //                AddSmallButtonTo(
+        //                    g2, 0, 3,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    padding: new AnyUiThickness(5, 0, 5, 0),
+        //                    content: "Add existing"),
+        //                (o) =>
+        //                {
+        //                    var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
+        //                    if (k2 != null)
+        //                        keys.AddRange(k2);
+
+        //                    emitCustomEvent?.Invoke(relatedReferable);
+
+        //                    if (takeOverLambdaAction != null)
+        //                        return takeOverLambdaAction;
+        //                    else
+        //                        return new AnyUiLambdaActionRedrawEntity();
+        //                });
+
+        //        AnyUiUIElement.RegisterControl(
+        //            AddSmallButtonTo(
+        //                g2, 0, 4,
+        //                margin: new AnyUiThickness(2, 2, 2, 2),
+        //                padding: new AnyUiThickness(5, 0, 5, 0),
+        //                content: "Add blank"),
+        //            (o) =>
+        //            {
+        //                var k = new AdminShell.Key();
+        //                keys.Add(k);
+
+        //                emitCustomEvent?.Invoke(relatedReferable);
+
+        //                if (takeOverLambdaAction != null)
+        //                    return takeOverLambdaAction;
+        //                else
+        //                    return new AnyUiLambdaActionRedrawEntity();
+        //            });
+
+        //        if (jumpLambda != null)
+        //            AnyUiUIElement.RegisterControl(
+        //                AddSmallButtonTo(
+        //                    g2, 0, 5,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    padding: new AnyUiThickness(5, 0, 5, 0),
+        //                    content: "Jump"),
+        //                (o) =>
+        //                {
+        //                    return jumpLambda(keys);
+        //                });
+
+        //        AnyUiUIElement.RegisterControl(
+        //            AddSmallButtonTo(
+        //                g2, 0, 6,
+        //                margin: new AnyUiThickness(2, 2, 2, 2),
+        //                padding: new AnyUiThickness(5, 0, 5, 0),
+        //                content: "Clipboard"),
+        //            (o) =>
+        //            {
+        //                var st = keys.ToString(format: 1, delimiter: "\r\n");
+        //                this.context?.ClipboardSet(new AnyUiClipboardData(st));
+        //                Log.Singleton.Info("Keys written to clipboard.");
+        //                return new AnyUiLambdaActionNone();
+        //            });
+
+        //        for (int i = 0; i < presetNo; i++)
+        //        {
+        //            var closureKey = addPresetKeyLists[i];
+        //            AnyUiUIElement.RegisterControl(
+        //                AddSmallButtonTo(
+        //                    g2, 0, 7 + i,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    padding: new AnyUiThickness(5, 0, 5, 0),
+        //                    content: "" + addPresetNames[i]),
+        //                (o) =>
+        //                {
+        //                    keys.AddRange(closureKey);
+        //                    emitCustomEvent?.Invoke(relatedReferable);
+        //                    return new AnyUiLambdaActionRedrawEntity();
+        //                });
+        //        }
+        //    }
+
+        //    // contents?
+        //    if (keys != null)
+        //        for (int i = 0; i < keys.Count; i++)
+        //            if (repo == null)
+        //            {
+        //                // lang
+        //                AddSmallLabelTo(
+        //                    g, 0 + i + rowOfs, 1,
+        //                    padding: new AnyUiThickness(2, 0, 0, 0),
+        //                    content: "(" + keys[i].type + ")");
+
+        //                // value
+        //                AddSmallLabelTo(
+        //                    g, 0 + i + rowOfs, 4,
+        //                    padding: new AnyUiThickness(2, 0, 0, 0),
+        //                    content: "" + keys[i].value);
+
+        //                // jump
+        //                /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
+        //                   It shall be replaced (after intergrating AnyUI) by a better repo handling */
+        //                if (noEditJumpLambda != null && i == 0)
+        //                {
+        //                    AnyUiUIElement.RegisterControl(
+        //                        AddSmallButtonTo(
+        //                            g, 0 + +rowOfs, 5,
+        //                            margin: new AnyUiThickness(2, 2, 2, 2),
+        //                            padding: new AnyUiThickness(5, 0, 5, 0),
+        //                            content: "Jump"),
+        //                            (o) =>
+        //                            {
+        //                                return noEditJumpLambda(keys);
+        //                            });
+        //                }
+        //            }
+        //            else
+        //            {
+        //                // save in current context
+        //                var currentI = 0 + i;
+
+        //                // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
+
+        //                // type
+        //                var cbType = AnyUiUIElement.RegisterControl(
+        //                    AddSmallComboBoxTo(
+        //                        g, 0 + i + rowOfs, 1,
+        //                        margin: new AnyUiThickness(2, 2, 2, 2),
+        //                        text: "" + keys[currentI].type,
+        //                        minWidth: 100,
+        //                        items: AdminShell.Key.KeyElements,
+        //                        isEditable: false,
+        //                        verticalContentAlignment: AnyUiVerticalAlignment.Center),
+        //                    (o) =>
+        //                    {
+        //                        keys[currentI].type = o as string;
+        //                        emitCustomEvent?.Invoke(relatedReferable);
+        //                        return new AnyUiLambdaActionNone();
+        //                    },
+        //                    takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
+        //                SmallComboBoxSelectNearestItem(cbType, cbType.Text);
+
+        //                // check here, if to hightlight
+        //                if (cbType != null && this.highlightField != null && keys[currentI].type != null &&
+        //                        this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
+        //                        keys[currentI] == this.highlightField.containingObject)
+        //                    this.HighligtStateElement(cbType, true);
+
+        //                // value
+        //                var tbValue = AddSmallTextBoxTo(
+        //                    g, 0 + i + rowOfs, 4,
+        //                    margin: new AnyUiThickness(2, 2, 2, 2),
+        //                    text: "" + keys[currentI].value,
+        //                    verticalContentAlignment: AnyUiVerticalAlignment.Center);
+        //                AnyUiUIElement.RegisterControl(
+        //                    tbValue,
+        //                    (o) =>
+        //                    {
+        //                        keys[currentI].value = o as string;
+        //                        emitCustomEvent?.Invoke(relatedReferable);
+        //                        return new AnyUiLambdaActionNone();
+        //                    }, takeOverLambda: takeOverLambdaAction);
+
+        //                // check here, if to hightlight
+        //                if (tbValue != null && this.highlightField != null && keys[currentI].value != null &&
+        //                        this.highlightField.fieldHash == keys[currentI].value.GetHashCode() &&
+        //                        keys[currentI] == this.highlightField.containingObject)
+        //                    this.HighligtStateElement(tbValue, true);
+
+        //                // button [hamburger]
+        //                AddSmallContextMenuItemTo(
+        //                        g, 0 + i + rowOfs, 5,
+        //                        "\u22ee",
+        //                        repo, new[] {
+        //                            "\u2702", "Delete",
+        //                            "\u25b2", "Move Up",
+        //                            "\u25bc", "Move Down",
+        //                        },
+        //                        margin: new AnyUiThickness(2, 2, 2, 2),
+        //                        padding: new AnyUiThickness(5, 0, 5, 0),
+        //                        menuItemLambda: (o) =>
+        //                        {
+        //                            var action = false;
+
+        //                            if (o is int ti)
+        //                                switch (ti)
+        //                                {
+        //                                    case 0:
+        //                                        keys.RemoveAt(currentI);
+        //                                        action = true;
+        //                                        break;
+        //                                    case 1:
+        //                                        MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
+        //                                        action = true;
+        //                                        break;
+        //                                    case 2:
+        //                                        MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
+        //                                        action = true;
+        //                                        break;
+        //                                }
+
+        //                            emitCustomEvent?.Invoke(relatedReferable);
+
+        //                            if (action)
+        //                                if (takeOverLambdaAction != null)
+        //                                    return takeOverLambdaAction;
+        //                                else
+        //                                    return new AnyUiLambdaActionRedrawEntity();
+        //                            return new AnyUiLambdaActionNone();
+        //                        });
+
+        //            }
+
+        //    // in total
+        //    view.Children.Add(g);
+        //}
+
+        // see below
         public void AddKeyListKeys(
             AnyUiStackPanel view, string key,
             AdminShell.KeyList keys,
@@ -1293,12 +1669,107 @@ namespace AasxPackageLogic
             AdminShell.Referable relatedReferable = null,
             Action<AdminShell.Referable> emitCustomEvent = null)
         {
+            AddKeyListGeneric<AdminShell.Key, AdminShell.KeyList>(
+                view, key, keys, repo, packages, selector, 
+                addExistingEntities: addExistingEntities,
+                addEclassIrdi: addEclassIrdi,
+                addFromPool: addFromPool,
+                addPresetNames: addPresetNames,
+                addPresetKeyLists: addPresetKeyLists,
+                jumpLambda: jumpLambda,
+                takeOverLambdaAction: takeOverLambdaAction,
+                noEditJumpLambda: noEditJumpLambda,
+                relatedReferable: relatedReferable,
+                emitCustomEvent: emitCustomEvent,
+                addElemLambda: (o) => {
+                    if (o is AdminShell.Identifiable id)
+                        keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), id.id.value));
+                    if (o is AdminShell.Key k)
+                        keys.Add(k);
+                },
+                getItem1Lambda: (k) => k?.type,
+                getItem2Lambda: (k) => k?.value,
+                setItem1Lambda: (k, o) => { k.type = (string)o; },
+                setItem2Lambda: (k, o) => { k.value = (string)o; },
+                elemsToStringLambda: (list) => list.ToString(format: 1, delimiter: "\r\n")
+            );
+        }
+
+        // see below
+        public void AddKeyListOfIdentifier(
+            AnyUiStackPanel view, string key,
+            AdminShell.ListOfIdentifier keys,
+            ModifyRepo repo = null,
+            PackageCentral.PackageCentral packages = null,
+            PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
+            string addExistingEntities = null,
+            bool addEclassIrdi = false,
+            bool addFromPool = false,
+            string[] addPresetNames = null, AdminShell.ListOfIdentifier[] addPresetKeyLists = null,
+            Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> jumpLambda = null,
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
+            Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            AdminShell.Referable relatedReferable = null,
+            Action<AdminShell.Referable> emitCustomEvent = null)
+        {
+            AddKeyListGeneric<AdminShell.Identifier, AdminShell.ListOfIdentifier>(
+                view, key, keys, repo, packages, selector,
+                addExistingEntities: addExistingEntities,
+                addEclassIrdi: addEclassIrdi,
+                addFromPool: addFromPool,
+                addPresetNames: addPresetNames,
+                addPresetKeyLists: addPresetKeyLists,
+                jumpLambda: jumpLambda,
+                takeOverLambdaAction: takeOverLambdaAction,
+                noEditJumpLambda: noEditJumpLambda,
+                relatedReferable: relatedReferable,
+                emitCustomEvent: emitCustomEvent,
+                addElemLambda: (o) => {
+                    if (o is AdminShell.Identifiable id)
+                        keys.Add(new AdminShell.Identifier(id.id.value));
+                    if (o is AdminShell.Key k)
+                        keys.Add(k?.value);
+                },
+                getItem1Lambda: null,
+                getItem2Lambda: (k) => k?.value,
+                setItem1Lambda: null,
+                setItem2Lambda: (k, o) => { k.value = (string)o; },
+                elemsToStringLambda: (list) => list.ToString(delimiter: "\r\n")
+            );
+        }
+
+        // GENERIC version
+
+        public void AddKeyListGeneric<T, LIST>(
+            AnyUiStackPanel view, string key,
+            LIST elems,
+            ModifyRepo repo = null,
+            PackageCentral.PackageCentral packages = null,
+            PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
+            string addExistingEntities = null,
+            bool addEclassIrdi = false,
+            bool addFromPool = false,
+            string[] addPresetNames = null, LIST[] addPresetKeyLists = null,
+            Func<LIST, AnyUiLambdaActionBase> jumpLambda = null,
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
+            Func<LIST, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            AdminShell.Referable relatedReferable = null,
+            Action<AdminShell.Referable> emitCustomEvent = null,
+            Action<object> addElemLambda = null,
+            Func<T, object> getItem1Lambda = null,
+            Func<T, object> getItem2Lambda = null,
+            Action<T, object> setItem1Lambda = null,
+            Action<T, object> setItem2Lambda = null,
+            Func<LIST, string> elemsToStringLambda = null)
+            where LIST : List<T>
+            where T : new()
+        {
             // sometimes needless to show
-            if (repo == null && (keys == null || keys.Count < 1))
+            if (repo == null && (elems == null || elems.Count < 1))
                 return;
             int rows = 1; // default!
-            if (keys != null && keys.Count > 1)
-                rows = keys.Count;
+            if (elems != null && elems.Count > 1)
+                rows = elems.Count;
             int rowOfs = 0;
             if (repo != null)
                 rowOfs = 1;
@@ -1366,7 +1837,7 @@ namespace AasxPackageLogic
                 // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??
             }
             else
-            if (keys != null)
+            if (elems != null)
             {
                 // populate [+], [Select], [ECLASS], [Copy] buttons
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
@@ -1396,7 +1867,7 @@ namespace AasxPackageLogic
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
                                 && pe.Ref is AdminShell.Identifiable id
                                 && id.id != null)
-                                keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), id.id.value));
+                                addElemLambda?.Invoke(id);
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1420,9 +1891,8 @@ namespace AasxPackageLogic
                             if (this.SmartSelectEclassEntity(
                                     AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
                             {
-                                keys.Add(
-                                    AdminShell.Key.CreateNew(
-                                        AdminShell.Key.GlobalReference, resIRDI));
+                                addElemLambda?.Invoke(AdminShell.Key.CreateNew(
+                                    AdminShell.Key.GlobalReference, resIRDI));
                             }
 
                             emitCustomEvent?.Invoke(relatedReferable);
@@ -1444,7 +1914,8 @@ namespace AasxPackageLogic
                         {
                             var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
                             if (k2 != null)
-                                keys.AddRange(k2);
+                                foreach (var k in k2)
+                                    addElemLambda?.Invoke(k);
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1463,7 +1934,7 @@ namespace AasxPackageLogic
                     (o) =>
                     {
                         var k = new AdminShell.Key();
-                        keys.Add(k);
+                        addElemLambda?.Invoke(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1482,7 +1953,7 @@ namespace AasxPackageLogic
                             content: "Jump"),
                         (o) =>
                         {
-                            return jumpLambda(keys);
+                            return jumpLambda(elems);
                         });
 
                 AnyUiUIElement.RegisterControl(
@@ -1493,7 +1964,7 @@ namespace AasxPackageLogic
                         content: "Clipboard"),
                     (o) =>
                     {
-                        var st = keys.ToString(format: 1, delimiter: "\r\n");
+                        var st = "" + elemsToStringLambda?.Invoke(elems);
                         this.context?.ClipboardSet(new AnyUiClipboardData(st));
                         Log.Singleton.Info("Keys written to clipboard.");
                         return new AnyUiLambdaActionNone();
@@ -1510,7 +1981,7 @@ namespace AasxPackageLogic
                             content: "" + addPresetNames[i]),
                         (o) =>
                         {
-                            keys.AddRange(closureKey);
+                            elems.AddRange(closureKey);
                             emitCustomEvent?.Invoke(relatedReferable);
                             return new AnyUiLambdaActionRedrawEntity();
                         });
@@ -1518,21 +1989,23 @@ namespace AasxPackageLogic
             }
 
             // contents?
-            if (keys != null)
-                for (int i = 0; i < keys.Count; i++)
+            if (elems != null)
+                for (int i = 0; i < elems.Count; i++)
                     if (repo == null)
                     {
                         // lang
-                        AddSmallLabelTo(
-                            g, 0 + i + rowOfs, 1,
-                            padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "(" + keys[i].type + ")");
+                        if (getItem1Lambda != null)
+                            AddSmallLabelTo(
+                                g, 0 + i + rowOfs, 1,
+                                padding: new AnyUiThickness(2, 0, 0, 0),
+                                content: "" + getItem1Lambda?.Invoke(elems[i]));
 
                         // value
-                        AddSmallLabelTo(
-                            g, 0 + i + rowOfs, 4,
-                            padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "" + keys[i].value);
+                        if (getItem2Lambda != null)
+                            AddSmallLabelTo(
+                                g, 0 + i + rowOfs, 4,
+                                padding: new AnyUiThickness(2, 0, 0, 0),
+                                content: "" + getItem2Lambda?.Invoke(elems[i]));
 
                         // jump
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
@@ -1547,7 +2020,7 @@ namespace AasxPackageLogic
                                     content: "Jump"),
                                     (o) =>
                                     {
-                                        return noEditJumpLambda(keys);
+                                        return noEditJumpLambda(elems);
                                     });
                         }
                     }
@@ -1559,50 +2032,58 @@ namespace AasxPackageLogic
                         // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
 
                         // type
-                        var cbType = AnyUiUIElement.RegisterControl(
-                            AddSmallComboBoxTo(
-                                g, 0 + i + rowOfs, 1,
-                                margin: new AnyUiThickness(2, 2, 2, 2),
-                                text: "" + keys[currentI].type,
-                                minWidth: 100,
-                                items: AdminShell.Key.KeyElements,
-                                isEditable: false,
-                                verticalContentAlignment: AnyUiVerticalAlignment.Center),
-                            (o) =>
-                            {
-                                keys[currentI].type = o as string;
-                                emitCustomEvent?.Invoke(relatedReferable);
-                                return new AnyUiLambdaActionNone();
-                            },
-                            takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
-                        SmallComboBoxSelectNearestItem(cbType, cbType.Text);
+                        if (getItem1Lambda != null)
+                        {
+                            var item = getItem1Lambda?.Invoke(elems[i]);
+                            var cbType = AnyUiUIElement.RegisterControl(
+                                AddSmallComboBoxTo(
+                                    g, 0 + i + rowOfs, 1,
+                                    margin: new AnyUiThickness(2, 2, 2, 2),
+                                    text: "" + item,
+                                    minWidth: 100,
+                                    items: AdminShell.Key.KeyElements,
+                                    isEditable: false,
+                                    verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                                (o) =>
+                                {
+                                    setItem1Lambda?.Invoke(elems[currentI], o);
+                                    emitCustomEvent?.Invoke(relatedReferable);
+                                    return new AnyUiLambdaActionNone();
+                                },
+                                takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
+                                SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
-                        // check here, if to hightlight
-                        if (cbType != null && this.highlightField != null && keys[currentI].type != null &&
-                                this.highlightField.fieldHash == keys[currentI].type.GetHashCode() &&
-                                keys[currentI] == this.highlightField.containingObject)
-                            this.HighligtStateElement(cbType, true);
+                            // check here, if to hightlight
+                            if (cbType != null && this.highlightField != null && item != null &&
+                                    this.highlightField.fieldHash == item.GetHashCode() &&
+                                    (object)elems[currentI] == this.highlightField.containingObject)
+                                this.HighligtStateElement(cbType, true);
+                        }
 
                         // value
-                        var tbValue = AddSmallTextBoxTo(
-                            g, 0 + i + rowOfs, 4,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            text: "" + keys[currentI].value,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.RegisterControl(
-                            tbValue,
-                            (o) =>
-                            {
-                                keys[currentI].value = o as string;
-                                emitCustomEvent?.Invoke(relatedReferable);
-                                return new AnyUiLambdaActionNone();
-                            }, takeOverLambda: takeOverLambdaAction);
+                        if (getItem2Lambda != null)
+                        {
+                            var item = getItem2Lambda?.Invoke(elems[i]);
+                            var tbValue = AddSmallTextBoxTo(
+                                g, 0 + i + rowOfs, 4,
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                text: "" + item,
+                                verticalContentAlignment: AnyUiVerticalAlignment.Center);
+                                AnyUiUIElement.RegisterControl(
+                                    tbValue,
+                                    (o) =>
+                                    {
+                                        setItem2Lambda?.Invoke(elems[currentI], o);
+                                        emitCustomEvent?.Invoke(relatedReferable);
+                                        return new AnyUiLambdaActionNone();
+                                    }, takeOverLambda: takeOverLambdaAction);
 
-                        // check here, if to hightlight
-                        if (tbValue != null && this.highlightField != null && keys[currentI].value != null &&
-                                this.highlightField.fieldHash == keys[currentI].value.GetHashCode() &&
-                                keys[currentI] == this.highlightField.containingObject)
-                            this.HighligtStateElement(tbValue, true);
+                            // check here, if to hightlight
+                            if (tbValue != null && this.highlightField != null && item != null &&
+                                    this.highlightField.fieldHash == item.GetHashCode() &&
+                                    (object) elems[currentI] == this.highlightField.containingObject)
+                                this.HighligtStateElement(tbValue, true);
+                        }
 
                         // button [hamburger]
                         AddSmallContextMenuItemTo(
@@ -1623,15 +2104,15 @@ namespace AasxPackageLogic
                                         switch (ti)
                                         {
                                             case 0:
-                                                keys.RemoveAt(currentI);
+                                                elems.RemoveAt(currentI);
                                                 action = true;
                                                 break;
                                             case 1:
-                                                MoveElementInListUpwards<AdminShell.Key>(keys, keys[currentI]);
+                                                MoveElementInListUpwards<T>(elems, elems[currentI]);
                                                 action = true;
                                                 break;
                                             case 2:
-                                                MoveElementInListDownwards<AdminShell.Key>(keys, keys[currentI]);
+                                                MoveElementInListDownwards<T>(elems, elems[currentI]);
                                                 action = true;
                                                 break;
                                         }
@@ -1652,338 +2133,6 @@ namespace AasxPackageLogic
             view.Children.Add(g);
         }
 
-        // TODO (MIHO, 2022-0-03): Consider joining (again) with above
-
-        public void AddKeyListOfIdentifers(
-            AnyUiStackPanel view, string key,
-            AdminShell.ListOfIdentifier identifiers,
-            ModifyRepo repo = null,
-            PackageCentral.PackageCentral packages = null,
-            PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
-            string addExistingEntities = null,
-            bool addEclassIrdi = false,
-            bool addFromPool = false,
-            string[] addPresetNames = null, AdminShell.ListOfIdentifier[] addPresetIdLists = null,
-            Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> jumpLambda = null,
-            AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> noEditJumpLambda = null,
-            AdminShell.Referable relatedReferable = null,
-            Action<AdminShell.Referable> emitCustomEvent = null)
-        {
-            // sometimes needless to show
-            if (repo == null && (identifiers == null || identifiers.Count < 1))
-                return;
-            int rows = 1; // default!
-            if (identifiers != null && identifiers.Count > 1)
-                rows = identifiers.Count;
-            int rowOfs = 0;
-            if (repo != null)
-                rowOfs = 1;
-            if (jumpLambda != null)
-                rowOfs = 1;
-
-            // default
-            if (emitCustomEvent == null)
-                emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
-
-            // Grid
-            var g = new AnyUiGrid();
-            g.Margin = new AnyUiThickness(0, 0, 0, 0);
-
-            // 0 key
-            var gc = new AnyUiColumnDefinition();
-            gc.Width = AnyUiGridLength.Auto;
-            gc.MinWidth = this.standardFirstColWidth;
-            g.ColumnDefinitions.Add(gc);
-
-            // 1 type
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // 2 value
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-            g.ColumnDefinitions.Add(gc);
-
-            // 3 .. buttons behind it
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // rows
-            for (int r = 0; r < rows + rowOfs; r++)
-            {
-                var gr = new AnyUiRowDefinition();
-                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-                g.RowDefinitions.Add(gr);
-            }
-
-            // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
-
-            // presets?
-            var presetNo = 0;
-            if (addPresetNames != null && addPresetIdLists != null
-                && addPresetNames.Length == addPresetIdLists.Length)
-                presetNo = addPresetNames.Length;
-
-            if (repo == null)
-            {
-                // TODO (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??
-            }
-            else
-            if (identifiers != null)
-            {
-                // populate [+], [Select], [ECLASS], [Copy] buttons
-                var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
-                for (int i = 0; i < presetNo; i++)
-                    colDescs.Add("#");
-
-                var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
-                AnyUiGrid.SetRow(g2, 0);
-                AnyUiGrid.SetColumn(g2, 1);
-                AnyUiGrid.SetColumnSpan(g2, 7);
-                g.Children.Add(g2);
-
-                if (addFromPool)
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 1,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "Add known"),
-                        (o) =>
-                        {
-                            var uc = new AnyUiDialogueDataSelectReferableFromPool(
-                                caption: "Select known entity");
-                            this.context.StartFlyoverModal(uc);
-
-                            if (uc.Result &&
-                                uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
-                                && pe.Ref is AdminShell.Identifiable id
-                                && id.id != null)
-                                identifiers.Add(new AdminShell.Identifier(id.id.value));
-
-                            emitCustomEvent?.Invoke(relatedReferable);
-
-                            if (takeOverLambdaAction != null)
-                                return takeOverLambdaAction;
-                            else
-                                return new AnyUiLambdaActionRedrawEntity();
-                        });
-
-                if (addEclassIrdi)
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 2,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "Add ECLASS"),
-                        (o) =>
-                        {
-                            string resIRDI = null;
-                            AdminShell.ConceptDescription resCD = null;
-                            if (this.SmartSelectEclassEntity(
-                                    AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
-                            {
-                                identifiers.Add(new AdminShell.Identifier(resIRDI));
-                            }
-
-                            emitCustomEvent?.Invoke(relatedReferable);
-
-                            if (takeOverLambdaAction != null)
-                                return takeOverLambdaAction;
-                            else
-                                return new AnyUiLambdaActionRedrawEntity();
-                        });
-
-                if (addExistingEntities != null && packages.MainAvailable)
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 3,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "Add existing"),
-                        (o) =>
-                        {
-                            var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
-                            if (k2 != null)
-                                identifiers.AddRange(k2);
-
-                            emitCustomEvent?.Invoke(relatedReferable);
-
-                            if (takeOverLambdaAction != null)
-                                return takeOverLambdaAction;
-                            else
-                                return new AnyUiLambdaActionRedrawEntity();
-                        });
-
-                AnyUiUIElement.RegisterControl(
-                    AddSmallButtonTo(
-                        g2, 0, 4,
-                        margin: new AnyUiThickness(2, 2, 2, 2),
-                        padding: new AnyUiThickness(5, 0, 5, 0),
-                        content: "Add blank"),
-                    (o) =>
-                    {
-                        identifiers.Add(new AdminShell.Identifier());
-
-                        emitCustomEvent?.Invoke(relatedReferable);
-
-                        if (takeOverLambdaAction != null)
-                            return takeOverLambdaAction;
-                        else
-                            return new AnyUiLambdaActionRedrawEntity();
-                    });
-
-                if (jumpLambda != null)
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 5,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "Jump"),
-                        (o) =>
-                        {
-                            return jumpLambda(identifiers);
-                        });
-
-                AnyUiUIElement.RegisterControl(
-                    AddSmallButtonTo(
-                        g2, 0, 6,
-                        margin: new AnyUiThickness(2, 2, 2, 2),
-                        padding: new AnyUiThickness(5, 0, 5, 0),
-                        content: "Clipboard"),
-                    (o) =>
-                    {
-                        var st = identifiers.ToString(delimiter: "\r\n");
-                        this.context?.ClipboardSet(new AnyUiClipboardData(st));
-                        Log.Singleton.Info("Values written to clipboard.");
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                for (int i = 0; i < presetNo; i++)
-                {
-                    var closureKey = addPresetIdLists[i];
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 7 + i,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "" + addPresetNames[i]),
-                        (o) =>
-                        {
-                            identifiers.AddRange(closureKey);
-                            emitCustomEvent?.Invoke(relatedReferable);
-                            return new AnyUiLambdaActionRedrawEntity();
-                        });
-                }
-            }
-
-            // contents?
-            if (identifiers != null)
-                for (int i = 0; i < identifiers.Count; i++)
-                    if (repo == null)
-                    {
-                        // value
-                        AddSmallLabelTo(
-                            g, 0 + i + rowOfs, 2,
-                            padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "" + identifiers[i].value);
-
-                        // jump
-                        /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
-                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
-                        if (noEditJumpLambda != null && i == 0)
-                        {
-                            AnyUiUIElement.RegisterControl(
-                                AddSmallButtonTo(
-                                    g, 0 + +rowOfs, 5,
-                                    margin: new AnyUiThickness(2, 2, 2, 2),
-                                    padding: new AnyUiThickness(5, 0, 5, 0),
-                                    content: "Jump"),
-                                    (o) =>
-                                    {
-                                        return noEditJumpLambda(identifiers);
-                                    });
-                        }
-                    }
-                    else
-                    {
-                        // save in current context
-                        var currentI = 0 + i;
-
-                        // TODO (Michael Hoffmeister, 2020-08-01): Needs to be revisited
-
-                        // value
-                        var tbValue = AddSmallTextBoxTo(
-                            g, 0 + i + rowOfs, 2,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            text: "" + identifiers[currentI].value,
-                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                        AnyUiUIElement.RegisterControl(
-                            tbValue,
-                            (o) =>
-                            {
-                                identifiers[currentI].value = o as string;
-                                emitCustomEvent?.Invoke(relatedReferable);
-                                return new AnyUiLambdaActionNone();
-                            }, takeOverLambda: takeOverLambdaAction);
-
-                        // check here, if to hightlight
-                        if (tbValue != null && this.highlightField != null && identifiers[currentI].value != null &&
-                                this.highlightField.fieldHash == identifiers[currentI].value.GetHashCode() &&
-                                identifiers[currentI] == this.highlightField.containingObject)
-                            this.HighligtStateElement(tbValue, true);
-
-                        // button [hamburger]
-                        AddSmallContextMenuItemTo(
-                                g, 0 + i + rowOfs, 3,
-                                "\u22ee",
-                                repo, new[] {
-                                    "\u2702", "Delete",
-                                    "\u25b2", "Move Up",
-                                    "\u25bc", "Move Down",
-                                },
-                                margin: new AnyUiThickness(2, 2, 2, 2),
-                                padding: new AnyUiThickness(5, 0, 5, 0),
-                                menuItemLambda: (o) =>
-                                {
-                                    var action = false;
-
-                                    if (o is int ti)
-                                        switch (ti)
-                                        {
-                                            case 0:
-                                                identifiers.RemoveAt(currentI);
-                                                action = true;
-                                                break;
-                                            case 1:
-                                                MoveElementInListUpwards<AdminShell.Identifier>(identifiers, identifiers[currentI]);
-                                                action = true;
-                                                break;
-                                            case 2:
-                                                MoveElementInListDownwards<AdminShell.Identifier>(identifiers, identifiers[currentI]);
-                                                action = true;
-                                                break;
-                                        }
-
-                                    emitCustomEvent?.Invoke(relatedReferable);
-
-                                    if (action)
-                                        if (takeOverLambdaAction != null)
-                                            return takeOverLambdaAction;
-                                        else
-                                            return new AnyUiLambdaActionRedrawEntity();
-                                    return new AnyUiLambdaActionNone();
-                                });
-
-                    }
-
-            // in total
-            view.Children.Add(g);
-        }
 
         //
         // Safeguarding functions (checking if somethingis null and doing ..)
@@ -2451,7 +2600,6 @@ namespace AasxPackageLogic
             {
                 // sort all the non-fitting
                 if (elem.semanticId != null && !elem.semanticId.IsEmpty && elem.semanticId.Count == 1
-                    && elem.semanticId[0].type == AdminShell.Key.ConceptDescription
                     && elem.semanticId[0].value.StartsWith("0173"))
                 {
                     // already in CDs?

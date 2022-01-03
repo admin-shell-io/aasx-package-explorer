@@ -1000,6 +1000,56 @@ namespace AdminShellNS
             }
         }
 
+        //
+        // <<abstract>> Reference
+        //
+
+        [XmlType(TypeName = "reference")]
+        public class GenReference<T,LIST> : IAasElement 
+            where LIST : List<T>, new()
+            where T : new()
+        {
+            // protected member (not serialized directly)
+            protected LIST _elements;
+
+            // other members
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public bool IsEmpty { get { return _elements == null || _elements.Count < 1; } }
+            [XmlIgnore]
+            [JsonIgnore]
+            public int Count { get { if (_elements == null) return 0; return _elements.Count; } }
+            [XmlIgnore]
+            [JsonIgnore]
+            public T this[int index] { get { return _elements[index]; } }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public T First { get { return this.Count < 1 ? default(T) : this._elements[0]; } }
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public T Last { get { return this.Count < 1 ? default(T) : _elements[_elements.Count - 1]; } }
+
+            // self description
+
+            public virtual AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("Reference", "Rfc");
+            }
+
+            public virtual string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+        }
+
+        public class GlobalReference2 : GenReference<Identifier, ListOfIdentifier>
+        {
+
+        }
+
         /// <summary>
         /// STILL TODO
         /// </summary>

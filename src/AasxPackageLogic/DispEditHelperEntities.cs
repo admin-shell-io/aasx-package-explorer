@@ -1698,7 +1698,7 @@ namespace AasxPackageLogic
                 }));
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
+            this.DisplayOrEditEntityListOfModelReferences(stack, cd.IsCaseOf,
                 (ico) => { cd.IsCaseOf = ico; },
                 "isCaseOf", relatedReferable: cd);
 
@@ -2170,7 +2170,7 @@ namespace AasxPackageLogic
                                     new AdminShell.Key(AdminShell.Key.ConceptDescription, resIRDI));
 
                                 // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                     sme.idShort = cd.GetDefaultShortName();
 
@@ -2786,7 +2786,7 @@ namespace AasxPackageLogic
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListOfIdentifers(
+                    this.AddKeyListOfIdentifier(
                         stack, "valueId", p.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference,
@@ -2825,14 +2825,14 @@ namespace AasxPackageLogic
                         stack, repo, mlp.valueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            mlp.valueId = new AdminShell.Reference();
+                            mlp.valueId = new AdminShell.GlobalReference();
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListKeys(
-                        stack, "valueId", mlp.valueId.Keys, repo,
+                    this.AddKeyListOfIdentifier(
+                        stack, "valueId", mlp.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference,
                         relatedReferable: mlp,
@@ -3337,7 +3337,7 @@ namespace AasxPackageLogic
                         stack, repo, rfe.value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            rfe.value = new AdminShell.Reference();
+                            rfe.value = new AdminShell.ModelReference();
                             this.AddDiaryEntry(rfe, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3345,7 +3345,7 @@ namespace AasxPackageLogic
                     Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                            AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                     };
                     this.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
@@ -3369,7 +3369,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                 };
 
                 // members
@@ -3388,7 +3388,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.first, "First relation:", "Create data element!",
                         v =>
                         {
-                            rele.first = new AdminShell.Reference();
+                            rele.first = new AdminShell.ModelReference();
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3524,7 +3524,7 @@ namespace AasxPackageLogic
                     Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                            AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                     };
                     this.AddKeyListKeys(
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!

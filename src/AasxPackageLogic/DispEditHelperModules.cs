@@ -373,9 +373,9 @@ namespace AasxPackageLogic
         // List of References
         //
 
-        public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
-            List<AdminShell.Reference> references,
-            Action<List<AdminShell.Reference>> setOutput,
+        public void DisplayOrEditEntityListOfModelReferences(AnyUiStackPanel stack,
+            List<AdminShell.ModelReference> references,
+            Action<List<AdminShell.ModelReference>> setOutput,
             string entityName,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
             AdminShell.Referable relatedReferable = null)
@@ -389,7 +389,7 @@ namespace AasxPackageLogic
                     stack, this.repo, references, $"{entityName}:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new List<AdminShell.Reference>());
+                        setOutput?.Invoke(new List<AdminShell.ModelReference>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -403,7 +403,7 @@ namespace AasxPackageLogic
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
-                                references.Add(new AdminShell.Reference());
+                                references.Add(new AdminShell.ModelReference());
 
                             if (buttonNdx == 1 && references.Count > 0)
                                 references.RemoveAt(references.Count - 1);
@@ -417,7 +417,7 @@ namespace AasxPackageLogic
                 {
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                            stack, String.Format("ModelRef[{0}]", i), references[i].Keys, repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true,
