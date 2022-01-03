@@ -89,7 +89,7 @@ namespace AasxPackageLogic
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            AdminShell.Reference targetReference,
+            AdminShell.ModelReference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -97,7 +97,7 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public AdminShell.Reference targetReference;
+        public AdminShell.ModelReference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
     }

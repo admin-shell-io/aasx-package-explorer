@@ -31,8 +31,6 @@ namespace AdminShellNS
     /// </summary>
     public class AdminShell : AdminShellV30 { }
 
-    #region AdminShell_V3_RC02
-
     /// <summary>
     /// Version of Details of Administration Shell Part 1 V3.0 RC 02 published Apre 2022
     /// </summary>
@@ -93,10 +91,10 @@ namespace AdminShellNS
         public class LocatedReference
         {
             public Identifiable Identifiable;
-            public Reference Reference;
+            public ModelReference Reference;
 
             public LocatedReference() { }
-            public LocatedReference(Identifiable identifiable, Reference reference)
+            public LocatedReference(Identifiable identifiable, ModelReference reference)
             {
                 Identifiable = identifiable;
                 Reference = reference;
@@ -115,7 +113,7 @@ namespace AdminShellNS
 
         public interface IGetReference
         {
-            Reference GetReference(bool includeParents = true);
+            ModelReference GetReference(bool includeParents = true);
         }
 
         public interface IGetQualifiers
@@ -201,192 +199,6 @@ namespace AdminShellNS
         }
 
         //
-        // Important sub types
-        //
-
-        /// <summary>
-        /// V30
-        /// Thic class is the "old" Identification class of meta-model V2.0
-        /// It did contain two attributes "idType" and "id"
-        /// As string is sealed, this class cannot derive dirctly from string,
-        /// so an implicit conversion is tested
-        /// </summary>
-        public class Identifier
-        {
-
-            // members
-
-            [XmlText]
-            [CountForHash]
-            public string value = "";
-
-            // implicit operators
-
-            public static implicit operator string(Identifier d)
-            {
-                return d.value;
-            }
-            
-            public static implicit operator Identifier(string d)
-            {
-                return new Identifier(d);
-            }
-
-            // some constants
-
-            public static string IRDI = "IRDI";
-            public static string IRI = "IRI";
-            public static string IdShort = "IdShort";
-
-            // constructors
-
-            public Identifier() { }
-
-            public Identifier(Identifier src)
-            {
-                this.value = src.value;
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public Identifier(AasxCompatibilityModels.AdminShellV10.Identification src)
-            {
-                this.value = src.id;
-            }
-
-            public Identifier(AasxCompatibilityModels.AdminShellV20.Identification src)
-            {
-                this.value = src.id;
-            }
-#endif
-
-            public Identifier(string id)
-            {
-                this.value = id;
-            }
-
-            public Identifier(Key key)
-            {
-                this.value = key.value;
-            }
-
-            // Creator with validation
-
-            public static Identifier CreateNew(string id)
-            {
-                return new Identifier(id);
-            }
-
-            // further
-
-            public bool IsEqual(Identifier other)
-            {
-                return this.value.Trim().ToLower() == other.value.Trim().ToLower();
-            }
-
-            public static bool IsIRI(string value)
-            {
-                if (value == null)
-                    return false;
-                var m = Regex.Match(value, @"\s*(\w+)://");
-                return m.Success;
-            }
-
-            public bool IsIRI()
-            {
-                return IsIRI(value);
-            }
-
-            public static bool IsIRDI(string value)
-            {
-                if (value == null)
-                    return false;
-                var m = Regex.Match(value, @"\s*(\d{3,4})(:|-|/)");
-                return m.Success;
-            }
-
-            public bool IsIRDI()
-            {
-                return IsIRDI(value);
-            }
-
-            public override string ToString()
-            {
-                return value;
-            }
-        }
-
-        //
-        // IdentifierKeyValuePair
-        //
-
-        public class IdentifierKeyValuePair : IAasElement
-        {
-            // for JSON only
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "modelType")]
-            public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
-
-            // member
-            // from hasSemantics:
-            [XmlElement(ElementName = "semanticId")]
-            public SemanticId semanticId = null;
-
-            [MetaModelName("IdentifierKeyValuePair.key")]
-            [TextSearchable]
-            [CountForHash]
-            public string key = "";
-
-            [MetaModelName("IdentifierKeyValuePair.value")]
-            [TextSearchable]
-            [CountForHash]
-            public string value = null;
-
-            [CountForHash]
-            public GlobalReference externalSubjectId = null;
-
-            // constructors
-
-            public IdentifierKeyValuePair() { }
-
-            public IdentifierKeyValuePair(IdentifierKeyValuePair src)
-            {
-                if (src.semanticId != null)
-                    this.semanticId = new SemanticId(src.semanticId);
-                this.key = src.key;
-                this.value = src.value;
-                if (src.externalSubjectId != null)
-                    this.externalSubjectId = new GlobalReference(src.externalSubjectId);
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            // not existing in V2.0
-#endif
-
-            public AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("IdentifierKeyValuePair", "IKV");
-            }
-
-            public string GetElementName()
-            {
-                return this.GetSelfDescription()?.ElementName;
-            }
-        }
-
-        public class ListOfIdentifierKeyValuePair : List<IdentifierKeyValuePair>
-        {
-
-            // constructors
-            public ListOfIdentifierKeyValuePair() : base() { }
-            public ListOfIdentifierKeyValuePair(ListOfIdentifierKeyValuePair src) : base()
-            {
-                if (src != null)
-                    foreach (var kvp in src)
-                        Add(new IdentifierKeyValuePair(kvp));
-            }
-        }
-
-        //
         // Administration
         //
 
@@ -441,656 +253,6 @@ namespace AdminShellNS
             }
         }
 
-        public class Key
-        {
-            // Constants
-
-            public enum MatchMode { Relaxed, Identification }; // in V3.0RC02: Strict not anymore
-
-            // Members
-
-            [MetaModelName("Key.type")]
-            [TextSearchable]
-            [XmlAttribute]
-            [CountForHash]
-            public string type = "";
-
-            //TODO: REMOVE
-            //[XmlAttribute]
-            //[CountForHash]
-            //public bool local = false;
-
-            //[MetaModelName("Key.idType")]
-            //[TextSearchable]
-            //[XmlAttribute]
-            //[JsonIgnore]
-            //[CountForHash]
-            //public string idType = "";
-
-            //[XmlIgnore]
-            //[JsonProperty(PropertyName = "idType")]
-            //public string JsonIdType
-            //{
-            //    // adapt idShort <-> IdShort
-            //    get => (idType == "idShort") ? "IdShort" : idType;
-            //    set => idType = (value == "idShort") ? "IdShort" : value;
-            //}
-
-            [MetaModelName("Key.value")]
-            [TextSearchable]
-            [XmlText]
-            [CountForHash]
-            public string value = "";
-
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "index")]
-            [CountForHash]
-            public int index = 0;
-
-            public Key()
-            {
-            }
-
-            public Key(Key src)
-            {
-                this.type = src.type;
-                this.value = src.value;
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public Key(AasxCompatibilityModels.AdminShellV10.Key src)
-            {
-                this.type = src.type;
-                this.value = src.value;
-            }
-
-            public Key(AasxCompatibilityModels.AdminShellV20.Key src)
-            {
-                var stll = src?.type?.Trim().ToLower();
-                if (stll == AasxCompatibilityModels.AdminShellV20.Key.GlobalReference.ToLower())
-                    this.type = Key.GlobalReference;
-                else
-                    this.type = src.type;
-                this.value = src.value;
-            }
-#endif
-
-            public Key(string type, string value)
-            {
-                this.type = type;
-                this.value = value;
-            }
-
-            public static Key CreateNew(string type, string value)
-            {
-                var k = new Key()
-                {
-                    type = type,
-                    value = value
-                };
-                return (k);
-            }
-
-            public static Key GetFromRef(Reference r)
-            {
-                if (r == null || r.Count != 1)
-                    return null;
-                return r[0];
-            }
-
-            public Identifier ToId()
-            {
-                return new Identifier(this);
-            }
-
-            public string ToString(int format = 0)
-            {
-                if (format == 1)
-                {
-                    return String.Format(
-                        "({0}){1}", this.type, this.value);
-                }
-                if (format == 2)
-                {
-                    return String.Format("{0}", this.value);
-                }
-
-                // (old) default
-                return $"[{this.type}, {this.value}]";
-            }
-
-            public static Key Parse(string cell, string typeIfNotSet = null,
-                bool allowFmtAll = false, bool allowFmt0 = false,
-                bool allowFmt1 = false, bool allowFmt2 = false)
-            {
-                // access and defaults?
-                if (cell == null || cell.Trim().Length < 1)
-                    return null;
-                if (typeIfNotSet == null)
-                    typeIfNotSet = Key.GlobalReference;
-
-                // TODO: REWORK OLD & NEW FORMATS!!
-
-                // OLD format == 1
-                if (allowFmtAll || allowFmt1)
-                {
-                    var m = Regex.Match(cell, @"\((\w+)\)\((\S+)\)\[(\w+)\]( ?)(.*)$");
-                    if (m.Success)
-                    {
-                        return new AdminShell.Key(
-                                m.Groups[1].ToString(), m.Groups[5].ToString());
-                    }
-                }
-
-                // OLD format == 2
-                if (allowFmtAll || allowFmt2)
-                {
-                    var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
-                    if (m.Success)
-                    {
-                        return new AdminShell.Key(typeIfNotSet, m.Groups[3].ToString());
-                    }
-                }
-
-                // OLD format == 0
-                if (allowFmtAll || allowFmt0)
-                {
-                    var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
-                    if (m.Success)
-                    {
-                        return new AdminShell.Key(m.Groups[1].ToString(), m.Groups[7].ToString());
-                    }
-                }
-
-                // no
-                return null;
-            }
-
-            public static string KeyListToString(List<Key> keys)
-            {
-                if (keys == null || keys.Count < 1)
-                    return "";
-                // normally, exactly one key
-                if (keys.Count == 1)
-                    return keys[0].ToString();
-                // multiple!
-                var s = "[ ";
-                foreach (var k in keys)
-                {
-                    if (s.Length > 0)
-                        s += ", ";
-                    s += k.ToString();
-                }
-                return s + " ]";
-            }
-
-            public static string[] KeyElements = new string[] {
-                "AnnotatedRelationshipElement",
-                "AssetAdministrationShell",
-                "BasicEvent",
-                "Blob",
-                "Capability",
-                "ConceptDescription",
-                "DataElement",
-                "Entity",
-                "Event",
-                "File",
-                "FragmentReference",
-                "GlobalElementReference",
-                "ModelElementReference",
-                "MultiLanguageProperty",
-                "Operation",
-                "OperationVariable", // not specified, but used by AASX Package Explorer
-                "Property",
-                "Range",
-                "ReferenceElement",
-                "RelationshipElement",
-                "Submodel",
-                "SubmodelElement",
-                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
-                "SubmodelElementList",
-                "SubmodelElementStructure",
-                "SubmodelRef" // not specified, but used by AASX Package Explorer
-            };
-
-            public static string[] ReferableElements = new string[] {
-                "AnnotatedRelationshipElement",
-                "AssetAdministrationShell",
-                "BasicEvent",
-                "Blob",
-                "Capability",
-                "ConceptDescription",
-                "DataElement",
-                "Entity",
-                "Event",
-                "File",
-                "FragmentReference",
-                "GlobalElementReference",
-                "ModelElementReference",
-                "MultiLanguageProperty",
-                "Operation",
-                "OperationVariable", // not specified, but used by AASX Package Explorer
-                "Property",
-                "Range",
-                "ReferenceElement",
-                "RelationshipElement",
-                "Submodel",
-                "SubmodelElement",
-                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
-                "SubmodelElementList",
-                "SubmodelElementStructure"
-            };
-
-            public static string[] SubmodelElements = new string[] {
-                "AnnotatedRelationshipElement",
-                "BasicEvent",
-                "Blob",
-                "Capability",
-                "DataElement",
-                "Entity",
-                "Event",
-                "File",
-                // "GlobalElementReference", // in spec, but not expected by AASX Package Explorer
-                // "ModelElementReference", // in spec, but not expected by AASX Package Explorer
-                "MultiLanguageProperty",
-                "Operation",
-                "Property",
-                "Range",
-                "ReferenceElement",
-                "RelationshipElement",
-                "Submodel",
-                // "SubmodelElement", // in spec, but not expected by AASX Package Explorer
-                "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
-                "SubmodelElementList",
-                "SubmodelElementStructure"
-            };
-
-            // use this in list to designate all of the above elements
-            public static string AllElements = "All";
-
-            // use this in list to designate the GlobalReference
-            // Resharper disable MemberHidesStaticFromOuterClass
-            public static string GlobalReference = "GlobalElementReference";
-            public static string ModelReference = "ModelElementReference";
-            public static string FragmentReference = "FragmentReference";
-            public static string ConceptDescription = "ConceptDescription";
-            public static string SubmodelRef = "SubmodelRef";
-            public static string Submodel = "Submodel";
-            public static string SubmodelElement = "SubmodelElement";
-            public static string AssetInformation = "AssetInformation";
-            public static string AAS = "AssetAdministrationShell";
-            public static string Entity = "Entity";
-            // Resharper enable MemberHidesStaticFromOuterClass
-
-            // TODO: REMOVE
-            //public static string[] IdentifierTypeNames = new string[] {
-            //    Identifier.IdShort, "FragmentId", "Custom", Identifier.IRDI, Identifier.IRI };
-            //public enum IdentifierType { IdShort = 0, FragmentId, Custom, IRDI, IRI };
-
-            //public static string GetIdentifierTypeName(IdentifierType t)
-            //{
-            //    return IdentifierTypeNames[(int)t];
-            //}
-
-            //public static string IdShort = "IdShort";
-            //public static string FragmentId = "FragmentId";
-            //public static string Custom = "Custom";
-
-            // some helpers
-
-            public static bool IsInNamedElementsList(string[] elementsList, string ke)
-            {
-                if (elementsList == null || ke == null)
-                    return false;
-
-                foreach (var s in elementsList)
-                    if (s.Trim().ToLower() == ke.Trim().ToLower())
-                        return true;
-
-                return false;
-            }
-
-            public bool IsInKeyElements()
-            {
-                return IsInNamedElementsList(KeyElements, this.type);
-            }
-
-            public bool IsInReferableElements()
-            {
-                return IsInNamedElementsList(ReferableElements, this.type);
-            }
-
-            public bool IsInSubmodelElements()
-            {
-                return IsInNamedElementsList(SubmodelElements, this.type);
-            }
-
-            public bool IsIRI()
-            {
-                return Identifier.IsIRI(value);
-            }
-
-            public bool IsIRDI()
-            {
-                return Identifier.IsIRDI(value);
-            }
-
-            public bool IsType(string value)
-            {
-                if (value == null || type == null || type.Trim() == "")
-                    return false;
-                return value.Trim().ToLower().Equals(type.Trim().ToLower());
-            }
-
-            public bool IsAbsolute()
-            {
-                return IsType(Key.GlobalReference)
-                    || IsType(Key.AAS)
-                    || IsType(Key.Submodel);
-            }
-
-            public bool Matches(
-                string type, string id, MatchMode matchMode = MatchMode.Relaxed)
-            {
-                if (matchMode == MatchMode.Relaxed)
-                    return this.type == type && this.value == id;
-
-                if (matchMode == MatchMode.Identification)
-                    return this.value == id;
-
-                return false;
-            }
-
-            public bool Matches(Identifier id)
-            {
-                if (id == null)
-                    return false;
-                return this.Matches(Key.GlobalReference, id.value, MatchMode.Identification);
-            }
-
-            public bool Matches(Key key, MatchMode matchMode = MatchMode.Relaxed)
-            {
-                if (key == null)
-                    return false;
-                return this.Matches(key.type, key.value, matchMode);
-            }
-
-            // validation
-
-            public static AasValidationAction Validate(AasValidationRecordList results, Key k, Referable container)
-            {
-                // access
-                if (results == null || container == null)
-                    return AasValidationAction.No;
-
-                var res = AasValidationAction.No;
-
-                // check
-                if (k == null)
-                {
-                    // violation case
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SpecViolation, container,
-                        "Key: is null",
-                        () =>
-                        {
-                            res = AasValidationAction.ToBeDeleted;
-                        }));
-                }
-                else
-                {
-                    // check type
-                    var tf = AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
-                    if (tf == AdminShellUtil.ConstantFoundEnum.No)
-                        // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
-                            "Key: type is not in allowed enumeration values",
-                            () =>
-                            {
-                                k.type = GlobalReference;
-                            }));
-                    if (tf == AdminShellUtil.ConstantFoundEnum.AnyCase)
-                        // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
-                            "Key: type in wrong casing",
-                            () =>
-                            {
-                                k.type = AdminShellUtil.CorrectCasingForConstantStringArray(
-                                    KeyElements, k.type);
-                            }));
-                }
-
-                // may give result "to be deleted"
-                return res;
-            }
-        }
-
-        public class KeyList : List<Key>
-        {
-            // getters / setters
-
-            [XmlIgnore]
-            public bool IsEmpty { get { return this.Count < 1; } }
-
-            // constructors / creators
-
-            public KeyList() { }
-
-            public KeyList(KeyList src)
-            {
-                if (src != null)
-                    foreach (var k in src)
-                        this.Add(new Key(k));
-            }
-
-            public static KeyList CreateNew(Key k)
-            {
-                var kl = new KeyList { k };
-                return kl;
-            }
-
-            public static KeyList CreateNew(string type, string value)
-            {
-                var kl = new KeyList() {
-                    Key.CreateNew(type, value)
-                };
-                return kl;
-            }
-
-            public static KeyList CreateNew(string type, string[] valueItems)
-            {
-                // access
-                if (valueItems == null)
-                    return null;
-
-                // prepare
-                var kl = new AdminShell.KeyList();
-                foreach (var x in valueItems)
-                    kl.Add(new AdminShell.Key(type, "" + x));
-                return kl;
-            }
-
-            // matches
-
-            public bool Matches(KeyList other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (other == null || other.Count != this.Count)
-                    return false;
-
-                var same = true;
-                for (int i = 0; i < this.Count; i++)
-                    same = same && this[i].Matches(other[i], matchMode);
-
-                return same;
-            }
-
-            // other
-
-            public void NumberIndices()
-            {
-                for (int i = 0; i < this.Count; i++)
-                    this[i].index = i;
-            }
-
-            public string ToString(int format = 0, string delimiter = ",")
-            {
-                var res = "";
-                foreach (var k in this)
-                    res += k.ToString(format) + delimiter;
-                return res.TrimEnd(',');
-            }
-
-            public static KeyList Parse(string input)
-            {
-                // access
-                if (input == null)
-                    return null;
-
-                // split
-                var parts = input.Split(',', ';');
-                var kl = new KeyList();
-
-                foreach (var p in parts)
-                {
-                    var k = Key.Parse(p);
-                    if (k != null)
-                        kl.Add(k);
-                }
-
-                return kl;
-            }
-
-            public string MostSignificantInfo()
-            {
-                if (this.Count < 1)
-                    return "-";
-                var i = this.Count - 1;
-                var res = this[i].value;
-                if (this[i].IsType(Key.FragmentReference) && i > 0)
-                    res += this[i - 1].value;
-                return res;
-            }
-
-            // validation
-
-            public static void Validate(AasValidationRecordList results, KeyList kl,
-                Referable container)
-            {
-                // access
-                if (results == null || kl == null || container == null)
-                    return;
-
-                // iterate thru
-                var idx = 0;
-                while (idx < kl.Count)
-                {
-                    var act = Key.Validate(results, kl[idx], container);
-                    if (act == AasValidationAction.ToBeDeleted)
-                    {
-                        kl.RemoveAt(idx);
-                        continue;
-                    }
-                    idx++;
-                }
-            }
-
-            public bool StartsWith(KeyList head, bool emptyIsTrue = false,
-                Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                // access
-                if (head == null)
-                    return false;
-                if (head.Count == 0)
-                    return emptyIsTrue;
-
-                // simply test element-wise
-                for (int i = 0; i < head.Count; i++)
-                {
-                    // does head have more elements than this list?
-                    if (i >= this.Count)
-                        return false;
-
-                    if (!head[i].Matches(this[i], matchMode))
-                        return false;
-                }
-
-                // ok!
-                return true;
-            }
-
-            // arithmetics
-
-            public static KeyList operator +(KeyList a, Key b)
-            {
-                var res = new KeyList(a);
-                if (b != null)
-                    res.Add(b);
-                return res;
-            }
-
-            public static KeyList operator +(KeyList a, KeyList b)
-            {
-                var res = new KeyList(a);
-                if (b != null)
-                    res.AddRange(b);
-                return res;
-            }
-
-            public KeyList SubList(int startPos, int count = int.MaxValue)
-            {
-                var res = new KeyList();
-                if (startPos >= this.Count)
-                    return res;
-                int nr = 0;
-                for (int i = startPos; i < this.Count && nr < count; i++)
-                {
-                    nr++;
-                    res.Add(this[i]);
-                }
-                return res;
-            }
-
-            public KeyList ReplaceLastKey(KeyList newKeys)
-            {
-                var res = new KeyList(this);
-                if (res.Count < 1 || newKeys == null || newKeys.Count < 1)
-                    return res;
-
-                res.Remove(res.Last());
-                res = res + newKeys;
-
-                return res;
-            }
-
-            // other
-
-            /// <summary>
-            /// Take only idShort, ignore all other key-types and create a '/'-separated list
-            /// </summary>
-            /// <returns>Empty string or list of idShorts</returns>
-            public string BuildIdShortPath(int startPos = 0, int count = int.MaxValue)
-            {
-                if (startPos >= this.Count)
-                    return "";
-                int nr = 0;
-                var res = "";
-                for (int i = startPos; i < this.Count && nr < count; i++)
-                {
-                    nr++;
-                    // V3RC02: quite expensive check: if SME -> then treat as idShort
-                    if (this[i].IsInSubmodelElements())
-                    {
-                        if (res != "")
-                            res += "/";
-                        res += this[i].value;
-                    }
-                }
-                return res;
-            }
-        }
-
         public class AasElementSelfDescription
         {
             public string ElementName = "";
@@ -1111,312 +273,9 @@ namespace AdminShellNS
             }
         }
 
-        [XmlType(TypeName = "reference")]
-        public class Reference : IAasElement
-        {
-
-            // members
-
-            [XmlIgnore] // anyway, as it is private
-            [JsonIgnore]
-            protected KeyList keys = new KeyList();
-
-            // getters / setters
-
-            [XmlArray("keys")]
-            [XmlArrayItem("key")]
-            [JsonIgnore]
-            public KeyList Keys { get { return keys; } }
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "keys")]
-            public KeyList JsonKeys
-            {
-                get
-                {
-                    keys?.NumberIndices();
-                    return keys;
-                }
-            }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public bool IsEmpty { get { return keys == null || keys.Count < 1; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public int Count { get { if (keys == null) return 0; return keys.Count; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public Key this[int index] { get { return keys[index]; } }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public Key First { get { return this.Count < 1 ? null : this.keys[0]; } }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public Key Last { get { return this.Count < 1 ? null : this.keys[this.keys.Count - 1]; } }
-
-            // constructors / creators
-
-            public Reference()
-            {
-            }
-
-            public Reference(Key k)
-            {
-                if (k != null)
-                    keys.Add(k);
-            }
-
-            public Reference(Reference src)
-            {
-                if (src != null)
-                    foreach (var k in src.Keys)
-                        keys.Add(new Key(k));
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public Reference(AasxCompatibilityModels.AdminShellV10.Reference src)
-            {
-                if (src != null)
-                    foreach (var k in src.Keys)
-                        keys.Add(new Key(k));
-            }
-
-            public Reference(AasxCompatibilityModels.AdminShellV20.Reference src)
-            {
-                if (src != null)
-                    foreach (var k in src.Keys)
-                        keys.Add(new Key(k));
-            }
-#endif
-
-            public Reference(SemanticId src)
-            {
-                if (src != null)
-                    foreach (var k in src.Keys)
-                        keys.Add(new Key(k));
-            }
-
-#if !DoNotUseAasxCompatibilityModels
-            public Reference(AasxCompatibilityModels.AdminShellV10.SemanticId src)
-            {
-                if (src != null)
-                    foreach (var k in src.Keys)
-                        keys.Add(new Key(k));
-            }
-#endif
-            public static Reference CreateNew(Key k)
-            {
-                if (k == null)
-                    return null;
-                var r = new Reference();
-                r.keys.Add(k);
-                return r;
-            }
-
-            public static Reference CreateNew(List<Key> k)
-            {
-                if (k == null)
-                    return null;
-                var r = new Reference();
-                r.keys.AddRange(k);
-                return r;
-            }
-
-            public static Reference CreateNew(string type, string value)
-            {
-                if (type == null || value == null)
-                    return null;
-                var r = new Reference();
-                r.keys.Add(Key.CreateNew(type, value));
-                return r;
-            }
-
-            public static Reference CreateIrdiReference(string irdi)
-            {
-                if (irdi == null)
-                    return null;
-                var r = new Reference();
-                r.keys.Add(new Key(Key.GlobalReference, irdi));
-                return r;
-            }
-
-            // additions
-
-            public static Reference operator +(Reference a, Key b)
-            {
-                var res = new Reference(a);
-                res.Keys?.Add(b);
-                return res;
-            }
-
-            public static Reference operator +(Reference a, Reference b)
-            {
-                var res = new Reference(a);
-                res.Keys?.AddRange(b?.Keys);
-                return res;
-            }
-
-            // further
-
-            public Key GetAsExactlyOneKey()
-            {
-                if (keys == null || keys.Count != 1)
-                    return null;
-                var k = keys[0];
-                return new Key(k.type, k.value);
-            }
-
-            public bool MatchesExactlyOneKey(
-                string type, string id, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (keys == null || keys.Count != 1)
-                    return false;
-                var k = keys[0];
-                return k.Matches(type, id, matchMode);
-            }
-
-            public bool MatchesExactlyOneKey(Key key, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (key == null)
-                    return false;
-                return this.MatchesExactlyOneKey(key.type, key.value, matchMode);
-            }
-
-            public bool Matches(
-                string type, string id, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (this.Count == 1)
-                {
-                    var k = keys[0];
-                    return k.Matches(type, id, matchMode);
-                }
-                return false;
-            }
-
-            public bool Matches(Key key, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (this.Count == 1)
-                {
-                    var k = keys[0];
-                    return k.Matches(key, matchMode);
-                }
-                return false;
-            }
-
-            public bool Matches(Identifier other)
-            {
-                if (other == null)
-                    return false;
-                if (this.Count == 1)
-                {
-                    var k = keys[0];
-                    return k.Matches(Key.GlobalReference, other.value, Key.MatchMode.Identification);
-                }
-                return false;
-            }
-
-            public bool Matches(Reference other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                if (this.keys == null || other == null || other.keys == null || other.Count != this.Count)
-                    return false;
-
-                var same = true;
-                for (int i = 0; i < this.Count; i++)
-                    same = same && this.keys[i].Matches(other.keys[i], matchMode);
-
-                return same;
-            }
-
-            public bool Matches(SemanticId other, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                return Matches(new Reference(other), matchMode);
-            }
-
-            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
-            {
-                return Matches(cd?.GetReference(), matchMode);
-            }
-
-            public string ToString(int format = 0, string delimiter = ",")
-            {
-                return keys?.ToString(format, delimiter);
-            }
-
-            public static Reference Parse(string input)
-            {
-                return CreateNew(KeyList.Parse(input));
-            }
-
-            public string ListOfValues(string delim)
-            {
-                string res = "";
-                if (this.Keys != null)
-                    foreach (var x in this.Keys)
-                    {
-                        if (x == null)
-                            continue;
-                        if (res != "") res += delim;
-                        res += x.value;
-                    }
-                return res;
-            }
-
-            // self description
-
-            public virtual AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("Reference", "Rfc");
-            }
-
-            public virtual string GetElementName()
-            {
-                return this.GetSelfDescription()?.ElementName;
-            }
-        }
-
-        /// <summary>
-        /// STILL TODO
-        /// </summary>
-        public class GlobalReference : Reference
-        {
-            // constructors
-
-            public GlobalReference() : base() { }
-            public GlobalReference(GlobalReference src) : base(src) { }
-            public GlobalReference(Reference r) : base(r) { }
-            public GlobalReference(Key key) : base(key) { }
-
-#if !DoNotUseAasxCompatibilityModels
-            public GlobalReference(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
-            public GlobalReference(AasxCompatibilityModels.AdminShellV20.AssetRef src) : base(src) { }
-#endif
-        
-            /// <summary>
-            /// Converts the GlobalReference to a simple Identifier
-            /// </summary>
-            /// <param name="strict">Check, if exact number of information is available</param>
-            /// <returns>Identifier</returns>
-            public Identifier GetAsIdentifier(bool strict = false)
-            {
-                if (keys == null || keys.Count < 1)
-                    return null;
-                if (strict && keys.Count != 1)
-                    return null;
-                return keys.First().value;
-            }
-        }
-
-        /// <summary>
-        /// STILL TODO
-        /// </summary>
-        public class ModelReference : Reference
-        {
-        }
 
         [XmlType(TypeName = "derivedFrom")]
-        public class AssetAdministrationShellRef : Reference
+        public class AssetAdministrationShellRef : ModelReference
         {
             // constructors
 
@@ -1424,7 +283,7 @@ namespace AdminShellNS
 
             public AssetAdministrationShellRef(Key k) : base(k) { }
 
-            public AssetAdministrationShellRef(Reference src) : base(src) { }
+            public AssetAdministrationShellRef(ModelReference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public AssetAdministrationShellRef(AasxCompatibilityModels.AdminShellV10.Reference src) : base(src) { }
@@ -1441,14 +300,14 @@ namespace AdminShellNS
         }
 
         [XmlType(TypeName = "assetRef")]
-        public class AssetRef : Reference
+        public class AssetRef : GlobalReference
         {
             // constructors
 
             public AssetRef() : base() { }
             public AssetRef(AssetRef src) : base(src) { }
-            public AssetRef(Reference r) : base(r) { }
-            public AssetRef(Key key) : base(key) { }
+            public AssetRef(GlobalReference r) : base(r) { }
+            public AssetRef(Identifier id) : base(id) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public AssetRef(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
@@ -1465,7 +324,7 @@ namespace AdminShellNS
         }
 
         [XmlType(TypeName = "submodelRef")]
-        public class SubmodelRef : Reference
+        public class SubmodelRef : ModelReference
         {
             // constructors
 
@@ -1473,7 +332,7 @@ namespace AdminShellNS
 
             public SubmodelRef(SubmodelRef src) : base(src) { }
 
-            public SubmodelRef(Reference src) : base(src) { }
+            public SubmodelRef(ModelReference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public SubmodelRef(AasxCompatibilityModels.AdminShellV10.SubmodelRef src) : base(src) { }
@@ -1488,7 +347,7 @@ namespace AdminShellNS
                 return r;
             }
 
-            public static SubmodelRef CreateNew(Reference src)
+            public static SubmodelRef CreateNew(ModelReference src)
             {
                 if (src == null || src.Keys == null)
                     return null;
@@ -1506,7 +365,7 @@ namespace AdminShellNS
         }
 
         [XmlType(TypeName = "conceptDescriptionRef")]
-        public class ConceptDescriptionRef : Reference
+        public class ConceptDescriptionRef : ModelReference
         {
             // constructors
 
@@ -1539,7 +398,7 @@ namespace AdminShellNS
         }
 
         [XmlType(TypeName = "dataSpecificationRef")]
-        public class DataSpecificationRef : Reference
+        public class DataSpecificationRef : GlobalReference
         {
             // constructors
 
@@ -1547,7 +406,7 @@ namespace AdminShellNS
 
             public DataSpecificationRef(DataSpecificationRef src) : base(src) { }
 
-            public DataSpecificationRef(Reference src) : base(src) { }
+            public DataSpecificationRef(GlobalReference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.DataSpecificationRef src) : base(src) { }
@@ -1559,14 +418,9 @@ namespace AdminShellNS
 
             // further methods
 
-            public static DataSpecificationRef CreateNew(Reference src)
+            public static DataSpecificationRef CreateNew(GlobalReference src)
             {
-                if (src == null || src.Keys == null)
-                    return null;
-                var res = new DataSpecificationRef();
-                foreach (var k in src.Keys)
-                    res.Keys.Add(new Key(k));
-                return res;
+                return new DataSpecificationRef(src); 
             }
 
             public override AasElementSelfDescription GetSelfDescription()
@@ -1654,8 +508,8 @@ namespace AdminShellNS
                 {
                     foreach (var eds in this)
                         if (eds?.dataSpecificationContent?.dataSpecificationIEC61360 != null
-                            || eds?.dataSpecification?.MatchesExactlyOneKey(
-                                DataSpecificationIEC61360.GetKey(), Key.MatchMode.Identification) == true)
+                            || eds?.dataSpecification?.Matches(
+                                DataSpecificationIEC61360.GetIdentifier(), Key.MatchMode.Identification) == true)
                             return eds;
                     return null;
                 }
@@ -2106,36 +960,27 @@ namespace AdminShellNS
             }
         }
 
-        public class SemanticId : Reference
+        public class SemanticId : GlobalReference
         {
-
             // constructors / creators
 
-            public SemanticId()
-                : base()
-            {
-            }
-
-            public SemanticId(SemanticId src)
-                : base(src)
-            {
-            }
+            public SemanticId() : base() { }
+            public SemanticId(Identifier id) : base(id) { }
+            public SemanticId(SemanticId src) : base(src) { }
 
             public SemanticId(Reference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
-            public SemanticId(AasxCompatibilityModels.AdminShellV10.SemanticId src) : base(src) { }
-
+            public SemanticId(AasxCompatibilityModels.AdminShellV10.SemanticId src) : base(src?.Keys) { }
             public SemanticId(AasxCompatibilityModels.AdminShellV20.SemanticId src) : base(src) { }
 #endif
-            public SemanticId(Key key) : base(key) { }
 
             public static SemanticId CreateFromKey(Key key)
             {
                 if (key == null)
                     return null;
                 var res = new SemanticId();
-                res.Keys.Add(key);
+                res.Value.Add(key?.value);
                 return res;
             }
 
@@ -2144,13 +989,14 @@ namespace AdminShellNS
                 if (keys == null)
                     return null;
                 var res = new SemanticId();
-                res.Keys.AddRange(keys);
+                foreach (var k in keys)
+                    res.Value.Add(k?.value);
                 return res;
             }
 
             public new static SemanticId Parse(string input)
             {
-                return (SemanticId)CreateNew(KeyList.Parse(input));
+                return (SemanticId)CreateNew(ListOfIdentifier.Parse(input));
             }
         }
 
@@ -2244,9 +1090,9 @@ namespace AdminShellNS
                 return res;
             }
 
-            public Reference GetReference()
+            public ModelReference GetReference()
             {
-                return Reference.CreateNew(ToKeyList());
+                return ModelReference.CreateNew(ToKeyList());
             }
         }
 
@@ -2397,10 +1243,15 @@ namespace AdminShellNS
                 return AdminShellUtil.FilterFriendlyName(this.idShort);
             }
 
-            public virtual Reference GetReference(bool includeParents = true)
+            public virtual ModelReference GetReference(bool includeParents = true)
             {
-                return new Reference(
-                    new AdminShell.Key(this.GetElementName(), "" + this.idShort));
+                var r = new ModelReference(new AdminShell.Key(
+                    this.GetElementName(), "" + this.idShort));
+
+                if (this is IGetSemanticId igs)
+                    r.referredSemanticId = igs.GetSemanticId();
+
+                return r;
             }
 
             public void CollectReferencesByParent(List<Key> refs)
@@ -2776,9 +1627,14 @@ namespace AdminShellNS
 
             // self description
 
-            public override Reference GetReference(bool includeParents = true)
+            public override ModelReference GetReference(bool includeParents = true)
             {
-                var r = new Reference();
+                var r = new ModelReference();
+
+                // TODO: SEM ID
+                if (this is IGetSemanticId igs)
+                    r.referredSemanticId = igs.GetSemanticId();
+
                 r.Keys.Add(
                     Key.CreateNew(this.GetElementName(), this.id.value));
                 return r;
@@ -3098,10 +1954,6 @@ namespace AdminShellNS
                 // can only refs with 1 key
                 if (aref.Count != 1)
                     return null;
-                // and we're picky
-                var key = aref[0];
-                if (key.type.ToLower().Trim() != "asset")
-                    return null;
                 // brute force
                 foreach (var aas in this.AdministrationShells)
                     if (aas?.assetInformation?.globalAssetId?.Matches(aref) == true)
@@ -3140,7 +1992,7 @@ namespace AdminShellNS
                 return null;
             }
 
-            public Submodel FindFirstSubmodelBySemanticId(Key semId)
+            public Submodel FindFirstSubmodelBySemanticId(Identifier semId)
             {
                 // access
                 if (semId == null)
@@ -3148,14 +2000,14 @@ namespace AdminShellNS
 
                 // brute force
                 foreach (var sm in this.Submodels)
-                    if (true == sm.semanticId?.MatchesExactlyOneKey(semId))
+                    if (true == sm.semanticId?.MatchesExactlyOneId(semId))
                         return sm;
 
                 return null;
             }
 
             public IEnumerable<Submodel> FindAllSubmodelBySemanticId(
-                Key semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+                Identifier semId, Key.MatchMode matchMode = Key.MatchMode.Identification)
             {
                 // access
                 if (semId == null)
@@ -3163,7 +2015,7 @@ namespace AdminShellNS
 
                 // brute force
                 foreach (var sm in this.Submodels)
-                    if (true == sm.semanticId?.MatchesExactlyOneKey(semId, matchMode))
+                    if (true == sm.semanticId?.MatchesExactlyOneId(semId, matchMode))
                         yield return sm;
             }
 
@@ -3216,7 +2068,7 @@ namespace AdminShellNS
             // Reference handling
             //
 
-            public Referable FindReferableByReference(Reference rf, int keyIndex = 0, bool exactMatch = false)
+            public Referable FindReferableByReference(ModelReference rf, int keyIndex = 0, bool exactMatch = false)
             {
                 return FindReferableByReference(rf?.Keys);
             }
@@ -3365,10 +2217,10 @@ namespace AdminShellNS
             {
                 if (semId == null)
                     return null;
-                return FindConceptDescription(semId.Keys);
+                return FindConceptDescription(semId.Value);
             }
 
-            public ConceptDescription FindConceptDescription(Reference rf)
+            public ConceptDescription FindConceptDescription(ModelReference rf)
             {
                 if (rf == null)
                     return null;
@@ -3396,6 +2248,24 @@ namespace AdminShellNS
                 // brute force
                 foreach (var cd in conceptDescriptions)
                     if (cd.id.value.ToLower().Trim() == key.value.ToLower().Trim())
+                        return cd;
+                // uups
+                return null;
+            }
+
+            public ConceptDescription FindConceptDescription(ListOfIdentifier loi)
+            {
+                // trivial
+                if (loi == null)
+                    return null;
+                // can only refs with 1 key
+                if (loi.Count != 1)
+                    return null;
+                // and we're picky
+                var id = loi[0];
+                // brute force
+                foreach (var cd in conceptDescriptions)
+                    if (cd.id.value.ToLower().Trim() == id.value.ToLower().Trim())
                         return cd;
                 // uups
                 return null;
@@ -3465,11 +2335,11 @@ namespace AdminShellNS
                 if (srcEnv == null || src == null || src.semanticId == null)
                     return;
                 // check for this SubmodelElement in Source
-                var cdSrc = srcEnv.FindConceptDescription(src.semanticId.Keys);
+                var cdSrc = srcEnv.FindConceptDescription(src.semanticId);
                 if (cdSrc == null)
                     return;
                 // check for this SubmodelElement in Destnation (this!)
-                var cdDest = this.FindConceptDescription(src.semanticId.Keys);
+                var cdDest = this.FindConceptDescription(src.semanticId);
                 if (cdDest != null)
                     return;
                 // copy new
@@ -3642,8 +2512,7 @@ namespace AdminShellNS
                     }
 
                     // rename old Asset
-                    assetOld.assetInformation.globalAssetId 
-                        = new GlobalReference(new Key(Key.AssetInformation, newId));
+                    assetOld.assetInformation.SetIdentification(newId);
 
                     // seems fine
                     return res;
@@ -3718,7 +2587,7 @@ namespace AdminShellNS
                     // include in filter ..
                     if (w.submodelElement.semanticId != null)
                     {
-                        var cd = src.FindConceptDescription(w.submodelElement.semanticId.Keys);
+                        var cd = src.FindConceptDescription(w.submodelElement.semanticId);
                         if (cd != null)
                             filterForCD.Add(cd);
                     }
@@ -3885,7 +2754,7 @@ namespace AdminShellNS
         // Submodel + Submodel elements
         //
 
-        public class Qualifier : IAasElement
+        public class Qualifier : IAasElement, IGetSemanticId
         {
             // for JSON only
             [XmlIgnore]
@@ -3896,6 +2765,7 @@ namespace AdminShellNS
             // from hasSemantics:
             [XmlElement(ElementName = "semanticId")]
             public SemanticId semanticId = null;
+            public SemanticId GetSemanticId() { return semanticId; }
 
             // this class
             // TODO (Michael Hoffmeister, 2020-08-01): check, if Json has Qualifiers or not
@@ -3911,7 +2781,7 @@ namespace AdminShellNS
             public string valueType = "";
 
             [CountForHash]
-            public Reference valueId = null;
+            public GlobalReference valueId = null;
 
             [MetaModelName("Qualifier.value")]
             [TextSearchable]
@@ -3937,7 +2807,7 @@ namespace AdminShellNS
                 this.type = src.type;
                 this.value = src.value;
                 if (src.valueId != null)
-                    this.valueId = new Reference(src.valueId);
+                    this.valueId = new GlobalReference(src.valueId);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -3948,7 +2818,7 @@ namespace AdminShellNS
                 this.type = src.qualifierType;
                 this.value = src.qualifierValue;
                 if (src.qualifierValueId != null)
-                    this.valueId = new Reference(src.qualifierValueId);
+                    this.valueId = new GlobalReference(src.qualifierValueId);
             }
 
             public Qualifier(AasxCompatibilityModels.AdminShellV20.Qualifier src)
@@ -3958,7 +2828,7 @@ namespace AdminShellNS
                 this.type = src.type;
                 this.value = src.value;
                 if (src.valueId != null)
-                    this.valueId = new Reference(src.valueId);
+                    this.valueId = new GlobalReference(src.valueId);
             }
 #endif
 
@@ -4006,7 +2876,7 @@ namespace AdminShellNS
                     type = m.Groups[1].ToString().Trim(),
                     semanticId = SemanticId.Parse(m.Groups[1].ToString().Trim()),
                     value = m.Groups[3].ToString().Trim(),
-                    valueId = Reference.Parse(m.Groups[1].ToString().Trim())
+                    valueId = GlobalReference.Parse(m.Groups[1].ToString().Trim())
                 };
             }
         }
@@ -4092,7 +2962,7 @@ namespace AdminShellNS
             public static void AddQualifier(
                 ref QualifierCollection qualifiers,
                 string qualifierType = null, string qualifierValue = null, KeyList semanticKeys = null,
-                Reference qualifierValueId = null)
+                GlobalReference qualifierValueId = null)
             {
                 if (qualifiers == null)
                     qualifiers = new QualifierCollection();
@@ -4130,6 +3000,4 @@ namespace AdminShellNS
         }
 
     }
-
-    #endregion
 }
