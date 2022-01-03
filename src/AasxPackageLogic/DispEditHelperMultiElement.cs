@@ -86,9 +86,6 @@ namespace AasxPackageLogic
                             if (el is VisualElementConceptDescription vecd)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, vecd.theCD));
 
-                            if (el is VisualElementAsset veass)
-                                cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veass.theAsset));
-
                             if (el is VisualElementAdminShell veaas)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veaas.theAas));
                         }
@@ -513,25 +510,6 @@ namespace AasxPackageLogic
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions,
-                        this.theCopyPaste, entities);
-                }
-
-                if (first is VisualElementAsset veass)
-                {
-                    // up down delete
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.Asset>();
-
-                    EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        veass.theEnv?.Assets, bos, indexInfo,
-                        sendUpdateEvent: new PackCntChangeEventData()
-                        {
-                            Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veass.theEnv)
-                                                 .FirstOrDefault(),
-                            ThisElem = veass.theEnv?.Assets
-                        });
-
-                    // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, veass.theEnv, veass.theEnv?.Assets,
                         this.theCopyPaste, entities);
                 }
 

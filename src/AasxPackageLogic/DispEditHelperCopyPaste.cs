@@ -97,7 +97,7 @@ namespace AasxPackageLogic
                 var idf = rf as AdminShell.Identifiable;
                 if (idf == null
                     || !(idf is AdminShell.AdministrationShell
-                         || idf is AdminShell.Asset || idf is AdminShell.ConceptDescription))
+                         || idf is AdminShell.AssetInformation || idf is AdminShell.ConceptDescription))
                     return null;
 
                 // create

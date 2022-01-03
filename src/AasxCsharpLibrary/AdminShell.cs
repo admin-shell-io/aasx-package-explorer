@@ -226,6 +226,7 @@ namespace AdminShellNS
             {
                 return d.value;
             }
+            
             public static implicit operator Identifier(string d)
             {
                 return new Identifier(d);
@@ -313,6 +314,81 @@ namespace AdminShellNS
                 return value;
             }
         }
+
+        //
+        // IdentifierKeyValuePair
+        //
+
+        public class IdentifierKeyValuePair : IAasElement
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+
+            // member
+            // from hasSemantics:
+            [XmlElement(ElementName = "semanticId")]
+            public SemanticId semanticId = null;
+
+            [MetaModelName("IdentifierKeyValuePair.key")]
+            [TextSearchable]
+            [CountForHash]
+            public string key = "";
+
+            [MetaModelName("IdentifierKeyValuePair.value")]
+            [TextSearchable]
+            [CountForHash]
+            public string value = null;
+
+            [CountForHash]
+            public GlobalReference externalSubjectId = null;
+
+            // constructors
+
+            public IdentifierKeyValuePair() { }
+
+            public IdentifierKeyValuePair(IdentifierKeyValuePair src)
+            {
+                if (src.semanticId != null)
+                    this.semanticId = new SemanticId(src.semanticId);
+                this.key = src.key;
+                this.value = src.value;
+                if (src.externalSubjectId != null)
+                    this.externalSubjectId = new GlobalReference(src.externalSubjectId);
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            // not existing in V2.0
+#endif
+
+            public AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("IdentifierKeyValuePair", "IKV");
+            }
+
+            public string GetElementName()
+            {
+                return this.GetSelfDescription()?.ElementName;
+            }
+        }
+
+        public class ListOfIdentifierKeyValuePair : List<IdentifierKeyValuePair>
+        {
+
+            // constructors
+            public ListOfIdentifierKeyValuePair() : base() { }
+            public ListOfIdentifierKeyValuePair(ListOfIdentifierKeyValuePair src) : base()
+            {
+                if (src != null)
+                    foreach (var kvp in src)
+                        Add(new IdentifierKeyValuePair(kvp));
+            }
+        }
+
+        //
+        // Administration
+        //
 
         public class Administration
         {
@@ -641,7 +717,7 @@ namespace AdminShellNS
             public static string SubmodelRef = "SubmodelRef";
             public static string Submodel = "Submodel";
             public static string SubmodelElement = "SubmodelElement";
-            public static string Asset = "Asset";
+            public static string AssetInformation = "AssetInformation";
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
             // Resharper enable MemberHidesStaticFromOuterClass
@@ -1043,7 +1119,7 @@ namespace AdminShellNS
 
             [XmlIgnore] // anyway, as it is private
             [JsonIgnore]
-            private KeyList keys = new KeyList();
+            protected KeyList keys = new KeyList();
 
             // getters / setters
 
@@ -1300,6 +1376,45 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// STILL TODO
+        /// </summary>
+        public class GlobalReference : Reference
+        {
+            // constructors
+
+            public GlobalReference() : base() { }
+            public GlobalReference(GlobalReference src) : base(src) { }
+            public GlobalReference(Reference r) : base(r) { }
+            public GlobalReference(Key key) : base(key) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public GlobalReference(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
+            public GlobalReference(AasxCompatibilityModels.AdminShellV20.AssetRef src) : base(src) { }
+#endif
+        
+            /// <summary>
+            /// Converts the GlobalReference to a simple Identifier
+            /// </summary>
+            /// <param name="strict">Check, if exact number of information is available</param>
+            /// <returns>Identifier</returns>
+            public Identifier GetAsIdentifier(bool strict = false)
+            {
+                if (keys == null || keys.Count < 1)
+                    return null;
+                if (strict && keys.Count != 1)
+                    return null;
+                return keys.First().value;
+            }
+        }
+
+        /// <summary>
+        /// STILL TODO
+        /// </summary>
+        public class ModelReference : Reference
+        {
+        }
+
         [XmlType(TypeName = "derivedFrom")]
         public class AssetAdministrationShellRef : Reference
         {
@@ -1331,19 +1446,15 @@ namespace AdminShellNS
             // constructors
 
             public AssetRef() : base() { }
-
             public AssetRef(AssetRef src) : base(src) { }
+            public AssetRef(Reference r) : base(r) { }
+            public AssetRef(Key key) : base(key) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public AssetRef(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
-
             public AssetRef(AasxCompatibilityModels.AdminShellV20.AssetRef src) : base(src) { }
 #endif
 
-            public AssetRef(Reference r)
-                : base(r)
-            {
-            }
 
             // further methods
 
@@ -2078,7 +2189,7 @@ namespace AdminShellNS
         public class ReferableRootInfo
         {
             public AdministrationShell AAS = null;
-            public Asset Asset = null;
+            public AssetInformation Asset = null;
             public Submodel Submodel = null;
 
             public int NrOfRootKeys = 0;
@@ -2278,8 +2389,6 @@ namespace AdminShellNS
             {
                 if (elementName == Key.AAS)
                     return new AdministrationShell();
-                if (elementName == Key.Asset)
-                    return new Asset();
                 if (elementName == Key.ConceptDescription)
                     return new ConceptDescription();
                 if (elementName == Key.Submodel)
@@ -2808,7 +2917,6 @@ namespace AdminShellNS
         [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/2/0")]
         public class AdministrationShellEnv : IFindAllReferences, IAasElement, IDiaryData, IRecurseOnReferables
         {
-
             // diary (as e.g. deleted AASes need to be listed somewhere)
 
             [XmlIgnore]
@@ -2832,8 +2940,6 @@ namespace AdminShellNS
             [XmlIgnore] // will be ignored, anyway
             private ListOfAdministrationShells administrationShells = new ListOfAdministrationShells();
             [XmlIgnore] // will be ignored, anyway
-            private ListOfAssets assets = new ListOfAssets();
-            [XmlIgnore] // will be ignored, anyway
             private ListOfSubmodels submodels = new ListOfSubmodels();
             [XmlIgnore] // will be ignored, anyway
             private ListOfConceptDescriptions conceptDescriptions = new ListOfConceptDescriptions();
@@ -2847,15 +2953,6 @@ namespace AdminShellNS
             {
                 get { return administrationShells; }
                 set { administrationShells = value; }
-            }
-
-            [XmlArray("assets")]
-            [XmlArrayItem("asset")]
-            [JsonProperty(PropertyName = "assets")]
-            public ListOfAssets Assets
-            {
-                get { return assets; }
-                set { assets = value; }
             }
 
             [XmlArray("submodels")]
@@ -2885,11 +2982,9 @@ namespace AdminShellNS
             {
                 if (src.AdministrationShells != null)
                     foreach (var aas in src.AdministrationShells)
-                        this.administrationShells.Add(new AdministrationShell(aas));
+                        this.administrationShells.Add(new AdministrationShell(aas, src));
 
-                if (src.Assets != null)
-                    foreach (var asset in src.Assets)
-                        this.assets.Add(new Asset(asset));
+                // AssetInformation is aleady migrated in the constrcutor above
 
                 if (src.Submodels != null)
                     foreach (var sm in src.Submodels)
@@ -2904,11 +2999,9 @@ namespace AdminShellNS
             {
                 if (src.AdministrationShells != null)
                     foreach (var aas in src.AdministrationShells)
-                        this.administrationShells.Add(new AdministrationShell(aas));
+                        this.administrationShells.Add(new AdministrationShell(aas, src));
 
-                if (src.Assets != null)
-                    foreach (var asset in src.Assets)
-                        this.assets.Add(new Asset(asset));
+                // AssetInformation is aleady migrated in the constrcutor above
 
                 if (src.Submodels != null)
                     foreach (var sm in src.Submodels)
@@ -2927,8 +3020,6 @@ namespace AdminShellNS
                 var res = "AAS-ENV";
                 if (AdministrationShells != null)
                     res += $" {AdministrationShells.Count} AAS";
-                if (Assets != null)
-                    res += $" {Assets.Count} Assets";
                 if (Submodels != null)
                     res += $" {Submodels.Count} Submodels";
                 if (ConceptDescriptions != null)
@@ -3010,17 +3101,17 @@ namespace AdminShellNS
                 }
             }
 
-            public Asset FindAsset(Identifier id)
+            public AdministrationShell FindAasWithAssetInfo(Identifier id)
             {
                 if (id == null)
                     return null;
-                foreach (var asset in this.Assets)
-                    if (asset.id != null && asset.id.IsEqual(id))
-                        return asset;
+                foreach (var aas in this.AdministrationShells)
+                    if (aas?.assetInformation?.globalAssetId?.Matches(id) == true)
+                        return aas;
                 return null;
             }
 
-            public Asset FindAsset(AssetRef aref)
+            public AdministrationShell FindAasWithAsset(AssetRef aref)
             {
                 // trivial
                 if (aref == null)
@@ -3033,9 +3124,9 @@ namespace AdminShellNS
                 if (key.type.ToLower().Trim() != "asset")
                     return null;
                 // brute force
-                foreach (var a in assets)
-                    if (a.id.value.ToLower().Trim() == key.value.ToLower().Trim())
-                        return a;
+                foreach (var aas in this.AdministrationShells)
+                    if (aas?.assetInformation?.globalAssetId?.Matches(aref) == true)
+                        return aas;
                 // uups
                 return null;
             }
@@ -3117,11 +3208,6 @@ namespace AdminShellNS
                             yield return aas;
                         }
 
-                if (this.Assets != null)
-                    foreach (var asset in this.Assets)
-                        if (asset != null)
-                            yield return asset;
-
                 if (this.Submodels != null)
                     foreach (var sm in this.Submodels)
                         if (sm != null)
@@ -3188,32 +3274,24 @@ namespace AdminShellNS
                     aasToFollow = aas;
                 }
 
-                if (firstType == Key.Asset.Trim().ToLower())
+                if (firstType == Key.AssetInformation.Trim().ToLower())
                 {
                     // search asset
-                    var asset = this.FindAsset(firstIdentification);
+                    var aas4asset = this.FindAasWithAssetInfo(firstIdentification);
 
                     // not found or already at end with our search?
-                    if (asset == null || keyIndex >= kl.Count - 1)
-                        return exactMatch ? null : asset;
-
-                    // try find aas for it
-                    var aas = this.FindAllAAS((a) =>
-                    {
-                        return a?.assetRef?.Matches(asset.id) == true;
-                    }).FirstOrDefault();
-                    if (aas == null)
-                        return exactMatch ? null : asset;
+                    if (aas4asset == null || keyIndex >= kl.Count - 1)
+                        return exactMatch ? null : aas4asset;
 
                     // side info?
                     if (rootInfo != null)
                     {
-                        rootInfo.Asset = asset;
+                        rootInfo.Asset = aas4asset?.assetInformation;
                         rootInfo.NrOfRootKeys = 1 + keyIndex;
                     }
 
                     // follow up
-                    aasToFollow = aas;
+                    aasToFollow = aas4asset;
                 }
 
                 // try
@@ -3386,12 +3464,6 @@ namespace AdminShellNS
                             foreach (var r in aas.FindAllReferences())
                                 yield return r;
 
-                if (this.Assets != null)
-                    foreach (var asset in this.Assets)
-                        if (asset != null)
-                            foreach (var r in asset.FindAllReferences())
-                                yield return new LocatedReference(asset, r);
-
                 if (this.Submodels != null)
                     foreach (var sm in this.Submodels)
                         if (sm != null)
@@ -3506,7 +3578,7 @@ namespace AdminShellNS
             /// Returns a list of Referables, which were changed or <c>null</c> in case of error
             /// </summary>
             public List<Referable> RenameIdentifiable<T>(Identifier oldId, Identifier newId)
-                where T : Identifiable
+                where T : IAasElement
             {
                 // access
                 if (oldId == null || newId == null || oldId.IsEqual(newId))
@@ -3568,11 +3640,11 @@ namespace AdminShellNS
                     return res;
                 }
 
-                if (typeof(T) == typeof(Asset))
+                if (typeof(T) == typeof(AssetInformation))
                 {
                     // check, if exist or not exist
-                    var assetOld = FindAsset(oldId);
-                    if (assetOld == null || FindAsset(newId) != null)
+                    var assetOld = FindAasWithAssetInfo(oldId);
+                    if (assetOld == null || FindAasWithAssetInfo(newId) != null)
                         return null;
 
                     // recurse all possible Referenes in the aas env
@@ -3581,7 +3653,7 @@ namespace AdminShellNS
                         var r = lr?.Reference;
                         if (r != null)
                             for (int i = 0; i < r.Count; i++)
-                                if (r[i].Matches(Key.Asset, oldId.value, Key.MatchMode.Relaxed))
+                                if (r[i].Matches(Key.AssetInformation, oldId.value))
                                 {
                                     // directly replace
                                     r[i].value = newId.value;
@@ -3590,8 +3662,9 @@ namespace AdminShellNS
                                 }
                     }
 
-                    // rename old Submodel
-                    assetOld.id = newId;
+                    // rename old Asset
+                    assetOld.assetInformation.globalAssetId 
+                        = new GlobalReference(new Key(Key.AssetInformation, newId));
 
                     // seems fine
                     return res;
@@ -3692,15 +3765,13 @@ namespace AdminShellNS
 
             public static AdministrationShellEnv CreateFromExistingEnv(AdministrationShellEnv src,
                 List<AdministrationShell> filterForAas = null,
-                List<Asset> filterForAsset = null,
+                List<AssetInformation> filterForAsset = null,
                 ListOfSubmodels filterForSubmodel = null,
                 List<ConceptDescription> filterForCD = null)
             {
                 // prepare defaults
                 if (filterForAas == null)
                     filterForAas = new List<AdministrationShell>();
-                if (filterForAsset == null)
-                    filterForAsset = new List<Asset>();
                 if (filterForSubmodel == null)
                     filterForSubmodel = new ListOfSubmodels();
                 if (filterForCD == null)
@@ -3716,14 +3787,6 @@ namespace AdminShellNS
                         // take over
                         res.administrationShells.Add(new AdministrationShell(aas));
 
-                        // consequences
-                        if (aas.assetRef != null)
-                        {
-                            var asset = src.FindAsset(aas.assetRef);
-                            if (asset != null)
-                                filterForAsset.Add(asset);
-                        }
-
                         if (aas.submodelRefs != null)
                             foreach (var smr in aas.submodelRefs)
                             {
@@ -3731,14 +3794,6 @@ namespace AdminShellNS
                                 if (sm != null)
                                     filterForSubmodel.Add(sm);
                             }
-                    }
-
-                // take over Assets
-                foreach (var asset in src.assets)
-                    if (filterForAsset.Contains(asset))
-                    {
-                        // take over
-                        res.assets.Add(new Asset(asset));
                     }
 
                 // take over Submodels

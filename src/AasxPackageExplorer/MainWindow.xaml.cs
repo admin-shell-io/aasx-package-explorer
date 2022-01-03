@@ -583,14 +583,13 @@ namespace AasxPackageExplorer
                 // what is asset specific?
                 this.AssetPic.Source = null;
                 this.AssetId.Text = "<id missing!>";
-                var asset = tvlaas.theEnv.FindAsset(tvlaas.theAas.assetRef);
+                var asset = tvlaas.theAas.assetInformation;
                 if (asset != null)
                 {
-
                     // text id
-                    if (asset.id != null)
+                    if (asset.globalAssetId != null)
                         this.AssetId.Text = WpfStringAddWrapChars(
-                            AdminShellUtil.EvalToNonNullString("{0}", asset.id.value));
+                            AdminShellUtil.EvalToNonNullString("{0}", asset.globalAssetId.GetAsIdentifier()));
 
                     // asset thumbnail
                     try
@@ -1084,7 +1083,7 @@ namespace AasxPackageExplorer
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Count == 1
-                    && rf.First.IsType(AdminShell.Key.Asset))
+                    && rf.First.IsType(AdminShell.Key.AssetInformation))
                 {
                     // try to find possible environments containg the asset and try making
                     // replacement
@@ -1094,7 +1093,7 @@ namespace AasxPackageExplorer
                             continue;
 
                         foreach (var aas in pe.AasEnv.AdministrationShells)
-                            if (aas.assetRef?.Matches(rf) == true)
+                            if (aas.assetInformation?.globalAssetId?.Matches(rf) == true)
                             {
                                 rf = aas.GetReference();
                                 break;
@@ -1261,7 +1260,7 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.AssetInformation.ToLower())
                             fi = _packageCentral.Repositories.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
                             fi = _packageCentral.Repositories.FindByAasId(work[0].value.Trim());

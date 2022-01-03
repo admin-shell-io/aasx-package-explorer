@@ -398,41 +398,24 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private AdminShell.Asset TryParseAssetFromIe(InternalElementType ie)
+            private AdminShell.AssetInformation TryParseAssetFromIe(InternalElementType ie)
             {
                 // begin new (temporary) object
-                var asset = new AdminShell.Asset();
+                var asset = new AdminShell.AssetInformation();
 
                 // gather important attributes
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
                 var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
-                var version = FindAttributeValueByRefSemantic(
-                    ie.Attribute, AmlConst.Attributes.Administration_Version);
-                var revision = FindAttributeValueByRefSemantic(
-                    ie.Attribute, AmlConst.Attributes.Administration_Revision);
-                var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
-                var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
                 var kind = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Asset_Kind);
-                var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
 
                 // we need to have some important information
                 if (idType != null && id != null)
                 {
                     // set data
-                    asset.idShort = ie.Name;
-                    if (idShort != null)
-                        asset.idShort = idShort;
-                    asset.id = new AdminShell.Identifier(id);
-                    if (version != null && revision != null)
-                        asset.administration = new AdminShell.Administration(version, revision);
-                    asset.category = cat;
-                    if (desc != null)
-                        asset.description = desc;
+                    asset.SetIdentification(id);
                     if (kind != null)
-                        asset.kind = new AdminShell.AssetKind(kind);
-                    if (ds != null)
-                        asset.hasDataSpecification = ds;
+                        asset.assetKind = new AdminShell.AssetKind(kind);
 
                     // result
                     return asset;
@@ -944,10 +927,11 @@ namespace AasxAmlImExport
                         {
                             Debug(indentation, "  ASSET with required attributes recognised. Starting new Asset..");
 
+                            // TODO: re-create asset handling fro AML import
                             // make temporary object official
-                            this.package.AasEnv.Assets.Add(asset);
-                            currentAas.assetRef = asset.GetAssetReference();
-                            matcher.AddMatch(asset, ie);
+                            //this.package.AasEnv.Assets.Add(asset);
+                            //currentAas.assetRef = asset.GetAssetReference();
+                            //matcher.AddMatch(asset, ie);
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");

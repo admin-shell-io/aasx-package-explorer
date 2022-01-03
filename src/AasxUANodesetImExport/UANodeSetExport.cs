@@ -126,12 +126,6 @@ namespace AasxUANodesetImExport
             //add ConceptDictionary
             refs.Add(CreateReference("HasComponent", CreateConceptDictionaryFolder(env.ConceptDescriptions)));
 
-            //add Assets
-            foreach (AdminShell.Asset asset in env.Assets)
-            {
-                refs.Add(CreateReference("HasComponent", CreateAASAsset(asset)));
-            }
-
             //add Submodels
             foreach (AdminShell.Submodel submodel in env.Submodels)
             {
@@ -169,10 +163,11 @@ namespace AasxUANodesetImExport
                     refs.Add(CreateReference("HasComponent", CreateHasDataSpecification(shell.hasDataSpecification)));
                 }
 
-                if (shell.assetRef != null)
+                if (shell.assetInformation != null)
                 {
-                    refs.Add(CreateReference("HasComponent", CreateAssetRef(shell.assetRef)));
+                    refs.Add(CreateReference("HasComponent", CreateAASAsset(shell.assetInformation)));
                 }
+
             }
 
             sub.References = refs.ToArray();
@@ -830,59 +825,29 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateAASAsset(AdminShell.Asset asset)
+        private static string CreateAASAsset(AdminShell.AssetInformation asset)
         {
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
-            ident.BrowseName = "1:" + asset.idShort;
+            ident.BrowseName = "1:" + asset.fakeIdShort;
             masterID++;
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASAssetType"));
 
-            if (asset.kind != null)
+            if (asset.assetKind != null)
                 refs.Add(
                     CreateReference(
                         "HasProperty",
-                        CreateProperty(asset.kind.kind, "1:AASModelingKindDataType", "Kind", "String")));
+                        CreateProperty(asset.assetKind.kind, "1:AASModelingKindDataType", "Kind", "String")));
 
             //check if either administration or identification is null, 
             // -> (because if identification were null, you could not access id or idType)
             //then set accordingly
-            if (asset.administration == null)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(asset.id.value, "", null, null)));
-            }
-            else if (asset.id == null)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(null, null, asset.administration.version, asset.administration.revision)));
-            }
-            else
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(
-                            asset.id.value, "", asset.administration.version,
-                            asset.administration.revision)));
-            }
-
-            if (asset.description == null)
-            {
-                refs.Add(CreateReference("HasComponent", CreateReferable(asset.category, null)));
-            }
-            else
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateReferable(asset.category, asset.description.langString)));
-            }
-
+            refs.Add(
+                CreateReference(
+                    "HasComponent",
+                    CreateIdentifiable(asset.globalAssetId.GetAsIdentifier(), "", null, null)));
+            
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
             return ident.NodeId;

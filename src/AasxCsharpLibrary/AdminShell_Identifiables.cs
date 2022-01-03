@@ -49,8 +49,7 @@ namespace AdminShellNS
             // from this very class
             public AssetAdministrationShellRef derivedFrom = null;
 
-            [JsonProperty(PropertyName = "asset")]
-            public AssetRef assetRef = new AssetRef();
+            public AssetInformation assetInformation = null;
 
             [JsonProperty(PropertyName = "submodels")]
             [SkipForSearch]
@@ -73,9 +72,6 @@ namespace AdminShellNS
                     if (src.derivedFrom != null)
                         this.derivedFrom = new AssetAdministrationShellRef(src.derivedFrom);
 
-                    if (src.assetRef != null)
-                        this.assetRef = new AssetRef(src.assetRef);
-
                     if (src.submodelRefs != null)
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
@@ -83,7 +79,9 @@ namespace AdminShellNS
             }
 
 #if !DoNotUseAasxCompatibilityModels
-            public AdministrationShell(AasxCompatibilityModels.AdminShellV10.AdministrationShell src)
+            public AdministrationShell(
+                AasxCompatibilityModels.AdminShellV10.AdministrationShell src,
+                AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv srcenv)
                 : base(src)
             {
                 if (src.hasDataSpecification != null)
@@ -92,15 +90,18 @@ namespace AdminShellNS
                 if (src.derivedFrom != null)
                     this.derivedFrom = new AssetAdministrationShellRef(src.derivedFrom);
 
-                if (src.assetRef != null)
-                    this.assetRef = new AssetRef(src.assetRef);
-
                 if (src.submodelRefs != null)
                     foreach (var smr in src.submodelRefs)
                         this.submodelRefs.Add(new SubmodelRef(smr));
+
+                // now locate the Asset in the old environment and set
+                var srcasset = srcenv?.FindAsset(src.assetRef);
+                if (srcasset != null)
+                    assetInformation = new AssetInformation(srcasset);
             }
 
-            public AdministrationShell(AasxCompatibilityModels.AdminShellV20.AdministrationShell src)
+            public AdministrationShell(AasxCompatibilityModels.AdminShellV20.AdministrationShell src,
+                AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv srcenv)
                 : base(src)
             {
                 if (src != null)
@@ -111,12 +112,14 @@ namespace AdminShellNS
                     if (src.derivedFrom != null)
                         this.derivedFrom = new AssetAdministrationShellRef(src.derivedFrom);
 
-                    if (src.assetRef != null)
-                        this.assetRef = new AssetRef(src.assetRef);
-
                     if (src.submodelRefs != null)
                         foreach (var smr in src.submodelRefs)
                             this.submodelRefs.Add(new SubmodelRef(smr));
+
+                    // now locate the Asset in the old environment and set
+                    var srcasset = srcenv?.FindAsset(src.assetRef);
+                    if (srcasset != null)
+                        assetInformation = new AssetInformation(srcasset);
                 }
             }
 #endif
@@ -198,10 +201,6 @@ namespace AdminShellNS
 
             public IEnumerable<LocatedReference> FindAllReferences()
             {
-                // Asset
-                if (this.assetRef != null)
-                    yield return new LocatedReference(this, this.assetRef);
-
                 // Submodel references
                 if (this.submodelRefs != null)
                     foreach (var r in this.submodelRefs)
@@ -228,120 +227,130 @@ namespace AdminShellNS
         // Asset
         //
 
-        public class Asset : Identifiable
+        public class AssetInformation : IAasElement
         {
-            // for JSON only
+            // TODO: CHECK, IF REALLY REQUIRED
+            //// for JSON only
+            //[XmlIgnore]
+            //[JsonProperty(PropertyName = "modelType")]
+            //public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+
+            //// from hasDataSpecification:
+            //[XmlElement(ElementName = "hasDataSpecification")]
+            //public HasDataSpecification hasDataSpecification = null;
+
+            // as for V3RC02, Asset in no Referable anymore
             [XmlIgnore]
-            [JsonProperty(PropertyName = "modelType")]
-            public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            [JsonIgnore]
+            [SkipForHash] // important to skip, as recursion elsewise will go in cycles!
+            [SkipForReflection] // important to skip, as recursion elsewise will go in cycles!
+            public IAasElement parent = null;
 
-            // from hasDataSpecification:
-            [XmlElement(ElementName = "hasDataSpecification")]
-            public HasDataSpecification hasDataSpecification = null;
+            // V3RC02: instead of Identification
+            public GlobalReference globalAssetId;
 
-            // from this very class
-            [XmlElement(ElementName = "assetIdentificationModelRef")]
-            public SubmodelRef assetIdentificationModelRef = null;
+            // new in V3RC02
+            public ListOfIdentifierKeyValuePair specificAssetId = null;
 
-            [XmlElement(ElementName = "billOfMaterialRef")]
-            public SubmodelRef billOfMaterialRef = null;
+            // new in V3RC02
+            public File defaultThumbnail = null;
+
+            // some fake information
+            [XmlIgnore]
+            [JsonIgnore]
+            public string fakeIdShort => Key.AssetInformation;
+
+            [XmlIgnore]
+            [JsonIgnore]
+            public Description fakeDescription => null;
 
             // from HasKind
-            [XmlElement(ElementName = "kind")]
+            [XmlElement(ElementName = "assetKind")]
             [JsonIgnore]
-            public AssetKind kind = new AssetKind();
+            public AssetKind assetKind = new AssetKind();
             [XmlIgnore]
-            [JsonProperty(PropertyName = "kind")]
+            [JsonProperty(PropertyName = "assetKind")]
             public string JsonKind
             {
                 get
                 {
-                    if (kind == null)
+                    if (assetKind == null)
                         return null;
-                    return kind.kind;
+                    return assetKind.kind;
                 }
                 set
                 {
-                    if (kind == null)
-                        kind = new AssetKind();
-                    kind.kind = value;
+                    if (assetKind == null)
+                        assetKind = new AssetKind();
+                    assetKind.kind = value;
                 }
             }
 
             // constructors
 
-            public Asset() { }
+            public AssetInformation() { }
 
-            public Asset(string idShort) : base(idShort) { }
+            public AssetInformation(string fakeIdShort) {
+                // empty, because V3RC02 does not foresee storage anymore
+            }
 
-            public Asset(Asset src)
-                : base(src)
+            public AssetInformation(AssetInformation src)
             {
-                if (src != null)
-                {
-                    if (src.hasDataSpecification != null)
-                        this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                    if (src.kind != null)
-                        this.kind = new AssetKind(src.kind);
-                    if (src.assetIdentificationModelRef != null)
-                        this.assetIdentificationModelRef = new SubmodelRef(src.assetIdentificationModelRef);
-                }
+                if (src == null)
+                    return;
+
+                if (src.assetKind != null)
+                    assetKind = new AssetKind(src.assetKind);
+
+                if (src.globalAssetId != null)
+                    globalAssetId = new GlobalReference();
+
+                if (src.specificAssetId != null)
+                    specificAssetId = new ListOfIdentifierKeyValuePair(src.specificAssetId);
+
+                if (src.defaultThumbnail != null)
+                    defaultThumbnail = new File(src.defaultThumbnail);
             }
 
 #if !DoNotUseAasxCompatibilityModels
-            public Asset(AasxCompatibilityModels.AdminShellV10.Asset src)
-                : base(src)
+            public AssetInformation(AasxCompatibilityModels.AdminShellV10.Asset src)
             {
-                if (src != null)
-                {
-                    if (src.hasDataSpecification != null)
-                        this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                    if (src.kind != null)
-                        this.kind = new AssetKind(src.kind);
-                    if (src.assetIdentificationModelRef != null)
-                        this.assetIdentificationModelRef = new SubmodelRef(src.assetIdentificationModelRef);
-                }
+                if (src == null)
+                    return;
+
+                if (src.kind != null)
+                    this.assetKind = new AssetKind(src.kind);
+
+                if (src.identification != null)
+                    globalAssetId = new GlobalReference(new Key(Key.AssetInformation, src.identification.id));
             }
 
-            public Asset(AasxCompatibilityModels.AdminShellV20.Asset src)
-                : base(src)
+            public AssetInformation(AasxCompatibilityModels.AdminShellV20.Asset src)
             {
-                if (src != null)
-                {
-                    if (src.hasDataSpecification != null)
-                        this.hasDataSpecification = new HasDataSpecification(src.hasDataSpecification);
-                    if (src.kind != null)
-                        this.kind = new AssetKind(src.kind);
-                    if (src.assetIdentificationModelRef != null)
-                        this.assetIdentificationModelRef = new SubmodelRef(src.assetIdentificationModelRef);
-                }
+                if (src == null)
+                    return;
+
+                if (src.kind != null)
+                    this.assetKind = new AssetKind(src.kind);
+
+                if (src.identification != null)
+                    globalAssetId = new GlobalReference(new Key(Key.AssetInformation, src.identification.id));
             }
 #endif
 
             // Getter & setters
 
-            public AssetRef GetAssetReference()
-            {
-                var r = new AssetRef();
-                r.Keys.Add(
-                    Key.CreateNew(this.GetElementName(), this.id.value));
-                return r;
-            }
+            public AssetRef GetAssetReference() => new AssetRef(globalAssetId);
 
-            public override AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("Asset", "Asset");
-            }
+            public string GetElementName() => Key.AssetInformation;
+
+            public AasElementSelfDescription GetSelfDescription()
+                => new AasElementSelfDescription(Key.AssetInformation, "Asset");
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
-                if (administration != null)
-                    caption += "V" + administration.version + "." + administration.revision;
-
-                var info = "";
-                if (id != null)
-                    info = $"[{id.value}]";
+                var caption = Key.AssetInformation;
+                var info = "" + globalAssetId.ToString(1);
                 return Tuple.Create(caption, info);
             }
 
@@ -353,27 +362,20 @@ namespace AdminShellNS
 
             public IEnumerable<Reference> FindAllReferences()
             {
-                if (this.assetIdentificationModelRef != null)
-                    yield return this.assetIdentificationModelRef;
-                if (this.billOfMaterialRef != null)
-                    yield return this.billOfMaterialRef;
+                yield break;
             }
-        }
 
-        public class ListOfAssets : List<Asset>, IAasElement
-        {
-            // self decscription
-
-            public AasElementSelfDescription GetSelfDescription()
+            public void AddDescription(string lang, string str)
             {
-                return new AasElementSelfDescription("Assets", "Assets");
+                // empty, because V3RC02 does not foresee storage anymore
             }
 
-            public string GetElementName()
+            public void SetIdentification(Identifier id)
             {
-                return this.GetSelfDescription()?.ElementName;
+                if (id == null)
+                    return;
+                globalAssetId = new GlobalReference(new Key(Key.AssetInformation, id));
             }
-
         }
 
         //

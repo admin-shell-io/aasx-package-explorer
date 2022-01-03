@@ -116,9 +116,8 @@ namespace AasxToolkit
             {
 
                 // ASSET
-                var asset1 = new AdminShell.Asset("Asset_3s7plfdrs35");
-                aasenv1.Assets.Add(asset1);
-                asset1.SetIdentification("http://example.com/3s7plfdrs35", "3s7plfdrs35");
+                var asset1 = new AdminShell.AssetInformation("Asset_3s7plfdrs35");
+                asset1.SetIdentification("http://example.com/3s7plfdrs35");
                 asset1.AddDescription("en", "USB Stick");
                 asset1.AddDescription("de", "USB Speichereinheit");
 
@@ -162,7 +161,7 @@ namespace AasxToolkit
                     new AdminShell.Key("AssetAdministrationShell", 
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
-                aas1.assetRef = asset1.GetAssetReference();
+                aas1.assetInformation = asset1;
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");

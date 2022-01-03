@@ -431,16 +431,13 @@ namespace AasxPackageLogic.PackageCentral
 
             CleanIds();
 
-            Env?.AasEnv?.Assets?.ForEach((x) =>
-            {
-                if (true == x?.id?.value.HasContent())
-                    _assetIds.Add(x?.id.value);
-            });
-
             Env?.AasEnv?.AdministrationShells?.ForEach((x) =>
             {
                 if (true == x?.id?.value.HasContent())
+                {
                     _aasIds.Add(x?.id.value);
+                    _assetIds.Add(x?.assetInformation?.globalAssetId?.GetAsIdentifier());
+                }
             });
 
             Env?.AasEnv?.Submodels?.ForEach((x) =>
@@ -451,8 +448,8 @@ namespace AasxPackageLogic.PackageCentral
 
             // get some descriptiive data
             var threeFn = Path.GetFileNameWithoutExtension(Location);
-            var asset0 = Env?.AasEnv?.Assets?.FirstOrDefault();
             var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
+            var asset0 = aas0?.assetInformation;
 
             // Tag
             if (!Tag.HasContent() || force)
@@ -462,8 +459,8 @@ namespace AasxPackageLogic.PackageCentral
                 try
                 {
                     tag = "";
-                    if (asset0 != null)
-                        tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
+                    //if (asset0 != null)
+                    //    tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
                     if (tag == null || tag.Length < 2)
                         tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
                     if ((tag == null || tag.Length < 2) && aas0 != null)
@@ -485,12 +482,12 @@ namespace AasxPackageLogic.PackageCentral
                 var desc = "";
                 if (aas0?.idShort.HasContent() == true)
                     desc += $"{aas0.idShort}";
-                if (asset0?.idShort.HasContent() == true)
-                {
-                    if (desc.HasContent())
-                        desc += ",";
-                    desc += $"{asset0.idShort}";
-                }
+                //if (asset0?.idShort.HasContent() == true)
+                //{
+                //    if (desc.HasContent())
+                //        desc += ",";
+                //    desc += $"{asset0.idShort}";
+                //}
                 Description = desc;
             }
         }

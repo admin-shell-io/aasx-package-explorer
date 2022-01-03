@@ -408,7 +408,8 @@ namespace AasxRestServerLibrary
             }
 
             // try to get the asset as well
-            var asset = this.Package.AasEnv.FindAsset(aas.assetRef);
+            // TODO: decide what to do with the frame
+            AdminShell.AssetInformation asset = null;
 
             // result
             dynamic res = new ExpandoObject();
@@ -566,7 +567,7 @@ namespace AasxRestServerLibrary
             SendTextResponse(context, "OK" + ((existingAas != null) ? " (updated)" : " (new)"));
         }
 
-        public void EvalDeleteAasAndAsset(IHttpContext context, string aasid, bool deleteAsset = false)
+        public void EvalDeleteAasAndAsset(IHttpContext context, string aasid)
         {
             // datastructure update
             if (this.Package == null || this.Package.AasEnv == null ||
@@ -586,22 +587,11 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            // find the asset
-            var asset = this.Package.AasEnv.FindAsset(aas.assetRef);
-
             // delete
             context.Server.Logger.Debug(
                 $"Deleting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
                 $"id {aas.id?.ToString() ?? "--"}");
             this.Package.AasEnv.AdministrationShells.Remove(aas);
-
-            if (deleteAsset && asset != null)
-            {
-                context.Server.Logger.Debug(
-                    $"Deleting Asset with idShort {asset.idShort ?? "--"} and " +
-                    $"id {asset.id?.ToString() ?? "--"}");
-                this.Package.AasEnv.Assets.Remove(asset);
-            }
 
             // simple OK
             SendTextResponse(context, "OK");
@@ -624,7 +614,8 @@ namespace AasxRestServerLibrary
             if (handle != null && handle.identification != null)
             {
                 foreach (var aas in this.Package.AasEnv.AdministrationShells)
-                    if (aas.assetRef != null && aas.assetRef.Matches(handle.identification))
+                    if (aas.assetInformation?.globalAssetId != null 
+                        && aas.assetInformation.globalAssetId.Matches(handle.identification))
                     {
                         dynamic o = new ExpandoObject();
                         o.identification = aas.id;
@@ -660,10 +651,10 @@ namespace AasxRestServerLibrary
             }
 
             // de-serialize asset
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
             try
             {
-                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.Asset>(context.Request.Payload);
+                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AssetInformation>(context.Request.Payload);
             }
             catch (Exception ex)
             {
@@ -673,7 +664,7 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (asset.id == null)
+            if (asset.globalAssetId?.GetAsIdentifier(strict: true) == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.BadRequest,
@@ -682,18 +673,21 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError,
                     $"Error accessing internal data structures.");
                 return;
             }
-            context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
-            var existingAsset = this.Package.AasEnv.FindAsset(asset.id);
-            if (existingAsset != null)
-                this.Package.AasEnv.Assets.Remove(existingAsset);
-            this.Package.AasEnv.Assets.Add(asset);
+
+            // TODO: What to do with overall function?
+            //context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
+            //var existingAsset = this.Package.AasEnv.FindAsset(asset.id);
+            //if (existingAsset != null)
+            //    this.Package.AasEnv.Assets.Remove(existingAsset);
+            //this.Package.AasEnv.Assets.Add(asset);
+            AdminShell.AssetInformation existingAsset = null;
 
             // simple OK
             SendTextResponse(context, "OK" + ((existingAsset != null) ? " (updated)" : " (new)"));
@@ -793,7 +787,7 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
@@ -1583,7 +1577,7 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");

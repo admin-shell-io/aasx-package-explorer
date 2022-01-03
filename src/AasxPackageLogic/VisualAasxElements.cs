@@ -626,9 +626,9 @@ namespace AasxPackageLogic
                 var ci = theAas.ToCaptionInfo();
                 this.Caption = ci.Item1;
                 this.Info = ci.Item2;
-                var asset = theEnv.FindAsset(theAas.assetRef);
+                var asset = theAas.assetInformation;
                 if (asset != null)
-                    this.Info += $" of [{asset.id.value}, {asset.kind.kind}]";
+                    this.Info += $" of [{asset.globalAssetId.GetAsIdentifier()}, {asset.assetKind.kind}]";
             }
         }
     }
@@ -636,16 +636,18 @@ namespace AasxPackageLogic
     public class VisualElementAsset : VisualElementGeneric
     {
         public AdminShell.AdministrationShellEnv theEnv = null;
-        public AdminShell.Asset theAsset = null;
+        public AdminShell.AdministrationShell theAas = null;
+        public AdminShell.AssetInformation theAsset = null;
 
         public VisualElementAsset(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
-            AdminShell.Asset asset)
+            AdminShell.AdministrationShell aas, AdminShell.AssetInformation asset)
             : base()
         {
             this.Parent = parent;
             this.Cache = cache;
             this.theEnv = env;
+            this.theAas = aas;
             this.theAsset = asset;
 
             this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
@@ -1542,10 +1544,6 @@ namespace AasxPackageLogic
                     if (aas != null)
                         aas.parent = env;
 
-                foreach (var asset in env.Assets)
-                    if (asset != null)
-                        asset.parent = env;
-
                 foreach (var sm in env.Submodels)
                     if (sm != null)
                         sm.parent = env;
@@ -1618,22 +1616,21 @@ namespace AasxPackageLogic
                         {
                             res.Add(tiAas);
                         }
+
+                        // add asset as well (visual legacy of V2.0)
+                        var asset = aas.assetInformation;
+                        if (asset != null)
+                        {
+                            // item
+                            var tiAsset = new VisualElementAsset(tiAssets, cache, env, aas, asset);
+                            tiAas.Members.Add(tiAsset);
+                        }
                     }
                 }
 
                 // if edit mode, then display further ..
                 if (editMode)
                 {
-                    //
-                    // over all assets
-                    //
-                    foreach (var asset in env.Assets)
-                    {
-                        // item
-                        var tiAsset = new VisualElementAsset(tiAssets, cache, env, asset);
-                        tiAssets.Members.Add(tiAsset);
-                    }
-
                     //
                     // over all Submodels (not the refs)
                     //

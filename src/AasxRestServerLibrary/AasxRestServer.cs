@@ -82,7 +82,7 @@ namespace AasxRestServerLibrary
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
                 if (m.Success && m.Groups.Count >= 2)
                 {
-                    helper.EvalDeleteAasAndAsset(context, m.Groups[1].ToString(), deleteAsset: true);
+                    helper.EvalDeleteAasAndAsset(context, m.Groups[1].ToString());
                 }
                 return context;
             }
