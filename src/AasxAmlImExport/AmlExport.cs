@@ -619,31 +619,17 @@ namespace AasxAmlImExport
         }
 
         private static void ExportAsset(
-            InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset)
+            InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env, AdminShell.AssetInformation asset)
         {
             if (ieseq == null || env == null || asset == null)
                 return;
 
             // directly add internal element
-            var ie = AppendIeNameAndRole(ieseq, name: asset.idShort, altName: "Asset", role: AmlConst.Roles.Asset);
+            var ie = AppendIeNameAndRole(ieseq, name: asset.fakeIdShort, altName: "Asset", role: AmlConst.Roles.Asset);
 
             // set some data
-            SetIdentification(ie.Attribute, asset.id);
-            SetAdministration(ie.Attribute, asset.administration);
-            SetReferable(ie.Attribute, asset);
-            SetAssetKind(ie.Attribute, asset.kind, attributeRole: AmlConst.Attributes.Asset_Kind);
-            SetHasDataSpecification(ie.Attribute, asset.hasDataSpecification);
-
-            // do some data directly
-
-            if (asset.assetIdentificationModelRef != null)
-                AppendAttributeNameAndRole(
-                    ie.Attribute, "assetIdentificationModelRef", AmlConst.Attributes.Asset_IdentificationModelRef,
-                    ToAmlReference(asset.assetIdentificationModelRef));
-
-            if (asset.billOfMaterialRef != null)
-                AppendAttributeNameAndRole(ie.Attribute, "billOfMaterialRef",
-                AmlConst.Attributes.Asset_BillOfMaterialRef, ToAmlReference(asset.billOfMaterialRef));
+            SetIdentification(ie.Attribute, asset.globalAssetId?.GetAsIdentifier());
+            SetAssetKind(ie.Attribute, asset.assetKind, attributeRole: AmlConst.Attributes.Asset_Kind);
         }
 
         private static void ExportAAS(
@@ -679,7 +665,7 @@ namespace AasxAmlImExport
                     ToAmlReference(aas.derivedFrom));
 
             // asset
-            var asset = env.FindAsset(aas.assetRef);
+            var asset = aas.assetInformation;
             ExportAsset(aasIE.InternalElement, env, asset);
 
             // the AAS for Submodels of kind = Type willbe created on demand

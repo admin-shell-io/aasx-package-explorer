@@ -105,12 +105,11 @@ namespace AasxUANodesetImExport
                             createConceptDictionary((UAObject)node);
                         }
                         //create Asset
-                        else if (getTypeDefinition(node) == "1:AASAssetType")
-                        {
-                            Asset ass = createAsset(node);
-                            thePackageEnv.AasEnv.Assets.Add(ass);
-
-                        }
+                        ////else if (getTypeDefinition(node) == "1:AASAssetType")
+                        ////{
+                        ////    AssetInformation ass = createAsset(node);
+                        ////    thePackageEnv.AasEnv.Assets.Add(ass);
+                        ////}
                         //set DerivedFrom
                         else if (node.BrowseName == "1:DerivedFrom")
                         {
@@ -121,11 +120,6 @@ namespace AasxUANodesetImExport
                         else if (node.BrowseName == "1:DataSpecification")
                         {
                             aas.hasDataSpecification = CreateHasDataSpecification(node);
-                        }
-                        //create AssetRef
-                        else if (node.BrowseName == "1:AssetRef")
-                        {
-                            aas.assetRef = createAssetRef(node);
                         }
                         else if (node.BrowseName == "1:Identification" &&
                                 getTypeDefinition(node) == "1:AASIdentifierType")
@@ -852,15 +846,14 @@ namespace AasxUANodesetImExport
 
         //Create Asset
 
-        private static Asset createAsset(UANode node)
+        private static AssetInformation createAsset(UANode node)
         {
             //Asset (node)
             //  -> AASIdentifiable (var)
             //  -> ModellingKind (var)
             //  -> AASReferable (var)
 
-            Asset asset = new Asset();
-            asset.idShort = makePretty(node.BrowseName);
+            AssetInformation asset = new AssetInformation();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -869,7 +862,7 @@ namespace AasxUANodesetImExport
                     if (getTypeDefinition(var) == "1:IAASIdentifiableType") setIdentifiable(asset, var);
                     if (getTypeDefinition(var) == "1:AASModelingKindDataType")
                     {
-                        asset.kind = new AssetKind(); asset.kind.kind = createKind(_ref.Value).kind;
+                        asset.assetKind = new AssetKind(); asset.assetKind.kind = createKind(_ref.Value).kind;
                     }
                     if (getTypeDefinition(var) == "1:IAASReferableType") setReferable(asset, var);
                 }
@@ -877,7 +870,7 @@ namespace AasxUANodesetImExport
             return asset;
         }
 
-        private static void setIdentifiable(Asset asset, UANode node)
+        private static void setIdentifiable(AssetInformation asset, UANode node)
         {
             //AASIdentifiable (node)
             //  -> AASAdministrativeInformationType (var)
@@ -888,40 +881,38 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     UANode var = findNode(_ref.Value);
-                    if (getTypeDefinition(var) == "1:AASAdministrativeInformationType")
-                        asset.administration = createAdmninistration(var);
 
                     if (getTypeDefinition(var) == "1:AASIdentifierType")
-                        asset.id = createIdentification(var);
+                        asset.SetIdentification(createIdentification(var));
                 }
             }
         }
 
-        private static void setReferable(Asset asset, UANode node)
+        private static void setReferable(AssetInformation asset, UANode node)
         {
             //AASReferable (node)
             //  -> Category (var)
             //  -> Description (var)
 
-            asset.description = new Description();
-            asset.description.langString = new ListOfLangStr();
+            ////asset.description = new Description();
+            ////asset.description.langString = new ListOfLangStr();
 
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    UANode var = findNode(_ref.Value);
-                    if (var.BrowseName == "1:Category")
-                    {
-                        var temp = (UAVariable)var;
-                        asset.category = temp.Value.InnerText;
-                    }
-                    else if (var.BrowseName == "1:Description")
-                    {
-                        asset.description.langString = getDescription(var);
-                    }
-                }
-            }
+            ////foreach (Reference _ref in node.References)
+            ////{
+            ////    if (_ref.ReferenceType != "HasTypeDefinition")
+            ////    {
+            ////        UANode var = findNode(_ref.Value);
+            ////        if (var.BrowseName == "1:Category")
+            ////        {
+            ////            var temp = (UAVariable)var;
+            ////            asset.category = temp.Value.InnerText;
+            ////        }
+            ////        else if (var.BrowseName == "1:Description")
+            ////        {
+            ////            asset.description.langString = getDescription(var);
+            ////        }
+            ////    }
+            ////}
         }
 
         private static ListOfLangStr getDescription(UANode node)

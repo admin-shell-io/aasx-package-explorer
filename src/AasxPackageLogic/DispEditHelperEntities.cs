@@ -47,28 +47,12 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAsset(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
+            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, 
+            AdminShell.AdministrationShell aas, AdminShell.AssetInformation asset,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false)
         {
             this.AddGroup(stack, "Asset", this.levelColors.MainSection);
-
-            // Up/ down/ del
-            if (editMode && !embedded)
-            {
-                // execute
-                this.EntityListUpDownDeleteHelper<AdminShell.Asset>(stack, repo, env.Assets, asset, env, "Asset:");
-            }
-
-            // Cut, copy, paste within list of Assets
-            if (editMode && env != null)
-            {
-                // cut/ copy / paste
-                this.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.Asset>(
-                    stack, repo, this.theCopyPaste,
-                    env.Assets, asset, (o) => { return new AdminShell.Asset(o); },
-                    label: "Buffer:");
-            }
 
             // print code sheet
             this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
@@ -79,7 +63,7 @@ namespace AasxPackageLogic
                     this.context?.StartFlyover(uc);
                     try
                     {
-                        this.context?.PrintSingleAssetCodeSheet(asset.id.value, asset.idShort);
+                        this.context?.PrintSingleAssetCodeSheet(asset.globalAssetId?.GetAsIdentifier(), asset.fakeIdShort);
                     }
                     catch (Exception ex)
                     {
@@ -90,100 +74,89 @@ namespace AasxPackageLogic
                 return new AnyUiLambdaActionNone();
             });
 
-            // Referable
-            this.DisplayOrEditEntityReferable(stack, asset, categoryUsual: false);
-
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, asset.hasDataSpecification,
-                (ds) => { asset.hasDataSpecification = ds; }, relatedReferable: asset);
-
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
-                stack, asset,
-                Options.Curr.TemplateIdAsset,
-                new DispEditHelperModules.DispEditInjectAction(
-                new[] { "Input", "Rename" },
-                (i) =>
-                {
-                    if (i == 0)
-                    {
-                        var uc = new AnyUiDialogueDataTextBox(
-                            "Asset ID:", null, AnyUiMessageBoxImage.Question,
-                            AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
-                        if (this.context.StartFlyoverModal(uc))
-                        {
-                            asset.id.value = uc.Text;
-                            this.AddDiaryEntry(asset, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
-                        }
-                    }
+            // TODO: MAKE NEW
+            //this.DisplayOrEditEntityIdentifiable(
+            //    stack, asset,
+            //    Options.Curr.TemplateIdAsset,
+            //    new DispEditHelperModules.DispEditInjectAction(
+            //    new[] { "Input", "Rename" },
+            //    (i) =>
+            //    {
+            //        if (i == 0)
+            //        {
+            //            var uc = new AnyUiDialogueDataTextBox(
+            //                "Asset ID:", null, AnyUiMessageBoxImage.Question,
+            //                AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
+            //            if (this.context.StartFlyoverModal(uc))
+            //            {
+            //                asset.SetIdentification("" + uc.Text);
+            //                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+            //                return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+            //            }
+            //        }
 
-                    if (i == 1 && env != null)
-                    {
-                        var uc = new AnyUiDialogueDataTextBox(
-                            "New ID:",
-                            symbol: AnyUiMessageBoxImage.Question,
-                            maxWidth: 1400,
-                            text: asset.id.value);
-                        if (this.context.StartFlyoverModal(uc))
-                        {
-                            var res = false;
+            //        if (i == 1 && env != null)
+            //        {
+            //            var uc = new AnyUiDialogueDataTextBox(
+            //                "New ID:",
+            //                symbol: AnyUiMessageBoxImage.Question,
+            //                maxWidth: 1400,
+            //                text: "" + asset.globalAssetId?.GetAsIdentifier());
+            //            if (this.context.StartFlyoverModal(uc))
+            //            {
+            //                var res = false;
 
-                            try
-                            {
-                                // rename
-                                var lrf = env.RenameIdentifiable<AdminShell.Asset>(
-                                    asset.id,
-                                    new AdminShell.Identifier(uc.Text));
+            //                try
+            //                {
+            //                    // rename
+            //                    var lrf = env.RenameIdentifiable<AdminShell.AssetInformation>(
+            //                        asset.globalAssetId?.GetAsIdentifier(),
+            //                        new AdminShell.Identifier(uc.Text));
 
-                                // use this information to emit events
-                                if (lrf != null)
-                                {
-                                    res = true;
-                                    foreach (var rf in lrf)
-                                    {
-                                        var rfi = rf.FindParentFirstIdentifiable();
-                                        if (rfi != null)
-                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                            }
+            //                    // use this information to emit events
+            //                    if (lrf != null)
+            //                    {
+            //                        res = true;
+            //                        foreach (var rf in lrf)
+            //                        {
+            //                            var rfi = rf.FindParentFirstIdentifiable();
+            //                            if (rfi != null)
+            //                                this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+            //                        }
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            //                }
 
-                            if (!res)
-                                this.context.MessageBoxFlyoutShow(
-                                    "The renaming of the Submodel or some referring elements " +
-                                    "has not performed successfully! Please review your inputs and " +
-                                    "the AAS structure for any inconsistencies.",
-                                    "Warning",
-                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+            //                if (!res)
+            //                    this.context.MessageBoxFlyoutShow(
+            //                        "The renaming of the Submodel or some referring elements " +
+            //                        "has not performed successfully! Please review your inputs and " +
+            //                        "the AAS structure for any inconsistencies.",
+            //                        "Warning",
+            //                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
 
-                            return new AnyUiLambdaActionRedrawAllElements(asset);
-                        }
-                    }
-                    return new AnyUiLambdaActionNone();
+            //                return new AnyUiLambdaActionRedrawAllElements(asset);
+            //            }
+            //        }
+            //        return new AnyUiLambdaActionNone();
 
-                }));
+            //    }));
 
             // Kind
-            this.DisplayOrEditEntityAssetKind(stack, asset.kind,
-                (k) => { asset.kind = k; }, relatedReferable: asset);
+            this.DisplayOrEditEntityAssetKind(stack, asset.assetKind,
+                (k) => { asset.assetKind = k; }, relatedReferable: aas);
 
             // special Submode references
             this.AddGroup(stack, "Submodel references with special meaning", this.levelColors.SubSection);
 
-            // AssetIdentificationModelRef
-            this.DisplayOrEditEntitySubmodelRef(stack, asset.assetIdentificationModelRef,
-                (smr) => { asset.assetIdentificationModelRef = smr; },
-                "assetIdentificationModel", relatedReferable: asset);
-
-            // BillOfMaterialRef
-            this.DisplayOrEditEntitySubmodelRef(stack, asset.billOfMaterialRef,
-                (smr) => { asset.billOfMaterialRef = smr; },
-                "billOfMaterial", relatedReferable: asset);
+            // list of multiple key value pairs
+            this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.specificAssetId,
+                (ico) => { asset.specificAssetId = ico; },
+                "Specific key value pairs", relatedReferable: aas);
 
         }
 
@@ -205,8 +178,6 @@ namespace AasxPackageLogic
             // automatically and silently fix errors
             if (env.AdministrationShells == null)
                 env.AdministrationShells = new AdminShell.ListOfAdministrationShells();
-            if (env.Assets == null)
-                env.Assets = new AdminShell.ListOfAssets();
             if (env.ConceptDescriptions == null)
                 env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
             if (env.Submodels == null)
@@ -221,10 +192,6 @@ namespace AasxPackageLogic
             {
                 // some hints
                 this.AddHintBubble(stack, hintMode, new[] {
-                    new HintCheck(
-                        () => { return env.Assets == null || env.Assets.Count < 1; },
-                        "There are no assets in this AAS environment. You should consider adding " +
-                            "an asset by clicking 'Add asset' on the edit panel below."),
                     new HintCheck(
                         () => { return env.AdministrationShells == null || env.AdministrationShells.Count < 1; },
                         "There are no Administration Shells in this AAS environment. " +
@@ -253,20 +220,10 @@ namespace AasxPackageLogic
 
                 // let the user control the number of entities
                 this.AddAction(
-                    stack, "Entities:", new[] { "Add Asset", "Add AAS", "Add ConceptDescription" }, repo,
+                    stack, "Entities:", new[] { "Add AAS", "Add ConceptDescription" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
-                        {
-                            var asset = new AdminShell.Asset();
-                            this.MakeNewIdentifiableUnique(asset);
-                            env.Assets.Add(asset);
-                            this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                                StructuralChangeReason.Create));
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
-                        }
-
-                        if (buttonNdx == 1)
                         {
                             var aas = new AdminShell.AdministrationShell();
                             this.MakeNewIdentifiableUnique(aas);
@@ -276,7 +233,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
                         }
 
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 1)
                         {
                             var cd = new AdminShell.ConceptDescription();
                             this.MakeNewIdentifiableUnique(cd);
@@ -328,32 +285,24 @@ namespace AasxPackageLogic
                                         //
                                         try
                                         {
-                                            // in any case, copy the Asset as well
-                                            var sourceAsset = rve.theEnv.FindAsset(sourceAAS.assetRef);
-                                            var destAsset = sourceAsset;
-                                            if (copyRecursively)
-                                            {
-                                                destAsset = new AdminShell.Asset(sourceAsset);
-                                                if (createNewIds)
-                                                    destAsset.id = new AdminShell.Identifier(
-                                                        AdminShellUtil.GenerateIdAccordingTemplate(
-                                                            Options.Curr.TemplateIdAsset));
-
-                                                env.Assets.Add(destAsset);
-                                                this.AddDiaryEntry(destAsset, new DiaryEntryStructChange(
-                                                    StructuralChangeReason.Create));
-                                            }
-
                                             // make a copy of the AAS itself
                                             destAAS = new AdminShell.AdministrationShell(
                                                 mdo as AdminShell.AdministrationShell);
-                                            destAAS.assetRef = null;
-                                            if (copyRecursively)
-                                                destAAS.assetRef = new AdminShell.AssetRef(destAsset.GetReference());
                                             if (createNewIds)
+                                            {
                                                 destAAS.id = new AdminShell.Identifier(
                                                     AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
+
+                                                if (destAAS.assetInformation != null)
+                                                {
+                                                    destAAS.assetInformation.globalAssetId
+                                                        = new AdminShell.GlobalReference(new AdminShell.Key(
+                                                            AdminShell.Key.AssetInformation,
+                                                            AdminShellUtil.GenerateIdAccordingTemplate(
+                                                                Options.Curr.TemplateIdAsset)));
+                                                }
+                                            }
 
                                             env.AdministrationShells.Add(destAAS);
                                             this.AddDiaryEntry(destAAS, new DiaryEntryStructChange(
@@ -511,25 +460,6 @@ namespace AasxPackageLogic
                                     {
                                         aasold.Remove(itaas);
                                         this.AddDiaryEntry(itaas,
-                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
-                                    }
-                                }
-                                else
-                                if (cpiid.entity is AdminShell.Asset itasset)
-                                {
-                                    // new 
-                                    var asset = new AdminShell.Asset(itasset);
-                                    env.Assets.Add(asset);
-                                    this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                                        StructuralChangeReason.Create));
-                                    res = asset;
-
-                                    // delete
-                                    if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
-                                        && assetold.Contains(itasset))
-                                    {
-                                        assetold.Remove(itasset);
-                                        this.AddDiaryEntry(itasset,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
@@ -837,11 +767,6 @@ namespace AasxPackageLogic
                                 "Select the 'Administration Shells' item on the middle panel and " +
                                 "select 'Add AAS' to add a new entity."),
                         new HintCheck(
-                            () => { return env.Assets.Count < 1; },
-                            "There are no Asset entities in the environment. " +
-                                "Select the 'Assets' item on the middle panel and " +
-                                "select 'Add asset' to add a new entity."),
-                        new HintCheck(
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
                                 "It is a good practive to have those. Select or add an AdministrationShell, " +
@@ -858,7 +783,6 @@ namespace AasxPackageLogic
                 this.AddSmallLabelTo(
                     g, 1, 0, content: String.Format("#admin shells: {0}.", env.AdministrationShells.Count),
                     margin: new AnyUiThickness(0, 5, 0, 0));
-                this.AddSmallLabelTo(g, 2, 0, content: String.Format("#assets: {0}.", env.Assets.Count));
                 this.AddSmallLabelTo(g, 3, 0, content: String.Format("#submodels: {0}.", env.Submodels.Count));
                 this.AddSmallLabelTo(
                     g, 4, 0, content: String.Format("#concept descriptions: {0}.", env.ConceptDescriptions.Count));
@@ -1168,14 +1092,14 @@ namespace AasxPackageLogic
                 null);
 
             // use some asset reference
-            var asset = env.FindAsset(aas.assetRef);
+            var asset = aas.assetInformation;
 
             // derivedFrom
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () =>
                     {
-                        return asset != null && asset.kind != null && asset.kind.IsInstance &&
+                        return asset != null && asset.assetKind != null && asset.assetKind.IsInstance &&
                             ( aas.derivedFrom == null || aas.derivedFrom.Count < 1);
                     },
                     "You have decided to create an AAS for kind = 'Instance'. " +
@@ -1210,38 +1134,6 @@ namespace AasxPackageLogic
                     jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
             }
 
-            // assetRef
-
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck(
-                    () => { return asset == null; },
-                    "No asset is associated with this Administration Shell. " +
-                        "This might be, because some identification changed. " +
-                        "Use 'Add existing' to assign the Administration Shell with an existing asset " +
-                        "in the AAS environment or use 'Add blank' to create an arbitray reference."),
-            });
-            if (this.SafeguardAccess(
-                stack, repo, aas.assetRef, "assetRef:", "Create data element!",
-                v =>
-                {
-                    aas.assetRef = new AdminShell.AssetRef();
-                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionRedrawEntity();
-                }))
-            {
-                this.AddGroup(stack, "Asset Reference", this.levelColors.SubSection);
-
-                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
-                {
-                    return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: false);
-                };
-
-                this.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.Main, "Asset",
-                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
-            }
-
             //
             // Asset linked with AAS
             //
@@ -1249,7 +1141,7 @@ namespace AasxPackageLogic
             if (asset != null)
             {
                 DisplayOrEditAasEntityAsset(
-                    packages, env, asset, editMode, repo, stack, hintMode: hintMode);
+                    packages, env, aas, asset, editMode, repo, stack, hintMode: hintMode);
             }
         }
 

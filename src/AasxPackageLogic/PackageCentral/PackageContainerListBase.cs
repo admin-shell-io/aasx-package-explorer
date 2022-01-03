@@ -267,10 +267,11 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AssetIds != null)
                     foreach (var id in fi.AssetIds)
                     {
-                        var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
-                        asset.AddDescription("en?", "" + fi.Description);
-                        asset.id = new AdminShell.Identifier("" + id);
-                        pkg.AasEnv?.Assets.Add(asset);
+                        var asset = new AdminShell.AssetInformation();
+                        asset.SetIdentification("" + id);
+                        
+                        // TODO: where to save?
+                        // pkg.AasEnv?.Assets.Add(asset);
                     }
             }
         }

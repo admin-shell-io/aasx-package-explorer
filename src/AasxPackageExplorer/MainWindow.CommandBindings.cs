@@ -1094,7 +1094,7 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_PrintAsset()
         {
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAsset)
             {
                 var ve = DisplayElements.SelectedItem as VisualElementAsset;
@@ -1115,9 +1115,10 @@ namespace AasxPackageExplorer
 
             try
             {
-                if (asset.id != null)
+                var id = asset.globalAssetId.GetAsIdentifier();
+                if (id != null)
                 {
-                    AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.id.value, asset.idShort);
+                    AasxPrintFunctions.PrintSingleAssetCodeSheet(id, asset.fakeIdShort);
                 }
             }
             catch (Exception ex)
@@ -1678,7 +1679,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.AdministrationShells == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -1829,7 +1830,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.AdministrationShells == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -2753,9 +2754,9 @@ namespace AasxPackageExplorer
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
-                foreach (AdminShell.Asset ass in _packageCentral.Main.AasEnv.Assets)
+                foreach (AdminShell.AdministrationShell aas in _packageCentral.Main.AasEnv.AdministrationShells)
                 {
-                    UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
+                    UANodeSetExport.CreateAAS(aas?.assetInformation?.fakeIdShort, _packageCentral.Main.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();

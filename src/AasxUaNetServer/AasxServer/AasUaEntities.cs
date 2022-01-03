@@ -534,7 +534,7 @@ namespace AasOpcUaServer
                 null, "AssetIdentificationModel", modellingRule: AasUaNodeHelper.ModellingRule.Optional);
         }
 
-        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.Asset asset = null,
+        public NodeState CreateAddElements(NodeState parent, CreateMode mode, AdminShell.AssetInformation asset = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             if (parent == null)
@@ -554,25 +554,17 @@ namespace AasOpcUaServer
                     return null;
 
                 // register node record
-                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(o, asset));
+                this.entityBuilder.AddNodeRecord(new AasEntityBuilder.NodeRecord(
+                    o, asset?.globalAssetId?.GetAsIdentifier()));
 
                 // Referable
-                this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);
+                //// this.entityBuilder.AasTypes.Referable.CreateAddElements(o, CreateMode.Instance, asset);
                 // Identifiable
                 this.entityBuilder.AasTypes.Identification.CreateAddElements(
-                    o, CreateMode.Instance, asset.id);
-                this.entityBuilder.AasTypes.Administration.CreateAddElements(
-                    o, CreateMode.Instance, asset.administration);
+                    o, CreateMode.Instance, asset.globalAssetId?.GetAsIdentifier());
                 // HasKind
-                this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.kind);
-                // HasDataSpecification
-                if (asset.hasDataSpecification != null && asset.hasDataSpecification != null)
-                    foreach (var ds in asset.hasDataSpecification)
-                        this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                            o, CreateMode.Instance, ds?.dataSpecification, "DataSpecification");
+                this.entityBuilder.AasTypes.AssetKind.CreateAddElements(o, CreateMode.Instance, asset.assetKind);
                 // own attributes
-                this.entityBuilder.AasTypes.Reference.CreateAddElements(
-                    o, CreateMode.Instance, asset.assetIdentificationModelRef, "AssetIdentificationModel");
             }
 
             return o;
@@ -654,12 +646,10 @@ namespace AasOpcUaServer
                 o, CreateMode.Instance, aas.derivedFrom, "DerivedFrom");
 
             // associated asset
-            if (aas.assetRef != null)
+            if (aas.assetInformation != null)
             {
-                var asset = env.FindAsset(aas.assetRef);
-                if (asset != null)
-                    this.entityBuilder.AasTypes.Asset.CreateAddElements(
-                        o, CreateMode.Instance, asset);
+                this.entityBuilder.AasTypes.Asset.CreateAddElements(
+                    o, CreateMode.Instance, aas.assetInformation);
             }
 
             // associated submodels

@@ -162,7 +162,7 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.Asset>> GetAasAssetCore(string index)
+        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>> GetAasAssetCore(string index)
         {
             // access
             if (!IsValid())
@@ -181,15 +181,15 @@ namespace AasxPackageLogic.PackageCentral
 
             // proudly to the parsing
             AdminShell.AdministrationShell aas = null;
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
                 aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(frame["AAS"]);
-            if (frame.ContainsKey("Asset"))
-                asset = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Asset>(frame["Asset"]);
+
+            // TODO: what to do with frame fro Asset??
 
             // result
-            return new Tuple<AdminShell.AdministrationShell, AdminShell.Asset>(aas, asset);
+            return new Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>(aas, asset);
         }
 
         /// <summary>
@@ -462,11 +462,11 @@ namespace AasxPackageLogic.PackageCentral
                         ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
-                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
+                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.fakeIdShort}\"",
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.idShort).SubstringMax(0, 3)
                     };
                     fi.AasIds.Add("" + x.Item1?.id?.value);
-                    fi.AssetIds.Add("" + x.Item2?.id?.value);
+                    fi.AssetIds.Add("" + x.Item2?.globalAssetId?.GetAsIdentifier());
                     res.Add(fi);
                 }
                 catch (Exception ex)
