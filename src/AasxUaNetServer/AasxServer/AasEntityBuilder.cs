@@ -143,10 +143,10 @@ namespace AasOpcUaServer
         {
             public enum ActionType { None, SetAasReference, SetDictionaryEntry }
 
-            public AdminShell.Reference targetReference = null;
+            public AdminShell.ModelReference targetReference = null;
             public ActionType actionType = ActionType.None;
 
-            public NodeLateActionLinkToReference(NodeState uanode, AdminShell.Reference targetReference,
+            public NodeLateActionLinkToReference(NodeState uanode, AdminShell.ModelReference targetReference,
                 ActionType actionType)
             {
                 this.uanode = uanode;

@@ -403,7 +403,7 @@ namespace AasxPackageExplorer
             {
                 // check for ReferenceElement
                 var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference());
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSemanticId());
                 if (navTo?.value == null)
                     continue;
 
@@ -1035,7 +1035,7 @@ namespace AasxPackageExplorer
             if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
             {
                 // do some more adoptions
-                var rf = new AdminShell.Reference(tempNavTo.targetReference);
+                var rf = new AdminShell.ModelReference(tempNavTo.targetReference);
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Count == 1
@@ -1105,7 +1105,7 @@ namespace AasxPackageExplorer
         }
 
         private async Task<AdminShell.Referable> LoadFromFileRepository(PackageContainerRepoItem fi,
-            AdminShell.Reference requireReferable = null)
+            AdminShell.ModelReference requireReferable = null)
         {
             // access single file repo
             var fileRepo = _packageCentral.Repositories.FindRepository(fi);
@@ -1178,7 +1178,7 @@ namespace AasxPackageExplorer
         }
 
         private async Task UiHandleNavigateTo(
-            AdminShell.Reference targetReference,
+            AdminShell.ModelReference targetReference,
             bool alsoDereferenceObjects = true)
         {
             // access
@@ -1187,7 +1187,7 @@ namespace AasxPackageExplorer
 
             // make a copy of the Reference for searching
             VisualElementGeneric veFound = null;
-            var work = new AdminShell.Reference(targetReference);
+            var work = new AdminShell.ModelReference(targetReference);
 
             try
             {

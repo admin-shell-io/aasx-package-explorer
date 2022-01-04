@@ -423,7 +423,7 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     UAVariable key = (UAVariable)findNode(_ref.Value);
-                    Key _key = new Key();
+                    Identifier newid = new Identifier();
                     foreach (Reference _InnerRef in key.References)
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
@@ -438,15 +438,14 @@ namespace AasxUANodesetImExport
                                 case "1:Local":
                                     break;
                                 case "1:Type":
-                                    _key.type = value.Value.InnerText;
                                     break;
                                 case "1:Value":
-                                    _key.value = value.Value.InnerText;
+                                    newid.value = value.Value.InnerText;
                                     break;
                             }
                         }
                     }
-                    sub.semanticId.Keys.Add(_key);
+                    sub.semanticId.Value.Add(newid);
                 }
             }
         }
@@ -461,17 +460,17 @@ namespace AasxUANodesetImExport
             return kind;
         }
 
-        private static AdminShell.Reference createReference(string val)
+        private static AdminShell.ModelReference createReference(string val)
         {
             // Refereces are saved as Strings: [type, value]
-            AdminShell.Reference reference = new AdminShell.Reference();
+            AdminShell.ModelReference reference = new AdminShell.ModelReference();
             //convert String to an actual Reference
             var mep = val.Split(',');
             if (mep.Length == 2)
             {
                 string type = mep[0].Trim().TrimStart('[');
                 string value = mep[1].Trim().TrimEnd(']');
-                reference = AdminShell.Reference.CreateNew(type, value);
+                reference = AdminShell.ModelReference.CreateNew(type, value);
             }
             return reference;
         }
@@ -565,7 +564,8 @@ namespace AasxUANodesetImExport
                 {
                     var var = (UAVariable)findNode(_ref.Value);
                     if (var.BrowseName == "1:Value") prop.value = var.Value.InnerText; prop.valueType = var.DataType;
-                    if (var.BrowseName == "1:ValueId") prop.valueId = createReference(var.Value.InnerText);
+                    if (var.BrowseName == "1:ValueId") prop.valueId = 
+                        AdminShell.GlobalReference.CreateNew(createReference(var.Value.InnerText));
                 }
             }
             return prop;
@@ -957,20 +957,22 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     data.Add(
-                        new EmbeddedDataSpecification(createReference(findNode(_ref.Value))));
+                        new EmbeddedDataSpecification(
+                                AdminShell.GlobalReference.CreateNew(
+                                    createReference(findNode(_ref.Value)))));
                 }
             }
             return data;
         }
 
-        private static AdminShell.Reference createReference(UANode node)
+        private static AdminShell.ModelReference createReference(UANode node)
         {
             //Reference (node)
             //  -> Key (multiple)
 
             List<Key> keys = new List<Key>();
             keys = addSemanticID(node);
-            AdminShell.Reference refe = AdminShell.Reference.CreateNew(keys);
+            AdminShell.ModelReference refe = AdminShell.ModelReference.CreateNew(keys);
             return refe;
         }
 
@@ -984,7 +986,7 @@ namespace AasxUANodesetImExport
             var keys = addSemanticID(node);
             foreach (Key key in keys)
             {
-                ass.Keys.Add(key);
+                ass.Value.Add(key?.value);
             }
             return ass;
         }
