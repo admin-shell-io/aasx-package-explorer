@@ -273,7 +273,7 @@ namespace AasxPackageLogic
                 var tupkey = PreparePresetsForListKeys(cpb, label);
                 return new Tuple<string[], AdminShell.ListOfIdentifier[]>(
                     (tupkey == null) ? null : tupkey.Item1,
-                    (tupkey == null) ? null : tupkey.Item2.Select(
+                    (tupkey == null) ? null : tupkey.Item2?.Select(
                         (kl) => AdminShell.ListOfIdentifier.CreateNew(kl)).ToArray()
                 );
             }

@@ -42,6 +42,18 @@ namespace AasxPluginGenericForms
         /// A list with required concept descriptions, if appropriate.
         /// </summary>
         public AdminShell.ListOfConceptDescriptions ConceptDescriptions = null;
+
+#if !DoNotUseAasxCompatibilityModels
+        public GenericFormsOptionsRecord(
+            AasxCompatibilityModels.AasxPluginGenericForms.GenericFormsOptionsRecordV20 src) : base()
+        {
+            FormTag = src.FormTag;
+            FormTitle = src.FormTitle;
+            if (src.FormSubmodel != null)
+                FormSubmodel = new FormDescSubmodel(src.FormSubmodel);
+        }
+#endif
+
     }
 
     [DisplayName("Options")]
