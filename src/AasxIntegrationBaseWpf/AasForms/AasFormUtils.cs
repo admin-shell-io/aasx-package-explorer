@@ -32,25 +32,25 @@ namespace AasxIntegrationBase.AasForms
                     if (smw.submodelElement is AdminShell.Property p)
                     {
                         tsme = new FormDescProperty(
-                            "" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsExactlyOneKey(),
+                            "" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsIdentifier(strict: true),
                             "" + p.idShort, valueType: p.valueType);
                     }
                     if (smw.submodelElement is AdminShell.MultiLanguageProperty mlp)
                     {
                         tsme = new FormDescMultiLangProp(
-                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
+                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsIdentifier(strict: true),
                             "" + mlp.idShort);
                     }
                     if (smw.submodelElement is AdminShell.File fl)
                     {
                         tsme = new FormDescFile(
-                            "" + fl.idShort, FormMultiplicity.One, fl.semanticId?.GetAsExactlyOneKey(),
+                            "" + fl.idShort, FormMultiplicity.One, fl.semanticId?.GetAsIdentifier(strict: true),
                             "" + fl.idShort);
                     }
                     if (smw.submodelElement is AdminShell.ReferenceElement rf)
                     {
                         tsme = new FormDescReferenceElement(
-                            "" + rf.idShort, FormMultiplicity.One, rf.semanticId?.GetAsExactlyOneKey(),
+                            "" + rf.idShort, FormMultiplicity.One, rf.semanticId?.GetAsIdentifier(strict: true),
                             "" + rf.idShort);
                     }
                     if (smw.submodelElement is AdminShell.RelationshipElement re)
@@ -68,7 +68,7 @@ namespace AasxIntegrationBase.AasForms
                     if (smw.submodelElement is AdminShell.SubmodelElementCollection smec)
                     {
                         tsme = new FormDescSubmodelElementCollection(
-                            "" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsExactlyOneKey(),
+                            "" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsIdentifier(strict: true),
                             "" + smec.idShort);
                     }
 
@@ -135,9 +135,9 @@ namespace AasxIntegrationBase.AasForms
                         tels.Add(tsme);
 
                     // in any case, check for CD
-                    if (env != null && cds != null && smw?.submodelElement?.semanticId?.Keys != null)
+                    if (env != null && cds != null && smw?.submodelElement?.semanticId?.IsValid == true)
                     {
-                        var masterCd = env.FindConceptDescription(smw?.submodelElement?.semanticId?.Keys);
+                        var masterCd = env.FindConceptDescription(smw?.submodelElement?.semanticId);
                         if (masterCd != null && masterCd.id != null)
                         {
                             // already in cds?
@@ -177,7 +177,7 @@ namespace AasxIntegrationBase.AasForms
                     // make submodel template
                     var tsm = new FormDescSubmodel(
                         "Submodel",
-                        sm.GetSemanticKey(),
+                        sm.GetSemanticId()?.GetAsIdentifier(),
                         sm.idShort,
                         "");
                     tsm.SubmodelElements = new FormDescListOfElement();
@@ -204,7 +204,7 @@ namespace AasxIntegrationBase.AasForms
             var templateArr = new List<FormDescSubmodel>();
             var tsm = new FormDescSubmodel(
                 "Submodel",
-                sm.semanticId?.GetAsExactlyOneKey(),
+                sm.semanticId?.GetAsIdentifier(strict: true),
                 sm.idShort,
                 "");
             tsm.SubmodelElements = new FormDescListOfElement();
@@ -246,7 +246,7 @@ namespace AasxIntegrationBase.AasForms
             // make submodel template
             var tsm = new FormDescSubmodel(
                 "Submodel",
-                sm.semanticId?.GetAsExactlyOneKey(),
+                sm.semanticId?.GetAsIdentifier(strict: true),
                 sm.idShort,
                 "");
             tsm.SubmodelElements = new FormDescListOfElement();

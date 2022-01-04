@@ -335,7 +335,7 @@ namespace AasxPluginExportTable
                 }
             }
 
-            private void repReference(string head, string refName, AdminShell.Reference rid)
+            private void repReference(string head, string refName, AdminShell.ModelReference rid)
             {
                 if (rid == null || refName == null || rid.Keys == null)
                     return;
@@ -356,6 +356,31 @@ namespace AasxPluginExportTable
                         // but also in separate parts
                         //-9- {Reference}[0..n].{type, local, idType, value}
                         rep(head + refName + $"[{ki}].type", "" + k.type);
+                        rep(head + refName + $"[{ki}].value", "" + k.value);
+                    }
+                }
+            }
+
+            private void repReference(string head, string refName, AdminShell.GlobalReference rid)
+            {
+                if (rid == null || refName == null || rid.Value == null)
+                    return;
+
+                // add together
+                //-9- {Reference}
+                rep(head + refName + "", "" + rid.ToString(1));
+
+                // add the single parts of the sid
+                for (int ki = 0; ki < rid.Value.Count; ki++)
+                {
+                    var k = rid.Value[ki];
+                    if (k != null)
+                    {
+                        // in nice form
+                        //-9- {Reference}[0..n]
+                        rep(head + refName + $"[{ki}]", "" + k.ToString());
+                        // but also in separate parts
+                        //-9- {Reference}[0..n].{type, local, idType, value}
                         rep(head + refName + $"[{ki}].value", "" + k.value);
                     }
                 }
@@ -554,7 +579,7 @@ namespace AasxPluginExportTable
                             repListOfLangStr(head + "preferredName", iec.preferredName);
                             repListOfLangStr(head + "shortName", iec.shortName);
                             rep(head + "unit", "" + iec.unit);
-                            repReference(head, "unitId", AdminShell.Reference.CreateNew(iec.unitId?.Keys));
+                            repReference(head, "unitId", iec.unitId);
                             rep(head + "sourceOfDefinition", "" + iec.sourceOfDefinition);
                             rep(head + "symbol", "" + iec.symbol);
                             rep(head + "dataType", "" + iec.dataType);

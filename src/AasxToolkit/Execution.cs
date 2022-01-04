@@ -251,7 +251,7 @@ namespace AasxToolkit
 
                                 ei.ExportSingleSubmodel(
                                     package, ecst.Path,
-                                    dnp.SM_Nameplate.GetSemanticKey(),
+                                    dnp.SM_Nameplate.GetAutoSingleId(),
                                     dnp.GetAllReferables(),
                                     firstNodeId: new AasxFormatCst.CstIdObjectBase()
                                     {
@@ -349,14 +349,10 @@ namespace AasxToolkit
                                 }
 
                                 var prop = AdminShell.Property.CreateNew("test", "cat01");
-                                prop.semanticId = new AdminShell.SemanticId(
-                                    AdminShell.Reference.CreateNew(
-                                        AdminShell.Key.GlobalReference, "www.admin-shell.io/nonsense"));
+                                prop.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
 
                                 var fil = AdminShell.File.CreateNew("test", "cat01");
-                                fil.semanticId = new AdminShell.SemanticId(
-                                    AdminShell.Reference.CreateNew(
-                                        AdminShell.Key.GlobalReference, "www.admin-shell.io/nonsense"));
+                                fil.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
                                 fil.parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();

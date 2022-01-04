@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey()))
+            if (sm != null && true == sm.GetAutoSingleKey()?.Matches(defs.SM_Nameplate.GetAutoSingleKey()))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Digital Nameplate HSU to ZVEI V1.0"));
 
@@ -60,14 +60,14 @@ namespace AasxPredefinedConcepts.Convert
             // access Submodel (again)
             var sm = currentReferable as AdminShell.Submodel;
             if (sm == null || sm.submodelElements == null ||
-                    true != sm.GetSemanticKey()?.Matches(defsHSU.SM_Nameplate.GetSemanticKey()))
+                    true != sm.GetAutoSingleKey()?.Matches(defsHSU.SM_Nameplate.GetAutoSingleKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
             var smHSU = sm.submodelElements;
             sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(defsV10.SM_Nameplate.GetSemanticKey());
+            sm.semanticId = new AdminShell.SemanticId(defsV10.SM_Nameplate.GetAutoSingleId());
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -106,7 +106,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // Address (target cardinality: 1)
             foreach (var smcHSUadd in smHSU.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsHSU.CD_PhysicalAddress.GetSingleKey()))
+                        defsHSU.CD_PhysicalAddress.GetSingleId()))
             {
                 // make a new one
                 var smcV10add = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -115,30 +115,27 @@ namespace AasxPredefinedConcepts.Convert
                 // SME
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_Str,
                     smcHSUadd.value, new[] {
-                        defsHSU.CD_Street.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
+                        defsHSU.CD_Street.GetSingleId(),
+                    new AdminShell.Identifier(
                         "https://www.hsu-hh.de/aut/aas/street")},
                     createDefault: true, addSme: true, idShort: "Street");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ZipCod,
                     smcHSUadd.value, new[] {
-                        defsHSU.CD_Zip.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
-                        "https://www.hsu-hh.de/aut/aas/postalcode")},
+                        defsHSU.CD_Zip.GetSingleId(),
+                        new AdminShell.Identifier("https://www.hsu-hh.de/aut/aas/postalcode")},
                     createDefault: true, addSme: true, idShort: "Zipcode");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_CitTow,
                     smcHSUadd.value, new[] {
-                        defsHSU.CD_CityTown.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
-                        "https://www.hsu-hh.de/aut/aas/city")},
+                        defsHSU.CD_CityTown.GetSingleId(),
+                        new AdminShell.Identifier("https://www.hsu-hh.de/aut/aas/city")},
                     createDefault: true, addSme: true, idShort: "CityTown");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_StaCou,
                     smcHSUadd.value, new[] {
-                        defsHSU.CD_StateCounty.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, 
-                        "https://www.hsu-hh.de/aut/aas/statecounty")},
+                        defsHSU.CD_StateCounty.GetSingleId(),
+                        new AdminShell.Identifier("https://www.hsu-hh.de/aut/aas/statecounty")},
                     createDefault: true, addSme: true, idShort: "StateCounty");
 
                 smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_NatCod,
@@ -166,7 +163,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // each Marking
             foreach (var smcHSUmk in smHSU.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsHSU.CD_ProductMarking.GetSingleKey()))
+                        defsHSU.CD_ProductMarking.GetSingleId()))
             {
                 // make a new one
                 var smcV10mk = smcV10mks.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(

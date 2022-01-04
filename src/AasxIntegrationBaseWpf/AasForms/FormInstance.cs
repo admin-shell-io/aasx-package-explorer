@@ -335,7 +335,7 @@ namespace AasxIntegrationBase.AasForms
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
 
-            if (desc == null || desc.KeySemanticId == null || sourceElements == null)
+            if (desc == null || desc.SingleSemanticId == null || sourceElements == null)
                 return;
 
             // Instances ready?
@@ -345,7 +345,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum == 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToOne || desc.Multiplicity == FormMultiplicity.One)
             {
-                var smw = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
+                var smw = sourceElements.FindFirstSemanticId(desc.SingleSemanticId);
                 if (smw != null && smw.submodelElement != null)
                 {
                     var y = desc.CreateInstance(this, smw.submodelElement);
@@ -357,7 +357,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum > 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToMany || desc.Multiplicity == FormMultiplicity.OneToMany)
             {
-                foreach (var smw in sourceElements.FindAllSemanticId(desc.KeySemanticId))
+                foreach (var smw in sourceElements.FindAllSemanticId(desc.SingleSemanticId))
                     if (smw != null && smw.submodelElement != null)
                     {
                         var y = desc.CreateInstance(this, smw.submodelElement);
@@ -536,8 +536,8 @@ namespace AasxIntegrationBase.AasForms
             if (source?.description != null)
                 sm.description = new AdminShell.Description(source.description);
 
-            if (desc.KeySemanticId != null)
-                sm.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+            if (desc.SingleSemanticId != null)
+                sm.semanticId = new AdminShell.SemanticId(desc.SingleSemanticId);
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -611,8 +611,8 @@ namespace AasxIntegrationBase.AasForms
             if (source?.description != null)
                 sme.description = new AdminShell.Description(source.description);
 
-            if (desc.KeySemanticId != null)
-                sme.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+            if (desc.SingleSemanticId != null)
+                sme.semanticId = new AdminShell.SemanticId(desc.SingleSemanticId);
         }
 
         /// <summary>
@@ -1054,7 +1054,7 @@ namespace AasxIntegrationBase.AasForms
             if (reSource != null)
             {
                 // take over
-                re.value = new AdminShell.Reference(reSource.value);
+                re.value = new AdminShell.ModelReference(reSource.value);
             }
 
             // create user control

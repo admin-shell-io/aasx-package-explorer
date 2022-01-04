@@ -129,13 +129,13 @@ namespace AasxPredefinedConcepts.ConceptModel
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
-            if (sm.semanticId.MatchesExactlyOneKey(
-                    defsV10.SM_TechnicalData.GetSemanticKey()))
+            if (sm.semanticId.MatchesExactlyOneId(
+                    defsV10.SM_TechnicalData.GetAutoSingleId()))
                 InitFromVersion(Version.V1_0);
 
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
-            if (sm.semanticId.MatchesExactlyOneKey(
-                    defsV11.SM_TechnicalData.GetSemanticKey()))
+            if (sm.semanticId.MatchesExactlyOneId(
+                    defsV11.SM_TechnicalData.GetAutoSingleId()))
                 InitFromVersion(Version.V1_1);
         }
     }

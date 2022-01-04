@@ -50,15 +50,26 @@ namespace AasxIntegrationBase.AasForms
                     OnPropertyChanged("InfoReference");
                 }
             }
+            
             public string InfoReference
             {
                 get
                 {
-                    if (storedReference == null)
-                        return "(no reference set)";
-                    if (storedReference.Count < 1)
-                        return "(no Keys)";
-                    return storedReference.ToString(format: 1, delimiter: Environment.NewLine);
+                    if (storedReference is AdminShell.ModelReference modrf)
+                    {
+                        if (modrf.Count < 1)
+                            return "(no Keys)";
+                        return modrf.ToString(format: 1, delimiter: Environment.NewLine);
+                    }
+
+                    if (storedReference is AdminShell.GlobalReference glbrf)
+                    {
+                        if (glbrf.Count < 1)
+                            return "(no Keys)";
+                        return glbrf.ToString(format: 1, delimiter: Environment.NewLine);
+                    }
+
+                    return "(no reference set)";
                 }
             }
         }
@@ -134,7 +145,7 @@ namespace AasxIntegrationBase.AasForms
                         if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                         {
                             dc.instance.Touch();
-                            dc.refElem.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                            dc.refElem.value = AdminShell.ModelReference.CreateNew(rsel.resultKeys);
                             this.theViewModel.StoredReference = dc.refElem.value;
                         }
                     };

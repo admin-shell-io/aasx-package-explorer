@@ -23,7 +23,7 @@ namespace AasxPluginMtpViewer
         public enum MtpRecordType { MtpType, MtpInstance }
 
         public MtpRecordType RecordType = MtpRecordType.MtpType;
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
     public class MtpViewerOptions : AasxIntegrationBase.AasxPluginOptionsBase
@@ -43,11 +43,13 @@ namespace AasxPluginMtpViewer
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = new List<AdminShell.Identifier>(
+                new[] { defs.SEM_MtpSubmodel.GetAsIdentifier(strict: true) });
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = new List<AdminShell.Identifier>(
+                new[] { defs.SEM_MtpInstanceSubmodel.GetAsIdentifier(strict: true) });
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

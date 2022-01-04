@@ -382,8 +382,7 @@ namespace AasxPluginExportTable
                 var id = new AdminShell.Identifier(
                     AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription));
 
-                context.Sme.semanticId = new AdminShell.SemanticId(
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, id.value));
+                context.Sme.semanticId = new AdminShell.SemanticId(id.value);
             }
 
             // create, add

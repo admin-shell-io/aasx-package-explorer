@@ -1045,6 +1045,9 @@ namespace AdminShellNS
             public bool IsEmpty { get { return value == null || value.Count < 1; } }
             [XmlIgnore]
             [JsonIgnore]
+            public bool IsValid { get { return value != null && value.Count >= 1; } }
+            [XmlIgnore]
+            [JsonIgnore]
             public int Count { get { if (value == null) return 0; return value.Count; } }
             [XmlIgnore]
             [JsonIgnore]
@@ -1291,6 +1294,9 @@ namespace AdminShellNS
             [XmlIgnore]
             [JsonIgnore]
             public bool IsEmpty { get { return keys == null || keys.Count < 1; } }
+            [XmlIgnore]
+            [JsonIgnore]
+            public bool IsValid { get { return keys != null && keys.Count >= 1; } }
             [XmlIgnore]
             [JsonIgnore]
             public int Count { get { if (keys == null) return 0; return keys.Count; } }

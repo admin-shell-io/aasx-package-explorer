@@ -99,7 +99,7 @@ namespace AasxIntegrationBase.AasForms
         /// SemanticId of the SubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public AdminShell.Key KeySemanticId = new AdminShell.Key();
+        public AdminShell.Identifier SingleSemanticId = new AdminShell.Identifier();
 
         // Constructors
         //=============
@@ -107,11 +107,11 @@ namespace AasxIntegrationBase.AasForms
         public FormDescReferable() { }
 
         public FormDescReferable(
-            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
+            string formText, AdminShell.Identifier singleSemanticId, string presetIdShort, string formInfo = null)
             : base()
         {
             this.FormTitle = formText;
-            this.KeySemanticId = keySemanticId;
+            this.SingleSemanticId = singleSemanticId;
             this.PresetIdShort = presetIdShort;
             this.FormInfo = formInfo;
         }
@@ -122,7 +122,7 @@ namespace AasxIntegrationBase.AasForms
             // this part == static, therefore only shallow copy
             this.FormTitle = other.FormTitle;
             this.FormInfo = other.FormInfo;
-            this.KeySemanticId = other.KeySemanticId;
+            this.SingleSemanticId = other.SingleSemanticId;
             this.PresetIdShort = other.PresetIdShort;
             this.PresetCategory = other.PresetCategory;
             this.PresetDescription = other.PresetDescription;
@@ -164,8 +164,8 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodel() { }
 
         public FormDescSubmodel(
-            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
-            : base(formText, keySemanticId, presetIdShort, formInfo)
+            string formText, AdminShell.Identifier singleSemanticId, string presetIdShort, string formInfo = null)
+            : base(formText, singleSemanticId, presetIdShort, formInfo)
         {
         }
 
@@ -202,8 +202,8 @@ namespace AasxIntegrationBase.AasForms
             this.InitReferable(res);
 
             // has SemanticId
-            if (this.KeySemanticId != null)
-                res.semanticId = AdminShell.SemanticId.CreateFromKey(this.KeySemanticId);
+            if (this.SingleSemanticId != null)
+                res.semanticId = new AdminShell.SemanticId(this.SingleSemanticId);
 
             // has elements
             res.submodelElements = this.SubmodelElements.GenerateDefault();
@@ -292,9 +292,9 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElement() { }
 
         public FormDescSubmodelElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key keySemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
-            : base(formText, keySemanticId, presetIdShort, formInfo)
+            : base(formText, singleSemanticId, presetIdShort, formInfo)
         {
             this.Multiplicity = multiplicity;
             this.IsReadOnly = isReadOnly;
@@ -328,8 +328,8 @@ namespace AasxIntegrationBase.AasForms
             this.InitReferable(sme);
 
             // has SemanticId
-            if (this.KeySemanticId != null)
-                sme.semanticId = AdminShell.SemanticId.CreateFromKey(this.KeySemanticId);
+            if (this.SingleSemanticId != null)
+                sme.semanticId = new AdminShell.SemanticId(this.SingleSemanticId);
         }
     }
 
@@ -348,7 +348,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElementCollection() { }
 
         public FormDescSubmodelElementCollection(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, string presetIdShort,
             string formInfo = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo)
         {
@@ -441,7 +441,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescProperty() { }
 
         public FormDescProperty(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
             string presetValue = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -502,7 +502,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescMultiLangProp(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
@@ -546,7 +546,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescFile(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetMimeType = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -602,7 +602,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescReferenceElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)

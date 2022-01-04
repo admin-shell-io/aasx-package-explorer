@@ -193,12 +193,7 @@ namespace AasxPluginExportTable
             if (!cell.HasContent())
                 return null;
 
-            var key = AdminShell.Key.Parse(cell, AdminShell.Key.ConceptDescription,
-                        allowFmtAll: true);
-            if (key == null)
-                return null;
-
-            return new AdminShell.SemanticId(key);
+            return new AdminShell.SemanticId(cell);
         }
 
         private bool MatchEntity(
@@ -363,8 +358,7 @@ namespace AasxPluginExportTable
                 cd.IEC61360Content.unit = commit(cell);
 
             if (preset == "unitId")
-                cd.IEC61360Content.unitId = AdminShell.UnitId.CreateNew(
-                    AdminShell.Reference.Parse(commit(cell)));
+                cd.IEC61360Content.unitId = new AdminShell.UnitId(commit(cell));
 
             if (preset == "sourceOfDefinition")
                 cd.IEC61360Content.sourceOfDefinition = commit(cell);

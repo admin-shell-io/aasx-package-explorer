@@ -187,7 +187,7 @@ namespace AasxPluginMtpViewer
                 // Source list
                 foreach (var srcLst in this.theSubmodel.submodelElements
                     .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceList?.GetReference()))
+                        this.defsMtp.CD_SourceList.GetSingleId()))
                 {
                     // found a source list, might contain sources
                     if (srcLst?.value == null)
@@ -195,7 +195,7 @@ namespace AasxPluginMtpViewer
 
                     // UA Server?
                     foreach (var src in srcLst.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceOpcUaServer?.GetReference()))
+                        this.defsMtp.CD_SourceOpcUaServer.GetSingleId()))
                         if (src?.value != null)
                         {
                             // UA server
@@ -213,13 +213,13 @@ namespace AasxPluginMtpViewer
                 // Identifier renaming?
                 foreach (var ren in theSubmodel.submodelElements
                     .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    this.defsMtp.CD_IdentifierRenaming?.GetReference()))
+                    this.defsMtp.CD_IdentifierRenaming.GetSingleId()))
                     if (ren?.value != null)
                     {
                         var oldtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingOldText?.GetReference())?.value;
+                            this.defsMtp.CD_RenamingOldText.GetSingleId())?.value;
                         var newtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingNewText?.GetReference())?.value;
+                            this.defsMtp.CD_RenamingNewText.GetSingleId())?.value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.IdentifierRenaming != null)
                             preLoadInfo.IdentifierRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
@@ -228,13 +228,13 @@ namespace AasxPluginMtpViewer
                 // Namespace renaming?
                 foreach (var ren in theSubmodel.submodelElements
                     .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    this.defsMtp.CD_NamespaceRenaming?.GetReference()))
+                    this.defsMtp.CD_NamespaceRenaming.GetSingleId()))
                     if (ren?.value != null)
                     {
                         var oldtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingOldText?.GetReference())?.value;
+                            this.defsMtp.CD_RenamingOldText.GetSingleId())?.value;
                         var newtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingNewText?.GetReference())?.value;
+                            this.defsMtp.CD_RenamingNewText.GetSingleId())?.value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.NamespaceRenaming != null)
                             preLoadInfo.NamespaceRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
@@ -257,7 +257,7 @@ namespace AasxPluginMtpViewer
                 // another possibility: direct reference
                 var dirLink = this.theSubmodel.submodelElements
                     .FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                        this.defsMtp.CD_MtpTypeSubmodel?.GetReference());
+                        this.defsMtp.CD_MtpTypeSubmodel.GetSingleId());
                 var dirLinkSm = env.FindReferableByReference(dirLink?.value) as AdminShell.Submodel;
                 if (mtpTypeSm == null)
                     mtpTypeSm = dirLinkSm;

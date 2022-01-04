@@ -126,7 +126,7 @@ namespace AasxDictionaryImport
             var eds = cd.IEC61360DataSpec;
             if (eds != null)
             {
-                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetReference());
+                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetSingleId());
             }
 
             submodel.semanticId = new AdminShell.SemanticId(cd.GetReference());
@@ -142,7 +142,7 @@ namespace AasxDictionaryImport
             var eds = cd.IEC61360DataSpec;
             if (eds != null)
             {
-                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetReference());
+                eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetSemanticId());
             }
 
             submodelElement.semanticId = new AdminShell.SemanticId(cd.GetReference());
@@ -166,7 +166,7 @@ namespace AasxDictionaryImport
             //};
             // dead-csharp on
 
-            cd.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(data.Irdi));
+            cd.AddIsCaseOf(AdminShell.ModelReference.CreateIrdiReference(data.Irdi));
             env.ConceptDescriptions.Add(cd);
             return cd;
         }
@@ -410,8 +410,7 @@ namespace AasxDictionaryImport
             if (Unit.Length > 0)
                 ds.unit = Unit;
             if (UnitIrdi.Length > 0)
-                ds.unitId = AdminShell.UnitId.CreateNew(
-                    AdminShell.Key.GlobalReference, UnitIrdi);
+                ds.unitId = new AdminShell.UnitId(UnitIrdi);
             if (DataType.Length > 0)
                 ds.dataType = DataType;
             if (DataFormat.Length > 0)

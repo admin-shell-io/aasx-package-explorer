@@ -435,7 +435,7 @@ namespace AasxPluginDocumentShelf
                 // right now: hardcoded check for mdoel version
                 var modelVersion = DocumentEntity.SubmodelVersion.Default;
                 var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
+                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetAutoSingleKey()))
                     modelVersion = DocumentEntity.SubmodelVersion.V11;
                 if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
                     modelVersion = DocumentEntity.SubmodelVersion.V10;

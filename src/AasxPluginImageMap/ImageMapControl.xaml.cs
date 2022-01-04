@@ -139,7 +139,7 @@ namespace AasxPluginImageMap
 
             // file?
             var fe = this.theSubmodel.submodelElements.FindFirstSemanticIdAs<AdminShell.File>(
-                AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile.GetReference());
+                AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile.GetSingleId());
             if (fe == null)
                 return;
 
@@ -303,7 +303,7 @@ namespace AasxPluginImageMap
             // entities
             int index = -1;
             foreach (var ent in this.theSubmodel.submodelElements.FindAllSemanticIdAs<AdminShell.Entity>(
-                AasxPredefinedConcepts.ImageMap.Static.CD_EntityOfImageMap.GetReference()))
+                AasxPredefinedConcepts.ImageMap.Static.CD_EntityOfImageMap.GetSingleId()))
             {
                 // access
                 if (ent?.statements == null)
@@ -311,7 +311,7 @@ namespace AasxPluginImageMap
 
                 // find all regions known
                 foreach (var prect in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect.GetReference()))
+                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect.GetSingleId()))
                 {
                     // access
                     if (!(prect?.value.HasContent() == true))
@@ -339,7 +339,7 @@ namespace AasxPluginImageMap
                 }
 
                 foreach (var pcirc in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle.GetReference()))
+                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle.GetSingleId()))
                 {
                     // access
                     if (!(pcirc?.value.HasContent() == true))
@@ -367,7 +367,7 @@ namespace AasxPluginImageMap
                 }
 
                 foreach (var ppoly in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon.GetReference()))
+                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon.GetSingleId()))
                 {
                     // access
                     if (!(ppoly?.value.HasContent() == true))
@@ -462,12 +462,12 @@ namespace AasxPluginImageMap
                 {
                     // first check, if a navigate to reference element can be found
                     var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                        AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference());
+                        AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo.GetSingleId());
                     if (navTo?.value != null)
                     {
                         // try activate
                         var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                        ev.targetReference = new AdminShell.Reference(navTo.value);
+                        ev.targetReference = new AdminShell.ModelReference(navTo.value);
                         this.theEventStack?.PushEvent(ev);
                         return;
                     }
@@ -478,7 +478,7 @@ namespace AasxPluginImageMap
                     {
                         // try activate
                         var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                        ev.targetReference = new AdminShell.Reference(ent.assetRef);
+                        ev.targetReference = new AdminShell.ModelReference(ent.assetRef);
                         this.theEventStack?.PushEvent(ev);
                         return;
                     }

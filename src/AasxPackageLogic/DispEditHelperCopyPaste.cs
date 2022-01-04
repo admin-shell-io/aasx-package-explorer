@@ -244,7 +244,7 @@ namespace AasxPackageLogic
                         bufferKey = AdminShell.KeyList.CreateNew(
                             new AdminShell.Key("" + cpbi.entity.GetElementName(), cpbi.entity.id.value));
 
-                    if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetSemanticKey() != null)
+                    if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.GetAutoSingleKey() != null)
                         bufferKey = AdminShell.KeyList.CreateNew(cpbsm.sm.GetReference()?.First);
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null

@@ -379,7 +379,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 {
                     // gather data for this entity
                     var sme2 = ci.submodelElement;
-                    var cd = env.FindConceptDescription(sme2?.semanticId?.Keys);
+                    var cd = env.FindConceptDescription(sme2?.semanticId);
 
                     // add
                     listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,

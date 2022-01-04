@@ -75,8 +75,8 @@ namespace AasxPackageExplorer
                             sm.Add(propGroup[0]);
                             if (rows.Length > 3)
                             {
-                                if (rows[7] != "") propGroup[0].semanticId = new AdminShell.SemanticId(
-                                     AdminShell.Reference.CreateNew("ConceptDescription", rows[7]));
+                                if (rows[7] != "") 
+                                    propGroup[0].semanticId = new AdminShell.SemanticId(rows[7]);
                             }
                             propGroup[0].kind = AdminShell.ModelingKind.CreateAsInstance();
                         }
@@ -101,9 +101,7 @@ namespace AasxPackageExplorer
                             if (rows[6] != "") p.AddDescription("de", rows[6]);
                             p.kind = AdminShell.ModelingKind.CreateAsInstance();
                             if (rows[7] != "")
-                                p.semanticId = new AdminShell.SemanticId(
-                                    AdminShell.Reference.CreateNew(
-                                        "ConceptDescription", rows[7]));
+                                p.semanticId = new AdminShell.SemanticId(rows[7]);
                         }
                         if (i_propGroup == 0)
                         {

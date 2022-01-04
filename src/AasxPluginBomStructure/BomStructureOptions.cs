@@ -33,7 +33,8 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        public AdminShell.ModelReference GetReference(bool includeParents = true) 
+            => new AdminShell.ModelReference(Match);
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -44,7 +45,7 @@ namespace AasxPluginBomStructure
         public void Index()
         {
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.ModelReference.CreateNew(ls.Match), ls);
         }
     }
 
@@ -61,7 +62,8 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        public AdminShell.ModelReference GetReference(bool includeParents = true) 
+            => new AdminShell.ModelReference(Match);
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>
@@ -72,7 +74,7 @@ namespace AasxPluginBomStructure
         public void Index()
         {
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.ModelReference.CreateNew(ls.Match), ls);
         }
     }
 

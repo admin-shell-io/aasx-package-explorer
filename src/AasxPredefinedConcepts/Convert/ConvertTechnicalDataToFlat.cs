@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts.Convert
                             new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
             var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_TechnicalData.GetSemanticKey()))
+            if (sm != null && true == sm.GetAutoSingleKey()?.Matches(defs.SM_TechnicalData.GetAutoSingleKey()))
                 res.Add(new ConvertOfferTechnicalDataToFlat(this,
                         $"Convert Submodel '{"" + sm.idShort}' from Technical Data to flat Submodel"));
 
@@ -60,20 +60,17 @@ namespace AasxPredefinedConcepts.Convert
             // access Submodel (again)
             var sm = currentReferable as AdminShell.Submodel;
             if (sm == null || sm.submodelElements == null
-                || true != sm.GetSemanticKey()?.Matches(defsTD.SM_TechnicalData.GetSemanticKey()))
+                || true != sm.GetAutoSingleKey()?.Matches(defsTD.SM_TechnicalData.GetAutoSingleKey()))
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
             var smcOldTD = sm.submodelElements;
             sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                    AdminShell.Key.Submodel, 
-                    "http://admin-shell.io/sandbox/technical-data-flat/sm"));
+            sm.semanticId = new AdminShell.SemanticId("http://admin-shell.io/sandbox/technical-data-flat/sm");
 
             // find all technical properties
             foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                defsTD.CD_TechnicalProperties.GetSingleKey()))
+                defsTD.CD_TechnicalProperties.GetSingleId()))
             {
                 // access
                 if (smcTDP == null || smcTDP.value == null)
