@@ -34,7 +34,7 @@ namespace AasOpcUaServer
             return clean;
         }
 
-        public static string ToOpcUaReference(AdminShell.Reference refid)
+        public static string ToOpcUaReference(AdminShell.ModelReference refid)
         {
             if (refid == null || refid.IsEmpty)
                 return null;
@@ -51,7 +51,23 @@ namespace AasOpcUaServer
             return semstr;
         }
 
-        public static List<string> ToOpcUaReferenceList(AdminShell.Reference refid)
+        public static string ToOpcUaReference(AdminShell.GlobalReference refid)
+        {
+            if (refid == null || refid.IsEmpty)
+                return null;
+
+            var semstr = "";
+            foreach (var k in refid.Value)
+            {
+                if (semstr != "")
+                    semstr += ",";
+                semstr += String.Format("{0}", k.value);
+            }
+
+            return semstr;
+        }
+
+        public static List<string> ToOpcUaReferenceList(AdminShell.ModelReference refid)
         {
             if (refid == null || refid.IsEmpty)
                 return null;
@@ -59,8 +75,21 @@ namespace AasOpcUaServer
             var res = new List<string>();
             foreach (var k in refid.Keys)
             {
-                res.Add(String.Format("({0}){1}",
-                            k.type, k.value));
+                res.Add(String.Format("({0}){1}", k.value));
+            }
+
+            return res;
+        }
+
+        public static List<string> ToOpcUaReferenceList(AdminShell.GlobalReference refid)
+        {
+            if (refid == null || refid.IsEmpty)
+                return null;
+
+            var res = new List<string>();
+            foreach (var k in refid.Value)
+            {
+                res.Add(String.Format("{0}", k.value));
             }
 
             return res;

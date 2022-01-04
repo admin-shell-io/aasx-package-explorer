@@ -365,7 +365,7 @@ namespace AasOpcUaServer
 
                 if (mode == CreateMode.Instance && keyo != null)
                 {
-                    keyo.Value = AasUaUtils.ToOpcUaReference(AdminShell.Reference.CreateNew(keys));
+                    keyo.Value = AasUaUtils.ToOpcUaReference(AdminShell.ModelReference.CreateNew(keys));
                 }
             }
             else
@@ -376,7 +376,43 @@ namespace AasOpcUaServer
 
                 if (mode == CreateMode.Instance && keyo != null)
                 {
-                    keyo.Value = AasUaUtils.ToOpcUaReferenceList(AdminShell.Reference.CreateNew(keys))?.ToArray();
+                    keyo.Value = AasUaUtils.ToOpcUaReferenceList(AdminShell.ModelReference.CreateNew(keys))?.ToArray();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the "Keys" value information of an AAS Reference. This is especially important for referencing 
+        /// outwards of the AAS (environment).
+        /// </summary>
+        public void CreateAddKeyElements(NodeState parent, CreateMode mode, List<AdminShell.Identifier> ids = null)
+        {
+            if (parent == null)
+                return;
+
+            // MIHO: open62541 does not to process Values as string[], therefore change it temporarily
+
+            if (this.entityBuilder != null && this.entityBuilder.theServerOptions != null
+                && this.entityBuilder.theServerOptions.ReferenceKeysAsSingleString)
+            {
+                // fix for open62541
+                var keyo = this.entityBuilder.CreateAddPropertyState<string>(parent, mode, "Values",
+                    DataTypeIds.String, null, defaultSettings: true);
+
+                if (mode == CreateMode.Instance && keyo != null)
+                {
+                    keyo.Value = AasUaUtils.ToOpcUaReference(AdminShell.GlobalReference.CreateNew(ids));
+                }
+            }
+            else
+            {
+                // default behaviour
+                var keyo = this.entityBuilder?.CreateAddPropertyState<string[]>(parent, mode, "Values",
+                    DataTypeIds.Structure, null, defaultSettings: true);
+
+                if (mode == CreateMode.Instance && keyo != null)
+                {
+                    keyo.Value = AasUaUtils.ToOpcUaReferenceList(AdminShell.GlobalReference.CreateNew(ids))?.ToArray();
                 }
             }
         }
@@ -411,7 +447,7 @@ namespace AasOpcUaServer
             this.typeObject = this.entityBuilder.CreateAddObjectType("AASReferenceType",
                 ObjectTypeIds.BaseObjectType, preferredTypeNumId);
             // with some elements
-            this.CreateAddKeyElements(this.typeObject, CreateMode.Type);
+            this.CreateAddKeyElements(this.typeObject, CreateMode.Type, keys: null);
             this.CreateAddReferenceElements(this.typeObject, CreateMode.Type);
         }
 
@@ -437,16 +473,33 @@ namespace AasOpcUaServer
                     ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
                 // explicit strings?
-                this.CreateAddKeyElements(o, mode, reference.Keys);
+                if (reference is AdminShell.ModelReference modrf)
+                {
+                    this.CreateAddKeyElements(o, mode, modrf.Keys);
 
-                // find a matching concept description or other referable?
-                // as we do not have all other nodes realized, store a late action
-                this.entityBuilder.AddNodeLateAction(
-                    new AasEntityBuilder.NodeLateActionLinkToReference(
-                        o,
-                        reference,
-                        AasEntityBuilder.NodeLateActionLinkToReference.ActionType.SetAasReference
-                    ));
+                    // find a matching concept description or other referable?
+                    // as we do not have all other nodes realized, store a late action
+                    this.entityBuilder.AddNodeLateAction(
+                        new AasEntityBuilder.NodeLateActionLinkToReference(
+                            o,
+                            modrf,
+                            AasEntityBuilder.NodeLateActionLinkToReference.ActionType.SetAasReference
+                        ));
+                }
+
+                if (reference is AdminShell.GlobalReference glbrf)
+                {
+                    this.CreateAddKeyElements(o, mode, glbrf.Value);
+
+                    // find a matching concept description or other referable?
+                    // as we do not have all other nodes realized, store a late action
+                    this.entityBuilder.AddNodeLateAction(
+                        new AasEntityBuilder.NodeLateActionLinkToReference(
+                            o,
+                            AdminShell.ModelReference.CreateNew("?", glbrf.Value),
+                            AasEntityBuilder.NodeLateActionLinkToReference.ActionType.SetAasReference
+                        ));
+                }
 
                 // OK
                 return o;
@@ -487,14 +540,14 @@ namespace AasOpcUaServer
                     ReferenceTypeIds.HasComponent, GetTypeObject().NodeId);
 
                 // explicit strings?
-                this.CreateAddKeyElements(o, mode, semid.Keys);
+                this.CreateAddKeyElements(o, mode, semid.Value);
 
                 // find a matching concept description or other referable?
                 // as we do not have all other nodes realized, store a late action
                 this.entityBuilder.AddNodeLateAction(
                     new AasEntityBuilder.NodeLateActionLinkToReference(
                         parent,
-                        new AdminShell.Reference(semid),
+                        AdminShell.ModelReference.CreateNew(AdminShell.Key.ConceptDescription, semid?.Value),
                         AasEntityBuilder.NodeLateActionLinkToReference.ActionType.SetDictionaryEntry
                     ));
 
@@ -1587,7 +1640,7 @@ namespace AasOpcUaServer
 
                 if (ds.unitId != null)
                     this.entityBuilder.AasTypes.Reference.CreateAddElements(o, mode,
-                        AdminShell.Reference.CreateNew(ds.unitId?.Keys), "UnitId");
+                        AdminShell.GlobalReference.CreateNew(ds.unitId?.Value), "UnitId");
 
                 if (ds.sourceOfDefinition != null)
                     this.entityBuilder.CreateAddPropertyState<string>(o, mode, "SourceOfDefinition",

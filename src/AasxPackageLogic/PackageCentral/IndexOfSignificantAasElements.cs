@@ -41,7 +41,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public AdminShell.Reference Reference;
+        public AdminShell.ModelReference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!

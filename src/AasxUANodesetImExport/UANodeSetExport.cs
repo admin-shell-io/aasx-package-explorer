@@ -306,7 +306,7 @@ namespace AasxUANodesetImExport
             return null;
         }
 
-        private static string CreateAASQualifier(string type, string value, AdminShell.Reference valueId)
+        private static string CreateAASQualifier(string type, string value, AdminShell.GlobalReference valueId)
         {
             UAObject qual = new UAObject();
             qual.NodeId = "ns=1;i=" + masterID.ToString();
@@ -323,11 +323,11 @@ namespace AasxUANodesetImExport
                     "HasProperty", CreateProperty(value, "1:AASPropertyType", "QualifierValue", "String")));
             if (valueId != null)
             {
-                foreach (AdminShell.Key key in valueId.Keys)
+                foreach (AdminShell.Identifier key in valueId.Value)
                 {
                     refs.Add(
                         CreateReference(
-                            "HasComponent", CreateKey("", "true", key.type, key.value)));
+                            "HasComponent", CreateKey("", "true", "", key.value)));
                 }
             }
 
@@ -775,11 +775,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASSemanticIdType"));
 
-            foreach (AdminShell.Key key in sem.Keys)
+            foreach (AdminShell.Identifier key in sem.Value)
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey("", "true", key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", "", key.value)));
             }
 
             ident.References = refs.ToArray();
@@ -1092,12 +1092,20 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            if (_ref != null)
-                foreach (AdminShell.Key key in _ref.Keys)
+            if (_ref is AdminShell.ModelReference modrf)
+                foreach (AdminShell.Key key in modrf.Keys)
                 {
                     refs.Add(
                         CreateReference(
                             "HasComponent", CreateKey("", "true", key.type, key.value)));
+                }
+
+            if (_ref is AdminShell.GlobalReference  glbrf)
+                foreach (AdminShell.Identifier id in glbrf.Value)
+                {
+                    refs.Add(
+                        CreateReference(
+                            "HasComponent", CreateKey("", "true", "", id.value)));
                 }
 
             obj.References = refs.ToArray();
@@ -1114,11 +1122,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShell.Key key in ass.Keys)
+            foreach (AdminShell.Identifier key in ass.Value)
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey("", "true", key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", "", key.value)));
             }
 
             obj.References = refs.ToArray();

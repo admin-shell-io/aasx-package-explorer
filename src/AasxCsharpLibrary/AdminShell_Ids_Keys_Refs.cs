@@ -1132,6 +1132,16 @@ namespace AdminShellNS
                 return r;
             }
 
+            public static GlobalReference CreateNew(List<Identifier> loi)
+            {
+                if (loi == null)
+                    return null;
+                var r = new GlobalReference();
+                foreach (var id in loi)
+                    r.value.Add(id);
+                return r;
+            }
+
             public static GlobalReference CreateNew(ModelReference mref)
             {
                 if (mref?.Keys == null)
@@ -1192,6 +1202,10 @@ namespace AdminShellNS
                 return Matches(new GlobalReference(other), matchMode);
             }
 
+            public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+            {
+                return Matches(cd?.GetSemanticId(), matchMode);
+            }
 
             // other
 
@@ -1375,7 +1389,7 @@ namespace AdminShellNS
                 return r;
             }
 
-            public static ModelReference CreateNew(Identifier id, string keyType)
+            public static ModelReference CreateNew(string keyType, Identifier id)
             {
                 if (id == null)
                     return null;
@@ -1384,7 +1398,7 @@ namespace AdminShellNS
                 return r;
             }
 
-            public static ModelReference CreateNew(ListOfIdentifier loi, string keyType)
+            public static ModelReference CreateNew(string keyType, ListOfIdentifier loi)
             {
                 if (loi == null)
                     return null;

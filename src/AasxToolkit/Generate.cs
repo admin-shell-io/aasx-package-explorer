@@ -950,9 +950,8 @@ namespace AasxToolkit
 
             var la001 = new AdminShell.Entity(
                 AdminShell.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
-                new AdminShell.AssetRef(
-                    AdminShell.Reference.CreateNew(
-                        "Asset", "example.com/assets/23224234234232342343234")));
+                AdminShell.ModelReference.CreateNew(
+                        AdminShell.Key.AssetInformation, "example.com/assets/23224234234232342343234"));
             sub1.Add(la001);
             var la001_1 = AdminShell.Property.CreateNew(
                 "1", "CONSTANT", cdContact1.GetSemanticId());

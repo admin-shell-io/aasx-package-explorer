@@ -628,7 +628,7 @@ namespace AasxPackageLogic
                     jumpLambda: (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            AdminShell.ModelReference.CreateNew(kl, AdminShell.Key.ConceptDescription));
+                            AdminShell.ModelReference.CreateNew(AdminShell.Key.ConceptDescription, kl));
                     },
                     relatedReferable: relatedReferable);
         }
