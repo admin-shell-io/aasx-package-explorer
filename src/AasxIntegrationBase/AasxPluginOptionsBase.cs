@@ -69,7 +69,8 @@ namespace AasxIntegrationBase
         public void TryLoadAdditionalOptionsFromAssemblyDir<T>(
             string pluginName, Assembly assy = null,
             JsonSerializerSettings settings = null,
-            LogInstance log = null) where T : AasxPluginOptionsBase
+            LogInstance log = null
+            ) where T : AasxPluginOptionsBase
         {
             // expand assy?
             if (assy == null)
@@ -87,9 +88,17 @@ namespace AasxIntegrationBase
                 try
                 {
                     var optText = File.ReadAllText(fn);
-                    optText = AdminShellSerializationHelper.FixSerializedVersionedEntities(optText);
-                    var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
-                    this.Merge(opts);
+
+                    if (optText.Contains(".AdminShellV20+"))
+                    {
+
+                    }
+                    else
+                    {
+                        // assume current version
+                        var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
+                        this.Merge(opts);
+                    }
                 }
                 catch (Exception ex)
                 {

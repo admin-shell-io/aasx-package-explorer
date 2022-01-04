@@ -182,6 +182,9 @@ namespace AdminShellNS
             return serializer;
         }
 
+        /// <summary>
+        /// This does not work enough
+        /// </summary>
         public static string FixSerializedVersionedEntities(string txt)
         {
             txt = txt.Replace(".AdminShellV20+", ".AdminShellV30+");
