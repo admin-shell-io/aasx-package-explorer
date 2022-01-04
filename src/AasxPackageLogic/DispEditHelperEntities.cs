@@ -1163,7 +1163,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                  {
                      return new AnyUiLambdaActionNavigateTo(
-                         AdminShell.Reference.CreateNew(kl), alsoDereferenceObjects: false);
+                         AdminShell.ModelReference.CreateNew(kl), alsoDereferenceObjects: false);
                  };
 
                 this.AddKeyListKeys(
@@ -1723,7 +1723,7 @@ namespace AasxPackageLogic
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
                 addPresetKeyLists: new[] {
-                    AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
+                    new AdminShell.ListOfIdentifier(AdminShell.DataSpecificationIEC61360.GetIdentifier())},
                 dataSpecRefsAreUsual: true, relatedReferable: cd);
 
             // the IEC61360 Content
@@ -3417,7 +3417,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.first, "Second relation:", "Create data element!",
                         v =>
                         {
-                            rele.second = new AdminShell.Reference();
+                            rele.second = new AdminShell.ModelReference();
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3516,7 +3516,7 @@ namespace AasxPackageLogic
                         stack, repo, ent.assetRef, "Asset:", "Create data element!",
                         v =>
                         {
-                            ent.assetRef = new AdminShell.AssetRef();
+                            ent.assetRef = new AdminShell.ModelReference();
                             this.AddDiaryEntry(ent, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3563,7 +3563,7 @@ namespace AasxPackageLogic
                         stack, repo, bev.observed, "observed:", "Create data element!",
                         v =>
                         {
-                            bev.observed = new AdminShell.Reference();
+                            bev.observed = new AdminShell.ModelReference();
                             this.AddDiaryEntry(bev, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3574,7 +3574,7 @@ namespace AasxPackageLogic
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                            return new AnyUiLambdaActionNavigateTo(AdminShell.ModelReference.CreateNew(kl));
                         },
                         relatedReferable: bev);
                 }

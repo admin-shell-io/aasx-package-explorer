@@ -873,10 +873,10 @@ namespace AasxPackageLogic
                 if (showCDinfo)
                 {
                     // cache ConceptDescription?
-                    if (sme.semanticId != null && sme.semanticId.Keys != null)
+                    if (sme.semanticId != null && !sme.semanticId.IsEmpty)
                     {
                         if (this._cachedCD == null)
-                            this._cachedCD = this.theEnv.FindConceptDescription(sme.semanticId.Keys);
+                            this._cachedCD = this.theEnv.FindConceptDescription(sme.semanticId);
                         var iecprop = this._cachedCD?.GetIEC61360();
                         if (iecprop != null)
                         {
@@ -1843,16 +1843,17 @@ namespace AasxPackageLogic
 
         public class SupplementaryReferenceInformation
         {
-            public AdminShell.Reference CleanReference;
+            public AdminShell.ModelReference CleanReference;
 
             public string SearchPluginTag = null;
         }
 
-        public static SupplementaryReferenceInformation StripSupplementaryReferenceInformation(AdminShell.Reference rf)
+        public static SupplementaryReferenceInformation StripSupplementaryReferenceInformation(
+            AdminShell.ModelReference rf)
         {
             // in any case, provide record
             var sri = new SupplementaryReferenceInformation();
-            sri.CleanReference = new AdminShell.Reference(rf);
+            sri.CleanReference = new AdminShell.ModelReference(rf);
 
             // plug-in?
             var srl = sri.CleanReference.Last;

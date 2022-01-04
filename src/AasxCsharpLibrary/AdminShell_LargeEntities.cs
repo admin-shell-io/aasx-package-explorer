@@ -446,6 +446,7 @@ namespace AdminShellNS
             public UnitId(Identifier id) : base(id) { }
             public UnitId(UnitId src) : base(src) { }
 
+            public UnitId(GlobalReference src) : base(src) { }
             public UnitId(Reference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -938,6 +939,15 @@ namespace AdminShellNS
             }
 
             public Identifier GetSingleId()
+            {
+                return new Identifier(this.id.value);
+            }
+
+            /// <summary>
+            /// In order to be semantically precise, use this id to figure out
+            /// the single id zo be put in a semantic id.
+            /// </summary>
+            public Identifier GetSemanticId()
             {
                 return new Identifier(this.id.value);
             }
@@ -1483,12 +1493,7 @@ namespace AdminShellNS
             }
 
             public SubmodelRef GetSubmodelRef()
-            {
-                SubmodelRef l = new SubmodelRef();
-                l.Keys.Add(
-                    Key.CreateNew(this.GetElementName(), this.id.value));
-                return l;
-            }
+                => new SubmodelRef(GetReference());
 
             /// <summary>
             ///  If instance, return semanticId as one key.

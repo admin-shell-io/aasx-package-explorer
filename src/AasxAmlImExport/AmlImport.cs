@@ -95,7 +95,7 @@ namespace AasxAmlImExport
                 Console.WriteLine("{0}{1}", new String(' ', 2 * indentation), st);
             }
 
-            public AdminShell.Reference ParseAmlReference(string refstr)
+            public AdminShell.ModelReference ParseAmlReference(string refstr)
             {
                 // trivial
                 if (refstr == null)
@@ -107,7 +107,7 @@ namespace AasxAmlImExport
                     return null;
 
                 // build a Reference
-                var res = new AdminShell.Reference();
+                var res = new AdminShell.ModelReference();
 
                 // over all entries
                 foreach (var rs in refstrs)
@@ -301,7 +301,7 @@ namespace AasxAmlImExport
                                 type = qt,
                                 value = qv,
                                 semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(sid)?.Keys),
-                                valueId = ParseAmlReference(qvid)
+                                valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(qvid))
                             };
 
                             // add
@@ -323,7 +323,7 @@ namespace AasxAmlImExport
                 foreach (var a in aseq)
                     if (CheckAttributeFoRefSemantic(a, AmlConst.Attributes.DataSpecificationRef))
                     {
-                        var r = ParseAmlReference(a.Value);
+                        var r = AdminShell.GlobalReference.CreateNew(ParseAmlReference(a.Value));
                         if (r != null)
                         {
                             if (res == null)
@@ -572,7 +572,7 @@ namespace AasxAmlImExport
                                 if (aasref == null)
                                     return;
                                 // get a "real" reference of this
-                                var theref = new AdminShell.Reference();
+                                var theref = new AdminShell.ModelReference();
                                 aasref.CollectReferencesByParent(theref.Keys);
                                 // nooooooooooow, set this
                                 if (targetId == 1 && target is AdminShell.ReferenceElement tre)
@@ -646,7 +646,7 @@ namespace AasxAmlImExport
 
                         p.value = value;
                         if (valueId != null)
-                            p.valueId = ParseAmlReference(valueId);
+                            p.valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(valueId));
                         if (valueAttr != null)
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
@@ -684,7 +684,7 @@ namespace AasxAmlImExport
                         if (value.langString != null)
                             mlp.value = new AdminShell.LangStringSet(value.langString);
                         if (valueId != null)
-                            mlp.valueId = ParseAmlReference(valueId);
+                            mlp.valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(valueId));
                     }
 
                     if (sme is AdminShell.Blob smeb)
@@ -765,7 +765,7 @@ namespace AasxAmlImExport
                         var assetRef = FindAttributeValueByRefSemantic(
                                 ie.Attribute, AmlConst.Attributes.Entity_asset);
                         if (assetRef != null)
-                            ent.assetRef = new AdminShell.AssetRef(ParseAmlReference(assetRef));
+                            ent.assetRef = ParseAmlReference(assetRef);
                     }
 
                     // ok
@@ -804,7 +804,7 @@ namespace AasxAmlImExport
                         cd.category = cat;
 
                     // special data
-                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.Reference>(
+                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.ModelReference>(
                         aseq, AmlConst.Attributes.CD_IsCaseOf, (s) => { return ParseAmlReference(s); });
 
                     // result
@@ -832,8 +832,8 @@ namespace AasxAmlImExport
 
                 ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-                ds.unitId = AdminShell.UnitId.CreateNew(
-                    ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)));
+                ds.unitId = new AdminShell.UnitId(AdminShell.GlobalReference.CreateNew(
+                        ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId))));
 
                 ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
@@ -1337,8 +1337,8 @@ namespace AasxAmlImExport
                                             var hds = FindAttributeValueByRefSemantic(
                                                 ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)
-                                                eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(
-                                                    ParseAmlReference(hds));
+                                                eds.dataSpecification = new AdminShell.DataSpecificationRef(
+                                                    AdminShell.GlobalReference.CreateNew(ParseAmlReference(hds)));
 
                                             // make 61360 data
                                             eds.dataSpecificationContent = new AdminShell.DataSpecificationContent()
