@@ -74,10 +74,8 @@ namespace AasxPluginSmdExporter
             Bom = new AdminShellNS.AdminShell.Submodel();
             Bom.idShort = name_sm;
             Bom.id.value = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
-            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId();
-            Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
-            Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
-            Bom.semanticId.Keys[0].type = "Submodel";
+            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId(
+                "http://example.com/id/type/submodel/BOM/1/1");
 
             String bom_json = Newtonsoft.Json.JsonConvert.SerializeObject(Bom);
 
@@ -330,17 +328,15 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         public AdminShellNS.AdminShell.SemanticId SetSemanticIdRelEle(IOput input, IOput output, int type)
         {
-            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.index = 0;
-            key.type = "ConceptDescription";
+            var strkey = "";
             switch (type)
             {
-                case 0: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); break;
-                case 1: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); break;
-                case 2: key.value = "mechanic"; break;
+                case 0: strkey = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); break;
+                case 1: strkey = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); break;
+                case 2: strkey = "mechanic"; break;
             }
-            semantic.JsonKeys.Add(key);
+
+            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId(strkey);
             return semantic;
         }
     }

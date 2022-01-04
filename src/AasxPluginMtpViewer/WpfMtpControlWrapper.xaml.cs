@@ -200,7 +200,7 @@ namespace AasxPluginMtpViewer
                         {
                             // UA server
                             var ep = src.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                this.defsMtp.CD_Endpoint.GetReference())?.value;
+                                this.defsMtp.CD_Endpoint.GetSingleId())?.value;
 
                             // add
                             if (preLoadInfo?.EndpointMapping != null)
@@ -276,7 +276,7 @@ namespace AasxPluginMtpViewer
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
             this.activeMtpFileElem = mtpTypeSm.submodelElements?
-                .FindFirstSemanticIdAs<AdminShell.File>(this.defsMtp.CD_MtpFile.GetReference());
+                .FindFirstSemanticIdAs<AdminShell.File>(this.defsMtp.CD_MtpFile.GetSingleId());
             var inputFn = this.activeMtpFileElem?.value;
             if (inputFn == null)
                 return false;
@@ -346,12 +346,12 @@ namespace AasxPluginMtpViewer
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFtn.ToString(1)}");
 
                 foreach (var fileToNav in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(
-                this.defsInterop?.CD_FileToNavigateElement?.GetReference()))
+                    this.defsInterop?.CD_FileToNavigateElement?.GetSingleId()))
                     if (fileToNav.first?.Matches(firstFtn) == true)
                     {
                         // try activate
                         var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                        ev.targetReference = new AdminShell.Reference(fileToNav.second);
+                        ev.targetReference = new AdminShell.ModelReference(fileToNav.second);
                         this.theEventStack?.PushEvent(ev);
                         return;
                     }
@@ -364,7 +364,7 @@ namespace AasxPluginMtpViewer
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFte.ToString(1)}");
 
                 foreach (var fileToEnt in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(
-                this.defsInterop?.CD_FileToEntity?.GetReference()))
+                    this.defsInterop?.CD_FileToEntity?.GetSingleId()))
                     if (fileToEnt.first?.Matches(firstFte) == true)
                     {
                         // debug
@@ -378,7 +378,7 @@ namespace AasxPluginMtpViewer
                         {
                             // try activate
                             var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                            ev.targetReference = new AdminShell.Reference(foundEnt.assetRef);
+                            ev.targetReference = new AdminShell.ModelReference(foundEnt.assetRef);
                             this.theEventStack?.PushEvent(ev);
                             return;
                         }

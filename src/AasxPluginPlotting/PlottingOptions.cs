@@ -18,7 +18,7 @@ namespace AasxPluginPlotting
 {
     public class PlottingOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
     public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase
@@ -32,7 +32,7 @@ namespace AasxPluginPlotting
         {
             var rec = new PlottingOptionsRecord();
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.Plotting.Static.SEM_PlottingSubmodel.GetAsExactlyOneKey());
+                AasxPredefinedConcepts.Plotting.Static.SEM_PlottingSubmodel.GetAsIdentifier());
 
             var opt = new PlottingOptions();
             opt.Records.Add(rec);

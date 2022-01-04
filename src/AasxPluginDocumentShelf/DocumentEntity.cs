@@ -55,8 +55,8 @@ namespace AasxPluginDocumentShelf
         public string[] DeleteFilesAfterLoading = null;
 
         public enum DocRelationType { DocumentedEntity, RefersTo, BasedOn, Affecting, TranslationOf };
-        public List<Tuple<DocRelationType, AdminShell.Reference>> Relations =
-            new List<Tuple<DocRelationType, AdminShell.Reference>>();
+        public List<Tuple<DocRelationType, AdminShell.ModelReference>> Relations =
+            new List<Tuple<DocRelationType, AdminShell.ModelReference>>();
 
         public class FileInfo
         {
@@ -293,7 +293,7 @@ namespace AasxPluginDocumentShelf
                     continue;
 
                 // add
-                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, AdminShell.Reference>(
+                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, AdminShell.ModelReference>(
                     drt, re.value));
             }
         }
