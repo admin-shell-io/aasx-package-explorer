@@ -435,7 +435,7 @@ namespace AasxPluginDocumentShelf
                 // right now: hardcoded check for mdoel version
                 var modelVersion = DocumentEntity.SubmodelVersion.Default;
                 var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetAutoSingleKey()))
+                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetAutoSingleId()))
                     modelVersion = DocumentEntity.SubmodelVersion.V11;
                 if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
                     modelVersion = DocumentEntity.SubmodelVersion.V10;
@@ -670,11 +670,11 @@ namespace AasxPluginDocumentShelf
             }
 
             // check for a document reference
-            if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
+            if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.ModelReference> reltup
                 && reltup.Item2 != null && reltup.Item2.Count > 0)
             {
                 var evt = new AasxPluginResultEventNavigateToReference();
-                evt.targetReference = new AdminShell.Reference(reltup.Item2);
+                evt.targetReference = new AdminShell.ModelReference(reltup.Item2);
                 this.theEventStack.PushEvent(evt);
             }
         }

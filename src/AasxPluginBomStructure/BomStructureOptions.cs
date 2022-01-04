@@ -80,7 +80,7 @@ namespace AasxPluginBomStructure
 
     public class BomStructureOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
 
         public int Layout;
         public bool? Compact;
@@ -149,9 +149,7 @@ namespace AasxPluginBomStructure
         public static BomStructureOptions CreateDefault()
         {
             var rec = new BomStructureOptionsRecord();
-            rec.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                value: "http://smart.festo.com/id/type/submodel/BOM/1/1"));
+            rec.AllowSubmodelSemanticId.Add("http://smart.festo.com/id/type/submodel/BOM/1/1");
 
             var opt = new BomStructureOptions();
             opt.Records.Add(rec);

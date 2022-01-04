@@ -18,7 +18,7 @@ namespace AasxPluginTechnicalData
 {
     public class TechnicalDataOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
     public class TechnicalDataOptions : AasxIntegrationBase.AasxPluginOptionsBase
@@ -40,11 +40,11 @@ namespace AasxPluginTechnicalData
             var opt = new TechnicalDataOptions();
 
             var rec10 = new TechnicalDataOptionsRecord();
-            rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetAutoSingleKey());
+            rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetAutoSingleId());
             opt.Records.Add(rec10);
 
             var rec11 = new TechnicalDataOptionsRecord();
-            rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetAutoSingleKey());
+            rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetAutoSingleId());
             opt.Records.Add(rec11);
 
             return opt;

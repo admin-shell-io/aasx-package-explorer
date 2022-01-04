@@ -18,7 +18,7 @@ namespace AasxPluginImageMap
 {
     public class ImageMapOptionsOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
     public class ImageMapOptions : AasxIntegrationBase.AasxPluginOptionsBase
@@ -32,7 +32,7 @@ namespace AasxPluginImageMap
         {
             var rec = new ImageMapOptionsOptionsRecord();
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.ImageMap.Static.SEM_ImageMapSubmodel.GetAsExactlyOneKey());
+                AasxPredefinedConcepts.ImageMap.Static.SEM_ImageMapSubmodel.GetAsIdentifier());
 
             var opt = new ImageMapOptions();
             opt.Records.Add(rec);

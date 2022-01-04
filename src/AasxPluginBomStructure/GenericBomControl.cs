@@ -234,15 +234,15 @@ namespace AasxPluginBomStructure
                             if (refs.Count > 0)
                             {
                                 var evt = new AasxPluginResultEventNavigateToReference();
-                                evt.targetReference = AdminShell.Reference.CreateNew(refs);
+                                evt.targetReference = AdminShell.ModelReference.CreateNew(refs);
                                 this.eventStack.PushEvent(evt);
                             }
                         }
 
-                        if (us is AdminShell.Reference)
+                        if (us is AdminShell.ModelReference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
-                            evt.targetReference = (us as AdminShell.Reference);
+                            evt.targetReference = (us as AdminShell.ModelReference);
                             this.eventStack.PushEvent(evt);
                         }
                     }
