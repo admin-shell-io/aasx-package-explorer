@@ -99,33 +99,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         [JsonProperty(Order = 8)]
         public AdminShellV20.Key KeySemanticId = new AdminShellV20.Key();
 
-        // Constructors
-        //=============
-
-        public FormDescReferableV20() { }
-
-        public FormDescReferableV20(
-            string formText, AdminShellV20.Key keySemanticId, string presetIdShort, string formInfo = null)
-            : base()
-        {
-            this.FormTitle = formText;
-            this.KeySemanticId = keySemanticId;
-            this.PresetIdShort = presetIdShort;
-            this.FormInfo = formInfo;
-        }
-
-        public FormDescReferableV20(FormDescReferableV20 other)
-            : base()
-        {
-            // this part == static, therefore only shallow copy
-            this.FormTitle = other.FormTitle;
-            this.FormInfo = other.FormInfo;
-            this.KeySemanticId = other.KeySemanticId;
-            this.PresetIdShort = other.PresetIdShort;
-            this.PresetCategory = other.PresetCategory;
-            this.PresetDescription = other.PresetDescription;
-        }
-
     }
 
     /// <summary>
@@ -141,23 +114,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         [JsonProperty(Order = 800)]
         public FormDescListOfElementV20 SubmodelElements = null;
 
-        // Constructors
-        //=============
-
-        public FormDescSubmodelV20() { }
-
-        public FormDescSubmodelV20(
-            string formText, AdminShellV20.Key keySemanticId, string presetIdShort, string formInfo = null)
-            : base(formText, keySemanticId, presetIdShort, formInfo)
-        {
-        }
-
-        public FormDescSubmodelV20(FormDescSubmodelV20 other)
-            : base(other)
-        {
-            // this part == static, therefore only shallow copy
-            this.SubmodelElements = other.SubmodelElements;
-        }
     }
 
 
@@ -167,20 +123,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
     [DisplayName("FormListOfElement")]
     public class FormDescListOfElementV20 : List<FormDescSubmodelElementV20>
     {
-
-        // Constructors
-        //=============
-
-        public FormDescListOfElementV20() { }
-
-        public FormDescListOfElementV20(FormDescListOfElementV20 other)
-        {
-            if (other == null)
-                return;
-            foreach (var o in other)
-                this.Add(o);
-        }
-
     }
 
     [DisplayName("FormSubmodelElement")]
@@ -205,28 +147,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         /// </summary>
         public string SlaveOfIdShort = null;
 
-        // Constructors
-        //=============
-
-        public FormDescSubmodelElementV20() { }
-
-        public FormDescSubmodelElementV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId, string presetIdShort,
-            string formInfo = null, bool isReadOnly = false)
-            : base(formText, singleSemanticId, presetIdShort, formInfo)
-        {
-            this.Multiplicity = multiplicity;
-            this.IsReadOnly = isReadOnly;
-        }
-
-        public FormDescSubmodelElementV20(FormDescSubmodelElementV20 other)
-            : base(other)
-        {
-            // this part == static, therefore only shallow copy
-            this.Multiplicity = other.Multiplicity;
-            this.IsReadOnly = other.IsReadOnly;
-        }
-
     }
 
     [DisplayName("FormSubmodelElementCollection")]
@@ -237,26 +157,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         /// </summary>
         [JsonProperty(Order = 800)]
         public FormDescListOfElementV20 value = new FormDescListOfElementV20();
-
-        // Constructors
-        //=============
-
-        public FormDescSubmodelElementCollectionV20() { }
-
-        public FormDescSubmodelElementCollectionV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, string presetIdShort,
-            string formInfo = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo)
-        {
-        }
-
-        public FormDescSubmodelElementCollectionV20(FormDescSubmodelElementCollectionV20 other)
-            : base(other)
-        {
-            if (other.value != null)
-                foreach (var ov in other.value)
-                    this.value.Add(new FormDescSubmodelElementV20(ov));
-        }
 
     }
 
@@ -296,34 +196,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         [JsonProperty(Order = 23)]
         public Dictionary<string, string> valueFromMasterValue = null;
 
-        // Constructors
-        //=============
-
-        public FormDescPropertyV20() { }
-
-        public FormDescPropertyV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
-            string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
-            string presetValue = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
-        {
-            // init
-            if (valueType != null)
-                this.allowedValueTypes = new[] { valueType };
-            if (presetValue != null)
-                this.presetValue = presetValue;
-        }
-
-        public FormDescPropertyV20(FormDescPropertyV20 other)
-            : base(other)
-        {
-            // this part == static, therefore only shallow copy
-            this.allowedValueTypes = other.allowedValueTypes;
-            this.presetValue = other.presetValue;
-            this.comboBoxChoices = other.comboBoxChoices;
-            this.valueFromComboBoxIndex = other.valueFromComboBoxIndex;
-        }
-
     }
 
     [DisplayName("FormMultiLangProp")]
@@ -333,20 +205,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
         public FormDescMultiLangPropV20() { }
 
-        // Constructors
-        //=============
-
-        public FormDescMultiLangPropV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, string presetIdShort,
-            string formInfo = null, bool isReadOnly = false)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
-        {
-        }
-
-        public FormDescMultiLangPropV20(FormDescMultiLangPropV20 other)
-            : base(other)
-        {
-        }
     }
 
     [DisplayName("FormFile")]
@@ -360,25 +218,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 
         public FormDescFileV20() { }
 
-        // Constructors
-        //=============
-
-        public FormDescFileV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
-            string presetIdShort, string formInfo = null, bool isReadOnly = false,
-            string presetMimeType = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
-        {
-            if (presetMimeType != null)
-                this.presetMimeType = presetMimeType;
-        }
-
-        public FormDescFileV20(FormDescFileV20 other)
-            : base(other)
-        {
-            // this part == static, therefore only shallow copy
-            this.presetMimeType = other.presetMimeType;
-        }
     }
 
     [DisplayName("FormReferenceElement")]
@@ -391,26 +230,6 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
         public string presetFilter = "";
 
         public FormDescReferenceElementV20() { }
-
-        // Constructors
-        //=============
-
-        public FormDescReferenceElementV20(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
-            string presetIdShort, string formInfo = null, bool isReadOnly = false,
-            string presetFilter = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
-        {
-            if (presetFilter != null)
-                this.presetFilter = presetFilter;
-        }
-
-        public FormDescReferenceElementV20(FormDescReferenceElementV20 other)
-            : base(other)
-        {
-            // this part == static, therefore only shallow copy
-            this.presetFilter = other.presetFilter;
-        }
     }
 
 }

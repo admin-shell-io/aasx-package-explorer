@@ -47,18 +47,51 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // need special settings
                 var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase),
+                    typeof(AasxCompatibilityModels.AdminShellV20) });
+
+                // TESTING
+
+                //var optfn = System.IO.Path.Combine(
+                //        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                //        "AasxPluginGenericForms_SG2_TechnicalData_v11.add-options.json");
+
+                //var optText = File.ReadAllText(optfn);
+
+                //optText = optText.Replace("AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+");
+
+                //var testV20 = Newtonsoft.Json.JsonConvert.DeserializeObject
+                //    <AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20>(optText, settings);
+
+                //var testV30 = new AasxPluginGenericForms.GenericFormOptions(testV20);
+
+                var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
+                upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
+                {
+                    Info = "meta-model V2.0.1",
+                    Trigger = "AdminShellNS.AdminShellV20+",
+                    OldRootType = typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
+                    Replacements = new Dictionary<string, string>()
+                    {
+                        { "AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+" }
+                    },
+                    UpgradeLambda = (old) => new AasxPluginGenericForms.GenericFormOptions(
+                        old as AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20)
+                });
 
                 // base options
-                var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
+                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, 
+                        this.Log, upgrades.ToArray());
                 if (newOpt != null)
                     this.options = newOpt;
 
                 // try find additional options
-                this.options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, this.Log);
+                this.options.TryLoadAdditionalOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, 
+                        this.Log, upgrades.ToArray());
             }
             catch (Exception ex)
             {

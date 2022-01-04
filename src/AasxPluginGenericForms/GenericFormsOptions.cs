@@ -43,6 +43,10 @@ namespace AasxPluginGenericForms
         /// </summary>
         public AdminShell.ListOfConceptDescriptions ConceptDescriptions = null;
 
+        // Constructors
+
+        public GenericFormsOptionsRecord() { }
+
 #if !DoNotUseAasxCompatibilityModels
         public GenericFormsOptionsRecord(
             AasxCompatibilityModels.AasxPluginGenericForms.GenericFormsOptionsRecordV20 src) : base()
@@ -51,6 +55,12 @@ namespace AasxPluginGenericForms
             FormTitle = src.FormTitle;
             if (src.FormSubmodel != null)
                 FormSubmodel = new FormDescSubmodel(src.FormSubmodel);
+            if (src.ConceptDescriptions != null)
+            {
+                ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
+                foreach (var ocd in src.ConceptDescriptions)
+                    ConceptDescriptions.Add(new AdminShell.ConceptDescription(ocd));
+            }
         }
 #endif
 
@@ -68,6 +78,20 @@ namespace AasxPluginGenericForms
         //
 
         public List<GenericFormsOptionsRecord> Records = new List<GenericFormsOptionsRecord>();
+
+        // Constructors
+
+        public GenericFormOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public GenericFormOptions(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20 src)
+            : base()
+        {
+            if (src.Records != null)
+                foreach (var rec in src.Records)
+                    Records.Add(new GenericFormsOptionsRecord(rec));
+        }
+#endif
 
         /// <summary>
         /// Create a set of minimal options
