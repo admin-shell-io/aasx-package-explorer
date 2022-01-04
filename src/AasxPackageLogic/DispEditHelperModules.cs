@@ -305,7 +305,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
+            string[] addPresetNames = null, AdminShell.ListOfIdentifier[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
             AdminShell.Referable relatedReferable = null)
         {
@@ -359,9 +359,9 @@ namespace AasxPackageLogic
                 {
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                         if (hasDataSpecification[i].dataSpecification != null)
-                            this.AddKeyListKeys(
+                            this.AddKeyListOfIdentifier(
                                 stack, String.Format("reference[{0}]", i),
-                                hasDataSpecification[i].dataSpecification.Keys,
+                                hasDataSpecification[i].dataSpecification.Value,
                                 repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
@@ -599,15 +599,15 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                                () => { return checkForCD &&
-                                    semanticId[0].type != AdminShell.Key.ConceptDescription; },
+                                () => !(semanticId.First?.IsIRDI() == true
+                                        || semanticId.First?.IsIRI() == true),
                                 "The semanticId usually refers to a ConceptDescription " +
-                                    "within the respective repository.",
+                                    "identified by IRI or IRDI.",
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
             // add from Copy Buffer
-            var bufferKeys = CopyPasteBuffer.PreparePresetsForListKeys(cpb);
+            var bufferKeys = CopyPasteBuffer.PreparePresetsForListOfIdentifier(cpb);
 
             // add the keys
             if (this.SafeguardAccess(
@@ -618,8 +618,8 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListKeys(
-                    stack, "semanticId", semanticId.Keys, repo,
+                this.AddKeyListOfIdentifier(
+                    stack, "semanticId", semanticId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addEclassIrdi: true,
@@ -627,7 +627,8 @@ namespace AasxPackageLogic
                     addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) =>
                     {
-                        return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        return new AnyUiLambdaActionNavigateTo(
+                            AdminShell.ModelReference.CreateNew(kl, AdminShell.Key.ConceptDescription));
                     },
                     relatedReferable: relatedReferable);
         }
@@ -771,8 +772,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo,
+                this.AddKeyListOfIdentifier(
+                    stack, "unitId", dsiec.unitId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true,
                     relatedReferable: relatedReferable);

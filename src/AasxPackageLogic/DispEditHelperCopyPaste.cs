@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
@@ -133,10 +134,7 @@ namespace AasxPackageLogic
             public void TryFixSmRefIfNull()
             {
                 if (smref == null && sm?.id != null)
-                {
-                    smref = new AdminShell.SubmodelRef(new AdminShell.Reference(
-                        new AdminShell.Key(AdminShell.Key.Submodel, sm.id.value)));
-                }
+                    smref = sm.GetSubmodelRef();
             }
 
             public static CopyPasteItemSubmodel ConvertFrom(AdminShell.Referable rf)
@@ -266,6 +264,17 @@ namespace AasxPackageLogic
                 return new Tuple<string[], AdminShell.KeyList[]>(
                     (bufferKey == null) ? null : new[] { label },
                     (bufferKey == null) ? null : new[] { bufferKey }
+                );
+            }
+
+            public static Tuple<string[], AdminShell.ListOfIdentifier[]> PreparePresetsForListOfIdentifier(
+                CopyPasteBuffer cpb, string label = "Paste")
+            {
+                var tupkey = PreparePresetsForListKeys(cpb, label);
+                return new Tuple<string[], AdminShell.ListOfIdentifier[]>(
+                    (tupkey == null) ? null : tupkey.Item1,
+                    (tupkey == null) ? null : tupkey.Item2.Select(
+                        (kl) => AdminShell.ListOfIdentifier.CreateNew(kl)).ToArray()
                 );
             }
 

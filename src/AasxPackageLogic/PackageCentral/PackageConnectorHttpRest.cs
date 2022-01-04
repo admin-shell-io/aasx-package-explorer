@@ -326,7 +326,7 @@ namespace AasxPackageLogic.PackageCentral
                             if (wrappers != null)
                             {
                                 var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
+                                    wrappers, AdminShell.ModelReference.CreateNew(kl), keyIndex: 0);
                                 if (x is AdminShell.Property prop)
                                 {
                                     if (tuple.value != null)

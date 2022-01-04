@@ -932,21 +932,21 @@ namespace AasxRestServerLibrary
                 // SubnmodelElement general
                 row.idShorts = path + (sme.idShort ?? "(-)");
                 row.typeName = sme.GetElementName();
-                if (sme.semanticId == null || sme.semanticId.Keys == null)
+                if (sme.semanticId == null || sme.semanticId.Value == null)
                 { }
-                else if (sme.semanticId.Keys.Count > 1)
+                else if (sme.semanticId.Value.Count > 1)
                 {
                     row.semId = "(complex)";
                 }
                 else
                 {
-                    row.semId = sme.semanticId.Keys[0].value;
+                    row.semId = sme.semanticId.First.value;
                 }
 
                 // try find a concept description
                 if (sme.semanticId != null)
                 {
-                    var cd = this.Package.AasEnv.FindConceptDescription(sme.semanticId.Keys);
+                    var cd = this.Package.AasEnv.FindConceptDescription(sme.semanticId);
                     if (cd != null)
                     {
                         var ds = cd.GetIEC61360();

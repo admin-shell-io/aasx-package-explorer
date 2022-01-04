@@ -175,28 +175,45 @@ namespace AasxAmlImExport
                 return null;
 
             var semstr = "";
-            foreach (var k in semid.Keys)
-                semstr += String.Format(
-                    "({0}){1}", k.type, k.value);
+            foreach (var v in semid.Value)
+                semstr += String.Format("{0}", v.value);
 
             return semstr;
         }
 
         private static string ToAmlReference(AdminShell.Reference refid)
         {
-            if (refid == null || refid.IsEmpty)
-                return null;
-
-            var semstr = "";
-            foreach (var k in refid.Keys)
+            if (refid is AdminShell.ModelReference modrf && !modrf.IsEmpty)
             {
-                if (semstr != "")
-                    semstr += ",";
-                semstr += String.Format(
-                    "({0}){1}", k.type, k.value);
+                // TODO (MIHO, 2022-01-03): this does not export referredSemId!
+
+                var semstr = "";
+                foreach (var k in modrf.Keys)
+                {
+                    if (semstr != "")
+                        semstr += ",";
+                    semstr += String.Format(
+                        "({0}){1}", k.type, k.value);
+                }
+
+                return semstr;
             }
 
-            return semstr;
+            if (refid is AdminShell.GlobalReference glbrf && !glbrf.IsEmpty)
+            {
+                var semstr = "";
+                foreach (var v in glbrf.Value)
+                {
+                    if (semstr != "")
+                        semstr += ",";
+                    semstr += String.Format(
+                        "{0}", v.value);
+                }
+
+                return semstr;
+            }
+
+            return null;
         }
 
         private static void SetSemanticId(AttributeSequence aseq, AdminShell.SemanticId semid)
@@ -302,7 +319,7 @@ namespace AasxAmlImExport
                     }
 
                     // try find the referenced element as Referable in the AAS environment
-                    var targetReferable = env.FindReferableByReference(refInReferable);
+                    var targetReferable = env.FindReferableByReference(refInReferable as AdminShell.ModelReference);
                     if (targetReferable != null && internalLinksToCreate != null)
                     {
                         internalLinksToCreate.Add(
@@ -850,7 +867,7 @@ namespace AasxAmlImExport
                 if (source61360.unitId != null)
                     AppendAttributeNameAndRole(
                         dest61360, "unitId", AmlConst.Attributes.CD_DSC61360_UnitId,
-                        ToAmlReference(AdminShell.Reference.CreateNew(source61360.unitId.Keys)));
+                        ToAmlReference(AdminShell.GlobalReference.CreateNew(source61360.unitId.Value)));
                 if (source61360.valueFormat != null)
                     AppendAttributeNameAndRole(
                         dest61360, "valueFormat", AmlConst.Attributes.CD_DSC61360_ValueFormat,
@@ -921,8 +938,7 @@ namespace AasxAmlImExport
                             if (y is AdminShell.Submodel smkt)
                             {
                                 if (smkt.kind != null && smkt.kind.IsTemplate &&
-                                    smki.semanticId.Matches(
-                                        AdminShell.Key.Submodel, smkt.id.value))
+                                    smki.semanticId.Matches(smkt.id.value))
                                 {
                                     // we have a match: Submodel kind = Instance -> Submodel kind = Type
                                     var smki_aml = matcher.GetAmlObject(smki) as InternalElementType;

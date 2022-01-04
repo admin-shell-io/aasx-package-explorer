@@ -2542,8 +2542,8 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListKeys(
-                        substack, "semanticId", qual.semanticId.Keys, repo,
+                    AddKeyListOfIdentifier(
+                        substack, "semanticId", qual.semanticId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: AdminShell.Key.AllElements,
                         addEclassIrdi: true,
@@ -2572,12 +2572,12 @@ namespace AasxPackageLogic
                         substack, repo, qual.valueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            qual.valueId = new AdminShell.Reference();
+                            qual.valueId = new AdminShell.GlobalReference();
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListKeys(substack, "valueId", qual.valueId.Keys, repo,
+                    AddKeyListOfIdentifier(substack, "valueId", qual.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         relatedReferable: relatedReferable);
                 }

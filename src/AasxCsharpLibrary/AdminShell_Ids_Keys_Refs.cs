@@ -200,6 +200,23 @@ namespace AdminShellNS
 
         public class ListOfIdentifier : List<Identifier>
         {
+            // constructors / creators
+
+            public ListOfIdentifier() : base() { }
+            public ListOfIdentifier(Identifier id) : base() { if (id != null) Add(id); }
+            public ListOfIdentifier(ListOfIdentifier loi) : base() { if (loi != null) AddRange(loi); }
+
+            public static ListOfIdentifier CreateNew(KeyList kl)
+            {
+                if (kl == null)
+                    return null;
+                var res = new ListOfIdentifier();
+                foreach (var k in kl)
+                    if (k?.value != null)
+                        res.Add(new Identifier(k?.value));
+                return res;
+            }
+
             // Member operation
 
             public void AddRange(List<Key> kl)
@@ -1000,56 +1017,6 @@ namespace AdminShellNS
             }
         }
 
-        //
-        // <<abstract>> Reference
-        //
-
-        [XmlType(TypeName = "reference")]
-        public class GenReference<T,LIST> : IAasElement 
-            where LIST : List<T>, new()
-            where T : new()
-        {
-            // protected member (not serialized directly)
-            protected LIST _elements;
-
-            // other members
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public bool IsEmpty { get { return _elements == null || _elements.Count < 1; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public int Count { get { if (_elements == null) return 0; return _elements.Count; } }
-            [XmlIgnore]
-            [JsonIgnore]
-            public T this[int index] { get { return _elements[index]; } }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public T First { get { return this.Count < 1 ? default(T) : this._elements[0]; } }
-
-            [XmlIgnore]
-            [JsonIgnore]
-            public T Last { get { return this.Count < 1 ? default(T) : _elements[_elements.Count - 1]; } }
-
-            // self description
-
-            public virtual AasElementSelfDescription GetSelfDescription()
-            {
-                return new AasElementSelfDescription("Reference", "Rfc");
-            }
-
-            public virtual string GetElementName()
-            {
-                return this.GetSelfDescription()?.ElementName;
-            }
-        }
-
-        public class GlobalReference2 : GenReference<Identifier, ListOfIdentifier>
-        {
-
-        }
-
         /// <summary>
         /// STILL TODO
         /// </summary>
@@ -1163,6 +1130,21 @@ namespace AdminShellNS
                 var r = new GlobalReference();
                 r.value.AddRange(loi);
                 return r;
+            }
+
+            public static GlobalReference CreateNew(ModelReference mref)
+            {
+                if (mref?.Keys == null)
+                    return null;
+                var r = new GlobalReference();                
+                foreach (var key in mref.Keys)
+                    r.value.Add(key?.value);
+                return r;
+            }
+
+            public static GlobalReference CreateIrdiReference(string irdi)
+            {
+                return new GlobalReference("" + irdi);
             }
 
             // Matching
@@ -1390,6 +1372,25 @@ namespace AdminShellNS
                     return null;
                 var r = new ModelReference();
                 r.keys.AddRange(k);
+                return r;
+            }
+
+            public static ModelReference CreateNew(Identifier id, string keyType)
+            {
+                if (id == null)
+                    return null;
+                var r = new ModelReference();
+                r.keys.Add(new Key(keyType, id));
+                return r;
+            }
+
+            public static ModelReference CreateNew(ListOfIdentifier loi, string keyType)
+            {
+                if (loi == null)
+                    return null;
+                var r = new ModelReference();
+                foreach (var id in loi)
+                    r.keys.Add(new Key(keyType, id));
                 return r;
             }
 

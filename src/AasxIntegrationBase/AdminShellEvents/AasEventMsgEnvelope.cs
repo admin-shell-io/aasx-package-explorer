@@ -35,7 +35,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
-        public AdminShell.Reference Source { get; set; }
+        public AdminShell.ModelReference Source { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  source  EventElement,  if available.
@@ -46,7 +46,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
         /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
-        public AdminShell.Reference ObservableReference { get; set; }
+        public AdminShell.ModelReference ObservableReference { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  Referable,  which  defines  the scope of the event, if available. 
@@ -166,9 +166,9 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasEventMsgEnvelope(
             DateTime timestamp,
-            AdminShell.Reference source = null,
+            AdminShell.ModelReference source = null,
             AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
+            AdminShell.ModelReference observableReference = null,
             AdminShell.SemanticId observableSemanticId = null,
             string topic = null,
             string subject = null,

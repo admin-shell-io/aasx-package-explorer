@@ -2934,10 +2934,10 @@ namespace AdminShellNS
                 }
                 this.entityType = ent.entityType;
                 if (ent.assetRef != null)
-                    this.assetRef = new AssetRef(ent.assetRef);
+                    this.assetRef = new ModelReference(ent.assetRef);
             }
 
-            public Entity(EntityTypeEnum entityType, string idShort = null, AssetRef assetRef = null,
+            public Entity(EntityTypeEnum entityType, string idShort = null, ModelReference assetRef = null,
                 string category = null, Identifier semanticIdKey = null)
             {
                 CreateNewLogic(idShort, null, semanticIdKey);
@@ -2960,7 +2960,7 @@ namespace AdminShellNS
                 }
                 this.entityType = src.entityType;
                 if (src.assetRef != null)
-                    this.assetRef = new AssetRef(src.assetRef);
+                    this.assetRef = new ModelReference(src.assetRef);
             }
 #endif
 
