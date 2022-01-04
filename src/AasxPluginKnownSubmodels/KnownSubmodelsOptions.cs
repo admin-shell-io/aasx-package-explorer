@@ -45,7 +45,7 @@ namespace AasxPluginKnownSubmodels
                 FurtherUrl = "https://github.com/admin-shell-io/id"
             };
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.ZveiContactInformationV10.Static.SM_ContactInformation.GetSemanticKey());
+                AasxPredefinedConcepts.ZveiContactInformationV10.Static.SM_ContactInformation.GetAutoSingleKey());
 
             var opt = new KnownSubmodelsOptions();
             opt.Records.Add(rec);

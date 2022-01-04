@@ -519,7 +519,7 @@ namespace AasxPackageLogic
                     res.id.value = input[i].IRDI;
 
                     // isCase of
-                    res.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(input[i].IRDI));
+                    res.AddIsCaseOf(AdminShell.ModelReference.CreateIrdiReference(input[i].IRDI));
 
                     // administration
                     res.administration = new AdminShell.Administration();
@@ -563,8 +563,8 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.unitId = AdminShell.UnitId.CreateNew(
-                                                AdminShell.Key.GlobalReference, urefIrdi.Trim());
+                                            ds.unitId = new AdminShell.UnitId(
+                                                new AdminShell.Identifier(urefIrdi.Trim()));
                                             ds.unit = xiun.InnerText.Trim();
                                         }
                                 }

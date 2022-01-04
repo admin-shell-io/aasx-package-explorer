@@ -142,7 +142,7 @@ namespace AasxPredefinedConcepts
             string idShort,
             string id,
             string definitionHereString,
-            AdminShell.Reference isCaseOf = null)
+            AdminShell.ModelReference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
@@ -157,7 +157,7 @@ namespace AasxPredefinedConcepts
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<AdminShell.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<AdminShell.ModelReference>(new[] { isCaseOf });
 
             // ok
             return cd;

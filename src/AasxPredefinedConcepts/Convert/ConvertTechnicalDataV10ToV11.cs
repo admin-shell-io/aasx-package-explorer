@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
             var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_TechnicalData.GetSemanticKey()))
+            if (sm != null && true == sm.GetAutoSingleKey()?.Matches(defs.SM_TechnicalData.GetAutoSingleKey()))
                 res.Add(new ConvertOfferTechnicalDataV10ToV11(this,
                             $"Convert Submodel '{"" + sm.idShort}' for Technical Data (ZVEI) V1.0 to V1.1"));
 
@@ -69,11 +69,11 @@ namespace AasxPredefinedConcepts.Convert
                     // what to create?
                     AdminShell.SubmodelElementCollection smcSectDst = null;
 
-                    if (smcSectSrc.semanticId?.Matches(defsV10.CD_MainSection.GetSingleKey()) == true)
+                    if (smcSectSrc.semanticId?.Matches(defsV10.CD_MainSection.GetSingleId()) == true)
                         smcSectDst = smcDest.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
                             defsV11.CD_MainSection, addSme: false);
 
-                    if (smcSectSrc.semanticId?.Matches(defsV10.CD_SubSection.GetSingleKey()) == true)
+                    if (smcSectSrc.semanticId?.Matches(defsV10.CD_SubSection.GetSingleId()) == true)
                         smcSectDst = smcDest.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
                             defsV11.CD_SubSection, addSme: false);
 
@@ -100,7 +100,7 @@ namespace AasxPredefinedConcepts.Convert
 
                     // do some fix for "non-standardized"
                     if (sme.submodelElement.semanticId?
-                        .MatchesExactlyOneKey(defsV10.CD_NonstandardizedProperty.GetSingleKey()) == true)
+                        .MatchesExactlyOneId(defsV10.CD_NonstandardizedProperty.GetSingleId()) == true)
                     {
                         // fix
                         sme.submodelElement.semanticId = new AdminShell.SemanticId(
@@ -126,14 +126,14 @@ namespace AasxPredefinedConcepts.Convert
             // access Submodel (again)
             var sm = currentReferable as AdminShell.Submodel;
             if (sm == null || sm.submodelElements == null ||
-                    true != sm.GetSemanticKey()?.Matches(defsV10.SM_TechnicalData.GetSemanticKey()))
+                    true != sm.GetAutoSingleKey()?.Matches(defsV10.SM_TechnicalData.GetAutoSingleKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
             var smcV10 = sm.submodelElements;
             sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(defsV11.SM_TechnicalData.GetSemanticKey());
+            sm.semanticId = new AdminShell.SemanticId(defsV11.SM_TechnicalData.GetAutoSingleId());
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -162,7 +162,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // General Info (target cardinality: 1)
             foreach (var smcV10gi in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsV10.CD_GeneralInformation.GetSingleKey()))
+                        defsV10.CD_GeneralInformation.GetSingleId()))
             {
                 // make a new one
                 var smcV11gi = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -192,7 +192,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // Product Classifications (target cardinality: 1)
             foreach (var smcV10pcs in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsV10.CD_ProductClassifications.GetSingleKey()))
+                        defsV10.CD_ProductClassifications.GetSingleId()))
             {
                 // make a new one
                 var smcV11pcs = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -200,7 +200,7 @@ namespace AasxPredefinedConcepts.Convert
 
                 // Product Classification Items (target cardinality: 1..n)
                 foreach (var smcV10pci in smcV10pcs.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            defsV10.CD_ProductClassificationItem.GetSingleKey()))
+                            defsV10.CD_ProductClassificationItem.GetSingleId()))
                 {
                     // make a new one
                     var smcV11pci = smcV11pcs.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -223,7 +223,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // TechnicalProperties (target cardinality: 1)
             foreach (var smcV10prop in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsV10.CD_TechnicalProperties.GetSingleKey()))
+                        defsV10.CD_TechnicalProperties.GetSingleId()))
             {
                 // make a new one
                 var smcV11prop = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
@@ -235,7 +235,7 @@ namespace AasxPredefinedConcepts.Convert
 
             // Further Info (target cardinality: 1)
             foreach (var smcV10fi in smcV10.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsV10.CD_FurtherInformation.GetSingleKey()))
+                        defsV10.CD_FurtherInformation.GetSingleId()))
             {
                 // make a new one
                 var smcV11fi = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(

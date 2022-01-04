@@ -1499,13 +1499,24 @@ namespace AdminShellNS
             ///  If instance, return semanticId as one key.
             ///  If template, return identification as key.
             /// </summary>
-            /// <returns></returns>
-            public Key GetSemanticKey()
+            public Key GetAutoSingleKey()
             {
                 if (true == this.kind?.IsTemplate)
                     return new Key(this.GetElementName(), this.id?.value);
                 else
                     return this.semanticId?.GetAsExactlyOneKey();
+            }
+
+            /// <summary>
+            ///  If instance, return semanticId as one key.
+            ///  If template, return identification as key.
+            /// </summary>
+            public Identifier GetAutoSingleId()
+            {
+                if (true == this.kind?.IsTemplate)
+                    return new Identifier(this.id);
+                else
+                    return this.semanticId?.GetAsIdentifier(strict: true);
             }
 
             public void AddDataSpecification(Identifier id)

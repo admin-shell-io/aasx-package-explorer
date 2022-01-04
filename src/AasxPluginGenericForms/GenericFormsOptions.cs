@@ -73,14 +73,14 @@ namespace AasxPluginGenericForms
 
             rec.FormSubmodel = new FormDescSubmodel(
                 "Submodel Root",
-                new AdminShell.Key("Submodel", "www.exmaple.com/sms/1112"),
+                new AdminShell.Identifier("www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
                 formText: "Sample Property",
                 multiplicity: FormMultiplicity.OneToMany,
-                smeSemanticId: new AdminShell.Key("ConceptDescription", "www.example.com/cds/1113"),
+                smeSemanticId: new AdminShell.Identifier("www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",
                 valueType: "string",
                 presetValue: "123"));
@@ -94,8 +94,8 @@ namespace AasxPluginGenericForms
             GenericFormsOptionsRecord res = null;
             if (Records != null)
                 foreach (var rec in Records)
-                    if (rec?.FormSubmodel?.KeySemanticId != null)
-                        if (sem != null && sem.Matches(rec.FormSubmodel.KeySemanticId))
+                    if (rec?.FormSubmodel?.SingleSemanticId != null)
+                        if (sem != null && sem.Matches(rec.FormSubmodel.SingleSemanticId))
                         {
                             res = rec;
                             break;

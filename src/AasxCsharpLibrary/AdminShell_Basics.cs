@@ -405,8 +405,8 @@ namespace AdminShellNS
             public DataSpecificationRef() : base() { }
 
             public DataSpecificationRef(DataSpecificationRef src) : base(src) { }
-
             public DataSpecificationRef(GlobalReference src) : base(src) { }
+            public DataSpecificationRef(Identifier src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels
             public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.DataSpecificationRef src) : base(src) { }
@@ -967,7 +967,6 @@ namespace AdminShellNS
             public SemanticId() : base() { }
             public SemanticId(Identifier id) : base(id) { }
             public SemanticId(SemanticId src) : base(src) { }
-
             public SemanticId(Reference src) : base(src) { }
 
 #if !DoNotUseAasxCompatibilityModels

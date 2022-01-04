@@ -270,7 +270,7 @@ namespace AasxFormatCst
 
         public void ExportSingleSubmodel(
             AdminShellPackageEnv env, string path,
-            AdminShell.Key smId,
+            AdminShell.Identifier smId,
             IEnumerable<AdminShell.Referable> cdReferables,
             CstIdObjectBase firstNodeId,
             CstIdObjectBase secondNodeId,

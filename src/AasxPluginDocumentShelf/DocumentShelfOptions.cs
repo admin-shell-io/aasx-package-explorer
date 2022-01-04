@@ -70,7 +70,7 @@ namespace AasxPluginDocumentShelf
 
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleKey());
 
             //
             // further models for CAD

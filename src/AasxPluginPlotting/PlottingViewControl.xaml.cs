@@ -1507,23 +1507,23 @@ namespace AasxPluginPlotting
             // challenge is to select SMes, which are NOT from a known semantic id!
             var tsvAllowed = new[]
             {
-                pcts.CD_RecordId.GetSingleKey(),
-                pcts.CD_UtcTime.GetSingleKey(),
-                pcts.CD_TaiTime.GetSingleKey(),
-                pcts.CD_Time.GetSingleKey(),
-                pcts.CD_TimeDuration.GetSingleKey(),
-                pcts.CD_ValueArray.GetSingleKey(),
-                pcts.CD_ExternalDataFile.GetSingleKey()
+                pcts.CD_RecordId.GetSingleId(),
+                pcts.CD_UtcTime.GetSingleId(),
+                pcts.CD_TaiTime.GetSingleId(),
+                pcts.CD_Time.GetSingleId(),
+                pcts.CD_TimeDuration.GetSingleId(),
+                pcts.CD_ValueArray.GetSingleId(),
+                pcts.CD_ExternalDataFile.GetSingleId()
             };
 
             var tsrAllowed = new[]
             {
-                pcts.CD_RecordId.GetSingleKey(),
-                pcts.CD_UtcTime.GetSingleKey(),
-                pcts.CD_TaiTime.GetSingleKey(),
-                pcts.CD_Time.GetSingleKey(),
-                pcts.CD_TimeDuration.GetSingleKey(),
-                pcts.CD_ValueArray.GetSingleKey()
+                pcts.CD_RecordId.GetSingleId(),
+                pcts.CD_UtcTime.GetSingleId(),
+                pcts.CD_TaiTime.GetSingleId(),
+                pcts.CD_Time.GetSingleId(),
+                pcts.CD_TimeDuration.GetSingleId(),
+                pcts.CD_ValueArray.GetSingleId()
             };
 
             // find variables?

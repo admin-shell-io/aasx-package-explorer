@@ -228,7 +228,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (smName.Contains("V1.1"))
                 {
                     sm.semanticId = new AdminShell.SemanticId(
-                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleKey());
                     sm.idShort = "ManufacturerDocumentation";
                 }
                 else

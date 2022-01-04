@@ -556,12 +556,8 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         private AdminShellNS.AdminShell.SemanticId createSemanticIdSummingPoint()
         {
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum");
-            key.type = "ConceptDescription";
-            key.index = 0;
-            semanticId.Keys.Add(key);
+            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId(
+                SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Sum"));
             return semanticId;
         }
 
@@ -656,12 +652,8 @@ namespace AasxPluginSmdExporter
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
 
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.value = SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult");
-            key.type = "ConceptDescription";
-            key.index = 0;
-            semanticId.Keys.Add(key);
+            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId(
+                SemanticPort.GetInstance().GetSemanticForPort("BoM_SmdComp_Mult"));
 
             foreach (var simmod in SimulationsModels.Values)
             {
@@ -826,12 +818,8 @@ namespace AasxPluginSmdExporter
             List<SimulationModel> newSimMod = new List<SimulationModel>();
 
 
-            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.value = "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033";
-            key.type = "ConceptDescription";
-            key.index = 0;
-            semanticId.Keys.Add(key);
+            AdminShellNS.AdminShell.SemanticId semanticId = new AdminShellNS.AdminShell.SemanticId(
+                "www.tedz.itsowl.com/ids/cd/1132_9030_2102_4033");
 
             List<List<IOput>> nodeLists = new List<List<IOput>>();
 

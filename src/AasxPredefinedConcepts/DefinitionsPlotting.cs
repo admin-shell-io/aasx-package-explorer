@@ -37,9 +37,7 @@ namespace AasxPredefinedConcepts
 
             // Referable
             SEM_PlottingSubmodel = new AdminShell.SemanticId(
-                AdminShell.Key.CreateNew(
-                    type: "Submodel",
-                    value: "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0"));
+                "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0");
 
             // dummy .. to be replaced later
             CD_Dummy = CreateSparseConceptDescription("en", "IRI",

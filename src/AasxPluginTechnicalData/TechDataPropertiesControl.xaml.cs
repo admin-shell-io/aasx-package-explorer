@@ -82,7 +82,7 @@ namespace AasxPluginTechnicalData
                 // make up semantics
                 if (sme.semanticId != null)
                 {
-                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleKey()))
+                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleId()))
                         semantics = "(not available)";
                     else
                     {
@@ -118,7 +118,7 @@ namespace AasxPluginTechnicalData
 
                 // special function?
                 if (sme is AdminShell.SubmodelElementCollection &&
-                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleId()))
                 {
                     // finalize current row group??
                     ;
@@ -145,7 +145,7 @@ namespace AasxPluginTechnicalData
                 }
                 else
                 if (sme is AdminShell.SubmodelElementCollection &&
-                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey()))
+                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleId()))
                 {
                     // finalize current row group??
                     ;
@@ -201,7 +201,7 @@ namespace AasxPluginTechnicalData
             // section Properties
             var smcProps =
                 sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    theDefs.CD_TechnicalProperties.GetSingleKey());
+                    theDefs.CD_TechnicalProperties.GetSingleId());
             if (smcProps == null)
                 return null;
 

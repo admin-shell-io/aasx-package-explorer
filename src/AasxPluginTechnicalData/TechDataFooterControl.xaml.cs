@@ -44,18 +44,18 @@ namespace AasxPluginTechnicalData
 
             // section General
             var smcFurther = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                theDefs.CD_FurtherInformation.GetSingleKey());
+                theDefs.CD_FurtherInformation.GetSingleId());
             if (smcFurther != null)
             {
                 // single items
                 TextBoxValidDate.Text = "" + smcFurther.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                    theDefs.CD_ValidDate.GetSingleKey())?.value;
+                    theDefs.CD_ValidDate.GetSingleId())?.value;
 
                 // Lines
                 var tsl = new List<string>();
                 foreach (var smw in
                     smcFurther.value.FindAllSemanticId(
-                        theDefs.CD_TextStatement.GetSingleKey(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
+                        theDefs.CD_TextStatement.GetSingleId(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
                     tsl.Add("" + smw?.submodelElement?.ValueAsText(defaultLang));
 
 

@@ -40,11 +40,11 @@ namespace AasxPluginTechnicalData
             var opt = new TechnicalDataOptions();
 
             var rec10 = new TechnicalDataOptionsRecord();
-            rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetSemanticKey());
+            rec10.AllowSubmodelSemanticId.Add(defsV10.SM_TechnicalData.GetAutoSingleKey());
             opt.Records.Add(rec10);
 
             var rec11 = new TechnicalDataOptionsRecord();
-            rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetSemanticKey());
+            rec11.AllowSubmodelSemanticId.Add(defsV11.SM_TechnicalData.GetAutoSingleKey());
             opt.Records.Add(rec11);
 
             return opt;
