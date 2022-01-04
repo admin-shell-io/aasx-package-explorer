@@ -40,9 +40,64 @@ namespace AasxIntegrationBase
         {
         }
 
+        protected static T LoadOptionsFromJson<T>(
+            string json, string fnInfo,
+            JsonSerializerSettings settings = null,
+            LogInstance log = null,
+            UpgradeMapping[] upgrades = null)
+            where T : AasxPluginOptionsBase
+        {
+            // access
+            if (!json.HasContent())
+                return null;
+
+            T opts = null;
+
+            // find an upgrade path?
+            UpgradeMapping um = null;
+            if (upgrades != null)
+                foreach (var u in upgrades)
+                    if (u?.Trigger.HasContent() == true
+                        && u.OldRootType != null
+                        && u.UpgradeLambda != null
+                        && json.Contains(u.Trigger))
+                    {
+                        um = u;
+                        break;
+                    }
+
+            // upgrade or straight forward
+            if (um != null)
+            {
+                log?.Append(new StoredPrint(StoredPrint.Color.Blue,
+                    $"Detected an old version of options: {um.Info}. Upgrading from {fnInfo} .."));
+
+                if (um.Replacements != null)
+                    foreach (var rkey in um.Replacements.Keys)
+                        json = json.Replace(rkey, um.Replacements[rkey]);
+                var oldOpts = Newtonsoft.Json.JsonConvert.DeserializeObject(json, um.OldRootType, settings);
+                opts = um.UpgradeLambda.Invoke(oldOpts) as T;
+
+                if (opts != null)
+                    log?.Append(new StoredPrint(StoredPrint.Color.Blue,
+                        $"Upgraded successfully! Consider saving options in new format."));
+            }
+            else
+            {
+                // assume current version
+                log?.Info($"Try load options from {fnInfo} ..");
+                opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json, settings);
+            }
+
+            return opts;
+        }
+
         public static T LoadDefaultOptionsFromAssemblyDir<T>(
             string pluginName, Assembly assy = null,
-            JsonSerializerSettings settings = null) where T : AasxPluginOptionsBase
+            JsonSerializerSettings settings = null,
+            LogInstance log = null,
+            UpgradeMapping[] upgrades = null) 
+            where T : AasxPluginOptionsBase
         {
             // expand assy?
             if (assy == null)
@@ -57,19 +112,29 @@ namespace AasxIntegrationBase
 
             if (File.Exists(optfn))
             {
-                var optText = File.ReadAllText(optfn);
-
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
+                var json = File.ReadAllText(optfn);
+                var opts = LoadOptionsFromJson<T>(json, optfn, settings, log, upgrades);
+                return opts;
             }
 
             // no
             return null;
         }
 
+        public class UpgradeMapping
+        {
+            public string Info = "";
+            public string Trigger;
+            public Type OldRootType;
+            public Dictionary<string, string> Replacements;
+            public Func<object, object> UpgradeLambda;
+        }
+
         public void TryLoadAdditionalOptionsFromAssemblyDir<T>(
             string pluginName, Assembly assy = null,
             JsonSerializerSettings settings = null,
-            LogInstance log = null
+            LogInstance log = null,
+            UpgradeMapping[] upgrades = null
             ) where T : AasxPluginOptionsBase
         {
             // expand assy?
@@ -87,18 +152,10 @@ namespace AasxIntegrationBase
             foreach (var fn in files)
                 try
                 {
-                    var optText = File.ReadAllText(fn);
-
-                    if (optText.Contains(".AdminShellV20+"))
-                    {
-
-                    }
-                    else
-                    {
-                        // assume current version
-                        var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
+                    var json = File.ReadAllText(fn);
+                    var opts = LoadOptionsFromJson<T>(json, fn, settings, log, upgrades);
+                    if (opts != null)
                         this.Merge(opts);
-                    }
                 }
                 catch (Exception ex)
                 {

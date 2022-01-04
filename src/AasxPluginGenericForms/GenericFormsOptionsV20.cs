@@ -14,8 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
 
 #if !DoNotUseAasxCompatibilityModels
@@ -38,12 +36,12 @@ namespace AasxCompatibilityModels.AasxPluginGenericForms
         /// <summary>
         /// Full (recursive) description for Submodel to be generated
         /// </summary>
-        public FormDescSubmodel FormSubmodel = null;
+        public AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelV20 FormSubmodel = null;
 
         /// <summary>
         /// A list with required concept descriptions, if appropriate.
         /// </summary>
-        public AdminShell.ListOfConceptDescriptions ConceptDescriptions = null;
+        public AdminShellV20.ListOfConceptDescriptions ConceptDescriptions = null;
     }
 
     [DisplayName("Options")]
