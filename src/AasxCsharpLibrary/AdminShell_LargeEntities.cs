@@ -400,6 +400,8 @@ namespace AdminShellNS
 
             public LangStringSetIEC61360(LangStringSetIEC61360 src)
             {
+                if (src == null)
+                    return;
                 foreach (var ls in src)
                     this.Add(new LangStr(ls));
             }
@@ -414,6 +416,8 @@ namespace AdminShellNS
 
             public LangStringSetIEC61360(AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)
             {
+                if (src == null)
+                    return;
                 foreach (var ls in src)
                     this.Add(new LangStr(ls));
             }

@@ -1,5 +1,6 @@
 ﻿/* official Submodel Template Spec ZVEI Nameplate V1.0 from 13 APR 2021 */
 {
+  "Version" :  "AAS2.0",
   "SM_ContactInformation": {
     "semanticId": {
       "keys": [
