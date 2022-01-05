@@ -50,7 +50,7 @@
   "Records": [
     {
       // This is an legacy semantic id -- for testing purposes only
-      "AllowSubmodelSemanticId": [
+      "AllowSubmodelSemanticId": [ 
         {
           "type": "Submodel",
           "local": false,

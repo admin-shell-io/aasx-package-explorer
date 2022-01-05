@@ -15,6 +15,13 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
 
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "KnownSubmodelsOptions.options.json".
+// It is even not existing,yet.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginKnownSubmodels
 {
     public class KnownSubmodelsOptionsRecord : AasxPluginOptionsLookupRecordBase
