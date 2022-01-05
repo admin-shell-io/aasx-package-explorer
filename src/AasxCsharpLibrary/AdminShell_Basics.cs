@@ -37,6 +37,25 @@ namespace AdminShellNS
     public partial class AdminShellV30
     {
         //
+        // Version
+        //
+
+        /// <summary>
+        /// Major version of the meta-model
+        /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
+        public static string MetaModelVersionCoarse = "AAS3.0";
+
+        /// <summary>
+        /// Minor version (extension) of the meta-model.
+        /// Should be added to <c>MetaModelVersionCoarse</c>
+        /// </summary>
+        [XmlIgnore]
+        [JsonIgnore]
+        public static string MetaModelVersionFine = "RC02";
+
+        //
         // Interfaces
         //
 

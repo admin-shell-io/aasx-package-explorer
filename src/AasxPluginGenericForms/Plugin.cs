@@ -178,6 +178,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         new[] {
                             typeof(AasxPluginGenericForms.GenericFormOptions),
                             typeof(AasForms.FormDescBase) });
+                    settings.Formatting = Formatting.Indented;
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                         this.options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
                     return new AasxPluginResultBaseObject("OK", json);

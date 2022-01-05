@@ -64,13 +64,13 @@ namespace AasxPluginDocumentShelf
             // V1.0
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
-            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsIdentifier();
             if (semIdDocumentation != null)
                 rec.AllowSubmodelSemanticId.Add(semIdDocumentation);
 
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleKey());
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleId());
 
             //
             // further models for CAD
@@ -83,8 +83,8 @@ namespace AasxPluginDocumentShelf
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+            rec.AllowSubmodelSemanticId.Add(
+                new AdminShell.Identifier("smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
 
             rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
                 AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,

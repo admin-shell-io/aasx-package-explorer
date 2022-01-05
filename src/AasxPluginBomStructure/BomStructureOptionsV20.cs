@@ -57,10 +57,9 @@ namespace AasxCompatibilityModels.AasxPluginBomStructure
     {
     }
 
-    public class BomStructureOptionsRecordV20
+    public class BomStructureOptionsRecordV20 
+        : AasxCompatibilityModels.AasxIntegrationBase.AasxPluginOptionsLookupRecordBaseV20
     {
-        public List<AdminShellV20.Key> AllowSubmodelSemanticId = new List<AdminShellV20.Key>();
-
         public int Layout;
         public bool? Compact;
 
@@ -72,7 +71,7 @@ namespace AasxCompatibilityModels.AasxPluginBomStructure
     {
     }
 
-    public class BomStructureOptionsV20
+    public class BomStructureOptionsV20 : AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20
     {
         public List<BomStructureOptionsRecordV20> Records = new List<BomStructureOptionsRecordV20>();
     }

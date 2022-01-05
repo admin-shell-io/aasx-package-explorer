@@ -31,6 +31,8 @@ namespace AasxPluginBomStructure
                     dict.Add(key, new List<V> { value });
             }
 
+            public void Clear() => dict.Clear();
+
             public bool ContainsKey(K key) => dict.ContainsKey(key);
 
             public List<V> this[K key] => dict[key];
@@ -90,7 +92,9 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
-        public void Index(AdminShell.ModelReference rf, T elem)
+        public void Clear() => dict.Clear();
+
+        public void Index(AdminShell.Reference rf, T elem)
         {
             // access
             if (elem == null || rf == null)

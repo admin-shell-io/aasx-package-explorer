@@ -672,6 +672,11 @@ namespace AasxPackageExplorer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // version logging
+            Log.Singleton.Info("Binary version: {0}", _pref.Version);
+            Log.Singleton.Info("Meta model version: {0}", 
+                AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine);
+
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";

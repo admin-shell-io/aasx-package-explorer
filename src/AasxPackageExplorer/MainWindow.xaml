@@ -98,6 +98,7 @@
                     <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
                     <RoutedUICommand x:Key="ToolsFindBackward" Text="ToolsFindbackward" />
                     <RoutedUICommand x:Key="NewSubmodelFromPlugin" Text="NewSubmodelFromPlugin" />
+                    <RoutedUICommand x:Key="SaveOptionsFromPlugin" Text="SaveOptionsFromPlugin" />
                     <RoutedUICommand x:Key="ConvertElement" Text="ConvertElement" />
                     <RoutedUICommand x:Key="EventsShowLogMenu" Text="EventsShowLogMenu" />
                     <RoutedUICommand x:Key="EventsShowLogKey" Text="EventsShowLogKey" />
@@ -269,6 +270,7 @@
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindBackward}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource NewSubmodelFromPlugin}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource SaveOptionsFromPlugin}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConvertElement}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource EventsShowLogKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource EventsShowLogMenu}" Executed="CommandBinding_Executed"/>
@@ -435,6 +437,9 @@
                         <MenuItem x:Name="MenuItemOptionsAnimateElems" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
                         <MenuItem x:Name="MenuItemOptionsObserveEvents" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
                         <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
+                        <MenuItem Header="Plugins ..">
+                            <MenuItem x:Name="MenuItemWorkspaceSaveOptionFromPlugin" Header="Save options from plugin .." Command="{StaticResource SaveOptionsFromPlugin}"/>
+                        </MenuItem>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>

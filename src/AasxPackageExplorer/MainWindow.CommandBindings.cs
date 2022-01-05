@@ -650,6 +650,9 @@ namespace AasxPackageExplorer
             if (cmd == "newsubmodelfromplugin")
                 CommandBinding_NewSubmodelFromPlugin();
 
+            if (cmd == "saveoptionsfromplugin")
+                CommandBinding_SaveOptionsFromPlugin();
+
             if (cmd == "convertelement")
                 CommandBinding_ConvertElement();
 
@@ -2729,6 +2732,74 @@ namespace AasxPackageExplorer
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                }
+            }
+        }
+
+        public void CommandBinding_SaveOptionsFromPlugin()
+        {
+            // create a list of plugins, which are capable of generating Submodels
+            var listOfSm = new List<AnyUiDialogueListItem>();
+            foreach (var lpi in Plugins.LoadedPlugins.Values)
+            {
+                if (lpi.HasAction("get-json-options"))
+                    listOfSm.Add(new AnyUiDialogueListItem(
+                        "" + lpi.name,
+                        new Tuple<Plugins.PluginInstance, string>(lpi, "")));
+            }
+
+            // could be nothing
+            if (listOfSm.Count < 1)
+            {
+                MessageBoxFlyoutShow(
+                    "No plugins exporting options found. Aborting.", "Save options from plugins",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            // prompt for this list
+            var uc = new SelectFromListFlyout();
+            uc.DiaData.Caption = "Select plugin to save options from ..";
+            uc.DiaData.ListOfItems = listOfSm;
+            this.StartFlyoverModal(uc);
+            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
+                uc.DiaData.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
+            {
+                // get result arguments
+                var TagTuple = uc.DiaData.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
+                var lpi = TagTuple?.Item1;
+
+                try
+                {
+                    Log.Singleton.Info($"Retrieving options from plugin {lpi?.name} ..");
+                    var res = lpi.InvokeAction("get-json-options") as AasxPluginResultBaseObject;
+                    if (res?.obj is string resstr)
+                    {
+                        // ask for file name
+                        var dlg = new Microsoft.Win32.SaveFileDialog();
+                        dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                        dlg.Title = "Select options file to be exported";
+                        dlg.FileName = "new.options.json";
+                        dlg.DefaultExt = "*.options.json";
+                        dlg.Filter = "Options JSON File (.options.json)|*.options.json|All files (*.*)|*.*";
+
+                        if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                        var res2 = true == dlg.ShowDialog(this);
+                        if (Options.Curr.UseFlyovers) this.CloseFlyover();
+                        if (!res2)
+                            return;
+
+                        // ok, try save
+                        Log.Singleton.Info($"Writing options to {dlg.FileName} ..");
+                        File.WriteAllText(dlg.FileName, resstr);
+                        Log.Singleton.Info("Done with writing plugin options to file.");
+                    }
+                    else
+                        Log.Singleton.Error($"Error retrieving options from plugin {lpi?.name} !");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when save options from plugin {lpi?.name}");
                 }
             }
         }
