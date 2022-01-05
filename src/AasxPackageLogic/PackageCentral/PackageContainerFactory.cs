@@ -72,8 +72,8 @@ namespace AasxPackageLogic.PackageCentral
 
                     string aasId = match.Groups[2].ToString().Trim();
                     var split = ll.Split('/');
-                    if (split.Count() >= 3)
-                        aasId = split[split.Count() - 1];
+                    if (split.Length >= 3)
+                        aasId = split[split.Length - 1];
                     return new PackageContainerGuess()
                     {
                         Location = location,
