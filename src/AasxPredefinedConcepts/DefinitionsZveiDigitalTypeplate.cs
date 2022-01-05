@@ -26,7 +26,7 @@ namespace AasxPredefinedConcepts
 
         public DefinitionsZveiDigitalTypeplate()
         {
-            this.theLibrary = BuildLibrary(
+            this._library = BuildLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiDigitalTypeplate.json");
         }
 

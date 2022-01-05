@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts
 
         public DefinitionsZveiTechnicalData()
         {
-            this.theLibrary = BuildLibrary(
+            this._library = BuildLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTechnicalData.json");
         }
 

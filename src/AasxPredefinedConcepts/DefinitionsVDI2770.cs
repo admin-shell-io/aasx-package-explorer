@@ -91,7 +91,7 @@ namespace AasxPredefinedConcepts
 
         public DefinitionsVDI2770()
         {
-            this.theLibrary = BuildLibrary(
+            this._library = BuildLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "VDI2770.json");
         }
 
