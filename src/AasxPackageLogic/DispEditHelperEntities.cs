@@ -361,7 +361,7 @@ namespace AasxPackageLogic
 
                                                         // make a new ref
                                                         var dstRef = AdminShell.SubmodelRef.CreateNew(
-                                                            dstSub.GetReference());
+                                                            dstSub.GetModelReference());
 
                                                         // formally add this to active environment and AAS
                                                         env.Submodels.Add(dstSub);
@@ -1053,7 +1053,7 @@ namespace AasxPackageLogic
                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
-                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
+                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetModelReference());
 
                                         // formally add this to active environment 
                                         env.Submodels.Add(dstSub);
@@ -3609,7 +3609,7 @@ namespace AasxPackageLogic
                             // send event
                             var ev = new AasEventMsgEnvelope(
                                 DateTime.UtcNow,
-                                source: bev.GetReference(),
+                                source: bev.GetModelReference(),
                                 sourceSemanticId: bev.semanticId,
                                 observableReference: bev.observed,
                                 observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());

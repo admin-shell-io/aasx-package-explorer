@@ -102,12 +102,12 @@ namespace AasxPackageExplorer
                 aasid = (veAas as VisualElementAdminShell)?.theAas?.id;
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
-                refref = (derefdo as AdminShell.IGetReference)?.GetReference();
+                refref = (derefdo as AdminShell.IGetModelReference)?.GetModelReference();
             }
 
             // some more special cases
             if (refref == null && ve is VisualElementConceptDescription vecd)
-                refref = vecd.theCD?.GetReference();
+                refref = vecd.theCD?.GetModelReference();
 
             // found some referable Reference?
             if (refref == null)

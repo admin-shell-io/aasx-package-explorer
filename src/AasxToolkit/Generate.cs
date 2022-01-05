@@ -165,13 +165,13 @@ namespace AasxToolkit
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
-                aas1.submodelRefs.Add(subCad.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subDocu.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subDatasheet.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subEng.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subVars.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM.GetReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM2.GetReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subCad.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subDocu.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subDatasheet.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subEng.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subVars.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subBOM.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subBOM2.GetModelReference() as AdminShell.SubmodelRef);
             }
             catch (Exception ex)
             {
@@ -824,8 +824,8 @@ namespace AasxToolkit
                     cd.GetDefaultPreferredName(), "PARAMETER",
                     cd.GetSemanticId());
                 sub1.Add(ar);
-                ar.first = sme1.GetReference();
-                ar.second = sme2.GetReference();
+                ar.first = sme1.GetModelReference();
+                ar.second = sme2.GetModelReference();
 
                 ar.annotations = new AdminShell.DataElementWrapperCollection();
                 ar.annotations.Add(sme1);
@@ -968,15 +968,15 @@ namespace AasxToolkit
 
             smec1.Add(AdminShell.RelationshipElement.CreateNew(
                 "w001", semanticIdKey: cdRelElCon.GetSemanticId(),
-                first: ps001_1.GetReference(), second: sw001_1.GetReference()));
+                first: ps001_1.GetModelReference(), second: sw001_1.GetModelReference()));
 
             smec1.Add(AdminShell.RelationshipElement.CreateNew(
                 "w002", semanticIdKey: cdRelElCon.GetSemanticId(),
-                first: sw001_2.GetReference(), second: la001_1.GetReference()));
+                first: sw001_2.GetModelReference(), second: la001_1.GetModelReference()));
 
             smec1.Add(AdminShell.RelationshipElement.CreateNew(
                 "w003", semanticIdKey: cdRelElCon.GetSemanticId(),
-                first: la001_2.GetReference(), second: ps001_2.GetReference()));
+                first: la001_2.GetModelReference(), second: ps001_2.GetModelReference()));
 
             // Nice
             return sub1;
@@ -1041,22 +1041,22 @@ namespace AasxToolkit
             sub1.Add(
                 AdminShell.RelationshipElement.CreateNew(
                     "rel001", semanticIdKey: cdIsPartOf.GetSemanticId(),
-                first: axisGroup.GetReference(), second: motor.GetReference()));
+                first: axisGroup.GetModelReference(), second: motor.GetModelReference()));
 
             sub1.Add(
                 AdminShell.RelationshipElement.CreateNew(
                     "rel002", semanticIdKey: cdIsPartOf.GetSemanticId(),
-                first: axisGroup.GetReference(), second: encoder.GetReference()));
+                first: axisGroup.GetModelReference(), second: encoder.GetModelReference()));
 
             sub1.Add(
                 AdminShell.RelationshipElement.CreateNew(
                     "rel003", semanticIdKey: cdIsPartOf.GetSemanticId(),
-                first: axisGroup.GetReference(), second: gearbox.GetReference()));
+                first: axisGroup.GetModelReference(), second: gearbox.GetModelReference()));
 
             sub1.Add(
                 AdminShell.RelationshipElement.CreateNew(
                     "rel004", semanticIdKey: cdIsPartOf.GetSemanticId(),
-                first: axisGroup.GetReference(), second: amp.GetReference()));
+                first: axisGroup.GetModelReference(), second: amp.GetModelReference()));
 
 
             // Nice

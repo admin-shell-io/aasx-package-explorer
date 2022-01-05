@@ -111,9 +111,22 @@ namespace AdminShellNS
             SemanticId GetSemanticId();
         }
 
-        public interface IGetReference
+        /// <summary>
+        /// This interface marks an entity, which can provide a ModelReference of itself.
+        /// Typically, these are Referables or Identifiables.
+        /// </summary>
+        public interface IGetModelReference
         {
-            ModelReference GetReference(bool includeParents = true);
+            ModelReference GetModelReference(bool includeParents = true);
+        }
+
+        /// <summary>
+        /// This interface marks an entity, which can provide a GlobaleReference of itself.
+        /// These entities are much more rare.
+        /// </summary>
+        public interface IGetGlobalReference
+        {
+            GlobalReference GetGlobalReference();
         }
 
         public interface IGetQualifiers
@@ -1095,7 +1108,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Referable : IValidateEntity, IAasElement, IDiaryData, IGetReference, IRecurseOnReferables
+        public class Referable : IValidateEntity, IAasElement, IDiaryData, IGetModelReference, IRecurseOnReferables
         {
             // diary
 
@@ -1242,7 +1255,7 @@ namespace AdminShellNS
                 return AdminShellUtil.FilterFriendlyName(this.idShort);
             }
 
-            public virtual ModelReference GetReference(bool includeParents = true)
+            public virtual ModelReference GetModelReference(bool includeParents = true)
             {
                 var r = new ModelReference(new AdminShell.Key(
                     this.GetElementName(), "" + this.idShort));
@@ -1527,7 +1540,7 @@ namespace AdminShellNS
             }
         }
 
-        public class Identifiable : Referable, IGetReference
+        public class Identifiable : Referable, IGetModelReference
         {
 
             // members
@@ -1626,7 +1639,7 @@ namespace AdminShellNS
 
             // self description
 
-            public override ModelReference GetReference(bool includeParents = true)
+            public override ModelReference GetModelReference(bool includeParents = true)
             {
                 var r = new ModelReference();
 

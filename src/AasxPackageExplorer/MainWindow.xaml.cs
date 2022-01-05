@@ -1051,7 +1051,7 @@ namespace AasxPackageExplorer
                         foreach (var aas in pe.AasEnv.AdministrationShells)
                             if (aas.assetInformation?.globalAssetId?.Matches(rf) == true)
                             {
-                                rf = aas.GetReference();
+                                rf = aas.GetModelReference();
                                 break;
                             }
                     }
@@ -1570,7 +1570,7 @@ namespace AasxPackageExplorer
                     // send event
                     var ev = new AasEventMsgEnvelope(
                         DateTime.UtcNow,
-                        source: refEv.GetReference(),
+                        source: refEv.GetModelReference(),
                         sourceSemanticId: refEv.semanticId,
                         observableReference: refEv.observed,
                         observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());

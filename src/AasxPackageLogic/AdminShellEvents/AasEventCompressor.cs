@@ -56,7 +56,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 // get a current key
                 var rf = evplsc.Changes[0].GetDataAsReferable();
                 rf.parent = null;
-                var currKey = rf.GetReference()?.Last;
+                var currKey = rf.GetModelReference()?.Last;
 
                 // Transition NULL -> structural change
                 if (currKey != null && stateIn == null)

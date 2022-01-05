@@ -59,7 +59,7 @@ namespace AasxDictionaryImport
             AddDescriptions(submodel, data);
             AddDataSpecification(env, submodel, data);
 
-            adminShell.AddSubmodelRef(submodel.GetReference() as AdminShell.SubmodelRef);
+            adminShell.AddSubmodelRef(submodel.GetModelReference() as AdminShell.SubmodelRef);
             env.Submodels.Add(submodel);
 
             return submodel;
@@ -129,7 +129,7 @@ namespace AasxDictionaryImport
                 eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetSingleId());
             }
 
-            submodel.semanticId = new AdminShell.SemanticId(cd.GetReference());
+            submodel.semanticId = new AdminShell.SemanticId(cd.GetModelReference());
         }
 
         private static void AddDataSpecification(AdminShell.AdministrationShellEnv env,
@@ -145,7 +145,7 @@ namespace AasxDictionaryImport
                 eds.dataSpecification = new AdminShell.DataSpecificationRef(cd.GetSemanticId());
             }
 
-            submodelElement.semanticId = new AdminShell.SemanticId(cd.GetReference());
+            submodelElement.semanticId = new AdminShell.SemanticId(cd.GetModelReference());
         }
 
         private static AdminShell.ConceptDescription CreateConceptDescription(

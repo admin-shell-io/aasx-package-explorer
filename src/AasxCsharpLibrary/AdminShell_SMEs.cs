@@ -49,7 +49,7 @@ namespace AdminShellNS
             }
         }
 
-        public class SubmodelElement : Referable, System.IDisposable, IGetReference, IGetSemanticId, IGetQualifiers
+        public class SubmodelElement : Referable, System.IDisposable, IGetModelReference, IGetSemanticId, IGetQualifiers
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
@@ -216,7 +216,7 @@ namespace AdminShellNS
                 return new AasElementSelfDescription("SubmodelElement", "SME");
             }
 
-            public override ModelReference GetReference(bool includeParents = true)
+            public override ModelReference GetModelReference(bool includeParents = true)
             {
                 var r = new ModelReference();
                 // semantic id

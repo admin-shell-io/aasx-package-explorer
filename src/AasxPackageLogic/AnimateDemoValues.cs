@@ -166,7 +166,7 @@ namespace AasxPackageLogic
                 {
                     // create
                     var evi = new AasPayloadUpdateValueItem(
-                        path: (prop as AdminShell.IGetReference)?.GetReference()?.Keys,
+                        path: (prop as AdminShell.IGetModelReference)?.GetModelReference()?.Keys,
                         value: prop.ValueAsText());
 
                     evi.ValueId = prop.valueId;

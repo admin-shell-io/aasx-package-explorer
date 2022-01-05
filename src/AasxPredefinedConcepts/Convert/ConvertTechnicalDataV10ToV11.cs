@@ -104,7 +104,7 @@ namespace AasxPredefinedConcepts.Convert
                     {
                         // fix
                         sme.submodelElement.semanticId = new AdminShell.SemanticId(
-                            defsV11.CD_SemanticIdNotAvailable.GetReference());
+                            defsV11.CD_SemanticIdNotAvailable.GetModelReference());
                     }
                 }
             }

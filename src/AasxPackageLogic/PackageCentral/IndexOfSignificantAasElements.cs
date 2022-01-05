@@ -70,9 +70,9 @@ namespace AasxPackageLogic.PackageCentral
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                Reference = sm?.GetReference()
+                Reference = sm?.GetModelReference()
                     + parents?.GetReference()
-                    + sme?.GetReference(includeParents: false)
+                    + sme?.GetModelReference(includeParents: false)
             };
             _records.Add(kind, r);
         }

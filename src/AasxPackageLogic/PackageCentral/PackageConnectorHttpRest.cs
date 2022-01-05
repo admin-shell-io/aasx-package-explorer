@@ -222,8 +222,8 @@ namespace AasxPackageLogic.PackageCentral
             rootSubmodel.SetAllParents();
 
             // get the reference of the sourceEvent and requestedElement
-            var sourceReference = sourceEvent.GetReference();
-            var requestedReference = (reqSm != null) ? reqSm.GetReference() : reqSme.GetReference();
+            var sourceReference = sourceEvent.GetModelReference();
+            var requestedReference = (reqSm != null) ? reqSm.GetModelReference() : reqSme.GetModelReference();
 
             // 2nd check
             if (sourceReference == null || requestedReference == null)

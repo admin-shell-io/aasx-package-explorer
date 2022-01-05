@@ -2877,9 +2877,9 @@ namespace AasxPackageLogic
 
             public DiaryReference() { }
 
-            public DiaryReference(AdminShell.IGetReference rf)
+            public DiaryReference(AdminShell.IGetModelReference rf)
             {
-                OriginalPath = rf?.GetReference()?.Keys;
+                OriginalPath = rf?.GetModelReference()?.Keys;
             }
         }
 
@@ -2934,7 +2934,7 @@ namespace AasxPackageLogic
                 // create
                 var evi = new AasPayloadStructuralChangeItem(
                     DateTime.UtcNow, desc.Reason,
-                    path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
+                    path: (rf as AdminShell.IGetModelReference)?.GetModelReference()?.Keys,
                     createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
                     data: JsonConvert.SerializeObject(rf));
@@ -2959,7 +2959,7 @@ namespace AasxPackageLogic
             {
                 // create
                 var evi = new AasPayloadUpdateValueItem(
-                    path: (rf as AdminShell.IGetReference)?.GetReference()?.Keys,
+                    path: (rf as AdminShell.IGetModelReference)?.GetModelReference()?.Keys,
                     value: sme.ValueAsText());
 
                 // TODO (MIHO, 2021-08-17): check if more SME types to serialize

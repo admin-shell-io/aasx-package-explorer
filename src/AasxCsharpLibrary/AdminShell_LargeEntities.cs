@@ -1493,7 +1493,7 @@ namespace AdminShellNS
             }
 
             public SubmodelRef GetSubmodelRef()
-                => new SubmodelRef(GetReference());
+                => new SubmodelRef(GetModelReference());
 
             /// <summary>
             ///  If instance, return semanticId as one key.
