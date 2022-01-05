@@ -14,14 +14,21 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "AasxPluginTechnicalData.options.json".
+// This is, because plotting plugin is only initally published in Dec 2021.
+// A migration by hand was done.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginTechnicalData
 {
-    public class TechnicalDataOptionsRecord
+    public class TechnicalDataOptionsRecord : AasxIntegrationBase.AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
-    public class TechnicalDataOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class TechnicalDataOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         public List<TechnicalDataOptionsRecord> Records = new List<TechnicalDataOptionsRecord>();
 

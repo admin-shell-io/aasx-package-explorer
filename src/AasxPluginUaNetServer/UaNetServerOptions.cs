@@ -17,6 +17,12 @@ using AdminShellNS;
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
 
+// Note on V3.0:
+// As of Dec 2021, no options depending on meta-model or elsewise versioned entities
+// existed.
+// As there were massive difficulties in Min 2021 to use AasxIntegrationBase to load
+// options correctly (see Plugin.cs), everything was let in old stage.
+
 namespace AasxUaNetServer
 {
     public class UaNetServerOptionsRecord
