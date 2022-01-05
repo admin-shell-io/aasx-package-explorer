@@ -34,6 +34,12 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxPluginOptionsBase
     {
+        /// <summary>
+        /// This string marks the "file-format" version of the options.
+        /// Typically, it is connected with major versions of the AAS meta model.
+        /// </summary>
+        public string Version = "AAS3.0";
+
         protected MultiValueDictionary<string, AasxPluginOptionsRecordBase> _recordLookup = null;
 
         public virtual void Merge(AasxPluginOptionsBase options)

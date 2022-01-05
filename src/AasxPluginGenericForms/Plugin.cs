@@ -50,25 +50,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase),
                     typeof(AasxCompatibilityModels.AdminShellV20) });
 
-                // TESTING
-
-                //var optfn = System.IO.Path.Combine(
-                //        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                //        "AasxPluginGenericForms_SG2_TechnicalData_v11.add-options.json");
-
-                //var optText = File.ReadAllText(optfn);
-
-                //optText = optText.Replace("AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+");
-
-                //var testV20 = Newtonsoft.Json.JsonConvert.DeserializeObject
-                //    <AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20>(optText, settings);
-
-                //var testV30 = new AasxPluginGenericForms.GenericFormOptions(testV20);
-
+                // this plugin can read OLD options (using the meta-model V2.0.1)
                 var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
                 upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
                 {
-                    Info = "meta-model V2.0.1",
+                    Info = "AAS2.0.1",
                     Trigger = "AdminShellNS.AdminShellV20+",
                     OldRootType = typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
                     Replacements = new Dictionary<string, string>()
