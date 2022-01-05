@@ -426,7 +426,7 @@ namespace AasxPluginDocumentShelf
                 // make sure for the right Submodel
                 DocumentShelfOptionsRecord foundRec = null;
                 foreach (var rec in options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                    subModel?.semanticId?.GetAsExactlyOneKey()))
+                    subModel?.semanticId?.GetAsIdentifier()))
                     foundRec = rec;
 
                 if (foundRec == null)

@@ -22,7 +22,7 @@ namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyle : AdminShell.IGetModelReference
+    public class BomLinkStyle : AdminShell.IGetGlobalReference
     {
         public AdminShell.Identifier Match;
         public bool Skip;
@@ -33,8 +33,8 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.ModelReference GetModelReference(bool includeParents = true) 
-            => new AdminShell.ModelReference(Match);
+        public AdminShell.GlobalReference GetGlobalReference() 
+            => new AdminShell.GlobalReference(Match);
 
         public BomLinkStyle() : base() { }
 
@@ -64,12 +64,16 @@ namespace AasxPluginBomStructure
 
         public void Index()
         {
+            // as this object is attached the options but could be executed multiple times in the life time
+            // clear at first
+            Store.Clear();
+            // now re-index
             foreach (var ls in this)
-                Store.Index(AdminShell.ModelReference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.GlobalReference.CreateNew(ls.Match), ls);
         }
     }
 
-    public class BomNodeStyle : AdminShell.IGetModelReference
+    public class BomNodeStyle : AdminShell.IGetGlobalReference
     {
         public AdminShell.Identifier Match;
         public bool Skip;
@@ -82,8 +86,8 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.ModelReference GetModelReference(bool includeParents = true) 
-            => new AdminShell.ModelReference(Match);
+        public AdminShell.GlobalReference GetGlobalReference()
+            => new AdminShell.GlobalReference(Match);
 
         public BomNodeStyle() : base() { }
 
@@ -115,15 +119,17 @@ namespace AasxPluginBomStructure
 
         public void Index()
         {
+            // as this object is attached the options but could be executed multiple times in the life time
+            // clear at first
+            Store.Clear();
+            // now re-index
             foreach (var ls in this)
-                Store.Index(AdminShell.ModelReference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.GlobalReference.CreateNew(ls.Match), ls);
         }
     }
 
-    public class BomStructureOptionsRecord
+    public class BomStructureOptionsRecord : AasxIntegrationBase.AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
-
         public int Layout;
         public bool? Compact;
 
@@ -134,7 +140,7 @@ namespace AasxPluginBomStructure
 
 #if !DoNotUseAasxCompatibilityModels
         public BomStructureOptionsRecord(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src) 
-            : base() 
+            : base(src) 
         {
             if (src == null)
                 return;
@@ -203,7 +209,7 @@ namespace AasxPluginBomStructure
         }
     }
 
-    public class BomStructureOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class BomStructureOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         public List<BomStructureOptionsRecord> Records = new List<BomStructureOptionsRecord>();
 
@@ -211,7 +217,7 @@ namespace AasxPluginBomStructure
 
 #if !DoNotUseAasxCompatibilityModels
         public BomStructureOptions(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20 src) 
-            : base() 
+            : base(src) 
         {
             if (src.Records != null)
                 foreach (var rec in src.Records)

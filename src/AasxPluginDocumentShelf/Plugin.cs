@@ -122,7 +122,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var found = false;
                 // ReSharper disable once UnusedVariable
                 foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                    sm.semanticId?.GetAsExactlyOneKey()))
+                    sm.semanticId?.GetAsIdentifier()))
                     found = true;
                 if (!found)
                     return null;

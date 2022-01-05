@@ -97,9 +97,7 @@ namespace AasxPackageExplorer
 
             // Build up of options
             Log.Singleton.Info("Application startup.");
-
             var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
-
             Options.ReplaceCurr(InferOptions(exePath, e.Args));
 
             // search for plugins?

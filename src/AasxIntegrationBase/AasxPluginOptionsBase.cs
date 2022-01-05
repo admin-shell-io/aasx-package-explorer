@@ -27,6 +27,16 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxPluginOptionsRecordBase
     {
+        // Constructors
+
+        public AasxPluginOptionsRecordBase() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public AasxPluginOptionsRecordBase(
+            AasxCompatibilityModels.AasxIntegrationBase.AasxPluginOptionsRecordBaseV20 src)
+        {
+        }
+#endif
     }
 
     /// <summary>
@@ -41,6 +51,14 @@ namespace AasxIntegrationBase
         public string Version = "AAS3.0";
 
         protected MultiValueDictionary<string, AasxPluginOptionsRecordBase> _recordLookup = null;
+
+        public AasxPluginOptionsBase() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public AasxPluginOptionsBase(AasxCompatibilityModels.AasxIntegrationBase.AasxPluginOptionsBaseV20 src)
+        {
+        }
+#endif
 
         public virtual void Merge(AasxPluginOptionsBase options)
         {
@@ -185,7 +203,22 @@ namespace AasxIntegrationBase
         /// This keyword is used by the plugin options to code allowed semantic ids for
         /// a Submodel sensitive plugin
         /// </summary>
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
+
+        // Constructors
+
+        public AasxPluginOptionsLookupRecordBase() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public AasxPluginOptionsLookupRecordBase(
+            AasxCompatibilityModels.AasxIntegrationBase.AasxPluginOptionsLookupRecordBaseV20 src)
+            : base(src)
+        {
+            if (src.AllowSubmodelSemanticId != null)
+                foreach (var assi in src.AllowSubmodelSemanticId)
+                    AllowSubmodelSemanticId.Add(new AdminShell.Identifier(assi?.value));
+        }
+#endif
     }
 
     /// <summary>
@@ -194,21 +227,31 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxPluginLookupOptionsBase : AasxPluginOptionsBase
     {
-        private string GenerateIndexKey(AdminShell.Key key)
+
+        public AasxPluginLookupOptionsBase() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public AasxPluginLookupOptionsBase(AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20 src) 
+            : base(src) 
         {
-            if (key == null)
+        }
+#endif
+
+        private string GenerateIndex(AdminShell.Identifier id)
+        {
+            if (id == null)
                 return null;
-            var k = new AdminShell.Key(key);
-            var ndx = k?.ToString(format: 1);
+            var k = new AdminShell.Identifier(id);
+            var ndx = k?.ToString();
             return ndx;
         }
 
-        public void IndexRecord(AdminShell.Key key, AasxPluginOptionsRecordBase rec)
+        public void IndexRecord(AdminShell.Identifier id, AasxPluginOptionsRecordBase rec)
         {
             if (_recordLookup == null)
                 _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();
 
-            var ndx = GenerateIndexKey(key);
+            var ndx = GenerateIndex(id);
             if (!ndx.HasContent())
                 return;
             _recordLookup.Add(ndx, rec);
@@ -225,21 +268,21 @@ namespace AasxIntegrationBase
                         IndexRecord(a2, rec);
         }
 
-        public bool ContainsIndexKey(AdminShell.Key key)
+        public bool ContainsIndex(AdminShell.Identifier id)
         {
             // access
-            var ndx = GenerateIndexKey(key);
+            var ndx = GenerateIndex(id);
             if (_recordLookup == null || !ndx.HasContent())
                 return false;
 
             return _recordLookup.ContainsKey(ndx);
         }
 
-        public IEnumerable<T> LookupAllIndexKey<T>(AdminShell.Key key)
+        public IEnumerable<T> LookupAllIndexKey<T>(AdminShell.Identifier id)
             where T : AasxPluginOptionsRecordBase
         {
             // access
-            var ndx = GenerateIndexKey(key);
+            var ndx = GenerateIndex(id);
             if (_recordLookup == null || !ndx.HasContent())
                 yield break;
 

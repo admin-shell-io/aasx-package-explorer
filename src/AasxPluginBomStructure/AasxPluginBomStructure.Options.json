@@ -49,6 +49,7 @@
 {
   "Records": [
     {
+      // This is an legacy semantic id -- for testing purposes only
       "AllowSubmodelSemanticId": [
         {
           "type": "Submodel",
@@ -56,6 +57,44 @@
           "value": "http://example.com/id/type/submodel/BOM/1/1",
           "index": 0,
           "idType": "IRI"
+        }
+      ],
+      "Layout": 3,
+      "Compact": true,
+      "LinkStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/IsPartOfForBOM/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Direction": "Forward",
+          "Color": "DarkGreen",
+          "Width": 1.0,
+          "Text": "isPartOf"
+        }
+      ],
+      "NodeStyles": [
+        {
+          "Match": {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/PneumaticFeature/1/0",
+            "index": 0,
+            "idType": "IRI"
+          },
+          "Skip": false,
+          "Shape": "Circle",
+          "Background": "LightBlue",
+          "Foreground": "DarkBlue",
+          "LineWidth": 1.0,
+          "Radius": 0.0,
+          "FontSize": 8.0,
+          "Dashed": true,
+          "Bold": false,
+          "Dotted": false
         }
       ]
     },

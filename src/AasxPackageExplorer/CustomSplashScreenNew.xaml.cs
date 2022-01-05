@@ -24,6 +24,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using AasxPackageLogic;
+using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
@@ -36,7 +37,9 @@ namespace AasxPackageExplorer
             // set new values here
             this.TextBlockAuthors.Text = pref.Authors;
             this.TextBlockLicenses.Text = pref.LicenseShort;
-            this.TextBlockVersion.Text = pref.Version;
+            this.TextBlockVersion.Text = 
+                pref.Version + System.Environment.NewLine 
+                + AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine;
             this.TextBlockBuildDate.Text = "";
 
             // try to include plug-ins as well
