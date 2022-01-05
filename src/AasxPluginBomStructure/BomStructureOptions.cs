@@ -24,7 +24,7 @@ namespace AasxPluginBomStructure
 
     public class BomLinkStyle : AdminShell.IGetReference
     {
-        public AdminShell.Key Match;
+        public AdminShell.Identifier Match;
         public bool Skip;
         public BomLinkDirection Direction;
         public string Color;
@@ -35,6 +35,26 @@ namespace AasxPluginBomStructure
 
         public AdminShell.ModelReference GetReference(bool includeParents = true) 
             => new AdminShell.ModelReference(Match);
+
+        public BomLinkStyle() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomLinkStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomLinkStyleV20 src) : base() 
+        {
+            if (src.Match != null)
+                Match = new AdminShell.Identifier(src.Match.value);
+
+            Skip = src.Skip;
+            Direction = (BomLinkDirection)((int)src.Direction);
+            Color = src.Color;
+            Width = src.Width;
+            Text = src.Text;
+            FontSize = src.FontSize;
+            Dashed = src.Dashed;
+            Bold = src.Bold;
+            Dotted = src.Dotted;
+        }
+#endif
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -51,7 +71,7 @@ namespace AasxPluginBomStructure
 
     public class BomNodeStyle : AdminShell.IGetReference
     {
-        public AdminShell.Key Match;
+        public AdminShell.Identifier Match;
         public bool Skip;
 
         public string Shape;
@@ -64,6 +84,28 @@ namespace AasxPluginBomStructure
 
         public AdminShell.ModelReference GetReference(bool includeParents = true) 
             => new AdminShell.ModelReference(Match);
+
+        public BomNodeStyle() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomNodeStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomNodeStyleV20 src) : base()
+        {
+            if (src.Match != null)
+                Match = new AdminShell.Identifier(src.Match.value);
+
+            Skip = src.Skip;
+            Shape = src.Shape;
+            Background = src.Background;
+            Foreground = src.Foreground;
+            LineWidth = src.LineWidth;
+            Radius = src.Radius;
+            Text = src.Text;
+            FontSize = src.FontSize;
+            Dashed = src.Dashed;
+            Bold = src.Bold;
+            Dotted = src.Dotted;
+        }
+#endif
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>
@@ -87,6 +129,28 @@ namespace AasxPluginBomStructure
 
         public BomLinkStyleList LinkStyles = new BomLinkStyleList();
         public BomNodeStyleList NodeStyles = new BomNodeStyleList();
+
+        public BomStructureOptionsRecord() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomStructureOptionsRecord(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src) 
+            : base() 
+        {
+            if (src == null)
+                return;
+
+            Layout = src.Layout;
+            Compact = src.Compact;
+
+            if (src.LinkStyles != null)
+                foreach (var ls in src.LinkStyles)
+                    LinkStyles.Add(new BomLinkStyle(ls));
+
+            if (src.NodeStyles != null)
+                foreach (var ns in src.NodeStyles)
+                    NodeStyles.Add(new BomNodeStyle(ns));
+        }
+#endif
 
         public void Index()
         {
@@ -142,6 +206,18 @@ namespace AasxPluginBomStructure
     public class BomStructureOptions : AasxIntegrationBase.AasxPluginOptionsBase
     {
         public List<BomStructureOptionsRecord> Records = new List<BomStructureOptionsRecord>();
+
+        public BomStructureOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomStructureOptions(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20 src) 
+            : base() 
+        {
+            if (src.Records != null)
+                foreach (var rec in src.Records)
+                    Records.Add(new BomStructureOptionsRecord(rec));
+        }
+#endif
 
         /// <summary>
         /// Create a set of minimal options
