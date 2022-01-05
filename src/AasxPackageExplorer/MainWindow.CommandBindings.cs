@@ -2698,7 +2698,7 @@ namespace AasxPackageExplorer
                             Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add Submodel
-                    var smref = new AdminShell.SubmodelRef(smres.GetReference());
+                    var smref = new AdminShell.SubmodelRef(smres.GetModelReference());
                     ve1.theAas.AddSubmodelRef(smref);
                     _packageCentral.Main.AasEnv.Submodels.Add(smres);
 

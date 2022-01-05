@@ -249,7 +249,7 @@ namespace AasxMqttClient
 
                         // single values as well? 
                         if (_diaData.SingleValueFirstTime)
-                            PublishSingleValues_FirstTimeSubmodel(aas, sm, sm.GetReference()?.Keys);
+                            PublishSingleValues_FirstTimeSubmodel(aas, sm, sm.GetModelReference()?.Keys);
                     }
                 }
             }

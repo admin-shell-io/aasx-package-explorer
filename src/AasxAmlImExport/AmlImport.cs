@@ -967,7 +967,7 @@ namespace AasxAmlImExport
                             // consequences that additional properties in the 2nd SM with the same SM get lost!
                             if (null == this.package.AasEnv.FindSubmodel(sm.id))
                                 this.package.AasEnv.Submodels.Add(sm);
-                            currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(sm.GetModelReference() as AdminShell.SubmodelRef);
                             currentSmeCollection = sm;
                         }
                         else
@@ -986,7 +986,7 @@ namespace AasxAmlImExport
                             var existSm = package.AasEnv.FindSubmodel(targetSm.id);
 
                             // if so, add a SubmodelRef
-                            currentAas.AddSubmodelRef(existSm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(existSm.GetModelReference() as AdminShell.SubmodelRef);
                         }
                     }
 
@@ -1269,7 +1269,7 @@ namespace AasxAmlImExport
 
                             // this will be the parent for child elements
                             this.package.AasEnv.Submodels.Add(sm);
-                            currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(sm.GetModelReference() as AdminShell.SubmodelRef);
                             currentSmeCollection = sm;
                         }
                         else

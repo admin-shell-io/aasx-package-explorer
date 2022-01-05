@@ -22,7 +22,7 @@ namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyle : AdminShell.IGetReference
+    public class BomLinkStyle : AdminShell.IGetModelReference
     {
         public AdminShell.Identifier Match;
         public bool Skip;
@@ -33,7 +33,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.ModelReference GetReference(bool includeParents = true) 
+        public AdminShell.ModelReference GetModelReference(bool includeParents = true) 
             => new AdminShell.ModelReference(Match);
 
         public BomLinkStyle() : base() { }
@@ -69,7 +69,7 @@ namespace AasxPluginBomStructure
         }
     }
 
-    public class BomNodeStyle : AdminShell.IGetReference
+    public class BomNodeStyle : AdminShell.IGetModelReference
     {
         public AdminShell.Identifier Match;
         public bool Skip;
@@ -82,7 +82,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.ModelReference GetReference(bool includeParents = true) 
+        public AdminShell.ModelReference GetModelReference(bool includeParents = true) 
             => new AdminShell.ModelReference(Match);
 
         public BomNodeStyle() : base() { }

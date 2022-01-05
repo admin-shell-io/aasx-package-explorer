@@ -110,7 +110,7 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as AdminShell.IGetReference)?.GetReference();
+                var xx = (test as AdminShell.IGetModelReference)?.GetModelReference();
                 if (r is AdminShell.ModelReference modrf 
                     && xx != null && xx.Matches(modrf, matchMode))
                     return test;
@@ -158,7 +158,7 @@ namespace AasxPluginBomStructure
                 return;
 
             // make curr ref and index
-            var currRef = cd.GetReference();
+            var currRef = cd.GetModelReference();
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
@@ -169,7 +169,7 @@ namespace AasxPluginBomStructure
                 return;
 
             // make curr ref and index
-            var currRef = sm.GetReference();
+            var currRef = sm.GetModelReference();
             dict.Add(ComputeHashOnReference(currRef), sm);
 
             // recurse

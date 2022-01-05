@@ -1523,7 +1523,7 @@ namespace AdminShellNS
 
             public bool Matches(ConceptDescription cd, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
             {
-                return Matches(cd?.GetReference(), matchMode);
+                return Matches(cd?.GetModelReference(), matchMode);
             }
 
             public string ToString(int format = 0, string delimiter = ",")

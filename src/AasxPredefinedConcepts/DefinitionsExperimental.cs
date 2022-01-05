@@ -103,13 +103,13 @@ namespace AasxPredefinedConcepts
                     "TubePipeConnectionPneumatic",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/TubePipeConnectionPneumatic/1/0",
                     "States, that there is a pneumatic connection between two Electrical Entities.",
-                    isCaseOf: CD_TubePipeConnection.GetReference());
+                    isCaseOf: CD_TubePipeConnection.GetModelReference());
 
                 CD_TubePipeConnectionHydraulic = CreateSparseConceptDescription("en", "IRI",
                     "TubePipeConnectionHydraulic",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/TubePipeConnectionHydraulic/1/0",
                     "States, that there is a hydraulic connection between two Electrical Entities.",
-                    isCaseOf: CD_TubePipeConnection.GetReference());
+                    isCaseOf: CD_TubePipeConnection.GetModelReference());
 
                 // reflect
                 AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

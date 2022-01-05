@@ -327,7 +327,7 @@ namespace AasxPluginMtpViewer
         {
             // access
             var sme = this.theSubmodel?.submodelElements;
-            var first = this.activeMtpFileElem.GetReference();
+            var first = this.activeMtpFileElem.GetModelReference();
             if (source == null || this.activeMtpFileElem == null || sme == null || first == null)
                 return;
 

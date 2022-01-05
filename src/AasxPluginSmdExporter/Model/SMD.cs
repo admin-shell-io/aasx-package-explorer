@@ -310,8 +310,8 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.RelationshipElement relationshipElement =
                 new AdminShellNS.AdminShell.RelationshipElement();
 
-            relationshipElement.first = outproperty.GetReference();
-            relationshipElement.second = property.GetReference();
+            relationshipElement.first = outproperty.GetModelReference();
+            relationshipElement.second = property.GetModelReference();
             relationshipElement.semanticId = SetSemanticIdRelEle(input, output, type);
             relationshipElement.idShort = $"{relCount++}";
 
