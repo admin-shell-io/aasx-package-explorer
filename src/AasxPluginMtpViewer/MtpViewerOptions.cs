@@ -12,27 +12,69 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using WpfMtpControl;
 
 namespace AasxPluginMtpViewer
 {
-    public class MtpViewerOptionsRecord
+    public class MtpViewerOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         public enum MtpRecordType { MtpType, MtpInstance }
 
         public MtpRecordType RecordType = MtpRecordType.MtpType;
-        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
+
+        public MtpViewerOptionsRecord() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public MtpViewerOptionsRecord(AasxCompatibilityModels.AasxPluginMtpViewer.MtpViewerOptionsRecordV20 src)
+            : base()
+        {
+            if (src == null)
+                return;
+            
+            RecordType = (MtpRecordType)((int)src.RecordType);
+
+            if (src.AllowSubmodelSemanticId != null)
+                foreach (var k in src.AllowSubmodelSemanticId)
+                    AllowSubmodelSemanticId.Add(new AdminShell.Identifier(k?.value));
+        }
+#endif
     }
 
-    public class MtpViewerOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class MtpViewerOptions : AasxPluginLookupOptionsBase
     {
         public List<MtpViewerOptionsRecord> Records = new List<MtpViewerOptionsRecord>();
 
         public WpfMtpControl.MtpSymbolMapRecordList SymbolMappings = new WpfMtpControl.MtpSymbolMapRecordList();
 
         public MtpVisuOptions VisuOptions = new MtpVisuOptions();
+
+        public MtpViewerOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public MtpViewerOptions(AasxCompatibilityModels.AasxPluginMtpViewer.MtpViewerOptionsV20 src)
+            : base()
+        {
+            if (src == null)
+                return;
+
+            if (src.Records != null)
+                foreach (var rec in src.Records)
+                    Records.Add(new MtpViewerOptionsRecord(rec));
+
+            var xx = new AasxCompatibilityModels.WpfMtpControl.MtpSymbolMapRecordV20();
+            var yy = new MtpSymbolMapRecord(xx);
+
+            if (src.SymbolMappings != null)
+                foreach (var sym in src.SymbolMappings)
+                    SymbolMappings.Add(new MtpSymbolMapRecord(sym));
+
+            if (src.VisuOptions != null)
+                VisuOptions = new WpfMtpControl.MtpVisuOptions(src.VisuOptions);
+        }
+#endif
 
         /// <summary>
         /// Create a set of minimal options

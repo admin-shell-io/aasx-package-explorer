@@ -14,6 +14,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// Note on V3.0:
+// As of today, the options neither use Records nor use AdminShell meta model entities, yet.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginExportTable
 {
     public class ExportTableOptions : AasxIntegrationBase.AasxPluginOptionsBase

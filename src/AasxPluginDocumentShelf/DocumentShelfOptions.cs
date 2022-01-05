@@ -19,6 +19,13 @@ using AasxPredefinedConcepts;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "AasxPluginDocumentShelf.options.json".
+// Latest changes in Dec 2021 were deeply cleaning-up the options.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginDocumentShelf
 {
     /// <summary>
@@ -42,7 +49,7 @@ namespace AasxPluginDocumentShelf
         public string UsageInfo = null;
     }
 
-    public class DocumentShelfOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
+    public class DocumentShelfOptions : AasxPluginLookupOptionsBase
     {
         public List<DocumentShelfOptionsRecord> Records = new List<DocumentShelfOptionsRecord>();
 

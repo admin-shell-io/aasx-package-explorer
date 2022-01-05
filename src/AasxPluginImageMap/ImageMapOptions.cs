@@ -12,16 +12,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AdminShellNS;
+
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "AasxPluginImageMap.options.json".
+// It is even not existing,yet.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
 
 namespace AasxPluginImageMap
 {
-    public class ImageMapOptionsOptionsRecord
+    public class ImageMapOptionsOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Identifier> AllowSubmodelSemanticId = new List<AdminShell.Identifier>();
     }
 
-    public class ImageMapOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class ImageMapOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         public List<ImageMapOptionsOptionsRecord> Records = new List<ImageMapOptionsOptionsRecord>();
 
