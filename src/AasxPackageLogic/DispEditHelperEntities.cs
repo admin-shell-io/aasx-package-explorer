@@ -246,13 +246,51 @@ namespace AasxPackageLogic
             this.DisplayOrEditEntityAssetKind(stack, asset.assetKind,
                 (k) => { asset.assetKind = k; }, relatedReferable: aas);
 
-            // special Submode references
-            this.AddGroup(stack, "Submodel references with special meaning", this.levelColors.SubSection);
 
             // list of multiple key value pairs
             this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.specificAssetId,
                 (ico) => { asset.specificAssetId = ico; },
                 relatedReferable: aas);
+
+            // Thumbnail: File [0..1]
+            // Note: another, may be better approach would be have a special SMWCollection constrained
+            // on [0..1] and let the existing functions work on this. This could give better copy/ paste
+            // and more. The serialization would then materialize (via getter/setters) this as "File" [0..1].
+
+            this.AddGroup(stack, "DefaultThumbnail: File element", this.levelColors.SubSection,
+                auxButtonTitle: (asset.defaultThumbnail == null) ? null : "Delete",
+                auxButtonLambda: (o) =>
+                {
+                    if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                               "Delete Fiel element? This operation can not be reverted!",
+                               "ConceptDescriptions",
+                               AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    {
+                        asset.defaultThumbnail = null;
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                });
+
+            if (this.SafeguardAccess(
+                stack, repo, asset.defaultThumbnail, $"defaultThumbnail:", $"Create empty File element!",
+                v =>
+                {
+                    asset.defaultThumbnail = new AdminShell.File();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+
+                // Note: parentContainer = null effectively seems to disable "unwanted" functionality
+                DisplayOrEditAasEntitySubmodelElement(
+                    packages: packages, env: env, parentContainer: null, wrapper: null, 
+                    sme: asset.defaultThumbnail, 
+                    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
+            }
 
         }
 
@@ -2081,7 +2119,7 @@ namespace AasxPackageLogic
                 return;
 
             // edit SubmodelElements's attributes
-            if (editMode)
+            if (editMode && parentContainer != null)
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
@@ -2158,6 +2196,13 @@ namespace AasxPackageLogic
                 }
             }
 
+            // else:
+            if (editMode && parentContainer == null)
+            {
+                // use "emergency mode"
+                this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer: null, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
+            }
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             if (editMode)
@@ -2178,7 +2223,7 @@ namespace AasxPackageLogic
                             () => { return sme.semanticId == null || sme.semanticId.IsEmpty; },
                             "The semanticId (see below) is empty. " +
                                 "This SubmodelElement ist currently not assigned to any ConceptDescription. " +
-                                "However, it is recommended to do such assignemt. " +
+                                "However, it is recommended to do such assignment. " +
                                 "With the 'Assign ..' buttons below you might create and/or assign " +
                                 "the SubmodelElement to an ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
