@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using AasxIntegrationBase;
@@ -1663,6 +1664,8 @@ namespace AasxPackageLogic
             bool addEclassIrdi = false,
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
+            Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             Func<AdminShell.KeyList, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Func<AdminShell.KeyList, AnyUiLambdaActionBase> noEditJumpLambda = null,
@@ -1676,6 +1679,8 @@ namespace AasxPackageLogic
                 addFromPool: addFromPool,
                 addPresetNames: addPresetNames,
                 addPresetKeyLists: addPresetKeyLists,
+                auxButtonLambda: auxButtonLambda,
+                auxButtonTitles: auxButtonTitles, auxButtonToolTips: auxButtonToolTips,
                 jumpLambda: jumpLambda,
                 takeOverLambdaAction: takeOverLambdaAction,
                 noEditJumpLambda: noEditJumpLambda,
@@ -1706,6 +1711,8 @@ namespace AasxPackageLogic
             bool addEclassIrdi = false,
             bool addFromPool = false,
             string[] addPresetNames = null, AdminShell.ListOfIdentifier[] addPresetKeyLists = null,
+            Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Func<AdminShell.ListOfIdentifier, AnyUiLambdaActionBase> noEditJumpLambda = null,
@@ -1718,7 +1725,9 @@ namespace AasxPackageLogic
                 addEclassIrdi: addEclassIrdi,
                 addFromPool: addFromPool,
                 addPresetNames: addPresetNames,
-                addPresetKeyLists: addPresetKeyLists,
+                addPresetKeyLists: addPresetKeyLists, 
+                auxButtonLambda: auxButtonLambda,
+                auxButtonTitles: auxButtonTitles, auxButtonToolTips: auxButtonToolTips,
                 jumpLambda: jumpLambda,
                 takeOverLambdaAction: takeOverLambdaAction,
                 noEditJumpLambda: noEditJumpLambda,
@@ -1750,6 +1759,8 @@ namespace AasxPackageLogic
             bool addEclassIrdi = false,
             bool addFromPool = false,
             string[] addPresetNames = null, LIST[] addPresetKeyLists = null,
+            Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             Func<LIST, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Func<LIST, AnyUiLambdaActionBase> noEditJumpLambda = null,
@@ -1839,16 +1850,24 @@ namespace AasxPackageLogic
             else
             if (elems != null)
             {
-                // populate [+], [Select], [ECLASS], [Copy] buttons
+                // basic scheme: populate [+], [Select], [ECLASS], [Copy] buttons
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#" });
-                for (int i = 0; i < presetNo; i++)
+
+                // extend by variable # of items
+                var addColNum = presetNo;
+                if (auxButtonLambda != null && auxButtonTitles != null)
+                    addColNum += auxButtonTitles.Length;
+                for (int i = 0; i < addColNum; i++)
                     colDescs.Add("#");
 
-                var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
+                // create such Grid
+                var g2 = AddSmallGrid(1, 7 + addColNum, colDescs.ToArray());
                 AnyUiGrid.SetRow(g2, 0);
                 AnyUiGrid.SetColumn(g2, 1);
                 AnyUiGrid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
+
+                // add the different widgets
 
                 if (addFromPool)
                     AnyUiUIElement.RegisterControl(
@@ -1970,21 +1989,48 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                for (int i = 0; i < presetNo; i++)
+                if (addColNum > 0)
                 {
-                    var closureKey = addPresetKeyLists[i];
-                    AnyUiUIElement.RegisterControl(
-                        AddSmallButtonTo(
-                            g2, 0, 7 + i,
-                            margin: new AnyUiThickness(2, 2, 2, 2),
-                            padding: new AnyUiThickness(5, 0, 5, 0),
-                            content: "" + addPresetNames[i]),
-                        (o) =>
+                    // variable number of items
+                    int currCol = 7;
+
+                    for (int i = 0; i < presetNo; i++)
+                    {
+                        var closureKey = addPresetKeyLists[i];
+                        AnyUiUIElement.RegisterControl(
+                            AddSmallButtonTo(
+                                g2, 0, currCol++,
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                padding: new AnyUiThickness(5, 0, 5, 0),
+                                content: "" + addPresetNames[i]),
+                            (o) =>
+                            {
+                                elems.AddRange(closureKey);
+                                emitCustomEvent?.Invoke(relatedReferable);
+                                return new AnyUiLambdaActionRedrawEntity();
+                            });
+                    }
+
+                    if (auxButtonTitles != null)
+                        for (int i = 0; i < auxButtonTitles.Length; i++)
                         {
-                            elems.AddRange(closureKey);
-                            emitCustomEvent?.Invoke(relatedReferable);
-                            return new AnyUiLambdaActionRedrawEntity();
-                        });
+                            Func<object, AnyUiLambdaActionBase> lmb = null;
+                            int closureI = i;
+                            if (auxButtonLambda != null)
+                                lmb = (o) =>
+                                {
+                                    return auxButtonLambda(closureI); // exchange o with i !!
+                                };
+                            var b = AnyUiUIElement.RegisterControl(
+                                AddSmallButtonTo(
+                                    g2, 0, currCol++,
+                                    margin: new AnyUiThickness(2, 2, 2, 2),
+                                    padding: new AnyUiThickness(5, 0, 5, 0),
+                                    content: auxButtonTitles[i]),
+                                lmb) as AnyUiButton;
+                            if (auxButtonToolTips != null && i < auxButtonToolTips.Length)
+                                b.ToolTip = auxButtonToolTips[i];
+                        }
                 }
             }
 
@@ -2367,6 +2413,10 @@ namespace AasxPackageLogic
                 });
         }
 
+        //
+        // Qualifiers
+        //
+
         private bool PasteQualifierTextIntoExisting(
             string jsonInput,
             AdminShell.Qualifier qCurr)
@@ -2436,7 +2486,6 @@ namespace AasxPackageLogic
                                 {
                                     qualifiers.Add(qNew);
                                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                                    Log.Singleton.Info("Qualifier taken from clipboard.");
                                 }
                             }
                             catch (Exception ex)
@@ -2578,6 +2627,247 @@ namespace AasxPackageLogic
                         }))
                 {
                     AddKeyListOfIdentifier(substack, "valueId", qual.valueId.Value, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
+                        relatedReferable: relatedReferable);
+                }
+
+            }
+
+        }
+
+        //
+        // Key Value Pairs
+        //
+
+        private bool PasteIKVPTextIntoExisting(
+            string jsonInput,
+            AdminShell.IdentifierKeyValuePair qCurr)
+        {
+            var qIn = JsonConvert.DeserializeObject<AdminShell.IdentifierKeyValuePair>(jsonInput);
+            if (qCurr != null && qIn != null)
+            {
+                qCurr.key = qIn.key;
+                qCurr.value = qIn.value;
+                if (qIn.externalSubjectId != null)
+                    qCurr.externalSubjectId = qIn.externalSubjectId;
+                if (qIn.semanticId != null)
+                    qCurr.semanticId = qIn.semanticId;
+                Log.Singleton.Info("IdentifierKeyValuePair data taken from clipboard.");
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// This class defines the JSON format for presets.
+        /// </summary>
+        public class IdentifierKeyValuePairPreset
+        {
+            public string name = "";
+            public AdminShell.IdentifierKeyValuePair pair = new AdminShell.IdentifierKeyValuePair();
+        }
+
+        public void IdentifierKeyValuePairHelper(
+            AnyUiStackPanel stack, ModifyRepo repo,
+            AdminShell.ListOfIdentifierKeyValuePair pairs,
+            AdminShell.Referable relatedReferable = null)
+        {
+            if (editMode)
+            {
+                // let the user control the number of references
+                AddAction(
+                    stack, "IdentifierKeyValuePairs:",
+                    new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
+                    repo,
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            pairs.Add(new AdminShell.IdentifierKeyValuePair());
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        }
+
+                        if (buttonNdx == 1)
+                        {
+                            var pfn = Options.Curr.IdentifierKeyValuePairsFile;
+                            if (pfn == null || !File.Exists(pfn))
+                            {
+                                Log.Singleton.Error(
+                                    "JSON file for IdentifierKeyValuePair presets not defined nor existing.");
+                                return new AnyUiLambdaActionNone();
+                            }
+                            try
+                            {
+                                // read file contents
+                                var init = File.ReadAllText(pfn);
+                                var presets = JsonConvert.DeserializeObject<List<IdentifierKeyValuePairPreset>>(init);
+
+                                // define dialogue and map presets into dialogue items
+                                var uc = new AnyUiDialogueDataSelectFromList();
+                                uc.ListOfItems = presets.Select((pr)
+                                        => new AnyUiDialogueListItem() { Text = pr.name, Tag = pr }).ToList();
+
+                                // perform dialogue
+                                this.context.StartFlyoverModal(uc);
+                                if (uc.Result && uc.ResultItem?.Tag is IdentifierKeyValuePairPreset preset
+                                    && preset.pair != null)
+                                {
+                                    pairs.Add(preset.pair);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"While show IdentifierKeyValuePair presets ({Options.Curr.QualifiersFile})");
+                            }
+                        }
+
+                        if (buttonNdx == 2)
+                        {
+                            try
+                            {
+                                var pNew = new AdminShell.IdentifierKeyValuePair();
+                                var jsonInput = this.context?.ClipboardGet()?.Text;
+                                if (PasteIKVPTextIntoExisting(jsonInput, pNew))
+                                {
+                                    pairs.Add(pNew);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex, "while accessing IdentifierKeyValuePair data in clipboard");
+                            }
+                        }
+
+                        if (buttonNdx == 3 && pairs.Count > 0)
+                            pairs.RemoveAt(pairs.Count - 1);
+
+                        return new AnyUiLambdaActionRedrawEntity();
+                    });
+            }
+
+            for (int i = 0; i < pairs.Count; i++)
+            {
+                var pair = pairs[i];
+                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+
+                int storedI = i;
+                AddGroup(
+                    substack, $"Pair {1 + i}",
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    contextMenuText: "\u22ee",
+                    menuHeaders: new[] {
+                        "\u2702", "Delete",
+                        "\u25b2", "Move Up",
+                        "\u25bc", "Move Down",
+                        "\u29c9", "Copy to clipboard",
+                        "\u2398", "Paste from clipboard",
+                    },
+                    menuItemLambda: (o) =>
+                    {
+                        var action = false;
+
+                        if (o is int ti)
+                            switch (ti)
+                            {
+                                case 0:
+                                    pairs.Remove(pair);
+                                    action = true;
+                                    break;
+                                case 1:
+                                    var res = this.MoveElementInListUpwards<AdminShell.IdentifierKeyValuePair>(
+                                        pairs, pairs[storedI]);
+                                    if (res > -1)
+                                    {
+                                        action = true;
+                                    }
+                                    break;
+                                case 2:
+                                    action = true;
+                                    break;
+                                case 3:
+                                    var jsonStr = JsonConvert.SerializeObject(pairs[storedI], Formatting.Indented);
+                                    this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                                    Log.Singleton.Info("IdentifierKeyValuePair serialized to clipboard.");
+                                    break;
+                                case 4:
+                                    try
+                                    {
+                                        var jsonInput = this.context?.ClipboardGet()?.Text;
+                                        action = PasteIKVPTextIntoExisting(jsonInput, pairs[storedI]);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Singleton.Error(ex, "while accessing IdentifierKeyValuePair data in clipboard");
+                                    }
+                                    break;
+
+                            }
+
+                        if (action)
+                        {
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    },
+                    margin: new AnyUiThickness(2, 2, 2, 2),
+                    padding: new AnyUiThickness(5, 0, 5, 0));
+
+                AddHintBubble(
+                    substack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !(pair.semanticId?.IsValid == true || pair.key.HasContent()),
+                            "Either key string specification or (at leaset) a semanticId shall be given!")
+                    });
+                if (SafeguardAccess(
+                        substack, repo, pair.semanticId, "semanticId:", "Create data element!",
+                        v =>
+                        {
+                            pair.semanticId = new AdminShell.SemanticId();
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                {
+                    AddKeyListOfIdentifier(
+                        substack, "semanticId", pair.semanticId.Value, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: AdminShell.Key.AllElements,
+                        addEclassIrdi: true,
+                        relatedReferable: relatedReferable);
+                }
+
+                AddKeyValueRef(
+                    substack, "key", pair, ref pair.key, null, repo,
+                    v =>
+                    {
+                        pair.key = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                AddKeyValueRef(
+                    substack, "value", pair, ref pair.value, null, repo,
+                    v =>
+                    {
+                        pair.value = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                if (SafeguardAccess(
+                        substack, repo, pair.externalSubjectId, "externalSubjectId:", "Create data element!",
+                        v =>
+                        {
+                            pair.externalSubjectId = new AdminShell.GlobalReference();
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                {
+                    AddKeyListOfIdentifier(substack, "externalSubjectId", pair.externalSubjectId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         relatedReferable: relatedReferable);
                 }

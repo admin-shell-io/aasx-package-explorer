@@ -1390,6 +1390,15 @@ namespace AasxPackageLogic
             var tiAas = new VisualElementAdminShell(null, cache, package, env, aas);
             tiAas.SetIsExpandedIfNotTouched(OptionExpandMode > 0);
 
+            // add asset as well (visual legacy of V2.0)
+            var asset = aas.assetInformation;
+            if (asset != null)
+            {
+                // item
+                var tiAsset = new VisualElementAsset(tiAas, cache, env, aas, asset);
+                tiAas.Members.Add(tiAsset);
+            }
+
             // have submodels?
             if (aas.submodelRefs != null)
                 foreach (var smr in aas.submodelRefs)
@@ -1589,16 +1598,7 @@ namespace AasxPackageLogic
                         else
                         {
                             res.Add(tiAas);
-                        }
-
-                        // add asset as well (visual legacy of V2.0)
-                        var asset = aas.assetInformation;
-                        if (asset != null)
-                        {
-                            // item
-                            var tiAsset = new VisualElementAsset(tiAssets, cache, env, aas, asset);
-                            tiAas.Members.Add(tiAsset);
-                        }
+                        }                        
                     }
                 }
 

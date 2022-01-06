@@ -279,10 +279,11 @@ namespace AdminShellNS
 
         public class IdentifierKeyValuePair : IAasElement
         {
-            // for JSON only
-            [XmlIgnore]
-            [JsonProperty(PropertyName = "modelType")]
-            public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
+            // TODO: check if required
+            //// for JSON only
+            //[XmlIgnore]
+            //[JsonProperty(PropertyName = "modelType")]
+            //public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
 
             // member
             // from hasSemantics:
@@ -320,6 +321,24 @@ namespace AdminShellNS
             // not existing in V2.0
 #endif
 
+            // further
+
+            public string ToString(int format = 0)
+            {
+                if (format == 1)
+                {
+                    return String.Format(
+                        "({0}){1}", this.key, this.value);
+                }
+                if (format == 2)
+                {
+                    return String.Format("{0}", this.value);
+                }
+
+                // (old) default
+                return $"[{this.key}, {this.value}]";
+            }
+
             // self description
 
             public AasElementSelfDescription GetSelfDescription()
@@ -331,6 +350,7 @@ namespace AdminShellNS
             {
                 return this.GetSelfDescription()?.ElementName;
             }
+
         }
 
         public class ListOfIdentifierKeyValuePair : List<IdentifierKeyValuePair>
@@ -343,6 +363,13 @@ namespace AdminShellNS
                 if (src != null)
                     foreach (var kvp in src)
                         Add(new IdentifierKeyValuePair(kvp));
+            }
+
+            // further
+
+            public string ToString(int format = 0, string delimiter = ",")
+            {
+                return string.Join(delimiter, this.Select((x) => x.ToString(format)));
             }
         }
 
@@ -363,27 +390,6 @@ namespace AdminShellNS
             [XmlAttribute]
             [CountForHash]
             public string type = "";
-
-            //TODO: REMOVE
-            //[XmlAttribute]
-            //[CountForHash]
-            //public bool local = false;
-
-            //[MetaModelName("Key.idType")]
-            //[TextSearchable]
-            //[XmlAttribute]
-            //[JsonIgnore]
-            //[CountForHash]
-            //public string idType = "";
-
-            //[XmlIgnore]
-            //[JsonProperty(PropertyName = "idType")]
-            //public string JsonIdType
-            //{
-            //    // adapt idShort <-> IdShort
-            //    get => (idType == "idShort") ? "IdShort" : idType;
-            //    set => idType = (value == "idShort") ? "IdShort" : value;
-            //}
 
             [MetaModelName("Key.value")]
             [TextSearchable]
@@ -630,20 +636,6 @@ namespace AdminShellNS
             public static string AAS = "AssetAdministrationShell";
             public static string Entity = "Entity";
             // Resharper enable MemberHidesStaticFromOuterClass
-
-            // TODO: REMOVE
-            //public static string[] IdentifierTypeNames = new string[] {
-            //    Identifier.IdShort, "FragmentId", "Custom", Identifier.IRDI, Identifier.IRI };
-            //public enum IdentifierType { IdShort = 0, FragmentId, Custom, IRDI, IRI };
-
-            //public static string GetIdentifierTypeName(IdentifierType t)
-            //{
-            //    return IdentifierTypeNames[(int)t];
-            //}
-
-            //public static string IdShort = "IdShort";
-            //public static string FragmentId = "FragmentId";
-            //public static string Custom = "Custom";
 
             // some helpers
 
@@ -1018,7 +1010,8 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// STILL TODO
+        /// This reference is used to point OUTSIDE the model, to definitions and knowledge
+        /// existing in the outside world.
         /// </summary>
         public class GlobalReference : Reference
         {
@@ -1259,8 +1252,9 @@ namespace AdminShellNS
             }
         }
 
+
         /// <summary>
-        /// Receive most of the V2.0 Reference handling
+        /// These references are menat to point inside an model described by the meta model of the AAS
         /// </summary>
         public class ModelReference : Reference
         {

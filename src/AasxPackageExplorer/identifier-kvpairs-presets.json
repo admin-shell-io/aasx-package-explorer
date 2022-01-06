@@ -1,0 +1,11 @@
+[
+  {
+    "name": "GTIN number as designated on asset",
+    "pair": {
+      "semanticId": null,
+      "key": "GTIN",
+      "value": "1234.many",
+      "externalSubjectId": null
+    }
+  }
+]

@@ -426,59 +426,6 @@ namespace AasxPackageLogic
             }
         }
 
-        //
-        // List of IdentifierKeyValuePair
-        //
-
-        public void DisplayOrEditEntityListOfIdentifierKeyValuePair(
-            AnyUiStackPanel stack,
-            AdminShell.ListOfIdentifierKeyValuePair keyValuePairs,
-            Action<AdminShell.ListOfIdentifierKeyValuePair> setOutput,
-            string entityName,
-            string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
-            AdminShell.Referable relatedReferable = null)
-        {
-            // access
-            if (stack == null)
-                return;
-
-            // list of multiple keys
-            if (this.SafeguardAccess(
-                    stack, this.repo, keyValuePairs, $"{entityName}:", "Create data element!",
-                    v =>
-                    {
-                        setOutput?.Invoke(new AdminShell.ListOfIdentifierKeyValuePair());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }))
-            {
-                this.AddGroup(stack, $"{entityName}:", levelColors.SubSection);
-
-                if (editMode)
-                {
-                    // let the user control the number of references
-                    this.AddAction(
-                        stack, $"{entityName}:", new[] { "Add IdentifierKeyValuePair", "Delete last one" }, repo,
-                        (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0)
-                                keyValuePairs.Add(new AdminShell.IdentifierKeyValuePair());
-
-                            if (buttonNdx == 1 && keyValuePairs.Count > 0)
-                                keyValuePairs.RemoveAt(keyValuePairs.Count - 1);
-
-                            return new AnyUiLambdaActionRedrawEntity();
-                        });
-                }
-
-                // now use the normal mechanism to deal with editMode or not ..
-                if (keyValuePairs != null && keyValuePairs.Count > 0)
-                {
-                    for (int i = 0; i < keyValuePairs.Count; i++)
-                        // TODO ADD
-                        throw new NotImplementedException();
-                }
-            }
-        }
 
         //
         // Kind
@@ -658,6 +605,36 @@ namespace AasxPackageLogic
                 }))
             {
                 this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable);
+            }
+
+        }
+
+        //
+        // List of IdentifierKeyValuePair
+        //
+
+        public void DisplayOrEditEntityListOfIdentifierKeyValuePair(AnyUiStackPanel stack,
+            AdminShell.ListOfIdentifierKeyValuePair pairs,
+            Action<AdminShell.ListOfIdentifierKeyValuePair> setOutput,
+            AdminShell.Referable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "IdentifierKeyValuePairs:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, pairs, "IdentifierKeyValuePairs:", "Create empty list of IdentifierKeyValuePairs!",
+                v =>
+                {
+                    setOutput?.Invoke(new AdminShell.ListOfIdentifierKeyValuePair());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.IdentifierKeyValuePairHelper(stack, repo, pairs, relatedReferable: relatedReferable);
             }
 
         }
