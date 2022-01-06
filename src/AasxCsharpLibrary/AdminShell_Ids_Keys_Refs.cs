@@ -1562,5 +1562,238 @@ namespace AdminShellNS
             }
         }
 
+        //
+        // derived References
+        //
+
+        [XmlType(TypeName = "assetRef")]
+        public class AssetRef : GlobalReference
+        {
+            // constructors
+
+            public AssetRef() : base() { }
+            public AssetRef(AssetRef src) : base(src) { }
+            public AssetRef(GlobalReference r) : base(r) { }
+            public AssetRef(Identifier id) : base(id) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public AssetRef(AasxCompatibilityModels.AdminShellV10.AssetRef src) : base(src) { }
+            public AssetRef(AasxCompatibilityModels.AdminShellV20.AssetRef src) : base(src) { }
+#endif
+
+
+            // further methods
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("AssetRef", "AssetRef");
+            }
+        }
+
+        [XmlType(TypeName = "derivedFrom")]
+        public class AssetAdministrationShellRef : ModelReference
+        {
+            // constructors
+
+            public AssetAdministrationShellRef() : base() { }
+
+            public AssetAdministrationShellRef(Key k) : base(k) { }
+
+            public AssetAdministrationShellRef(ModelReference src) : base(src) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public AssetAdministrationShellRef(AasxCompatibilityModels.AdminShellV10.Reference src) : base(src) { }
+
+            public AssetAdministrationShellRef(AasxCompatibilityModels.AdminShellV20.Reference src) : base(src) { }
+#endif
+
+            // further methods
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("AssetAdministrationShellRef", "AasRef");
+            }
+        }
+
+        [XmlType(TypeName = "submodelRef")]
+        public class SubmodelRef : ModelReference
+        {
+            // constructors
+
+            public SubmodelRef() : base() { }
+
+            public SubmodelRef(SubmodelRef src) : base(src) { }
+
+            public SubmodelRef(ModelReference src) : base(src) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public SubmodelRef(AasxCompatibilityModels.AdminShellV10.SubmodelRef src) : base(src) { }
+
+            public SubmodelRef(AasxCompatibilityModels.AdminShellV20.SubmodelRef src) : base(src) { }
+#endif
+
+            public new static SubmodelRef CreateNew(string type, string value)
+            {
+                var r = new SubmodelRef();
+                r.Keys.Add(Key.CreateNew(type, value));
+                return r;
+            }
+
+            public static SubmodelRef CreateNew(ModelReference src)
+            {
+                if (src == null || src.Keys == null)
+                    return null;
+                var r = new SubmodelRef();
+                r.Keys.AddRange(src.Keys);
+                return r;
+            }
+
+            // further methods
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("SubmodelRef", "SMRef");
+            }
+        }
+
+        [XmlType(TypeName = "conceptDescriptionRef")]
+        public class ConceptDescriptionRef : ModelReference
+        {
+            // constructors
+
+            public ConceptDescriptionRef() : base() { }
+
+            public ConceptDescriptionRef(ConceptDescriptionRef src) : base(src) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public ConceptDescriptionRef(
+                AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRef src) : base(src) { }
+
+            public ConceptDescriptionRef(
+                AasxCompatibilityModels.AdminShellV20.ConceptDescriptionRef src) : base(src) { }
+#endif
+
+            // further methods
+
+            public new static ConceptDescriptionRef CreateNew(string type, string value)
+            {
+                var r = new ConceptDescriptionRef();
+                r.Keys.Add(Key.CreateNew(type, value));
+                return r;
+            }
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("ConceptDescriptionRef", "CDRef");
+            }
+
+        }
+
+        [XmlType(TypeName = "dataSpecificationRef")]
+        public class DataSpecificationRef : GlobalReference
+        {
+            // constructors
+
+            public DataSpecificationRef() : base() { }
+
+            public DataSpecificationRef(DataSpecificationRef src) : base(src) { }
+            public DataSpecificationRef(GlobalReference src) : base(src) { }
+            public DataSpecificationRef(Identifier src) : base(src) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.DataSpecificationRef src) : base(src) { }
+
+            public DataSpecificationRef(AasxCompatibilityModels.AdminShellV10.Reference src) : base(src) { }
+
+            public DataSpecificationRef(AasxCompatibilityModels.AdminShellV20.DataSpecificationRef src) : base(src) { }
+#endif
+
+            // further methods
+
+            public static DataSpecificationRef CreateNew(GlobalReference src)
+            {
+                return new DataSpecificationRef(src);
+            }
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("DataSpecificationRef", "DSRef");
+            }
+
+        }
+
+        [XmlType(TypeName = "conceptDescriptions")]
+        public class ConceptDescriptionRefs
+        {
+            [XmlElement(ElementName = "conceptDescriptionRef")]
+            public List<ConceptDescriptionRef> conceptDescriptions = new List<ConceptDescriptionRef>();
+
+            // constructors
+
+            public ConceptDescriptionRefs() { }
+
+            public ConceptDescriptionRefs(ConceptDescriptionRefs src)
+            {
+                if (src.conceptDescriptions != null)
+                    foreach (var cdr in src.conceptDescriptions)
+                        this.conceptDescriptions.Add(new ConceptDescriptionRef(cdr));
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            public ConceptDescriptionRefs(AasxCompatibilityModels.AdminShellV10.ConceptDescriptionRefs src)
+            {
+                if (src.conceptDescriptions != null)
+                    foreach (var cdr in src.conceptDescriptions)
+                        this.conceptDescriptions.Add(new ConceptDescriptionRef(cdr));
+            }
+
+            public ConceptDescriptionRefs(AasxCompatibilityModels.AdminShellV20.ConceptDescriptionRefs src)
+            {
+                if (src.conceptDescriptions != null)
+                    foreach (var cdr in src.conceptDescriptions)
+                        this.conceptDescriptions.Add(new ConceptDescriptionRef(cdr));
+            }
+#endif
+        }
+
+        public class SemanticId : GlobalReference
+        {
+            // constructors / creators
+
+            public SemanticId() : base() { }
+            public SemanticId(Identifier id) : base(id) { }
+            public SemanticId(SemanticId src) : base(src) { }
+            public SemanticId(Reference src) : base(src) { }
+
+#if !DoNotUseAasxCompatibilityModels
+            public SemanticId(AasxCompatibilityModels.AdminShellV10.SemanticId src) : base(src?.Keys) { }
+            public SemanticId(AasxCompatibilityModels.AdminShellV20.SemanticId src) : base(src) { }
+#endif
+
+            public static SemanticId CreateFromKey(Key key)
+            {
+                if (key == null)
+                    return null;
+                var res = new SemanticId();
+                res.Value.Add(key?.value);
+                return res;
+            }
+
+            public static SemanticId CreateFromKeys(List<Key> keys)
+            {
+                if (keys == null)
+                    return null;
+                var res = new SemanticId();
+                foreach (var k in keys)
+                    res.Value.Add(k?.value);
+                return res;
+            }
+
+            public new static SemanticId Parse(string input)
+            {
+                return (SemanticId)CreateNew(ListOfIdentifier.Parse(input));
+            }
+        }
+
     }
 }
