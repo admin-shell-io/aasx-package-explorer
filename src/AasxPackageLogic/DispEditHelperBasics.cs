@@ -2437,6 +2437,12 @@ namespace AasxPackageLogic
             return false;
         }
 
+        public class QualifierPreset
+        {
+            public string name = "";
+            public AdminShell.Qualifier qualifier = new AdminShell.Qualifier();
+        }
+
         public void QualifierHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<AdminShell.Qualifier> qualifiers,
@@ -2459,20 +2465,37 @@ namespace AasxPackageLogic
 
                         if (buttonNdx == 1)
                         {
-                            if (Options.Curr.QualifiersFile == null)
+                            var pfn = Options.Curr.QualifiersFile;
+                            if (pfn == null || !File.Exists(pfn))
+                            {
+                                Log.Singleton.Error(
+                                    $"JSON file for Quialifer presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
+                            }
                             try
                             {
-                                var uc = new AnyUiDialogueDataSelectQualifierPreset();
+                                // read file contents
+                                var init = File.ReadAllText(pfn);
+                                var presets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
+
+                                // define dialogue and map presets into dialogue items
+                                var uc = new AnyUiDialogueDataSelectFromList();
+                                uc.ListOfItems = presets.Select((pr)
+                                        => new AnyUiDialogueListItem() { Text = pr.name, Tag = pr }).ToList();
+
+                                // perform dialogue
                                 this.context.StartFlyoverModal(uc);
-                                if (uc.Result && uc.ResultQualifier != null)
-                                    qualifiers.Add(uc.ResultQualifier);
-                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                if (uc.Result && uc.ResultItem?.Tag is QualifierPreset preset
+                                    && preset.qualifier != null)
+                                {
+                                    qualifiers.Add(preset.qualifier);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                }
                             }
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
+                                    ex, $"While show Qualifier presets ({pfn})");
                             }
                         }
 
@@ -2693,7 +2716,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    "JSON file for IdentifierKeyValuePair presets not defined nor existing.");
+                                    "JSON file for IdentifierKeyValuePair presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -2719,7 +2742,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show IdentifierKeyValuePair presets ({Options.Curr.QualifiersFile})");
+                                    ex, $"While show IdentifierKeyValuePair presets ({pfn})");
                             }
                         }
 
