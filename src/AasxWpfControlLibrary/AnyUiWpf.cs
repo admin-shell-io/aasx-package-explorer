@@ -1040,14 +1040,6 @@ namespace AnyUi
                 res = uc;
             }
 
-            if (dialogueData is AnyUiDialogueDataSelectQualifierPreset ddsq)
-            {
-                var fullfn = System.IO.Path.GetFullPath(Options.Curr.QualifiersFile);
-                var uc = new SelectQualifierPresetFlyout(fullfn);
-                uc.DiaData = ddsq;
-                res = uc;
-            }
-
             if (dialogueData is AnyUiDialogueDataProgress ddpr)
             {
                 var uc = new ProgressBarFlyout();

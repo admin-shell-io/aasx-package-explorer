@@ -162,20 +162,4 @@ namespace AasxPackageLogic
         {
         }
     }
-
-    public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
-    {
-        // in
-        // (the presets will be provided by the technology implementation)
-
-        // out
-        public AdminShell.Qualifier ResultQualifier = null;
-
-        public AnyUiDialogueDataSelectQualifierPreset(
-            string caption = "",
-            double? maxWidth = null)
-            : base(caption, maxWidth)
-        {
-        }
-    }
 }
