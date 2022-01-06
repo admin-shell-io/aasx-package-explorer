@@ -465,10 +465,44 @@ namespace AasxPackageLogic
             string label = "Buffer:")
         {
             // access
-            if (parentContainer == null || cpbInternal == null || sme == null)
+            if (cpbInternal == null || sme == null)
                 return;
 
-            // use an action
+            // "emergency mode" if parent container does not exist!
+            if (parentContainer == null)
+            {
+                this.AddAction(
+                    stack, label,
+                    new[] { "Copy", }, repo,
+                    actionTags: new[] { "aas-elem-copy" },
+                    action: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            // store info
+                            cpbInternal.Clear();
+                            cpbInternal.Valid = true;
+                            cpbInternal.Duplicate = true;
+                            cpbInternal.Items = new ListOfCopyPasteItem(
+                                new CopyPasteItemSME(env, parentContainer, wrapper, sme));
+                            cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
+
+                            // user feedback
+                            Log.Singleton.Info(
+                                StoredPrint.Color.Blue,
+                                $"Stored SubmodelElement '{0}'({1}) to internal buffer. Paste will duplicate.", 
+                                "" + sme.idShort,
+                                "" + sme?.GetElementName());
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
+        
+                // important!
+                return;
+            }
+
+            // "full mode:" use an action
             this.AddAction(
                 stack, label,
                 new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
