@@ -30,6 +30,7 @@
   /* "LogoFile": "SpecPI40_t.png", */
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",
+  "IdentifierKeyValuePairsFile": "identifier-kvpairs-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 1000,
@@ -86,6 +87,50 @@
       "Args": [],
       "Options": null
     }, */
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
+      "Args": []
+    }, /*
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
+      "Args": []
+    }, */
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
+      "Args": []
+    } /*,
     // Festo specific from here on
     /*
     {

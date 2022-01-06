@@ -40,7 +40,7 @@
             <Button x:Name="ButtonClose" Style="{DynamicResource TranspRoundCorner}" Height="20" Width="20" Foreground="White" Click="ButtonClose_Click">X</Button>
         </Viewbox>
 
-        <TextBlock x:Name="TextBlockCaption" Grid.Row="1" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Select preset for Qualifier .."/></TextBlock>
+        <TextBlock x:Name="TextBlockCaption" Grid.Row="1" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Select from list .."/></TextBlock>
 
         <ListBox x:Name="ListBoxPresets" Grid.Row="2" Grid.Column="1" Margin="5,10,5,10" Background="#c0202030" Foreground="White" FontWeight="Bold" FontSize="16" ScrollViewer.VerticalScrollBarVisibility="Auto" MouseDoubleClick="ListBoxPresets_MouseDoubleClick">
         </ListBox>
