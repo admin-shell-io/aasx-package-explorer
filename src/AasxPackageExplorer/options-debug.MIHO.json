@@ -31,6 +31,7 @@
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",
   "IdentifierKeyValuePairsFile": "identifier-kvpairs-presets.json",
+  "ExtensionsPresetFile": "extension-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 1000,

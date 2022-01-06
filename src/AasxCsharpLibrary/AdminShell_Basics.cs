@@ -1109,6 +1109,15 @@ namespace AdminShellNS
                 description.langString.Add(new LangStr(lang, str));
             }
 
+            public void AddExtension(Extension ext)
+            {
+                if (ext == null)
+                    return;
+                if (extension == null)
+                    extension = new ListOfExtension();
+                extension.Add(ext);
+            }
+
             public virtual AasElementSelfDescription GetSelfDescription()
             {
                 return new AasElementSelfDescription("Referable", "Ref");

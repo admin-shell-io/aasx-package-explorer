@@ -282,6 +282,10 @@ namespace AasxPackageLogic
             Cmd = "-idpairs", Arg = "<path>")]
         public string IdentifierKeyValuePairsFile = null;
 
+        [OptionDescription(Description = "Path to JSON file defining Referable.extension presets.",
+            Cmd = "-extpreset", Arg = "<path>")]
+        public string ExtensionsPresetFile = null;
+
         [OptionDescription(Description = "Path to a JSON, defining a set of AasxPackage-Files, which serve as " +
             "repository",
             Cmd = "-aasxrepo", Arg = "<path>")]
