@@ -119,7 +119,16 @@ namespace AdminShellNS
                     // now locate the Asset in the old environment and set
                     var srcasset = srcenv?.FindAsset(src.assetRef);
                     if (srcasset != null)
+                    {
                         assetInformation = new AssetInformation(srcasset);
+
+                        this.AddExtension(new Extension()
+                        {
+                            name = "AAS2.0/MIGRATION",
+                            valueType = "application/json",
+                            value = JsonConvert.SerializeObject(srcasset, Newtonsoft.Json.Formatting.Indented)
+                        });
+                    }
                 }
             }
 #endif

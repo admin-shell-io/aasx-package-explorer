@@ -25,7 +25,7 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperCopyPaste
+    public class DispEditHelperModules : DispEditHelperMiniModules
     {
         //
         // Inject a number of customised function in modules
@@ -182,6 +182,13 @@ namespace AasxPackageLogic
                 this.AddKeyListLangStr(stack, "description", referable.description.langString,
                     repo, relatedReferable: referable);
             }
+
+            // Extensions (at the end to make them not so much impressive!)
+
+            DisplayOrEditEntityListOfExtension(
+                stack: stack, extensions: referable.extension,
+                setOutput: (v) => { referable.extension = v; },
+                relatedReferable: referable);
         }
 
         //
@@ -605,6 +612,36 @@ namespace AasxPackageLogic
                 }))
             {
                 this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable);
+            }
+
+        }
+
+        //
+        // Extensions
+        //
+
+        public void DisplayOrEditEntityListOfExtension(AnyUiStackPanel stack,
+            AdminShell.ListOfExtension extensions,
+            Action<AdminShell.ListOfExtension> setOutput,
+            AdminShell.Referable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "HasExtension:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, extensions, "extensions:", "Create empty list of Extensions!",
+                v =>
+                {
+                    setOutput?.Invoke(new AdminShell.ListOfExtension());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.ExtensionHelper(stack, repo, extensions, relatedReferable: relatedReferable);
             }
 
         }

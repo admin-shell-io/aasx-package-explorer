@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Plain text fragment",
+    "extension": {
+      "semanticId": null,
+      "name": "",
+      "valueType": "xsd:string",
+      "value": "",
+      "refersTo": null
+    }
+  },
+  {
+    "name": "Sample JSON fragment",
+    "extension": {
+      "semanticId": null,
+      "name": "sample-json-ext",
+      "valueType": "application/json",
+      "value": "[ 1, 2, 3, \r\n  \"Hello \", \r\n  \"world!\" ]",
+      "refersTo": null
+    }
+  },
+  {
+    "name": "Sample XML fragment",
+    "extension": {
+      "semanticId": null,
+      "name": "sample-xml-ext",
+      "valueType": "application/xml",
+      "value": "<value \"attrib\"=\"a\">text</value>",
+      "refersTo": null
+    }
+  }
+]
