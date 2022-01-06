@@ -357,6 +357,8 @@ namespace AdminShellNS
             [XmlElement(ElementName = "operation", Type = typeof(Operation))]
             [XmlElement(ElementName = "basicEvent", Type = typeof(BasicEvent))]
             [XmlElement(ElementName = "entity", Type = typeof(Entity))]
+            [XmlElement(ElementName = "submodelElementList", Type = typeof(SubmodelElementList))]
+            [XmlElement(ElementName = "submodelElementStruct", Type = typeof(SubmodelElementStruct))]
             public SubmodelElement submodelElement;
 
             // element names
@@ -364,7 +366,7 @@ namespace AdminShellNS
             {
                 Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob,
                 ReferenceElement, RelationshipElement, AnnotatedRelationshipElement, Capability, Operation,
-                BasicEvent, Entity
+                BasicEvent, Entity, SubmodelElementList, SubmodelElementStruct
             }
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
@@ -376,11 +378,12 @@ namespace AdminShellNS
 
             public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
             "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
-            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity",
+            "SubmodelElementList", "SubmodelElementStruct"};
 
             public static string[] AdequateElementShortName = { null, "SMC", null,
             "MLP", null, null, null, "Ref", "Rel",
-            "ARel", null, null, "Event", "Entity" };
+            "ARel", null, null, "Event", "Entity", "SML", "SMS" };
 
             // constructors
 
@@ -420,6 +423,10 @@ namespace AdminShellNS
                     this.submodelElement = new BasicEvent(src as BasicEvent);
                 if (src is Entity)
                     this.submodelElement = new Entity(src as Entity);
+                if (src is SubmodelElementList)
+                    this.submodelElement = new SubmodelElementList(src as SubmodelElementList);
+                if (src is SubmodelElementStruct)
+                    this.submodelElement = new SubmodelElementStruct(src as SubmodelElementStruct);
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -574,6 +581,10 @@ namespace AdminShellNS
                     return new BasicEvent(src);
                 if (ae == AdequateElementEnum.Entity)
                     return new Entity(src);
+                if (ae == AdequateElementEnum.SubmodelElementList)
+                    return new SubmodelElementList(src);
+                if (ae == AdequateElementEnum.SubmodelElementStruct)
+                    return new SubmodelElementStruct(src);
                 return null;
             }
 
@@ -2256,7 +2267,11 @@ namespace AdminShellNS
             }
         }
 
-
+        /// <summary>
+        /// In V2.0, this was the most important SME to hold multiple child SME.
+        /// Ib V3.0, this is deprecated and will made abstract.
+        /// Use SubmodelElementList, SubmodelElementStruct instead.
+        /// </summary>
         public class SubmodelElementCollection : SubmodelElement, IManageSubmodelElements, IEnumerateChildren
         {
             // for JSON only
@@ -2503,6 +2518,121 @@ namespace AdminShellNS
                 this.value?.RecurseOnReferables(state, parents, lambda);
             }
         }
+       
+        public class SubmodelElementList : SubmodelElementCollection
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
+
+            // members
+            // (from "old" SMC, there are a lot members!)
+
+            public bool orderRelevant = false;
+
+            public GlobalReference semanticIdListElement = null;
+
+            public SubmodelElementWrapper.AdequateElementEnum typeValueListElement 
+                = SubmodelElementWrapper.AdequateElementEnum.Unknown;
+
+            public string valueTypeListElement = null;
+
+            // constructors
+
+            public SubmodelElementList() { }
+
+            public SubmodelElementList(SubmodelElement src, bool shallowCopy = false)
+                : base(src, shallowCopy)
+            {
+                if (!(src is SubmodelElementList sml))
+                    return;
+
+                this.orderRelevant = sml.orderRelevant;
+
+                if (sml.semanticIdListElement != null)
+                    this.semanticIdListElement = new GlobalReference(sml.semanticIdListElement);
+
+                this.typeValueListElement = sml.typeValueListElement;
+                this.valueTypeListElement = sml.valueTypeListElement;
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            // new in V3.0
+#endif
+
+            public new static SubmodelElementList CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
+            {
+                var x = new SubmodelElementList();
+                x.CreateNewLogic(idShort, category, semanticIdKey);
+                return (x);
+            }
+
+            // self description
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("SubmodelElementList", "SML",
+                    SubmodelElementWrapper.AdequateElementEnum.SubmodelElementList);
+            }
+
+
+        }
+
+        public class SubmodelElementStruct : SubmodelElementCollection
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
+
+            // members
+            // (no new members compared to SMC of V2.0)
+
+            // constructors
+
+            public SubmodelElementStruct() { }
+
+            public SubmodelElementStruct(SubmodelElement src, bool shallowCopy = false)
+                : base(src, shallowCopy)
+            {
+                if (!(src is SubmodelElementStruct sml))
+                    return;
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            // new in V3.0
+#endif
+
+            public new static SubmodelElementStruct CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
+            {
+                var x = new SubmodelElementStruct();
+                x.CreateNewLogic(idShort, category, semanticIdKey);
+                return (x);
+            }
+
+            // self description
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("SubmodelElementStruct", "SMS",
+                    SubmodelElementWrapper.AdequateElementEnum.SubmodelElementStruct);
+            }
+
+
+        }
+
+        //
+        // Operation
+        //
 
         public class OperationVariable : IAasElement
         {
