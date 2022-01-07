@@ -23,7 +23,7 @@ namespace AasxCompatibilityModels.AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyleV20 
+    public class BomLinkStyleV20
     {
         public AdminShellV20.Key Match;
         public bool Skip;
@@ -39,7 +39,7 @@ namespace AasxCompatibilityModels.AasxPluginBomStructure
     {
     }
 
-    public class BomNodeStyleV20 
+    public class BomNodeStyleV20
     {
         public AdminShellV20.Key Match;
         public bool Skip;
@@ -57,7 +57,7 @@ namespace AasxCompatibilityModels.AasxPluginBomStructure
     {
     }
 
-    public class BomStructureOptionsRecordV20 
+    public class BomStructureOptionsRecordV20
         : AasxCompatibilityModels.AasxIntegrationBase.AasxPluginOptionsLookupRecordBaseV20
     {
         public int Layout;

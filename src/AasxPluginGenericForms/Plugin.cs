@@ -68,7 +68,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // base options
                 var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir
                     <AasxPluginGenericForms.GenericFormOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, 
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
                         this.Log, upgrades.ToArray());
                 if (newOpt != null)
                     this.options = newOpt;
@@ -76,7 +76,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // try find additional options
                 this.options.TryLoadAdditionalOptionsFromAssemblyDir
                     <AasxPluginGenericForms.GenericFormOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, 
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
                         this.Log, upgrades.ToArray());
             }
             catch (Exception ex)

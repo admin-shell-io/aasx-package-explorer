@@ -564,7 +564,7 @@ namespace AasxUANodesetImExport
                 {
                     var var = (UAVariable)findNode(_ref.Value);
                     if (var.BrowseName == "1:Value") prop.value = var.Value.InnerText; prop.valueType = var.DataType;
-                    if (var.BrowseName == "1:ValueId") prop.valueId = 
+                    if (var.BrowseName == "1:ValueId") prop.valueId =
                         AdminShell.GlobalReference.CreateNew(createReference(var.Value.InnerText));
                 }
             }

@@ -89,7 +89,7 @@ namespace WpfMtpControl
         {
             if (src == null)
                 return;
-            
+
             EClassVersions = src.EClassVersions;
             EClassClasses = src.EClassClasses;
             EClassIRDIs = src.EClassIRDIs;

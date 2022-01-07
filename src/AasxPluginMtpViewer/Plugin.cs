@@ -50,8 +50,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // need special settings
                 var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                    new[] { 
-                        typeof(WpfMtpControl.MtpVisuOptions), 
+                    new[] {
+                        typeof(WpfMtpControl.MtpVisuOptions),
                         typeof(AasxCompatibilityModels.WpfMtpControl.MtpVisuOptionsV20),
                         typeof(AasxCompatibilityModels.AdminShellV20)
                     });

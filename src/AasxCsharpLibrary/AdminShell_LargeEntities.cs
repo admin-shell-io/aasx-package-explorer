@@ -297,7 +297,8 @@ namespace AdminShellNS
 
             public AssetInformation() { }
 
-            public AssetInformation(string fakeIdShort) {
+            public AssetInformation(string fakeIdShort)
+            {
                 // empty, because V3RC02 does not foresee storage anymore
             }
 
@@ -451,7 +452,7 @@ namespace AdminShellNS
 
         }
 
-        public class UnitId : GlobalReference 
+        public class UnitId : GlobalReference
         {
             // constructors / creators
 
@@ -626,7 +627,7 @@ namespace AdminShellNS
             public static Key GetKey()
             {
                 return Key.CreateNew(
-                            "GlobalReference", 
+                            "GlobalReference",
                             "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
             }
 

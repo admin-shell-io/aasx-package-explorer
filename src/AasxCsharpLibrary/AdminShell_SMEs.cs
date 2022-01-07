@@ -2518,7 +2518,7 @@ namespace AdminShellNS
                 this.value?.RecurseOnReferables(state, parents, lambda);
             }
         }
-       
+
         public class SubmodelElementList : SubmodelElementCollection
         {
             // for JSON only
@@ -2536,7 +2536,7 @@ namespace AdminShellNS
 
             public GlobalReference semanticIdListElement = null;
 
-            public SubmodelElementWrapper.AdequateElementEnum typeValueListElement 
+            public SubmodelElementWrapper.AdequateElementEnum typeValueListElement
                 = SubmodelElementWrapper.AdequateElementEnum.Unknown;
 
             public string valueTypeListElement = null;

@@ -477,7 +477,7 @@ namespace AasxPluginBomStructure
                             {
                                 var cd = this.FindReferableByReference(
                                     new AdminShell.ModelReference(
-                                        rel.semanticId, AdminShell.Key.ConceptDescription)) 
+                                        rel.semanticId, AdminShell.Key.ConceptDescription))
                                             as AdminShell.ConceptDescription;
 
                                 if (cd != null)

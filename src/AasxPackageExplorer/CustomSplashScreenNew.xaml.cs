@@ -37,8 +37,8 @@ namespace AasxPackageExplorer
             // set new values here
             this.TextBlockAuthors.Text = pref.Authors;
             this.TextBlockLicenses.Text = pref.LicenseShort;
-            this.TextBlockVersion.Text = 
-                pref.Version + System.Environment.NewLine 
+            this.TextBlockVersion.Text =
+                pref.Version + System.Environment.NewLine
                 + AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine;
             this.TextBlockBuildDate.Text = "";
 

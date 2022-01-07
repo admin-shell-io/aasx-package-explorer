@@ -674,7 +674,7 @@ namespace AasxPackageExplorer
         {
             // version logging
             Log.Singleton.Info("Binary version: {0}", _pref.Version);
-            Log.Singleton.Info("Meta model version: {0}", 
+            Log.Singleton.Info("Meta model version: {0}",
                 AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine);
 
             // making up "empty" picture

@@ -1726,7 +1726,7 @@ namespace AasOpcUaServer
         public NodeState GetTypeObjectFor(AdminShell.Identifier identification)
         {
             var to = this.typeObject; // shall be NULL
-            
+
             if (true == identification?.IsIRI())
                 to = this.typeObjectUri;
             else
@@ -1734,7 +1734,7 @@ namespace AasOpcUaServer
                 to = this.typeObjectIrdi;
 
             // TODO (MIHO, 2021-12-30): before V3.0, there was a compare to "custom" here.
-            
+
             return to;
         }
 

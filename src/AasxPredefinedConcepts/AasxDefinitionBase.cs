@@ -48,7 +48,7 @@ namespace AasxPredefinedConcepts
         }
 
         public class Library : Dictionary<string, LibraryEntry>
-        {            
+        {
         }
 
         //

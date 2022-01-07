@@ -1678,7 +1678,7 @@ namespace AasxPackageLogic
             Action<AdminShell.Referable> emitCustomEvent = null)
         {
             AddKeyListGeneric<AdminShell.Key, AdminShell.KeyList>(
-                view, key, keys, repo, packages, selector, 
+                view, key, keys, repo, packages, selector,
                 addExistingEntities: addExistingEntities,
                 addEclassIrdi: addEclassIrdi,
                 addFromPool: addFromPool,
@@ -1691,7 +1691,8 @@ namespace AasxPackageLogic
                 noEditJumpLambda: noEditJumpLambda,
                 relatedReferable: relatedReferable,
                 emitCustomEvent: emitCustomEvent,
-                addElemLambda: (o) => {
+                addElemLambda: (o) =>
+                {
                     if (o is AdminShell.Identifiable id)
                         keys.Add(AdminShell.Key.CreateNew(id.GetElementName(), id.id.value));
                     if (o is AdminShell.Key k)
@@ -1730,7 +1731,7 @@ namespace AasxPackageLogic
                 addEclassIrdi: addEclassIrdi,
                 addFromPool: addFromPool,
                 addPresetNames: addPresetNames,
-                addPresetKeyLists: addPresetKeyLists, 
+                addPresetKeyLists: addPresetKeyLists,
                 auxButtonLambda: auxButtonLambda,
                 auxButtonTitles: auxButtonTitles, auxButtonToolTips: auxButtonToolTips,
                 jumpLambda: jumpLambda,
@@ -1738,7 +1739,8 @@ namespace AasxPackageLogic
                 noEditJumpLambda: noEditJumpLambda,
                 relatedReferable: relatedReferable,
                 emitCustomEvent: emitCustomEvent,
-                addElemLambda: (o) => {
+                addElemLambda: (o) =>
+                {
                     if (o is AdminShell.Identifiable id)
                         keys.Add(new AdminShell.Identifier(id.id.value));
                     if (o is AdminShell.Key k)
@@ -2102,7 +2104,7 @@ namespace AasxPackageLogic
                                     return new AnyUiLambdaActionNone();
                                 },
                                 takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
-                                SmallComboBoxSelectNearestItem(cbType, cbType.Text);
+                            SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
                             // check here, if to hightlight
                             if (cbType != null && this.highlightField != null && item != null &&
@@ -2120,19 +2122,19 @@ namespace AasxPackageLogic
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 text: "" + item,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center);
-                                AnyUiUIElement.RegisterControl(
-                                    tbValue,
-                                    (o) =>
-                                    {
-                                        setItem2Lambda?.Invoke(elems[currentI], o);
-                                        emitCustomEvent?.Invoke(relatedReferable);
-                                        return new AnyUiLambdaActionNone();
-                                    }, takeOverLambda: takeOverLambdaAction);
+                            AnyUiUIElement.RegisterControl(
+                                tbValue,
+                                (o) =>
+                                {
+                                    setItem2Lambda?.Invoke(elems[currentI], o);
+                                    emitCustomEvent?.Invoke(relatedReferable);
+                                    return new AnyUiLambdaActionNone();
+                                }, takeOverLambda: takeOverLambdaAction);
 
                             // check here, if to hightlight
                             if (tbValue != null && this.highlightField != null && item != null &&
                                     this.highlightField.fieldHash == item.GetHashCode() &&
-                                    (object) elems[currentI] == this.highlightField.containingObject)
+                                    (object)elems[currentI] == this.highlightField.containingObject)
                                 this.HighligtStateElement(tbValue, true);
                         }
 

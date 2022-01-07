@@ -275,7 +275,7 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         var asset = new AdminShell.AssetInformation();
                         asset.SetIdentification("" + id);
-                        
+
                         // TODO: where to save?
                         // pkg.AasEnv?.Assets.Add(asset);
                     }

@@ -47,7 +47,7 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAsset(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, 
+            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.AdministrationShell aas, AdminShell.AssetInformation asset,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false)
@@ -179,8 +179,8 @@ namespace AasxPackageLogic
                         if (i == 1)
                         {
                             var uc = new AnyUiDialogueDataTextBox(
-                                "Global Asset ID:", 
-                                maxWidth: 1400, 
+                                "Global Asset ID:",
+                                maxWidth: 1400,
                                 symbol: AnyUiMessageBoxImage.Question,
                                 options: AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys,
                                 text: "" + asset.globalAssetId?.GetAsIdentifier());
@@ -287,8 +287,8 @@ namespace AasxPackageLogic
 
                 // Note: parentContainer = null effectively seems to disable "unwanted" functionality
                 DisplayOrEditAasEntitySubmodelElement(
-                    packages: packages, env: env, parentContainer: null, wrapper: null, 
-                    sme: asset.defaultThumbnail, 
+                    packages: packages, env: env, parentContainer: null, wrapper: null,
+                    sme: asset.defaultThumbnail,
                     editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
             }
 
@@ -1225,7 +1225,7 @@ namespace AasxPackageLogic
                         }
 
                         return new AnyUiLambdaActionNone();
-                    });               
+                    });
             }
 
             // Referable

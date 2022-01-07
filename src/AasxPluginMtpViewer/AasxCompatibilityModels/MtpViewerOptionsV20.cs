@@ -33,10 +33,10 @@ namespace AasxCompatibilityModels.AasxPluginMtpViewer
     {
         public List<MtpViewerOptionsRecordV20> Records = new List<MtpViewerOptionsRecordV20>();
 
-        public WpfMtpControl.MtpSymbolMapRecordListV20 SymbolMappings 
+        public WpfMtpControl.MtpSymbolMapRecordListV20 SymbolMappings
             = new WpfMtpControl.MtpSymbolMapRecordListV20();
 
-        public WpfMtpControl.MtpVisuOptionsV20 VisuOptions 
+        public WpfMtpControl.MtpVisuOptionsV20 VisuOptions
             = new WpfMtpControl.MtpVisuOptionsV20();
     }
 }

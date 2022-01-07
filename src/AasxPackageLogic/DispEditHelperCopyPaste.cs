@@ -490,14 +490,14 @@ namespace AasxPackageLogic
                             // user feedback
                             Log.Singleton.Info(
                                 StoredPrint.Color.Blue,
-                                $"Stored SubmodelElement '{0}'({1}) to internal buffer. Paste will duplicate.", 
+                                $"Stored SubmodelElement '{0}'({1}) to internal buffer. Paste will duplicate.",
                                 "" + sme.idShort,
                                 "" + sme?.GetElementName());
                         }
 
                         return new AnyUiLambdaActionNone();
                     });
-        
+
                 // important!
                 return;
             }
