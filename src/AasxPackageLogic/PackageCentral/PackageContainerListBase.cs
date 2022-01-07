@@ -270,8 +270,8 @@ namespace AasxPackageLogic.PackageCentral
                         var asset = new AdminShell.AssetInformation();
                         asset.SetIdentification("" + id);
 
-                        // TODO: where to save?
-                        // pkg.AasEnv?.Assets.Add(asset);
+                        // TODO (MIHO, 2022-01-07): where to save?
+                        //// pkg.AasEnv?.Assets.Add(asset);
                     }
             }
         }

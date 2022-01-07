@@ -17,6 +17,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels

@@ -139,7 +139,8 @@ namespace AasxPluginBomStructure
         public BomStructureOptionsRecord() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public BomStructureOptionsRecord(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src)
+        public BomStructureOptionsRecord(
+            AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src)
             : base(src)
         {
             if (src == null)

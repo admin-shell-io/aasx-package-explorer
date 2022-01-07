@@ -98,7 +98,7 @@ namespace AasxPackageLogic
                 var idf = rf as AdminShell.Identifiable;
                 if (idf == null
                     || !(idf is AdminShell.AdministrationShell
-                         || idf is AdminShell.AssetInformation || idf is AdminShell.ConceptDescription))
+                         || idf is AdminShell.ConceptDescription))
                     return null;
 
                 // create
@@ -483,6 +483,7 @@ namespace AasxPackageLogic
                             cpbInternal.Clear();
                             cpbInternal.Valid = true;
                             cpbInternal.Duplicate = true;
+                            // ReSharper disable once ExpressionIsAlwaysNull
                             cpbInternal.Items = new ListOfCopyPasteItem(
                                 new CopyPasteItemSME(env, parentContainer, wrapper, sme));
                             cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
@@ -490,7 +491,7 @@ namespace AasxPackageLogic
                             // user feedback
                             Log.Singleton.Info(
                                 StoredPrint.Color.Blue,
-                                $"Stored SubmodelElement '{0}'({1}) to internal buffer. Paste will duplicate.",
+                                "Stored SubmodelElement '{0}'({1}) to internal buffer. Paste will duplicate.",
                                 "" + sme.idShort,
                                 "" + sme?.GetElementName());
                         }

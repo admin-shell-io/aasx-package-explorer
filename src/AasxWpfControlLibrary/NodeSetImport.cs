@@ -278,8 +278,7 @@ namespace AasxPackageExplorer
             // store models information
             var msemanticID = new AdminShell.Identifier(ModelUri + "models");
             var msme = AdminShell.SubmodelElementCollection.CreateNew("Models", null, msemanticID);
-            // TODO V3RC02: this does not work anymore!
-            // msme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", "Models"));
+            // TODO (MIHO/AO, 2022-01-07): change to Extensions?
             msme.semanticId.Value.Add("UATypeName:Models");
             innerSme.Add(msme);
             // modeluri
@@ -343,8 +342,7 @@ namespace AasxPackageExplorer
                     (n.fields != null && n.fields.Count != 0))
                 {
                     var sme = AdminShell.SubmodelElementCollection.CreateNew(name, null, semanticID);
-                    // TODO V3RC02: this does not work anymore!
-                    // sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", n.UAObjectTypeName));
+                    // TODO (MIHO/AO, 2022-01-07): change to Extensions?
                     sme.semanticId.Value.Add("UATypeName:" + n.UAObjectTypeName);
                     switch (n.UAObjectTypeName)
                     {
@@ -364,10 +362,7 @@ namespace AasxPackageExplorer
                     }
                     foreach (field f in n.fields)
                     {
-                        // TODO V3RC02: This does not work anymore
-                        //sme.semanticId.Keys.Add(
-                        //    AdminShell.Key.CreateNew(
-                        //        "UAField", f.name + " = " + f.value + " : " + f.description));
+                        // TODO (MIHO/AO, 2022-01-07): change to Extensions?
                         sme.semanticId.Value.Add("UAField:" + f.name + " = " + f.value + " : " + f.description);
 
                         semanticID = new AdminShell.Identifier(ModelUri + name + "/" + f.name);
@@ -419,8 +414,7 @@ namespace AasxPackageExplorer
                 (n.fields != null && n.fields.Count != 0))
             {
                 var sme = AdminShell.SubmodelElementCollection.CreateNew(name, null, semanticID);
-                // TODO V3RC02: This does not work anymore
-                // sme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", n.UAObjectTypeName));
+                // TODO (MIHO/AO, 2022-01-07): change to Extensions?
                 sme.semanticId.Value.Add("UATypeName:" + n.UAObjectTypeName);
                 smec.Add(sme);
                 if (n.Value != "")
@@ -431,10 +425,7 @@ namespace AasxPackageExplorer
                 }
                 foreach (field f in n.fields)
                 {
-                    // TODO V3RC02: This does not work anymore
-                    //sme.semanticId.Keys.Add(
-                    //    AdminShell.Key.CreateNew(
-                    //        "UAField", f.name + " = " + f.value + " : " + f.description));
+                    // TODO (MIHO/AO, 2022-01-07): change to Extensions?
                     sme.semanticId.Value.Add("UAField:" + f.name + " = " + f.value + " : " + f.description);
                     semanticID = new AdminShell.Identifier(path + name + "/" + f.name);
                     var p = AdminShell.Property.CreateNew(f.name, null, semanticID);
@@ -502,40 +493,7 @@ namespace AasxPackageExplorer
                 se.category = "VARIABLE";
             }
 
-            // TODO V3RC02: This does not work anymore
-            //se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", n.UAObjectTypeName));
-            //se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANodeId", n.NodeId));
-            //if (n.ParentNodeId != null && n.ParentNodeId != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAParentNodeId", n.ParentNodeId));
-            //if (n.BrowseName != null && n.BrowseName != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UABrowseName", n.BrowseName));
-            //if (n.DisplayName != null && n.DisplayName != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADisplayName", n.DisplayName));
-            //if (n.NameSpace != null && n.NameSpace != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UANameSpace", n.NameSpace));
-            //if (n.SymbolicName != null && n.SymbolicName != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UASymbolicName", n.SymbolicName));
-            //if (n.DataType != null && n.DataType != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADataType", n.DataType));
-            //if (n.Description != null && n.Description != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADescription", n.Description));
-            //foreach (string s in n.references)
-            //{
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UAReference", s));
-            //}
-            //if (n.DefinitionName != null && n.DefinitionName != "")
-            //    se.semanticId.Keys.Add(AdminShell.Key.CreateNew("UADefinitionName", n.DefinitionName));
-            //if (n.DefinitionNameSpace != null && n.DefinitionNameSpace != "")
-            //    se.semanticId.Keys.Add(
-            //        AdminShell.Key.CreateNew(
-            //            "UADefinitionNameSpace", n.DefinitionNameSpace));
-            //foreach (field f in n.fields)
-            //{
-            //    se.semanticId.Keys.Add(
-            //        AdminShell.Key.CreateNew(
-            //            "UAField", f.name + " = " + f.value + " : " + f.description));
-            //}
-
+            // TODO (MIHO/AO, 2022-01-07): change to Extensions?
             se.semanticId.Value.Add("UATypeName" + ":" + n.UAObjectTypeName);
             se.semanticId.Value.Add("UANodeId" + ":" + n.NodeId);
             if (n.ParentNodeId != null && n.ParentNodeId != "")

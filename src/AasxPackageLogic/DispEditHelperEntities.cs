@@ -63,7 +63,8 @@ namespace AasxPackageLogic
                     this.context?.StartFlyover(uc);
                     try
                     {
-                        this.context?.PrintSingleAssetCodeSheet(asset.globalAssetId?.GetAsIdentifier(), asset.fakeIdShort);
+                        this.context?.PrintSingleAssetCodeSheet(
+                            asset.globalAssetId?.GetAsIdentifier(), asset.fakeIdShort);
                     }
                     catch (Exception ex)
                     {
@@ -74,81 +75,7 @@ namespace AasxPackageLogic
                 return new AnyUiLambdaActionNone();
             });
 
-            // Identifiable
-            // TODO: MAKE NEW
-            //this.DisplayOrEditEntityIdentifiable(
-            //    stack, asset,
-            //    Options.Curr.TemplateIdAsset,
-            //    new DispEditHelperModules.DispEditInjectAction(
-            //    new[] { "Input", "Rename" },
-            //    (i) =>
-            //    {
-            //        if (i == 0)
-            //        {
-            //            var uc = new AnyUiDialogueDataTextBox(
-            //                "Asset ID:", null, AnyUiMessageBoxImage.Question,
-            //                AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
-            //            if (this.context.StartFlyoverModal(uc))
-            //            {
-            //                asset.SetIdentification("" + uc.Text);
-            //                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-            //                return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
-            //            }
-            //        }
-
-            //        if (i == 1 && env != null)
-            //        {
-            //            var uc = new AnyUiDialogueDataTextBox(
-            //                "New ID:",
-            //                symbol: AnyUiMessageBoxImage.Question,
-            //                maxWidth: 1400,
-            //                text: "" + asset.globalAssetId?.GetAsIdentifier());
-            //            if (this.context.StartFlyoverModal(uc))
-            //            {
-            //                var res = false;
-
-            //                try
-            //                {
-            //                    // rename
-            //                    var lrf = env.RenameIdentifiable<AdminShell.AssetInformation>(
-            //                        asset.globalAssetId?.GetAsIdentifier(),
-            //                        new AdminShell.Identifier(uc.Text));
-
-            //                    // use this information to emit events
-            //                    if (lrf != null)
-            //                    {
-            //                        res = true;
-            //                        foreach (var rf in lrf)
-            //                        {
-            //                            var rfi = rf.FindParentFirstIdentifiable();
-            //                            if (rfi != null)
-            //                                this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
-            //                        }
-            //                    }
-            //                }
-            //                catch (Exception ex)
-            //                {
-            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            //                }
-
-            //                if (!res)
-            //                    this.context.MessageBoxFlyoutShow(
-            //                        "The renaming of the Submodel or some referring elements " +
-            //                        "has not performed successfully! Please review your inputs and " +
-            //                        "the AAS structure for any inconsistencies.",
-            //                        "Warning",
-            //                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-
-            //                return new AnyUiLambdaActionRedrawAllElements(asset);
-            //            }
-            //        }
-            //        return new AnyUiLambdaActionNone();
-
-            //    }));
-
             // global Asset ID
-
-            // add the keys
             if (this.SafeguardAccess(
                     stack, repo, asset.globalAssetId, "globalAssetId:", "Create data element!",
                     v =>
@@ -2119,26 +2046,26 @@ namespace AasxPackageLogic
                 };
 
                 // entities helper
-                if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
+                if (parentContainer is AdminShell.Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
                         "SubmodelElement:", nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
-                if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection &&
+                if (parentContainer is AdminShell.SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
-                if (parentContainer != null && parentContainer is AdminShell.Entity && wrapper != null)
+                if (parentContainer is AdminShell.Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Entity).statements,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
                 // refactor?
-                if (parentContainer != null && parentContainer is AdminShell.IManageSubmodelElements)
+                if (parentContainer is AdminShell.IManageSubmodelElements)
                     this.AddAction(
                         horizStack, "Refactoring:",
                         new[] { "Refactor" }, repo,
@@ -2171,11 +2098,8 @@ namespace AasxPackageLogic
                         });
 
                 // cut/ copy / paste
-                if (parentContainer != null)
-                {
-                    this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
-                        label: "Buffer:");
-                }
+                this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
             }
 
             // else:

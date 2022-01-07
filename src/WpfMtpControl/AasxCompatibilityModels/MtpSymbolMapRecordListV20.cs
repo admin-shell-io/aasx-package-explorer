@@ -20,6 +20,8 @@ using System.Windows.Markup;
 using System.Windows.Shapes;
 using System.Xml;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels.WpfMtpControl

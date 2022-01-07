@@ -131,7 +131,6 @@ namespace AasxRestServerLibrary
                     if (m2.Success && m2.Groups.Count >= 4)
                     {
                         var k = m2.Groups[1].ToString();
-                        var idt = m2.Groups[2].ToString();
                         var ids = m2.Groups[3].ToString();
 
                         var id = new AdminShell.Identifier(ids);
@@ -408,12 +407,14 @@ namespace AasxRestServerLibrary
             }
 
             // try to get the asset as well
-            // TODO: decide what to do with the frame
-            AdminShell.AssetInformation asset = null;
+            // TODO (MIHO, 2022-01-07): decide what to do with the frame
+            AdminShell.AssetInformation asset = null;            
 
             // result
             dynamic res = new ExpandoObject();
             res.AAS = aas;
+            
+            // ReSharper disable once ExpressionIsAlwaysNull
             res.Asset = asset;
 
             // return as JSON
@@ -654,7 +655,8 @@ namespace AasxRestServerLibrary
             AdminShell.AssetInformation asset = null;
             try
             {
-                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AssetInformation>(context.Request.Payload);
+                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AssetInformation>(
+                    context.Request.Payload);
             }
             catch (Exception ex)
             {
@@ -681,13 +683,15 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            // TODO: What to do with overall function?
-            //context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
-            //var existingAsset = this.Package.AasEnv.FindAsset(asset.id);
-            //if (existingAsset != null)
-            //    this.Package.AasEnv.Assets.Remove(existingAsset);
-            //this.Package.AasEnv.Assets.Add(asset);
+            // TODO (MIHO/FhG, 2022-01-07):  What to do with overall function?
+            ////context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
+            ////var existingAsset = this.Package.AasEnv.FindAsset(asset.id);
+            ////if (existingAsset != null)
+            ////    this.Package.AasEnv.Assets.Remove(existingAsset);
+            ////this.Package.AasEnv.Assets.Add(asset);
             AdminShell.AssetInformation existingAsset = null;
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
 
             // simple OK
             SendTextResponse(context, "OK" + ((existingAsset != null) ? " (updated)" : " (new)"));

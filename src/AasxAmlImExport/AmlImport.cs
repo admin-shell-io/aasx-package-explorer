@@ -63,18 +63,6 @@ namespace AasxAmlImExport
             private MultiValueDictionary<string, TargetIdAction> registerForInternalLinks =
                     new MultiValueDictionary<string, TargetIdAction>();
 
-            private class IeViewAmlTarget
-            {
-                public InternalElementType Ie;
-                public CAEXObject AmlTarget;
-
-                public IeViewAmlTarget(InternalElementType ie, CAEXObject amlTarget)
-                {
-                    Ie = ie;
-                    AmlTarget = amlTarget;
-                }
-            }
-
             /// <summary>
             /// Hold available all IDs of input AML
             /// </summary>
@@ -112,7 +100,7 @@ namespace AasxAmlImExport
                 // over all entries
                 foreach (var rs in refstrs)
                 {
-                    // TODO: REWORK OLD FORMATS!
+                    // TODO (MIHO, 2022-01-07): REWORK OLD FORMATS!
 
                     var m = Regex.Match(rs.Trim(), @"^\(([^)]+)\)\s*\(([^)]+)\)\s*\[(\w+)\](.*)$");
                     if (!m.Success)
@@ -404,13 +392,13 @@ namespace AasxAmlImExport
                 var asset = new AdminShell.AssetInformation();
 
                 // gather important attributes
-                var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
+                ////var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
+                ////var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
                 var kind = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Asset_Kind);
 
                 // we need to have some important information
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set data
                     asset.SetIdentification(id);
@@ -833,7 +821,8 @@ namespace AasxAmlImExport
                 ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
                 ds.unitId = new AdminShell.UnitId(AdminShell.GlobalReference.CreateNew(
-                        ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId))));
+                        ParseAmlReference(
+                            FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId))));
 
                 ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
@@ -927,11 +916,11 @@ namespace AasxAmlImExport
                         {
                             Debug(indentation, "  ASSET with required attributes recognised. Starting new Asset..");
 
-                            // TODO: re-create asset handling fro AML import
-                            // make temporary object official
-                            //this.package.AasEnv.Assets.Add(asset);
-                            //currentAas.assetRef = asset.GetAssetReference();
-                            //matcher.AddMatch(asset, ie);
+                            // TODO (MIHO, 2022-01-07): re-create asset handling fro AML import
+                            //// make temporary object official
+                            ////this.package.AasEnv.Assets.Add(asset);
+                            ////currentAas.assetRef = asset.GetAssetReference();
+                            ////matcher.AddMatch(asset, ie);
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");

@@ -231,7 +231,8 @@ namespace AasxIntegrationBase
         public AasxPluginLookupOptionsBase() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public AasxPluginLookupOptionsBase(AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20 src)
+        public AasxPluginLookupOptionsBase(
+            AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20 src)
             : base(src)
         {
         }

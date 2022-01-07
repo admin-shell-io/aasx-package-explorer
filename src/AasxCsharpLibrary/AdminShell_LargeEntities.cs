@@ -236,16 +236,6 @@ namespace AdminShellNS
 
         public class AssetInformation : IAasElement
         {
-            // TODO: CHECK, IF REALLY REQUIRED
-            //// for JSON only
-            //[XmlIgnore]
-            //[JsonProperty(PropertyName = "modelType")]
-            //public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
-
-            //// from hasDataSpecification:
-            //[XmlElement(ElementName = "hasDataSpecification")]
-            //public HasDataSpecification hasDataSpecification = null;
-
             // as for V3RC02, Asset in no Referable anymore
             [XmlIgnore]
             [JsonIgnore]

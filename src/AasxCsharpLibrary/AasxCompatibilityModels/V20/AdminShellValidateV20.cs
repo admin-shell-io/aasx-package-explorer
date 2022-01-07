@@ -23,15 +23,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels
 {
-    /// <summary>
-    /// validates the XML content against the AASX XML schema.
-    ///
-    /// Please produce instances with <see cref="AasSchemaValidation.NewXmlValidator"/>.
-    /// </summary>
     public class XmlValidatorV20
     {
         private System.Xml.Schema.XmlSchemaSet xmlSchemaSet;
@@ -218,14 +215,6 @@ namespace AasxCompatibilityModels
             return new XmlValidatorV20(xmlSchemaSet);
         }
 
-        /// <summary>
-        /// creates an XML validator and applies it on the given content.
-        ///
-        /// If you repeatedly need to validate XML against a schema, re-use an instance of
-        /// <see cref="XmlValidator"/> produced with <see cref="NewXmlValidator"/>. 
-        /// </summary>
-        /// <param name="recs">Validation records</param>
-        /// <param name="xmlContent">Content to be validated</param>
         public static void ValidateXML(AasValidationRecordListV20 recs, Stream xmlContent)
         {
             var validator = NewXmlValidator();

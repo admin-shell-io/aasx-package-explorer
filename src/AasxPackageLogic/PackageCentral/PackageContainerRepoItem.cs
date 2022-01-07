@@ -446,7 +446,7 @@ namespace AasxPackageLogic.PackageCentral
             // get some descriptiive data
             var threeFn = Path.GetFileNameWithoutExtension(Location);
             var aas0 = Env?.AasEnv?.AdministrationShells?.FirstOrDefault();
-            var asset0 = aas0?.assetInformation;
+            //// var asset0 = aas0?.assetInformation;
 
             // Tag
             if (!Tag.HasContent() || force)
@@ -456,8 +456,9 @@ namespace AasxPackageLogic.PackageCentral
                 try
                 {
                     tag = "";
-                    //if (asset0 != null)
-                    //    tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
+                    // TODO (MIHO, 2022-01-07): Fix this
+                    ////if (asset0 != null)
+                    ////    tag = AdminShellUtil.ExtractPascalCasingLetters(asset0.idShort).SubstringMax(0, 3);
                     if (tag == null || tag.Length < 2)
                         tag = AdminShellUtil.ExtractPascalCasingLetters(threeFn).SubstringMax(0, 3);
                     if ((tag == null || tag.Length < 2) && aas0 != null)
@@ -479,12 +480,13 @@ namespace AasxPackageLogic.PackageCentral
                 var desc = "";
                 if (aas0?.idShort.HasContent() == true)
                     desc += $"{aas0.idShort}";
-                //if (asset0?.idShort.HasContent() == true)
-                //{
-                //    if (desc.HasContent())
-                //        desc += ",";
-                //    desc += $"{asset0.idShort}";
-                //}
+                // TODO (MIHO, 2022-01-07): Fix this
+                ////if (asset0?.idShort.HasContent() == true)
+                ////{
+                ////    if (desc.HasContent())
+                ////        desc += ",";
+                ////    desc += $"{asset0.idShort}";
+                ////}
                 Description = desc;
             }
         }

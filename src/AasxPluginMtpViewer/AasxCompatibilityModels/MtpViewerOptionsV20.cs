@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+// ReSharper disable All .. as this is legacy code!
+
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
 

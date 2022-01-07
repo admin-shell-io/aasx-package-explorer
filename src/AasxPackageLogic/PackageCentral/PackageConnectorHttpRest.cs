@@ -162,7 +162,8 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>> GetAasAssetCore(string index)
+        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>> 
+            GetAasAssetCore(string index)
         {
             // access
             if (!IsValid())
@@ -186,7 +187,9 @@ namespace AasxPackageLogic.PackageCentral
             if (frame.ContainsKey("AAS"))
                 aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(frame["AAS"]);
 
-            // TODO: what to do with frame fro Asset??
+            // TODO (MIHO, 2022-01-07): what to do with frame fro Asset??
+
+            // ReSharper disable once ExpressionIsAlwaysNull
 
             // result
             return new Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>(aas, asset);

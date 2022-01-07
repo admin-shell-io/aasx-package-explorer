@@ -14,7 +14,6 @@ using AasValidationRecordList = AdminShellNS.AasValidationRecordList;
 using AdminShell = AdminShellNS.AdminShell;
 using AdminShellPackageEnv = AdminShellNS.AdminShellPackageEnv;
 using AdminShellUtil = AdminShellNS.AdminShellUtil;
-// using AdminShellV20 = AdminShellNS.AdminShellV30RC02;
 using AmlExport = AasxAmlImExport.AmlExport;
 using AmlImport = AasxAmlImExport.AmlImport;
 using Console = System.Console;
