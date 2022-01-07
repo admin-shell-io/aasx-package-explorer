@@ -392,8 +392,10 @@ namespace AasxAmlImExport
                 var asset = new AdminShell.AssetInformation();
 
                 // gather important attributes
-                ////var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                ////var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
+                ////var idShort = FindAttributeValueByRefSemantic(ie.Attribute, 
+                ////              AmlConst.Attributes.Referable_IdShort);
+                ////var idType = FindAttributeValueByRefSemantic(ie.Attribute, 
+                ////             AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
                 var kind = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Asset_Kind);
 
