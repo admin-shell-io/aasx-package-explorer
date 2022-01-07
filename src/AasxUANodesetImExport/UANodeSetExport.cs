@@ -847,7 +847,7 @@ namespace AasxUANodesetImExport
                 CreateReference(
                     "HasComponent",
                     CreateIdentifiable(asset.globalAssetId.GetAsIdentifier(), "", null, null)));
-            
+
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
             return ident.NodeId;
@@ -1100,7 +1100,7 @@ namespace AasxUANodesetImExport
                             "HasComponent", CreateKey("", "true", key.type, key.value)));
                 }
 
-            if (_ref is AdminShell.GlobalReference  glbrf)
+            if (_ref is AdminShell.GlobalReference glbrf)
                 foreach (AdminShell.Identifier id in glbrf.Value)
                 {
                     refs.Add(

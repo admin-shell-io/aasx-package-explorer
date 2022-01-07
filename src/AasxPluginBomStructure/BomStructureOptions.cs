@@ -33,13 +33,13 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.GlobalReference GetGlobalReference() 
+        public AdminShell.GlobalReference GetGlobalReference()
             => new AdminShell.GlobalReference(Match);
 
         public BomLinkStyle() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public BomLinkStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomLinkStyleV20 src) : base() 
+        public BomLinkStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomLinkStyleV20 src) : base()
         {
             if (src.Match != null)
                 Match = new AdminShell.Identifier(src.Match.value);
@@ -139,8 +139,8 @@ namespace AasxPluginBomStructure
         public BomStructureOptionsRecord() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public BomStructureOptionsRecord(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src) 
-            : base(src) 
+        public BomStructureOptionsRecord(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src)
+            : base(src)
         {
             if (src == null)
                 return;
@@ -216,8 +216,8 @@ namespace AasxPluginBomStructure
         public BomStructureOptions() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public BomStructureOptions(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20 src) 
-            : base(src) 
+        public BomStructureOptions(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20 src)
+            : base(src)
         {
             if (src.Records != null)
                 foreach (var rec in src.Records)

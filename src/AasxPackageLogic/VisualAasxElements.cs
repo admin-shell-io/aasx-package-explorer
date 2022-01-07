@@ -1598,7 +1598,7 @@ namespace AasxPackageLogic
                         else
                         {
                             res.Add(tiAas);
-                        }                        
+                        }
                     }
                 }
 

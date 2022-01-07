@@ -108,7 +108,7 @@ namespace AasxPredefinedConcepts.Convert
                 // Document Item
                 // ReSharper disable once ConvertToUsingDeclaration
                 using (var smcDoc = AdminShell.SubmodelElementCollection.CreateNew("" + smcSource.idShort,
-                            smcSource.category, 
+                            smcSource.category,
                             defsSg2.CD_VDI2770_Document.GetSingleId()))
                 using (var smcDocVersion = AdminShell.SubmodelElementCollection.CreateNew("DocumentVersion",
                             smcSource.category,

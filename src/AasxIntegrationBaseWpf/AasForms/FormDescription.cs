@@ -369,7 +369,7 @@ namespace AasxIntegrationBase.AasForms
             : base(other)
         {
             // this part == static, therefore only shallow copy
-            this.Multiplicity = (FormMultiplicity) ((int) other.Multiplicity);
+            this.Multiplicity = (FormMultiplicity)((int)other.Multiplicity);
             this.IsReadOnly = other.IsReadOnly;
         }
 #endif
@@ -438,7 +438,7 @@ namespace AasxIntegrationBase.AasForms
                     var sme = FormDescListOfElement.CloneFromOld(ov);
                     if (sme != null)
                         this.value.Add(sme);
-                }                    
+                }
         }
 #endif
 

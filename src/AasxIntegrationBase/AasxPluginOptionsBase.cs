@@ -120,7 +120,7 @@ namespace AasxIntegrationBase
             string pluginName, Assembly assy = null,
             JsonSerializerSettings settings = null,
             LogInstance log = null,
-            UpgradeMapping[] upgrades = null) 
+            UpgradeMapping[] upgrades = null)
             where T : AasxPluginOptionsBase
         {
             // expand assy?
@@ -231,8 +231,8 @@ namespace AasxIntegrationBase
         public AasxPluginLookupOptionsBase() : base() { }
 
 #if !DoNotUseAasxCompatibilityModels
-        public AasxPluginLookupOptionsBase(AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20 src) 
-            : base(src) 
+        public AasxPluginLookupOptionsBase(AasxCompatibilityModels.AasxIntegrationBase.AasxPluginLookupOptionsBaseV20 src)
+            : base(src)
         {
         }
 #endif

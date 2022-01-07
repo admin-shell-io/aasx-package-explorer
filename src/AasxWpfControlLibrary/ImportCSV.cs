@@ -75,7 +75,7 @@ namespace AasxPackageExplorer
                             sm.Add(propGroup[0]);
                             if (rows.Length > 3)
                             {
-                                if (rows[7] != "") 
+                                if (rows[7] != "")
                                     propGroup[0].semanticId = new AdminShell.SemanticId(rows[7]);
                             }
                             propGroup[0].kind = AdminShell.ModelingKind.CreateAsInstance();

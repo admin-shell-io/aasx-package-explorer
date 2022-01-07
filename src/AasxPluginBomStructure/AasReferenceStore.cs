@@ -115,7 +115,7 @@ namespace AasxPluginBomStructure
             foreach (var test in dict[hk])
             {
                 var xx = (test as AdminShell.IGetModelReference)?.GetModelReference();
-                if (r is AdminShell.ModelReference modrf 
+                if (r is AdminShell.ModelReference modrf
                     && xx != null && xx.Matches(modrf, matchMode))
                     return test;
                 if (r is AdminShell.GlobalReference glbrf)

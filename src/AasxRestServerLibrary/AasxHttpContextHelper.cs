@@ -614,7 +614,7 @@ namespace AasxRestServerLibrary
             if (handle != null && handle.identification != null)
             {
                 foreach (var aas in this.Package.AasEnv.AdministrationShells)
-                    if (aas.assetInformation?.globalAssetId != null 
+                    if (aas.assetInformation?.globalAssetId != null
                         && aas.assetInformation.globalAssetId.Matches(handle.identification))
                     {
                         dynamic o = new ExpandoObject();

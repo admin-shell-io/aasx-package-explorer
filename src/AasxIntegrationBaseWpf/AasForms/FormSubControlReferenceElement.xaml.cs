@@ -50,7 +50,7 @@ namespace AasxIntegrationBase.AasForms
                     OnPropertyChanged("InfoReference");
                 }
             }
-            
+
             public string InfoReference
             {
                 get

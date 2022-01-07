@@ -323,7 +323,7 @@ namespace AdminShellNS
         //
         // Data Specification
         //
-        
+
         // Note: In versions prior to V2.0.1, the SDK has "HasDataSpecification" containing only a Reference.
         // Iv 2.0.1, theoretically each entity with HasDataSpecification could also conatin a 
         // EmbeddedDataSpecification. 
@@ -1411,14 +1411,16 @@ namespace AdminShellNS
             public Identifier id = new Identifier();
             [XmlIgnore]
             [JsonProperty(PropertyName = "id")]
-            public string JsonId { 
-                get { return id?.value; } 
-                set {
+            public string JsonId
+            {
+                get { return id?.value; }
+                set
+                {
                     if (id == null)
                         id = new Identifier(value);
                     else
                         id.value = value;
-                } 
+                }
             }
 
             // rest of members
@@ -1617,7 +1619,7 @@ namespace AdminShellNS
                 return this.langString?.GetDefaultStr(defaultLang);
             }
         }
-       
+
         //
         // Qualifier
         //

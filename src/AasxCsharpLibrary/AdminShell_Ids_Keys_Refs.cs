@@ -1057,7 +1057,7 @@ namespace AdminShellNS
             // constructors / creators
 
             public GlobalReference() : base() { }
-            public GlobalReference(GlobalReference src) : base() 
+            public GlobalReference(GlobalReference src) : base()
             {
                 if (src == null)
                     return;
@@ -1067,8 +1067,9 @@ namespace AdminShellNS
             }
 
             public GlobalReference(Reference r) : base() { }
-            
-            public GlobalReference(Identifier id) : base() {
+
+            public GlobalReference(Identifier id) : base()
+            {
                 value.Add(id);
             }
 
@@ -1095,7 +1096,7 @@ namespace AdminShellNS
             {
                 if (src == null)
                     return;
-                
+
                 foreach (var k in src.Keys)
                     value.Add("" + k?.value);
             }
@@ -1142,7 +1143,7 @@ namespace AdminShellNS
             {
                 if (mref?.Keys == null)
                     return null;
-                var r = new GlobalReference();                
+                var r = new GlobalReference();
                 foreach (var key in mref.Keys)
                     r.value.Add(key?.value);
                 return r;

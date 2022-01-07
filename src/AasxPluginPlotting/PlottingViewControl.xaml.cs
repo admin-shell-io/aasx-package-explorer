@@ -1556,7 +1556,7 @@ namespace AasxPluginPlotting
                         ds.TimeAxis = timeSpec.Item1;
 
                     // find a DataPoint description?
-                    var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed, 
+                    var pdp = smcvar.value.FindFirstAnySemanticId<AdminShell.Property>(tsvAllowed,
                                 invertAllowed: true);
                     if (pdp != null && ds.DataPoint == null)
                     {

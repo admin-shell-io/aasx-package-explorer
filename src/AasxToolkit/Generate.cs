@@ -158,7 +158,7 @@ namespace AasxToolkit
                 var aas1 = AdminShell.AdministrationShell.CreateNew(
                     "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
                 aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(
-                    new AdminShell.Key("AssetAdministrationShell", 
+                    new AdminShell.Key("AssetAdministrationShell",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
                 aas1.assetInformation = asset1;
@@ -272,7 +272,7 @@ namespace AasxToolkit
 
                 // GROUP
                 var propGroup = AdminShell.SubmodelElementCollection.CreateNew(
-                    $"CadItem{ndx:D2}", "PARAMETER", 
+                    $"CadItem{ndx:D2}", "PARAMETER",
                     cdGroup.GetSemanticId());
                 sub1.Add(propGroup);
 
@@ -706,7 +706,7 @@ namespace AasxToolkit
                 p2.AddQualifier("life cycle qual", "BUILT",
                     AdminShell.KeyList.CreateNew(
                         AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
-                    new AdminShell.GlobalReference( 
+                    new AdminShell.GlobalReference(
                         "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";

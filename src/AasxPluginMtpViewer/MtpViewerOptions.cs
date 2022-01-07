@@ -33,7 +33,7 @@ namespace AasxPluginMtpViewer
         {
             if (src == null)
                 return;
-            
+
             RecordType = (MtpRecordType)((int)src.RecordType);
 
             if (src.AllowSubmodelSemanticId != null)
