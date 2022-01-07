@@ -453,7 +453,7 @@ namespace AasxPackageLogic
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, 
+                                        Log.Singleton.Error(ex,
                                             "while accessing IdentifierKeyValuePair data in clipboard");
                                     }
                                     break;

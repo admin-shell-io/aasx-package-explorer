@@ -461,7 +461,7 @@ namespace AdminShellNS
 
                 if (src is AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection)
                     this.submodelElement = new SubmodelElementCollection(
-                        src as AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection, 
+                        src as AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection,
                         shallowCopy: shallowCopy);
                 if (src is AasxCompatibilityModels.AdminShellV20.Property)
                     this.submodelElement = new Property(src as AasxCompatibilityModels.AdminShellV20.Property);
@@ -2073,7 +2073,7 @@ namespace AdminShellNS
 #endif
 
             public static RelationshipElement CreateNew(
-                string idShort = null, string category = null, 
+                string idShort = null, string category = null,
                 Identifier semanticIdKey = null, ModelReference first = null,
                 ModelReference second = null)
             {

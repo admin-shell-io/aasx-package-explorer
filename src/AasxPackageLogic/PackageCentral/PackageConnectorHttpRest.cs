@@ -162,7 +162,7 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>> 
+        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>>
             GetAasAssetCore(string index)
         {
             // access
