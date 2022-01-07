@@ -48,6 +48,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // need special settings
                 var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
                     new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase),
+                    typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
                     typeof(AasxCompatibilityModels.AdminShellV20) });
 
                 // this plugin can read OLD options (using the meta-model V2.0.1)

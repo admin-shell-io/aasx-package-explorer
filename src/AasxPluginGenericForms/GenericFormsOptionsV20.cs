@@ -18,6 +18,9 @@ using Newtonsoft.Json;
 
 // ReSharper disable All .. as this is legacy code!
 
+// Note: not clear why, but this file needs to be in the same folder as
+// the normale otions class!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels.AasxPluginGenericForms
