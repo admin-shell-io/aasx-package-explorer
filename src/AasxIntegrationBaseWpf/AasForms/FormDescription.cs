@@ -343,7 +343,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElement() { }
 
         public FormDescSubmodelElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId, 
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId,
             string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, singleSemanticId, presetIdShort, formInfo)
@@ -592,7 +592,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescMultiLangProp(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, 
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId,
             string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)

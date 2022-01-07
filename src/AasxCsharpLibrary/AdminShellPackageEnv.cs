@@ -1273,7 +1273,7 @@ namespace AdminShellNS
         /// <returns>Target path of file in package</returns>
         public string AddSupplementaryFileToStore(
             string sourcePath, string targetDir, string targetFn, bool embedAsThumb,
-            AdminShellPackageSupplementaryFile.SourceGetByteChunk sourceGetBytesDel = null, 
+            AdminShellPackageSupplementaryFile.SourceGetByteChunk sourceGetBytesDel = null,
             string useMimeType = null)
         {
             // beautify parameters

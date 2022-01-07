@@ -408,12 +408,12 @@ namespace AasxRestServerLibrary
 
             // try to get the asset as well
             // TODO (MIHO, 2022-01-07): decide what to do with the frame
-            AdminShell.AssetInformation asset = null;            
+            AdminShell.AssetInformation asset = null;
 
             // result
             dynamic res = new ExpandoObject();
             res.AAS = aas;
-            
+
             // ReSharper disable once ExpressionIsAlwaysNull
             res.Asset = asset;
 
