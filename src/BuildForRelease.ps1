@@ -44,6 +44,7 @@ function Main
         "AasxPluginExportTable",
         "AasxPluginGenericForms",
         "AasxPluginImageMap",
+        "AasxPluginKnownSubmodels",
         "AasxPluginMtpViewer",
         "AasxPluginPlotting",
         "AasxPluginSmdExporter",
