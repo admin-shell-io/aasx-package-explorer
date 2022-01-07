@@ -121,6 +121,8 @@ namespace AdminShellNS
         public class LocatedReference
         {
             public Identifiable Identifiable;
+
+            // ReSharper disable once MemberHidesStaticFromOuterClass
             public ModelReference Reference;
 
             public LocatedReference() { }
@@ -1523,7 +1525,6 @@ namespace AdminShellNS
             {
                 var r = new ModelReference();
 
-                // TODO: SEM ID
                 if (this is IGetSemanticId igs)
                     r.referredSemanticId = igs.GetSemanticId();
 

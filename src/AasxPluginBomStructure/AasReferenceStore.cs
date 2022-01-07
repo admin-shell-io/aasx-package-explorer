@@ -50,7 +50,7 @@ namespace AasxPluginBomStructure
                 if (r is AdminShell.ModelReference modrf)
                 {
                     // access
-                    if (r == null || modrf.Keys == null)
+                    if (modrf.Keys == null)
                         return 0;
 
                     foreach (var k in modrf.Keys)
@@ -66,7 +66,7 @@ namespace AasxPluginBomStructure
                 if (r is AdminShell.GlobalReference glbrf)
                 {
                     // access
-                    if (r == null || glbrf.Value == null)
+                    if (glbrf.Value == null)
                         return 0;
 
                     foreach (var v in glbrf.Value)
@@ -118,8 +118,8 @@ namespace AasxPluginBomStructure
                 if (r is AdminShell.ModelReference modrf
                     && xx != null && xx.Matches(modrf, matchMode))
                     return test;
-                if (r is AdminShell.GlobalReference glbrf)
-                    // TODO: MAKE THIS MORE PRECISE
+                if (r is AdminShell.GlobalReference)
+                    // TODO (MIHO, 2022-01-07): make this check more precise?
                     return test;
             }
 

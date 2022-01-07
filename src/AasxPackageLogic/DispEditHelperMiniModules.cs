@@ -63,6 +63,8 @@ namespace AasxPackageLogic
             return false;
         }
 
+        // ReSharper Disable once ClassNeverInstantiated.Global
+
         public class QualifierPreset
         {
             public string name = "";
@@ -307,6 +309,8 @@ namespace AasxPackageLogic
             return false;
         }
 
+        // ReSharper Disable once ClassNeverInstantiated.Global
+
         /// <summary>
         /// This class defines the JSON format for presets.
         /// </summary>
@@ -449,7 +453,8 @@ namespace AasxPackageLogic
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing IdentifierKeyValuePair data in clipboard");
+                                        Log.Singleton.Error(ex, 
+                                            "while accessing IdentifierKeyValuePair data in clipboard");
                                     }
                                     break;
 
@@ -549,6 +554,7 @@ namespace AasxPackageLogic
             return false;
         }
 
+        // ReSharper Disable once ClassNeverInstantiated.Global
         public class ExtensionPreset
         {
             public string name = "";

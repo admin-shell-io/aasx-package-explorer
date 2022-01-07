@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels.AasxPluginGenericForms

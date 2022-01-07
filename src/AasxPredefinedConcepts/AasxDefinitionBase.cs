@@ -168,8 +168,7 @@ namespace AasxPredefinedConcepts
                     }
                 }
 #endif
-                if (res == null)
-                    res = JsonConvert.DeserializeObject<T>(entry.contents);
+                res ??= JsonConvert.DeserializeObject<T>(entry.contents);
             }
             catch (Exception ex)
             {

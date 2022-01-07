@@ -343,7 +343,8 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElement() { }
 
         public FormDescSubmodelElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier singleSemanticId, 
+            string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, singleSemanticId, presetIdShort, formInfo)
         {
@@ -365,7 +366,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
 #if !DoNotUseAasxCompatibilityModels
-        public FormDescSubmodelElement(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementV20 other)
+        public FormDescSubmodelElement(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementV20 other)
             : base(other)
         {
             // this part == static, therefore only shallow copy
@@ -429,7 +431,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
 #if !DoNotUseAasxCompatibilityModels
-        public FormDescSubmodelElementCollection(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementCollectionV20 other)
+        public FormDescSubmodelElementCollection(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementCollectionV20 other)
             : base(other)
         {
             if (other.value != null)
@@ -589,7 +592,8 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescMultiLangProp(
-            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, AdminShell.Identifier smeSemanticId, 
+            string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
@@ -601,7 +605,8 @@ namespace AasxIntegrationBase.AasForms
         }
 
 #if !DoNotUseAasxCompatibilityModels
-        public FormDescMultiLangProp(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescMultiLangPropV20 other)
+        public FormDescMultiLangProp(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescMultiLangPropV20 other)
             : base(other)
         {
         }

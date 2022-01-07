@@ -390,7 +390,7 @@ namespace AasxUANodesetImExport
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
-                            // TODO: REMOVE IDTYPE && LOCAL
+                            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
 
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)
@@ -428,7 +428,7 @@ namespace AasxUANodesetImExport
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
-                            // TODO: REMOVE IDTYPE && LOCAL
+                            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
 
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)

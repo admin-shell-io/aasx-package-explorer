@@ -453,18 +453,21 @@ namespace AdminShellNS
                     this.submodelElement = new Operation(src as AasxCompatibilityModels.AdminShellV10.Operation);
             }
 
-            public SubmodelElementWrapper(AasxCompatibilityModels.AdminShellV20.SubmodelElement src, bool shallowCopy = false)
+            public SubmodelElementWrapper(
+                AasxCompatibilityModels.AdminShellV20.SubmodelElement src, bool shallowCopy = false)
             {
                 /* TODO (MIHO, 2021-08-12): consider using:
                    Activator.CreateInstance(pl.GetType(), new object[] { pl }) */
 
                 if (src is AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection)
                     this.submodelElement = new SubmodelElementCollection(
-                        src as AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection, shallowCopy: shallowCopy);
+                        src as AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection, 
+                        shallowCopy: shallowCopy);
                 if (src is AasxCompatibilityModels.AdminShellV20.Property)
                     this.submodelElement = new Property(src as AasxCompatibilityModels.AdminShellV20.Property);
                 if (src is AasxCompatibilityModels.AdminShellV20.MultiLanguageProperty)
-                    this.submodelElement = new MultiLanguageProperty(src as AasxCompatibilityModels.AdminShellV20.MultiLanguageProperty);
+                    this.submodelElement = new MultiLanguageProperty(
+                        src as AasxCompatibilityModels.AdminShellV20.MultiLanguageProperty);
                 if (src is AasxCompatibilityModels.AdminShellV20.Range)
                     this.submodelElement = new Range(src as AasxCompatibilityModels.AdminShellV20.Range);
                 if (src is AasxCompatibilityModels.AdminShellV20.File)
@@ -472,11 +475,14 @@ namespace AdminShellNS
                 if (src is AasxCompatibilityModels.AdminShellV20.Blob)
                     this.submodelElement = new Blob(src as AasxCompatibilityModels.AdminShellV20.Blob);
                 if (src is AasxCompatibilityModels.AdminShellV20.ReferenceElement)
-                    this.submodelElement = new ReferenceElement(src as AasxCompatibilityModels.AdminShellV20.ReferenceElement);
+                    this.submodelElement = new ReferenceElement(
+                        src as AasxCompatibilityModels.AdminShellV20.ReferenceElement);
                 if (src is AasxCompatibilityModels.AdminShellV20.RelationshipElement)
-                    this.submodelElement = new RelationshipElement(src as AasxCompatibilityModels.AdminShellV20.RelationshipElement);
+                    this.submodelElement = new RelationshipElement(
+                        src as AasxCompatibilityModels.AdminShellV20.RelationshipElement);
                 if (src is AasxCompatibilityModels.AdminShellV20.AnnotatedRelationshipElement)
-                    this.submodelElement = new AnnotatedRelationshipElement(src as AasxCompatibilityModels.AdminShellV20.AnnotatedRelationshipElement);
+                    this.submodelElement = new AnnotatedRelationshipElement(
+                        src as AasxCompatibilityModels.AdminShellV20.AnnotatedRelationshipElement);
                 if (src is AasxCompatibilityModels.AdminShellV20.Capability)
                     this.submodelElement = new Capability(src as AasxCompatibilityModels.AdminShellV20.Capability);
                 if (src is AasxCompatibilityModels.AdminShellV20.Operation)
@@ -877,7 +883,8 @@ namespace AdminShellNS
                     }
             }
 
-            public IEnumerable<T> FindAllSemanticIdAs<T>(Identifier semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
+            public IEnumerable<T> FindAllSemanticIdAs<T>(
+                Identifier semId, Key.MatchMode matchMode = Key.MatchMode.Relaxed)
                 where T : SubmodelElement
             {
                 foreach (var smw in this)
@@ -1509,7 +1516,8 @@ namespace AdminShellNS
 
 #endif
 
-            public static Property CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
+            public static Property CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Property();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1734,7 +1742,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static Range CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
+            public static Range CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Range();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -1934,7 +1943,7 @@ namespace AdminShellNS
             }
         }
 
-        // TODO: MAKE to ModelRefElm!!!
+        // TODO (MIHO, 2022-01-07): make to ModelRefElm!!!
         public class ReferenceElement : DataElement
         {
             // for JSON only
@@ -2064,7 +2073,8 @@ namespace AdminShellNS
 #endif
 
             public static RelationshipElement CreateNew(
-                string idShort = null, string category = null, Identifier semanticIdKey = null, ModelReference first = null,
+                string idShort = null, string category = null, 
+                Identifier semanticIdKey = null, ModelReference first = null,
                 ModelReference second = null)
             {
                 var x = new RelationshipElement();
@@ -2384,7 +2394,8 @@ namespace AdminShellNS
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
             }
 
-            public SubmodelElementCollection(AasxCompatibilityModels.AdminShellV20.SubmodelElement src, bool shallowCopy = false)
+            public SubmodelElementCollection(
+                AasxCompatibilityModels.AdminShellV20.SubmodelElement src, bool shallowCopy = false)
                 : base(src)
             {
                 if (!(src is AasxCompatibilityModels.AdminShellV20.SubmodelElementCollection smc))
@@ -2603,8 +2614,6 @@ namespace AdminShellNS
             public SubmodelElementStruct(SubmodelElement src, bool shallowCopy = false)
                 : base(src, shallowCopy)
             {
-                if (!(src is SubmodelElementStruct sml))
-                    return;
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -3094,7 +3103,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static Entity CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
+            public static Entity CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new Entity();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
@@ -3203,7 +3213,8 @@ namespace AdminShellNS
             }
 #endif
 
-            public static BasicEvent CreateNew(string idShort = null, string category = null, Identifier semanticIdKey = null)
+            public static BasicEvent CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
                 var x = new BasicEvent();
                 x.CreateNewLogic(idShort, category, semanticIdKey);

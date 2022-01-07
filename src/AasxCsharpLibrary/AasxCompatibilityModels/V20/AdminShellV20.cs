@@ -24,6 +24,8 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels
@@ -536,7 +538,8 @@ namespace AasxCompatibilityModels
 
             // validation
 
-            public static AasValidationActionV20 Validate(AasValidationRecordListV20 results, Key k, Referable container)
+            public static AasValidationActionV20 Validate(
+                AasValidationRecordListV20 results, Key k, Referable container)
             {
                 // access
                 if (results == null || container == null)

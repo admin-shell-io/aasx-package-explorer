@@ -75,7 +75,7 @@ namespace AasOpcUaServer
             var res = new List<string>();
             foreach (var k in refid.Keys)
             {
-                res.Add(String.Format("({0}){1}", k.value));
+                res.Add(String.Format("{0}", k.value));
             }
 
             return res;

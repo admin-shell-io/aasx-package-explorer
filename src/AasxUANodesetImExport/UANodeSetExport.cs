@@ -789,7 +789,7 @@ namespace AasxUANodesetImExport
 
         private static string CreateKey(string idtype, string local, string type, string value)
         {
-            // TODO: REMOVE IDTYPE && LOCAL
+            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
 
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();

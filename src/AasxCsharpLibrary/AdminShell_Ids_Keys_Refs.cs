@@ -165,7 +165,8 @@ namespace AdminShellNS
 
             // validation
 
-            public static AasValidationAction Validate(AasValidationRecordList results, Identifier id, Referable container)
+            public static AasValidationAction Validate(
+                AasValidationRecordList results, Identifier id, Referable container)
             {
                 // access
                 if (results == null || container == null)
@@ -279,12 +280,6 @@ namespace AdminShellNS
 
         public class IdentifierKeyValuePair : IAasElement
         {
-            // TODO: check if required
-            //// for JSON only
-            //[XmlIgnore]
-            //[JsonProperty(PropertyName = "modelType")]
-            //public JsonModelTypeWrapper JsonModelType { get { return new JsonModelTypeWrapper(GetElementName()); } }
-
             // member
             // from hasSemantics:
             [XmlElement(ElementName = "semanticId")]
@@ -421,7 +416,9 @@ namespace AdminShellNS
 
             public Key(AasxCompatibilityModels.AdminShellV20.Key src)
             {
-                var stll = src?.type?.Trim().ToLower();
+                if (src == null)
+                    return;
+                var stll = src.type?.Trim().ToLower();
                 if (stll == AasxCompatibilityModels.AdminShellV20.Key.GlobalReference.ToLower())
                     this.type = Key.GlobalReference;
                 else
@@ -484,7 +481,7 @@ namespace AdminShellNS
                 if (typeIfNotSet == null)
                     typeIfNotSet = Key.GlobalReference;
 
-                // TODO: REWORK OLD & NEW FORMATS!!
+                // TODO (MIHO, 2022-01-07): REWORK OLD & NEW FORMATS!!
 
                 // OLD format == 1
                 if (allowFmtAll || allowFmt1)
@@ -605,8 +602,8 @@ namespace AdminShellNS
                 "Entity",
                 "Event",
                 "File",
-                // "GlobalElementReference", // in spec, but not expected by AASX Package Explorer
-                // "ModelElementReference", // in spec, but not expected by AASX Package Explorer
+                //// "GlobalElementReference", // in spec, but not expected by AASX Package Explorer
+                //// "ModelElementReference", // in spec, but not expected by AASX Package Explorer
                 "MultiLanguageProperty",
                 "Operation",
                 "Property",
@@ -614,7 +611,7 @@ namespace AdminShellNS
                 "ReferenceElement",
                 "RelationshipElement",
                 "Submodel",
-                // "SubmodelElement", // in spec, but not expected by AASX Package Explorer
+                //// "SubmodelElement", // in spec, but not expected by AASX Package Explorer
                 "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
                 "SubmodelElementList",
                 "SubmodelElementStructure"

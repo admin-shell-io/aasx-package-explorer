@@ -64,9 +64,6 @@ namespace AasxPluginMtpViewer
                 foreach (var rec in src.Records)
                     Records.Add(new MtpViewerOptionsRecord(rec));
 
-            var xx = new AasxCompatibilityModels.WpfMtpControl.MtpSymbolMapRecordV20();
-            var yy = new MtpSymbolMapRecord(xx);
-
             if (src.SymbolMappings != null)
                 foreach (var sym in src.SymbolMappings)
                     SymbolMappings.Add(new MtpSymbolMapRecord(sym));

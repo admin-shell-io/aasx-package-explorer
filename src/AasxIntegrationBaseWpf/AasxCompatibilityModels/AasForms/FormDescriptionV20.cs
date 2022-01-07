@@ -18,6 +18,8 @@ using System.Windows.Controls;
 using AasxIntegrationBase;
 using Newtonsoft.Json;
 
+// ReSharper disable All .. as this is legacy code!
+
 #if !DoNotUseAasxCompatibilityModels
 
 namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
