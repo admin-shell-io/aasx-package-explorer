@@ -256,7 +256,7 @@ namespace AasxPluginMtpViewer
 
                 // another possibility: direct reference
                 var dirLink = this.theSubmodel.submodelElements
-                    .FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                    .FindFirstSemanticIdAs<AdminShell.ModelReferenceElement>(
                         this.defsMtp.CD_MtpTypeSubmodel.GetSingleId());
                 var dirLinkSm = env.FindReferableByReference(dirLink?.value) as AdminShell.Submodel;
                 if (mtpTypeSm == null)

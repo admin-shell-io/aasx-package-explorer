@@ -284,12 +284,10 @@ namespace AasxToolkit
                 propFile.value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
-                var propType = AdminShell.ReferenceElement.CreateNew(
+                var propType = AdminShell.GlobalReferenceElement.CreateNew(
                     "FileFormat", "PARAMETER", cdFormat.GetSemanticId());
                 propGroup.Add(propType);
-                propType.value = AdminShell.ModelReference.CreateNew(
-                    AdminShell.Key.CreateNew(
-                        AdminShell.Key.GlobalReference, "" + fr.args[0]));
+                propType.value = AdminShell.GlobalReference.CreateNew("" + fr.args[0]);
             }
 
             return sub1;
@@ -727,12 +725,10 @@ namespace AasxToolkit
                     "Schweißen usw. in die endgültige Form gebracht werden" }
                 );
 
-                var p = AdminShell.ReferenceElement.CreateNew(
+                var p = AdminShell.GlobalReferenceElement.CreateNew(
                     cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
-                p.value = AdminShell.ModelReference.CreateNew(
-                    AdminShell.Key.CreateNew(
-                        AdminShell.Key.GlobalReference, "0173-1#07-AAA878#004")); // Polyamide (PA)
+                p.value = AdminShell.GlobalReference.CreateNew("0173-1#07-AAA878#004"); // Polyamide (PA)
             }
 
             // Nice

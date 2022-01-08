@@ -461,7 +461,7 @@ namespace AasxPluginImageMap
                     prop.parent is AdminShell.Entity ent)
                 {
                     // first check, if a navigate to reference element can be found
-                    var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                    var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ModelReferenceElement>(
                         AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo.GetSingleId());
                     if (navTo?.value != null)
                     {

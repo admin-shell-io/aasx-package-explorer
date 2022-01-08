@@ -984,11 +984,11 @@ namespace AasxRestServerLibrary
                         row.value = "(" + p.value.Length + " bytes)";
                 }
 
-                if (sme is AdminShell.ReferenceElement)
-                {
-                    var p = sme as AdminShell.ReferenceElement;
-                    row.value = "" + p.value.ToString();
-                }
+                if (sme is AdminShell.GlobalReferenceElement gre)
+                    row.value = "" + gre.value.ToString();
+
+                if (sme is AdminShell.ModelReferenceElement mre)
+                    row.value = "" + mre.value.ToString();
 
                 if (sme is AdminShell.RelationshipElement)
                 {

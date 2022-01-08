@@ -517,13 +517,18 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + f.value);
                         }
 
-                        if (sme is AdminShell.ReferenceElement)
+                        if (sme is AdminShell.ModelReferenceElement mre)
                         {
-                            var re = sme as AdminShell.ReferenceElement;
                             //-2- ReferenceElement.value
-                            rep("ReferenceElement.value", "" + re.value?.ToString(1));
+                            rep("ModelReferenceElement.value", "" + mre.value?.ToString(1));
+                            rep("SME.value", "" + mre.value?.ToString(1));
+                        }
 
-                            rep("SME.value", "" + re.value?.ToString(1));
+                        if (sme is AdminShell.GlobalReferenceElement gre)
+                        {
+                            //-2- ReferenceElement.value
+                            rep("GlobalReferenceElement.value", "" + gre.value?.ToString(1));
+                            rep("SME.value", "" + gre.value?.ToString(1));
                         }
 
                         if (sme is AdminShell.RelationshipElement)

@@ -422,9 +422,14 @@ namespace AasxUANodesetImExport
                             CreateAASRelationshipElement(rela.first.ToString(), rela.second.ToString())));
                     break;
 
-                case "ReferenceElement":
-                    AdminShell.ReferenceElement refe = (AdminShell.ReferenceElement)element;
-                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(refe.value.ToString())));
+                case "ModelReferenceElement":
+                    AdminShell.ModelReferenceElement mrefe = element as AdminShell.ModelReferenceElement;
+                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(mrefe?.value?.ToString())));
+                    break;
+
+                case "GlobalReferenceElement":
+                    var grefe = element as AdminShell.GlobalReferenceElement;
+                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(grefe?.value?.ToString())));
                     break;
             }
 

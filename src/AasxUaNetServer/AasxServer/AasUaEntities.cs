@@ -1293,7 +1293,10 @@ namespace AasOpcUaServer
             base.PopulateInstanceObject(o, refElem);
 
             // own attributes
-            this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, refElem.value, "Value");
+            if (refElem is AdminShell.GlobalReferenceElement gre)
+                this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, gre.value, "Value");
+            if (refElem is AdminShell.ModelReferenceElement mre)
+                this.entityBuilder.AasTypes.Reference.CreateAddElements(o, CreateMode.Instance, mre.value, "Value");
 
             // result
             return o;

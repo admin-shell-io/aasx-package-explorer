@@ -187,7 +187,7 @@ namespace AasxPackageExplorer
                 return null;
             var res = filter;
             if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in AdminShell.Key.SubmodelElements)
+                foreach (var s in AdminShell.Key.SubmodelElementElements)
                     res += " " + s + " ";
             return " " + res + " ";
         }

@@ -2650,10 +2650,20 @@ namespace AasxPackageLogic
             }
 
             {
+                // indicate deprecation
+                string deprMsg = AdminShell.SubmodelElementWrapper.EvalDeprecationMessage(sme);
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => deprMsg != null, deprMsg, severityLevel: HintCheck.Severity.High)
+                    });
+
                 this.AddGroup(
                     stack,
                     $"Submodel Element ({"" + sme?.GetElementName()})",
-                    this.levelColors.MainSection);
+                    (deprMsg != null) ? this.levelColors.HintSeverityHigh : this.levelColors.MainSection);
 
                 // Referable
                 this.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
@@ -3379,31 +3389,33 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
             }
-            else if (sme is AdminShell.ReferenceElement rfe)
+            else if (sme is AdminShell.ModelReferenceElement mrfe)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
 
                 // group
-                this.AddGroup(stack, "ReferenceElement", this.levelColors.MainSection);
+                this.AddGroup(stack, "ModelReferenceElement", this.levelColors.MainSection);
 
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return rfe.value == null || rfe.value.IsEmpty; },
+                            () => { return mrfe.value == null || mrfe.value.IsEmpty; },
                             "Please choose the target of the reference. " +
-                                "You refer to any Referable, if local within the AAS environment or outside. " +
+                                "You may refer to any Referable, if local within the AAS environment or outside. " +
+                                "However, you may not refer to an external piece of information or service. " +
+                                "For this, choose a GlobalReferenceElement. " +
                                 "The semantics of your reference shall be described " +
                                 "by the concept referred by semanticId.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (this.SafeguardAccess(
-                        stack, repo, rfe.value, "Target reference:", "Create data element!",
+                        stack, repo, mrfe.value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            rfe.value = new AdminShell.ModelReference();
-                            this.AddDiaryEntry(rfe, new DiaryEntryUpdateValue());
+                            mrfe.value = new AdminShell.ModelReference();
+                            this.AddDiaryEntry(mrfe, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3412,14 +3424,52 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(
                             AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                     };
-                    this.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
+                    this.AddKeyListKeys(stack, "value", mrfe.value.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: lambda, noEditJumpLambda: lambda,
-                        relatedReferable: rfe,
+                        relatedReferable: mrfe,
                         emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
+            }
+            else if (sme is AdminShell.GlobalReferenceElement grfe)
+            {
+                // group
+                this.AddGroup(stack, "GlobalReferenceElement", this.levelColors.MainSection);
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => { return grfe.value == null || grfe.value.IsEmpty; },
+                            "Please choose the target of the reference. " +
+                                "You may refer to any element outside of an AAS. " +
+                                "However, you may not refer to an element of an AAS, either local or external. " +
+                                "For this, choose a ModelReferenceElement. " +
+                                "The semantics of your reference shall be described " +
+                                "by the concept referred by semanticId.",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                if (this.SafeguardAccess(
+                        stack, repo, grfe.value, "Target reference:", "Create data element!",
+                        v =>
+                        {
+                            grfe.value = new AdminShell.GlobalReference();
+                            this.AddDiaryEntry(grfe, new DiaryEntryUpdateValue());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                {
+                    this.AddKeyListOfIdentifier(stack, "value", grfe.value.Value, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: null,
+                        relatedReferable: grfe,
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                }
+            }
+            else if (sme is AdminShell.ReferenceElement)
+            {
+                this.AddGroup(stack, "ReferenceElement (abstract)", this.levelColors.MainSection);
             }
             else
             if (sme is AdminShell.RelationshipElement rele)
@@ -3506,9 +3556,92 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Capability", this.levelColors.MainSection);
                 this.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
+            else if (sme is AdminShell.SubmodelElementList sml)
+            {
+                // Start
+
+                this.AddGroup(stack, "SubmodelElementList", this.levelColors.MainSection);
+                if (sml.value != null)
+                    this.AddKeyValue(stack, "# of values", "" + sml.value.Count);
+                else
+                    this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                this.AddCheckBox(
+                    stack, "orderRelevant:", sml.orderRelevant, " (true if order in list is relevant)",
+                    (b) => { sml.ordered = b; });
+
+                // type of the items of the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !sml.valueTypeListElement.HasContent(),
+                            "Please check, if you can provide a type information for which " +
+                            "SubmodelElements are contained in this list. ",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                this.AddKeyValueRef(
+                    stack, "typeValueListElement", sml.typeValueListElement, ref sml.typeValueListElement,
+                    null, repo,
+                    v =>
+                    {
+                        sml.typeValueListElement = v as string;
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode,
+                    comboBoxItems: AdminShell.Key.SubmodelElementElements);
+
+                // ValueType for the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !sml.valueTypeListElement.HasContent(),
+                            "Please check, if you can provide a value type of the SubmodelElement " +
+                            "contained in this list. " +
+                            "Value types are provided by built-in types of XML Schema Definition 1.1.",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                this.AddKeyValueRef(
+                    stack, "valueTypeListElement", sml.valueTypeListElement, ref sml.valueTypeListElement,
+                    null, repo,
+                    v =>
+                    {
+                        sml.valueTypeListElement = v as string;
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode,
+                    comboBoxItems: AdminShell.DataElement.ValueTypeItems);
+
+                // SemanticId for the list
+
+                DisplayOrEditEntitySemanticId(stack, sml.semanticIdListElement,
+                    (o) => { sml.semanticIdListElement = o; },
+                    key: "semanticIdListElement",
+                    groupHeader: null,
+                    statement: "Semantic Id the submodel elements contained in the list match to.",
+                    addExistingEntities: AdminShell.Key.AllElements);
+            }
+            else if (sme is AdminShell.SubmodelElementStruct sms)
+            {
+                // Start
+
+                this.AddGroup(stack, "SubmodelElementStruct", this.levelColors.MainSection);
+                if (sms.value != null)
+                    this.AddKeyValue(stack, "# of values", "" + sms.value.Count);
+                else
+                    this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                // no further members
+
+            }
             else if (sme is AdminShell.SubmodelElementCollection smc)
             {
-                this.AddGroup(stack, "SubmodelElementCollection", this.levelColors.MainSection);
+                this.AddGroup(stack, "SubmodelElementCollection (deprecated)", this.levelColors.MainSection);
                 if (smc.value != null)
                     this.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else

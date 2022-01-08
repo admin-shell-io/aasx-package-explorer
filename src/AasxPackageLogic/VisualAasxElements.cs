@@ -796,6 +796,13 @@ namespace AasxPackageLogic
 
             this.TagString = wrap.GetElementAbbreviation();
 
+            // special case: deprecated element
+            if (AdminShell.SubmodelElementWrapper.GetElementIsDeprecated(wrap?.submodelElement))
+            {
+                this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.FocusErrorBrush);
+                this.TagFg = AnyUiColors.White;
+            }
+
             RefreshFromMainData();
             RestoreFromCache();
         }
@@ -839,9 +846,14 @@ namespace AasxPackageLogic
                         info += "-> " + smef.value;
                     break;
 
-                case AdminShell.ReferenceElement smere:
-                    if (smere.value != null && !smere.value.IsEmpty)
-                        info += "~> " + smere.value.ToString();
+                case AdminShell.ModelReferenceElement smemre:
+                    if (smemre.value?.IsValid == true)
+                        info += "~> " + smemre.value.ToString();
+                    break;
+
+                case AdminShell.GlobalReferenceElement smegre:
+                    if (smegre.value?.IsValid == true)
+                        info += "~~> " + smegre.value.ToString();
                     break;
 
                 case AdminShell.SubmodelElementCollection smc:

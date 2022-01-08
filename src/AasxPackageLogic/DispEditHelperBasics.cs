@@ -1227,7 +1227,10 @@ namespace AasxPackageLogic
             // prepare a list
             var fol = new List<AnyUiDialogueListItem>();
             foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues, includeValues))
-                fol.Add(new AnyUiDialogueListItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
+                fol.Add(new AnyUiDialogueListItem(
+                    AdminShell.SubmodelElementWrapper.GetAdequateName(en)
+                    + (AdminShell.SubmodelElementWrapper.GetElementIsDeprecated(en) ? " (deprecated)" : ""),
+                    en));
 
             // prompt for this list
             var uc = new AnyUiDialogueDataSelectFromList(

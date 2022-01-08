@@ -80,14 +80,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceReferenceElement instance;
             public FormDescReferenceElement desc;
-            public AdminShell.ReferenceElement refElem;
+            public AdminShell.ModelReferenceElement refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceReferenceElement;
                 dc.desc = dc.instance?.desc as FormDescReferenceElement;
-                dc.refElem = dc.instance?.sme as AdminShell.ReferenceElement;
+                dc.refElem = dc.instance?.sme as AdminShell.ModelReferenceElement;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;
