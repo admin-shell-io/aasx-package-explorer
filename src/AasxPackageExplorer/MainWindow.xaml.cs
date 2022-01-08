@@ -424,7 +424,7 @@ namespace AasxPackageExplorer
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
-                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ModelReferenceElement>(
                     AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSemanticId());
                 if (navTo?.value == null)
                     continue;

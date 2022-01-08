@@ -282,7 +282,7 @@ namespace AasxPluginDocumentShelf
             if (smwc == null || semId == null || intoDoc == null)
                 return;
 
-            foreach (var re in smwc.FindAllSemanticIdAs<AdminShell.ReferenceElement>(semId))
+            foreach (var re in smwc.FindAllSemanticIdAs<AdminShell.ModelReferenceElement>(semId))
             {
                 // access 
                 if (re.value == null || re.value.Count < 1)

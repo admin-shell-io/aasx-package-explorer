@@ -530,6 +530,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
             AdminShell.SemanticId semanticId,
             Action<AdminShell.SemanticId> setOutput,
+            string key = "semanticId",
+            string groupHeader = "Semantic ID:",
             string statement = null,
             bool checkForCD = false,
             string addExistingEntities = null,
@@ -541,7 +543,8 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Semantic ID:", levelColors.SubSection);
+            if (groupHeader != null)
+                this.AddGroup(stack, groupHeader, levelColors.SubSection);
 
             // hint
             this.AddHintBubble(
@@ -565,7 +568,7 @@ namespace AasxPackageLogic
 
             // add the keys
             if (this.SafeguardAccess(
-                    stack, repo, semanticId, "semanticId:", "Create data element!",
+                    stack, repo, semanticId, "" + key + ":", "Create data element!",
                     v =>
                     {
                         setOutput?.Invoke(new AdminShell.SemanticId());
@@ -573,7 +576,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
                 this.AddKeyListOfIdentifier(
-                    stack, "semanticId", semanticId.Value, repo,
+                    stack, "" + key, semanticId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addEclassIrdi: true,

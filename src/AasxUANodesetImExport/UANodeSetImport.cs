@@ -576,7 +576,9 @@ namespace AasxUANodesetImExport
             //ReferenceElement
             //  -> Value
 
-            ReferenceElement refEle = new ReferenceElement();
+            // TODO (MIHO/FhG, 2022-01-08): split between model / global references?
+
+            ModelReferenceElement refEle = new ModelReferenceElement();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")

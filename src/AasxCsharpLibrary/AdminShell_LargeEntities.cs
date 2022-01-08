@@ -1678,9 +1678,9 @@ namespace AdminShellNS
                 // recurse
                 this.RecurseOnSubmodelElements(null, (state, parents, sme) =>
                 {
-                    if (sme is ReferenceElement re)
-                        if (re.value != null)
-                            temp.Add(re.value);
+                    if (sme is ModelReferenceElement mre)
+                        if (mre.value != null)
+                            temp.Add(mre.value);
                     if (sme is RelationshipElement rl)
                     {
                         if (rl.first != null)

@@ -593,7 +593,7 @@ namespace AdminShellNS
                 "SubmodelElementStructure"
             };
 
-            public static string[] SubmodelElements = new string[] {
+            public static string[] SubmodelElementElements = new string[] {
                 "AnnotatedRelationshipElement",
                 "BasicEvent",
                 "Blob",
@@ -602,16 +602,16 @@ namespace AdminShellNS
                 "Entity",
                 "Event",
                 "File",
-                //// "GlobalElementReference", // in spec, but not expected by AASX Package Explorer
-                //// "ModelElementReference", // in spec, but not expected by AASX Package Explorer
+                "GlobalReferenceElement",
+                "ModelReferenceElement",
                 "MultiLanguageProperty",
                 "Operation",
                 "Property",
                 "Range",
-                "ReferenceElement",
+                "ReferenceElement", // typo in spec?, but used by AASX Package Explorer
                 "RelationshipElement",
-                "Submodel",
-                //// "SubmodelElement", // in spec, but not expected by AASX Package Explorer
+                "Submodel", // not specified, but used by AASX Package Explorer
+                "SubmodelElement",
                 "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
                 "SubmodelElementList",
                 "SubmodelElementStructure"
@@ -660,7 +660,7 @@ namespace AdminShellNS
 
             public bool IsInSubmodelElements()
             {
-                return IsInNamedElementsList(SubmodelElements, this.type);
+                return IsInNamedElementsList(SubmodelElementElements, this.type);
             }
 
             public bool IsIRI()

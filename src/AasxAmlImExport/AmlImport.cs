@@ -565,8 +565,10 @@ namespace AasxAmlImExport
                                 var theref = new AdminShell.ModelReference();
                                 aasref.CollectReferencesByParent(theref.Keys);
                                 // nooooooooooow, set this
-                                if (targetId == 1 && target is AdminShell.ReferenceElement tre)
-                                    tre.value = theref;
+                                if (targetId == 1 && target is AdminShell.ModelReferenceElement tmre)
+                                    tmre.value = theref;
+                                if (targetId == 1 && target is AdminShell.GlobalReferenceElement tgre)
+                                    tgre.value = AdminShell.GlobalReference.CreateNew(theref);
                                 if (targetId == 2 && target is AdminShell.RelationshipElement trse)
                                     trse.first = theref;
                                 if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
@@ -580,8 +582,10 @@ namespace AasxAmlImExport
                         ei.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                     if (value != null)
                     {
-                        if (targetId == 1 && target is AdminShell.ReferenceElement tre)
-                            tre.value = ParseAmlReference(value);
+                        if (targetId == 1 && target is AdminShell.ModelReferenceElement tmre)
+                            tmre.value = ParseAmlReference(value);
+                        if (targetId == 1 && target is AdminShell.GlobalReferenceElement tgre)
+                            tgre.value = AdminShell.GlobalReference.CreateNew(ParseAmlReference(value));
                         if (targetId == 2 && target is AdminShell.RelationshipElement trse)
                             trse.first = ParseAmlReference(value);
                         if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
@@ -699,7 +703,7 @@ namespace AasxAmlImExport
                             smef.value = value;
                     }
 
-                    if (sme is AdminShell.ReferenceElement smer)
+                    if (sme is AdminShell.ModelReferenceElement smemr)
                     {
                         if (aasStyleAttributes)
                         {
@@ -707,14 +711,33 @@ namespace AasxAmlImExport
                             var value = FindAttributeValueByRefSemantic(
                                 ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                             if (value != null)
-                                smer.value = ParseAmlReference(value);
+                                smemr.value = ParseAmlReference(value);
                         }
 
                         if (amlStyleAttributes)
                         {
                             // now the default
                             TryPopulateReferenceAttribute(
-                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smer, 1);
+                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smemr, 1);
+                        }
+                    }
+
+                    if (sme is AdminShell.GlobalReferenceElement smegr)
+                    {
+                        if (aasStyleAttributes)
+                        {
+                            // not used anymore!
+                            var value = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
+                            if (value != null)
+                                smegr.value = AdminShell.GlobalReference.CreateNew(ParseAmlReference(value));
+                        }
+
+                        if (amlStyleAttributes)
+                        {
+                            // now the default
+                            TryPopulateReferenceAttribute(
+                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smegr, 1);
                         }
                     }
 

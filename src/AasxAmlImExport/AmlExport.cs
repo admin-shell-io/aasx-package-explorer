@@ -483,10 +483,17 @@ namespace AasxAmlImExport
                             }
                             break;
 
-                        case AdminShell.ReferenceElement smer:
+                        case AdminShell.GlobalReferenceElement smegr:
                             // value == a Reference
-                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
-                                smer.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smegr,
+                                smegr.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                                aasStyleAttributes, amlStyleAttributes);
+                            break;
+
+                        case AdminShell.ModelReferenceElement smemr:
+                            // value == a Reference
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smemr,
+                                smemr.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
                                 aasStyleAttributes, amlStyleAttributes);
                             break;
 

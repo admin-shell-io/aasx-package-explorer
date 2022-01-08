@@ -366,24 +366,41 @@ namespace AdminShellNS
             {
                 Unknown = 0, SubmodelElementCollection, Property, MultiLanguageProperty, Range, File, Blob,
                 ReferenceElement, RelationshipElement, AnnotatedRelationshipElement, Capability, Operation,
-                BasicEvent, Entity, SubmodelElementList, SubmodelElementStruct
+                BasicEvent, Entity, SubmodelElementList, SubmodelElementStruct,
+                ModelReferenceElement, GlobalReferenceElement
             }
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-            AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
-            AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
-            AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
-        };
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
+                AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
+                AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+            };
 
-            public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
-            "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
-            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity",
-            "SubmodelElementList", "SubmodelElementStruct"};
+            // shall be consistent to (int) AdequateElementEnum !
+            public static string[] AdequateElementNames = {
+                "Unknown", "SubmodelElementCollection", "Property",
+                "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
+                "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity",
+                "SubmodelElementList", "SubmodelElementStruct",
+                "ModelReferenceElement", "GlobalReferenceElement"
+            };
 
-            public static string[] AdequateElementShortName = { null, "SMC", null,
-            "MLP", null, null, null, "Ref", "Rel",
-            "ARel", null, null, "Event", "Entity", "SML", "SMS" };
+            // shall be consistent to (int) AdequateElementEnum !
+            public static string[] AdequateElementShortName = {
+                null, "SMC", null,
+                "MLP", null, null, null, "Ref", "Rel",
+                "ARel", null, null, "Event", "Entity", "SML", "SMS",
+                "RefM", "RefG"
+            };
+
+            // shall be consistent to (int) AdequateElementEnum !
+            public static bool[] AdequateElementDeprecated = {
+                false, true, false,
+                false, false, false, false, true, false,
+                false, false, false, false, false, false, false,
+                false, false
+            };
 
             // constructors
 
@@ -396,9 +413,6 @@ namespace AdminShellNS
                 /* TODO (MIHO, 2021-08-12): consider using:
                    Activator.CreateInstance(pl.GetType(), new object[] { pl }) */
 
-                if (src is SubmodelElementCollection)
-                    this.submodelElement = new SubmodelElementCollection(
-                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
                 if (src is Property)
                     this.submodelElement = new Property(src as Property);
                 if (src is MultiLanguageProperty)
@@ -409,12 +423,7 @@ namespace AdminShellNS
                     this.submodelElement = new File(src as File);
                 if (src is Blob)
                     this.submodelElement = new Blob(src as Blob);
-                if (src is ReferenceElement)
-                    this.submodelElement = new ReferenceElement(src as ReferenceElement);
-                if (src is RelationshipElement)
-                    this.submodelElement = new RelationshipElement(src as RelationshipElement);
-                if (src is AnnotatedRelationshipElement)
-                    this.submodelElement = new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
+
                 if (src is Capability)
                     this.submodelElement = new Capability(src as Capability);
                 if (src is Operation)
@@ -423,10 +432,35 @@ namespace AdminShellNS
                     this.submodelElement = new BasicEvent(src as BasicEvent);
                 if (src is Entity)
                     this.submodelElement = new Entity(src as Entity);
+
+                // care abuot elements, which could be derived from (not so) abstract base types
                 if (src is SubmodelElementList)
                     this.submodelElement = new SubmodelElementList(src as SubmodelElementList);
+                else
                 if (src is SubmodelElementStruct)
                     this.submodelElement = new SubmodelElementStruct(src as SubmodelElementStruct);
+                else
+                if (src is SubmodelElementCollection)
+                    this.submodelElement = new SubmodelElementCollection(
+                        src as SubmodelElementCollection, shallowCopy: shallowCopy);
+
+                // again
+                if (src is AnnotatedRelationshipElement)
+                    this.submodelElement = new AnnotatedRelationshipElement(src as AnnotatedRelationshipElement);
+                else
+                if (src is RelationshipElement)
+                    this.submodelElement = new RelationshipElement(src as RelationshipElement);
+
+                // again
+                if (src is ModelReferenceElement)
+                    this.submodelElement = new ModelReferenceElement(src as ModelReferenceElement);
+                else
+                    if (src is GlobalReferenceElement)
+                    this.submodelElement = new GlobalReferenceElement(src as GlobalReferenceElement);
+                else
+                    if (src is ReferenceElement)
+                    this.submodelElement = new ReferenceElement(src as ReferenceElement);
+
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -474,9 +508,6 @@ namespace AdminShellNS
                     this.submodelElement = new File(src as AasxCompatibilityModels.AdminShellV20.File);
                 if (src is AasxCompatibilityModels.AdminShellV20.Blob)
                     this.submodelElement = new Blob(src as AasxCompatibilityModels.AdminShellV20.Blob);
-                if (src is AasxCompatibilityModels.AdminShellV20.ReferenceElement)
-                    this.submodelElement = new ReferenceElement(
-                        src as AasxCompatibilityModels.AdminShellV20.ReferenceElement);
                 if (src is AasxCompatibilityModels.AdminShellV20.RelationshipElement)
                     this.submodelElement = new RelationshipElement(
                         src as AasxCompatibilityModels.AdminShellV20.RelationshipElement);
@@ -491,6 +522,11 @@ namespace AdminShellNS
                     this.submodelElement = new BasicEvent(src as AasxCompatibilityModels.AdminShellV20.BasicEvent);
                 if (src is AasxCompatibilityModels.AdminShellV20.Entity)
                     this.submodelElement = new Entity(src as AasxCompatibilityModels.AdminShellV20.Entity);
+
+                // a little more special
+                if (src is AasxCompatibilityModels.AdminShellV20.ReferenceElement)
+                    this.submodelElement = new ModelReferenceElement(
+                        src as AasxCompatibilityModels.AdminShellV20.ReferenceElement);
             }
 #endif
 
@@ -533,6 +569,50 @@ namespace AdminShellNS
                         return en;
 
                 return AdequateElementEnum.Unknown;
+            }
+
+            /// <summary>
+            /// Returns, if the element is deprecated in the most current version of the meta model.
+            /// </summary>
+            public static bool GetElementIsDeprecated(AdequateElementEnum ae)
+            {
+                return AdequateElementDeprecated[(int)ae];
+            }
+
+            /// <summary>
+            /// Returns, if the element is deprecated in the most current version of the meta model.
+            /// </summary>
+            public static bool GetElementIsDeprecated(SubmodelElement sme)
+            {
+                if (sme == null)
+                    return false;
+                var sd = sme.GetSelfDescription();
+                if (sd == null)
+                    return false;
+                return AdequateElementDeprecated[(int)sd.ElementEnum];
+            }
+
+            /// <summary>
+            /// Returns a rather general statement, if the SME is deprecated.
+            /// </summary>
+            /// <param name="sme"></param>
+            public static string EvalDeprecationMessage(SubmodelElement sme)
+            {
+                string res = null;
+                if (AdminShell.SubmodelElementWrapper.GetElementIsDeprecated(sme))
+                {
+                    res = "This SubmodelElement is considered deprecated by the AdminShell meta model "
+                            + AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine + ". "
+                            + "Please refactor to another adequate SubmodelElement. ";
+
+                    if (sme is SubmodelElementCollection)
+                        res += "Please consider to used SubmodelElementList or SubmodelElemenStructure. ";
+                    if (sme is ReferenceElement)
+                        res += "For references to elements of an AAS, either local or external, consider " +
+                            "ModelReferenceElement. For references to external information or services, " +
+                            "consider GlobalReferenceElement. ";
+                }
+                return res;
             }
 
             public static IEnumerable<AdequateElementEnum> GetAdequateEnums(
@@ -591,6 +671,10 @@ namespace AdminShellNS
                     return new SubmodelElementList(src);
                 if (ae == AdequateElementEnum.SubmodelElementStruct)
                     return new SubmodelElementStruct(src);
+                if (ae == AdequateElementEnum.ModelReferenceElement)
+                    return new ModelReferenceElement(src);
+                if (ae == AdequateElementEnum.GlobalReferenceElement)
+                    return new GlobalReferenceElement(src);
                 return null;
             }
 
@@ -1943,8 +2027,61 @@ namespace AdminShellNS
             }
         }
 
-        // TODO (MIHO, 2022-01-07): make to ModelRefElm!!!
+        //
+        // Reference elements
+        //
+
+        /// <summary>
+        /// This class was the old V2.0 ReferenceElement, which now turned into 
+        /// more a abstract class.
+        /// </summary>
         public class ReferenceElement : DataElement
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
+
+            // members
+
+            // constructors
+
+            public ReferenceElement() { }
+
+            public ReferenceElement(SubmodelElement src)
+                : base(src)
+            {
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            public ReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
+                : base(src)
+            {
+            }
+
+            public ReferenceElement(AasxCompatibilityModels.AdminShellV20.ReferenceElement src)
+                : base(src)
+            {
+            }
+#endif
+
+            // self description
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("ReferenceElement", "Ref",
+                    SubmodelElementWrapper.AdequateElementEnum.ReferenceElement);
+            }
+
+        }
+
+        /// <summary>
+        /// New V3.0 reference element, specifically targeted at model references
+        /// </summary>
+        public class ModelReferenceElement : ReferenceElement
         {
             // for JSON only
             [XmlIgnore]
@@ -1960,20 +2097,20 @@ namespace AdminShellNS
 
             // constructors
 
-            public ReferenceElement() { }
+            public ModelReferenceElement() { }
 
-            public ReferenceElement(SubmodelElement src)
+            public ModelReferenceElement(SubmodelElement src)
                 : base(src)
             {
-                if (!(src is ReferenceElement re))
+                if (!(src is ModelReferenceElement mre))
                     return;
 
-                if (re.value != null)
-                    this.value = new ModelReference(re.value);
+                if (mre.value != null)
+                    this.value = new ModelReference(mre.value);
             }
 
 #if !DoNotUseAasxCompatibilityModels
-            public ReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
+            public ModelReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
                 : base(src)
             {
                 if (src == null)
@@ -1983,7 +2120,7 @@ namespace AdminShellNS
                     this.value = new ModelReference(src.value);
             }
 
-            public ReferenceElement(AasxCompatibilityModels.AdminShellV20.ReferenceElement src)
+            public ModelReferenceElement(AasxCompatibilityModels.AdminShellV20.ReferenceElement src)
                 : base(src)
             {
                 if (src == null)
@@ -1994,10 +2131,10 @@ namespace AdminShellNS
             }
 #endif
 
-            public static ReferenceElement CreateNew(
+            public static ModelReferenceElement CreateNew(
                 string idShort = null, string category = null, Identifier semanticIdKey = null)
             {
-                var x = new ReferenceElement();
+                var x = new ModelReferenceElement();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
                 return (x);
             }
@@ -2009,11 +2146,89 @@ namespace AdminShellNS
 
             public override AasElementSelfDescription GetSelfDescription()
             {
-                return new AasElementSelfDescription("ReferenceElement", "Ref",
-                    SubmodelElementWrapper.AdequateElementEnum.ReferenceElement);
+                return new AasElementSelfDescription("ModelReferenceElement", "RefM",
+                    SubmodelElementWrapper.AdequateElementEnum.ModelReferenceElement);
             }
 
         }
+
+        /// <summary>
+        /// New V3.0 reference element, specifically targeted at global references
+        /// </summary>
+        public class GlobalReferenceElement : ReferenceElement
+        {
+            // for JSON only
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "modelType")]
+            public new JsonModelTypeWrapper JsonModelType
+            {
+                get { return new JsonModelTypeWrapper(GetElementName()); }
+            }
+
+            // members
+
+            public GlobalReference value = new GlobalReference();
+
+            // constructors
+
+            public GlobalReferenceElement() { }
+
+            public GlobalReferenceElement(SubmodelElement src)
+                : base(src)
+            {
+                if (!(src is GlobalReferenceElement gre))
+                    return;
+
+                if (gre.value != null)
+                    this.value = new GlobalReference(gre.value);
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            public GlobalReferenceElement(AasxCompatibilityModels.AdminShellV10.ReferenceElement src)
+                : base(src)
+            {
+                if (src == null)
+                    return;
+
+                if (src.value != null)
+                    this.value = new GlobalReference(src.value);
+            }
+
+            public GlobalReferenceElement(AasxCompatibilityModels.AdminShellV20.ReferenceElement src)
+                : base(src)
+            {
+                if (src == null)
+                    return;
+
+                if (src.value != null)
+                    this.value = new GlobalReference(src.value);
+            }
+#endif
+
+            public static GlobalReferenceElement CreateNew(
+                string idShort = null, string category = null, Identifier semanticIdKey = null)
+            {
+                var x = new GlobalReferenceElement();
+                x.CreateNewLogic(idShort, category, semanticIdKey);
+                return (x);
+            }
+
+            public void Set(GlobalReference value = null)
+            {
+                this.value = value;
+            }
+
+            public override AasElementSelfDescription GetSelfDescription()
+            {
+                return new AasElementSelfDescription("GlobalReferenceElement", "RefG",
+                    SubmodelElementWrapper.AdequateElementEnum.GlobalReferenceElement);
+            }
+
+        }
+
+        //
+        // Relationships
+        //
 
         public class RelationshipElement : DataElement
         {
@@ -2545,10 +2760,11 @@ namespace AdminShellNS
 
             public bool orderRelevant = false;
 
-            public GlobalReference semanticIdListElement = null;
+            public SemanticId semanticIdListElement = null;
 
-            public SubmodelElementWrapper.AdequateElementEnum typeValueListElement
-                = SubmodelElementWrapper.AdequateElementEnum.Unknown;
+            // Note MIHO: I was attempted to have the type of SubmodelElementWrapper.AdequateElementEnum,
+            // however basic approach of this SDK is to have everything as string to be open
+            public string typeValueListElement = null;
 
             public string valueTypeListElement = null;
 
@@ -2565,7 +2781,7 @@ namespace AdminShellNS
                 this.orderRelevant = sml.orderRelevant;
 
                 if (sml.semanticIdListElement != null)
-                    this.semanticIdListElement = new GlobalReference(sml.semanticIdListElement);
+                    this.semanticIdListElement = new SemanticId(sml.semanticIdListElement);
 
                 this.typeValueListElement = sml.typeValueListElement;
                 this.valueTypeListElement = sml.valueTypeListElement;

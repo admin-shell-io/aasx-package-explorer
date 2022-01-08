@@ -162,7 +162,7 @@ namespace AasxPredefinedConcepts.Convert
                     smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_IsPrimaryDocumentId,
                             addSme: true)?.Set("boolean", (idt.Trim().ToLower() == "primary") ? "True" : "False");
 
-                    smcDoc.value.CreateSMEForCD<AdminShell.ReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
+                    smcDoc.value.CreateSMEForCD<AdminShell.ModelReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
                             addSme: true)?.
                         Set(new AdminShell.ModelReference());
 

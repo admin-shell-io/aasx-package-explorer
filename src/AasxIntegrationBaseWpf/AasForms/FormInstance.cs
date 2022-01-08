@@ -1043,14 +1043,16 @@ namespace AasxIntegrationBase.AasForms
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
+            // TODO (MIHO, 2022-01-08): decision to have only model references .. OK?
+
             // initialize Referable
-            var re = new AdminShell.ReferenceElement();
+            var re = new AdminShell.ModelReferenceElement();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            var reSource = this.sourceSme as AdminShell.ModelReferenceElement;
             if (reSource != null)
             {
                 // take over
