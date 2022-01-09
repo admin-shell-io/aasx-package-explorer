@@ -2744,7 +2744,7 @@ namespace AdminShellNS
                 }
                 this.value?.RecurseOnReferables(state, parents, lambda);
             }
-        }        
+        }
 
         public class SubmodelElementList : SubmodelElementCollection
         {

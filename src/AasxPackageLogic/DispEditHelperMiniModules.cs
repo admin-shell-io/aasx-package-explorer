@@ -323,13 +323,14 @@ namespace AasxPackageLogic
         public void IdentifierKeyValuePairHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             AdminShell.ListOfIdentifierKeyValuePair pairs,
+            string key = "IdentifierKeyValuePairs",
             AdminShell.Referable relatedReferable = null)
         {
             if (editMode)
             {
                 // let the user control the number of references
                 AddAction(
-                    stack, "IdentifierKeyValuePairs:",
+                    stack, $"{key}:",
                     new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
                     repo,
                     (buttonNdx) =>
@@ -475,7 +476,8 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => !(pair.semanticId?.IsValid == true || pair.key.HasContent()),
-                            "Either key string specification or (at leaset) a semanticId shall be given!")
+                            "Check, if a semanticId can be given in addition the key!",
+                            severityLevel: HintCheck.Severity.Notice)
                     });
                 if (SafeguardAccess(
                         substack, repo, pair.semanticId, "semanticId:", "Create data element!",
@@ -494,6 +496,13 @@ namespace AasxPackageLogic
                         relatedReferable: relatedReferable);
                 }
 
+                AddHintBubble(
+                    substack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !pair.key.HasContent(),
+                            "A key string specification shall be given!")
+                    });
                 AddKeyValueRef(
                     substack, "key", pair, ref pair.key, null, repo,
                     v =>

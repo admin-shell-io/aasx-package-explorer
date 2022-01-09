@@ -657,6 +657,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityListOfIdentifierKeyValuePair(AnyUiStackPanel stack,
             AdminShell.ListOfIdentifierKeyValuePair pairs,
             Action<AdminShell.ListOfIdentifierKeyValuePair> setOutput,
+            string key = "IdentifierKeyValuePairs",
             AdminShell.Referable relatedReferable = null)
         {
             // access
@@ -664,10 +665,10 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "IdentifierKeyValuePairs:", levelColors.SubSection);
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection);
 
             if (this.SafeguardAccess(
-                stack, repo, pairs, "IdentifierKeyValuePairs:", "Create empty list of IdentifierKeyValuePairs!",
+                stack, repo, pairs, $"{key}:", "Create empty list of IdentifierKeyValuePairs!",
                 v =>
                 {
                     setOutput?.Invoke(new AdminShell.ListOfIdentifierKeyValuePair());
@@ -675,7 +676,9 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.IdentifierKeyValuePairHelper(stack, repo, pairs, relatedReferable: relatedReferable);
+                this.IdentifierKeyValuePairHelper(stack, repo, pairs,
+                    key: key,
+                    relatedReferable: relatedReferable);
             }
 
         }

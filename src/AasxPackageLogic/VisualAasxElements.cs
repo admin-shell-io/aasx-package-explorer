@@ -498,12 +498,12 @@ namespace AasxPackageLogic
     {
         public enum ItemType
         {
-            Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
+            Env = 0, Shells, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
             EmptySet, DummyNode
         };
 
         public static string[] ItemTypeNames = new string[] {
-            "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
+            "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty", "Dummy" };
 
         public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
@@ -1233,7 +1233,7 @@ namespace AasxPackageLogic
         // need some attach points, which are determined by initial rendering and
         // kept in the class
         private VisualElementEnvironmentItem
-            tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
+            tiPackage = null, tiEnv = null, tiShells = null, tiCDs = null;
 
         private MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric> _cdReferred =
             new MultiValueDictionary<AdminShell.ConceptDescription, VisualElementGeneric>();
@@ -1611,12 +1611,6 @@ namespace AasxPackageLogic
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Shells);
                     tiShells.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiShells);
-
-                    // assets
-                    tiAssets = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Assets);
-                    tiAssets.SetIsExpandedIfNotTouched(expandMode > 0);
-                    tiEnv.Members.Add(tiAssets);
                 }
 
                 // over all Admin shells
