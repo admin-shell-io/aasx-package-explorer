@@ -24,6 +24,7 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+
 namespace AdminShellNS
 {
     /// <summary>
@@ -2743,7 +2744,7 @@ namespace AdminShellNS
                 }
                 this.value?.RecurseOnReferables(state, parents, lambda);
             }
-        }
+        }        
 
         public class SubmodelElementList : SubmodelElementCollection
         {
@@ -2797,6 +2798,91 @@ namespace AdminShellNS
                 var x = new SubmodelElementList();
                 x.CreateNewLogic(idShort, category, semanticIdKey);
                 return (x);
+            }
+
+            // advanced checks
+
+            public class ConstraintStat
+            {
+                /// <summary>
+                /// Constraint AASd-107: If a first level child element in a SubmodelElementList has a semanticId 
+                /// it shall be identical to SubmodelElementList/semanticIdListElement. 
+                /// </summary>
+                public bool AllChildSemIdMatch = true;
+
+                /// <summary>
+                /// Constraint AASd-108: All first level child elements in a SubmodelElementList shall have the 
+                /// same submodel element type as specified in SubmodelElementList/typeValueListElement.
+                /// </summary>
+                public bool AllChildSmeTypeMatch = true;
+
+                /// <summary>
+                /// Constraint AASd-109: If SubmodelElementList/typeValueListElement equal to Property or Range, 
+                /// SubmodelElementList/valueTypeListElement shall be set and all first level child elements in 
+                /// the SubmodelElementList shall have the the value type as specified in 
+                /// SubmodelElementList/valueTypeListElement
+                /// </summary>
+                public bool AllChildValueTypeMatch = true;
+            }
+
+            public ConstraintStat EvalConstraintStat()
+            {
+                // access
+                var res = new ConstraintStat();
+                if (value == null)
+                    return res;
+
+                // prepare SME type
+                var smeTypeToCheck = SubmodelElementWrapper.GetAdequateEnum2(typeValueListElement);
+
+                // prepare value type
+                var valueTypeToCheck = valueTypeListElement?.Trim().ToLower();
+
+                // eval
+                foreach (var smw in value)
+                {
+                    // access
+                    var sme = smw?.submodelElement;
+                    if (sme == null)
+                        continue;
+
+                    // need self description
+                    var smesd = sme.GetSelfDescription();
+                    if (smesd == null)
+                        continue;
+
+                    // sem id?
+                    if (res.AllChildSemIdMatch
+                        && semanticIdListElement?.IsValid == true
+                        && sme.semanticId?.IsValid == true
+                        && !semanticIdListElement.Matches(sme.semanticId))
+                        res.AllChildSemIdMatch = false;
+
+                    // type of SME?
+                    if (smeTypeToCheck != SubmodelElementWrapper.AdequateElementEnum.Unknown
+                        && res.AllChildSmeTypeMatch
+                        && smesd.ElementEnum != smeTypeToCheck)
+                        res.AllChildSmeTypeMatch = false;
+
+                    // value type to check
+                    // TODO (MIHO, 2022-01-08): GetValueType() worth the effort to implement?
+                    if (valueTypeToCheck != null && valueTypeToCheck.Length > 0
+                        && res.AllChildValueTypeMatch
+                        && sme is AdminShell.Property prop
+                        && prop.valueType != null && prop.value.Trim().Length > 0
+                        && prop.value.Trim().ToLower() != valueTypeToCheck)
+                        res.AllChildValueTypeMatch = false;
+
+                    if (valueTypeToCheck != null && valueTypeToCheck.Length > 0
+                        && res.AllChildValueTypeMatch
+                        && sme is AdminShell.Property range
+                        && range.valueType != null && range.value.Trim().Length > 0
+                        && range.value.Trim().ToLower() != valueTypeToCheck)
+                        res.AllChildValueTypeMatch = false;
+                }
+
+                // ok 
+                return res;
             }
 
             // self description

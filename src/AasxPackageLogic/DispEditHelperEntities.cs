@@ -3570,16 +3570,24 @@ namespace AasxPackageLogic
                     stack, "orderRelevant:", sml.orderRelevant, " (true if order in list is relevant)",
                     (b) => { sml.ordered = b; });
 
+                // stats
+                var stats = sml.EvalConstraintStat();
+
                 // type of the items of the list
 
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => !sml.valueTypeListElement.HasContent(),
+                            () => !sml.typeValueListElement.HasContent(),
                             "Please check, if you can provide a type information for which " +
                             "SubmodelElements are contained in this list. ",
-                            severityLevel: HintCheck.Severity.Notice)
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => stats?.AllChildSmeTypeMatch == false,
+                            "Constraint AASd-108 violated: All first level child elements in a " +
+                            "SubmodelElementList shall have the same submodel element type as specified " +
+                            "in SubmodelElementList/typeValueListElement.")
                     });
                 this.AddKeyValueRef(
                     stack, "typeValueListElement", sml.typeValueListElement, ref sml.typeValueListElement,
@@ -3603,7 +3611,13 @@ namespace AasxPackageLogic
                             "Please check, if you can provide a value type of the SubmodelElement " +
                             "contained in this list. " +
                             "Value types are provided by built-in types of XML Schema Definition 1.1.",
-                            severityLevel: HintCheck.Severity.Notice)
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => stats?.AllChildValueTypeMatch == false,
+                            "Constraint AASd-109 violated: If SubmodelElementList/typeValueListElement " +
+                            "equal to Property or Range, SubmodelElementList/valueTypeListElement shall " +
+                            "be set and all first level child elements in the SubmodelElementList shall " +
+                            "have the the value type as specified in SubmodelElementList/valueTypeListElement")
                     });
                 this.AddKeyValueRef(
                     stack, "valueTypeListElement", sml.valueTypeListElement, ref sml.valueTypeListElement,
@@ -3618,6 +3632,16 @@ namespace AasxPackageLogic
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
                 // SemanticId for the list
+
+                this.AddHintBubble(
+                   stack, hintMode,
+                   new[] {
+                        new HintCheck(
+                            () => stats?.AllChildSemIdMatch == false,
+                            "Constraint AASd-107 violated: If a first level child element in a " +
+                            "SubmodelElementList has a semanticId it shall be identical to " +
+                            "SubmodelElementList/semanticIdListElement.")
+                   });
 
                 DisplayOrEditEntitySemanticId(stack, sml.semanticIdListElement,
                     (o) => { sml.semanticIdListElement = o; },
