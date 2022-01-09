@@ -49,33 +49,25 @@ namespace AasxPackageLogic
         public void DisplayOrEditAasEntityAsset(
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.AdministrationShell aas, AdminShell.AssetInformation asset,
+            object preferredNextFocus,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false)
         {
-            this.AddGroup(stack, "Asset", this.levelColors.MainSection);
-
-            // print code sheet
-            this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
-            {
-                if (buttonNdx == 0)
-                {
-                    var uc = new AnyUiDialogueDataEmpty();
-                    this.context?.StartFlyover(uc);
-                    try
-                    {
-                        this.context?.PrintSingleAssetCodeSheet(
-                            asset.globalAssetId?.GetAsIdentifier(), asset.fakeIdShort);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "When printing, an error occurred");
-                    }
-                    this.context?.CloseFlyover();
-                }
-                return new AnyUiLambdaActionNone();
-            });
+            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
 
             // global Asset ID
+
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => asset.globalAssetId?.IsValid != true,
+                    "It is strobly encouraged to have the AAS associated with an global asset id from the " +
+                    "very beginning. If the AAS describes a product, the individual asset id should to be " +
+                    "found on its typeplate. " +
+                    "This  attribute  is  required  as  soon  as  the  AAS  is exchanged via partners in " +
+                    "the life cycle of the asset.",
+                    severityLevel: HintCheck.Severity.High)
+            });
+
             if (this.SafeguardAccess(
                     stack, repo, asset.globalAssetId, "globalAssetId:", "Create data element!",
                     v =>
@@ -84,6 +76,8 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
+            {
+
                 this.AddKeyListOfIdentifier(
                     stack, "globalAssetId", asset.globalAssetId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
@@ -100,7 +94,7 @@ namespace AasxPackageLogic
                             asset.SetIdentification("" + AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdAsset));
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: preferredNextFocus);
                         }
 
                         if (i == 1)
@@ -169,6 +163,29 @@ namespace AasxPackageLogic
 
                     });
 
+                // print code sheet
+                this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
+                {
+                    if (buttonNdx == 0)
+                    {
+                        var uc = new AnyUiDialogueDataEmpty();
+                        this.context?.StartFlyover(uc);
+                        try
+                        {
+                            this.context?.PrintSingleAssetCodeSheet(
+                                asset.globalAssetId?.GetAsIdentifier(),
+                                asset.globalAssetId?.GetAsIdentifier().ToString());
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex, "When printing, an error occurred");
+                        }
+                        this.context?.CloseFlyover();
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
+            }
+
             // Kind
             this.DisplayOrEditEntityAssetKind(stack, asset.assetKind,
                 (k) => { asset.assetKind = k; }, relatedReferable: aas);
@@ -177,6 +194,7 @@ namespace AasxPackageLogic
             // list of multiple key value pairs
             this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.specificAssetId,
                 (ico) => { asset.specificAssetId = ico; },
+                key: "specificAssetId",
                 relatedReferable: aas);
 
             // Thumbnail: File [0..1]
@@ -247,7 +265,6 @@ namespace AasxPackageLogic
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
             {
@@ -485,7 +502,6 @@ namespace AasxPackageLogic
                 }
 
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
@@ -1197,10 +1213,24 @@ namespace AasxPackageLogic
             // Asset linked with AAS
             //
 
-            if (asset != null)
+            // show group only if no AssetInformation is available because
+            // else DisplayOrEditAasEntityAsset will do
+            if (aas.assetInformation == null)
+                this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, aas.assetInformation, "AssetInformation:", "Create data element!",
+                v =>
+                {
+                    aas.assetInformation = new AdminShell.AssetInformation();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
             {
                 DisplayOrEditAasEntityAsset(
-                    packages, env, aas, asset, editMode, repo, stack, hintMode: hintMode);
+                    packages, env, aas, aas.assetInformation,
+                    preferredNextFocus: aas,
+                    editMode: editMode, repo: repo, stack: stack, hintMode: hintMode);
             }
         }
 
