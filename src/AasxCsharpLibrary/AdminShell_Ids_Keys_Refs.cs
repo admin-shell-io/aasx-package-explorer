@@ -561,7 +561,7 @@ namespace AdminShellNS
                 "SubmodelElement",
                 "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
                 "SubmodelElementList",
-                "SubmodelElementStructure",
+                "SubmodelElementStruct",
                 "SubmodelRef" // not specified, but used by AASX Package Explorer
             };
 
@@ -590,7 +590,7 @@ namespace AdminShellNS
                 "SubmodelElement",
                 "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
                 "SubmodelElementList",
-                "SubmodelElementStructure"
+                "SubmodelElementStruct"
             };
 
             public static string[] SubmodelElementElements = new string[] {
@@ -614,7 +614,7 @@ namespace AdminShellNS
                 "SubmodelElement",
                 "SubmodelElementCollection", // not specified, but used by AASX Package Explorer
                 "SubmodelElementList",
-                "SubmodelElementStructure"
+                "SubmodelElementStruct"
             };
 
             // use this in list to designate all of the above elements

@@ -1477,11 +1477,12 @@ namespace AdminShellNS
             public static string ValueType_BOOLEAN = "boolean";
 
             public static string[] ValueTypeItems = new string[] {
-                    "anyType", "complexType", "anySimpleType", "anyAtomicType", "anyURI", "base64Binary",
+                    "anyURI", "base64Binary",
                     "boolean", "date", "dateTime",
                     "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
                     "positiveInteger",
-                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
+                    "nonPositiveInteger", "negativeInteger",
                     "double", "duration",
                     "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 

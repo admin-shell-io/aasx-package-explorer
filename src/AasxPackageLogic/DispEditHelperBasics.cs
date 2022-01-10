@@ -1919,6 +1919,72 @@ namespace AasxPackageLogic
             return ndx + 1;
         }
 
+        public int AddUnqiueElementBefore<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
+            AdminShell.SubmodelElementWrapper entity,
+            AdminShell.SubmodelElementWrapper existing,
+            bool checkForUniqueness = true)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || entity == null || existing == null)
+                return -1;
+
+            // check uniqueness??
+            if (entity.submodelElement?.idShort.HasContent() == true
+                && list.FindFirstIdShort(entity.submodelElement.idShort) != null)
+            {
+                this.MakeNewReferableUnique(entity.submodelElement);
+            }
+
+            // pass over
+            return AddElementInListBefore<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        public int AddUnqiueElementAfter<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
+            AdminShell.SubmodelElementWrapper entity,
+            AdminShell.SubmodelElementWrapper existing,
+            bool checkForUniqueness = true)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || entity == null || existing == null)
+                return -1;
+
+            // check uniqueness??
+            if (entity.submodelElement?.idShort.HasContent() == true
+                && list.FindFirstIdShort(entity.submodelElement.idShort) != null)
+            {
+                this.MakeNewReferableUnique(entity.submodelElement);
+            }
+
+            // pass over
+            return AddElementInListAfter<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        public void CheckIfMakeElementUnique(
+            AdminShell.Referable rf,
+            AdminShell.IEnumerateChildren children)
+        {
+            // access
+            if (rf == null || children == null)
+                return;
+
+            // check
+            var exist = false;
+            if (rf.idShort.HasContent())
+            {
+                foreach (var smw in children.EnumerateChildren())
+                    if (smw?.submodelElement?.idShort?.Trim() == rf.idShort.Trim())
+                        exist = true;
+            }
+
+            // make unique?
+            if (exist)
+                this.MakeNewReferableUnique(rf);
+        }
+
         //
         // List manipulations (multiple entities)
         //
@@ -2258,10 +2324,22 @@ namespace AasxPackageLogic
         /// Note: if <c>idShort</c> has content, will add unique content.
         /// </summary>
         /// <param name="rf">given Referable</param>
-        public void MakeNewReferableUnique(AdminShell.Referable rf)
+        /// <param name="onlyIfCollision">If set, will unique only if there would be a collision in the
+        /// specifed collection</param>
+        public void MakeNewReferableUnique(
+            AdminShell.Referable rf,
+            AdminShell.SubmodelElementWrapperCollection onlyIfCollision = null)
         {
             // access
             if (rf == null)
+                return;
+            if (rf.idShort == null)
+                rf.idShort = "";
+
+            // collision?
+            if (rf.idShort.HasContent()
+                && onlyIfCollision != null
+                && onlyIfCollision.FindFirstIdShort(rf.idShort) == null)
                 return;
 
             // random add

@@ -97,9 +97,10 @@ namespace AasxPackageLogic
 
             // members
             this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck( () => { return referable.idShort == null || referable.idShort.Length < 1; },
-                    "The idShort is meanwhile mandatory for all Referables. It is a short, " +
-                        "unique identifier that is unique just in its context, its name space. ", breakIfTrue: true),
+                new HintCheck( () => !(referable is AdminShell.Identifiable) && !referable.idShort.HasContent(),
+                    "The idShort is mandatory for all Referables which are not Identifiable. " +
+                    "It is a short, unique identifier that is unique just in its context, " +
+                    "its name space. ", breakIfTrue: true),
                 new HintCheck(
                     () => {
                         if (referable.idShort == null) return false;
@@ -128,6 +129,31 @@ namespace AasxPackageLogic
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
                 auxButtonLambda: injectToIdShort?.auxLambda
                 );
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => referable.displayName?.IsValid != true,
+                        "The use of a Display name is recommended to express a human readable name " +
+                        "for the Referable in multiple languages.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice),
+                    new HintCheck(
+                        () => { return referable.displayName.langString.Count < 2; },
+                        "Consider having Display name in multiple langauges.",
+                        severityLevel: HintCheck.Severity.Notice)
+            });
+            if (this.SafeguardAccess(stack, repo, referable.displayName, "displayName:", "Create data element!", v =>
+            {
+                referable.displayName = new AdminShell.DisplayName();
+                this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                return new AnyUiLambdaActionRedrawEntity();
+            }))
+            {
+                this.AddKeyListLangStr(stack, "displayName", referable.displayName.langString,
+                    repo, relatedReferable: referable);
+            }
 
             if (!categoryUsual)
                 this.AddHintBubble(
@@ -182,6 +208,32 @@ namespace AasxPackageLogic
                 this.AddKeyListLangStr(stack, "description", referable.description.langString,
                     repo, relatedReferable: referable);
             }
+
+            // Checksum
+
+            this.AddKeyValueRef(
+                stack, "checksum", referable, ref referable.checksum, null, repo,
+                v =>
+                {
+                    var dr = new DiaryReference(referable);
+                    referable.checksum = v as string;
+                    this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Generate" },
+                auxButtonToolTips: new[] { "Generate a SHA256 hashcode over this Referable" },
+                auxButtonLambda: (i) =>
+                {
+                    if (i == 0)
+                    {
+                        referable.checksum = referable.ComputeHashcode();
+                        this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                }
+                );
 
             // Extensions (at the end to make them not so much impressive!)
 
