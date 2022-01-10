@@ -475,7 +475,7 @@ namespace AasxPackageLogic
                     substack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => !(pair.semanticId?.IsValid == true || pair.key.HasContent()),
+                            () => pair.semanticId?.IsValid != true,
                             "Check, if a semanticId can be given in addition the key!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -726,8 +726,8 @@ namespace AasxPackageLogic
                     substack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => !(extension.semanticId?.IsValid == true || extension.name.HasContent()),
-                            "Either a semanticId or a name specification shall be given!")
+                            () => extension.semanticId?.IsValid != true,
+                            "Check, if a semanticId can be given in addition the key!")
                     });
                 if (SafeguardAccess(
                         substack, repo, extension.semanticId, "semanticId:", "Create data element!",
@@ -746,6 +746,13 @@ namespace AasxPackageLogic
                         relatedReferable: relatedReferable);
                 }
 
+                AddHintBubble(
+                    substack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !extension.name.HasContent(),
+                            "A name specification shall be given!")
+                    });
                 AddKeyValueRef(
                     substack, "name", extension, ref extension.name, null, repo,
                     v =>

@@ -604,6 +604,53 @@ namespace AdminShellNS
         }
 
         //
+        // DisplayName
+        //
+
+        public class DisplayName
+        {
+
+            // members
+
+            [XmlElement(ElementName = "langString")]
+            public ListOfLangStr langString = new ListOfLangStr();
+
+            // constructors
+
+            public DisplayName() { }
+
+            public DisplayName(Description src)
+            {
+                if (src != null && src.langString != null)
+                    foreach (var ls in src.langString)
+                        langString.Add(new LangStr(ls));
+            }
+
+            public DisplayName(LangStringSet src)
+            {
+                if (src != null && src.langString != null)
+                    foreach (var ls in src.langString)
+                        langString.Add(new LangStr(ls));
+            }
+
+#if !DoNotUseAasxCompatibilityModels
+            // new in V3.0
+#endif
+
+            // further
+            [XmlIgnore]
+            [JsonIgnore]
+            public bool IsValid { get { return langString != null && langString.Count >= 1; } }
+
+            // single string representation
+            public string GetDefaultStr(string defaultLang = null)
+            {
+                return this.langString?.GetDefaultStr(defaultLang);
+            }
+
+        }
+
+        //
         // Description
         //
 
@@ -648,6 +695,11 @@ namespace AdminShellNS
                         langString.Add(new LangStr(ls));
             }
 #endif
+
+            // further
+            [XmlIgnore]
+            [JsonIgnore]
+            public bool IsValid { get { return langString != null && langString.Count >= 1; } }
 
             // single string representation
             public string GetDefaultStr(string defaultLang = null)
@@ -975,10 +1027,37 @@ namespace AdminShellNS
 
             // members
 
-            [MetaModelName("Referable.IdShort")]
+            [MetaModelName("Referable.idShort")]
             [TextSearchable]
             [CountForHash]
             public string idShort = "";
+
+            [XmlElement(ElementName = "displayName")]
+            [JsonIgnore]
+            [CountForHash]
+            public DisplayName displayName = null;
+
+            [XmlIgnore]
+            [JsonProperty(PropertyName = "displayNames")]
+            public ListOfLangStr JsonDisplayName
+            {
+                get
+                {
+                    return displayName?.langString;
+                }
+                set
+                {
+                    if (value == null)
+                    {
+                        displayName = null;
+                        return;
+                    }
+
+                    if (displayName == null)
+                        displayName = new DisplayName();
+                    displayName.langString = value;
+                }
+            }
 
             [MetaModelName("Referable.category")]
             [TextSearchable]
@@ -1011,6 +1090,9 @@ namespace AdminShellNS
                     description.langString = value;
                 }
             }
+
+            [MetaModelName("Referable.checksum")]
+            public string checksum = "";
 
             [XmlIgnore]
             [JsonIgnore]

@@ -1431,11 +1431,14 @@ namespace AasxPackageLogic
                                         rve.theEnv, mdo as AdminShell.SubmodelElement,
                                         copyCD: true, shallowCopy: buttonNdx == 0);
 
-                                    this.MakeNewReferableUnique(clone?.submodelElement);
-
+                                    // need to prep at first?
                                     if (submodel.submodelElements == null)
                                         submodel.submodelElements =
                                             new AdminShell.SubmodelElementWrapperCollection();
+
+                                    // check if to make unique in the target folder?
+                                    this.MakeNewReferableUnique(clone?.submodelElement,
+                                        submodel.submodelElements);
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
@@ -1446,7 +1449,7 @@ namespace AasxPackageLogic
                                         new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     return new AnyUiLambdaActionRedrawAllElements(
-                                        submodel, isExpanded: true);
+                                        clone?.submodelElement, isExpanded: true);
                                 }
                             }
                         }
@@ -2401,9 +2404,22 @@ namespace AasxPackageLogic
                                         shallowCopy: buttonNdx == 0);
 
                                     if (sme is AdminShell.SubmodelElementCollection smesmc)
+                                    {
+                                        if (smesmc.value == null)
+                                            smesmc.value = new AdminShell.SubmodelElementWrapperCollection();
+                                        this.MakeNewReferableUnique(clone?.submodelElement,
+                                            smesmc.value);
                                         smesmc.value.Add(clone);
+                                    }
+
                                     if (sme is AdminShell.Entity smeent)
+                                    {
+                                        if (smeent.statements == null)
+                                            smeent.statements = new AdminShell.SubmodelElementWrapperCollection();
+                                        this.MakeNewReferableUnique(clone?.submodelElement,
+                                            smeent.statements);
                                         smeent.statements.Add(clone);
+                                    }
 
                                     // emit event
                                     this.AddDiaryEntry(sme, new DiaryEntryStructChange());
