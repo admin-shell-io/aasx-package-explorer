@@ -1637,7 +1637,7 @@ namespace AasxPackageLogic
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, submodel.semanticId,
                     (o) => { submodel.semanticId = o; },
-                    "The semanticId may be either a reference to a submodel " +
+                    statement: "The semanticId may be either a reference to a submodel " +
                     "with kind=Type (within the same or another Administration Shell) or " +
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).",
@@ -2765,7 +2765,7 @@ namespace AasxPackageLogic
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, sme.semanticId,
                     (sid) => { sme.semanticId = sid; },
-                    "The use of semanticId for SubmodelElements is mandatory! " +
+                    statement: "The use of semanticId for SubmodelElements is mandatory! " +
                     "Only by this means, an automatic system can identify and " +
                     "understand the meaning of the SubmodelElements and, for example, " +
                     "its unit or logical datatype. " +
