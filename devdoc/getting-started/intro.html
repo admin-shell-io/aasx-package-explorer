@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Introduction </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Introduction ">
+    <meta name="generator" content="docfx 2.56.1.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/adminshellio-48x48.jpg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="introduction">Introduction</h1>
+
+<p>This series of articles help you set up and build the solution,
+explain you how to test and check your code contribution and
+finally how to properly submit it.</p>
+<p>If you don't like reading the documentation, just want to take a deep dive and
+start contributing, the following section &quot;Quick Start&quot; gives you a brief
+overview of how you can get your code in.</p>
+<h2 id="quick-start">Quick Start</h2>
+<p>This is a brief list of steps explaining how to submit your code contribution.</p>
+<h3 id="development-tools">Development Tools</h3>
+<ul>
+<li>Install the IDE of your choice, <em>e.g.</em>,
+<a href="https://visualstudio.microsoft.com/de/vs/community/">Visual Studio 2019 Community Edition</a>.</li>
+</ul>
+<h3 id="create-a-feature-branch">Create a feature branch</h3>
+<p><strong>If you are a member of <a href="https://github.com/admin-shell-io">admin-shell-io GitHub organization</a></strong>:</p>
+<ul>
+<li><p>Clone the Git repository:</p>
+<pre><code>git clone https://github.com/admin-shell-io/aasx-package-explorer
+</code></pre>
+</li>
+<li><p>Create your feature branch:</p>
+<pre><code>git checkout -b yourUsername/Add-some-new-feature
+</code></pre>
+<p>Please observe <a href="https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/development-workflow.html#pull-requests">our guideline to naming the branches</a>
+(<code>{your-username}/{Describe-subject-of-the-commit}</code>).</p>
+</li>
+</ul>
+<p><strong>Otherwise</strong>:</p>
+<ul>
+<li><p>Make the fork of your repository (see <a href="https://guides.github.com/activities/forking/">this GitHub guide</a>)</p>
+</li>
+<li><p>Clone the Git repository:</p>
+<pre><code>git clone https://github.com/yourUsername/aasx-package-explorer
+</code></pre>
+</li>
+<li><p>Create your feature branch:</p>
+<pre><code>git checkout -b yourUsername/Add-some-new-feature
+</code></pre>
+</li>
+</ul>
+<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li><p>Change to the directory of your repository. Execute in Powershell:</p>
+<pre><code>.\src\InstallSolutionDependencies.ps1
+</code></pre>
+</li>
+</ul>
+<h3 id="write-your-code">Write Your Code</h3>
+<ul>
+<li>Make your code changes.</li>
+<li>Do not forget to implement unit tests.</li>
+</ul>
+<h3 id="commit--push">Commit &amp; Push</h3>
+<ul>
+<li><p>Format your code to conform to the style guide:</p>
+<pre><code>.\src\FormatCode.ps1
+</code></pre>
+</li>
+<li><p>Add files that you would like in your pull request:</p>
+<pre><code>git add src/AasxSomeProject/SomeFile.cs
+</code></pre>
+</li>
+<li><p>Commit locally:</p>
+<pre><code>git commit
+</code></pre>
+<p>Please observe our <a href="https://admin-shell-io.github.io/aasx-package-explorer/devdoc/getting-started/development-workflow.html#commit-messages">guideline related to commit messages</a>:</p>
+<ol>
+<li>First line is a subject, max. 50 characters, starts with a verb in
+imperative mood</li>
+<li>Empty line</li>
+<li>Body, max. line width 72 characters, must not start with the first word of
+the subject</li>
+</ol>
+</li>
+<li><p>Run the pre-commit checks and make sure they all pass:</p>
+<pre><code>.\src\Check.ps1
+</code></pre>
+</li>
+<li><p>If needed, change your commit message:</p>
+<pre><code>git commit --amend
+</code></pre>
+</li>
+<li><p>Set the upstream of your branch:</p>
+<pre><code>git branch --set-upstream-to origin/yourUsername/Add-some-new-feature
+</code></pre>
+</li>
+<li><p>Push your changes:</p>
+<pre><code>git push
+</code></pre>
+</li>
+</ul>
+<h3 id="pull-request">Pull Request</h3>
+<ul>
+<li>Go to the <a href="https://github.com/admin-shell-io/aasx-package-explorer">aasx-package-explorer GitHub Repository</a> and
+create the pull request in the web interface.</li>
+<li>Have it reviewed, if necessary</li>
+<li>Make sure all the remote checks pass</li>
+<li>Sign Contributor License Agreement (CLA) on the page of your pull request.
+This needs to be done only once.</li>
+</ul>
+<h3 id="merge">Merge</h3>
+<p><strong>If you are a member of <a href="https://github.com/admin-shell-io">admin-shell-io GitHub organization</a></strong>:</p>
+<ul>
+<li>Squash &amp; Merge (see
+<a href="https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/merging-a-pull-request">this section of the GitHub documentation</a>)</li>
+</ul>
+<p><strong>Otherwise</strong>:</p>
+<ul>
+<li>Ask somebody from the organization to squash &amp; merge the pull request for you</li>
+</ul>
+<h2 id="visual-studio---solution-structure">Visual Studio - Solution structure</h2>
+<p>The VS solution is structured in multiple folders</p>
+<ul>
+<li>Plugins: all plugin reside here</li>
+</ul>
+<h2 id="create-a-plugin">Create a plugin</h2>
+<p>As copying and renaming projects in Vs does not always work perfectly, here a step-by-step guidance:</p>
+<ul>
+<li>in Plugins, add a new project as .DLL for .net &amp; WPF</li>
+<li>choose wisely a new name for the project, always starting with AasxPlugin..</li>
+<li>location shall be below src/.</li>
+<li>select .net-framework = 4.6.1</li>
+<li>copy an appropriate existing Plugin.cs (do NOT rename it!)</li>
+<li>copy an appropriate existing ...Options.cs (rename it, you WILL need options)</li>
+<li>add reference to AasxCsharpLibrary, AasxIntegrationBase, AasxIntegrationBaseWpf, AasxPredefinedConcepts</li>
+<li>in the ...Options.cs, check&amp;modify the record-logic for allowing Submodel semantic ids</li>
+<li>choose an appropriate Submodel semantic id to be associated with the plugin</li>
+<li>change the contents of the Plugin.cs (do NOT rename it!)
+<ul>
+<li>change handling of options defined in ...Options.cs file</li>
+<li>change ListActions() for the actions, your plugin shall handle
+(if an action is not listed, it will not be issued by the main application to the plug-in!)</li>
+<li>change / extend ActivateAction() to handle defined actions
+<ul>
+<li>use string-comparison for action names</li>
+<li>always check &amp; typecast provided arguments</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>important actions are:
+<ul>
+<li>&quot;call-check-visual-extension&quot;: the main app calls this action for each Submodel to check, if the plug-in feels responsible</li>
+<li>&quot;get-events&quot;: retrieves stacked events FROM the plugin</li>
+<li>&quot;event-return&quot;: pushes events from the main app TO the plugin</li>
+<li>&quot;get-check-visual-extension&quot;: returns a True, if a control shall be rendered</li>
+<li>&quot;fill-panel-visual-extension&quot;: fill a provided WPF panel with content controls</li>
+</ul>
+</li>
+<li>event payloads are defined in: AasxPluginInterface.cs</li>
+</ul>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/admin-shell-io/aasx-package-explorer/blob/master/docdev/docfx_project/getting-started/intro.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

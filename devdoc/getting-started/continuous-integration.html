@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Continuous Integration </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Continuous Integration ">
+    <meta name="generator" content="docfx 2.56.1.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/adminshellio-48x48.jpg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="continuous-integration">Continuous Integration</h1>
+
+<p>To establish confidence in the software as well as to continuously maintain
+the code quality, we provide scripts to run pre-merge checks on your local
+machine as well as Github workflows to run remotely.</p>
+<p>All the following scripts <em>should not</em> require any administration privilege.</p>
+<h2 id="building-for-debug">Building for Debug</h2>
+<p>To build the solution for debugging and testing, invoke:</p>
+<pre><code class="lang-powershell">.\src\BuildForDebug.ps1
+</code></pre>
+<p>You can also build a single project.
+This is practical when you want to manually test something and do not want to
+waste time on MSBuild inspecting which projects need to be rebuilt:</p>
+<pre><code class="lang-powershell">.\src\BuildForDebug.ps1 -Project AasxToolkit
+</code></pre>
+<p>To clean the build, call:</p>
+<pre><code class="lang-powershell">.\src\BuildForDebug.ps1 -clean
+</code></pre>
+<p>In cases of substantial changes to the solution (<em>e.g.</em>, conversion of the
+projects from legacy to SDK style), you need to delete <code>bin</code> and <code>obj</code>
+subdirectories beneath <code>src</code> as dotnet (and consequently MSBuild) will not do
+that for you. We provide a shallow script to save you a couple of
+keystrokes:</p>
+<pre><code class="lang-powershell">.\src\RemoveBinAndObj.ps1
+</code></pre>
+<h2 id="reformatting-code">Reformatting Code</h2>
+<p>We use <code>dontet-format</code> to automatically fix the formatting of
+the code to comply with the style guideline. To reformat the code in-place,
+call:</p>
+<pre><code class="lang-powershell">.\src\FormatCode.ps1
+</code></pre>
+<h2 id="generate-doctests">Generate Doctests</h2>
+<p>We use <a href="https://github.com/mristin/doctest-csharp">doctest-csharp</a> for <a href="https://en.wikipedia.org/wiki/Doctest">doctests</a>. To extract the doctests and generate
+the corresponding unit tests:</p>
+<pre><code class="lang-powershell">.\src\Doctest.ps1
+</code></pre>
+<h2 id="licenses">Licenses</h2>
+<p>We maintain one file listing all the copyrights and licenses, <code>LICENSE.txt</code>.
+This license file needs to be replicated in each of the solution projects.</p>
+<p>If there are changes to <code>LICENSE.txt</code>, propagate it to the projects by calling
+the following script:</p>
+<p><code>.\src\CopyLicenses.txt</code></p>
+<h2 id="running-checks-locally">Running Checks Locally</h2>
+<p>We wrote the checks in separate scripts (<em>e.g.</em>, <code>src\CheckFormat.ps1</code>) and
+bundled them in one script, <code>src\Check.ps1</code>. If you want to run all the checks,
+simply call:</p>
+<pre><code class="lang-powershell">.\src\Check.ps1
+</code></pre>
+<p>The script <code>src\Check.ps1</code> will inform you which individual scripts were run. In
+case of failures, you can just run the last failing script.</p>
+<p>Please see the source code of <code>src\Check.ps1</code> for more details.</p>
+<h3 id="testing-locally-with-testps1">Testing Locally with <code>Test.ps1</code></h3>
+<p>Unit tests are part of our continuous integration. While you usually test
+with <code>src\Check.ps1</code> at the end of the development cycle, it is often practical
+to continuously test while developing.</p>
+<p>The script <code>src\Test.ps1</code> handles all the unit testing for you.</p>
+<p>Please note that you have to build the solution for debug before <em>each run</em>
+(using <code>src\BuildForDebug.ps1</code>). <code>src\Test.ps1</code> will look for binaries in
+<code>artefacts</code> directory, and ignore any other binaries you might have built with
+your IDE (<em>e.g.</em>, building from within Visual Studio will have <em>no</em> effect on
+<code>src\Test.ps1</code> execution!).</p>
+<p>To run all the tests:</p>
+<pre><code class="lang-powershell">.\src\Test.ps1
+</code></pre>
+<p>To list the tests without executing them:</p>
+<pre><code class="lang-powershell">.\src\Test.ps1 -Explore
+</code></pre>
+<p>To execute an individual unit test:</p>
+<pre><code class="lang-powershell">.\src\Test.ps1 -Test AasxDictionaryImport.Cdd.Tests.Test_Context.Empty
+</code></pre>
+<p>You can also specify a prefix so that all the corresponding test cases will be
+executed:</p>
+<pre><code class="lang-powershell">.\src\Test.ps1 -Test AasxDictionaryImport.Cdd
+</code></pre>
+<h3 id="testing-locally-with-visual-studio">Testing Locally with Visual Studio</h3>
+<p>Our tests are written using NUnit3, so you need to install NUnit 3 Test Adapter
+for Visual Studio (see <a href="https://docs.nunit.org/articles/vs-test-adapter/Adapter-Installation.html">this article</a> from NUnit
+documentation).</p>
+<p>See <a href="https://docs.nunit.org/articles/vs-test-adapter/Usage.html">this article</a> for how to use NUnit 3 Test
+Adapter in more detail.</p>
+<p>Once the adapter has been installed, you can run all the tests which do not
+require any external dependencies (such as AASX samples downloaded from
+<a href="http://admin-shell-io.com/samples/">http://admin-shell-io.com/samples/</a>).</p>
+<p>Our tests with external dependencies use environment variables to specify the
+location of the dependencies. While <code>src\Check.ps1</code> and related scripts set up
+the expected locations in the environment automatically, you need to adjust your
+test setting accordingly.</p>
+<p>So far, we need to set <code>SAMPLE_AASX_DIR</code> environment variable to point to the
+absolute path where AASX samples have been downloaded (using
+<code>src\DownloadSamples.ps1</code>). This is by definition
+<code>{your repository}\sample-aasx</code>.</p>
+<p>In order to reflect this environment variable in your test adapter, you have
+to create a RUNSETTINGS file and include it into the solution as user-specific.
+Please follow <a href="https://docs.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2019">this page</a> from Visual Studio
+documentation how to set up a RUNSETTINGS file.</p>
+<p>Here is an example RUNSETTINGS file:</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;RunSettings&gt;
+ &lt;EnvironmentVariables&gt;
+    &lt;SAMPLE_AASX_DIR&gt;
+        C:\admin-shell-io\aasx-package-explorer\sample-aasx
+    &lt;/SAMPLE_AASX_DIR&gt;
+  &lt;/EnvironmentVariables&gt;
+&lt;/RunSettings&gt;
+</code></pre>
+<h3 id="gui-tests">GUI Tests</h3>
+<p>Analogous to unit tests, we provide GUI tests (a.k.a. function tests) based on
+<a href="https://github.com/FlaUI/FlaUI">FlaUI</a>.
+Such test projects are marked with <code>.GuiTests</code> suffix.</p>
+<p>Mind that the tests run against the executables released in
+<code>artefacts\build\Debug</code> directory. This means that building the executables
+in your IDE will have no effect on GUI tests (unless you manually set the target
+for the binaries to <code>artefacts\build\Debug</code>). Please always double-check that
+you built your binaries with <code>src\BuildForDebug.ps1</code> to avoid unnecessary
+confusion.</p>
+<p>Some of the GUI tests, similarly to unit tests, depend on sample AASX files
+which need to be downloaded with <code>src\DownloadSamples.ps1</code> before the tests can
+run. Once you built for debug and obtained the samples, you are all set to
+automatically test the GUIs.</p>
+<p>To run all the GUI tests, call:</p>
+<pre><code class="lang-powershell">.\src\TestGui.ps1
+</code></pre>
+<p>Similar to unit tests, you can list the tests:</p>
+<pre><code class="lang-powershell">.\src\Test.ps1 -Explore
+</code></pre>
+<p>, execute a single test:</p>
+<pre><code class="lang-powershell">.\src\TestGui.ps1 `
+    -Test AasxPackageExplorer.GuiTests.TestBasic.Test_application_start
+</code></pre>
+<p>or a group of tests sharing a common prefix:</p>
+<pre><code class="lang-powershell">.\src\TestGui.ps1 `
+    -Test AasxPackageExplorer.GuiTests
+</code></pre>
+<p>GUI tests are not executed automatically on the remote
+CI servers. First, it is more often than difficult to run GUI tests on headless
+remote servers, so it would put a high maintenance burden. Second, GUI tests
+take too long and depend on timeouts which are often not controllable
+and reproducible enough. In particular, timeouts depend on the server load and
+hence can vary greatly.</p>
+<h2 id="github-workflows">Github Workflows</h2>
+<p>Github Actions allow for running continuous integration on Github servers.
+For a general introduction, see <a href="https://docs.github.com/en/actions">Github's documentation on Actions</a>.</p>
+<p>The specification of our Github workflows can be found in <a href="https://github.com/admin-shell-io/aasx-package-explorer/tree/master/.github/workflows"><code>.github/workflows</code></a> directory. Please see the corresponding <code>*.yml</code> files for more details.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/admin-shell-io/aasx-package-explorer/blob/master/docdev/docfx_project/getting-started/continuous-integration.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

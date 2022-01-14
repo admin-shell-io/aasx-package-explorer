@@ -1,0 +1,160 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Releasing </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Releasing ">
+    <meta name="generator" content="docfx 2.56.1.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/adminshellio-48x48.jpg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="releasing">Releasing</h1>
+
+<h2 id="versioning">Versioning</h2>
+<p>We version based on the date of the release (<em>e.g.</em>, <code>2019-10-21</code>).
+The suffixes <code>alpha</code> and <code>beta</code> indicate the testing maturity of the release:</p>
+<ul>
+<li><code>Alpha</code> releases have not been manually tested (only automatic tests were
+performed).</li>
+<li><code>Beta</code> releases underwent only a bit of manual testing, but no thorough manual
+testing has been performed.</li>
+<li>A release without suffix implies that a couple of users tested the release and
+were satisfied with the quality of the software.</li>
+</ul>
+<p>While we admit that such a versioning scheme is uninformative with respect to
+number of new features, bugs fixed or critical changes, we found it too hard to
+come up with a versioning scheme for a GUI program such as ours that would be
+neither misleading nor confusing. Schemes like <a href="https://semver.org">semantic versioning</a> work well for libraries or command-line tools where breaking
+changes and extensions are well-defined. However, a breaking change in a GUI is
+not as easily defined and much more subjective (<em>e.g.</em>, a breaking change for
+one user is a minor improvement to another user).</p>
+<h2 id="build-solution-for-release">Build Solution for Release</h2>
+<p>To build the solution for release, invoke:</p>
+<pre><code class="lang-powershell">.\src\BuildForRelease.ps1
+</code></pre>
+<p>If you want to clean a previous build, call:</p>
+<pre><code class="lang-powershell">.\src\BuildForRelease.ps1 -clean
+</code></pre>
+<p>This will produce the solution build in <code>artefacts/</code> directory.</p>
+<p>In cases of substantial changes to the solution (<em>e.g.</em>, conversion of the
+projects from legacy to SDK style), you need to delete <code>bin</code> and <code>obj</code>
+subdirectories beneath <code>src</code> as dotnet (and consequently MSBuild) will not do
+that for you. We provide a shallow script to save you a couple of
+keystrokes:</p>
+<pre><code class="lang-powershell">.\src\RemoveBinAndObj.ps1
+</code></pre>
+<h2 id="package-the-release">Package the Release</h2>
+<p>The release is now ready to be packaged. Call <code>PackageRelease.ps</code> with the
+desired version:</p>
+<pre><code class="lang-powershell">.\src\PackageRelease.ps1 -version 2020-08-14.alpha
+</code></pre>
+<p>Multiple release packages will be produced (with web browser integrated, small
+<em>etc</em>.).</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/admin-shell-io/aasx-package-explorer/blob/master/docdev/docfx_project/getting-started/releasing.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

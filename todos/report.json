@@ -1,0 +1,1326 @@
+[
+  {
+    "path": "AasxAmlImExport\\AmlExport.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): If further data specifications exist (in future), add here",
+        "line": 870,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxAmlImExport\\AmlImport.cs",
+    "records": [
+      {
+        "prefix": "HACK",
+        "suffix": " (MIHO, 2020-08-01): The check for role class or requirements is still questionable\r\n                 but seems to be correct (see below)\r\n\r\n                 Question MIHO: I dont understand the determinism behind that!\r\n                 WIEGAND: me, neither ;-)\r\n                 Wiegand:  ich hab mir von Prof.Drath nochmal erkl\u00E4ren lassen, wie SupportedRoleClass und\r\n                 RoleRequirement verwendet werden:\r\n                 In CAEX2.15(aktuelle AML Version und unsere AAS Mapping Version):\r\n                   1.Eine SystemUnitClass hat eine oder mehrere SupportedRoleClasses, die ihre \u201Em\u00F6gliche Rolle\r\n                     beschreiben(Drucker / Fax / kopierer)\r\n                   2.Wird die SystemUnitClass als InternalElement instanziiert entscheidet man sich f\u00FCr eine\r\n                     Hauptrolle, die dann zum RoleRequirement wird und evtl. Nebenklassen die dann\r\n                     SupportedRoleClasses sind(ist ein Workaround weil CAEX2.15 in der Norm nur\r\n                     ein RoleReuqirement erlaubt)\r\n                 InCAEX3.0(n\u00E4chste AMl Version):\r\n                   1.Wie bei CAEX2.15\r\n                   2.Wird die SystemUnitClass als Internal Elementinstanziiert werden die verwendeten Rollen\r\n                     jeweils als RoleRequirement zugewiesen (in CAEX3 sind mehrere RoleReuqirements nun erlaubt)",
+        "line": 168,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): fill out \r\n                                             eds.hasDataSpecification by using outer attributes",
+        "line": 1435,
+        "column": 44,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxCsharpLibrary.Tests\\TestLoadSaveChain.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-10-05): The class is unused since all its tests were disabled temporarily and\r\n    will be fixed in the near future.\r\n\r\n    Once the tests are enabled, please remove this Resharper directive.",
+        "line": 41,
+        "column": 4,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-10-05): This test has been temporary disabled so that we can merge in the branch\r\n        MIHO/EnhanceDocumentShelf. The test should be fixed in a future pull request and we will then re-enable it\r\n        again.\r\n\r\n        Please do not forget to remove the Resharper directive at the top of this class.\r\n\r\n        [TestCase(\u0022.xml\u0022)]\r\n\r\n        dead-csharp ignore this comment",
+        "line": 91,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-10-05): This test has been temporary disabled so that we can merge in the branch\r\n        MIHO/EnhanceDocumentShelf. The test should be fixed in a future pull request and we will then re-enable it\r\n        again.\r\n\r\n        Please do not forget to remove the Resharper directive at the top of this class.\r\n\r\n        [Test]\r\n\r\n        dead-csharp ignore this comment",
+        "line": 131,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-09-17): Remove autofix once XSD and Aasx library in sync\r\n\r\n                      Package has been loaded, now we need to do an automatic check \u0026 fix.\r\n\r\n                      This is necessary as Aasx library is still not conform with the XSD AASX schema and breaks\r\n                      certain constraints (*e.g.*, the cardinality of langString = 1..*).",
+        "line": 154,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxCsharpLibrary\\AasxCompatibilityModels\\V10\\AdminShellV10.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): in V1.0, shall be a list of embeddedDataSpecification",
+        "line": 1842,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): Qualifiers not working!",
+        "line": 2560,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): Operation",
+        "line": 2920,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!",
+        "line": 3899,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!",
+        "line": 3924,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!",
+        "line": 4031,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!",
+        "line": 4060,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): use aasenv serialzers here!",
+        "line": 4087,
+        "column": 28,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxCsharpLibrary\\AdminShell.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-30): this does not prevent the corner case, that we could have\r\n                            * multiple dataSpecificationIEC61360 in this list, which would be an error",
+        "line": 1410,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-27): According to spec, cardinality is [1..1][1..n]",
+        "line": 3446,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-27): According to spec, cardinality is [0..1][1..n]",
+        "line": 3450,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-27): According to spec, cardinality is [0..1][1..n]",
+        "line": 3481,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-30): align wording of the member (\u0022embeddedDataSpecification\u0022) with the \r\n                * wording of the other entities (\u0022hasDataSpecification\u0022)",
+        "line": 3760,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-26): not very elegant, yet. Avoid temporary collection",
+        "line": 4517,
+        "column": 32,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): check, if Json has Qualifiers or not",
+        "line": 5276,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-07-08): obvious error .. info should receive semanticId .. but would change",
+        "line": 5744,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-12): consider using:\r\n                   Activator.CreateInstance(pl.GetType(), new object[] { pl })",
+        "line": 5838,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-07-31): would be nice to use IEnumerateChildren for this ..",
+        "line": 6203,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-10-18): there are overlaps of this new function with\r\n             * this old function: FindFirstAnySemanticId(Key[] semId ..\r\n             * clarify/ refactor",
+        "line": 6339,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxCsharpLibrary\\AdminShellPackageEnv.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer",
+        "line": 289,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer",
+        "line": 475,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer",
+        "line": 518,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer",
+        "line": 553,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-02): check again.\r\n                                     * Revisiting this code after a while, and after\r\n                                     * the code has undergo some changes by MR, the following copy command needed\r\n                                     * to be amended with a if to protect against self-copy.",
+        "line": 607,
+        "column": 36,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxCsharpLibrary\\AdminShellUtil.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-11-12): replace with Regex for multi language. Ideally have Exception messages\r\n                   always as English.",
+        "line": 211,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxDictionaryImport.Tests\\Cdd\\TestImport.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Robin, 2020-09-03): please check",
+        "line": 82,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Robin, 2020-09-03): please check",
+        "line": 98,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxDictionaryImport.Tests\\Cdd\\TestModel.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (krahlro-sick, 2020-07-31): make sure that there are no duplicates",
+        "line": 554,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxDictionaryImport\\Eclass\\Model.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (krahlro-sick, 2021-02-03): HTML-decode SI code",
+        "line": 394,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (krahlro-sick, 2021-02-23): This logic is copied from EclassUtils.GenerateConceptDescription -- does",
+        "line": 819,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxDictionaryImport\\Iec61360Utils.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Robin, 2020-09-03): MIHO is not sure, if the data spec reference is correct; please check",
+        "line": 125,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Robin, 2020-09-03): MIHO is not sure, if the data spec reference is correct; please check",
+        "line": 141,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Robin, 2020-09-03): check this code",
+        "line": 157,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxFormatCst\\AasxToCst.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-05-28): extend Parse() to parse also ECLASS, IEC CDD",
+        "line": 226,
+        "column": 28,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxIntegrationBase\\AasxPluginOptionSerialization.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-06): move code to AasForms source file",
+        "line": 126,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxIntegrationBaseWpf\\EmptyFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 34,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxMqttClient\\MqttClient.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-30): check use of Url()",
+        "line": 123,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageExplorer.Tests\\TestOptionsAndPlugins.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-11-13): @MIHO please check -- Options should be null, not empty?",
+        "line": 173,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Marko Ristin, 2021-07-09): not clear, how this test could pass. As of today,",
+        "line": 297,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Marko Ristin, 2021-07-09): could not fix",
+        "line": 301,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageExplorer\\Flyout\\MqttPublisherFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 35,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageExplorer\\MainWindow.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-31): check for ANYUI MIHO",
+        "line": 313,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-12-27): consider extending for better testing or\r\n             * script running",
+        "line": 342,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-10-28): Check, if a better solution exists \r\n                             * to instrument event updates in a way that they\u0027re automatically\r\n                             * visualized",
+        "line": 1434,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-10-09): prepare path to be relative",
+        "line": 1539,
+        "column": 48,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-10-09): prepare path to be relative",
+        "line": 1550,
+        "column": 48,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-08): find the root cause instead of doing a quick-fix",
+        "line": 2244,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\DispEditHelperBasics.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): function \u0026 if-clause is obsolete",
+        "line": 1202,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): possibly [Jump] button??",
+        "line": 1365,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!\r\n                           It shall be replaced (after intergrating AnyUI) by a better repo handling",
+        "line": 1551,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): Needs to be revisited",
+        "line": 1572,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-17): check if more SME types to serialize",
+        "line": 2539,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\DispEditHelperCopyPaste.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-22): think of converting Referable to IAasElement",
+        "line": 339,
+        "column": 24,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): Operation complete?",
+        "line": 571,
+        "column": 32,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): Operation complete?",
+        "line": 610,
+        "column": 32,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-18): createAtIndex missing here",
+        "line": 629,
+        "column": 32,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\DispEditHelperEntities.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-17): create events for CDs are not emitted!",
+        "line": 1485,
+        "column": 36,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-09-01): extend the lines below to cover also data spec. for units",
+        "line": 1866,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!\r\n                           It shall be replaced (after intergrating AnyUI) by a better repo handling",
+        "line": 3670,
+        "column": 24,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\DispEditHelperMultiElement.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-07-08): check for completeness",
+        "line": 432,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\ModifyRepo.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-28): eliminate ModifyRepo. Right now, it is used as boolean flag while editing",
+        "line": 23,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageCentral.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-07): rename to plural",
+        "line": 256,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageConnectorHttpRest.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (all, 2021-01-30): check periodically for supported element types",
+        "line": 246,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue",
+        "line": 304,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-04): ValueIds still missing ..",
+        "line": 305,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic",
+        "line": 649,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-05-21): make sure, this is required by the specification!",
+        "line": 750,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-10-09): Modify missing!!",
+        "line": 786,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-05-28): to be implemented",
+        "line": 834,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-05-28): to be implemented",
+        "line": 843,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-05-28): to be implemented",
+        "line": 852,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerBase.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-17): check if to refactor/ move to another location \r\n         * and to extend to Submodels ..",
+        "line": 361,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-08-17): add more type specific conversions?",
+        "line": 374,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue",
+        "line": 450,
+        "column": 28,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerBuffered.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-25): think of creating a temp file which resemebles the source file",
+        "line": 64,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerFactory.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-02-01): check, if demo option is still required",
+        "line": 159,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerListBase.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-05): refacture this with DispEditHelper.cs",
+        "line": 323,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerListHttpRestRepository.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-08): check, how to make absolute",
+        "line": 105,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerLocalFile.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-15): consider removing \u0022indirectLoadSave\u0022 from AdminShellPackageEnv",
+        "line": 142,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\PackageContainerRepoItem.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-08): add SubmodelIds",
+        "line": 121,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\VisualAasxElements.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-07-31): check if commented out because of non-working multi-select?",
+        "line": 201,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-06-11): Submodel needs to be set in the long run",
+        "line": 2346,
+        "column": 24,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginExportTable\\Uml\\BaseWriter.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-12-24): check if to refactor multiplicity handling as utility",
+        "line": 61,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginPlotting\\PlotItem.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-04): consider at least to include MLP, as well",
+        "line": 294,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginPlotting\\PlottingViewControl.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-11-09): AasxPlugPlotting does not allow all options",
+        "line": 1956,
+        "column": 20,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginUaNetClient\\UASampleClient.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): lookup SOURCE!",
+        "line": 0,
+        "column": 0,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginUaNetServer\\Plugin.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-11-17): damned, weird dependency reasons between\r\n         * .netstandard2.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.\r\n         * Fix",
+        "line": 44,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPluginWebBrowser\\Plugin.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-02): when dragging the divider between elements tree and browser window,",
+        "line": 143,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxSignature\\AasxSignature.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Andreas Orzelski, 2020-08-01): The signature file and [Content_Types].xml can be tampered?",
+        "line": 29,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Andreas Orzelski, 2020-08-01): Is package according to the Logical model of the AAS?",
+        "line": 179,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Andreas Orzelski, 2020-08-01): is package sealed? =\u003E no other signatures can be added?",
+        "line": 213,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Andreas Orzelski, 2020-08-01): The information from the analysis\r\n                  -\u003E return as an object (list of enums with the issues/warings???)",
+        "line": 216,
+        "column": 16,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxToolkit.Tests\\TestProgram.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (mristin, 2020-10-30): add json once the validation is in place.\r\n                     Michael Hoffmeister had it almost done today.\r\n                     \r\n                    Path.Combine(\r\n                        TestContext.CurrentContext.TestDirectory,\r\n                        \u0022TestResources\\\\AasxToolkit.Tests\\\\sample.json\u0022)\r\n                        \r\n                        dead-csharp ignore this comment",
+        "line": 262,
+        "column": 20,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUaNetConsoleServer\\Program.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-03): check SOURCE",
+        "line": 9,
+        "column": 0,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUaNetServer\\AasxServer\\AasEntityBuilder.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): check, which namespace shall be used",
+        "line": 279,
+        "column": 32,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUaNetServer\\AasxServer\\AasUaEntities.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-29): The UA mapping needs to be overworked in order to comply the joint aligment with I4AAS",
+        "line": 19,
+        "column": 0,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-29): The UA mapping needs to be checked for the \u0022new\u0022 HasDataSpecification strcuture of V2.0.1",
+        "line": 20,
+        "column": 0,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): check (again) if reference to CDs is done are shall be done",
+        "line": 694,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): not sure if to add these",
+        "line": 985,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): use the collection element of UA?",
+        "line": 1086,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): decide to from where the name comes",
+        "line": 1422,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): description: get \u0022en\u0022 version which is appropriate?",
+        "line": 1425,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): parse UA data type out .. OK?",
+        "line": 1428,
+        "column": 28,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): description: get \u0022en\u0022 version is appropriate?",
+        "line": 1437,
+        "column": 32,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): this any better?",
+        "line": 1446,
+        "column": 36,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): description: get \u0022en\u0022 version is appropriate?",
+        "line": 1450,
+        "column": 36,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): check, if to make super classes for UriDictionaryEntryType?",
+        "line": 1794,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUaNetServer\\Base\\SampleNodeManager.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): check, if this is valid use of the SDK. MIHO added this",
+        "line": 665,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUaNetServer\\SampleServer.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-04): To be checked by Andreas. All applications have software certificates",
+        "line": 172,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUANodesetImExport\\UANodeSet.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper to be OK",
+        "line": 23,
+        "column": 0,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUANodesetImExport\\UANodeSetExport.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): License",
+        "line": 29,
+        "column": 0,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 1970-01-01): Fraunhofer IOSB: Check ReSharper",
+        "line": 30,
+        "column": 0,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxUANodesetImExport\\UANodeSetImport.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper settings to be OK",
+        "line": 26,
+        "column": 0,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\AnyUiWpf.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): can be realized without tedious central dispatch?",
+        "line": 961,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\DiplayVisualAasxElements.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-11-09): check, if clearing selected items on refresh is required",
+        "line": 274,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-04): check to replace all occurences of RefreshFromMainData() by\r\n             * making the tree-items ObservableCollection and INotifyPropertyChanged",
+        "line": 495,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-07-21): was because of multi-select",
+        "line": 811,
+        "column": 20,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\DispEditAasxEntity.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-24): check if required",
+        "line": 157,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\ChangeElementAttributesFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 34,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\ProgressBarFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 34,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\SelectAasEntityFlout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 37,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\SelectFromListFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 39,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\SelectFromReferablesPoolFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 41,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\SelectQualifierPresetFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 40,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\TextBoxFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 34,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\Flyouts\\TextEditorFlyout.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-21): make DiaData non-Nullable",
+        "line": 36,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxWpfControlLibrary\\PackageCentral\\PackageContainerListOfListControl.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase",
+        "line": 122,
+        "column": 20,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase",
+        "line": 133,
+        "column": 20,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AnyUi\\AnyUiContextBase.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-12-24): check if to move/ refactor these functions",
+        "line": 138,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "WpfMtpControl\\MtpAmlHelper.cs",
+    "records": [
+      {
+        "prefix": "HACK",
+        "suffix": " (MIHO, 2020-08-03): see equivalent function in AmlImport.cs; may be re-use",
+        "line": 50,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): spec/example files seem not to be in a final state",
+        "line": 218,
+        "column": 40,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "WpfMtpControl\\MtpVisuOpcUaClient.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-08-06): remove this, if not required anymore",
+        "line": 241,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "WpfMtpControl\\UiElementHelper.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MICHA, 2020-10-04): check if font is set correctly ..",
+        "line": 425,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (MICHA, 2020-10-04): seems, that for Textblock the alignement DOES NOT WORK!",
+        "line": 426,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "WpfMtpVisuViewer\\MainWindow.xaml.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (MIHO, 2020-09-18): remove this test code",
+        "line": 75,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  }
+]

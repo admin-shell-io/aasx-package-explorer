@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>API Documentation </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="API Documentation ">
+    <meta name="generator" content="docfx 2.56.1.0">
+    
+    <link rel="shortcut icon" href="../images/favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    <meta property="docfx:rel" content="../">
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../images/adminshellio-48x48.jpg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div class="container body-content">
+        
+        <div id="search-results">
+          <div class="search-list"></div>
+          <div class="sr-items">
+            <p><i class="glyphicon glyphicon-refresh index-loading"></i></p>
+          </div>
+          <ul id="pagination"></ul>
+        </div>
+      </div>
+      <div role="main" class="container body-content hide-when-search">
+        <div class="article row grid">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="api-documentation">API Documentation</h1>
+
+<p>This is automatically-generated documentation of the API extracted
+from the structured comments in the code base.</p>
+<h2 id="documentation-quality">Documentation Quality</h2>
+<p>We are aware that the current generated documentation might be confusing or
+overwhelming for the new developers since it still lacks structure and no entry
+points are clearly visible.</p>
+<p>At the moment (August 2020), we are working on an introductory document to
+give you an overview of the code structure and how individual parts fit
+together.</p>
+<h2 id="entry-point">Entry Point</h2>
+<p>Current entry point to the program is: <a href="AasxPackageExplorer.App.yml">AasxPackageExplorer.App</a>. This class parses the command-line arguments and instantiates
+the <a href="AasxPackageExplorer.MainWindow.yml">AasxPackageExplorer.MainWindow</a>.</p>
+<p>The graphical user interface (GUI) is implemented in the namespace
+<a href="AasxPackageExplorer.yml">AasxPackageExplorer</a>.</p>
+<h2 id="data-model">Data Model</h2>
+<p>The data model of the AASX lives in the <a href="AdminShellNS.yml">AdminShellNS</a>
+namespace. Any changes and extensions to the data model should go there.</p>
+<p>Since the data model is still evolving (August 2020), we put the code
+responsible for managing the legacy data models (<em>e.g.</em>, AASX V1.0) to
+the namespace <a href="AasxCompatibilityModels.yml">AasxCompatibilityModels</a>.</p>
+<p>The pre-defined concepts (such as <a href="https://www.vdi.de/richtlinien/details/vdi-2770-blatt-1-betrieb-verfahrenstechnischer-anlagen-mindestanforderungen-an-digitale-herstellerinformationen-fuer-die-prozessindustrie-grundlagen">VDI 2770</a>) reside in the namespace
+<a href="AasxPredefinedConcepts.yml">AasxPredefinedConcepts</a>.</p>
+<h2 id="package-signatures">Package Signatures</h2>
+<p>Package signatures (<em>e.g.</em>, using <a href="https://en.wikipedia.org/wiki/X.509">X.509</a>
+standard) are handled in the namespace <a href="AasxSignature.yml">AasxSignature</a>.</p>
+<h2 id="clients">Clients</h2>
+<p>AASX Package Explorer uses various clients to communicate with the external
+sources. The clients are compartmentalized in the individual <code>*Client</code>
+namespaces (<em>e.g.</em>, <a href="AasxMqttClient.yml">AasxMqttClient</a> and
+<a href="AasxOpenIdClient.yml">AasxOpenIdClient</a>).</p>
+<h2 id="imports-and-exports">Imports and Exports</h2>
+<p>Imports and exports from different data formats are handled in <code>*ImExport</code>
+namespaces such as <a href="AasxAmlImExport.yml">AasxAmlImExport</a> and
+<a href="AasxUANodesetImExport.yml">AasxUANodesetImExport</a>.</p>
+<h2 id="plug-ins">Plug-ins</h2>
+<p>AASX Package Explorer uses plug-ins to reduce the size of the different
+binary releases. For example, a plug-in web browser
+(<a href="AasxPluginWebBrowser.yml">AasxPluginWebBrowser</a>) is pretty heavy in size
+(about 60 Mb), but many users do not actually need it. Hence they can download
+a much skinnier release without the browser (only about 2 Mb).</p>
+<p>The namespace <a href="AasxIntegrationBase.yml">AasxIntegrationBase</a> provides all the
+functionality needed to integrate the plug-ins.</p>
+<h2 id="aasxtoolkit-program">AasxToolkit Program</h2>
+<p>Apart from the main AASX Package Explorer, we include an additional
+program, <a href="AasxToolkit.yml">AasxToolkit</a>, to generate and manipulate AASX
+packages from the command line. This program is also a good entry point if you
+want to see how you can perform operations on AASX in code (rather than using
+a GUI tool).</p>
+<h2 id="what-is-a-rest-server-doing-here">What is a REST Server Doing Here?</h2>
+<p>It might seem confusing that we include a REST server in the application (
+<a href="AasxRestConsoleServer.yml">AasxRestConsoleServer</a> and
+<a href="AasxRestServerLibrary.yml">AasxRestServerLibrary</a>). The rationale behind this
+inclusion is to make the demonstrations and local tests simple &amp; easy.</p>
+<p>However, from the software engineering point of view, this code does not really
+belong to the Package Explorer and should be refactored out of it. We are
+currently (August 2020) working on packaging <a href="https://github.com/admin-shell-io/aasx-server">AASX Server</a> in such a way that AASX Package
+Explorer can use it directly as a dependency (<em>e.g.</em>, as a NuGet package).
+As soon as we packaged the AASX Server, we will remove these server-related
+bits from this code base.</p>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/admin-shell-io/aasx-package-explorer/blob/master/docdev/docfx_project/api/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
