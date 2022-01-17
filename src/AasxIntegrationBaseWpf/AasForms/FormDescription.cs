@@ -135,7 +135,7 @@ namespace AasxIntegrationBase.AasForms
             // this part == static, therefore only shallow copy
             this.FormTitle = other.FormTitle;
             this.FormInfo = other.FormInfo;
-            this.SingleSemanticId = other.KeySemanticId?.value;
+            this.SingleSemanticId = new AdminShell.Identifier(other.KeySemanticId?.value);
             this.PresetIdShort = other.PresetIdShort;
             this.PresetCategory = other.PresetCategory;
             this.PresetDescription = new AdminShellV30.Description(other.PresetDescription);

@@ -360,6 +360,8 @@ namespace AdminShellNS
             [XmlElement(ElementName = "entity", Type = typeof(Entity))]
             [XmlElement(ElementName = "submodelElementList", Type = typeof(SubmodelElementList))]
             [XmlElement(ElementName = "submodelElementStruct", Type = typeof(SubmodelElementStruct))]
+            [XmlElement(ElementName = "modelReferenceElement", Type = typeof(ModelReferenceElement))]
+            [XmlElement(ElementName = "globalReferenceElement", Type = typeof(GlobalReferenceElement))]
             public SubmodelElement submodelElement;
 
             // element names

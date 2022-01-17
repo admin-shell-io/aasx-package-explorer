@@ -325,10 +325,12 @@ namespace AasxToolkit
                                 }
 
                                 var prop = AdminShell.Property.CreateNew("test", "cat01");
-                                prop.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
+                                prop.semanticId = new AdminShell.SemanticId(
+                                    new AdminShell.Identifier("www.admin-shell.io/nonsense"));
 
                                 var fil = AdminShell.File.CreateNew("test", "cat01");
-                                fil.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
+                                fil.semanticId = new AdminShell.SemanticId(
+                                    new AdminShell.Identifier("www.admin-shell.io/nonsense"));
                                 fil.parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();

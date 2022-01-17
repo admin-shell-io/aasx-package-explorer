@@ -320,7 +320,7 @@ namespace AdminShellNS
                     this.assetKind = new AssetKind(src.kind);
 
                 if (src.identification != null)
-                    SetIdentification(src.identification.id);
+                    SetIdentification(new Identifier(src.identification.id));
             }
 
             public AssetInformation(AasxCompatibilityModels.AdminShellV20.Asset src)
@@ -332,7 +332,7 @@ namespace AdminShellNS
                     this.assetKind = new AssetKind(src.kind);
 
                 if (src.identification != null)
-                    SetIdentification(src.identification.id);
+                    SetIdentification(new Identifier(src.identification.id));
             }
 #endif
 

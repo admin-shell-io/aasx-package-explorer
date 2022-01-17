@@ -44,11 +44,10 @@ namespace AdminShellNS
         /// </summary>
         public class Identifier
         {
-
             // members
 
-            [XmlText]
             [CountForHash]
+            [XmlText]
             public string value = "";
 
             // implicit operators
@@ -225,7 +224,7 @@ namespace AdminShellNS
                 if (kl == null)
                     return;
                 foreach (var k in kl)
-                    Add(k?.value);
+                    Add(new Identifier(k?.value));
             }
 
             public string ToString(string delimiter = ",")
@@ -244,7 +243,7 @@ namespace AdminShellNS
                 var loi = new ListOfIdentifier();
 
                 foreach (var p in parts)
-                    loi.Add(p);
+                    loi.Add(new Identifier(p));
 
                 return loi;
             }
@@ -1077,7 +1076,7 @@ namespace AdminShellNS
                     return;
 
                 foreach (var k in src)
-                    value.Add("" + k?.value);
+                    value.Add(new Identifier("" + k?.value));
             }
 
             public GlobalReference(List<AasxCompatibilityModels.AdminShellV20.Key> src)
@@ -1086,7 +1085,7 @@ namespace AdminShellNS
                     return;
 
                 foreach (var k in src)
-                    value.Add("" + k?.value);
+                    value.Add(new Identifier("" + k?.value));
             }
 
             public GlobalReference(AasxCompatibilityModels.AdminShellV10.Reference src)
@@ -1095,7 +1094,7 @@ namespace AdminShellNS
                     return;
 
                 foreach (var k in src.Keys)
-                    value.Add("" + k?.value);
+                    value.Add(new Identifier("" + k?.value));
             }
 
             public GlobalReference(AasxCompatibilityModels.AdminShellV20.Reference src)
@@ -1104,9 +1103,18 @@ namespace AdminShellNS
                     return;
 
                 foreach (var k in src.Keys)
-                    value.Add("" + k?.value);
+                    value.Add(new Identifier("" + k?.value));
             }
 #endif
+
+            public static GlobalReference CreateNew(string id)
+            {
+                if (id == null)
+                    return null;
+                var r = new GlobalReference();
+                r.value.Add(new Identifier(id));
+                return r;
+            }
 
             public static GlobalReference CreateNew(Identifier id)
             {
@@ -1142,13 +1150,13 @@ namespace AdminShellNS
                     return null;
                 var r = new GlobalReference();
                 foreach (var key in mref.Keys)
-                    r.value.Add(key?.value);
+                    r.value.Add(new Identifier(key?.value));
                 return r;
             }
 
             public static GlobalReference CreateIrdiReference(string irdi)
             {
-                return new GlobalReference("" + irdi);
+                return new GlobalReference(new Identifier("" + irdi));
             }
 
             // Matching
@@ -1224,7 +1232,7 @@ namespace AdminShellNS
                     return null;
                 if (strict && value.Count != 1)
                     return null;
-                return value.First().value;
+                return new Identifier(value.First().value);
             }
 
             public Key GetAsExactlyOneKey(string type = null)
@@ -1334,7 +1342,7 @@ namespace AdminShellNS
                     return;
 
                 foreach (var id in src.Value)
-                    keys.Add(new Key("", id));
+                    keys.Add(new Key("", id.value));
             }
 
             public ModelReference(SemanticId src, string type = null)
@@ -1343,7 +1351,7 @@ namespace AdminShellNS
                     type = Key.GlobalReference;
                 if (src != null)
                     foreach (var id in src.Value)
-                        keys.Add(new Key(type, id));
+                        keys.Add(new Key(type, id.value));
             }
 
 #if !DoNotUseAasxCompatibilityModels
@@ -1392,7 +1400,7 @@ namespace AdminShellNS
                 if (id == null)
                     return null;
                 var r = new ModelReference();
-                r.keys.Add(new Key(keyType, id));
+                r.keys.Add(new Key(keyType, id.value));
                 return r;
             }
 
@@ -1402,7 +1410,7 @@ namespace AdminShellNS
                     return null;
                 var r = new ModelReference();
                 foreach (var id in loi)
-                    r.keys.Add(new Key(keyType, id));
+                    r.keys.Add(new Key(keyType, id.value));
                 return r;
             }
 
@@ -1773,7 +1781,7 @@ namespace AdminShellNS
                 if (key == null)
                     return null;
                 var res = new SemanticId();
-                res.Value.Add(key?.value);
+                res.Value.Add(new Identifier(key?.value));
                 return res;
             }
 
@@ -1783,7 +1791,7 @@ namespace AdminShellNS
                     return null;
                 var res = new SemanticId();
                 foreach (var k in keys)
-                    res.Value.Add(k?.value);
+                    res.Value.Add(new Identifier(k?.value));
                 return res;
             }
 

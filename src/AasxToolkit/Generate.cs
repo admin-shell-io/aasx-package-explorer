@@ -117,7 +117,7 @@ namespace AasxToolkit
 
                 // ASSET
                 var asset1 = new AdminShell.AssetInformation("Asset_3s7plfdrs35");
-                asset1.SetIdentification("http://example.com/3s7plfdrs35");
+                asset1.SetIdentification(new AdminShell.Identifier("http://example.com/3s7plfdrs35"));
                 asset1.AddDescription("en", "USB Stick");
                 asset1.AddDescription("de", "USB Speichereinheit");
 
@@ -156,7 +156,9 @@ namespace AasxToolkit
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
                 var aas1 = AdminShell.AdministrationShell.CreateNew(
-                    "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
+                    "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "42", "3");
+                aas1.Schluessel.value = "47";
+                aas1.HalloWelt = "Micha";
                 aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(
                     new AdminShell.Key("AssetAdministrationShell",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
@@ -256,7 +258,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "CAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/cad/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/cad/1/1"));
 
             // for each cad file in prefs
             int ndx = 0;
@@ -567,7 +570,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/datasheet/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/datasheet/1/1"));
 
             // CONCEPT: Manufacturer
             using (var cd = AdminShell.ConceptDescription.CreateNew(
@@ -693,7 +697,7 @@ namespace AasxToolkit
                     AdminShell.KeyList.CreateNew(
                         AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
                     new AdminShell.GlobalReference(
-                        "0112/2///61360_4#AAF579"));
+                        new AdminShell.Identifier("0112/2///61360_4#AAF579")));
                 p.valueType = "double";
                 p.value = "23.1";
 
@@ -705,7 +709,7 @@ namespace AasxToolkit
                     AdminShell.KeyList.CreateNew(
                         AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
                     new AdminShell.GlobalReference(
-                        "0112/2///61360_4#AAF573"));
+                        new AdminShell.Identifier("0112/2///61360_4#AAF573")));
                 p2.valueType = "double";
                 p2.value = "23.05";
             }
@@ -742,7 +746,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "VariousItems";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/various/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/various/1/1"));
 
             AdminShell.SubmodelElement sme1, sme2;
 
@@ -840,7 +845,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "BOM-ECAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/BOM/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/BOM/1/1"));
 
             // CONCEPT: electrical plan
 
@@ -985,7 +991,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "BOM-ASSETS";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/BOM/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/BOM/1/1"));
 
             // CONCEPT: Generic asset decomposition
 
@@ -1066,7 +1073,8 @@ namespace AasxToolkit
             var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "EnergyMode";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/energymode/1/1");
+            sub1.semanticId = new AdminShell.SemanticId(
+                new AdminShell.Identifier("http://example.com/id/type/submodel/energymode/1/1"));
 
             // CONCEPT: SetMode
             var theOp = new AdminShell.Operation();

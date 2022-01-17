@@ -1484,6 +1484,12 @@ namespace AdminShellNS
         public class Identifiable : Referable, IGetModelReference
         {
 
+            // test
+            public string HalloWelt = "";
+
+            public Key Schluessel = new Key();
+
+
             // members
 
             // this is complex, because V3.0 made id a simple string

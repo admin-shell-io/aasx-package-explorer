@@ -280,8 +280,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyValueRef(
-                    stack, "id", identifiable, ref identifiable.id.value, null, repo,
+                this.AddKeyValue(
+                    stack, "id", identifiable.id.value, null, repo,
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
