@@ -32,8 +32,19 @@
             <local:FormSubControlSMEBase x:Name="SubControlBase" Grid.Row="0" Grid.Column="1"/>
 
             <TextBlock x:Name="TextBlockIndex" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" FontSize="8" VerticalAlignment="Top" Margin="0,1,4,0" Text="#1"/>
-            <TextBox x:Name="TextBoxValue"  Grid.Row="1" Grid.Column="1" Text="" Margin="2" Visibility="Visible" VerticalContentAlignment="Center"/>
-            <ComboBox x:Name="ComboBoxValue" Grid.Row="1" Grid.Column="1" Text="" Background="LightGray" Margin="2" Visibility="Hidden"/>
+            <Grid Grid.Row="1" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="TextBoxValue" Grid.Row="0" Grid.Column="0"  Text="" Margin="2" Visibility="Visible" VerticalContentAlignment="Center"/>
+                <ComboBox x:Name="ComboBoxValue" Grid.Row="0" Grid.Column="0" Text="" Background="LightGray" Margin="2" Visibility="Hidden"/>
+                <Button x:Name="ButtonOption" Grid.Row="0" Grid.Column="1" Content="Test" Visibility="Collapsed"
+                        Margin="2" Padding="2,0,2,0"/>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>

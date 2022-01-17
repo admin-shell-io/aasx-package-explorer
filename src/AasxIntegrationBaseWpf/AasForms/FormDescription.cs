@@ -101,6 +101,12 @@ namespace AasxIntegrationBase.AasForms
         [JsonProperty(Order = 8)]
         public AdminShell.Key KeySemanticId = new AdminShell.Key();
 
+        /// <summary>
+        /// Preset for Referable.category. Always required
+        /// </summary>
+        [JsonProperty(Order = 9)]
+        public string FormPluginValueCheck = null;
+
         // Constructors
         //=============
 

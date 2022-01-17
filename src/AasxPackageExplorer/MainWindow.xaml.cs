@@ -1350,6 +1350,45 @@ namespace AasxPackageExplorer
                     }
                 }
 
+                // Call another plugin
+                //=======================
+
+                var evCop = evt as AasxIntegrationBase.AasxPluginResultEventCallOtherPlugin;
+                if (evCop != null)
+                {
+                    // try find requested plugin
+                    var pi = Plugins.FindPluginInstance("" + evCop.pluginName);
+                    if (pi == null || !pi.HasAction("" + evCop.actionName))
+                    {
+                        Log.Singleton.Error(
+                            "AasxPluginResultEventCallOtherPlugin(): " +
+                            "cannot find plugin {0} action {1]", evCop.pluginName, evCop.actionName);
+                        return;
+                    }
+
+                    // ok, should be fine!
+                    try
+                    {
+                        var res = pi.InvokeAction(evCop.actionName, evCop.arguments);
+
+                        if (true)
+                        {
+                            // formulate return event
+                            var retev = new AasxIntegrationBase.AasxPluginEventReturnCallOtherPlugin();
+                            retev.sourceEvent = evt;
+                            retev.result = res;
+
+                            // fire back
+                            pluginInstance?.InvokeAction("event-return", retev);
+                        }
+                    } catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, 
+                            $"AasxPluginResultEventCallOtherPlugin() invoke " +
+                            $"plugin {evCop.pluginName} action {evCop.actionName}");
+                    }
+                }
+
                 #endregion
             }
             catch (Exception ex)

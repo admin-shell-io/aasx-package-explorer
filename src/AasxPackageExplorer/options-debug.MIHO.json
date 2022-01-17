@@ -103,7 +103,7 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
       "Args": []
-    }, 
+    },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
       "Args": []
@@ -118,6 +118,10 @@
     },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginCapabilityModel\\bin\\Debug\\net472\\AasxPluginCapabilityModel.dll",
       "Args": []
     },
     {

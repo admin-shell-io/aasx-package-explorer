@@ -112,10 +112,6 @@ namespace AasxIntegrationBase.AasForms
             // attach lambdas for select
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
-                // TEST
-                //// dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
-                //// UpdateDisplay();
-
                 // try find topmost instance
                 var top = FormInstanceHelper.GetTopMostParent(dc.instance);
                 var topBase = top as FormInstanceBase;

@@ -96,6 +96,14 @@ namespace AasxIntegrationBase.AasForms
                         if (q != null && tsme is FormDescProperty)
                             (tsme as FormDescProperty).presetValue = "" + q.value;
 
+                        q = qs?.FindType("PresetCategory");
+                        if (q != null && tsme is FormDescProperty)
+                            (tsme as FormDescProperty).PresetCategory = "" + q.value;
+
+                        q = qs?.FindType("FormPluginValueCheck");
+                        if (q != null && tsme is FormDescProperty)
+                            (tsme as FormDescProperty).FormPluginValueCheck = "" + q.value;
+
                         q = qs?.FindType("PresetMimeType");
                         if (q != null && tsme is FormDescFile)
                             (tsme as FormDescFile).presetMimeType = "" + q.value;

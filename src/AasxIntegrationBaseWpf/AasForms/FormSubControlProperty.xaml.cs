@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -203,6 +204,48 @@ namespace AasxIntegrationBase.AasForms
 
             }
 
+            // additional complication: auxiliary buttons?
+            var auxButtons = EvalAuxButtons(dc);            
+            if (auxButtons.Count == 1)
+            {
+                this.ButtonOption.Visibility = Visibility.Visible;
+                this.ButtonOption.Content = "" + auxButtons[0].Title;
+                this.ButtonOption.Tag = auxButtons[0];
+                this.ButtonOption.Click += (object sender4, RoutedEventArgs e4) =>
+                {
+                    // access
+                    if (!(sender4 is Button btn)
+                        || !(btn?.Tag is AuxButtonTag rec))
+                        return;
+
+                    // try find topmost instance
+                    var top = FormInstanceHelper.GetTopMostParent(dc.instance);
+                    var topBase = top as FormInstanceBase;
+                    if (topBase != null && topBase.outerEventStack != null)
+                    {
+                        // give over to event stack
+                        var ev = new AasxIntegrationBase.AasxPluginResultEventCallOtherPlugin();
+                        ev.pluginName = "" + rec.PluginName;
+                        ev.actionName = "" + rec.ActionName;
+                        ev.arguments = rec.Args;
+                        topBase.outerEventStack.PushEvent(ev);
+
+                        // .. and receive incoming event
+                        topBase.subscribeForNextEventReturn = (revt) =>
+                        {
+                            if (revt is AasxPluginEventReturnCallOtherPlugin rcop 
+                                && rcop.result is AasxPluginResultBaseObject rcopres)
+                            {
+                                if (!UpdateDisplayInCharge)
+                                    dc.instance.Touch();
+                                dc.prop.value = rcopres.strType;
+                                TextBoxValue.Text = dc.prop.value;
+                            }
+                        };
+                    }
+                };
+            }
+
             // then update
             UpdateDisplay();
 
@@ -220,5 +263,61 @@ namespace AasxIntegrationBase.AasForms
             dc.prop.value = ComboBoxValue.Text;
         }
 
+        //
+        // Special functions
+        //
+
+        public class AuxButtonTag
+        {
+            public string Title;
+            public string PluginName;
+            public string ActionName;
+            public object[] Args;
+        }
+
+        protected List<AuxButtonTag> EvalAuxButtons(IndividualDataContext dc)
+        {
+            // access
+            var res = new List<AuxButtonTag>();
+            if (dc == null)
+                return res;
+
+            //var qs = dc?.prop?.GetQualifiers();
+            //if (qs != null)
+            //    foreach (var q in qs.FindAllQualifierType("SMT/PluginValueCheck"))
+            //    {
+            //        // valid?
+            //        if (q?.value.HasContent() != true)
+            //            continue;
+
+            //        // arguments
+            //        var args = Regex.Match(q.value, @"([^|]+)\|([^|]+)\|([^|]+)");
+            //        if (args.Success)
+            //        {
+            //            var title = args.Groups[1].ToString().Trim();
+            //            var plugin = args.Groups[2].ToString().Trim();
+            //            var action = args.Groups[3].ToString().Trim();
+            //        }
+            //    }
+            
+            // ask Form definitions
+            if (dc?.desc?.FormPluginValueCheck.HasContent() == true)
+            {
+                // mis-use category for the moment
+                var args = Regex.Match(dc.desc.FormPluginValueCheck, @"SMT/PluginValueCheck\|([^|]+)\|([^|]+)\|([^|]+)\|([^|]*)");
+                if (args.Success)
+                {
+                    res.Add(new AuxButtonTag()
+                    {
+                        Title = args.Groups[1].ToString().Trim(),
+                        PluginName = args.Groups[2].ToString().Trim(),
+                        ActionName = args.Groups[3].ToString().Trim(),
+                        Args = new object[] { args.Groups[4].ToString().Trim() }
+                    });
+                }
+            }
+
+            return res;
+        }
     }
 }

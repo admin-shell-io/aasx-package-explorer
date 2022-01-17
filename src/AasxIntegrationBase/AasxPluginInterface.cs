@@ -91,6 +91,13 @@ namespace AasxIntegrationBase
         public bool showRepoFiles = false;
     }
 
+    public class AasxPluginResultEventCallOtherPlugin : AasxPluginResultEventBase
+    {
+        public string pluginName;
+        public string actionName;
+        public object[] arguments;
+    }
+
     public class AasxPluginEventReturnBase
     {
         public AasxPluginResultEventBase sourceEvent = null;
@@ -99,6 +106,11 @@ namespace AasxIntegrationBase
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
         public AdminShell.KeyList resultKeys = null;
+    }
+
+    public class AasxPluginEventReturnCallOtherPlugin : AasxPluginEventReturnBase
+    {
+        public object result = null;
     }
 
     public class AasxPluginResultLicense : AasxPluginResultBase
