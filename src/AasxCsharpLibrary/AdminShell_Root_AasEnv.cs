@@ -56,7 +56,7 @@ namespace AdminShellNS
             }
         }
 
-        [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/2/0")]
+        [XmlRoot(ElementName = "aasenv", Namespace = "http://www.admin-shell.io/aas/3/0")]
         public class AdministrationShellEnv : IFindAllReferences, IAasElement, IDiaryData, IRecurseOnReferables
         {
             // diary (as e.g. deleted AASes need to be listed somewhere)
@@ -77,7 +77,7 @@ namespace AdminShellNS
             [XmlAttribute(Namespace = System.Xml.Schema.XmlSchema.InstanceNamespace)]
             [JsonIgnore]
             public string schemaLocation =
-                "http://www.admin-shell.io/aas/2/0 AAS.xsd http://www.admin-shell.io/IEC61360/2/0 IEC61360.xsd";
+                "http://www.admin-shell.io/aas/3/0 AAS.xsd http://www.admin-shell.io/IEC61360/3/0 IEC61360.xsd";
 
             [XmlIgnore] // will be ignored, anyway
             private ListOfAdministrationShells administrationShells = new ListOfAdministrationShells();
@@ -836,8 +836,8 @@ namespace AdminShellNS
                 var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                 var nss = new XmlSerializerNamespaces();
                 nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                nss.Add("aas", "http://www.admin-shell.io/aas/3/0");
+                nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/3/0");
                 serializer.Serialize(s, this, nss);
             }
 
@@ -863,7 +863,7 @@ namespace AdminShellNS
             public AdministrationShellEnv DeserializeFromXmlStream(TextReader reader)
             {
                 XmlSerializer serializer = new XmlSerializer(
-                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
+                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/3/0");
                 var res = serializer.Deserialize(reader) as AdminShell.AdministrationShellEnv;
                 return res;
             }
