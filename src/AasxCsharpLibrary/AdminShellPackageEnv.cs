@@ -518,9 +518,9 @@ namespace AdminShellNS
         {
             var nss = new XmlSerializerNamespaces();
             nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-            nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/2/0");
-            nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
+            nss.Add("aas", "http://www.admin-shell.io/aas/3/0");
+            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/3/0");
+            nss.Add("abac", "http://www.admin-shell.io/aas/abac/3/0");
             return nss;
         }
 
@@ -543,7 +543,10 @@ namespace AdminShellNS
                         // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
                         var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                         var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, _aasEnv, nss);
+
+                        // serializer.Serialize(s, _aasEnv, nss);
+                        serializer.Serialize(s, _aasEnv.AdministrationShells[0].administration /*, nss */);
+
                         s.Flush();
                     }
                     finally
@@ -1002,8 +1005,8 @@ namespace AdminShellNS
                     var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
                     var nss = new XmlSerializerNamespaces();
                     nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-                    nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-                    nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/2/0");
+                    nss.Add("aas", "http://www.admin-shell.io/aas/3/0");
+                    nss.Add("IEC61360", "http://www.admin-shell.io/IEC61360/3/0");
                     serializer.Serialize(s, _aasEnv, nss);
                 }
             }
