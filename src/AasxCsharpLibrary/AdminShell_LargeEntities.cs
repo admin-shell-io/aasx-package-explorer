@@ -459,7 +459,7 @@ namespace AdminShellNS
 #endif
         }
 
-        [XmlRoot(Namespace = "http://www.admin-shell.io/IEC61360/2/0")]
+        [XmlRoot(Namespace = "http://www.admin-shell.io/IEC61360/3/0")]
         public class DataSpecificationIEC61360
         {
             // static member
@@ -618,13 +618,13 @@ namespace AdminShellNS
             {
                 return Key.CreateNew(
                             "GlobalReference",
-                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
+                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0");
             }
 
             public static Identifier GetIdentifier()
             {
                 return new Identifier(
-                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
+                            "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0");
             }
 
             // validation

@@ -3165,10 +3165,8 @@ namespace AasxPackageLogic
                                     maxWidth: 1400,
                                     text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
-                                if (!uc.Result)
-                                {
+                                if (!this.context.StartFlyoverModal(uc))
                                     return new AnyUiLambdaActionNone();
-                                }
 
                                 var ptd = "/aasx/";
                                 var ptfn = uc.Text.Trim();
