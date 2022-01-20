@@ -353,7 +353,8 @@ namespace AasxPackageExplorer
                 else if (entity is VisualElementAsset veas)
                 {
                     _helper.DisplayOrEditAasEntityAsset(
-                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
+                        packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
+                        editMode, repo, stack, hintMode: hintMode);
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
@@ -394,24 +395,6 @@ namespace AasxPackageExplorer
                         packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
-                }
-                else if (entity is VisualElementView vevw)
-                {
-                    if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
-                        _helper.DisplayOrEditAasEntityView(
-                            packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
-                            hintMode: hintMode);
-                    else
-                        _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
-                }
-                else if (entity is VisualElementReference verf)
-                {
-                    if (verf.Parent != null && verf.Parent is VisualElementView xpev)
-                        _helper.DisplayOrEditAasEntityViewReference(
-                            packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
-                            editMode, stack);
-                    else
-                        _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
                 }
                 else
                 if (entity is VisualElementSupplementalFile vesf)

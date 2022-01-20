@@ -73,7 +73,7 @@ namespace AasxFormatCst
 
             foreach (var cd in cds)
             {
-                var si = cd?.identification?.id;
+                var si = cd?.id?.value;
                 if (si != null)
                 {
                     var item = new CstIdDictionaryItem()

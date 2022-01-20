@@ -50,15 +50,26 @@ namespace AasxIntegrationBase.AasForms
                     OnPropertyChanged("InfoReference");
                 }
             }
+
             public string InfoReference
             {
                 get
                 {
-                    if (storedReference == null)
-                        return "(no reference set)";
-                    if (storedReference.Count < 1)
-                        return "(no Keys)";
-                    return storedReference.ToString(format: 1, delimiter: Environment.NewLine);
+                    if (storedReference is AdminShell.ModelReference modrf)
+                    {
+                        if (modrf.Count < 1)
+                            return "(no Keys)";
+                        return modrf.ToString(format: 1, delimiter: Environment.NewLine);
+                    }
+
+                    if (storedReference is AdminShell.GlobalReference glbrf)
+                    {
+                        if (glbrf.Count < 1)
+                            return "(no Keys)";
+                        return glbrf.ToString(format: 1, delimiter: Environment.NewLine);
+                    }
+
+                    return "(no reference set)";
                 }
             }
         }
@@ -69,14 +80,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceReferenceElement instance;
             public FormDescReferenceElement desc;
-            public AdminShell.ReferenceElement refElem;
+            public AdminShell.ModelReferenceElement refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceReferenceElement;
                 dc.desc = dc.instance?.desc as FormDescReferenceElement;
-                dc.refElem = dc.instance?.sme as AdminShell.ReferenceElement;
+                dc.refElem = dc.instance?.sme as AdminShell.ModelReferenceElement;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;
@@ -113,7 +124,7 @@ namespace AasxIntegrationBase.AasForms
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
                 // TEST
-                //// dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
+                //// dc.refElem.value = new AdminShell.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
                 //// UpdateDisplay();
 
                 // try find topmost instance
@@ -134,7 +145,7 @@ namespace AasxIntegrationBase.AasForms
                         if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                         {
                             dc.instance.Touch();
-                            dc.refElem.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                            dc.refElem.value = AdminShell.ModelReference.CreateNew(rsel.resultKeys);
                             this.theViewModel.StoredReference = dc.refElem.value;
                         }
                     };

@@ -22,7 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using AdminShellNS;
-using static AdminShellNS.AdminShellV20;
+using static AdminShellNS.AdminShellV30;
 
 // TODO (Michael Hoffmeister, 2020-08-01): Fraunhofer IOSB: Check ReSharper settings to be OK
 
@@ -69,8 +69,6 @@ namespace AasxUANodesetImExport
             //Initialize everything needed
             AdminShell.AdministrationShellEnv env = thePackageEnv.AasEnv;
             var aas = new AdminShell.AdministrationShell();
-            aas.views = new Views();
-            aas.views.views = new List<View>();
             env.AdministrationShells.Add(aas);
 
             //search for the root Node
@@ -96,8 +94,7 @@ namespace AasxUANodesetImExport
                                 env.Submodels.Add(submodel);
                                 var smr = new AdminShell.SubmodelRef();
                                 smr.Keys.Add(
-                                    new AdminShell.Key(
-                                        "Submodel", true, submodel.identification.idType, submodel.identification.id));
+                                    new AdminShell.Key("Submodel", submodel.id.value));
                                 aas.submodelRefs.Add(smr);
                             }
 
@@ -108,17 +105,11 @@ namespace AasxUANodesetImExport
                             createConceptDictionary((UAObject)node);
                         }
                         //create Asset
-                        else if (getTypeDefinition(node) == "1:AASAssetType")
-                        {
-                            Asset ass = createAsset(node);
-                            thePackageEnv.AasEnv.Assets.Add(ass);
-
-                        }
-                        //create Views
-                        else if (getTypeDefinition(node) == "1:AASViewType")
-                        {
-                            aas.views.views.Add(createView(node));
-                        }
+                        ////else if (getTypeDefinition(node) == "1:AASAssetType")
+                        ////{
+                        ////    AssetInformation ass = createAsset(node);
+                        ////    thePackageEnv.AasEnv.Assets.Add(ass);
+                        ////}
                         //set DerivedFrom
                         else if (node.BrowseName == "1:DerivedFrom")
                         {
@@ -130,15 +121,10 @@ namespace AasxUANodesetImExport
                         {
                             aas.hasDataSpecification = CreateHasDataSpecification(node);
                         }
-                        //create AssetRef
-                        else if (node.BrowseName == "1:AssetRef")
-                        {
-                            aas.assetRef = createAssetRef(node);
-                        }
                         else if (node.BrowseName == "1:Identification" &&
                                 getTypeDefinition(node) == "1:AASIdentifierType")
                         {
-                            aas.identification = createIdentification(node);
+                            aas.id = createIdentification(node);
                         }
 
                     }
@@ -172,7 +158,7 @@ namespace AasxUANodesetImExport
             return null;
         }
 
-        private static Identification GetIdentification(UANode submodel)
+        private static Identifier GetIdentification(UANode submodel)
         {
             //AASIdentifiable
             //  -> AASIdentifierType
@@ -187,7 +173,7 @@ namespace AasxUANodesetImExport
                     iden = findNode(_ref.Value);
             }
 
-            Identification identification = new Identification();
+            Identifier identification = new Identifier();
             foreach (Reference _ref in iden.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -200,8 +186,7 @@ namespace AasxUANodesetImExport
                             if (_refref.ReferenceType == "HasProperty")
                             {
                                 UAVariable node = (UAVariable)findNode(_refref.Value);
-                                if (node.BrowseName == "1:Id") identification.id = node.Value.InnerText;
-                                if (node.BrowseName == "1:IdType") identification.idType = node.Value.InnerText;
+                                if (node.BrowseName == "1:Id") identification.value = node.Value.InnerText;
                             }
                         }
                     }
@@ -222,8 +207,8 @@ namespace AasxUANodesetImExport
             if (isSubmodel(submodel))
             {
                 //set Submodelparameters
-                Identification iden = GetIdentification(submodel);
-                Submodel sub = Submodel.CreateNew(iden.idType, iden.id);
+                Identifier iden = GetIdentification(submodel);
+                Submodel sub = Submodel.CreateNew("", iden.value);
                 sub.idShort = makePretty(submodel.BrowseName);
                 sub.kind = getKind(submodel);
 
@@ -329,7 +314,7 @@ namespace AasxUANodesetImExport
             return cat;
         }
 
-        private static AdminShellV20.ModelingKind getKind(UANode node)
+        private static AdminShell.ModelingKind getKind(UANode node)
         {
             //Parent (node)
             // -> Kind (Property)
@@ -405,14 +390,14 @@ namespace AasxUANodesetImExport
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
+                            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
+
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)
                             {
                                 case "1:IdType":
-                                    _key.idType = value.Value.InnerText;
                                     break;
                                 case "1:Local":
-                                    _key.local = bool.Parse(value.Value.InnerText);
                                     break;
                                 case "1:Type":
                                     _key.type = value.Value.InnerText;
@@ -438,30 +423,29 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     UAVariable key = (UAVariable)findNode(_ref.Value);
-                    Key _key = new Key();
+                    Identifier newid = new Identifier();
                     foreach (Reference _InnerRef in key.References)
                     {
                         if (_InnerRef.ReferenceType != "HasTypeDefinition")
                         {
+                            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
+
                             UAVariable value = (UAVariable)findNode(_InnerRef.Value);
                             switch (value.BrowseName)
                             {
                                 case "1:IdType":
-                                    _key.idType = value.Value.InnerText;
                                     break;
                                 case "1:Local":
-                                    _key.local = bool.Parse(value.Value.InnerText);
                                     break;
                                 case "1:Type":
-                                    _key.type = value.Value.InnerText;
                                     break;
                                 case "1:Value":
-                                    _key.value = value.Value.InnerText;
+                                    newid.value = value.Value.InnerText;
                                     break;
                             }
                         }
                     }
-                    sub.semanticId.Keys.Add(_key);
+                    sub.semanticId.Value.Add(newid);
                 }
             }
         }
@@ -476,28 +460,24 @@ namespace AasxUANodesetImExport
             return kind;
         }
 
-        private static AdminShellV20.Reference createReference(string val)
+        private static AdminShell.ModelReference createReference(string val)
         {
-            //Refereces are saved as Strings: [type,local,idtype,value]
-
-
-            AdminShellV20.Reference reference = new AdminShellV20.Reference();
+            // Refereces are saved as Strings: [type, value]
+            AdminShell.ModelReference reference = new AdminShell.ModelReference();
             //convert String to an actual Reference
             var mep = val.Split(',');
-            if (mep.Length == 4)
+            if (mep.Length == 2)
             {
                 string type = mep[0].Trim().TrimStart('[');
-                bool local = (mep[1].Trim() == "not Local") ? false : true;
-                string idType = mep[2].Trim();
-                string value = mep[3].Trim().TrimEnd(']');
-                reference = AdminShellV20.Reference.CreateNew(type, local, idType, value);
+                string value = mep[1].Trim().TrimEnd(']');
+                reference = AdminShell.ModelReference.CreateNew(type, value);
             }
             return reference;
         }
 
         //Create Submodel Elements
 
-        private static AdminShellV20.SubmodelElementWrapper createSubmodelElement(UANode node)
+        private static AdminShell.SubmodelElementWrapper createSubmodelElement(UANode node)
         {
             //Parent (node)
             //  -> SemanticId
@@ -506,7 +486,7 @@ namespace AasxUANodesetImExport
             //  -> Kind (Property)
             //  -> DataNode (Same name as Type)
 
-            AdminShellV20.SubmodelElementWrapper wrapper = new AdminShellV20.SubmodelElementWrapper();
+            AdminShell.SubmodelElementWrapper wrapper = new AdminShell.SubmodelElementWrapper();
             wrapper.submodelElement = new SubmodelElement();
             List<Key> keys = new List<Key>();
             QualifierCollection quals = new QualifierCollection();
@@ -570,7 +550,7 @@ namespace AasxUANodesetImExport
             }
         }
 
-        private static AdminShellV20.Property setPropertyType(UANode node)
+        private static AdminShell.Property setPropertyType(UANode node)
         {
             //Property
             //  -> Value
@@ -584,7 +564,8 @@ namespace AasxUANodesetImExport
                 {
                     var var = (UAVariable)findNode(_ref.Value);
                     if (var.BrowseName == "1:Value") prop.value = var.Value.InnerText; prop.valueType = var.DataType;
-                    if (var.BrowseName == "1:ValueId") prop.valueId = createReference(var.Value.InnerText);
+                    if (var.BrowseName == "1:ValueId") prop.valueId =
+                        AdminShell.GlobalReference.CreateNew(createReference(var.Value.InnerText));
                 }
             }
             return prop;
@@ -595,7 +576,9 @@ namespace AasxUANodesetImExport
             //ReferenceElement
             //  -> Value
 
-            ReferenceElement refEle = new ReferenceElement();
+            // TODO (MIHO/FhG, 2022-01-08): split between model / global references?
+
+            ModelReferenceElement refEle = new ModelReferenceElement();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -727,7 +710,7 @@ namespace AasxUANodesetImExport
 
             ConceptDescription desc = new ConceptDescription();
             Administration admin = new Administration();
-            Identification iden = new Identification();
+            Identifier iden = new Identifier();
 
             var esc = EmbeddedDataSpecification.CreateIEC61360WithContent();
             esc.dataSpecificationContent.dataSpecificationIEC61360.shortName =
@@ -769,7 +752,7 @@ namespace AasxUANodesetImExport
                 }
             }
 
-            desc.identification = iden;
+            desc.id = iden;
             desc.administration = admin;
             return desc;
         }
@@ -825,20 +808,19 @@ namespace AasxUANodesetImExport
                 "URI", "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0");
         }
 
-        private static Identification createIdentification(UANode node)
+        private static Identifier createIdentification(UANode node)
         {
             //Identification
             //  -> Id
             //  -> IdType
 
-            Identification iden = new Identification();
+            Identifier iden = new Identifier();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     var val = (UAVariable)findNode(_ref.Value);
-                    if (val.BrowseName == "1:Id") iden.id = val.Value.InnerText;
-                    if (val.BrowseName == "1:IdType") iden.idType = val.Value.InnerText;
+                    if (val.BrowseName == "1:Id") iden.value = val.Value.InnerText;
                 }
 
             }
@@ -866,15 +848,14 @@ namespace AasxUANodesetImExport
 
         //Create Asset
 
-        private static Asset createAsset(UANode node)
+        private static AssetInformation createAsset(UANode node)
         {
             //Asset (node)
             //  -> AASIdentifiable (var)
             //  -> ModellingKind (var)
             //  -> AASReferable (var)
 
-            Asset asset = new Asset();
-            asset.idShort = makePretty(node.BrowseName);
+            AssetInformation asset = new AssetInformation();
             foreach (Reference _ref in node.References)
             {
                 if (_ref.ReferenceType != "HasTypeDefinition")
@@ -883,7 +864,7 @@ namespace AasxUANodesetImExport
                     if (getTypeDefinition(var) == "1:IAASIdentifiableType") setIdentifiable(asset, var);
                     if (getTypeDefinition(var) == "1:AASModelingKindDataType")
                     {
-                        asset.kind = new AssetKind(); asset.kind.kind = createKind(_ref.Value).kind;
+                        asset.assetKind = new AssetKind(); asset.assetKind.kind = createKind(_ref.Value).kind;
                     }
                     if (getTypeDefinition(var) == "1:IAASReferableType") setReferable(asset, var);
                 }
@@ -891,7 +872,7 @@ namespace AasxUANodesetImExport
             return asset;
         }
 
-        private static void setIdentifiable(Asset asset, UANode node)
+        private static void setIdentifiable(AssetInformation asset, UANode node)
         {
             //AASIdentifiable (node)
             //  -> AASAdministrativeInformationType (var)
@@ -902,40 +883,38 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     UANode var = findNode(_ref.Value);
-                    if (getTypeDefinition(var) == "1:AASAdministrativeInformationType")
-                        asset.administration = createAdmninistration(var);
 
                     if (getTypeDefinition(var) == "1:AASIdentifierType")
-                        asset.identification = createIdentification(var);
+                        asset.SetIdentification(createIdentification(var));
                 }
             }
         }
 
-        private static void setReferable(Asset asset, UANode node)
+        private static void setReferable(AssetInformation asset, UANode node)
         {
             //AASReferable (node)
             //  -> Category (var)
             //  -> Description (var)
 
-            asset.description = new Description();
-            asset.description.langString = new ListOfLangStr();
+            ////asset.description = new Description();
+            ////asset.description.langString = new ListOfLangStr();
 
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    UANode var = findNode(_ref.Value);
-                    if (var.BrowseName == "1:Category")
-                    {
-                        var temp = (UAVariable)var;
-                        asset.category = temp.Value.InnerText;
-                    }
-                    else if (var.BrowseName == "1:Description")
-                    {
-                        asset.description.langString = getDescription(var);
-                    }
-                }
-            }
+            ////foreach (Reference _ref in node.References)
+            ////{
+            ////    if (_ref.ReferenceType != "HasTypeDefinition")
+            ////    {
+            ////        UANode var = findNode(_ref.Value);
+            ////        if (var.BrowseName == "1:Category")
+            ////        {
+            ////            var temp = (UAVariable)var;
+            ////            asset.category = temp.Value.InnerText;
+            ////        }
+            ////        else if (var.BrowseName == "1:Description")
+            ////        {
+            ////            asset.description.langString = getDescription(var);
+            ////        }
+            ////    }
+            ////}
         }
 
         private static ListOfLangStr getDescription(UANode node)
@@ -980,20 +959,22 @@ namespace AasxUANodesetImExport
                 if (_ref.ReferenceType != "HasTypeDefinition")
                 {
                     data.Add(
-                        new EmbeddedDataSpecification(createReference(findNode(_ref.Value))));
+                        new EmbeddedDataSpecification(
+                                AdminShell.GlobalReference.CreateNew(
+                                    createReference(findNode(_ref.Value)))));
                 }
             }
             return data;
         }
 
-        private static AdminShellV20.Reference createReference(UANode node)
+        private static AdminShell.ModelReference createReference(UANode node)
         {
             //Reference (node)
             //  -> Key (multiple)
 
             List<Key> keys = new List<Key>();
             keys = addSemanticID(node);
-            AdminShellV20.Reference refe = AdminShellV20.Reference.CreateNew(keys);
+            AdminShell.ModelReference refe = AdminShell.ModelReference.CreateNew(keys);
             return refe;
         }
 
@@ -1007,49 +988,10 @@ namespace AasxUANodesetImExport
             var keys = addSemanticID(node);
             foreach (Key key in keys)
             {
-                ass.Keys.Add(key);
+                ass.Value.Add(key?.value);
             }
             return ass;
         }
-
-        //Create Views
-
-        private static Views createViews(UANode node)
-        {
-            //
-
-            Views views = new AdminShellV20.Views();
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    views.views.Add(createView(findNode(_ref.Value)));
-                }
-            }
-
-            return views;
-        }
-
-        private static View createView(UANode node)
-        {
-            //View (node)
-            //  -> ContainedElementRef 
-            //      -> Key (multiple)
-
-            View view = new View();
-            view.idShort = makePretty(node.BrowseName);
-
-            foreach (Reference _ref in node.References)
-            {
-                if (_ref.ReferenceType != "HasTypeDefinition")
-                {
-                    view.AddContainedElement(addSemanticID(findNode(_ref.Value)));
-                }
-            }
-
-            return view;
-        }
-
 
         private static string makePretty(string str)
         {

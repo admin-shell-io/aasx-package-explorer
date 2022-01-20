@@ -143,7 +143,7 @@ namespace AasxPackageExplorer
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
                                     using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                        "" + attribute_label_id, AdminShell.Identification.IRDI, FT_ID))
+                                        "" + attribute_label_id, AdminShell.Identifier.IRDI, FT_ID))
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -156,7 +156,7 @@ namespace AasxPackageExplorer
 
                                         var p = AdminShell.Property.CreateNew(
                                             cd.GetDefaultShortName(), "PARAMETER",
-                                            AdminShell.Key.GetFromRef(cd.GetCdReference()));
+                                            cd.GetSemanticId());
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -315,7 +315,7 @@ namespace AasxPackageExplorer
                                             }
 
                                             using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                               "" + extendedname, AdminShell.Identification.IRDI, FT_ID))
+                                               "" + extendedname, AdminShell.Identifier.IRDI, FT_ID))
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
@@ -328,7 +328,7 @@ namespace AasxPackageExplorer
 
                                                 var p = AdminShell.Property.CreateNew(
                                                     cd.GetDefaultShortName(), "PARAMETER",
-                                                    AdminShell.Key.GetFromRef(cd.GetCdReference()));
+                                                    cd.GetSemanticId());
                                                 p.valueType = "double";
                                                 p.value = FVALUE[k];
 

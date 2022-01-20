@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using AasxPackageLogic;
+using AdminShellNS;
 
 namespace AasxPackageExplorer
 {
@@ -43,7 +44,9 @@ namespace AasxPackageExplorer
                 "Copyright (c) 2018-2021 Festo AG & Co. KG and further (see below)\n" +
                 "Authors: " + _pref.Authors + " (see below)\n" +
                 "This software is licensed under the Apache License 2.0 (see below)" + "\n" +
-                "Version: " + _pref.Version + "\n" +
+                "Version: " + _pref.Version
+                    + " meta model: " + AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine
+                    + "\n" +
                 "Build date: " + _pref.BuildDate;
 
             this.InfoBox.Text = "[AasxPackageExplorer]" + Environment.NewLine + _pref.LicenseLong;

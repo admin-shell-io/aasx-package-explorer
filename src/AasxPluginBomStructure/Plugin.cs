@@ -45,10 +45,23 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try load defaults options from assy directory
             try
             {
+                // this plugin can read OLD options (using the meta-model V2.0.1)
+                var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
+                upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
+                {
+                    Info = "AAS2.0.1",
+                    Trigger = @"""local""",
+                    OldRootType = typeof(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20),
+                    Replacements = null,
+                    UpgradeLambda = (old) => new AasxPluginBomStructure.BomStructureOptions(
+                        old as AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20)
+                });
+
+                // read options?
                 var newOpt =
                     AasxPluginOptionsBase
                         .LoadDefaultOptionsFromAssemblyDir<AasxPluginBomStructure.BomStructureOptions>(
-                            this.GetPluginName(), Assembly.GetExecutingAssembly());
+                            this.GetPluginName(), Assembly.GetExecutingAssembly(), null, Log, upgrades.ToArray());
                 if (newOpt != null)
                     this._options = newOpt;
             }

@@ -402,9 +402,8 @@ namespace AasxPackageExplorer
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
-                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
-                    AdminShell.Key.MatchMode.Relaxed);
+                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ModelReferenceElement>(
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSemanticId());
                 if (navTo?.value == null)
                     continue;
 
@@ -557,19 +556,18 @@ namespace AasxPackageExplorer
 
                 // what is AAS specific?
                 this.AasId.Text = WpfStringAddWrapChars(
-                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.identification.id, "<id missing!>"));
+                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.id.value, "<id missing!>"));
 
                 // what is asset specific?
                 this.AssetPic.Source = null;
                 this.AssetId.Text = "<id missing!>";
-                var asset = tvlaas.theEnv.FindAsset(tvlaas.theAas.assetRef);
+                var asset = tvlaas.theAas.assetInformation;
                 if (asset != null)
                 {
-
                     // text id
-                    if (asset.identification != null)
+                    if (asset.globalAssetId != null)
                         this.AssetId.Text = WpfStringAddWrapChars(
-                            AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
+                            AdminShellUtil.EvalToNonNullString("{0}", asset.globalAssetId.GetAsIdentifier()));
 
                     // asset thumbnail
                     try
@@ -652,6 +650,11 @@ namespace AasxPackageExplorer
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // version logging
+            Log.Singleton.Info("Binary version: {0}", _pref.Version);
+            Log.Singleton.Info("Meta model version: {0}",
+                AdminShell.MetaModelVersionCoarse + AdminShell.MetaModelVersionFine);
+
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
@@ -1037,11 +1040,11 @@ namespace AasxPackageExplorer
             if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
             {
                 // do some more adoptions
-                var rf = new AdminShell.Reference(tempNavTo.targetReference);
+                var rf = new AdminShell.ModelReference(tempNavTo.targetReference);
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Count == 1
-                    && rf.First.IsType(AdminShell.Key.Asset))
+                    && rf.First.IsType(AdminShell.Key.AssetInformation))
                 {
                     // try to find possible environments containg the asset and try making
                     // replacement
@@ -1051,9 +1054,9 @@ namespace AasxPackageExplorer
                             continue;
 
                         foreach (var aas in pe.AasEnv.AdministrationShells)
-                            if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                            if (aas.assetInformation?.globalAssetId?.Matches(rf) == true)
                             {
-                                rf = aas.GetReference();
+                                rf = aas.GetModelReference();
                                 break;
                             }
                     }
@@ -1107,7 +1110,7 @@ namespace AasxPackageExplorer
         }
 
         private async Task<AdminShell.Referable> LoadFromFileRepository(PackageContainerRepoItem fi,
-            AdminShell.Reference requireReferable = null)
+            AdminShell.ModelReference requireReferable = null)
         {
             // access single file repo
             var fileRepo = _packageCentral.Repositories.FindRepository(fi);
@@ -1180,7 +1183,7 @@ namespace AasxPackageExplorer
         }
 
         private async Task UiHandleNavigateTo(
-            AdminShell.Reference targetReference,
+            AdminShell.ModelReference targetReference,
             bool alsoDereferenceObjects = true)
         {
             // access
@@ -1189,7 +1192,7 @@ namespace AasxPackageExplorer
 
             // make a copy of the Reference for searching
             VisualElementGeneric veFound = null;
-            var work = new AdminShell.Reference(targetReference);
+            var work = new AdminShell.ModelReference(targetReference);
 
             try
             {
@@ -1218,7 +1221,7 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
+                        if (work[0].type.Trim().ToLower() == AdminShell.Key.AssetInformation.ToLower())
                             fi = _packageCentral.Repositories.FindByAssetId(work[0].value.Trim());
                         if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
                             fi = _packageCentral.Repositories.FindByAasId(work[0].value.Trim());
@@ -1484,8 +1487,7 @@ namespace AasxPackageExplorer
 
                     // some special cases
                     if (true == refEv.observed?.Matches(
-                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV",
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AdminShell.Key.GlobalReference, "AASENV"))
                     {
                         observable = env;
                     }
@@ -1573,7 +1575,7 @@ namespace AasxPackageExplorer
                     // send event
                     var ev = new AasEventMsgEnvelope(
                         DateTime.UtcNow,
-                        source: refEv.GetReference(),
+                        source: refEv.GetModelReference(),
                         sourceSemanticId: refEv.semanticId,
                         observableReference: refEv.observed,
                         observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
@@ -1640,8 +1642,7 @@ namespace AasxPackageExplorer
                         // check, if the Submodel has interesting events
                         foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
                             (true == x?.semanticId?.Matches(
-                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                                AdminShellV20.Key.MatchMode.Relaxed))))
+                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards))))
                         {
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
@@ -1650,7 +1651,7 @@ namespace AasxPackageExplorer
                             // no, klSelected shall lie in klObserved
                             if (klObserved != null && klSelected != null &&
                                 klSelected.StartsWith(klObserved,
-                                emptyIsTrue: false, matchMode: AdminShellV20.Key.MatchMode.Relaxed))
+                                emptyIsTrue: false))
                             {
                                 // take a shortcut
                                 if (_packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
@@ -1903,17 +1904,17 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.id != null
+                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.value != null
                     && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.value.Trim());
                     if (fi == null)
                     {
                         Log.Singleton.Error(
-                            $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
+                            $"Cannot lookup aas id {hi.ReferableAasId.value} in file repository.");
                         return;
                     }
 
@@ -1929,7 +1930,7 @@ namespace AasxPackageExplorer
                     catch (Exception ex)
                     {
                         Log.Singleton.Error(
-                            ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
+                            ex, $"While retrieving file for {hi.ReferableAasId.value} from file repository");
                     }
 
                     // still proceed?

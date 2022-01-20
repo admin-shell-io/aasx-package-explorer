@@ -322,12 +322,11 @@ namespace AasxPluginExportTable
             {
                 if (ifi == null)
                     return;
-                if (ifi.identification != null)
+                if (ifi.id != null)
                 {
                     //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", "[" + ifi.identification.idType + "]" + ifi.identification.id);
-                    rep(head + "identification.idType", "" + ifi.identification.idType);
-                    rep(head + "identification.id", "" + ifi.identification.id);
+                    rep(head + "identification", "" + ifi.id.value);
+                    rep(head + "identification.id", "" + ifi.id.value);
                 }
                 if (ifi.administration != null)
                 {
@@ -336,7 +335,7 @@ namespace AasxPluginExportTable
                 }
             }
 
-            private void repReference(string head, string refName, AdminShell.Reference rid)
+            private void repReference(string head, string refName, AdminShell.ModelReference rid)
             {
                 if (rid == null || refName == null || rid.Keys == null)
                     return;
@@ -357,8 +356,31 @@ namespace AasxPluginExportTable
                         // but also in separate parts
                         //-9- {Reference}[0..n].{type, local, idType, value}
                         rep(head + refName + $"[{ki}].type", "" + k.type);
-                        rep(head + refName + $"[{ki}].local", (!k.local) ? "no-local" : "local");
-                        rep(head + refName + $"[{ki}].idType", "" + k.idType);
+                        rep(head + refName + $"[{ki}].value", "" + k.value);
+                    }
+                }
+            }
+
+            private void repReference(string head, string refName, AdminShell.GlobalReference rid)
+            {
+                if (rid == null || refName == null || rid.Value == null)
+                    return;
+
+                // add together
+                //-9- {Reference}
+                rep(head + refName + "", "" + rid.ToString(1));
+
+                // add the single parts of the sid
+                for (int ki = 0; ki < rid.Value.Count; ki++)
+                {
+                    var k = rid.Value[ki];
+                    if (k != null)
+                    {
+                        // in nice form
+                        //-9- {Reference}[0..n]
+                        rep(head + refName + $"[{ki}]", "" + k.ToString());
+                        // but also in separate parts
+                        //-9- {Reference}[0..n].{type, local, idType, value}
                         rep(head + refName + $"[{ki}].value", "" + k.value);
                     }
                 }
@@ -495,13 +517,18 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + f.value);
                         }
 
-                        if (sme is AdminShell.ReferenceElement)
+                        if (sme is AdminShell.ModelReferenceElement mre)
                         {
-                            var re = sme as AdminShell.ReferenceElement;
                             //-2- ReferenceElement.value
-                            rep("ReferenceElement.value", "" + re.value?.ToString(1));
+                            rep("ModelReferenceElement.value", "" + mre.value?.ToString(1));
+                            rep("SME.value", "" + mre.value?.ToString(1));
+                        }
 
-                            rep("SME.value", "" + re.value?.ToString(1));
+                        if (sme is AdminShell.GlobalReferenceElement gre)
+                        {
+                            //-2- ReferenceElement.value
+                            rep("GlobalReferenceElement.value", "" + gre.value?.ToString(1));
+                            rep("SME.value", "" + gre.value?.ToString(1));
                         }
 
                         if (sme is AdminShell.RelationshipElement)
@@ -557,7 +584,7 @@ namespace AasxPluginExportTable
                             repListOfLangStr(head + "preferredName", iec.preferredName);
                             repListOfLangStr(head + "shortName", iec.shortName);
                             rep(head + "unit", "" + iec.unit);
-                            repReference(head, "unitId", AdminShell.Reference.CreateNew(iec.unitId?.Keys));
+                            repReference(head, "unitId", iec.unitId);
                             rep(head + "sourceOfDefinition", "" + iec.sourceOfDefinition);
                             rep(head + "symbol", "" + iec.symbol);
                             rep(head + "dataType", "" + iec.dataType);

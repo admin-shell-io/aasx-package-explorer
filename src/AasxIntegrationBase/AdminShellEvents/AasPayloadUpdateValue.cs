@@ -47,7 +47,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// ValueId of the update element.
         /// </summary>
-        public AdminShell.Reference ValueId { get; set; }
+        public AdminShell.GlobalReference ValueId { get; set; }
 
         /// <summary>
         /// Direct reference to Referable, when value item was successfully processed.
@@ -63,7 +63,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AasPayloadUpdateValueItem(
             AdminShell.KeyList path = null,
             string value = null,
-            AdminShell.Reference valueId = null)
+            AdminShell.GlobalReference valueId = null)
         {
             Path = path;
             Value = value;

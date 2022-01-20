@@ -47,18 +47,38 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // need special settings
                 var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase),
+                    typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
+                    typeof(AasxCompatibilityModels.AdminShellV20) });
+
+                // this plugin can read OLD options (using the meta-model V2.0.1)
+                var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
+                upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
+                {
+                    Info = "AAS2.0.1",
+                    Trigger = "AdminShellNS.AdminShellV20+",
+                    OldRootType = typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
+                    Replacements = new Dictionary<string, string>()
+                    {
+                        { "AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+" }
+                    },
+                    UpgradeLambda = (old) => new AasxPluginGenericForms.GenericFormOptions(
+                        old as AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20)
+                });
 
                 // base options
-                var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
+                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
+                        this.Log, upgrades.ToArray());
                 if (newOpt != null)
                     this.options = newOpt;
 
                 // try find additional options
-                this.options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, this.Log);
+                this.options.TryLoadAdditionalOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
+                        this.Log, upgrades.ToArray());
             }
             catch (Exception ex)
             {
@@ -159,6 +179,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         new[] {
                             typeof(AasxPluginGenericForms.GenericFormOptions),
                             typeof(AasForms.FormDescBase) });
+                    settings.Formatting = Formatting.Indented;
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(
                         this.options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
                     return new AasxPluginResultBaseObject("OK", json);

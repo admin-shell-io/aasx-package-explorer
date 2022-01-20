@@ -170,7 +170,7 @@ namespace AasxPluginKnownSubmodels
                     }
 #else
                 foreach (var rec in _options.LookupAllIndexKey<KnownSubmodelsOptionsRecord>(
-                    _submodel?.semanticId?.GetAsExactlyOneKey()))
+                    _submodel?.semanticId?.GetAsIdentifier()))
                     _viewModel.Add(new KnownSubmodelViewItem(rec, basePath));
 #endif
 

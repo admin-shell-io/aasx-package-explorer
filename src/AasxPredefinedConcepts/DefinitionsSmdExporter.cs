@@ -37,11 +37,7 @@ namespace AasxPredefinedConcepts
 
             // Referable
             SEM_SmdExporterSubmodel = new AdminShell.SemanticId(
-                AdminShell.Key.CreateNew(
-                    type: "Submodel",
-                    local: false,
-                    idType: "IRI",
-                    value: "http://admin-shell.io/aasx-package-explorer/plugins/SmdExporter/Submodel/1/0"));
+                "http://admin-shell.io/aasx-package-explorer/plugins/SmdExporter/Submodel/1/0");
 
             // dummy .. to be replaced later
             CD_Dummy = CreateSparseConceptDescription("en", "IRI",

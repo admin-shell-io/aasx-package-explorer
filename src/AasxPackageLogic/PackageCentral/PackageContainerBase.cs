@@ -456,7 +456,7 @@ namespace AasxPackageLogic.PackageCentral
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
                                 var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
+                                    wrappers, AdminShell.ModelReference.CreateNew(vl.Path), keyIndex: 0);
                                 if (x is AdminShell.Property fpp)
                                     smeToModify = fpp;
                             }

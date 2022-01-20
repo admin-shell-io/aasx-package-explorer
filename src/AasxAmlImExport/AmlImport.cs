@@ -63,25 +63,6 @@ namespace AasxAmlImExport
             private MultiValueDictionary<string, TargetIdAction> registerForInternalLinks =
                     new MultiValueDictionary<string, TargetIdAction>();
 
-            private class IeViewAmlTarget
-            {
-                public InternalElementType Ie;
-                public AdminShell.View View;
-                public CAEXObject AmlTarget;
-
-                public IeViewAmlTarget(InternalElementType ie, AdminShellV20.View view, CAEXObject amlTarget)
-                {
-                    Ie = ie;
-                    View = view;
-                    AmlTarget = amlTarget;
-                }
-            }
-
-            /// <summary>
-            /// Remember contained element refs for Views, to be assiciated later with AAS entities
-            /// </summary>
-            private List<IeViewAmlTarget> latePopoulationViews = new List<IeViewAmlTarget>();
-
             /// <summary>
             /// Hold available all IDs of input AML
             /// </summary>
@@ -102,7 +83,7 @@ namespace AasxAmlImExport
                 Console.WriteLine("{0}{1}", new String(' ', 2 * indentation), st);
             }
 
-            public AdminShell.Reference ParseAmlReference(string refstr)
+            public AdminShell.ModelReference ParseAmlReference(string refstr)
             {
                 // trivial
                 if (refstr == null)
@@ -114,11 +95,13 @@ namespace AasxAmlImExport
                     return null;
 
                 // build a Reference
-                var res = new AdminShell.Reference();
+                var res = new AdminShell.ModelReference();
 
                 // over all entries
                 foreach (var rs in refstrs)
                 {
+                    // TODO (MIHO, 2022-01-07): REWORK OLD FORMATS!
+
                     var m = Regex.Match(rs.Trim(), @"^\(([^)]+)\)\s*\(([^)]+)\)\s*\[(\w+)\](.*)$");
                     if (!m.Success)
                         // immediate fail or next try?
@@ -126,17 +109,14 @@ namespace AasxAmlImExport
 
                     // get string data
                     var ke = m.Groups[1].ToString();
-                    var local = m.Groups[2].ToString().Trim().ToLower();
-                    var idtype = m.Groups[3].ToString();
                     var id = m.Groups[4].ToString();
 
                     // verify: ke has to be in allowed range
-                    if (!AdminShell.Key.IsInKeyElements(ke))
+                    if (!AdminShell.Key.IsInNamedElementsList(AdminShell.Key.KeyElements, ke))
                         return null;
-                    var islocal = local == "local";
 
                     // create key and make on refece
-                    var k = new AdminShell.Key(ke, islocal, idtype, id);
+                    var k = new AdminShell.Key(ke, id);
                     res.Keys.Add(k);
                 }
                 return res;
@@ -309,12 +289,12 @@ namespace AasxAmlImExport
                                 type = qt,
                                 value = qv,
                                 semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(sid)?.Keys),
-                                valueId = ParseAmlReference(qvid)
+                                valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(qvid))
                             };
 
                             // add
                             if (res == null)
-                                res = new AdminShellV20.QualifierCollection();
+                                res = new AdminShell.QualifierCollection();
                             res.Add(q);
                         }
                     }
@@ -331,7 +311,7 @@ namespace AasxAmlImExport
                 foreach (var a in aseq)
                     if (CheckAttributeFoRefSemantic(a, AmlConst.Attributes.DataSpecificationRef))
                     {
-                        var r = ParseAmlReference(a.Value);
+                        var r = AdminShell.GlobalReference.CreateNew(ParseAmlReference(a.Value));
                         if (r != null)
                         {
                             if (res == null)
@@ -387,7 +367,7 @@ namespace AasxAmlImExport
                     aas.idShort = ie.Name;
                     if (idShort != null)
                         aas.idShort = idShort;
-                    aas.identification = new AdminShell.Identification(idType, id);
+                    aas.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         aas.administration = new AdminShell.Administration(version, revision);
                     aas.category = cat;
@@ -406,41 +386,26 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private AdminShell.Asset TryParseAssetFromIe(InternalElementType ie)
+            private AdminShell.AssetInformation TryParseAssetFromIe(InternalElementType ie)
             {
                 // begin new (temporary) object
-                var asset = new AdminShell.Asset();
+                var asset = new AdminShell.AssetInformation();
 
                 // gather important attributes
-                var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
+                ////var idShort = FindAttributeValueByRefSemantic(ie.Attribute, 
+                ////              AmlConst.Attributes.Referable_IdShort);
+                ////var idType = FindAttributeValueByRefSemantic(ie.Attribute, 
+                ////             AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
-                var version = FindAttributeValueByRefSemantic(
-                    ie.Attribute, AmlConst.Attributes.Administration_Version);
-                var revision = FindAttributeValueByRefSemantic(
-                    ie.Attribute, AmlConst.Attributes.Administration_Revision);
-                var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
-                var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
                 var kind = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Asset_Kind);
-                var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
 
                 // we need to have some important information
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set data
-                    asset.idShort = ie.Name;
-                    if (idShort != null)
-                        asset.idShort = idShort;
-                    asset.identification = new AdminShell.Identification(idType, id);
-                    if (version != null && revision != null)
-                        asset.administration = new AdminShell.Administration(version, revision);
-                    asset.category = cat;
-                    if (desc != null)
-                        asset.description = desc;
+                    asset.SetIdentification(id);
                     if (kind != null)
-                        asset.kind = new AdminShell.AssetKind(kind);
-                    if (ds != null)
-                        asset.hasDataSpecification = ds;
+                        asset.assetKind = new AdminShell.AssetKind(kind);
 
                     // result
                     return asset;
@@ -472,66 +437,6 @@ namespace AasxAmlImExport
                 return idDict[ID];
             }
 
-            private AdminShell.View TryParseViewFromIe(InstanceHierarchyType insthier, InternalElementType ie)
-            {
-                // access
-                if (insthier == null || ie == null)
-                    return null;
-
-                //
-                // make up local data management
-                //
-
-                // begin new (temporary) objects
-                var view = new AdminShell.View();
-
-                // gather important attributes
-                var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var cat = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_Category);
-                var desc = TryParseDescriptionFromAttributes(ie.Attribute, AmlConst.Attributes.Referable_Description);
-                var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
-                var semid = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.SemanticId);
-
-                // we need to have some important information
-                if (ie.Name != null)
-                {
-                    // set data
-                    view.idShort = ie.Name;
-                    if (idShort != null)
-                        view.idShort = idShort;
-                    view.category = cat;
-                    if (desc != null)
-                        view.description = desc;
-                    if (semid != null)
-                        view.semanticId = AdminShell.SemanticId.CreateFromKeys(ParseAmlReference(semid)?.Keys);
-                    if (ds != null)
-                        view.hasDataSpecification = ds;
-
-                    // check for direct descendents to be "Mirror-Elements"
-                    if (ie.InternalElement != null)
-                        foreach (var mie in ie.InternalElement)
-                            if (mie.RefBaseSystemUnitPath.HasContent())
-                            {
-                                // candidate .. try identify target
-                                var el = FindInternalElementByID(mie.RefBaseSystemUnitPath);
-                                if (el != null)
-                                {
-                                    // for the View's contain element references, all targets of the references
-                                    // shall exists.
-                                    // This is not already the case, therefore store the AML IE / View Information
-                                    // for later parsing
-                                    this.latePopoulationViews.Add(new IeViewAmlTarget(ie, view, el));
-                                }
-                            }
-
-                    // result
-                    return view;
-                }
-                else
-                    // uups!
-                    return null;
-            }
-
             private AdminShell.Submodel TryParseSubmodelFromIe(SystemUnitClassType ie)
             {
                 // begin new (temporary) object
@@ -559,7 +464,7 @@ namespace AasxAmlImExport
                     sm.idShort = ie.Name;
                     if (idShort != null)
                         sm.idShort = idShort;
-                    sm.identification = new AdminShell.Identification(idType, id);
+                    sm.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         sm.administration = new AdminShell.Administration(version, revision);
                     sm.category = cat;
@@ -657,11 +562,13 @@ namespace AasxAmlImExport
                                 if (aasref == null)
                                     return;
                                 // get a "real" reference of this
-                                var theref = new AdminShell.Reference();
+                                var theref = new AdminShell.ModelReference();
                                 aasref.CollectReferencesByParent(theref.Keys);
                                 // nooooooooooow, set this
-                                if (targetId == 1 && target is AdminShell.ReferenceElement tre)
-                                    tre.value = theref;
+                                if (targetId == 1 && target is AdminShell.ModelReferenceElement tmre)
+                                    tmre.value = theref;
+                                if (targetId == 1 && target is AdminShell.GlobalReferenceElement tgre)
+                                    tgre.value = AdminShell.GlobalReference.CreateNew(theref);
                                 if (targetId == 2 && target is AdminShell.RelationshipElement trse)
                                     trse.first = theref;
                                 if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
@@ -675,8 +582,10 @@ namespace AasxAmlImExport
                         ei.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                     if (value != null)
                     {
-                        if (targetId == 1 && target is AdminShell.ReferenceElement tre)
-                            tre.value = ParseAmlReference(value);
+                        if (targetId == 1 && target is AdminShell.ModelReferenceElement tmre)
+                            tmre.value = ParseAmlReference(value);
+                        if (targetId == 1 && target is AdminShell.GlobalReferenceElement tgre)
+                            tgre.value = AdminShell.GlobalReference.CreateNew(ParseAmlReference(value));
                         if (targetId == 2 && target is AdminShell.RelationshipElement trse)
                             trse.first = ParseAmlReference(value);
                         if (targetId == 3 && target is AdminShell.RelationshipElement tre2)
@@ -731,7 +640,7 @@ namespace AasxAmlImExport
 
                         p.value = value;
                         if (valueId != null)
-                            p.valueId = ParseAmlReference(valueId);
+                            p.valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(valueId));
                         if (valueAttr != null)
                             p.valueType = ParseAmlDataType(valueAttr.AttributeDataType);
                     }
@@ -769,7 +678,7 @@ namespace AasxAmlImExport
                         if (value.langString != null)
                             mlp.value = new AdminShell.LangStringSet(value.langString);
                         if (valueId != null)
-                            mlp.valueId = ParseAmlReference(valueId);
+                            mlp.valueId = AdminShell.GlobalReference.CreateNew(ParseAmlReference(valueId));
                     }
 
                     if (sme is AdminShell.Blob smeb)
@@ -794,7 +703,7 @@ namespace AasxAmlImExport
                             smef.value = value;
                     }
 
-                    if (sme is AdminShell.ReferenceElement smer)
+                    if (sme is AdminShell.ModelReferenceElement smemr)
                     {
                         if (aasStyleAttributes)
                         {
@@ -802,14 +711,33 @@ namespace AasxAmlImExport
                             var value = FindAttributeValueByRefSemantic(
                                 ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
                             if (value != null)
-                                smer.value = ParseAmlReference(value);
+                                smemr.value = ParseAmlReference(value);
                         }
 
                         if (amlStyleAttributes)
                         {
                             // now the default
                             TryPopulateReferenceAttribute(
-                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smer, 1);
+                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smemr, 1);
+                        }
+                    }
+
+                    if (sme is AdminShell.GlobalReferenceElement smegr)
+                    {
+                        if (aasStyleAttributes)
+                        {
+                            // not used anymore!
+                            var value = FindAttributeValueByRefSemantic(
+                                ie.Attribute, AmlConst.Attributes.ReferenceElement_Value);
+                            if (value != null)
+                                smegr.value = AdminShell.GlobalReference.CreateNew(ParseAmlReference(value));
+                        }
+
+                        if (amlStyleAttributes)
+                        {
+                            // now the default
+                            TryPopulateReferenceAttribute(
+                                ie, "ReferableReference", AmlConst.Interfaces.ReferableReference, smegr, 1);
                         }
                     }
 
@@ -850,7 +778,7 @@ namespace AasxAmlImExport
                         var assetRef = FindAttributeValueByRefSemantic(
                                 ie.Attribute, AmlConst.Attributes.Entity_asset);
                         if (assetRef != null)
-                            ent.assetRef = new AdminShell.AssetRef(ParseAmlReference(assetRef));
+                            ent.assetRef = ParseAmlReference(assetRef);
                     }
 
                     // ok
@@ -880,7 +808,7 @@ namespace AasxAmlImExport
                 {
                     // set normal data
                     cd.idShort = idShort;
-                    cd.identification = new AdminShell.Identification(idType, id);
+                    cd.id = new AdminShell.Identifier(id);
                     if (version != null && revision != null)
                         cd.administration = new AdminShell.Administration(version, revision);
                     if (desc != null)
@@ -889,7 +817,7 @@ namespace AasxAmlImExport
                         cd.category = cat;
 
                     // special data
-                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.Reference>(
+                    cd.IsCaseOf = TryParseListItemsFromAttributes<AdminShell.ModelReference>(
                         aseq, AmlConst.Attributes.CD_IsCaseOf, (s) => { return ParseAmlReference(s); });
 
                     // result
@@ -917,8 +845,9 @@ namespace AasxAmlImExport
 
                 ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-                ds.unitId = AdminShell.UnitId.CreateNew(
-                    ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)));
+                ds.unitId = new AdminShell.UnitId(AdminShell.GlobalReference.CreateNew(
+                        ParseAmlReference(
+                            FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId))));
 
                 ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
@@ -1012,32 +941,14 @@ namespace AasxAmlImExport
                         {
                             Debug(indentation, "  ASSET with required attributes recognised. Starting new Asset..");
 
-                            // make temporary object official
-                            this.package.AasEnv.Assets.Add(asset);
-                            currentAas.assetRef = asset.GetAssetReference();
-                            matcher.AddMatch(asset, ie);
+                            // TODO (MIHO, 2022-01-07): re-create asset handling fro AML import
+                            //// make temporary object official
+                            ////this.package.AasEnv.Assets.Add(asset);
+                            ////currentAas.assetRef = asset.GetAssetReference();
+                            ////matcher.AddMatch(asset, ie);
                         }
                         else
                             Debug(indentation, "  ASSET with insufficient attributes. Skipping");
-                    }
-
-                    //
-                    // View
-                    //
-                    if (currentAas != null && CheckForRoleClassOrRoleRequirements(ie, AmlConst.Roles.View))
-                    {
-                        // begin new (temporary) object
-                        var view = TryParseViewFromIe(insthier, ie);
-                        if (view != null)
-                        {
-                            Debug(indentation, "  VIEW with required attributes recognised. Collecting references..");
-
-                            // make temporary object official
-                            currentAas.AddView(view);
-                            matcher.AddMatch(view, ie);
-                        }
-                        else
-                            Debug(indentation, "  VIEW with insufficient attributes. Skipping");
                     }
 
                     //
@@ -1057,7 +968,7 @@ namespace AasxAmlImExport
                             // existing.
                             // If so, that switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
+                            var existSm = this.package.AasEnv.FindSubmodel(sm.id);
                             if (existSm != null)
                                 sm = existSm;
 
@@ -1068,9 +979,9 @@ namespace AasxAmlImExport
                             // this will be the parent for child elements
                             // Remark: add only, if not a SM with the same ID is existing. This could have the
                             // consequences that additional properties in the 2nd SM with the same SM get lost!
-                            if (null == this.package.AasEnv.FindSubmodel(sm.identification))
+                            if (null == this.package.AasEnv.FindSubmodel(sm.id))
                                 this.package.AasEnv.Submodels.Add(sm);
-                            currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(sm.GetModelReference() as AdminShell.SubmodelRef);
                             currentSmeCollection = sm;
                         }
                         else
@@ -1086,10 +997,10 @@ namespace AasxAmlImExport
                         if (targetSm != null && this.package != null && this.package.AasEnv != null)
                         {
                             // try use Identification to find existing Submodel
-                            var existSm = package.AasEnv.FindSubmodel(targetSm.identification);
+                            var existSm = package.AasEnv.FindSubmodel(targetSm.id);
 
                             // if so, add a SubmodelRef
-                            currentAas.AddSubmodelRef(existSm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(existSm.GetModelReference() as AdminShell.SubmodelRef);
                         }
                     }
 
@@ -1333,7 +1244,7 @@ namespace AasxAmlImExport
                             // AAS might already exist by parsing instance, therefore check for existance
                             // If so, then switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existAas = this.package.AasEnv.FindAAS(aas.identification);
+                            var existAas = this.package.AasEnv.FindAAS(aas.id);
                             if (existAas != null)
                                 aas = existAas;
                             else
@@ -1363,7 +1274,7 @@ namespace AasxAmlImExport
                             // there might be the case, that a submodel with the same identification already exists.
                             // If so, that switch to it and ignore the newly parsed set of information
                             // (TODO: check, if to merge information?)
-                            var existSm = this.package.AasEnv.FindSubmodel(sm.identification);
+                            var existSm = this.package.AasEnv.FindSubmodel(sm.id);
                             if (existSm != null)
                                 sm = existSm;
 
@@ -1372,7 +1283,7 @@ namespace AasxAmlImExport
 
                             // this will be the parent for child elements
                             this.package.AasEnv.Submodels.Add(sm);
-                            currentAas.AddSubmodelRef(sm.GetReference() as AdminShell.SubmodelRef);
+                            currentAas.AddSubmodelRef(sm.GetModelReference() as AdminShell.SubmodelRef);
                             currentSmeCollection = sm;
                         }
                         else
@@ -1415,7 +1326,7 @@ namespace AasxAmlImExport
                         if (cd != null)
                         {
                             // add
-                            Debug(indentation, " .. added as {0}", cd.identification.ToString());
+                            Debug(indentation, " .. added as {0}", cd.id.ToString());
                             this.package.AasEnv.ConceptDescriptions.Add(cd);
 
                             // look for direct descendants = Data Specifcations
@@ -1440,8 +1351,8 @@ namespace AasxAmlImExport
                                             var hds = FindAttributeValueByRefSemantic(
                                                 ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)
-                                                eds.dataSpecification = AdminShell.DataSpecificationRef.CreateNew(
-                                                    ParseAmlReference(hds));
+                                                eds.dataSpecification = new AdminShell.DataSpecificationRef(
+                                                    AdminShell.GlobalReference.CreateNew(ParseAmlReference(hds)));
 
                                             // make 61360 data
                                             eds.dataSpecificationContent = new AdminShell.DataSpecificationContent()
@@ -1499,32 +1410,6 @@ namespace AasxAmlImExport
             }
 
             /// <summary>
-            /// Populate views with contained elements refs.
-            /// Precondition: AAS entities exist, matcher up to data, parents up to date
-            /// </summary>
-            public void LatePopulateViews()
-            {
-                foreach (var ieViewAmlTarget in this.latePopoulationViews)
-                {
-                    // access
-                    if (ieViewAmlTarget.Ie == null || ieViewAmlTarget.View == null || ieViewAmlTarget.AmlTarget == null)
-                        continue;
-
-                    // we need to identify the target with respect to the AAS
-                    var aasTarget = matcher.GetAasObject(ieViewAmlTarget.AmlTarget);
-                    if (aasTarget == null)
-                        continue;
-
-                    // get a "real" reference of this
-                    var theref = new AdminShell.Reference();
-                    aasTarget.CollectReferencesByParent(theref.Keys);
-
-                    // add
-                    ieViewAmlTarget.View.AddContainedElement(theref);
-                }
-            }
-
-            /// <summary>
             /// Build up internal data structures
             /// </summary>
             /// <param name="caex">Input AML / CAEX file</param>
@@ -1562,9 +1447,6 @@ namespace AasxAmlImExport
             // the following steps will require valid parent information
             foreach (var sm in package.AasEnv.Submodels)
                 sm.SetAllParents();
-
-            // do the late population of views
-            parser.LatePopulateViews();
 
             // the different parse stages might have reegistered actions to be source or
             // destination of AML internal links

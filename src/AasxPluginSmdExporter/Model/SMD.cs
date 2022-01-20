@@ -73,13 +73,9 @@ namespace AasxPluginSmdExporter
         {
             Bom = new AdminShellNS.AdminShell.Submodel();
             Bom.idShort = name_sm;
-            Bom.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
-            Bom.identification.idType = "IRI";
-            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId();
-            Bom.semanticId.Keys.Add(new AdminShellNS.AdminShell.Key());
-            Bom.semanticId.Keys[0].value = "http://example.com/id/type/submodel/BOM/1/1";
-            Bom.semanticId.Keys[0].type = "Submodel";
-            Bom.semanticId.Keys[0].idType = "IRI";
+            Bom.id.value = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
+            Bom.semanticId = new AdminShellNS.AdminShell.SemanticId(
+                "http://example.com/id/type/submodel/BOM/1/1");
 
             String bom_json = Newtonsoft.Json.JsonConvert.SerializeObject(Bom);
 
@@ -104,8 +100,7 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.AdministrationShell aas = new AdminShellNS.AdminShell.AdministrationShell();
 
             aas.idShort = name;
-            aas.identification.id = "urn:itsowl.tedz.com:demo:aas:1:1:123";
-            aas.identification.idType = "IRI";
+            aas.id.value = "urn:itsowl.tedz.com:demo:aas:1:1:123";
 
             String smd = Newtonsoft.Json.JsonConvert.SerializeObject(aas);
 
@@ -288,8 +283,7 @@ namespace AasxPluginSmdExporter
 
             AdminShellNS.AdminShell.Submodel submodel = new AdminShellNS.AdminShell.Submodel();
 
-            submodel.identification.id = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
-            submodel.identification.idType = "IRI";
+            submodel.id.value = "urn:itsowl.tedz.com:sm:instance:9053_7072_4002_2783";
 
 
             // Finden der zugehörigen properties der in und out
@@ -316,8 +310,8 @@ namespace AasxPluginSmdExporter
             AdminShellNS.AdminShell.RelationshipElement relationshipElement =
                 new AdminShellNS.AdminShell.RelationshipElement();
 
-            relationshipElement.first = outproperty.GetReference();
-            relationshipElement.second = property.GetReference();
+            relationshipElement.first = outproperty.GetModelReference();
+            relationshipElement.second = property.GetModelReference();
             relationshipElement.semanticId = SetSemanticIdRelEle(input, output, type);
             relationshipElement.idShort = $"{relCount++}";
 
@@ -334,19 +328,15 @@ namespace AasxPluginSmdExporter
         /// <returns></returns>
         public AdminShellNS.AdminShell.SemanticId SetSemanticIdRelEle(IOput input, IOput output, int type)
         {
-            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId();
-            AdminShellNS.AdminShell.Key key = new AdminShellNS.AdminShell.Key();
-            key.idType = "IRI";
-            key.index = 0;
-            key.local = true;
-            key.type = "ConceptDescription";
+            var strkey = "";
             switch (type)
             {
-                case 0: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); break;
-                case 1: key.value = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); break;
-                case 2: key.value = "mechanic"; break;
+                case 0: strkey = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_SignalFlow"); break;
+                case 1: strkey = SemanticPort.GetInstance().GetSemanticForPort("SmdComp_PhysicalElectric"); break;
+                case 2: strkey = "mechanic"; break;
             }
-            semantic.JsonKeys.Add(key);
+
+            AdminShellNS.AdminShell.SemanticId semantic = new AdminShellNS.AdminShell.SemanticId(strkey);
             return semantic;
         }
     }

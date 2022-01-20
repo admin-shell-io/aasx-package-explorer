@@ -426,7 +426,7 @@ namespace AasxPluginDocumentShelf
                 // make sure for the right Submodel
                 DocumentShelfOptionsRecord foundRec = null;
                 foreach (var rec in options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                    subModel?.semanticId?.GetAsExactlyOneKey()))
+                    subModel?.semanticId?.GetAsIdentifier()))
                     foundRec = rec;
 
                 if (foundRec == null)
@@ -435,7 +435,7 @@ namespace AasxPluginDocumentShelf
                 // right now: hardcoded check for mdoel version
                 var modelVersion = DocumentEntity.SubmodelVersion.Default;
                 var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
+                if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetAutoSingleId()))
                     modelVersion = DocumentEntity.SubmodelVersion.V11;
                 if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
                     modelVersion = DocumentEntity.SubmodelVersion.V10;
@@ -663,11 +663,11 @@ namespace AasxPluginDocumentShelf
             }
 
             // check for a document reference
-            if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
+            if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.ModelReference> reltup
                 && reltup.Item2 != null && reltup.Item2.Count > 0)
             {
                 var evt = new AasxPluginResultEventNavigateToReference();
-                evt.targetReference = new AdminShell.Reference(reltup.Item2);
+                evt.targetReference = new AdminShell.ModelReference(reltup.Item2);
                 this.theEventStack.PushEvent(evt);
             }
         }
@@ -921,9 +921,9 @@ namespace AasxPluginDocumentShelf
                 foreach (var x in theCds)
                 {
                     var cd = x as AdminShell.ConceptDescription;
-                    if (cd == null || cd.identification == null)
+                    if (cd == null || cd.id == null)
                         continue;
-                    var cdFound = env.FindConceptDescription(cd.identification);
+                    var cdFound = env.FindConceptDescription(cd.id);
                     if (cdFound != null)
                         continue;
                     // ok, add

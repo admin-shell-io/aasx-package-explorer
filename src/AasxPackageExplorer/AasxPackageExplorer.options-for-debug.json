@@ -12,6 +12,8 @@
   "EclassDir": ".\\eclass\\",
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",
+  "IdentifierKeyValuePairsFile": "identifier-kvpairs-presets.json",
+  "ExtensionsPresetFile": "extension-presets.json",
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,

@@ -516,11 +516,10 @@ namespace AasxPackageLogic
                 if (i == 0)
                 {
                     // identification
-                    res.identification.idType = AdminShell.Identification.IRDI;
-                    res.identification.id = input[i].IRDI;
+                    res.id.value = input[i].IRDI;
 
                     // isCase of
-                    res.AddIsCaseOf(AdminShell.Reference.CreateIrdiReference(input[i].IRDI));
+                    res.AddIsCaseOf(AdminShell.ModelReference.CreateIrdiReference(input[i].IRDI));
 
                     // administration
                     res.administration = new AdminShell.Administration();
@@ -531,7 +530,7 @@ namespace AasxPackageLogic
                     // short name -> TBD in future
                     FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", ls.str);
+                        ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", ls.str);
                         res.idShort = ls.str;
                     });
 
@@ -564,9 +563,8 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.unitId = AdminShell.UnitId.CreateNew(
-                                                "GlobalReference", false,
-                                                AdminShell.Identification.IRDI, urefIrdi.Trim());
+                                            ds.unitId = new AdminShell.UnitId(
+                                                new AdminShell.Identifier(urefIrdi.Trim()));
                                             ds.unit = xiun.InnerText.Trim();
                                         }
                                 }
@@ -644,7 +642,7 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sn);
+                            ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", sn);
                         }
                     }
                 }

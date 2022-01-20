@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 using AdminShellNS;
-using static AdminShellNS.AdminShellV20;
+using static AdminShellNS.AdminShellV30;
 
 // TODO (Michael Hoffmeister, 1970-01-01): License
 // TODO (Michael Hoffmeister, 1970-01-01): Fraunhofer IOSB: Check ReSharper
@@ -103,7 +103,7 @@ namespace AasxUANodesetImExport
         //3. Create an array from the List
         //   Add the created Node to the root List
 
-        public static string CreateAAS(string name, AdminShellV20.AdministrationShellEnv env)
+        public static string CreateAAS(string name, AdminShell.AdministrationShellEnv env)
         {
 
             UAObject sub = new UAObject();
@@ -126,30 +126,16 @@ namespace AasxUANodesetImExport
             //add ConceptDictionary
             refs.Add(CreateReference("HasComponent", CreateConceptDictionaryFolder(env.ConceptDescriptions)));
 
-            //add Assets
-            foreach (AdminShellV20.Asset asset in env.Assets)
-            {
-                refs.Add(CreateReference("HasComponent", CreateAASAsset(asset)));
-            }
-
             //add Submodels
-            foreach (AdminShellV20.Submodel submodel in env.Submodels)
+            foreach (AdminShell.Submodel submodel in env.Submodels)
             {
                 string id = CreateAASSubmodel(submodel);
                 refs.Add(CreateReference("HasComponent", id));
             }
 
             //map AAS Information
-            foreach (AdminShellV20.AdministrationShell shell in env.AdministrationShells)
+            foreach (AdminShell.AdministrationShell shell in env.AdministrationShells)
             {
-                if (shell.views != null)
-                {
-                    foreach (AdminShellV20.View view in shell.views.views)
-                    {
-                        refs.Add(CreateReference("HasComponent", CreateView(view)));
-                    }
-                }
-
                 if (shell.derivedFrom != null)
                 {
                     refs.Add(CreateReference("HasComponent", CreateDerivedFrom(shell.derivedFrom.Keys)));
@@ -163,13 +149,13 @@ namespace AasxUANodesetImExport
                             CreateProperty(shell.idShort, "PropertyType", "idShort", "String")));
                 }
 
-                if (shell.identification != null)
+                if (shell.id != null)
                 {
                     refs.Add(
                         CreateReference(
                             "HasComponent",
                             CreateIdentifiableIdentification(
-                                shell.identification.id, shell.identification.idType)));
+                                shell.id.value, "")));
                 }
 
                 if (shell.hasDataSpecification != null)
@@ -177,10 +163,11 @@ namespace AasxUANodesetImExport
                     refs.Add(CreateReference("HasComponent", CreateHasDataSpecification(shell.hasDataSpecification)));
                 }
 
-                if (shell.assetRef != null)
+                if (shell.assetInformation != null)
                 {
-                    refs.Add(CreateReference("HasComponent", CreateAssetRef(shell.assetRef)));
+                    refs.Add(CreateReference("HasComponent", CreateAASAsset(shell.assetInformation)));
                 }
+
             }
 
             sub.References = refs.ToArray();
@@ -189,7 +176,7 @@ namespace AasxUANodesetImExport
         }
 
 
-        private static string CreateAASSubmodel(AdminShellV20.Submodel submodel)
+        private static string CreateAASSubmodel(AdminShell.Submodel submodel)
         {
             UAObject sub = new UAObject();
             sub.NodeId = "ns=1;i=" + masterID.ToString();
@@ -214,9 +201,9 @@ namespace AasxUANodesetImExport
                 refs.Add(
                     CreateReference(
                         "HasInterface",
-                        CreateIdentifiable(submodel.identification.id, submodel.identification.idType, null, null)));
+                        CreateIdentifiable(submodel.id.value, "", null, null)));
             }
-            else if (submodel.identification == null)
+            else if (submodel.id == null)
             {
                 refs.Add(
                     CreateReference(
@@ -231,14 +218,14 @@ namespace AasxUANodesetImExport
                     CreateReference(
                         "HasInterface",
                         CreateIdentifiable(
-                            submodel.identification.id, submodel.identification.idType,
+                            submodel.id.value, "",
                             submodel.administration.version, submodel.administration.revision)));
             }
 
             //set Qualifier if it exists
             if (submodel.qualifiers != null)
             {
-                foreach (AdminShellV20.Qualifier qualifier in submodel.qualifiers)
+                foreach (AdminShell.Qualifier qualifier in submodel.qualifiers)
                 {
                     refs.Add(
                         CreateReference(
@@ -247,7 +234,7 @@ namespace AasxUANodesetImExport
             }
 
             //add Elements
-            foreach (AdminShellV20.SubmodelElementWrapper element in submodel.submodelElements)
+            foreach (AdminShell.SubmodelElementWrapper element in submodel.submodelElements)
             {
                 string id = CreateSubmodelElement(element.submodelElement);
                 refs.Add(CreateReference("HasComponent", id));
@@ -319,7 +306,7 @@ namespace AasxUANodesetImExport
             return null;
         }
 
-        private static string CreateAASQualifier(string type, string value, AdminShellV20.Reference valueId)
+        private static string CreateAASQualifier(string type, string value, AdminShell.GlobalReference valueId)
         {
             UAObject qual = new UAObject();
             qual.NodeId = "ns=1;i=" + masterID.ToString();
@@ -336,11 +323,11 @@ namespace AasxUANodesetImExport
                     "HasProperty", CreateProperty(value, "1:AASPropertyType", "QualifierValue", "String")));
             if (valueId != null)
             {
-                foreach (AdminShellV20.Key key in valueId.Keys)
+                foreach (AdminShell.Identifier key in valueId.Value)
                 {
                     refs.Add(
                         CreateReference(
-                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                            "HasComponent", CreateKey("", "true", "", key.value)));
                 }
             }
 
@@ -349,7 +336,7 @@ namespace AasxUANodesetImExport
             return qual.NodeId;
         }
 
-        private static string CreateSubmodelElement(AdminShellV20.SubmodelElement element)
+        private static string CreateSubmodelElement(AdminShell.SubmodelElement element)
         {
             UAObject elem = new UAObject();
             elem.BrowseName = "1:" + element.idShort;
@@ -388,7 +375,7 @@ namespace AasxUANodesetImExport
             //add Qualifier if it exists
             if (element.qualifiers != null)
             {
-                foreach (AdminShellV20.Qualifier qualifier in element.qualifiers)
+                foreach (AdminShell.Qualifier qualifier in element.qualifiers)
                 {
                     refs.Add(
                         CreateReference(
@@ -402,32 +389,32 @@ namespace AasxUANodesetImExport
             {
 
                 case "SubmodelElementCollection":
-                    AdminShellV20.SubmodelElementCollection coll = (AdminShellV20.SubmodelElementCollection)element;
+                    AdminShell.SubmodelElementCollection coll = (AdminShell.SubmodelElementCollection)element;
                     refs.Add(CreateReference("HasComponent", CreateSubmodelElementCollection(coll)));
                     break;
 
                 case "Property":
-                    AdminShellV20.Property prop = (AdminShellV20.Property)element;
+                    AdminShell.Property prop = (AdminShell.Property)element;
                     refs.Add(CreateReference("HasComponent", CreatePropertyType(prop.value, prop.valueId)));
                     break;
 
                 case "Operation":
-                    AdminShellV20.Operation op = (AdminShellV20.Operation)element;
+                    AdminShell.Operation op = (AdminShell.Operation)element;
                     refs.Add(CreateReference("HasComponent", CreateAASOperation(op.inputVariable, op.outputVariable)));
                     break;
 
                 case "Blob":
-                    AdminShellV20.Blob blob = (AdminShellV20.Blob)element;
+                    AdminShell.Blob blob = (AdminShell.Blob)element;
                     refs.Add(CreateReference("HasComponent", CreateAASBlob(blob.value, blob.mimeType)));
                     break;
 
                 case "File":
-                    AdminShellV20.File file = (AdminShellV20.File)element;
+                    AdminShell.File file = (AdminShell.File)element;
                     refs.Add(CreateReference("HasComponent", CreateAASFile(file.value, file.mimeType)));
                     break;
 
                 case "RelationshipElement":
-                    AdminShellV20.RelationshipElement rela = (AdminShellV20.RelationshipElement)element;
+                    AdminShell.RelationshipElement rela = (AdminShell.RelationshipElement)element;
 
                     refs.Add(
                         CreateReference(
@@ -435,9 +422,14 @@ namespace AasxUANodesetImExport
                             CreateAASRelationshipElement(rela.first.ToString(), rela.second.ToString())));
                     break;
 
-                case "ReferenceElement":
-                    AdminShellV20.ReferenceElement refe = (AdminShellV20.ReferenceElement)element;
-                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(refe.value.ToString())));
+                case "ModelReferenceElement":
+                    AdminShell.ModelReferenceElement mrefe = element as AdminShell.ModelReferenceElement;
+                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(mrefe?.value?.ToString())));
+                    break;
+
+                case "GlobalReferenceElement":
+                    var grefe = element as AdminShell.GlobalReferenceElement;
+                    refs.Add(CreateReference("HasComponent", CreateReferenceElement(grefe?.value?.ToString())));
                     break;
             }
 
@@ -451,7 +443,7 @@ namespace AasxUANodesetImExport
         //always the same pattern -> mapping Data
         //
 
-        private static string CreateSubmodelElementCollection(AdminShellV20.SubmodelElementCollection collection)
+        private static string CreateSubmodelElementCollection(AdminShell.SubmodelElementCollection collection)
         {
             UAObject coll = new UAObject();
             coll.NodeId = "ns=1;i=" + masterID.ToString();
@@ -459,7 +451,7 @@ namespace AasxUANodesetImExport
             masterID++;
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASSubmodelElementCollectionType"));
-            foreach (AdminShellV20.SubmodelElementWrapper elem in collection.value)
+            foreach (AdminShell.SubmodelElementWrapper elem in collection.value)
             {
                 refs.Add(CreateReference("HasComponent", CreateSubmodelElement(elem.submodelElement)));
             }
@@ -474,7 +466,7 @@ namespace AasxUANodesetImExport
             return coll.NodeId;
         }
 
-        private static string CreatePropertyType(string value, AdminShellV20.Reference valueId)
+        private static string CreatePropertyType(string value, AdminShell.Reference valueId)
         {
             UAObject prop = new UAObject();
             prop.NodeId = "ns=1;i=" + masterID.ToString();
@@ -531,7 +523,7 @@ namespace AasxUANodesetImExport
         }
 
         private static string CreateAASOperation(
-            List<AdminShellV20.OperationVariable> vin, List<AdminShellV20.OperationVariable> vout)
+            List<AdminShell.OperationVariable> vin, List<AdminShell.OperationVariable> vout)
         {
             UAObject prop = new UAObject();
             prop.NodeId = "ns=1;i=" + masterID.ToString();
@@ -756,7 +748,7 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateReferable(string category, List<AdminShellV20.LangStr> langstr)
+        private static string CreateReferable(string category, List<AdminShell.LangStr> langstr)
         {
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -776,7 +768,7 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateSemanticId(AdminShellV20.SemanticId sem)
+        private static string CreateSemanticId(AdminShell.SemanticId sem)
         {
             if (sem == null)
                 return null;
@@ -788,11 +780,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASSemanticIdType"));
 
-            foreach (AdminShellV20.Key key in sem.Keys)
+            foreach (AdminShell.Identifier key in sem.Value)
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", "", key.value)));
             }
 
             ident.References = refs.ToArray();
@@ -802,6 +794,8 @@ namespace AasxUANodesetImExport
 
         private static string CreateKey(string idtype, string local, string type, string value)
         {
+            // TODO (MIHO/FhG, 2022-01-07): remove local & idType
+
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
             ident.BrowseName = "1:AASKey";
@@ -836,58 +830,28 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateAASAsset(AdminShellV20.Asset asset)
+        private static string CreateAASAsset(AdminShell.AssetInformation asset)
         {
             UAVariable ident = new UAVariable();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
-            ident.BrowseName = "1:" + asset.idShort;
+            ident.BrowseName = "1:" + asset.fakeIdShort;
             masterID++;
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASAssetType"));
 
-            if (asset.kind != null)
+            if (asset.assetKind != null)
                 refs.Add(
                     CreateReference(
                         "HasProperty",
-                        CreateProperty(asset.kind.kind, "1:AASModelingKindDataType", "Kind", "String")));
+                        CreateProperty(asset.assetKind.kind, "1:AASModelingKindDataType", "Kind", "String")));
 
             //check if either administration or identification is null, 
             // -> (because if identification were null, you could not access id or idType)
             //then set accordingly
-            if (asset.administration == null)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(asset.identification.id, asset.identification.idType, null, null)));
-            }
-            else if (asset.identification == null)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(null, null, asset.administration.version, asset.administration.revision)));
-            }
-            else
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent",
-                        CreateIdentifiable(
-                            asset.identification.id, asset.identification.idType, asset.administration.version,
-                            asset.administration.revision)));
-            }
-
-            if (asset.description == null)
-            {
-                refs.Add(CreateReference("HasComponent", CreateReferable(asset.category, null)));
-            }
-            else
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateReferable(asset.category, asset.description.langString)));
-            }
+            refs.Add(
+                CreateReference(
+                    "HasComponent",
+                    CreateIdentifiable(asset.globalAssetId.GetAsIdentifier(), "", null, null)));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
@@ -896,7 +860,7 @@ namespace AasxUANodesetImExport
 
         //ConceptDictionary Creation
 
-        private static string CreateConceptDictionaryFolder(List<AdminShellV20.ConceptDescription> concepts)
+        private static string CreateConceptDictionaryFolder(List<AdminShell.ConceptDescription> concepts)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -905,7 +869,7 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASConceptDictionaryType"));
 
-            foreach (AdminShellV20.ConceptDescription con in concepts)
+            foreach (AdminShell.ConceptDescription con in concepts)
             {
                 refs.Add(CreateReference("HasComponent", CreateDictionaryEntry(con)));
             }
@@ -915,7 +879,7 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateDictionaryEntry(AdminShellV20.ConceptDescription concept)
+        private static string CreateDictionaryEntry(AdminShell.ConceptDescription concept)
         {
             UAObject entry = new UAObject();
             entry.NodeId = "ns=1;i=" + masterID.ToString();
@@ -927,7 +891,7 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("DictionaryEntryType"));
 
-            if (concept.identification.idType == "IRI")
+            if (concept.id.IsIRI())
             {
                 refs.Add(CreateReference("HasComponent", CreateUriConceptDescription(concept)));
             }
@@ -941,7 +905,7 @@ namespace AasxUANodesetImExport
             return entry.NodeId;
         }
 
-        private static string CreateUriConceptDescription(AdminShellV20.ConceptDescription concept)
+        private static string CreateUriConceptDescription(AdminShell.ConceptDescription concept)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -954,14 +918,14 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateIdentifiable(concept.identification.id, concept.identification.idType, null, null)));
+                    CreateIdentifiable(concept.id.value, "", null, null)));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
             return ident.NodeId;
         }
 
-        private static string CreateIrdConceptDescription(AdminShellV20.ConceptDescription concept)
+        private static string CreateIrdConceptDescription(AdminShell.ConceptDescription concept)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -974,14 +938,14 @@ namespace AasxUANodesetImExport
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateIdentifiable(concept.identification.id, concept.identification.idType, null, null)));
+                    CreateIdentifiable(concept.id.value, "", null, null)));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
             return ident.NodeId;
         }
 
-        private static string CreateDataSpecification(AdminShellV20.ConceptDescription concept)
+        private static string CreateDataSpecification(AdminShell.ConceptDescription concept)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -997,7 +961,7 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateDataSpecificationIEC61360(AdminShellV20.ConceptDescription concept)
+        private static string CreateDataSpecificationIEC61360(AdminShell.ConceptDescription concept)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1062,7 +1026,7 @@ namespace AasxUANodesetImExport
             return ident.NodeId;
         }
 
-        private static string CreateLangStrContainer(List<AdminShellV20.LangStr> list, string name)
+        private static string CreateLangStrContainer(List<AdminShell.LangStr> list, string name)
         {
             UAObject ident = new UAObject();
             ident.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1072,7 +1036,7 @@ namespace AasxUANodesetImExport
             refs.Add(CreateHasTypeDefinition("BaseObjectType"));
 
             if (list != null)
-                foreach (AdminShellV20.LangStr str in list)
+                foreach (AdminShell.LangStr str in list)
                 {
                     refs.Add(CreateReference("HasProperty", CreateLangStrSet(str.lang, str.str)));
                 }
@@ -1084,33 +1048,7 @@ namespace AasxUANodesetImExport
 
         //Asset Creation
 
-        private static string CreateView(AdminShellV20.View view)
-        {
-            UAVariable var = new UAVariable();
-            var.NodeId = "ns=1;i=" + masterID.ToString();
-            var.BrowseName = "1:" + view.idShort;
-            masterID++;
-            List<Reference> refs = new List<Reference>();
-            refs.Add(CreateHasTypeDefinition("1:AASViewType"));
-
-            if (view.description != null)
-            {
-                refs.Add(CreateReference("HasComponent", CreateReferable(view.category, view.description.langString)));
-
-            }
-
-            foreach (AdminShellV20.ContainedElementRef con in view.containedElements.reference)
-            {
-                refs.Add(CreateReference("HasComponent", createContainedElement(con)));
-            }
-
-
-            var.References = refs.ToArray();
-            root.Add((UANode)var);
-            return var.NodeId;
-        }
-
-        private static string CreateDerivedFrom(List<AdminShellV20.Key> keys)
+        private static string CreateDerivedFrom(List<AdminShell.Key> keys)
         {
             UAObject obj = new UAObject();
             obj.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1119,11 +1057,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShellV20.Key key in keys)
+            foreach (AdminShell.Key key in keys)
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", key.type, key.value)));
             }
 
             obj.References = refs.ToArray();
@@ -1131,7 +1069,7 @@ namespace AasxUANodesetImExport
             return obj.NodeId;
         }
 
-        private static string CreateHasDataSpecification(AdminShellV20.HasDataSpecification data)
+        private static string CreateHasDataSpecification(AdminShell.HasDataSpecification data)
         {
             UAObject obj = new UAObject();
             obj.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1150,7 +1088,7 @@ namespace AasxUANodesetImExport
             return obj.NodeId;
         }
 
-        private static string CreateReference(AdminShellV20.Reference _ref)
+        private static string CreateReference(AdminShell.Reference _ref)
         {
             UAObject obj = new UAObject();
             obj.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1159,12 +1097,20 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            if (_ref != null)
-                foreach (AdminShellV20.Key key in _ref.Keys)
+            if (_ref is AdminShell.ModelReference modrf)
+                foreach (AdminShell.Key key in modrf.Keys)
                 {
                     refs.Add(
                         CreateReference(
-                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                            "HasComponent", CreateKey("", "true", key.type, key.value)));
+                }
+
+            if (_ref is AdminShell.GlobalReference glbrf)
+                foreach (AdminShell.Identifier id in glbrf.Value)
+                {
+                    refs.Add(
+                        CreateReference(
+                            "HasComponent", CreateKey("", "true", "", id.value)));
                 }
 
             obj.References = refs.ToArray();
@@ -1172,7 +1118,7 @@ namespace AasxUANodesetImExport
             return obj.NodeId;
         }
 
-        private static string CreateAssetRef(AdminShellV20.AssetRef ass)
+        private static string CreateAssetRef(AdminShell.AssetRef ass)
         {
             UAObject obj = new UAObject();
             obj.NodeId = "ns=1;i=" + masterID.ToString();
@@ -1181,37 +1127,16 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShellV20.Key key in ass.Keys)
+            foreach (AdminShell.Identifier key in ass.Value)
             {
                 refs.Add(
                     CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                        "HasComponent", CreateKey("", "true", "", key.value)));
             }
 
             obj.References = refs.ToArray();
             root.Add((UANode)obj);
             return obj.NodeId;
-        }
-
-        private static string createContainedElement(AdminShellV20.ContainedElementRef ele)
-        {
-            UAVariable var = new UAVariable();
-            var.NodeId = "ns=1;i=" + masterID.ToString();
-            var.BrowseName = "1:ContainedElementRef";
-            masterID++;
-            List<Reference> refs = new List<Reference>();
-            refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
-
-            foreach (AdminShellV20.Key key in ele.Keys)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
-            }
-
-            var.References = refs.ToArray();
-            root.Add((UANode)var);
-            return var.NodeId;
         }
 
     }

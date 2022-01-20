@@ -37,7 +37,7 @@ namespace AasxPluginBomStructure
         private PluginEventStack eventStack = null;
 
         private Dictionary<AdminShell.Referable, int> preferredPresetIndex =
-            new Dictionary<AdminShellV20.Referable, int>();
+            new Dictionary<AdminShell.Referable, int>();
 
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 
@@ -234,15 +234,15 @@ namespace AasxPluginBomStructure
                             if (refs.Count > 0)
                             {
                                 var evt = new AasxPluginResultEventNavigateToReference();
-                                evt.targetReference = AdminShell.Reference.CreateNew(refs);
+                                evt.targetReference = AdminShell.ModelReference.CreateNew(refs);
                                 this.eventStack.PushEvent(evt);
                             }
                         }
 
-                        if (us is AdminShell.Reference)
+                        if (us is AdminShell.ModelReference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
-                            evt.targetReference = (us as AdminShell.Reference);
+                            evt.targetReference = (us as AdminShell.ModelReference);
                             this.eventStack.PushEvent(evt);
                         }
                     }

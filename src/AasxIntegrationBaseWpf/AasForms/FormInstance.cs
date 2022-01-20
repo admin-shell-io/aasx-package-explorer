@@ -333,7 +333,7 @@ namespace AasxIntegrationBase.AasForms
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
 
-            if (desc == null || desc.KeySemanticId == null || sourceElements == null)
+            if (desc == null || desc.SingleSemanticId == null || sourceElements == null)
                 return;
 
             // Instances ready?
@@ -343,7 +343,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum == 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToOne || desc.Multiplicity == FormMultiplicity.One)
             {
-                var smw = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
+                var smw = sourceElements.FindFirstSemanticId(desc.SingleSemanticId);
                 if (smw != null && smw.submodelElement != null)
                 {
                     var y = desc.CreateInstance(this, smw.submodelElement);
@@ -355,7 +355,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum > 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToMany || desc.Multiplicity == FormMultiplicity.OneToMany)
             {
-                foreach (var smw in sourceElements.FindAllSemanticId(desc.KeySemanticId))
+                foreach (var smw in sourceElements.FindAllSemanticId(desc.SingleSemanticId))
                     if (smw != null && smw.submodelElement != null)
                     {
                         var y = desc.CreateInstance(this, smw.submodelElement);
@@ -366,7 +366,7 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare list of original source elements
             if (this.InitialSourceElements == null)
-                this.InitialSourceElements = new List<AdminShellV20.SubmodelElement>();
+                this.InitialSourceElements = new List<AdminShell.SubmodelElement>();
             foreach (var inst in this.SubInstances)
                 if (inst != null && inst is FormInstanceSubmodelElement &&
                     (inst as FormInstanceSubmodelElement).sourceSme != null)
@@ -441,7 +441,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             // add
                             if (smec.value == null)
-                                smec.value = new AdminShellV20.SubmodelElementWrapperCollection();
+                                smec.value = new AdminShell.SubmodelElementWrapperCollection();
                             smec.value.AddRange(newElems);
 
                             // make smec unique
@@ -534,8 +534,8 @@ namespace AasxIntegrationBase.AasForms
             if (source?.description != null)
                 sm.description = new AdminShell.Description(source.description);
 
-            if (desc.KeySemanticId != null)
-                sm.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+            if (desc.SingleSemanticId != null)
+                sm.semanticId = new AdminShell.SemanticId(desc.SingleSemanticId);
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -609,8 +609,8 @@ namespace AasxIntegrationBase.AasForms
             if (source?.description != null)
                 sme.description = new AdminShell.Description(source.description);
 
-            if (desc.KeySemanticId != null)
-                sme.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+            if (desc.SingleSemanticId != null)
+                sme.semanticId = new AdminShell.SemanticId(desc.SingleSemanticId);
         }
 
         /// <summary>
@@ -1034,18 +1034,20 @@ namespace AasxIntegrationBase.AasForms
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
+            // TODO (MIHO, 2022-01-08): decision to have only model references .. OK?
+
             // initialize Referable
-            var re = new AdminShell.ReferenceElement();
+            var re = new AdminShell.ModelReferenceElement();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            var reSource = this.sourceSme as AdminShell.ModelReferenceElement;
             if (reSource != null)
             {
                 // take over
-                re.value = new AdminShell.Reference(reSource.value);
+                re.value = new AdminShell.ModelReference(reSource.value);
             }
 
             // create user control

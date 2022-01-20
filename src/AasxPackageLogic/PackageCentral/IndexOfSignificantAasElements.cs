@@ -41,7 +41,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public AdminShell.Reference Reference;
+        public AdminShell.ModelReference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
@@ -70,9 +70,9 @@ namespace AasxPackageLogic.PackageCentral
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                Reference = sm?.GetReference()
+                Reference = sm?.GetModelReference()
                     + parents?.GetReference()
-                    + sme?.GetReference(includeParents: false)
+                    + sme?.GetModelReference(includeParents: false)
             };
             _records.Add(kind, r);
         }
@@ -97,13 +97,11 @@ namespace AasxPackageLogic.PackageCentral
                     if (sme is AdminShell.BasicEvent)
                     {
                         if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards))
                             Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
                         if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 

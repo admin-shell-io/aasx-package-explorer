@@ -24,13 +24,12 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AdminShellNS
-{
-    /// <summary>
-    /// This empty class derives always from the current version of the Administration Shell class hierarchy.
-    /// </summary>
-    public class AdminShell : AdminShellV20 { }
+// ReSharper disable All .. as this is legacy code!
 
+#if !DoNotUseAasxCompatibilityModels
+
+namespace AasxCompatibilityModels
+{
     #region AdminShell_V2_0
 
     /// <summary>
@@ -309,7 +308,7 @@ namespace AdminShellNS
                     var m = Regex.Match(cell, @"\((\w+)\)\((\S+)\)\[(\w+)\]( ?)(.*)$");
                     if (m.Success)
                     {
-                        return new AdminShell.Key(
+                        return new Key(
                                 m.Groups[1].ToString(), m.Groups[2].ToString() == "local",
                                 m.Groups[3].ToString(), m.Groups[5].ToString());
                     }
@@ -321,7 +320,7 @@ namespace AdminShellNS
                     var m = Regex.Match(cell, @"\[(\w+)\]( ?)(.*)$");
                     if (m.Success)
                     {
-                        return new AdminShell.Key(
+                        return new Key(
                                 typeIfNotSet, true,
                                 m.Groups[1].ToString(), m.Groups[3].ToString());
                     }
@@ -333,7 +332,7 @@ namespace AdminShellNS
                     var m = Regex.Match(cell, @"\[(\w+),( ?)([^,]+),( ?)\[(\w+)\],( ?)(.*)\]");
                     if (m.Success)
                     {
-                        return new AdminShell.Key(
+                        return new Key(
                                 m.Groups[1].ToString(), !m.Groups[3].ToString().Contains("not"),
                                 m.Groups[5].ToString(), m.Groups[7].ToString());
                     }
@@ -539,69 +538,70 @@ namespace AdminShellNS
 
             // validation
 
-            public static AasValidationAction Validate(AasValidationRecordList results, Key k, Referable container)
+            public static AasValidationActionV20 Validate(
+                AasValidationRecordListV20 results, Key k, Referable container)
             {
                 // access
                 if (results == null || container == null)
-                    return AasValidationAction.No;
+                    return AasValidationActionV20.No;
 
-                var res = AasValidationAction.No;
+                var res = AasValidationActionV20.No;
 
                 // check
                 if (k == null)
                 {
                     // violation case
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SpecViolation, container,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SpecViolation, container,
                         "Key: is null",
                         () =>
                         {
-                            res = AasValidationAction.ToBeDeleted;
+                            res = AasValidationActionV20.ToBeDeleted;
                         }));
                 }
                 else
                 {
                     // check IdType
-                    var idf = AdminShellUtil.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
-                    if (idf == AdminShellUtil.ConstantFoundEnum.No)
+                    var idf = AdminShellNS.AdminShellUtil.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
+                    if (idf == AdminShellNS.AdminShellUtil.ConstantFoundEnum.No)
                         // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SchemaViolation, container,
                             "Key: idType is not in allowed enumeration values",
                             () =>
                             {
                                 k.idType = Custom;
                             }));
-                    if (idf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                    if (idf == AdminShellNS.AdminShellUtil.ConstantFoundEnum.AnyCase)
                         // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SchemaViolation, container,
                             "Key: idType in wrong casing",
                             () =>
                             {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                k.idType = AdminShellNS.AdminShellUtil.CorrectCasingForConstantStringArray(
                                     IdentifierTypeNames, k.idType);
                             }));
 
                     // check type
-                    var tf = AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
-                    if (tf == AdminShellUtil.ConstantFoundEnum.No)
+                    var tf = AdminShellNS.AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
+                    if (tf == AdminShellNS.AdminShellUtil.ConstantFoundEnum.No)
                         // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SchemaViolation, container,
                             "Key: type is not in allowed enumeration values",
                             () =>
                             {
                                 k.type = GlobalReference;
                             }));
-                    if (tf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                    if (tf == AdminShellNS.AdminShellUtil.ConstantFoundEnum.AnyCase)
                         // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SchemaViolation, container,
                             "Key: type in wrong casing",
                             () =>
                             {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                k.idType = AdminShellNS.AdminShellUtil.CorrectCasingForConstantStringArray(
                                     KeyElements, k.type);
                             }));
                 }
@@ -650,9 +650,9 @@ namespace AdminShellNS
                     return null;
 
                 // prepare
-                var kl = new AdminShell.KeyList();
+                var kl = new KeyList();
                 foreach (var x in valueItems)
-                    kl.Add(new AdminShell.Key(type, local, idType, "" + x));
+                    kl.Add(new Key(type, local, idType, "" + x));
                 return kl;
             }
 
@@ -719,7 +719,7 @@ namespace AdminShellNS
 
             // validation
 
-            public static void Validate(AasValidationRecordList results, KeyList kl,
+            public static void Validate(AasValidationRecordListV20 results, KeyList kl,
                 Referable container)
             {
                 // access
@@ -731,7 +731,7 @@ namespace AdminShellNS
                 while (idx < kl.Count)
                 {
                     var act = Key.Validate(results, kl[idx], container);
-                    if (act == AasValidationAction.ToBeDeleted)
+                    if (act == AasValidationActionV20.ToBeDeleted)
                     {
                         kl.RemoveAt(idx);
                         continue;
@@ -1826,7 +1826,7 @@ namespace AdminShellNS
 
             // validation
 
-            public static void Validate(AasValidationRecordList results, ModelingKind mk, Referable container)
+            public static void Validate(AasValidationRecordListV20 results, ModelingKind mk, Referable container)
             {
                 // access
                 if (results == null || container == null)
@@ -1836,8 +1836,8 @@ namespace AdminShellNS
                 if (mk == null || mk.kind == null)
                 {
                     // warning
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.Warning, container,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.Warning, container,
                         "ModelingKind: is null",
                         () =>
                         {
@@ -1850,8 +1850,8 @@ namespace AdminShellNS
                     if (kl != Template.ToLower() && kl != Instance.ToLower())
                     {
                         // violation case
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SchemaViolation, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SchemaViolation, container,
                             $"ModelingKind: enumeration value neither {Template} nor {Instance}",
                             () =>
                             {
@@ -1861,8 +1861,8 @@ namespace AdminShellNS
                     else if (k != Template && k != Instance)
                     {
                         // warning
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.Warning, container,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.Warning, container,
                             "ModelingKind: enumeration value in wrong casing",
                             () =>
                             {
@@ -1941,7 +1941,7 @@ namespace AdminShellNS
 
         public interface IValidateEntity
         {
-            void Validate(AasValidationRecordList results);
+            void Validate(AasValidationRecordListV20 results);
         }
 
         /// <summary>
@@ -2250,7 +2250,7 @@ namespace AdminShellNS
             public virtual Reference GetReference(bool includeParents = true)
             {
                 return new Reference(
-                    new AdminShell.Key(
+                    new Key(
                         this.GetElementName(), false, Key.IdShort, "" + this.idShort));
             }
 
@@ -2479,7 +2479,7 @@ namespace AdminShellNS
 
             // validation
 
-            public virtual void Validate(AasValidationRecordList results)
+            public virtual void Validate(AasValidationRecordListV20 results)
             {
                 // access
                 if (results == null)
@@ -2487,8 +2487,8 @@ namespace AdminShellNS
 
                 // check
                 if (this.idShort == null || this.idShort.Trim() == "")
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SpecViolation, this,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SpecViolation, this,
                         "Referable: missing idShort",
                         () =>
                         {
@@ -2497,8 +2497,8 @@ namespace AdminShellNS
 
                 if (this.description != null && (this.description.langString == null
                     || this.description.langString.Count < 1))
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, this,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SchemaViolation, this,
                         "Referable: existing description with missing langString",
                         () =>
                         {
@@ -3156,7 +3156,7 @@ namespace AdminShellNS
 
             // validation
 
-            public override void Validate(AasValidationRecordList results)
+            public override void Validate(AasValidationRecordListV20 results)
             {
                 // access
                 if (results == null)
@@ -3568,7 +3568,7 @@ namespace AdminShellNS
 
             // validation
 
-            public void Validate(AasValidationRecordList results, ConceptDescription cd)
+            public void Validate(AasValidationRecordListV20 results, ConceptDescription cd)
             {
                 // access
                 if (results == null || cd == null)
@@ -3576,18 +3576,18 @@ namespace AdminShellNS
 
                 // check IEC61360 spec
                 if (this.preferredName == null || this.preferredName.Count < 1)
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SchemaViolation, cd,
                         "ConceptDescription: missing preferredName",
                         () =>
                         {
-                            this.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
+                            this.preferredName = new LangStringSetIEC61360("EN?",
                                 AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
                         }));
 
                 if (this.shortName != null && this.shortName.Count < 1)
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SchemaViolation, cd,
                         "ConceptDescription: existing shortName with missing langString",
                         () =>
                         {
@@ -3595,8 +3595,8 @@ namespace AdminShellNS
                         }));
 
                 if (this.definition != null && this.definition.Count < 1)
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SchemaViolation, cd,
                         "ConceptDescription: existing definition with missing langString",
                         () =>
                         {
@@ -3610,8 +3610,8 @@ namespace AdminShellNS
                         if (this.dataType.Trim() == dtn.Trim())
                             foundDataType = this.dataType;
                 if (foundDataType == null)
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, cd,
+                    results.Add(new AasValidationRecordV20(
+                        AasValidationSeverityV20.SchemaViolation, cd,
                         "ConceptDescription: dataType does not match allowed enumeration values",
                         () =>
                         {
@@ -3726,7 +3726,7 @@ namespace AdminShellNS
                 eds.dataSpecification.Keys.Add(DataSpecificationIEC61360.GetKey());
 
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
-                    AdminShell.DataSpecificationIEC61360.CreateNew();
+                    DataSpecificationIEC61360.CreateNew();
 
                 return eds;
             }
@@ -3879,7 +3879,7 @@ namespace AdminShellNS
                 eds.dataSpecification.Keys.Add(
                     DataSpecificationIEC61360.GetKey());
                 eds.dataSpecificationContent.dataSpecificationIEC61360 =
-                    AdminShell.DataSpecificationIEC61360.CreateNew(
+                    DataSpecificationIEC61360.CreateNew(
                         preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
                         dataType, definition);
 
@@ -3949,7 +3949,7 @@ namespace AdminShellNS
 
             public DataSpecificationIEC61360 CreateDataSpecWithContentIec61360()
             {
-                var eds = AdminShell.EmbeddedDataSpecification.CreateIEC61360WithContent();
+                var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
                 if (this.embeddedDataSpecification == null)
                     this.embeddedDataSpecification = new HasDataSpecification();
                 this.embeddedDataSpecification.Add(eds);
@@ -4008,7 +4008,7 @@ namespace AdminShellNS
 
             // validation
 
-            public override void Validate(AasValidationRecordList results)
+            public override void Validate(AasValidationRecordListV20 results)
             {
                 // access
                 if (results == null)
@@ -4024,8 +4024,8 @@ namespace AdminShellNS
                     // check data spec
                     if (eds61360.dataSpecification == null ||
                         !(eds61360.dataSpecification.MatchesExactlyOneKey(DataSpecificationIEC61360.GetKey())))
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SpecViolation, this,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SpecViolation, this,
                             "HasDataSpecification: data specification content set to IEC61360, but no " +
                             "data specification reference set!",
                             () =>
@@ -4038,8 +4038,8 @@ namespace AdminShellNS
                     // validate content
                     if (eds61360.dataSpecificationContent?.dataSpecificationIEC61360 == null)
                     {
-                        results.Add(new AasValidationRecord(
-                            AasValidationSeverity.SpecViolation, this,
+                        results.Add(new AasValidationRecordV20(
+                            AasValidationSeverityV20.SpecViolation, this,
                             "HasDataSpecification: data specification reference set to IEC61360, but no " +
                             "data specification content set!",
                             () =>
@@ -4994,7 +4994,7 @@ namespace AdminShellNS
 
             public void SerializeXmlToStream(StreamWriter s)
             {
-                var serializer = new XmlSerializer(typeof(AdminShell.AdministrationShellEnv));
+                var serializer = new XmlSerializer(typeof(AdministrationShellEnv));
                 var nss = new XmlSerializerNamespaces();
                 nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
                 nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
@@ -5024,15 +5024,15 @@ namespace AdminShellNS
             public AdministrationShellEnv DeserializeFromXmlStream(TextReader reader)
             {
                 XmlSerializer serializer = new XmlSerializer(
-                    typeof(AdminShell.AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
-                var res = serializer.Deserialize(reader) as AdminShell.AdministrationShellEnv;
+                    typeof(AdministrationShellEnv), "http://www.admin-shell.io/aas/2/0");
+                var res = serializer.Deserialize(reader) as AdminShellV20.AdministrationShellEnv;
                 return res;
             }
 
             public AdministrationShellEnv DeserializeFromJsonStream(TextReader reader)
             {
                 JsonSerializer serializer = new JsonSerializer();
-                serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                serializer.Converters.Add(new AdminShellConvertersV20.JsonAasxConverter("modelType", "name"));
                 var res = (AdministrationShellEnv)serializer.Deserialize(reader, typeof(AdministrationShellEnv));
                 return res;
             }
@@ -5187,10 +5187,10 @@ namespace AdminShellNS
 
             // Validation
 
-            public AasValidationRecordList ValidateAll()
+            public AasValidationRecordListV20 ValidateAll()
             {
                 // collect results
-                var results = new AasValidationRecordList();
+                var results = new AasValidationRecordListV20();
 
                 // all entities
                 foreach (var rf in this.FindAllReferable())
@@ -5200,7 +5200,7 @@ namespace AdminShellNS
                 return results;
             }
 
-            public int AutoFix(IEnumerable<AasValidationRecord> records)
+            public int AutoFix(IEnumerable<AasValidationRecordV20> records)
             {
                 // access
                 if (records == null)
@@ -5517,7 +5517,7 @@ namespace AdminShellNS
         {
             // constants
             public static Type[] PROP_MLP = new Type[] {
-            typeof(AdminShell.MultiLanguageProperty), typeof(AdminShell.Property) };
+            typeof(MultiLanguageProperty), typeof(Property) };
 
             // for JSON only
             [XmlIgnore]
@@ -5771,7 +5771,7 @@ namespace AdminShellNS
 
             // validation
 
-            public override void Validate(AasValidationRecordList results)
+            public override void Validate(AasValidationRecordListV20 results)
             {
                 // access
                 if (results == null)
@@ -6005,7 +6005,7 @@ namespace AdminShellNS
             /// <returns>SubmodelElement or null</returns>
             public static SubmodelElement CreateAdequateType(Type t)
             {
-                if (t == null || !t.IsSubclassOf(typeof(AdminShell.SubmodelElement)))
+                if (t == null || !t.IsSubclassOf(typeof(SubmodelElement)))
                     return null;
                 var sme = Activator.CreateInstance(t) as SubmodelElement;
                 return sme;
@@ -7174,7 +7174,7 @@ namespace AdminShellNS
 
             // validation
 
-            public override void Validate(AasValidationRecordList results)
+            public override void Validate(AasValidationRecordListV20 results)
             {
                 // access
                 if (results == null)
@@ -8816,3 +8816,4 @@ namespace AdminShellNS
     #endregion
 }
 
+#endif

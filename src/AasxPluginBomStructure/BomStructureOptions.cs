@@ -22,9 +22,9 @@ namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyle : AdminShell.IGetReference
+    public class BomLinkStyle : AdminShell.IGetGlobalReference
     {
-        public AdminShell.Key Match;
+        public AdminShell.Identifier Match;
         public bool Skip;
         public BomLinkDirection Direction;
         public string Color;
@@ -33,7 +33,28 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        public AdminShell.GlobalReference GetGlobalReference()
+            => new AdminShell.GlobalReference(Match);
+
+        public BomLinkStyle() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomLinkStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomLinkStyleV20 src) : base()
+        {
+            if (src.Match != null)
+                Match = new AdminShell.Identifier(src.Match.value);
+
+            Skip = src.Skip;
+            Direction = (BomLinkDirection)((int)src.Direction);
+            Color = src.Color;
+            Width = src.Width;
+            Text = src.Text;
+            FontSize = src.FontSize;
+            Dashed = src.Dashed;
+            Bold = src.Bold;
+            Dotted = src.Dotted;
+        }
+#endif
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -43,14 +64,18 @@ namespace AasxPluginBomStructure
 
         public void Index()
         {
+            // as this object is attached the options but could be executed multiple times in the life time
+            // clear at first
+            Store.Clear();
+            // now re-index
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.GlobalReference.CreateNew(ls.Match), ls);
         }
     }
 
-    public class BomNodeStyle : AdminShell.IGetReference
+    public class BomNodeStyle : AdminShell.IGetGlobalReference
     {
-        public AdminShell.Key Match;
+        public AdminShell.Identifier Match;
         public bool Skip;
 
         public string Shape;
@@ -61,7 +86,30 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        public AdminShell.GlobalReference GetGlobalReference()
+            => new AdminShell.GlobalReference(Match);
+
+        public BomNodeStyle() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomNodeStyle(AasxCompatibilityModels.AasxPluginBomStructure.BomNodeStyleV20 src) : base()
+        {
+            if (src.Match != null)
+                Match = new AdminShell.Identifier(src.Match.value);
+
+            Skip = src.Skip;
+            Shape = src.Shape;
+            Background = src.Background;
+            Foreground = src.Foreground;
+            LineWidth = src.LineWidth;
+            Radius = src.Radius;
+            Text = src.Text;
+            FontSize = src.FontSize;
+            Dashed = src.Dashed;
+            Bold = src.Bold;
+            Dotted = src.Dotted;
+        }
+#endif
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>
@@ -71,20 +119,45 @@ namespace AasxPluginBomStructure
 
         public void Index()
         {
+            // as this object is attached the options but could be executed multiple times in the life time
+            // clear at first
+            Store.Clear();
+            // now re-index
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(AdminShell.GlobalReference.CreateNew(ls.Match), ls);
         }
     }
 
-    public class BomStructureOptionsRecord
+    public class BomStructureOptionsRecord : AasxIntegrationBase.AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
-
         public int Layout;
         public bool? Compact;
 
         public BomLinkStyleList LinkStyles = new BomLinkStyleList();
         public BomNodeStyleList NodeStyles = new BomNodeStyleList();
+
+        public BomStructureOptionsRecord() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomStructureOptionsRecord(
+            AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsRecordV20 src)
+            : base(src)
+        {
+            if (src == null)
+                return;
+
+            Layout = src.Layout;
+            Compact = src.Compact;
+
+            if (src.LinkStyles != null)
+                foreach (var ls in src.LinkStyles)
+                    LinkStyles.Add(new BomLinkStyle(ls));
+
+            if (src.NodeStyles != null)
+                foreach (var ns in src.NodeStyles)
+                    NodeStyles.Add(new BomNodeStyle(ns));
+        }
+#endif
 
         public void Index()
         {
@@ -96,14 +169,14 @@ namespace AasxPluginBomStructure
         {
             if (semId == null)
                 return null;
-            return LinkStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return LinkStyles.Store.FindElementByReference(semId);
         }
 
         public BomNodeStyle FindFirstNodeStyle(AdminShell.SemanticId semId)
         {
             if (semId == null)
                 return null;
-            return NodeStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return NodeStyles.Store.FindElementByReference(semId);
         }
 
     }
@@ -137,9 +210,21 @@ namespace AasxPluginBomStructure
         }
     }
 
-    public class BomStructureOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class BomStructureOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         public List<BomStructureOptionsRecord> Records = new List<BomStructureOptionsRecord>();
+
+        public BomStructureOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public BomStructureOptions(AasxCompatibilityModels.AasxPluginBomStructure.BomStructureOptionsV20 src)
+            : base(src)
+        {
+            if (src.Records != null)
+                foreach (var rec in src.Records)
+                    Records.Add(new BomStructureOptionsRecord(rec));
+        }
+#endif
 
         /// <summary>
         /// Create a set of minimal options
@@ -147,11 +232,7 @@ namespace AasxPluginBomStructure
         public static BomStructureOptions CreateDefault()
         {
             var rec = new BomStructureOptionsRecord();
-            rec.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://smart.festo.com/id/type/submodel/BOM/1/1"));
+            rec.AllowSubmodelSemanticId.Add("http://smart.festo.com/id/type/submodel/BOM/1/1");
 
             var opt = new BomStructureOptions();
             opt.Records.Add(rec);

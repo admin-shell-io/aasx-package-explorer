@@ -262,8 +262,8 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-           AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(AdminShell.AdministrationShellEnv env,
+           AdminShell.AdministrationShell adminShell)
         {
             return new Importer(env, Context).ImportSubmodel(this, adminShell);
         }

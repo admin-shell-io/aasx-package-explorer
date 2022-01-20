@@ -14,14 +14,21 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "AasxPluginPlotting.options.json".
+// This is, because plotting plugin is only initally published in Dec 2021.
+// A migration by hand was done.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginPlotting
 {
-    public class PlottingOptionsRecord
+    public class PlottingOptionsRecord : AasxIntegrationBase.AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
-    public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class PlottingOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         public List<PlottingOptionsRecord> Records = new List<PlottingOptionsRecord>();
 
@@ -32,7 +39,7 @@ namespace AasxPluginPlotting
         {
             var rec = new PlottingOptionsRecord();
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.Plotting.Static.SEM_PlottingSubmodel.GetAsExactlyOneKey());
+                AasxPredefinedConcepts.Plotting.Static.SEM_PlottingSubmodel.GetAsIdentifier());
 
             var opt = new PlottingOptions();
             opt.Records.Add(rec);

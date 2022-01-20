@@ -50,7 +50,7 @@ namespace AasxDictionaryImport.Cdd.Tests
                 new[] { "P4", "Test property 2" },
             }));
 
-            var env = new AdminShellV20.AdministrationShellEnv();
+            var env = new AdminShell.AdministrationShellEnv();
             var adminShell = CreateAdminShell(env);
 
             var p3 = submodelElements.First(e => e.Id == "P3");
@@ -71,14 +71,14 @@ namespace AasxDictionaryImport.Cdd.Tests
             Assert.That(submodel.submodelElements, Has.Count.EqualTo(2));
 
             var c2 = submodel.submodelElements[0].submodelElement;
-            Assert.That(c2, Is.TypeOf<AdminShellV20.SubmodelElementCollection>());
+            Assert.That(c2, Is.TypeOf<AdminShell.SubmodelElementCollection>());
             Assert.That(c2.idShort, Is.EqualTo("Block1"));
-            if (!(c2 is AdminShellV20.SubmodelElementCollection c2Coll))
+            if (!(c2 is AdminShell.SubmodelElementCollection c2Coll))
                 return;
             Assert.That(c2Coll.value, Has.Count.EqualTo(1));
 
             var p3Element = c2Coll.value[0].submodelElement;
-            Assert.That(p3Element, Is.TypeOf<AdminShellV20.Property>());
+            Assert.That(p3Element, Is.TypeOf<AdminShell.Property>());
             Assert.That(p3Element.idShort, Is.EqualTo("TestProperty1"));
             // TODO (Robin, 2020-09-03): please check
             // dead-csharp off
@@ -87,14 +87,14 @@ namespace AasxDictionaryImport.Cdd.Tests
             // dead-csharp on
 
             var c3 = submodel.submodelElements[1].submodelElement;
-            Assert.That(c3, Is.TypeOf<AdminShellV20.SubmodelElementCollection>());
+            Assert.That(c3, Is.TypeOf<AdminShell.SubmodelElementCollection>());
             Assert.That(c3.idShort, Is.EqualTo("Block2"));
-            if (!(c3 is AdminShellV20.SubmodelElementCollection c3Coll))
+            if (!(c3 is AdminShell.SubmodelElementCollection c3Coll))
                 return;
             Assert.That(c3Coll.value, Has.Count.EqualTo(1));
 
             var p4Element = c3Coll.value[0].submodelElement;
-            Assert.That(p4Element, Is.TypeOf<AdminShellV20.Property>());
+            Assert.That(p4Element, Is.TypeOf<AdminShell.Property>());
             Assert.That(p4Element.idShort, Is.EqualTo("TestProperty2"));
             // TODO (Robin, 2020-09-03): please check
             // dead-csharp off

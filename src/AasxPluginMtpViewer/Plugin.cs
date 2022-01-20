@@ -48,9 +48,29 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try load defaults options from assy directory
             try
             {
+                // need special settings
+                var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                    new[] {
+                        typeof(WpfMtpControl.MtpVisuOptions),
+                        typeof(AasxCompatibilityModels.WpfMtpControl.MtpVisuOptionsV20),
+                        typeof(AasxCompatibilityModels.AdminShellV20)
+                    });
+
+                // this plugin can read OLD options (using the meta-model V2.0.1)
+                var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
+                upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
+                {
+                    Info = "AAS2.0.1",
+                    Trigger = @"""local""",
+                    OldRootType = typeof(AasxCompatibilityModels.AasxPluginMtpViewer.MtpViewerOptionsV20),
+                    UpgradeLambda = (old) => new AasxPluginMtpViewer.MtpViewerOptions(
+                        old as AasxCompatibilityModels.AasxPluginMtpViewer.MtpViewerOptionsV20)
+                });
+
+                // base options
                 var newOpt =
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginMtpViewer.MtpViewerOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly());
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, Log, upgrades.ToArray());
                 if (newOpt != null)
                     this.options = newOpt;
             }

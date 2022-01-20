@@ -31,6 +31,8 @@ namespace AasxPluginBomStructure
                     dict.Add(key, new List<V> { value });
             }
 
+            public void Clear() => dict.Clear();
+
             public bool ContainsKey(K key) => dict.ContainsKey(key);
 
             public List<V> this[K key] => dict[key];
@@ -41,24 +43,37 @@ namespace AasxPluginBomStructure
 
         protected uint ComputeHashOnReference(AdminShell.Reference r)
         {
-            // access
-            if (r == null || r.Keys == null)
-                return 0;
-
             // use memory stream for effcient behaviour
             byte[] dataBytes = null;
             using (var mems = new MemoryStream())
             {
-                foreach (var k in r.Keys)
+                if (r is AdminShell.ModelReference modrf)
                 {
-                    var bs = System.Text.Encoding.UTF8.GetBytes(k.type.Trim().ToLower());
-                    mems.Write(bs, 0, bs.Length);
+                    // access
+                    if (modrf.Keys == null)
+                        return 0;
 
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.idType.Trim().ToLower());
-                    mems.Write(bs, 0, bs.Length);
+                    foreach (var k in modrf.Keys)
+                    {
+                        var bs = System.Text.Encoding.UTF8.GetBytes(k.type.Trim().ToLower());
+                        mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.value.Trim().ToLower());
-                    mems.Write(bs, 0, bs.Length);
+                        bs = System.Text.Encoding.UTF8.GetBytes(k.value.Trim().ToLower());
+                        mems.Write(bs, 0, bs.Length);
+                    }
+                }
+
+                if (r is AdminShell.GlobalReference glbrf)
+                {
+                    // access
+                    if (glbrf.Value == null)
+                        return 0;
+
+                    foreach (var v in glbrf.Value)
+                    {
+                        var bs = System.Text.Encoding.UTF8.GetBytes(v.value.Trim().ToLower());
+                        mems.Write(bs, 0, bs.Length);
+                    }
                 }
 
                 dataBytes = mems.ToArray();
@@ -77,6 +92,8 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
+        public void Clear() => dict.Clear();
+
         public void Index(AdminShell.Reference rf, T elem)
         {
             // access
@@ -89,7 +106,7 @@ namespace AasxPluginBomStructure
 
         public T FindElementByReference(
             AdminShell.Reference r,
-            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Strict)
+            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Relaxed)
         {
             var hk = ComputeHashOnReference(r);
             if (hk == 0 || !dict.ContainsKey(hk))
@@ -97,8 +114,12 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as AdminShell.IGetReference)?.GetReference();
-                if (xx != null && xx.Matches(r, matchMode))
+                var xx = (test as AdminShell.IGetModelReference)?.GetModelReference();
+                if (r is AdminShell.ModelReference modrf
+                    && xx != null && xx.Matches(modrf, matchMode))
+                    return test;
+                if (r is AdminShell.GlobalReference)
+                    // TODO (MIHO, 2022-01-07): make this check more precise?
                     return test;
             }
 
@@ -109,7 +130,7 @@ namespace AasxPluginBomStructure
 
     public class AasReferableStore : AasReferenceStore<AdminShell.Referable>
     {
-        private void RecurseIndexSME(AdminShell.Reference currRef, AdminShell.SubmodelElement sme)
+        private void RecurseIndexSME(AdminShell.ModelReference currRef, AdminShell.SubmodelElement sme)
         {
             // access
             if (currRef == null || sme == null)
@@ -118,7 +139,7 @@ namespace AasxPluginBomStructure
             // add to the currRef
             currRef.Keys.Add(
                 new AdminShell.Key(
-                    sme.GetElementName(), false, AdminShell.Identification.IdShort, sme.idShort));
+                    sme.GetElementName(), sme.idShort));
 
             // index
             var hk = ComputeHashOnReference(currRef);
@@ -141,7 +162,7 @@ namespace AasxPluginBomStructure
                 return;
 
             // make curr ref and index
-            var currRef = cd.GetReference();
+            var currRef = cd.GetModelReference();
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
@@ -152,7 +173,7 @@ namespace AasxPluginBomStructure
                 return;
 
             // make curr ref and index
-            var currRef = sm.GetReference();
+            var currRef = sm.GetModelReference();
             dict.Add(ComputeHashOnReference(currRef), sm);
 
             // recurse

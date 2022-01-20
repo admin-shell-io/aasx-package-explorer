@@ -259,8 +259,7 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
                         aas.AddDescription("en?", "" + fi.Description);
-                        aas.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
+                        aas.id = new AdminShell.Identifier("" + id);
                         pkg.AasEnv?.AdministrationShells.Add(aas);
                     }
 
@@ -268,11 +267,11 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AssetIds != null)
                     foreach (var id in fi.AssetIds)
                     {
-                        var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
-                        asset.AddDescription("en?", "" + fi.Description);
-                        asset.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
-                        pkg.AasEnv?.Assets.Add(asset);
+                        var asset = new AdminShell.AssetInformation();
+                        asset.SetIdentification("" + id);
+
+                        // TODO (MIHO, 2022-01-07): where to save?
+                        //// pkg.AasEnv?.Assets.Add(asset);
                     }
             }
         }

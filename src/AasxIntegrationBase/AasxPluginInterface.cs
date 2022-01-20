@@ -70,7 +70,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventNavigateToReference : AasxPluginResultEventBase
     {
-        public AdminShell.Reference targetReference = null;
+        public AdminShell.ModelReference targetReference = null;
     }
 
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase

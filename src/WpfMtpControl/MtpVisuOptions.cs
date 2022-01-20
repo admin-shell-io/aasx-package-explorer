@@ -20,7 +20,7 @@ namespace WpfMtpControl
 {
     public class MtpVisuOptions
     {
-        // original input
+        // public members
 
         public string Background = "#e0e0e0";
 
@@ -30,7 +30,7 @@ namespace WpfMtpControl
         public string StateColorForward = "#0000ff";
         public string StateColorReverse = "#00ff00";
 
-        // prepared
+        // public, but computed
 
         [JsonIgnore]
         public Brush BackgroundBrush = new SolidColorBrush(Color.FromRgb(224, 224, 255));
@@ -44,6 +44,27 @@ namespace WpfMtpControl
         public Brush StateColorForwardBrush = Brushes.Blue;
         [JsonIgnore]
         public Brush StateColorReverseBrush = Brushes.Green;
+
+        // Constructors
+
+        public MtpVisuOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public MtpVisuOptions(AasxCompatibilityModels.WpfMtpControl.MtpVisuOptionsV20 src)
+            : base()
+        {
+            if (src == null)
+                return;
+
+            Background = src.Background;
+            StateColorActive = src.StateColorActive;
+            StateColorNonActive = src.StateColorNonActive;
+            StateColorForward = src.StateColorForward;
+            StateColorReverse = src.StateColorReverse;
+        }
+#endif
+
+        // internal functions
 
         private static void PrepareColor(string preset, ref Brush color)
         {

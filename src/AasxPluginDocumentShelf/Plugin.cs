@@ -122,7 +122,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var found = false;
                 // ReSharper disable once UnusedVariable
                 foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                    sm.semanticId?.GetAsExactlyOneKey()))
+                    sm.semanticId?.GetAsIdentifier()))
                     found = true;
                 if (!found)
                     return null;
@@ -228,7 +228,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (smName.Contains("V1.1"))
                 {
                     sm.semanticId = new AdminShell.SemanticId(
-                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                        AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleId());
                     sm.idShort = "ManufacturerDocumentation";
                 }
                 else

@@ -160,8 +160,8 @@ namespace AasxPackageExplorer
                     DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
-                    DiaData.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
-                        AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag));
+                    DiaData.ResultKeys.Add(
+                        new AdminShell.Key(AdminShell.Key.FragmentReference, "Plugin:" + vepe.theExt.Tag));
 
                     // ok
                     return true;
@@ -187,7 +187,7 @@ namespace AasxPackageExplorer
                 return null;
             var res = filter;
             if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in AdminShell.Key.SubmodelElements)
+                foreach (var s in AdminShell.Key.SubmodelElementElements)
                     res += " " + s + " ";
             return " " + res + " ";
         }

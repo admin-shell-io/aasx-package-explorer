@@ -162,7 +162,8 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.Asset>> GetAasAssetCore(string index)
+        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>>
+            GetAasAssetCore(string index)
         {
             // access
             if (!IsValid())
@@ -181,15 +182,17 @@ namespace AasxPackageLogic.PackageCentral
 
             // proudly to the parsing
             AdminShell.AdministrationShell aas = null;
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
                 aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(frame["AAS"]);
-            if (frame.ContainsKey("Asset"))
-                asset = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Asset>(frame["Asset"]);
+
+            // TODO (MIHO, 2022-01-07): what to do with frame fro Asset??
+
+            // ReSharper disable once ExpressionIsAlwaysNull
 
             // result
-            return new Tuple<AdminShell.AdministrationShell, AdminShell.Asset>(aas, asset);
+            return new Tuple<AdminShell.AdministrationShell, AdminShell.AssetInformation>(aas, asset);
         }
 
         /// <summary>
@@ -222,8 +225,8 @@ namespace AasxPackageLogic.PackageCentral
             rootSubmodel.SetAllParents();
 
             // get the reference of the sourceEvent and requestedElement
-            var sourceReference = sourceEvent.GetReference();
-            var requestedReference = (reqSm != null) ? reqSm.GetReference() : reqSme.GetReference();
+            var sourceReference = sourceEvent.GetModelReference();
+            var requestedReference = (reqSm != null) ? reqSm.GetModelReference() : reqSme.GetModelReference();
 
             // 2nd check
             if (sourceReference == null || requestedReference == null)
@@ -315,8 +318,8 @@ namespace AasxPackageLogic.PackageCentral
                         if (tuple.path != null)
                         {
                             // KeyList from path
-                            var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
-                                        AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
+                            var kl = AdminShell.KeyList.CreateNew(
+                                        AdminShell.Key.SubmodelElement, tuple.path.ToObject<string[]>());
                             // goal (1)
                             pluv.Values.Add(
                                 new AasPayloadUpdateValueItem(kl, "" + tuple.value));
@@ -325,7 +328,7 @@ namespace AasxPackageLogic.PackageCentral
                             if (wrappers != null)
                             {
                                 var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
+                                    wrappers, AdminShell.ModelReference.CreateNew(kl), keyIndex: 0);
                                 if (x is AdminShell.Property prop)
                                 {
                                     if (tuple.value != null)
@@ -462,11 +465,11 @@ namespace AasxPackageLogic.PackageCentral
                         ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
-                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
+                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.fakeIdShort}\"",
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.idShort).SubstringMax(0, 3)
                     };
-                    fi.AasIds.Add("" + x.Item1?.identification?.id);
-                    fi.AssetIds.Add("" + x.Item2?.identification?.id);
+                    fi.AasIds.Add("" + x.Item1?.id?.value);
+                    fi.AssetIds.Add("" + x.Item2?.globalAssetId?.GetAsIdentifier());
                     res.Add(fi);
                 }
                 catch (Exception ex)
@@ -656,8 +659,8 @@ namespace AasxPackageLogic.PackageCentral
                 // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(
-                        "", false, AdminShell.Key.IdShort, sme0.idShort,
-                        AdminShellV20.Key.MatchMode.Identification))
+                        "", sme0.idShort,
+                        AdminShell.Key.MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
@@ -757,7 +760,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     AdminShell.SubmodelRef smrefFound = null;
                     foreach (var smref in parentAas.submodelRefs)
-                        if (smref.Matches(targetKl.Last(), AdminShellV20.Key.MatchMode.Relaxed))
+                        if (smref.Matches(targetKl.Last()))
                             smrefFound = smref;
 
                     if (smrefFound == null)

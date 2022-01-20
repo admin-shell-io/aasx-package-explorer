@@ -25,7 +25,7 @@ namespace AasxPackageLogic
     /// This class extends the basic helper functionalities of DispEditHelper by providing modules for display/
     /// editing disting modules of the GUI, such as the different (re-usable) Interfaces of the AAS entities
     /// </summary>
-    public class DispEditHelperModules : DispEditHelperCopyPaste
+    public class DispEditHelperModules : DispEditHelperMiniModules
     {
         //
         // Inject a number of customised function in modules
@@ -97,9 +97,10 @@ namespace AasxPackageLogic
 
             // members
             this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck( () => { return referable.idShort == null || referable.idShort.Length < 1; },
-                    "The idShort is meanwhile mandatory for all Referables. It is a short, " +
-                        "unique identifier that is unique just in its context, its name space. ", breakIfTrue: true),
+                new HintCheck( () => !(referable is AdminShell.Identifiable) && !referable.idShort.HasContent(),
+                    "The idShort is mandatory for all Referables which are not Identifiable. " +
+                    "It is a short, unique identifier that is unique just in its context, " +
+                    "its name space. ", breakIfTrue: true),
                 new HintCheck(
                     () => {
                         if (referable.idShort == null) return false;
@@ -128,6 +129,31 @@ namespace AasxPackageLogic
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
                 auxButtonLambda: injectToIdShort?.auxLambda
                 );
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => referable.displayName?.IsValid != true,
+                        "The use of a Display name is recommended to express a human readable name " +
+                        "for the Referable in multiple languages.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice),
+                    new HintCheck(
+                        () => { return referable.displayName.langString.Count < 2; },
+                        "Consider having Display name in multiple langauges.",
+                        severityLevel: HintCheck.Severity.Notice)
+            });
+            if (this.SafeguardAccess(stack, repo, referable.displayName, "displayName:", "Create data element!", v =>
+            {
+                referable.displayName = new AdminShell.DisplayName();
+                this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                return new AnyUiLambdaActionRedrawEntity();
+            }))
+            {
+                this.AddKeyListLangStr(stack, "displayName", referable.displayName.langString,
+                    repo, relatedReferable: referable);
+            }
 
             if (!categoryUsual)
                 this.AddHintBubble(
@@ -182,6 +208,39 @@ namespace AasxPackageLogic
                 this.AddKeyListLangStr(stack, "description", referable.description.langString,
                     repo, relatedReferable: referable);
             }
+
+            // Checksum
+
+            this.AddKeyValueRef(
+                stack, "checksum", referable, ref referable.checksum, null, repo,
+                v =>
+                {
+                    var dr = new DiaryReference(referable);
+                    referable.checksum = v as string;
+                    this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Generate" },
+                auxButtonToolTips: new[] { "Generate a SHA256 hashcode over this Referable" },
+                auxButtonLambda: (i) =>
+                {
+                    if (i == 0)
+                    {
+                        referable.checksum = referable.ComputeHashcode();
+                        this.AddDiaryEntry(referable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                }
+                );
+
+            // Extensions (at the end to make them not so much impressive!)
+
+            DisplayOrEditEntityListOfExtension(
+                stack: stack, extensions: referable.extension,
+                setOutput: (v) => { referable.extension = v; },
+                relatedReferable: referable);
         }
 
         //
@@ -191,8 +250,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityIdentifiable(AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
-            DispEditInjectAction injectToId = null,
-            bool checkForIri = true)
+            DispEditInjectAction injectToId = null)
         {
             // access
             if (stack == null || identifiable == null)
@@ -203,48 +261,31 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return identifiable.identification == null; },
+                    () => { return identifiable.id == null; },
                     "Providing a worldwide unique identification is mandatory.",
                     breakIfTrue: true),
                 new HintCheck(
-                    () => { return checkForIri
-                        && identifiable.identification.idType != AdminShell.Identification.IRI;
-                    },
-                    "Check if identification type is correct. Use of IRIs is usual here.",
-                    severityLevel: HintCheck.Severity.Notice ),
-                new HintCheck(
-                    () => { return identifiable.identification.id.Trim() == ""; },
+                    () => { return identifiable.id.value.Trim() == ""; },
                     "Identification id shall not be empty. You could use the 'Generate' button in order to " +
                         "generate a worldwide unique id. " +
                         "The template of this id could be set by commandline arguments." )
 
             });
             if (this.SafeguardAccess(
-                    stack, repo, identifiable.identification, "identification:", "Create data element!",
+                    stack, repo, identifiable.id, "identification:", "Create data element!",
                     v =>
                     {
-                        identifiable.identification = new AdminShell.Identification();
+                        identifiable.id = new AdminShell.Identifier();
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 this.AddKeyValueRef(
-                    stack, "idType", identifiable, ref identifiable.identification.idType, null, repo,
+                    stack, "id", identifiable, ref identifiable.id.value, null, repo,
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
-                        identifiable.identification.idType = v as string;
-                        this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                        return new AnyUiLambdaActionNone();
-                    },
-                    comboBoxItems: AdminShell.Key.IdentifierTypeNames);
-
-                this.AddKeyValueRef(
-                    stack, "id", identifiable, ref identifiable.identification.id, null, repo,
-                    v =>
-                    {
-                        var dr = new DiaryReference(identifiable);
-                        identifiable.identification.id = v as string;
+                        identifiable.id.value = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                         return new AnyUiLambdaActionNone();
                     },
@@ -254,8 +295,7 @@ namespace AasxPackageLogic
                         if (i == 0)
                         {
                             var dr = new DiaryReference(identifiable);
-                            identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            identifiable.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
@@ -323,7 +363,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             AdminShell.HasDataSpecification hasDataSpecification,
             Action<AdminShell.HasDataSpecification> setOutput,
-            string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
+            string[] addPresetNames = null, AdminShell.ListOfIdentifier[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
             AdminShell.Referable relatedReferable = null)
         {
@@ -377,9 +417,9 @@ namespace AasxPackageLogic
                 {
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                         if (hasDataSpecification[i].dataSpecification != null)
-                            this.AddKeyListKeys(
+                            this.AddKeyListOfIdentifier(
                                 stack, String.Format("reference[{0}]", i),
-                                hasDataSpecification[i].dataSpecification.Keys,
+                                hasDataSpecification[i].dataSpecification.Value,
                                 repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
                                 addExistingEntities: null /* "All" */,
                                 addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
@@ -392,9 +432,9 @@ namespace AasxPackageLogic
         // List of References
         //
 
-        public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
-            List<AdminShell.Reference> references,
-            Action<List<AdminShell.Reference>> setOutput,
+        public void DisplayOrEditEntityListOfModelReferences(AnyUiStackPanel stack,
+            List<AdminShell.ModelReference> references,
+            Action<List<AdminShell.ModelReference>> setOutput,
             string entityName,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
             AdminShell.Referable relatedReferable = null)
@@ -403,12 +443,12 @@ namespace AasxPackageLogic
             if (stack == null)
                 return;
 
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            // hasDataSpecification, isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             if (this.SafeguardAccess(
                     stack, this.repo, references, $"{entityName}:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new List<AdminShell.Reference>());
+                        setOutput?.Invoke(new List<AdminShell.ModelReference>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -422,7 +462,7 @@ namespace AasxPackageLogic
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
-                                references.Add(new AdminShell.Reference());
+                                references.Add(new AdminShell.ModelReference());
 
                             if (buttonNdx == 1 && references.Count > 0)
                                 references.RemoveAt(references.Count - 1);
@@ -436,7 +476,7 @@ namespace AasxPackageLogic
                 {
                     for (int i = 0; i < references.Count; i++)
                         this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                            stack, String.Format("ModelRef[{0}]", i), references[i].Keys, repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
                             AdminShell.Key.AllElements,
                             addEclassIrdi: true,
@@ -444,6 +484,7 @@ namespace AasxPackageLogic
                 }
             }
         }
+
 
         //
         // Kind
@@ -540,6 +581,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
             AdminShell.SemanticId semanticId,
             Action<AdminShell.SemanticId> setOutput,
+            string key = "semanticId",
+            string groupHeader = "Semantic ID:",
             string statement = null,
             bool checkForCD = false,
             string addExistingEntities = null,
@@ -551,7 +594,8 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Semantic ID:", levelColors.SubSection);
+            if (groupHeader != null)
+                this.AddGroup(stack, groupHeader, levelColors.SubSection);
 
             // hint
             this.AddHintBubble(
@@ -563,27 +607,27 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                                () => { return checkForCD &&
-                                    semanticId[0].type != AdminShell.Key.ConceptDescription; },
+                                () => !(semanticId.First?.IsIRDI() == true
+                                        || semanticId.First?.IsIRI() == true),
                                 "The semanticId usually refers to a ConceptDescription " +
-                                    "within the respective repository.",
+                                    "identified by IRI or IRDI.",
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
             // add from Copy Buffer
-            var bufferKeys = CopyPasteBuffer.PreparePresetsForListKeys(cpb);
+            var bufferKeys = CopyPasteBuffer.PreparePresetsForListOfIdentifier(cpb);
 
             // add the keys
             if (this.SafeguardAccess(
-                    stack, repo, semanticId, "semanticId:", "Create data element!",
+                    stack, repo, semanticId, "" + key + ":", "Create data element!",
                     v =>
                     {
                         setOutput?.Invoke(new AdminShell.SemanticId());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListKeys(
-                    stack, "semanticId", semanticId.Keys, repo,
+                this.AddKeyListOfIdentifier(
+                    stack, "" + key, semanticId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     addExistingEntities: addExistingEntities, addFromPool: true,
                     addEclassIrdi: true,
@@ -591,7 +635,8 @@ namespace AasxPackageLogic
                     addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) =>
                     {
-                        return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                        return new AnyUiLambdaActionNavigateTo(
+                            AdminShell.ModelReference.CreateNew(AdminShell.Key.ConceptDescription, kl));
                     },
                     relatedReferable: relatedReferable);
         }
@@ -625,6 +670,70 @@ namespace AasxPackageLogic
             }
 
         }
+
+        //
+        // Extensions
+        //
+
+        public void DisplayOrEditEntityListOfExtension(AnyUiStackPanel stack,
+            AdminShell.ListOfExtension extensions,
+            Action<AdminShell.ListOfExtension> setOutput,
+            AdminShell.Referable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "HasExtension:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, extensions, "extensions:", "Create empty list of Extensions!",
+                v =>
+                {
+                    setOutput?.Invoke(new AdminShell.ListOfExtension());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.ExtensionHelper(stack, repo, extensions, relatedReferable: relatedReferable);
+            }
+
+        }
+
+        //
+        // List of IdentifierKeyValuePair
+        //
+
+        public void DisplayOrEditEntityListOfIdentifierKeyValuePair(AnyUiStackPanel stack,
+            AdminShell.ListOfIdentifierKeyValuePair pairs,
+            Action<AdminShell.ListOfIdentifierKeyValuePair> setOutput,
+            string key = "IdentifierKeyValuePairs",
+            AdminShell.Referable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, pairs, $"{key}:", "Create empty list of IdentifierKeyValuePairs!",
+                v =>
+                {
+                    setOutput?.Invoke(new AdminShell.ListOfIdentifierKeyValuePair());
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.IdentifierKeyValuePairHelper(stack, repo, pairs,
+                    key: key,
+                    relatedReferable: relatedReferable);
+            }
+
+        }
+
 
         //
         // DataSpecificationIEC61360
@@ -735,8 +844,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.AddKeyListKeys(
-                    stack, "unitId", dsiec.unitId.Keys, repo,
+                this.AddKeyListOfIdentifier(
+                    stack, "unitId", dsiec.unitId.Value, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     AdminShell.Key.GlobalReference, addEclassIrdi: true,
                     relatedReferable: relatedReferable);

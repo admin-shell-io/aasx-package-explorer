@@ -110,15 +110,14 @@ namespace AasxToolkit
             }
 
             // AAS ENV
-            var aasenv1 = new AdminShellV20.AdministrationShellEnv();
+            var aasenv1 = new AdminShell.AdministrationShellEnv();
 
             try
             {
 
                 // ASSET
-                var asset1 = new AdminShellV20.Asset("Asset_3s7plfdrs35");
-                aasenv1.Assets.Add(asset1);
-                asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
+                var asset1 = new AdminShell.AssetInformation("Asset_3s7plfdrs35");
+                asset1.SetIdentification("http://example.com/3s7plfdrs35");
                 asset1.AddDescription("en", "USB Stick");
                 asset1.AddDescription("de", "USB Speichereinheit");
 
@@ -154,30 +153,25 @@ namespace AasxToolkit
                 Log.WriteLine(2, "Creating submodel BOM for Asset Structure..");
                 var subBOM2 = CreateSubmodelBOMforAssetStructure(repo, aasenv1);
 
-                // VIEW1
-                var view1 = CreateStochasticViewOnSubmodels(
-                    new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
-
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
-                var aas1 = AdminShellV20.AdministrationShell.CreateNew(
+                var aas1 = AdminShell.AdministrationShell.CreateNew(
                     "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
-                aas1.derivedFrom = new AdminShellV20.AssetAdministrationShellRef(
-                    new AdminShellV20.Key("AssetAdministrationShell", false, "IRI",
+                aas1.derivedFrom = new AdminShell.AssetAdministrationShellRef(
+                    new AdminShell.Key("AssetAdministrationShell",
                         "www.admin-shell.io/aas/sample-series-aas/1/1"));
                 aasenv1.AdministrationShells.Add(aas1);
-                aas1.assetRef = asset1.GetAssetReference();
+                aas1.assetInformation = asset1;
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
-                aas1.submodelRefs.Add(subCad.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subDocu.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subDatasheet.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subEng.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subVars.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM2.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.AddView(view1);
+                aas1.submodelRefs.Add(subCad.GetSubmodelRef());
+                aas1.submodelRefs.Add(subDocu.GetSubmodelRef());
+                aas1.submodelRefs.Add(subDatasheet.GetSubmodelRef());
+                aas1.submodelRefs.Add(subEng.GetSubmodelRef());
+                aas1.submodelRefs.Add(subVars.GetSubmodelRef());
+                aas1.submodelRefs.Add(subBOM.GetSubmodelRef());
+                aas1.submodelRefs.Add(subBOM2.GetSubmodelRef());
             }
             catch (Exception ex)
             {
@@ -218,12 +212,12 @@ namespace AasxToolkit
             return package;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelCad(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelCad(
+            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
 
             // CONCEPTS
-            var cdGroup = AdminShellV20.ConceptDescription.CreateNew(
+            var cdGroup = AdminShell.ConceptDescription.CreateNew(
                 "CadItem", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
             aasenv.ConceptDescriptions.Add(cdGroup);
             cdGroup.SetIEC61360Spec(
@@ -235,7 +229,7 @@ namespace AasxToolkit
                     "en", "Collection of properties, which make a file for a CAD system accessible." }
             );
 
-            var cdFile = AdminShellV20.ConceptDescription.CreateNew(
+            var cdFile = AdminShell.ConceptDescription.CreateNew(
                 "File", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
             aasenv.ConceptDescriptions.Add(cdFile);
             cdFile.SetIEC61360Spec(
@@ -246,8 +240,8 @@ namespace AasxToolkit
                     "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
             );
 
-            var cdFormat = AdminShellV20.ConceptDescription.CreateNew(
-                "FileFormat", AdminShellV20.Identification.IRDI, "0173-1#02-ZAA120#007");
+            var cdFormat = AdminShell.ConceptDescription.CreateNew(
+                "FileFormat", AdminShell.Identifier.IRDI, "0173-1#02-ZAA120#007");
             aasenv.ConceptDescriptions.Add(cdFormat);
             cdFormat.SetIEC61360Spec(
                 preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
@@ -259,12 +253,10 @@ namespace AasxToolkit
             );
 
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "CAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(
-                AdminShellV20.Key.CreateNew(
-                    "Submodel", false, "IRI", "http://example.com/id/type/submodel/cad/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/cad/1/1");
 
             // for each cad file in prefs
             int ndx = 0;
@@ -279,33 +271,30 @@ namespace AasxToolkit
                 ndx++;
 
                 // GROUP
-                var propGroup = AdminShellV20.SubmodelElementCollection.CreateNew(
+                var propGroup = AdminShell.SubmodelElementCollection.CreateNew(
                     $"CadItem{ndx:D2}", "PARAMETER",
-                    AdminShellV20.Key.GetFromRef(cdGroup.GetCdReference()));
+                    cdGroup.GetSemanticId());
                 sub1.Add(propGroup);
 
                 // FILE
-                var propFile = AdminShellV20.File.CreateNew(
-                    "File", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFile.GetCdReference()));
+                var propFile = AdminShell.File.CreateNew(
+                    "File", "PARAMETER", cdFile.GetSemanticId());
                 propGroup.Add(propFile);
                 propFile.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
                 propFile.value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
-                var propType = AdminShellV20.ReferenceElement.CreateNew(
-                    "FileFormat", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFormat.GetCdReference()));
+                var propType = AdminShell.GlobalReferenceElement.CreateNew(
+                    "FileFormat", "PARAMETER", cdFormat.GetSemanticId());
                 propGroup.Add(propType);
-                propType.value = AdminShellV20.Reference.CreateNew(
-                    AdminShellV20.Key.CreateNew(
-                        "GlobalReference", false,
-                        AdminShellV20.Identification.IRDI, "" + fr.args[0]));
+                propType.value = AdminShell.GlobalReference.CreateNew("" + fr.args[0]);
             }
 
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelDocumentationBasedOnVDI2770(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelDocumentationBasedOnVDI2770(
+            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // use pre-definitions
             var preDefLib = new DefinitionsVDI2770();
@@ -313,12 +302,12 @@ namespace AasxToolkit
 
             // add concept descriptions
             foreach (var rf in preDefs.GetAllReferables())
-                if (rf is AdminShellV20.ConceptDescription)
-                    aasenv.ConceptDescriptions.Add(rf as AdminShellV20.ConceptDescription);
+                if (rf is AdminShell.ConceptDescription)
+                    aasenv.ConceptDescriptions.Add(rf as AdminShell.ConceptDescription);
 
             // SUB MODEL
-            var sub1 = new AdminShellV20.Submodel(preDefs.SM_VDI2770_Documentation);
-            sub1.SetIdentification("IRI", repo.CreateOneTimeId());
+            var sub1 = new AdminShell.Submodel(preDefs.SM_VDI2770_Documentation);
+            sub1.SetIdentification(repo.CreateOneTimeId());
             aasenv.Submodels.Add(sub1);
 
             // execute LAMBDA on different data sources
@@ -326,8 +315,8 @@ namespace AasxToolkit
             {
                 // Document Item
                 var cd = preDefs.CD_VDI2770_Document;
-                using (var p0 = AdminShellV20.SubmodelElementCollection.CreateNew($"Document{idx:D2}",
-                    "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
+                using (var p0 = AdminShell.SubmodelElementCollection.CreateNew($"Document{idx:D2}",
+                    "CONSTANT", cd.GetSemanticId()))
                 {
                     sub1.Add(p0);
 
@@ -335,8 +324,8 @@ namespace AasxToolkit
 
                     // DOCUMENT ID
                     cd = preDefs.CD_VDI2770_DocumentId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultPreferredName(), "CONSTANT", cd.GetSemanticId()))
                     {
                         p.valueType = "string";
                         p.value = "" + args.GetHashCode();
@@ -345,8 +334,8 @@ namespace AasxToolkit
 
                     // Is Primary
                     cd = preDefs.CD_VDI2770_IsPrimaryDocumentId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultPreferredName(), "CONSTANT", cd.GetSemanticId()))
                     {
                         p.valueType = "boolean";
                         p.value = "true";
@@ -355,19 +344,19 @@ namespace AasxToolkit
 
                     // DOCUMENT CLASS ID
                     cd = preDefs.CD_VDI2770_DocumentClassId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultPreferredName(), "CONSTANT", cd.GetSemanticId()))
                     {
                         p.valueType = "string";
                         p.value = "" + args[0];
-                        p.valueId = AdminShellV20.Reference.CreateIrdiReference(args[2]);
+                        p.valueId = AdminShell.GlobalReference.CreateIrdiReference(args[2]);
                         p0.Add(p);
                     }
 
                     // DOCUMENT CLASS NAME
                     cd = preDefs.CD_VDI2770_DocumentClassName;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultPreferredName(), "CONSTANT", cd.GetSemanticId()))
                     {
                         p.valueType = "string";
                         p.value = "" + args[1];
@@ -376,8 +365,8 @@ namespace AasxToolkit
 
                     // CLASS SYS
                     cd = preDefs.CD_VDI2770_DocumentClassificationSystem;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    using (var p = AdminShell.Property.CreateNew(
+                        cd.GetDefaultPreferredName(), "CONSTANT", cd.GetSemanticId()))
                     {
                         p0.Add(p);
                         p.valueType = "string";
@@ -387,8 +376,8 @@ namespace AasxToolkit
                     // Document version
 
                     cd = preDefs.CD_VDI2770_DocumentVersion;
-                    using (var p1 = AdminShellV20.SubmodelElementCollection.CreateNew($"DocumentVersion01",
-                                        "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
+                    using (var p1 = AdminShell.SubmodelElementCollection.CreateNew($"DocumentVersion01",
+                                        "CONSTANT", cd.GetSemanticId()))
                     {
                         p0.Add(p1);
 
@@ -396,9 +385,9 @@ namespace AasxToolkit
                         cd = preDefs.CD_VDI2770_Language;
                         var lngs = args[4].Split(',');
                         for (int i = 0; i < lngs.Length; i++)
-                            using (var p = AdminShellV20.Property.CreateNew(
+                            using (var p = AdminShell.Property.CreateNew(
                                 cd.GetDefaultPreferredName() + $"{i + 1:00}", "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                                cd.GetSemanticId()))
                             {
                                 p1.Add(p);
                                 p.valueType = "string";
@@ -407,9 +396,9 @@ namespace AasxToolkit
 
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -418,9 +407,9 @@ namespace AasxToolkit
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Title;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.value.Add("en", "" + args[3]);
@@ -430,9 +419,9 @@ namespace AasxToolkit
 
                         // SUMMARY
                         cd = preDefs.CD_VDI2770_Summary;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.value.Add("en", "Summary for: " + args[3]);
@@ -442,9 +431,9 @@ namespace AasxToolkit
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Keywords;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
+                        using (var p = AdminShell.MultiLanguageProperty.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.value.Add("en", "Keywords for: " + args[3]);
@@ -454,9 +443,9 @@ namespace AasxToolkit
 
                         // SET DATE
                         cd = preDefs.CD_VDI2770_Date;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "date";
@@ -465,9 +454,9 @@ namespace AasxToolkit
 
                         // STATUS
                         cd = preDefs.CD_VDI2770_StatusValue;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -476,9 +465,9 @@ namespace AasxToolkit
 
                         // ROLE
                         cd = preDefs.CD_VDI2770_Role;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -487,9 +476,9 @@ namespace AasxToolkit
 
                         // ORGANIZATION
                         cd = preDefs.CD_VDI2770_OrganizationName;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -498,9 +487,9 @@ namespace AasxToolkit
 
                         // ORGANIZATION OFFICIAL
                         cd = preDefs.CD_VDI2770_OrganizationOfficialName;
-                        using (var p = AdminShellV20.Property.CreateNew(
+                        using (var p = AdminShell.Property.CreateNew(
                             cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            cd.GetSemanticId()))
                         {
                             p1.Add(p);
                             p.valueType = "string";
@@ -512,9 +501,9 @@ namespace AasxToolkit
                         {
                             // physical file
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShellV20.File.CreateNew(
+                            using (var p = AdminShell.File.CreateNew(
                                 cd.GetDefaultPreferredName(), "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                                cd.GetSemanticId()))
                             {
                                 p1.Add(p);
                                 p.mimeType = AdminShellPackageEnv.GuessMimeType(fn);
@@ -525,9 +514,9 @@ namespace AasxToolkit
                         {
                             // URL
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShellV20.File.CreateNew(
+                            using (var p = AdminShell.File.CreateNew(
                                 cd.GetDefaultPreferredName(), "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                                cd.GetSemanticId()))
                             {
                                 p1.Add(p);
                                 p.mimeType = AdminShellPackageEnv.GuessMimeType(url);
@@ -569,23 +558,20 @@ namespace AasxToolkit
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelDatasheet(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelDatasheet(
+            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // eClass product group: 19-15-07-01 USB stick
 
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(
-                AdminShellV20.Key.CreateNew(
-                    "Submodel", false, "IRI",
-                    "http://example.com/id/type/submodel/datasheet/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/datasheet/1/1");
 
             // CONCEPT: Manufacturer
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Manufacturer", AdminShellV20.Identification.IRDI, "0173-1#02-AAO677#001"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Manufacturer", AdminShell.Identifier.IRDI, "0173-1#02-AAO677#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -598,16 +584,16 @@ namespace AasxToolkit
                         "to its being brought into circulation" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
                 p.valueType = "string";
                 p.value = "Example company Ltd.";
             }
 
             // CONCEPT: Width
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Width", AdminShellV20.Identification.IRDI, "0173-1#02-BAF016#005"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Width", AdminShell.Identifier.IRDI, "0173-1#02-BAF016#005"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -624,16 +610,16 @@ namespace AasxToolkit
                         "perpendicular to height/ length/depth" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "48";
             }
 
             // CONCEPT: Height
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Height", AdminShellV20.Identification.IRDI, "0173-1#02-BAA020#008"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Height", AdminShell.Identifier.IRDI, "0173-1#02-BAA020#008"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -651,16 +637,16 @@ namespace AasxToolkit
                         "perpendicular to diameter/length/width/depth" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "56";
             }
 
             // CONCEPT: Depth
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Depth", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Depth", AdminShell.Identifier.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -677,16 +663,16 @@ namespace AasxToolkit
                         "the rear , generally away from the observer expansion is described as depth" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
                 p.valueType = "double";
                 p.value = "11.9";
             }
 
             // CONCEPT: Weight
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Weight", AdminShellV20.Identification.IRDI, "0173-1#02-AAS627#001"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Weight", AdminShell.Identifier.IRDI, "0173-1#02-AAS627#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -700,37 +686,33 @@ namespace AasxToolkit
                 );
 
                 // as designed
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
                 p.AddQualifier("life cycle qual", "SPEC",
-                    AdminShellV20.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF575"),
-                    AdminShellV20.Reference.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
+                    AdminShell.KeyList.CreateNew(
+                        AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
+                    new AdminShell.GlobalReference(
                         "0112/2///61360_4#AAF579"));
                 p.valueType = "double";
                 p.value = "23.1";
 
                 // as produced
-                var p2 = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p2 = AdminShell.Property.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p2);
                 p2.AddQualifier("life cycle qual", "BUILT",
-                    AdminShellV20.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF575"),
-                    AdminShellV20.Reference.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
+                    AdminShell.KeyList.CreateNew(
+                        AdminShell.Key.GlobalReference, "0112/2///61360_4#AAF575"),
+                    new AdminShell.GlobalReference(
                         "0112/2///61360_4#AAF573"));
                 p2.valueType = "double";
                 p2.value = "23.05";
             }
 
             // CONCEPT: Material
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Material", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                "Material", AdminShell.Identifier.IRDI, "0173-1#02-BAB577#007"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
                 cd.SetIEC61360Spec(
@@ -743,38 +725,31 @@ namespace AasxToolkit
                     "Schweißen usw. in die endgültige Form gebracht werden" }
                 );
 
-                var p = AdminShellV20.ReferenceElement.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.GlobalReferenceElement.CreateNew(
+                    cd.GetDefaultPreferredName(), "PARAMETER", cd.GetSemanticId());
                 sub1.Add(p);
-                p.value = p.value = AdminShellV20.Reference.CreateNew(
-                    AdminShellV20.Key.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0173-1#07-AAA878#004")); // Polyamide (PA)
+                p.value = AdminShell.GlobalReference.CreateNew("0173-1#07-AAA878#004"); // Polyamide (PA)
             }
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelVariousSingleItems(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelVariousSingleItems(
+            IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "VariousItems";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/various/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/various/1/1");
 
-            AdminShellV20.SubmodelElement sme1, sme2;
+            AdminShell.SubmodelElement sme1, sme2;
 
             // CONCEPT: MultiLanguageProperty
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "DocuName",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                  // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -789,8 +764,8 @@ namespace AasxToolkit
                     "en", "legally valid designation of the natural or judicial person..." }
                 );
 
-                var p = AdminShellV20.MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
+                            cd.GetSemanticId());
                 sub1.Add(p);
                 p.value.Add("en", "An english value.");
                 p.value.Add("de", "Ein deutscher Wert.");
@@ -798,9 +773,9 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Range
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "VoltageRange",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,                  // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -815,8 +790,8 @@ namespace AasxToolkit
                     "en", "very precisely limited voltage range..." }
                 );
 
-                var p = AdminShellV20.Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
+                            cd.GetSemanticId());
                 sub1.Add(p);
                 p.min = "11.5";
                 p.max = "13.8";
@@ -824,9 +799,9 @@ namespace AasxToolkit
             }
 
             // CONCEPT: AnnotatedRelationship
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "VerConn",
-                idType: AdminShellV20.Identification.IRDI,  // immer IRDI für ECLASS
+                idType: AdminShell.Identifier.IRDI,  // immer IRDI für ECLASS
                 id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -841,14 +816,14 @@ namespace AasxToolkit
                     "en", "very precisely defined electrical connection..." }
                 );
 
-                var ar = AdminShellV20.AnnotatedRelationshipElement.CreateNew(
+                var ar = AdminShell.AnnotatedRelationshipElement.CreateNew(
                     cd.GetDefaultPreferredName(), "PARAMETER",
-                    AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                    cd.GetSemanticId());
                 sub1.Add(ar);
-                ar.first = sme1.GetReference();
-                ar.second = sme2.GetReference();
+                ar.first = sme1.GetModelReference();
+                ar.second = sme2.GetModelReference();
 
-                ar.annotations = new AdminShellV20.DataElementWrapperCollection();
+                ar.annotations = new AdminShell.DataElementWrapperCollection();
                 ar.annotations.Add(sme1);
                 ar.annotations.Add(sme2);
             }
@@ -858,25 +833,21 @@ namespace AasxToolkit
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelBOMforECAD(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelBOMforECAD(
+            IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "BOM-ECAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/BOM/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/BOM/1/1");
 
             // CONCEPT: electrical plan
 
-            AdminShellV20.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
+            AdminShell.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,        // immer IRDI für ECLASS
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identifier.IRDI,        // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ993#001",
                 idShort: "E-CAD"))                             // die ID des Merkmales bei ECLASS
             {
@@ -894,8 +865,8 @@ namespace AasxToolkit
                 );
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identifier.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ982#001",
                 idShort: "single pole connection"))                             // die ID des Merkmales bei ECLASS
             {
@@ -913,8 +884,8 @@ namespace AasxToolkit
                 );
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,    // immer IRDI für ECLASS
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identifier.IRDI,    // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ994#001",
                 idShort: "1"))                             // die ID des Merkmales bei ECLASS
             {
@@ -932,8 +903,8 @@ namespace AasxToolkit
                 );
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                // immer IRDI für ECLASS
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identifier.IRDI,                // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ995#001",
                 idShort: "2"))                             // die ID des Merkmales bei ECLASS
             {
@@ -953,80 +924,75 @@ namespace AasxToolkit
 
             // ENTITIES
 
-            var ps001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "PowerSource001");
+            var ps001 = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "PowerSource001");
             sub1.Add(ps001);
-            var ps001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var ps001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
+            var ps001_1 = AdminShell.Property.CreateNew(
+                "1", "CONSTANT", cdContact1.GetSemanticId());
+            var ps001_2 = AdminShell.Property.CreateNew(
+                "2", "CONSTANT", cdContact2.GetSemanticId());
             ps001.Add(ps001_1);
             ps001.Add(ps001_2);
 
-            var sw001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Switch001");
+            var sw001 = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "Switch001");
             sub1.Add(sw001);
-            var sw001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var sw001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
+            var sw001_1 = AdminShell.Property.CreateNew(
+                "1", "CONSTANT", cdContact1.GetSemanticId());
+            var sw001_2 = AdminShell.Property.CreateNew(
+                "2", "CONSTANT", cdContact2.GetSemanticId());
             sw001.Add(sw001_1);
             sw001.Add(sw001_2);
 
-            var la001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
-                new AdminShellV20.AssetRef(
-                    AdminShellV20.Reference.CreateNew(
-                        "Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
+            var la001 = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
+                AdminShell.ModelReference.CreateNew(
+                        AdminShell.Key.AssetInformation, "example.com/assets/23224234234232342343234"));
             sub1.Add(la001);
-            var la001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var la001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
+            var la001_1 = AdminShell.Property.CreateNew(
+                "1", "CONSTANT", cdContact1.GetSemanticId());
+            var la001_2 = AdminShell.Property.CreateNew(
+                "2", "CONSTANT", cdContact2.GetSemanticId());
             la001.Add(la001_1);
             la001.Add(la001_2);
 
             // RELATIONS
 
-            var smec1 = AdminShellV20.SubmodelElementCollection.CreateNew(
-                "E-CAD", semanticIdKey: cdRelEPlan.GetCdReference()[0]);
+            var smec1 = AdminShell.SubmodelElementCollection.CreateNew(
+                "E-CAD", semanticIdKey: cdRelEPlan.GetSemanticId());
             sub1.Add(smec1);
 
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w001", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: ps001_1.GetReference(), second: sw001_1.GetReference()));
+            smec1.Add(AdminShell.RelationshipElement.CreateNew(
+                "w001", semanticIdKey: cdRelElCon.GetSemanticId(),
+                first: ps001_1.GetModelReference(), second: sw001_1.GetModelReference()));
 
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w002", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: sw001_2.GetReference(), second: la001_1.GetReference()));
+            smec1.Add(AdminShell.RelationshipElement.CreateNew(
+                "w002", semanticIdKey: cdRelElCon.GetSemanticId(),
+                first: sw001_2.GetModelReference(), second: la001_1.GetModelReference()));
 
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w003", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: la001_2.GetReference(), second: ps001_2.GetReference()));
+            smec1.Add(AdminShell.RelationshipElement.CreateNew(
+                "w003", semanticIdKey: cdRelElCon.GetSemanticId(),
+                first: la001_2.GetModelReference(), second: ps001_2.GetModelReference()));
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelBOMforAssetStructure(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelBOMforAssetStructure(
+            IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "BOM-ASSETS";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/BOM/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/BOM/1/1");
 
             // CONCEPT: Generic asset decomposition
 
-            AdminShellV20.ConceptDescription cdIsPartOf;
+            AdminShell.ConceptDescription cdIsPartOf;
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
+                idType: AdminShell.Identifier.IRDI,                         // immer IRDI für ECLASS
                 id: "0173-1#02-ZZZ998#002",
                 idShort: "isPartOf"))                             // die ID des Merkmales bei ECLASS
             {
@@ -1046,71 +1012,67 @@ namespace AasxToolkit
 
             // ENTITIES
 
-            var axisGroup = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "AxisGroup001");
+            var axisGroup = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "AxisGroup001");
             sub1.Add(axisGroup);
 
-            var motor = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Motor002");
+            var motor = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "Motor002");
             sub1.Add(motor);
 
-            var encoder = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Encoder003");
+            var encoder = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "Encoder003");
             sub1.Add(encoder);
 
-            var gearbox = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Gearbox003");
+            var gearbox = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "Gearbox003");
             sub1.Add(gearbox);
 
-            var amp = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "ServoAmplifier004");
+            var amp = new AdminShell.Entity(
+                AdminShell.Entity.EntityTypeEnum.CoManagedEntity, "ServoAmplifier004");
             sub1.Add(amp);
 
             // RELATIONS
 
             sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel001", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: motor.GetReference()));
+                AdminShell.RelationshipElement.CreateNew(
+                    "rel001", semanticIdKey: cdIsPartOf.GetSemanticId(),
+                first: axisGroup.GetModelReference(), second: motor.GetModelReference()));
 
             sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel002", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: encoder.GetReference()));
+                AdminShell.RelationshipElement.CreateNew(
+                    "rel002", semanticIdKey: cdIsPartOf.GetSemanticId(),
+                first: axisGroup.GetModelReference(), second: encoder.GetModelReference()));
 
             sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel003", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: gearbox.GetReference()));
+                AdminShell.RelationshipElement.CreateNew(
+                    "rel003", semanticIdKey: cdIsPartOf.GetSemanticId(),
+                first: axisGroup.GetModelReference(), second: gearbox.GetModelReference()));
 
             sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel004", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: amp.GetReference()));
+                AdminShell.RelationshipElement.CreateNew(
+                    "rel004", semanticIdKey: cdIsPartOf.GetSemanticId(),
+                first: axisGroup.GetModelReference(), second: amp.GetModelReference()));
 
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelEnergyMode(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static AdminShell.Submodel CreateSubmodelEnergyMode(
+            IriIdentifierRepository repo, AdminShell.AdministrationShellEnv aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
+            var sub1 = AdminShell.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
             sub1.idShort = "EnergyMode";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/energymode/1/1"));
+            sub1.semanticId = new AdminShell.SemanticId("http://example.com/id/type/submodel/energymode/1/1");
 
             // CONCEPT: SetMode
-            var theOp = new AdminShellV20.Operation();
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+            var theOp = new AdminShell.Operation();
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "SetMode",
-                idType: AdminShellV20.Identification.IRDI,
+                idType: AdminShell.Identifier.IRDI,
                 id: "0173-1#02-AAS999#001"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -1128,9 +1090,9 @@ namespace AasxToolkit
             }
 
             // CONCEPT: Mode
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
+            using (var cd = AdminShell.ConceptDescription.CreateNew(
                 "mode",
-                idType: AdminShellV20.Identification.IRDI,
+                idType: AdminShell.Identifier.IRDI,
                 id: "0173-1#02-AAX777#002"))
             {
                 aasenv.ConceptDescriptions.Add(cd);
@@ -1144,10 +1106,10 @@ namespace AasxToolkit
                     "en", "Preset in optimal case for the energy saving mode" }
                 );
 
-                var p = AdminShellV20.Property.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = AdminShell.Property.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
+                            cd.GetSemanticId());
 
-                var ovp = new AdminShellV20.OperationVariable(p);
+                var ovp = new AdminShell.OperationVariable(p);
 
                 theOp.inputVariable.Add(ovp);
                 p.valueType = "int";
@@ -1155,51 +1117,6 @@ namespace AasxToolkit
 
             // Nice
             return sub1;
-        }
-
-        private static void CreateStochasticViewOnSubmodelsRecurse(
-            AdminShellV20.View vw, AdminShellV20.Submodel submodel, AdminShellV20.SubmodelElement sme)
-        {
-            if (vw == null || sme == null)
-                return;
-
-            var isSmc = (sme is AdminShellV20.SubmodelElementCollection);
-
-            // spare out some of the leafs of the tree ..
-            if (!isSmc)
-                if (Math.Abs(sme.idShort.GetHashCode() % 100) > 50)
-                    return;
-
-            // ok, create
-            var ce = new AdminShellV20.ContainedElementRef();
-            sme.CollectReferencesByParent(ce.Keys);
-            vw.AddContainedElement(ce.Keys);
-            // recurse
-            if (isSmc)
-                foreach (var sme2wrap in (sme as AdminShellV20.SubmodelElementCollection).value)
-                    CreateStochasticViewOnSubmodelsRecurse(vw, submodel, sme2wrap.submodelElement);
-        }
-
-        public static AdminShellV20.View CreateStochasticViewOnSubmodels(AdminShellV20.Submodel[] sms, string idShort)
-        {
-            // create
-            var vw = new AdminShellV20.View();
-            vw.idShort = idShort;
-
-            // over all submodel elements
-            if (sms != null)
-                foreach (var sm in sms)
-                {
-                    // parent-ize submodel
-                    sm.SetAllParents();
-
-                    // loop in
-                    if (sm.submodelElements != null)
-                        foreach (var sme in sm.submodelElements)
-                            CreateStochasticViewOnSubmodelsRecurse(vw, sm, sme.submodelElement);
-                }
-            // done
-            return vw;
         }
 
         // ReSharper disable ClassNeverInstantiated.Global

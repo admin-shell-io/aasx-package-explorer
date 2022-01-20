@@ -47,145 +47,195 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAsset(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset,
+            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
+            AdminShell.AdministrationShell aas, AdminShell.AssetInformation asset,
+            object preferredNextFocus,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false)
         {
-            this.AddGroup(stack, "Asset", this.levelColors.MainSection);
+            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
 
-            // Up/ down/ del
-            if (editMode && !embedded)
-            {
-                // execute
-                this.EntityListUpDownDeleteHelper<AdminShell.Asset>(stack, repo, env.Assets, asset, env, "Asset:");
-            }
+            // global Asset ID
 
-            // Cut, copy, paste within list of Assets
-            if (editMode && env != null)
-            {
-                // cut/ copy / paste
-                this.DispPlainIdentifiableCutCopyPasteHelper<AdminShell.Asset>(
-                    stack, repo, this.theCopyPaste,
-                    env.Assets, asset, (o) => { return new AdminShell.Asset(o); },
-                    label: "Buffer:");
-            }
-
-            // print code sheet
-            this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
-            {
-                if (buttonNdx == 0)
-                {
-                    var uc = new AnyUiDialogueDataEmpty();
-                    this.context?.StartFlyover(uc);
-                    try
-                    {
-                        this.context?.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "When printing, an error occurred");
-                    }
-                    this.context?.CloseFlyover();
-                }
-                return new AnyUiLambdaActionNone();
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => asset.globalAssetId?.IsValid != true,
+                    "It is strobly encouraged to have the AAS associated with an global asset id from the " +
+                    "very beginning. If the AAS describes a product, the individual asset id should to be " +
+                    "found on its typeplate. " +
+                    "This  attribute  is  required  as  soon  as  the  AAS  is exchanged via partners in " +
+                    "the life cycle of the asset.",
+                    severityLevel: HintCheck.Severity.High)
             });
 
-            // Referable
-            this.DisplayOrEditEntityReferable(stack, asset, categoryUsual: false);
-
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, asset.hasDataSpecification,
-                (ds) => { asset.hasDataSpecification = ds; }, relatedReferable: asset);
-
-            // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
-                stack, asset,
-                Options.Curr.TemplateIdAsset,
-                new DispEditHelperModules.DispEditInjectAction(
-                new[] { "Input", "Rename" },
-                (i) =>
-                {
-                    if (i == 0)
+            if (this.SafeguardAccess(
+                    stack, repo, asset.globalAssetId, "globalAssetId:", "Create data element!",
+                    v =>
                     {
-                        var uc = new AnyUiDialogueDataTextBox(
-                            "Asset ID:", null, AnyUiMessageBoxImage.Question,
-                            AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys);
-                        if (this.context.StartFlyoverModal(uc))
+                        asset.globalAssetId = new AdminShell.GlobalReference();
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+
+                this.AddKeyListOfIdentifier(
+                    stack, "globalAssetId", asset.globalAssetId.Value, repo,
+                    packages, PackageCentral.PackageCentral.Selector.MainAux,
+                    auxButtonTitles: new[] { "Generate", "Input", "Rename" },
+                    auxButtonToolTips: new[] {
+                        "Generate an id based on the customizable template option for asset ids.",
+                        "Input the id, may be by the aid of barcode scanner",
+                        "Rename the id and all occurences of the id in the AAS"
+                    },
+                    auxButtonLambda: (i) =>
+                    {
+                        if (i == 0)
                         {
-                            asset.identification.id = uc.Text;
-                            this.AddDiaryEntry(asset, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                            asset.SetIdentification("" + AdminShellUtil.GenerateIdAccordingTemplate(
+                                Options.Curr.TemplateIdAsset));
+                            this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: preferredNextFocus);
                         }
-                    }
 
-                    if (i == 1 && env != null)
-                    {
-                        var uc = new AnyUiDialogueDataTextBox(
-                            "New ID:",
-                            symbol: AnyUiMessageBoxImage.Question,
-                            maxWidth: 1400,
-                            text: asset.identification.id);
-                        if (this.context.StartFlyoverModal(uc))
+                        if (i == 1)
                         {
-                            var res = false;
-
-                            try
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "Global Asset ID:",
+                                maxWidth: 1400,
+                                symbol: AnyUiMessageBoxImage.Question,
+                                options: AnyUiDialogueDataTextBox.DialogueOptions.FilterAllControlKeys,
+                                text: "" + asset.globalAssetId?.GetAsIdentifier());
+                            if (this.context.StartFlyoverModal(uc))
                             {
-                                // rename
-                                var lrf = env.RenameIdentifiable<AdminShell.Asset>(
-                                    asset.identification,
-                                    new AdminShell.Identification(
-                                        asset.identification.idType, uc.Text));
+                                asset.SetIdentification("" + uc.Text);
+                                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
+                            }
+                        }
 
-                                // use this information to emit events
-                                if (lrf != null)
+                        if (i == 2 && env != null)
+                        {
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "New Global Asset ID:",
+                                symbol: AnyUiMessageBoxImage.Question,
+                                maxWidth: 1400,
+                                text: "" + asset.globalAssetId?.GetAsIdentifier());
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                var res = false;
+
+                                try
                                 {
-                                    res = true;
-                                    foreach (var rf in lrf)
+                                    // rename
+                                    var lrf = env.RenameIdentifiable<AdminShell.AssetInformation>(
+                                        asset.globalAssetId?.GetAsIdentifier(),
+                                        new AdminShell.Identifier(uc.Text));
+
+                                    // use this information to emit events
+                                    if (lrf != null)
                                     {
-                                        var rfi = rf.FindParentFirstIdentifiable();
-                                        if (rfi != null)
-                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                        res = true;
+                                        foreach (var rf in lrf)
+                                        {
+                                            var rfi = rf.FindParentFirstIdentifiable();
+                                            if (rfi != null)
+                                                this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                        }
                                     }
                                 }
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                            }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
 
-                            if (!res)
-                                this.context.MessageBoxFlyoutShow(
-                                    "The renaming of the Submodel or some referring elements " +
-                                    "has not performed successfully! Please review your inputs and " +
-                                    "the AAS structure for any inconsistencies.",
-                                    "Warning",
-                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                                if (!res)
+                                    this.context.MessageBoxFlyoutShow(
+                                        "The renaming of the Submodel or some referring elements " +
+                                        "has not performed successfully! Please review your inputs and " +
+                                        "the AAS structure for any inconsistencies.",
+                                        "Warning",
+                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
 
-                            return new AnyUiLambdaActionRedrawAllElements(asset);
+                                return new AnyUiLambdaActionRedrawAllElements(asset);
+                            }
                         }
+                        return new AnyUiLambdaActionNone();
+
+                    });
+
+                // print code sheet
+                this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
+                {
+                    if (buttonNdx == 0)
+                    {
+                        var uc = new AnyUiDialogueDataEmpty();
+                        this.context?.StartFlyover(uc);
+                        try
+                        {
+                            this.context?.PrintSingleAssetCodeSheet(
+                                asset.globalAssetId?.GetAsIdentifier(),
+                                asset.globalAssetId?.GetAsIdentifier().ToString());
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex, "When printing, an error occurred");
+                        }
+                        this.context?.CloseFlyover();
                     }
                     return new AnyUiLambdaActionNone();
-
-                }),
-                checkForIri: true);
+                });
+            }
 
             // Kind
-            this.DisplayOrEditEntityAssetKind(stack, asset.kind,
-                (k) => { asset.kind = k; }, relatedReferable: asset);
+            this.DisplayOrEditEntityAssetKind(stack, asset.assetKind,
+                (k) => { asset.assetKind = k; }, relatedReferable: aas);
 
-            // special Submode references
-            this.AddGroup(stack, "Submodel references with special meaning", this.levelColors.SubSection);
 
-            // AssetIdentificationModelRef
-            this.DisplayOrEditEntitySubmodelRef(stack, asset.assetIdentificationModelRef,
-                (smr) => { asset.assetIdentificationModelRef = smr; },
-                "assetIdentificationModel", relatedReferable: asset);
+            // list of multiple key value pairs
+            this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.specificAssetId,
+                (ico) => { asset.specificAssetId = ico; },
+                key: "specificAssetId",
+                relatedReferable: aas);
 
-            // BillOfMaterialRef
-            this.DisplayOrEditEntitySubmodelRef(stack, asset.billOfMaterialRef,
-                (smr) => { asset.billOfMaterialRef = smr; },
-                "billOfMaterial", relatedReferable: asset);
+            // Thumbnail: File [0..1]
+            // Note: another, may be better approach would be have a special SMWCollection constrained
+            // on [0..1] and let the existing functions work on this. This could give better copy/ paste
+            // and more. The serialization would then materialize (via getter/setters) this as "File" [0..1].
+
+            this.AddGroup(stack, "DefaultThumbnail: File element", this.levelColors.SubSection,
+                auxButtonTitle: (asset.defaultThumbnail == null) ? null : "Delete",
+                auxButtonLambda: (o) =>
+                {
+                    if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                               "Delete Fiel element? This operation can not be reverted!",
+                               "ConceptDescriptions",
+                               AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    {
+                        asset.defaultThumbnail = null;
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                });
+
+            if (this.SafeguardAccess(
+                stack, repo, asset.defaultThumbnail, $"defaultThumbnail:", $"Create empty File element!",
+                v =>
+                {
+                    asset.defaultThumbnail = new AdminShell.File();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+
+                // Note: parentContainer = null effectively seems to disable "unwanted" functionality
+                DisplayOrEditAasEntitySubmodelElement(
+                    packages: packages, env: env, parentContainer: null, wrapper: null,
+                    sme: asset.defaultThumbnail,
+                    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
+            }
 
         }
 
@@ -207,8 +257,6 @@ namespace AasxPackageLogic
             // automatically and silently fix errors
             if (env.AdministrationShells == null)
                 env.AdministrationShells = new AdminShell.ListOfAdministrationShells();
-            if (env.Assets == null)
-                env.Assets = new AdminShell.ListOfAssets();
             if (env.ConceptDescriptions == null)
                 env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
             if (env.Submodels == null)
@@ -217,16 +265,11 @@ namespace AasxPackageLogic
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
             {
                 // some hints
                 this.AddHintBubble(stack, hintMode, new[] {
-                    new HintCheck(
-                        () => { return env.Assets == null || env.Assets.Count < 1; },
-                        "There are no assets in this AAS environment. You should consider adding " +
-                            "an asset by clicking 'Add asset' on the edit panel below."),
                     new HintCheck(
                         () => { return env.AdministrationShells == null || env.AdministrationShells.Count < 1; },
                         "There are no Administration Shells in this AAS environment. " +
@@ -255,20 +298,10 @@ namespace AasxPackageLogic
 
                 // let the user control the number of entities
                 this.AddAction(
-                    stack, "Entities:", new[] { "Add Asset", "Add AAS", "Add ConceptDescription" }, repo,
+                    stack, "Entities:", new[] { "Add AAS", "Add ConceptDescription" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
-                        {
-                            var asset = new AdminShell.Asset();
-                            this.MakeNewIdentifiableUnique(asset);
-                            env.Assets.Add(asset);
-                            this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                                StructuralChangeReason.Create));
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
-                        }
-
-                        if (buttonNdx == 1)
                         {
                             var aas = new AdminShell.AdministrationShell();
                             this.MakeNewIdentifiableUnique(aas);
@@ -278,7 +311,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
                         }
 
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 1)
                         {
                             var cd = new AdminShell.ConceptDescription();
                             this.MakeNewIdentifiableUnique(cd);
@@ -330,41 +363,29 @@ namespace AasxPackageLogic
                                         //
                                         try
                                         {
-                                            // in any case, copy the Asset as well
-                                            var sourceAsset = rve.theEnv.FindAsset(sourceAAS.assetRef);
-                                            var destAsset = sourceAsset;
-                                            if (copyRecursively)
-                                            {
-                                                destAsset = new AdminShell.Asset(sourceAsset);
-                                                if (createNewIds)
-                                                    destAsset.identification = new AdminShell.Identification(
-                                                        AdminShell.Identification.IRI,
-                                                        AdminShellUtil.GenerateIdAccordingTemplate(
-                                                            Options.Curr.TemplateIdAsset));
-
-                                                env.Assets.Add(destAsset);
-                                                this.AddDiaryEntry(destAsset, new DiaryEntryStructChange(
-                                                    StructuralChangeReason.Create));
-                                            }
-
                                             // make a copy of the AAS itself
                                             destAAS = new AdminShell.AdministrationShell(
                                                 mdo as AdminShell.AdministrationShell);
-                                            destAAS.assetRef = null;
-                                            if (copyRecursively)
-                                                destAAS.assetRef = new AdminShell.AssetRef(destAsset.GetReference());
                                             if (createNewIds)
-                                                destAAS.identification = new AdminShell.Identification(
-                                                    AdminShell.Identification.IRI,
+                                            {
+                                                destAAS.id = new AdminShell.Identifier(
                                                     AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
+
+                                                if (destAAS.assetInformation != null)
+                                                {
+                                                    destAAS.assetInformation.SetIdentification(
+                                                        AdminShellUtil.GenerateIdAccordingTemplate(
+                                                                Options.Curr.TemplateIdAsset));
+                                                }
+                                            }
 
                                             env.AdministrationShells.Add(destAAS);
                                             this.AddDiaryEntry(destAAS, new DiaryEntryStructChange(
                                                 StructuralChangeReason.Create));
 
                                             // clear, copy Submodels?
-                                            destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
+                                            destAAS.submodelRefs = new List<AdminShell.SubmodelRef>();
                                             if (copyRecursively && sourceAAS.submodelRefs != null)
                                             {
                                                 foreach (var smr in sourceAAS.submodelRefs)
@@ -413,13 +434,12 @@ namespace AasxPackageLogic
                                                         // with new id from scratch
                                                         var dstSub = new AdminShell.Submodel(
                                                             srcSub, shallowCopy: false);
-                                                        dstSub.identification = new AdminShell.Identification(
-                                                            AdminShell.Identification.IRI,
+                                                        dstSub.id = new AdminShell.Identifier(
                                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                                         // make a new ref
                                                         var dstRef = AdminShell.SubmodelRef.CreateNew(
-                                                            dstSub.GetReference());
+                                                            dstSub.GetModelReference());
 
                                                         // formally add this to active environment and AAS
                                                         env.Submodels.Add(dstSub);
@@ -482,7 +502,6 @@ namespace AasxPackageLogic
                 }
 
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
@@ -516,25 +535,6 @@ namespace AasxPackageLogic
                                     {
                                         aasold.Remove(itaas);
                                         this.AddDiaryEntry(itaas,
-                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
-                                    }
-                                }
-                                else
-                                if (cpiid.entity is AdminShell.Asset itasset)
-                                {
-                                    // new 
-                                    var asset = new AdminShell.Asset(itasset);
-                                    env.Assets.Add(asset);
-                                    this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                                        StructuralChangeReason.Create));
-                                    res = asset;
-
-                                    // delete
-                                    if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
-                                        && assetold.Contains(itasset))
-                                    {
-                                        assetold.Remove(itasset);
-                                        this.AddDiaryEntry(itasset,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
@@ -842,11 +842,6 @@ namespace AasxPackageLogic
                                 "Select the 'Administration Shells' item on the middle panel and " +
                                 "select 'Add AAS' to add a new entity."),
                         new HintCheck(
-                            () => { return env.Assets.Count < 1; },
-                            "There are no Asset entities in the environment. " +
-                                "Select the 'Assets' item on the middle panel and " +
-                                "select 'Add asset' to add a new entity."),
-                        new HintCheck(
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
                                 "It is a good practive to have those. Select or add an AdministrationShell, " +
@@ -863,7 +858,6 @@ namespace AasxPackageLogic
                 this.AddSmallLabelTo(
                     g, 1, 0, content: String.Format("#admin shells: {0}.", env.AdministrationShells.Count),
                     margin: new AnyUiThickness(0, 5, 0, 0));
-                this.AddSmallLabelTo(g, 2, 0, content: String.Format("#assets: {0}.", env.Assets.Count));
                 this.AddSmallLabelTo(g, 3, 0, content: String.Format("#submodels: {0}.", env.Submodels.Count));
                 this.AddSmallLabelTo(
                     g, 4, 0, content: String.Format("#concept descriptions: {0}.", env.ConceptDescriptions.Count));
@@ -956,7 +950,7 @@ namespace AasxPackageLogic
 
                         // duplicate
                         foreach (var x in aas.submodelRefs)
-                            if (x?.Matches(item.smref, AdminShellV20.Key.MatchMode.Identification) == true)
+                            if (x?.Matches(item.smref, AdminShell.Key.MatchMode.Identification) == true)
                                 return null;
 
                         // add 
@@ -1048,22 +1042,20 @@ namespace AasxPackageLogic
                             env.Submodels.Add(submodel);
 
                             // directly create identification, as we need it!
-                            submodel.identification.idType = AdminShell.Identification.IRI;
                             if (buttonNdx == 1)
                             {
-                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                submodel.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelTemplate);
                                 submodel.kind = AdminShell.ModelingKind.CreateAsTemplate();
                             }
                             else
-                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                submodel.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
                             var smr = new AdminShell.SubmodelRef();
                             smr.Keys.Add(
-                                new AdminShell.Key(
-                                    "Submodel", true, submodel.identification.idType, submodel.identification.id));
+                                new AdminShell.Key("Submodel", submodel.id.value));
                             aas.submodelRefs.Add(smr);
 
                             // event for AAS
@@ -1134,12 +1126,11 @@ namespace AasxPackageLogic
                                         // create Submodel as deep copy 
                                         // with new id from scratch
                                         var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
-                                        dstSub.identification = new AdminShell.Identification(
-                                            AdminShell.Identification.IRI,
+                                        dstSub.id = new AdminShell.Identifier(
                                             AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
-                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
+                                        var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetModelReference());
 
                                         // formally add this to active environment 
                                         env.Submodels.Add(dstSub);
@@ -1160,20 +1151,6 @@ namespace AasxPackageLogic
 
                         return new AnyUiLambdaActionNone();
                     });
-
-                // let the user control the number of entities
-                this.AddAction(stack, "Entities:", new[] { "Add View" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx == 0)
-                    {
-                        var view = new AdminShell.View();
-                        aas.AddView(view);
-                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
-                    }
-
-                    return new AnyUiLambdaActionNone();
-                });
             }
 
             // Referable
@@ -1187,18 +1164,17 @@ namespace AasxPackageLogic
             this.DisplayOrEditEntityIdentifiable(
                 stack, aas,
                 Options.Curr.TemplateIdAas,
-                null,
-                checkForIri: true);
+                null);
 
             // use some asset reference
-            var asset = env.FindAsset(aas.assetRef);
+            var asset = aas.assetInformation;
 
             // derivedFrom
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () =>
                     {
-                        return asset != null && asset.kind != null && asset.kind.IsInstance &&
+                        return asset != null && asset.assetKind != null && asset.assetKind.IsInstance &&
                             ( aas.derivedFrom == null || aas.derivedFrom.Count < 1);
                     },
                     "You have decided to create an AAS for kind = 'Instance'. " +
@@ -1224,7 +1200,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                 };
 
                 this.AddKeyListKeys(
@@ -1233,46 +1209,28 @@ namespace AasxPackageLogic
                     jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
             }
 
-            // assetRef
-
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck(
-                    () => { return asset == null; },
-                    "No asset is associated with this Administration Shell. " +
-                        "This might be, because some identification changed. " +
-                        "Use 'Add existing' to assign the Administration Shell with an existing asset " +
-                        "in the AAS environment or use 'Add blank' to create an arbitray reference."),
-            });
-            if (this.SafeguardAccess(
-                stack, repo, aas.assetRef, "assetRef:", "Create data element!",
-                v =>
-                {
-                    aas.assetRef = new AdminShell.AssetRef();
-                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionRedrawEntity();
-                }))
-            {
-                this.AddGroup(stack, "Asset Reference", this.levelColors.SubSection);
-
-                Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
-                {
-                    return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: false);
-                };
-
-                this.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.Main, "Asset",
-                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
-            }
-
             //
             // Asset linked with AAS
             //
 
-            if (asset != null)
+            // show group only if no AssetInformation is available because
+            // else DisplayOrEditAasEntityAsset will do
+            if (aas.assetInformation == null)
+                this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
+
+            if (this.SafeguardAccess(
+                stack, repo, aas.assetInformation, "AssetInformation:", "Create data element!",
+                v =>
+                {
+                    aas.assetInformation = new AdminShell.AssetInformation();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
             {
                 DisplayOrEditAasEntityAsset(
-                    packages, env, asset, editMode, repo, stack, hintMode: hintMode);
+                    packages, env, aas, aas.assetInformation,
+                    preferredNextFocus: aas,
+                    editMode: editMode, repo: repo, stack: stack, hintMode: hintMode);
             }
         }
 
@@ -1296,7 +1254,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                  {
                      return new AnyUiLambdaActionNavigateTo(
-                         AdminShell.Reference.CreateNew(kl), alsoDereferenceObjects: false);
+                         AdminShell.ModelReference.CreateNew(kl), alsoDereferenceObjects: false);
                  };
 
                 this.AddKeyListKeys(
@@ -1360,7 +1318,7 @@ namespace AasxPackageLogic
                     checkEquality: (r1, r2) =>
                     {
                         if (r1 != null && r2 != null)
-                            return (r1.Matches(r2, AdminShellV20.Key.MatchMode.Identification));
+                            return (r1.Matches(r2, AdminShell.Key.MatchMode.Identification));
                         return false;
                     },
                     extraAction: (cpi) =>
@@ -1434,7 +1392,7 @@ namespace AasxPackageLogic
                                 var smw = new AdminShell.SubmodelElementWrapper();
                                 smw.submodelElement = sme2;
                                 if (submodel.submodelElements == null)
-                                    submodel.submodelElements = new AdminShellV20.SubmodelElementWrapperCollection();
+                                    submodel.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
                                 submodel.submodelElements.Add(smw);
 
                                 // emit event
@@ -1473,11 +1431,14 @@ namespace AasxPackageLogic
                                         rve.theEnv, mdo as AdminShell.SubmodelElement,
                                         copyCD: true, shallowCopy: buttonNdx == 0);
 
-                                    this.MakeNewReferableUnique(clone?.submodelElement);
-
+                                    // need to prep at first?
                                     if (submodel.submodelElements == null)
                                         submodel.submodelElements =
-                                            new AdminShellV20.SubmodelElementWrapperCollection();
+                                            new AdminShell.SubmodelElementWrapperCollection();
+
+                                    // check if to make unique in the target folder?
+                                    this.MakeNewReferableUnique(clone?.submodelElement,
+                                        submodel.submodelElements);
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
@@ -1488,7 +1449,7 @@ namespace AasxPackageLogic
                                         new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     return new AnyUiLambdaActionRedrawAllElements(
-                                        submodel, isExpanded: true);
+                                        clone?.submodelElement, isExpanded: true);
                                 }
                             }
                         }
@@ -1622,7 +1583,7 @@ namespace AasxPackageLogic
                                     "New ID:",
                                     symbol: AnyUiMessageBoxImage.Question,
                                     maxWidth: 1400,
-                                    text: submodel.identification.id);
+                                    text: submodel.id.value);
                                 if (this.context.StartFlyoverModal(uc))
                                 {
                                     var res = false;
@@ -1631,9 +1592,8 @@ namespace AasxPackageLogic
                                     {
                                         // rename
                                         var lrf = env.RenameIdentifiable<AdminShell.Submodel>(
-                                            submodel.identification,
-                                            new AdminShell.Identification(
-                                                submodel.identification.idType, uc.Text));
+                                            submodel.id,
+                                            new AdminShell.Identifier(uc.Text));
 
                                         // use this information to emit events
                                         if (lrf != null)
@@ -1663,8 +1623,7 @@ namespace AasxPackageLogic
                                 }
                             }
                             return new AnyUiLambdaActionNone();
-                        }),
-                    checkForIri: submodel.kind != null && submodel.kind.IsInstance);
+                        }));
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
@@ -1678,7 +1637,7 @@ namespace AasxPackageLogic
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, submodel.semanticId,
                     (o) => { submodel.semanticId = o; },
-                    "The semanticId may be either a reference to a submodel " +
+                    statement: "The semanticId may be either a reference to a submodel " +
                     "with kind=Type (within the same or another Administration Shell) or " +
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).",
@@ -1756,7 +1715,7 @@ namespace AasxPackageLogic
                         var ds = cd.GetIEC61360();
                         if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
                         {
-                            ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", cd.idShort);
+                            ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", cd.idShort);
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
                         }
@@ -1790,7 +1749,7 @@ namespace AasxPackageLogic
                             "New ID:",
                             symbol: AnyUiMessageBoxImage.Question,
                             maxWidth: 1400,
-                            text: cd.identification.id);
+                            text: cd.id.value);
                         if (this.context.StartFlyoverModal(uc))
                         {
                             var res = false;
@@ -1799,8 +1758,8 @@ namespace AasxPackageLogic
                             {
                                 // rename
                                 var lrf = env.RenameIdentifiable<AdminShell.ConceptDescription>(
-                                    cd.identification,
-                                    new AdminShell.Identification(cd.identification.idType, uc.Text));
+                                    cd.id,
+                                    new AdminShell.Identifier(uc.Text));
 
                                 // use this information to emit events
                                 if (lrf != null)
@@ -1830,11 +1789,10 @@ namespace AasxPackageLogic
                         }
                     }
                     return new AnyUiLambdaActionNone();
-                }),
-                checkForIri: false);
+                }));
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
+            this.DisplayOrEditEntityListOfModelReferences(stack, cd.IsCaseOf,
                 (ico) => { cd.IsCaseOf = ico; },
                 "isCaseOf", relatedReferable: cd);
 
@@ -1848,8 +1806,8 @@ namespace AasxPackageLogic
                 new[] {
                     new HintCheck(
                         () => { return esc != null && (esc.dataSpecification == null
-                            || !esc.dataSpecification.MatchesExactlyOneKey(
-                                AdminShell.DataSpecificationIEC61360.GetKey())); },
+                            || !esc.dataSpecification.MatchesExactlyOneId(
+                                AdminShell.DataSpecificationIEC61360.GetIdentifier())); },
                         "IEC61360 content present, but data specification missing. Please add according reference.",
                         breakIfTrue: true),
                 });
@@ -1859,7 +1817,7 @@ namespace AasxPackageLogic
                 (ds) => { cd.embeddedDataSpecification = ds; },
                 addPresetNames: new[] { "IEC61360" },
                 addPresetKeyLists: new[] {
-                    AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
+                    new AdminShell.ListOfIdentifier(AdminShell.DataSpecificationIEC61360.GetIdentifier())},
                 dataSpecRefsAreUsual: true, relatedReferable: cd);
 
             // the IEC61360 Content
@@ -2103,7 +2061,7 @@ namespace AasxPackageLogic
                 return;
 
             // edit SubmodelElements's attributes
-            if (editMode)
+            if (editMode && parentContainer != null)
             {
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
@@ -2121,26 +2079,26 @@ namespace AasxPackageLogic
                 };
 
                 // entities helper
-                if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
+                if (parentContainer is AdminShell.Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
                         "SubmodelElement:", nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
-                if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection &&
+                if (parentContainer is AdminShell.SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
-                if (parentContainer != null && parentContainer is AdminShell.Entity && wrapper != null)
+                if (parentContainer is AdminShell.Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Entity).statements,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
 
                 // refactor?
-                if (parentContainer != null && parentContainer is AdminShell.IManageSubmodelElements)
+                if (parentContainer is AdminShell.IManageSubmodelElements)
                     this.AddAction(
                         horizStack, "Refactoring:",
                         new[] { "Refactor" }, repo,
@@ -2173,13 +2131,17 @@ namespace AasxPackageLogic
                         });
 
                 // cut/ copy / paste
-                if (parentContainer != null)
-                {
-                    this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
-                        label: "Buffer:");
-                }
+                this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
             }
 
+            // else:
+            if (editMode && parentContainer == null)
+            {
+                // use "emergency mode"
+                this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer: null, this.theCopyPaste, wrapper, sme,
+                    label: "Buffer:");
+            }
 
             // ReSharper disable ConditionIsAlwaysTrueOrFalse
             if (editMode)
@@ -2200,7 +2162,7 @@ namespace AasxPackageLogic
                             () => { return sme.semanticId == null || sme.semanticId.IsEmpty; },
                             "The semanticId (see below) is empty. " +
                                 "This SubmodelElement ist currently not assigned to any ConceptDescription. " +
-                                "However, it is recommended to do such assignemt. " +
+                                "However, it is recommended to do such assignment. " +
                                 "With the 'Assign ..' buttons below you might create and/or assign " +
                                 "the SubmodelElement to an ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
@@ -2222,7 +2184,7 @@ namespace AasxPackageLogic
                                 sme.semanticId = AdminShell.SemanticId.CreateFromKeys(ks);
 
                                 // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                 {
                                     sme.idShort = "" + cd.idShort;
@@ -2247,8 +2209,7 @@ namespace AasxPackageLogic
                             var cd = new AdminShell.ConceptDescription();
 
                             // make an ID, automatically
-                            cd.identification.idType = AdminShell.Identification.IRI;
-                            cd.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            cd.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
 
                             // store in AAS enviroment
@@ -2257,8 +2218,7 @@ namespace AasxPackageLogic
                             // go over to SubmodelElement
                             // set the semantic id
                             sme.semanticId = AdminShell.SemanticId.CreateFromKey(
-                                new AdminShell.Key(
-                                    "ConceptDescription", true, cd.identification.idType, cd.identification.id));
+                                new AdminShell.Key("ConceptDescription", cd.id.value));
 
                             // can set kind?
                             if (parentKind != null && sme.kind == null)
@@ -2299,19 +2259,16 @@ namespace AasxPackageLogic
                                     var newcd = resCD;
                                     if (null == env.FindConceptDescription(
                                             AdminShell.Key.CreateNew(
-                                                AdminShell.Key.ConceptDescription, true,
-                                                newcd.identification.idType, newcd.identification.id)))
+                                                AdminShell.Key.ConceptDescription, newcd.id.value)))
                                         env.ConceptDescriptions.Add(newcd);
                                 }
 
                                 // set the semantic key
                                 sme.semanticId = AdminShell.SemanticId.CreateFromKey(
-                                    new AdminShell.Key(
-                                        AdminShell.Key.ConceptDescription, true,
-                                        AdminShell.Identification.IRDI, resIRDI));
+                                    new AdminShell.Key(AdminShell.Key.ConceptDescription, resIRDI));
 
                                 // if empty take over shortName
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if ((sme.idShort == null || sme.idShort.Trim() == "") && cd != null)
                                     sme.idShort = cd.GetDefaultShortName();
 
@@ -2447,9 +2404,22 @@ namespace AasxPackageLogic
                                         shallowCopy: buttonNdx == 0);
 
                                     if (sme is AdminShell.SubmodelElementCollection smesmc)
+                                    {
+                                        if (smesmc.value == null)
+                                            smesmc.value = new AdminShell.SubmodelElementWrapperCollection();
+                                        this.MakeNewReferableUnique(clone?.submodelElement,
+                                            smesmc.value);
                                         smesmc.value.Add(clone);
+                                    }
+
                                     if (sme is AdminShell.Entity smeent)
+                                    {
+                                        if (smeent.statements == null)
+                                            smeent.statements = new AdminShell.SubmodelElementWrapperCollection();
+                                        this.MakeNewReferableUnique(clone?.submodelElement,
+                                            smeent.statements);
                                         smeent.statements.Add(clone);
+                                    }
 
                                     // emit event
                                     this.AddDiaryEntry(sme, new DiaryEntryStructChange());
@@ -2466,7 +2436,7 @@ namespace AasxPackageLogic
 
             AdminShell.ConceptDescription jumpToCD = null;
             if (sme.semanticId != null && sme.semanticId.Count > 0)
-                jumpToCD = env.FindConceptDescription(sme.semanticId.Keys);
+                jumpToCD = env.FindConceptDescription(sme.semanticId);
 
             if (jumpToCD != null && editMode)
             {
@@ -2726,10 +2696,20 @@ namespace AasxPackageLogic
             }
 
             {
+                // indicate deprecation
+                string deprMsg = AdminShell.SubmodelElementWrapper.EvalDeprecationMessage(sme);
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => deprMsg != null, deprMsg, severityLevel: HintCheck.Severity.High)
+                    });
+
                 this.AddGroup(
                     stack,
                     $"Submodel Element ({"" + sme?.GetElementName()})",
-                    this.levelColors.MainSection);
+                    (deprMsg != null) ? this.levelColors.HintSeverityHigh : this.levelColors.MainSection);
 
                 // Referable
                 this.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
@@ -2741,7 +2721,7 @@ namespace AasxPackageLogic
                         {
                             if (sme.semanticId != null && sme.semanticId.Count > 0)
                             {
-                                var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                                var cd = env.FindConceptDescription(sme.semanticId);
                                 if (cd != null)
                                 {
                                     if (cd.idShort == null || cd.idShort.Trim() == "")
@@ -2749,7 +2729,7 @@ namespace AasxPackageLogic
 
                                     var ds = cd.IEC61360Content;
                                     if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
-                                        ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", sme.idShort);
+                                        ds.shortName = new AdminShell.LangStringSetIEC61360("EN?", sme.idShort);
 
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
@@ -2785,7 +2765,7 @@ namespace AasxPackageLogic
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, sme.semanticId,
                     (sid) => { sme.semanticId = sid; },
-                    "The use of semanticId for SubmodelElements is mandatory! " +
+                    statement: "The use of semanticId for SubmodelElements is mandatory! " +
                     "Only by this means, an automatic system can identify and " +
                     "understand the meaning of the SubmodelElements and, for example, " +
                     "its unit or logical datatype. " +
@@ -2812,7 +2792,7 @@ namespace AasxPackageLogic
 
                 if (sme.semanticId != null && sme.semanticId.Count > 0 && !nestedCds)
                 {
-                    var cd = env.FindConceptDescription(sme.semanticId.Keys);
+                    var cd = env.FindConceptDescription(sme.semanticId);
                     if (cd == null)
                     {
                         this.AddGroup(
@@ -2921,14 +2901,14 @@ namespace AasxPackageLogic
                         stack, repo, p.valueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            p.valueId = new AdminShell.Reference();
+                            p.valueId = new AdminShell.GlobalReference();
                             this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListKeys(
-                        stack, "valueId", p.valueId.Keys, repo,
+                    this.AddKeyListOfIdentifier(
+                        stack, "valueId", p.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference,
                         relatedReferable: p,
@@ -2966,14 +2946,14 @@ namespace AasxPackageLogic
                         stack, repo, mlp.valueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            mlp.valueId = new AdminShell.Reference();
+                            mlp.valueId = new AdminShell.GlobalReference();
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     this.AddGroup(stack, "ValueID", this.levelColors.SubSection);
-                    this.AddKeyListKeys(
-                        stack, "valueId", mlp.valueId.Keys, repo,
+                    this.AddKeyListOfIdentifier(
+                        stack, "valueId", mlp.valueId.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.GlobalReference,
                         relatedReferable: mlp,
@@ -3185,10 +3165,8 @@ namespace AasxPackageLogic
                                     maxWidth: 1400,
                                     text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
 
-                                if (!uc.Result)
-                                {
+                                if (!this.context.StartFlyoverModal(uc))
                                     return new AnyUiLambdaActionNone();
-                                }
 
                                 var ptd = "/aasx/";
                                 var ptfn = uc.Text.Trim();
@@ -3455,47 +3433,87 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
             }
-            else if (sme is AdminShell.ReferenceElement rfe)
+            else if (sme is AdminShell.ModelReferenceElement mrfe)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
 
                 // group
-                this.AddGroup(stack, "ReferenceElement", this.levelColors.MainSection);
+                this.AddGroup(stack, "ModelReferenceElement", this.levelColors.MainSection);
 
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return rfe.value == null || rfe.value.IsEmpty; },
+                            () => { return mrfe.value == null || mrfe.value.IsEmpty; },
                             "Please choose the target of the reference. " +
-                                "You refer to any Referable, if local within the AAS environment or outside. " +
+                                "You may refer to any Referable, if local within the AAS environment or outside. " +
+                                "However, you may not refer to an external piece of information or service. " +
+                                "For this, choose a GlobalReferenceElement. " +
                                 "The semantics of your reference shall be described " +
                                 "by the concept referred by semanticId.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (this.SafeguardAccess(
-                        stack, repo, rfe.value, "Target reference:", "Create data element!",
+                        stack, repo, mrfe.value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            rfe.value = new AdminShell.Reference();
-                            this.AddDiaryEntry(rfe, new DiaryEntryUpdateValue());
+                            mrfe.value = new AdminShell.ModelReference();
+                            this.AddDiaryEntry(mrfe, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                            AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                     };
-                    this.AddKeyListKeys(stack, "value", rfe.value.Keys, repo,
+                    this.AddKeyListKeys(stack, "value", mrfe.value.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: lambda, noEditJumpLambda: lambda,
-                        relatedReferable: rfe,
+                        relatedReferable: mrfe,
                         emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
+            }
+            else if (sme is AdminShell.GlobalReferenceElement grfe)
+            {
+                // group
+                this.AddGroup(stack, "GlobalReferenceElement", this.levelColors.MainSection);
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => { return grfe.value == null || grfe.value.IsEmpty; },
+                            "Please choose the target of the reference. " +
+                                "You may refer to any element outside of an AAS. " +
+                                "However, you may not refer to an element of an AAS, either local or external. " +
+                                "For this, choose a ModelReferenceElement. " +
+                                "The semantics of your reference shall be described " +
+                                "by the concept referred by semanticId.",
+                            severityLevel: HintCheck.Severity.Notice)
+                    });
+                if (this.SafeguardAccess(
+                        stack, repo, grfe.value, "Target reference:", "Create data element!",
+                        v =>
+                        {
+                            grfe.value = new AdminShell.GlobalReference();
+                            this.AddDiaryEntry(grfe, new DiaryEntryUpdateValue());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                {
+                    this.AddKeyListOfIdentifier(stack, "value", grfe.value.Value, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: null,
+                        relatedReferable: grfe,
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
+                }
+            }
+            else if (sme is AdminShell.ReferenceElement)
+            {
+                this.AddGroup(stack, "ReferenceElement (abstract)", this.levelColors.MainSection);
             }
             else
             if (sme is AdminShell.RelationshipElement rele)
@@ -3510,7 +3528,7 @@ namespace AasxPackageLogic
                 Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                        AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                 };
 
                 // members
@@ -3529,7 +3547,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.first, "First relation:", "Create data element!",
                         v =>
                         {
-                            rele.first = new AdminShell.Reference();
+                            rele.first = new AdminShell.ModelReference();
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3558,7 +3576,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.first, "Second relation:", "Create data element!",
                         v =>
                         {
-                            rele.second = new AdminShell.Reference();
+                            rele.second = new AdminShell.ModelReference();
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3582,9 +3600,116 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Capability", this.levelColors.MainSection);
                 this.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
+            else if (sme is AdminShell.SubmodelElementList sml)
+            {
+                // Start
+
+                this.AddGroup(stack, "SubmodelElementList", this.levelColors.MainSection);
+                if (sml.value != null)
+                    this.AddKeyValue(stack, "# of values", "" + sml.value.Count);
+                else
+                    this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                this.AddCheckBox(
+                    stack, "orderRelevant:", sml.orderRelevant, " (true if order in list is relevant)",
+                    (b) => { sml.ordered = b; });
+
+                // stats
+                var stats = sml.EvalConstraintStat();
+
+                // type of the items of the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !sml.typeValueListElement.HasContent(),
+                            "Please check, if you can provide a type information for which " +
+                            "SubmodelElements are contained in this list. ",
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => stats?.AllChildSmeTypeMatch == false,
+                            "Constraint AASd-108 violated: All first level child elements in a " +
+                            "SubmodelElementList shall have the same submodel element type as specified " +
+                            "in SubmodelElementList/typeValueListElement.")
+                    });
+                this.AddKeyValueRef(
+                    stack, "typeValueListElement", sml.typeValueListElement, ref sml.typeValueListElement,
+                    null, repo,
+                    v =>
+                    {
+                        sml.typeValueListElement = v as string;
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode,
+                    comboBoxItems: AdminShell.Key.SubmodelElementElements);
+
+                // ValueType for the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => !sml.valueTypeListElement.HasContent(),
+                            "Please check, if you can provide a value type of the SubmodelElement " +
+                            "contained in this list. " +
+                            "Value types are provided by built-in types of XML Schema Definition 1.1.",
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => stats?.AllChildValueTypeMatch == false,
+                            "Constraint AASd-109 violated: If SubmodelElementList/typeValueListElement " +
+                            "equal to Property or Range, SubmodelElementList/valueTypeListElement shall " +
+                            "be set and all first level child elements in the SubmodelElementList shall " +
+                            "have the the value type as specified in SubmodelElementList/valueTypeListElement")
+                    });
+                this.AddKeyValueRef(
+                    stack, "valueTypeListElement", sml.valueTypeListElement, ref sml.valueTypeListElement,
+                    null, repo,
+                    v =>
+                    {
+                        sml.valueTypeListElement = v as string;
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode,
+                    comboBoxItems: AdminShell.DataElement.ValueTypeItems);
+
+                // SemanticId for the list
+
+                this.AddHintBubble(
+                   stack, hintMode,
+                   new[] {
+                        new HintCheck(
+                            () => stats?.AllChildSemIdMatch == false,
+                            "Constraint AASd-107 violated: If a first level child element in a " +
+                            "SubmodelElementList has a semanticId it shall be identical to " +
+                            "SubmodelElementList/semanticIdListElement.")
+                   });
+
+                DisplayOrEditEntitySemanticId(stack, sml.semanticIdListElement,
+                    (o) => { sml.semanticIdListElement = o; },
+                    key: "semanticIdListElement",
+                    groupHeader: null,
+                    statement: "Semantic Id the submodel elements contained in the list match to.",
+                    addExistingEntities: AdminShell.Key.AllElements);
+            }
+            else if (sme is AdminShell.SubmodelElementStruct sms)
+            {
+                // Start
+
+                this.AddGroup(stack, "SubmodelElementStruct", this.levelColors.MainSection);
+                if (sms.value != null)
+                    this.AddKeyValue(stack, "# of values", "" + sms.value.Count);
+                else
+                    this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+                // no further members
+
+            }
             else if (sme is AdminShell.SubmodelElementCollection smc)
             {
-                this.AddGroup(stack, "SubmodelElementCollection", this.levelColors.MainSection);
+                this.AddGroup(stack, "SubmodelElementCollection (deprecated)", this.levelColors.MainSection);
                 if (smc.value != null)
                     this.AddKeyValue(stack, "# of values", "" + smc.value.Count);
                 else
@@ -3624,7 +3749,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => {
                                 return ent.entityType == null ||
-                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.Undef;
+                                    ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.Undef;
                             },
                             "EntityType needs to be either CoManagedEntity (no assigned Asset reference) " +
                                 "or SelfManagedEntity (with assigned Asset reference)",
@@ -3647,7 +3772,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => {
                                 return ent.entityType != null &&
-                                    ent.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity &&
+                                    ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity &&
                                     (ent.assetRef == null || ent.assetRef.Count < 1);
                             },
                             "Please choose the Asset for the SelfManagedEntity.",
@@ -3657,7 +3782,7 @@ namespace AasxPackageLogic
                         stack, repo, ent.assetRef, "Asset:", "Create data element!",
                         v =>
                         {
-                            ent.assetRef = new AdminShell.AssetRef();
+                            ent.assetRef = new AdminShell.ModelReference();
                             this.AddDiaryEntry(ent, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3665,7 +3790,7 @@ namespace AasxPackageLogic
                     Func<AdminShell.KeyList, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            AdminShell.Reference.CreateNew(kl), translateAssetToAAS: true);
+                            AdminShell.ModelReference.CreateNew(kl), translateAssetToAAS: true);
                     };
                     this.AddKeyListKeys(
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
@@ -3704,7 +3829,7 @@ namespace AasxPackageLogic
                         stack, repo, bev.observed, "observed:", "Create data element!",
                         v =>
                         {
-                            bev.observed = new AdminShell.Reference();
+                            bev.observed = new AdminShell.ModelReference();
                             this.AddDiaryEntry(bev, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3715,7 +3840,7 @@ namespace AasxPackageLogic
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
+                            return new AnyUiLambdaActionNavigateTo(AdminShell.ModelReference.CreateNew(kl));
                         },
                         relatedReferable: bev);
                 }
@@ -3750,7 +3875,7 @@ namespace AasxPackageLogic
                             // send event
                             var ev = new AasEventMsgEnvelope(
                                 DateTime.UtcNow,
-                                source: bev.GetReference(),
+                                source: bev.GetModelReference(),
                                 sourceSemanticId: bev.semanticId,
                                 observableReference: bev.observed,
                                 observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
@@ -3775,107 +3900,5 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Submodel Element is unknown!", this.levelColors.MainSection);
         }
 
-        //
-        //
-        // --- View
-        //
-        //
-
-        public void DisplayOrEditAasEntityView(
-            PackageCentral.PackageCentral packages,
-            AdminShell.AdministrationShellEnv env, AdminShell.AdministrationShell shell,
-            AdminShell.View view, bool editMode, AnyUiStackPanel stack,
-            bool hintMode = false)
-        {
-            //
-            // View
-            //
-            this.AddGroup(stack, "View", this.levelColors.MainSection);
-
-            if (editMode)
-            {
-                // Up/ down/ del
-                this.EntityListUpDownDeleteHelper<AdminShell.View>(
-                    stack, repo, shell.views.views, view, env, "View:");
-
-                // let the user control the number of references
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return view.containedElements == null || view.containedElements.Count < 1; },
-                            "This View currently has no references to SubmodelElements, yet. " +
-                                "You could create them by clicking the 'Add ..' button below.",
-                            severityLevel: HintCheck.Severity.Notice)
-                });
-                this.AddAction(
-                    stack, "containedElements:", new[] { "Add Reference to SubmodelElement", }, repo,
-                    (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0)
-                        {
-                            var ks = this.SmartSelectAasEntityKeys(
-                                        packages, PackageCentral.PackageCentral.Selector.Main, "SubmodelElement");
-                            if (ks != null)
-                            {
-                                this.AddDiaryEntry(view, new DiaryEntryStructChange());
-                                view.AddContainedElement(ks);
-                            }
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
-                        }
-
-                        return new AnyUiLambdaActionNone();
-                    });
-            }
-            else
-            {
-                int num = 0;
-                if (view.containedElements != null && view.containedElements.reference != null)
-                    num = view.containedElements.reference.Count;
-
-                var g = this.AddSmallGrid(1, 1, new[] { "*" });
-                this.AddSmallLabelTo(g, 0, 0, content: $"# of containedElements: {num}");
-                stack.Children.Add(g);
-            }
-
-            // Referable
-            this.DisplayOrEditEntityReferable(stack, view, categoryUsual: false);
-
-            // HasSemantics
-            this.DisplayOrEditEntitySemanticId(stack, view.semanticId,
-                (sid) => { view.semanticId = sid; },
-                "Only by adding this, a computer can distinguish, for what the view is really meant for.",
-                checkForCD: false,
-                addExistingEntities: AdminShell.Key.ConceptDescription,
-                relatedReferable: view);
-
-            // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, view.hasDataSpecification,
-                (ds) => { view.hasDataSpecification = ds; },
-                relatedReferable: view);
-
-        }
-
-        public void DisplayOrEditAasEntityViewReference(
-            PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env, AdminShell.View view,
-            AdminShell.ContainedElementRef reference, bool editMode, AnyUiStackPanel stack)
-        {
-            //
-            // View
-            //
-            this.AddGroup(stack, "Reference (containedElement) of View ", this.levelColors.MainSection);
-
-            if (editMode)
-            {
-                // Up/ down/ del
-                this.EntityListUpDownDeleteHelper<AdminShell.ContainedElementRef>(
-                    stack, repo, view.containedElements.reference, reference, null, "Reference:");
-            }
-
-            // normal reference
-            this.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
-                packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements,
-                relatedReferable: view);
-        }
     }
 }

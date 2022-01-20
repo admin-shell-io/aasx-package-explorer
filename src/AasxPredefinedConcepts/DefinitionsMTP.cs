@@ -51,18 +51,10 @@ namespace AasxPredefinedConcepts
 
                 // Referable
                 SEM_MtpSubmodel = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                        type: "Submodel",
-                        local: false,
-                        idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/submodel"));
+                    "http://www.admin-shell.io/mtp/v1/submodel");
 
                 SEM_MtpInstanceSubmodel = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                        type: "Submodel",
-                        local: false,
-                        idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel"));
+                    "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel");
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",

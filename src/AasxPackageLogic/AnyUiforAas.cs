@@ -89,7 +89,7 @@ namespace AasxPackageLogic
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            AdminShell.Reference targetReference,
+            AdminShell.ModelReference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -97,7 +97,7 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public AdminShell.Reference targetReference;
+        public AdminShell.ModelReference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
     }
@@ -156,22 +156,6 @@ namespace AasxPackageLogic
         public object ResultItem = null;
 
         public AnyUiDialogueDataSelectReferableFromPool(
-            string caption = "",
-            double? maxWidth = null)
-            : base(caption, maxWidth)
-        {
-        }
-    }
-
-    public class AnyUiDialogueDataSelectQualifierPreset : AnyUiDialogueDataBase
-    {
-        // in
-        // (the presets will be provided by the technology implementation)
-
-        // out
-        public AdminShell.Qualifier ResultQualifier = null;
-
-        public AnyUiDialogueDataSelectQualifierPreset(
             string caption = "",
             double? maxWidth = null)
             : base(caption, maxWidth)

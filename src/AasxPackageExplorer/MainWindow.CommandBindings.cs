@@ -640,6 +640,9 @@ namespace AasxPackageExplorer
             if (cmd == "newsubmodelfromplugin")
                 CommandBinding_NewSubmodelFromPlugin();
 
+            if (cmd == "saveoptionsfromplugin")
+                CommandBinding_SaveOptionsFromPlugin();
+
             if (cmd == "convertelement")
                 CommandBinding_ConvertElement();
 
@@ -1094,7 +1097,7 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_PrintAsset()
         {
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAsset)
             {
                 var ve = DisplayElements.SelectedItem as VisualElementAsset;
@@ -1115,9 +1118,10 @@ namespace AasxPackageExplorer
 
             try
             {
-                if (asset.identification != null)
+                var id = asset.globalAssetId.GetAsIdentifier();
+                if (id != null)
                 {
-                    AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                    AasxPrintFunctions.PrintSingleAssetCodeSheet(id, asset.fakeIdShort);
                 }
             }
             catch (Exception ex)
@@ -1643,7 +1647,7 @@ namespace AasxPackageExplorer
 
             if (res == true)
             {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.id);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1669,7 +1673,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
+                if (submodel == null || submodel.id == null)
                 {
                     MessageBoxFlyoutShow(
                         "Identification of SubModel is (null).", "Submodel Read",
@@ -1678,7 +1682,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.AdministrationShells == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -1687,15 +1691,14 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.id);
                 if (existingSm != null)
                     _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
                 _packageCentral.Main.AasEnv.Submodels.Add(submodel);
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -1798,7 +1801,7 @@ namespace AasxPackageExplorer
             }
 
             {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.id);
 
                 // de-serialize Submodel
                 AdminShell.Submodel submodel = null;
@@ -1821,7 +1824,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
+                if (submodel == null || submodel.id == null)
                 {
                     MessageBoxFlyoutShow(
                         "Identification of SubModel is (null).", "Submodel Read",
@@ -1830,7 +1833,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.AdministrationShells == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -1839,7 +1842,7 @@ namespace AasxPackageExplorer
                 }
 
                 // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.id);
                 if (existingSm != null)
                     _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
                 _packageCentral.Main.AasEnv.Submodels.Add(submodel);
@@ -1847,7 +1850,7 @@ namespace AasxPackageExplorer
                 // add SubmodelRef to AAS
                 // access the AAS
                 var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                    "Submodel", submodel.id.value);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -2198,10 +2201,8 @@ namespace AasxPackageExplorer
                 || ve is VisualElementAdminShell
                 || ve is VisualElementAsset
                 || ve is VisualElementOperationVariable
-                || ve is VisualElementReference
                 || ve is VisualElementSubmodel
-                || ve is VisualElementSubmodelRef
-                || ve is VisualElementView))
+                || ve is VisualElementSubmodelRef))
                 ve = null;
 
             // need to have business object
@@ -2624,16 +2625,16 @@ namespace AasxPackageExplorer
                 try
                 {
                     // Submodel needs an identification
-                    smres.identification = new AdminShell.Identification("IRI", "");
+                    smres.id = new AdminShell.Identifier("");
                     if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                        smres.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                        smres.id.value = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add Submodel
-                    var smref = new AdminShell.SubmodelRef(smres.GetReference());
+                    var smref = new AdminShell.SubmodelRef(smres.GetModelReference());
                     ve1.theAas.AddSubmodelRef(smref);
                     _packageCentral.Main.AasEnv.Submodels.Add(smres);
 
@@ -2643,9 +2644,9 @@ namespace AasxPackageExplorer
                         int nr = 0;
                         foreach (var cd in cdres)
                         {
-                            if (cd == null || cd.identification == null)
+                            if (cd == null || cd.id == null)
                                 continue;
-                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
+                            var cdFound = ve1.theEnv.FindConceptDescription(cd.id);
                             if (cdFound != null)
                                 continue;
                             // ok, add
@@ -2664,6 +2665,74 @@ namespace AasxPackageExplorer
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                }
+            }
+        }
+
+        public void CommandBinding_SaveOptionsFromPlugin()
+        {
+            // create a list of plugins, which are capable of generating Submodels
+            var listOfSm = new List<AnyUiDialogueListItem>();
+            foreach (var lpi in Plugins.LoadedPlugins.Values)
+            {
+                if (lpi.HasAction("get-json-options"))
+                    listOfSm.Add(new AnyUiDialogueListItem(
+                        "" + lpi.name,
+                        new Tuple<Plugins.PluginInstance, string>(lpi, "")));
+            }
+
+            // could be nothing
+            if (listOfSm.Count < 1)
+            {
+                MessageBoxFlyoutShow(
+                    "No plugins exporting options found. Aborting.", "Save options from plugins",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            // prompt for this list
+            var uc = new SelectFromListFlyout();
+            uc.DiaData.Caption = "Select plugin to save options from ..";
+            uc.DiaData.ListOfItems = listOfSm;
+            this.StartFlyoverModal(uc);
+            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
+                uc.DiaData.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
+            {
+                // get result arguments
+                var TagTuple = uc.DiaData.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
+                var lpi = TagTuple?.Item1;
+
+                try
+                {
+                    Log.Singleton.Info($"Retrieving options from plugin {lpi?.name} ..");
+                    var res = lpi.InvokeAction("get-json-options") as AasxPluginResultBaseObject;
+                    if (res?.obj is string resstr)
+                    {
+                        // ask for file name
+                        var dlg = new Microsoft.Win32.SaveFileDialog();
+                        dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                        dlg.Title = "Select options file to be exported";
+                        dlg.FileName = "new.options.json";
+                        dlg.DefaultExt = "*.options.json";
+                        dlg.Filter = "Options JSON File (.options.json)|*.options.json|All files (*.*)|*.*";
+
+                        if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                        var res2 = true == dlg.ShowDialog(this);
+                        if (Options.Curr.UseFlyovers) this.CloseFlyover();
+                        if (!res2)
+                            return;
+
+                        // ok, try save
+                        Log.Singleton.Info($"Writing options to {dlg.FileName} ..");
+                        File.WriteAllText(dlg.FileName, resstr);
+                        Log.Singleton.Info("Done with writing plugin options to file.");
+                    }
+                    else
+                        Log.Singleton.Error($"Error retrieving options from plugin {lpi?.name} !");
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when save options from plugin {lpi?.name}");
                 }
             }
         }
@@ -2756,9 +2825,9 @@ namespace AasxPackageExplorer
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
-                foreach (AdminShellV20.Asset ass in _packageCentral.Main.AasEnv.Assets)
+                foreach (AdminShell.AdministrationShell aas in _packageCentral.Main.AasEnv.AdministrationShells)
                 {
-                    UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
+                    UANodeSetExport.CreateAAS(aas?.assetInformation?.fakeIdShort, _packageCentral.Main.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();

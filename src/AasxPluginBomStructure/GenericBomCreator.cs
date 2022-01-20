@@ -74,9 +74,9 @@ namespace AasxPluginBomStructure
 
         public AdminShell.Referable FindReferableByReference(AdminShell.Reference r)
         {
-            if (_refStore == null)
-                return this._env?.FindReferableByReference(r);
-            return _refStore.FindElementByReference(r, AdminShell.Key.MatchMode.Relaxed);
+            if (_refStore == null && r is AdminShell.ModelReference modrf)
+                return this._env?.FindReferableByReference(modrf);
+            return _refStore?.FindElementByReference(r);
         }
 
         private string GenerateNodeID()
@@ -476,8 +476,9 @@ namespace AasxPluginBomStructure
                             if (rel.semanticId != null && rel.semanticId.Count > 0)
                             {
                                 var cd = this.FindReferableByReference(
-                                    new AdminShell.Reference(
-                                        rel.semanticId)) as AdminShell.ConceptDescription;
+                                    new AdminShell.ModelReference(
+                                        rel.semanticId, AdminShell.Key.ConceptDescription))
+                                            as AdminShell.ConceptDescription;
 
                                 if (cd != null)
                                 {
@@ -601,11 +602,11 @@ namespace AasxPluginBomStructure
                         node1.Label.FontSize = 12;
 
                         // what type?
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity)
+                        if (sme.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity)
                         {
                             node1.Attr.FillColor = AssetSelfManagedColor;
                         }
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity)
+                        if (sme.GetEntityType() == AdminShell.Entity.EntityTypeEnum.CoManagedEntity)
                         {
                             node1.Attr.FillColor = AssetCoManagedColor;
                         }

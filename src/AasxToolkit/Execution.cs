@@ -14,7 +14,6 @@ using AasValidationRecordList = AdminShellNS.AasValidationRecordList;
 using AdminShell = AdminShellNS.AdminShell;
 using AdminShellPackageEnv = AdminShellNS.AdminShellPackageEnv;
 using AdminShellUtil = AdminShellNS.AdminShellUtil;
-using AdminShellV20 = AdminShellNS.AdminShellV20;
 using AmlExport = AasxAmlImExport.AmlExport;
 using AmlImport = AasxAmlImExport.AmlImport;
 using Console = System.Console;
@@ -228,7 +227,7 @@ namespace AasxToolkit
 
                                 ei.ExportSingleSubmodel(
                                     package, ecst.Path,
-                                    dnp.SM_Nameplate.GetSemanticKey(),
+                                    dnp.SM_Nameplate.GetAutoSingleId(),
                                     dnp.GetAllReferables(),
                                     firstNodeId: new AasxFormatCst.CstIdObjectBase()
                                     {
@@ -325,17 +324,11 @@ namespace AasxToolkit
                                     return -1;
                                 }
 
-                                var prop = AdminShellV20.Property.CreateNew("test", "cat01");
-                                prop.semanticId = new AdminShellV20.SemanticId(
-                                    AdminShellV20.Reference.CreateNew(
-                                        "GlobalReference", false, "IRI",
-                                        "www.admin-shell.io/nonsense"));
+                                var prop = AdminShell.Property.CreateNew("test", "cat01");
+                                prop.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
 
-                                var fil = AdminShellV20.File.CreateNew("test", "cat01");
-                                fil.semanticId = new AdminShellV20.SemanticId(
-                                    AdminShellV20.Reference.CreateNew(
-                                        "GlobalReference", false, "IRI",
-                                        "www.admin-shell.io/nonsense"));
+                                var fil = AdminShell.File.CreateNew("test", "cat01");
+                                fil.semanticId = new AdminShell.SemanticId("www.admin-shell.io/nonsense");
                                 fil.parent = fil;
 
                                 var so = new AdminShellUtil.SearchOptions();

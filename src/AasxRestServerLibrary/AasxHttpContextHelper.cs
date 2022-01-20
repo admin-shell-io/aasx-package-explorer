@@ -90,7 +90,7 @@ namespace AasxRestServerLibrary
                         var vl = v.Split(',');
                         if (vl.Length == 2)
                         {
-                            var id = new AdminShell.Identification(vl[0], vl[1]);
+                            var id = new AdminShell.Identifier(vl[1]);
                             var h = new AasxHttpHandleIdentification(id, "@" + k);
                             res.Add(h);
                         }
@@ -131,10 +131,9 @@ namespace AasxRestServerLibrary
                     if (m2.Success && m2.Groups.Count >= 4)
                     {
                         var k = m2.Groups[1].ToString();
-                        var idt = m2.Groups[2].ToString();
                         var ids = m2.Groups[3].ToString();
 
-                        var id = new AdminShell.Identification(idt, ids);
+                        var id = new AdminShell.Identifier(ids);
                         var h = new AasxHttpHandleIdentification(id, "@" + k);
                         res.Add(h);
                     }
@@ -408,11 +407,14 @@ namespace AasxRestServerLibrary
             }
 
             // try to get the asset as well
-            var asset = this.Package.AasEnv.FindAsset(aas.assetRef);
+            // TODO (MIHO, 2022-01-07): decide what to do with the frame
+            AdminShell.AssetInformation asset = null;
 
             // result
             dynamic res = new ExpandoObject();
             res.AAS = aas;
+
+            // ReSharper disable once ExpressionIsAlwaysNull
             res.Asset = asset;
 
             // return as JSON
@@ -538,7 +540,7 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (aas.identification == null)
+            if (aas.id == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.BadRequest,
@@ -556,8 +558,8 @@ namespace AasxRestServerLibrary
             }
             context.Server.Logger.Debug(
                 $"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
-                $"id {aas.identification.ToString() }");
-            var existingAas = this.Package.AasEnv.FindAAS(aas.identification);
+                $"id {aas.id.ToString() }");
+            var existingAas = this.Package.AasEnv.FindAAS(aas.id);
             if (existingAas != null)
                 this.Package.AasEnv.AdministrationShells.Remove(existingAas);
             this.Package.AasEnv.AdministrationShells.Add(aas);
@@ -566,7 +568,7 @@ namespace AasxRestServerLibrary
             SendTextResponse(context, "OK" + ((existingAas != null) ? " (updated)" : " (new)"));
         }
 
-        public void EvalDeleteAasAndAsset(IHttpContext context, string aasid, bool deleteAsset = false)
+        public void EvalDeleteAasAndAsset(IHttpContext context, string aasid)
         {
             // datastructure update
             if (this.Package == null || this.Package.AasEnv == null ||
@@ -586,22 +588,11 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            // find the asset
-            var asset = this.Package.AasEnv.FindAsset(aas.assetRef);
-
             // delete
             context.Server.Logger.Debug(
                 $"Deleting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
-                $"id {aas.identification?.ToString() ?? "--"}");
+                $"id {aas.id?.ToString() ?? "--"}");
             this.Package.AasEnv.AdministrationShells.Remove(aas);
-
-            if (deleteAsset && asset != null)
-            {
-                context.Server.Logger.Debug(
-                    $"Deleting Asset with idShort {asset.idShort ?? "--"} and " +
-                    $"id {asset.identification?.ToString() ?? "--"}");
-                this.Package.AasEnv.Assets.Remove(asset);
-            }
 
             // simple OK
             SendTextResponse(context, "OK");
@@ -624,10 +615,11 @@ namespace AasxRestServerLibrary
             if (handle != null && handle.identification != null)
             {
                 foreach (var aas in this.Package.AasEnv.AdministrationShells)
-                    if (aas.assetRef != null && aas.assetRef.Matches(handle.identification))
+                    if (aas.assetInformation?.globalAssetId != null
+                        && aas.assetInformation.globalAssetId.Matches(handle.identification))
                     {
                         dynamic o = new ExpandoObject();
-                        o.identification = aas.identification;
+                        o.identification = aas.id;
                         o.idShort = aas.idShort;
                         res.Add(o);
                     }
@@ -639,7 +631,7 @@ namespace AasxRestServerLibrary
                         aas.idShort.Trim().ToLower() == assetid.Trim().ToLower())
                     {
                         dynamic o = new ExpandoObject();
-                        o.identification = aas.identification;
+                        o.identification = aas.id;
                         o.idShort = aas.idShort;
                         res.Add(o);
                     }
@@ -660,10 +652,11 @@ namespace AasxRestServerLibrary
             }
 
             // de-serialize asset
-            AdminShell.Asset asset = null;
+            AdminShell.AssetInformation asset = null;
             try
             {
-                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.Asset>(context.Request.Payload);
+                asset = Newtonsoft.Json.JsonConvert.DeserializeObject<AdminShell.AssetInformation>(
+                    context.Request.Payload);
             }
             catch (Exception ex)
             {
@@ -673,7 +666,7 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (asset.identification == null)
+            if (asset.globalAssetId?.GetAsIdentifier(strict: true) == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.BadRequest,
@@ -682,18 +675,23 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError,
                     $"Error accessing internal data structures.");
                 return;
             }
-            context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
-            var existingAsset = this.Package.AasEnv.FindAsset(asset.identification);
-            if (existingAsset != null)
-                this.Package.AasEnv.Assets.Remove(existingAsset);
-            this.Package.AasEnv.Assets.Add(asset);
+
+            // TODO (MIHO/FhG, 2022-01-07):  What to do with overall function?
+            ////context.Server.Logger.Debug($"Adding Asset with idShort {asset.idShort ?? "--"}");
+            ////var existingAsset = this.Package.AasEnv.FindAsset(asset.id);
+            ////if (existingAsset != null)
+            ////    this.Package.AasEnv.Assets.Remove(existingAsset);
+            ////this.Package.AasEnv.Assets.Add(asset);
+            AdminShell.AssetInformation existingAsset = null;
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
 
             // simple OK
             SendTextResponse(context, "OK" + ((existingAsset != null) ? " (updated)" : " (new)"));
@@ -704,13 +702,13 @@ namespace AasxRestServerLibrary
 
         public class GetSubmodelsItem
         {
-            public AdminShell.Identification id = new AdminShell.Identification();
+            public AdminShell.Identifier id = new AdminShell.Identifier();
             public string idShort = "";
             public string kind = "";
 
             public GetSubmodelsItem() { }
 
-            public GetSubmodelsItem(AdminShell.Identification id, string idShort, string kind)
+            public GetSubmodelsItem(AdminShell.Identifier id, string idShort, string kind)
             {
                 this.id = id;
                 this.idShort = idShort;
@@ -719,7 +717,7 @@ namespace AasxRestServerLibrary
 
             public GetSubmodelsItem(AdminShell.Identifiable idi, string kind)
             {
-                this.id = idi.identification;
+                this.id = idi.id;
                 this.idShort = idi.idShort;
                 this.kind = kind;
             }
@@ -784,7 +782,7 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (submodel.identification == null)
+            if (submodel.id == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.BadRequest,
@@ -793,7 +791,7 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
@@ -803,21 +801,20 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding Submodel with idShort {submodel.idShort ?? "--"} and " +
-                $"id {submodel.identification?.ToString() }");
-            var existingSm = this.Package.AasEnv.FindSubmodel(submodel.identification);
+                $"id {submodel.id?.ToString() }");
+            var existingSm = this.Package.AasEnv.FindSubmodel(submodel.id);
             if (existingSm != null)
                 this.Package.AasEnv.Submodels.Remove(existingSm);
             this.Package.AasEnv.Submodels.Add(submodel);
 
             // add SubmodelRef to AAS
-            var newsmr = AdminShell.SubmodelRef.CreateNew(
-                "Submodel", true, submodel.identification.idType, submodel.identification.id);
+            var newsmr = AdminShell.SubmodelRef.CreateNew("Submodel", submodel.id.value);
             var existsmr = aas.HasSubmodelRef(newsmr);
             if (!existsmr)
             {
                 context.Server.Logger.Debug(
                     $"Adding SubmodelRef to AAS with idShort {aas.idShort ?? "--"} and " +
-                    $"id {aas.identification?.ToString() ?? "--"}");
+                    $"id {aas.id?.ToString() ?? "--"}");
                 aas.AddSubmodelRef(newsmr);
             }
 
@@ -850,7 +847,7 @@ namespace AasxRestServerLibrary
             {
                 context.Server.Logger.Debug(
                     $"Removing SubmodelRef {smid} from AAS with idShort {aas.idShort ?? "--"} and " +
-                    $"id {aas.identification?.ToString() ?? "--"}");
+                    $"id {aas.id?.ToString() ?? "--"}");
                 aas.submodelRefs.Remove(smref);
             }
 
@@ -939,22 +936,21 @@ namespace AasxRestServerLibrary
                 // SubnmodelElement general
                 row.idShorts = path + (sme.idShort ?? "(-)");
                 row.typeName = sme.GetElementName();
-                if (sme.semanticId == null || sme.semanticId.Keys == null)
+                if (sme.semanticId == null || sme.semanticId.Value == null)
                 { }
-                else if (sme.semanticId.Keys.Count > 1)
+                else if (sme.semanticId.Value.Count > 1)
                 {
                     row.semId = "(complex)";
                 }
                 else
                 {
-                    row.semIdType = sme.semanticId.Keys[0].idType;
-                    row.semId = sme.semanticId.Keys[0].value;
+                    row.semId = sme.semanticId.First.value;
                 }
 
                 // try find a concept description
                 if (sme.semanticId != null)
                 {
-                    var cd = this.Package.AasEnv.FindConceptDescription(sme.semanticId.Keys);
+                    var cd = this.Package.AasEnv.FindConceptDescription(sme.semanticId);
                     if (cd != null)
                     {
                         var ds = cd.GetIEC61360();
@@ -988,11 +984,11 @@ namespace AasxRestServerLibrary
                         row.value = "(" + p.value.Length + " bytes)";
                 }
 
-                if (sme is AdminShell.ReferenceElement)
-                {
-                    var p = sme as AdminShell.ReferenceElement;
-                    row.value = "" + p.value.ToString();
-                }
+                if (sme is AdminShell.GlobalReferenceElement gre)
+                    row.value = "" + gre.value.ToString();
+
+                if (sme is AdminShell.ModelReferenceElement mre)
+                    row.value = "" + mre.value.ToString();
 
                 if (sme is AdminShell.RelationshipElement)
                 {
@@ -1410,7 +1406,7 @@ namespace AasxRestServerLibrary
                 dynamic o = new ExpandoObject();
                 o.idShort = cd.idShort;
                 o.shortName = cd.GetDefaultShortName();
-                o.identification = cd.identification;
+                o.identification = cd.id;
                 o.isCaseOf = cd.IsCaseOf;
 
                 // add
@@ -1488,10 +1484,10 @@ namespace AasxRestServerLibrary
             }
 
             // list of Identification
-            List<AdminShell.Identification> ids = null;
+            List<AdminShell.Identifier> ids = null;
             try
             {
-                ids = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AdminShell.Identification>>(
+                ids = Newtonsoft.Json.JsonConvert.DeserializeObject<List<AdminShell.Identifier>>(
                     context.Request.Payload);
             }
             catch (Exception ex)
@@ -1576,7 +1572,7 @@ namespace AasxRestServerLibrary
             }
 
             // need id for idempotent behaviour
-            if (cd.identification == null)
+            if (cd.id == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.BadRequest,
@@ -1585,7 +1581,7 @@ namespace AasxRestServerLibrary
             }
 
             // datastructure update
-            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.Assets == null)
+            if (this.Package == null || this.Package.AasEnv == null || this.Package.AasEnv.AdministrationShells == null)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.InternalServerError, $"Error accessing internal data structures.");
@@ -1595,8 +1591,8 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and " +
-                $"id {cd.identification.ToString() }");
-            var existingCd = this.Package.AasEnv.FindConceptDescription(cd.identification);
+                $"id {cd.id.ToString() }");
+            var existingCd = this.Package.AasEnv.FindConceptDescription(cd.id);
             if (existingCd != null)
                 this.Package.AasEnv.ConceptDescriptions.Remove(existingCd);
             this.Package.AasEnv.ConceptDescriptions.Add(cd);

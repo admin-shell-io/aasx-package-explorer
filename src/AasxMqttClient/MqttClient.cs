@@ -142,8 +142,8 @@ namespace AasxMqttClient
 
         private string GenerateTopic(string template,
             string defaultIfNull = null,
-            string aasIdShort = null, AdminShell.Identification aasId = null,
-            string smIdShort = null, AdminShell.Identification smId = null,
+            string aasIdShort = null, AdminShell.Identifier aasId = null,
+            string smIdShort = null, AdminShell.Identifier smId = null,
             string path = null)
         {
             var res = template;
@@ -154,14 +154,14 @@ namespace AasxMqttClient
             if (aasIdShort != null)
                 res = res.Replace("{aas}", "" + aasIdShort);
 
-            if (aasId?.id != null)
-                res = res.Replace("{aas-id}", "" + System.Net.WebUtility.UrlEncode(aasId.id));
+            if (aasId?.value != null)
+                res = res.Replace("{aas-id}", "" + System.Net.WebUtility.UrlEncode(aasId.value));
 
             if (smIdShort != null)
                 res = res.Replace("{sm}", "" + smIdShort);
 
-            if (smId?.id != null)
-                res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId.id));
+            if (smId?.value != null)
+                res = res.Replace("{sm-id}", "" + System.Net.WebUtility.UrlEncode(smId.value));
 
             if (path != null)
                 res = res.Replace("{path}", path);
@@ -219,7 +219,7 @@ namespace AasxMqttClient
                     var message = new MqttApplicationMessageBuilder()
                                    .WithTopic(GenerateTopic(
                                         _diaData.FirstTopicAAS, defaultIfNull: "AAS",
-                                        aasIdShort: aas.idShort, aasId: aas.identification))
+                                        aasIdShort: aas.idShort, aasId: aas.id))
                                    .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(aas))
                                    .WithExactlyOnceQoS()
                                    .WithRetainFlag(_diaData.MqttRetain)
@@ -237,8 +237,8 @@ namespace AasxMqttClient
                         var message2 = new MqttApplicationMessageBuilder()
                                         .WithTopic(GenerateTopic(
                                             _diaData.FirstTopicSubmodel, defaultIfNull: "Submodel_" + sm.idShort,
-                                            aasIdShort: aas.idShort, aasId: aas.identification,
-                                            smIdShort: sm.idShort, smId: sm.identification))
+                                            aasIdShort: aas.idShort, aasId: aas.id,
+                                            smIdShort: sm.idShort, smId: sm.id))
                                        .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(sm))
                                        .WithExactlyOnceQoS()
                                        .WithRetainFlag(_diaData.MqttRetain)
@@ -249,7 +249,7 @@ namespace AasxMqttClient
 
                         // single values as well? 
                         if (_diaData.SingleValueFirstTime)
-                            PublishSingleValues_FirstTimeSubmodel(aas, sm, sm.GetReference()?.Keys);
+                            PublishSingleValues_FirstTimeSubmodel(aas, sm, sm.GetModelReference()?.Keys);
                     }
                 }
             }
@@ -288,8 +288,8 @@ namespace AasxMqttClient
                 var msg = new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
                                 _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                                aasIdShort: aas.idShort, aasId: aas.identification,
-                                smIdShort: sm.idShort, smId: sm.identification,
+                                aasIdShort: aas.idShort, aasId: aas.id,
+                                smIdShort: sm.idShort, smId: sm.id,
                                 path: pathStr))
                             .WithPayload(valStr)
                             .WithExactlyOnceQoS()
@@ -349,8 +349,8 @@ namespace AasxMqttClient
                         new MqttApplicationMessageBuilder()
                             .WithTopic(GenerateTopic(
                                 _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.id,
+                                smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.id,
                                 path: pathStr))
                             .WithPayload(valStr)
                             .WithExactlyOnceQoS()
@@ -396,8 +396,8 @@ namespace AasxMqttClient
             var message = new MqttApplicationMessageBuilder()
                     .WithTopic(GenerateTopic(
                         _diaData.SingleValueTopic, defaultIfNull: "SingleValue",
-                        aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                        smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                        aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.id,
+                        smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.id,
                         path: pathStr))
                     .WithPayload(valStr)
                     .WithExactlyOnceQoS()
@@ -447,8 +447,8 @@ namespace AasxMqttClient
                 var message = new MqttApplicationMessageBuilder()
                                .WithTopic(GenerateTopic(
                                     _diaData.EventTopic, defaultIfNull: "Event",
-                                    aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.identification,
-                                    smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
+                                    aasIdShort: ri?.AAS?.idShort, aasId: ri?.AAS?.id,
+                                    smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.id,
                                     path: sourcePathStr))
                                .WithPayload(json)
                                .WithExactlyOnceQoS()

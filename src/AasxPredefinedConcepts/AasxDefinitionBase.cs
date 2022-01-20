@@ -23,6 +23,14 @@ namespace AasxPredefinedConcepts
     public class AasxDefinitionBase
     {
         //
+        // Constants & members
+        //
+
+        public const string V20Tag = "AAS2.0";
+
+        public string ReadVersion = "";
+
+        //
         // Inner classes
         //
 
@@ -39,11 +47,15 @@ namespace AasxPredefinedConcepts
             }
         }
 
+        public class Library : Dictionary<string, LibraryEntry>
+        {
+        }
+
         //
         // Fields
         //
 
-        protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
+        protected Library _library = new Library();
 
         protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
 
@@ -57,7 +69,7 @@ namespace AasxPredefinedConcepts
 
         public AasxDefinitionBase(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
         //
@@ -66,13 +78,13 @@ namespace AasxPredefinedConcepts
 
         public void ReadLibrary(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
-        protected Dictionary<string, LibraryEntry> BuildLibrary(Assembly assembly, string resourceName)
+        protected Library BuildLibrary(Assembly assembly, string resourceName)
         {
             // empty result
-            var res = new Dictionary<string, LibraryEntry>();
+            var res = new Library();
 
             // access resource
             var stream = assembly.GetManifestResourceStream(resourceName);
@@ -95,6 +107,14 @@ namespace AasxPredefinedConcepts
                 if (prop == null)
                     continue;
 
+                // some special cases
+                if (prop.Name == "Version")
+                {
+                    // note this once for the whole class
+                    ReadVersion = prop.Value.ToString();
+                    continue;
+                }
+
                 // ok
                 var name = prop.Name;
                 var contents = prop.Value.ToString();
@@ -109,11 +129,11 @@ namespace AasxPredefinedConcepts
         public LibraryEntry RetrieveEntry(string name)
         {
             // simple access
-            if (theLibrary == null || name == null || !theLibrary.ContainsKey(name))
+            if (_library == null || name == null || !_library.ContainsKey(name))
                 return null;
 
             // return
-            return theLibrary[name];
+            return _library[name];
         }
 
         public T RetrieveReferable<T>(string name) where T : AdminShell.Referable
@@ -124,16 +144,40 @@ namespace AasxPredefinedConcepts
                 return null;
 
             // try de-serialize
+            T res = null;
             try
             {
-                var r = JsonConvert.DeserializeObject<T>(entry.contents);
-                return r;
+                // do some on-the-fly conversion?
+#if !DoNotUseAasxCompatibilityModels
+                if (ReadVersion == V20Tag)
+                {
+                    if (typeof(T) == typeof(AdminShell.Submodel))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.Submodel>(entry.contents);
+                        if (old != null)
+                            res = new AdminShell.Submodel(old) as T;
+                    }
+
+                    if (typeof(T) == typeof(AdminShell.ConceptDescription))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.ConceptDescription>(entry.contents);
+                        if (old != null)
+                            res = new AdminShell.ConceptDescription(old) as T;
+                    }
+                }
+#endif
+                res ??= JsonConvert.DeserializeObject<T>(entry.contents);
             }
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return null;
             }
+
+            // OK
+            return res;
         }
 
         public static AdminShell.ConceptDescription CreateSparseConceptDescription(
@@ -142,7 +186,7 @@ namespace AasxPredefinedConcepts
             string idShort,
             string id,
             string definitionHereString,
-            AdminShell.Reference isCaseOf = null)
+            AdminShell.ModelReference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
@@ -151,13 +195,13 @@ namespace AasxPredefinedConcepts
             // create CD
             var cd = AdminShell.ConceptDescription.CreateNew(idShort, idType, id);
             var dsiec = cd.CreateDataSpecWithContentIec61360();
-            dsiec.preferredName = new AdminShellV20.LangStringSetIEC61360(lang, "" + idShort);
-            dsiec.definition = new AdminShellV20.LangStringSetIEC61360(lang,
+            dsiec.preferredName = new AdminShell.LangStringSetIEC61360(lang, "" + idShort);
+            dsiec.definition = new AdminShell.LangStringSetIEC61360(lang,
                 "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<AdminShell.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<AdminShell.ModelReference>(new[] { isCaseOf });
 
             // ok
             return cd;
@@ -181,7 +225,7 @@ namespace AasxPredefinedConcepts
             bool useAttributes = false, bool useFieldNames = false)
         {
             // access
-            if (this.theLibrary == null || typeToReflect == null)
+            if (this._library == null || typeToReflect == null)
                 return;
 
             // remember found Referables

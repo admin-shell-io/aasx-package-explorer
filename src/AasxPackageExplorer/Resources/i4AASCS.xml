@@ -376,10 +376,7 @@
         <Value>
             <uax:ListOfString>
                 <uax:String>GlobalReference</uax:String>
-                <uax:String>ConceptDictionary</uax:String>
-                <uax:String>AccessPermissionRule</uax:String>
                 <uax:String>DataElement</uax:String>
-                <uax:String>View</uax:String>
                 <uax:String>Property</uax:String>
                 <uax:String>SubmodelElement</uax:String>
                 <uax:String>File</uax:String>
@@ -588,12 +585,6 @@
             <Reference ReferenceType="HasSubtype" IsForward="false">ns=1;i=1047</Reference>
         </References>
     </UAObjectType>
-    <UAObjectType NodeId="ns=1;i=1007" BrowseName="1:AASViewType">
-        <DisplayName>AASViewType</DisplayName>
-        <References>
-            <Reference ReferenceType="HasSubtype" IsForward="false">i=58</Reference>
-        </References>
-    </UAObjectType>
     <UADataType NodeId="ns=1;i=1093" BrowseName="1:AASPathDataType">
         <DisplayName>AASPathDataType</DisplayName>
         <References>
@@ -622,12 +613,6 @@
         <DisplayName>AASAnnotatedRelationshipElement</DisplayName>
         <References>
             <Reference ReferenceType="HasSubtype" IsForward="false">ns=1;i=1008</Reference>
-        </References>
-    </UAObjectType>
-    <UAObjectType NodeId="ns=1;i=1098" BrowseName="1:AASViewType">
-        <DisplayName>AASViewType</DisplayName>
-        <References>
-            <Reference ReferenceType="HasSubtype" IsForward="false">i=61</Reference>
         </References>
     </UAObjectType>
     <UADataType NodeId="ns=1;i=1099" BrowseName="1:AAADataTypeIEC61360DataType">

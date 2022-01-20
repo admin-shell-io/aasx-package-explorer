@@ -78,12 +78,11 @@ namespace AasxDictionaryImport.Cdd.Tests
             return dict;
         }
 
-        protected static AdminShellV20.AdministrationShell CreateAdminShell(AdminShellV20.AdministrationShellEnv env)
+        protected static AdminShell.AdministrationShell CreateAdminShell(AdminShell.AdministrationShellEnv env)
         {
-            var adminShell = new AdminShellV20.AdministrationShell()
+            var adminShell = new AdminShell.AdministrationShell()
             {
-                identification = new AdminShellV20.Identification(
-                        AdminShellV20.Identification.IRI,
+                id = new AdminShell.Identifier(
                         AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas)),
             };
             env.AdministrationShells.Add(adminShell);

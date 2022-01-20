@@ -68,8 +68,8 @@ namespace AasxDictionaryImport
         /// <param name="adminShell">The admin shell to import into, or null if a new admin shell should be
         /// created</param>
         /// <returns>true if at least one submodel was imported</returns>
-        public static bool ImportSubmodel(Window window, AdminShellV20.AdministrationShellEnv env,
-            string defaultSourceDir, AdminShellV20.AdministrationShell? adminShell = null)
+        public static bool ImportSubmodel(Window window, AdminShell.AdministrationShellEnv env,
+            string defaultSourceDir, AdminShell.AdministrationShell? adminShell = null)
         {
             adminShell ??= CreateAdminShell(env);
             return PerformImport(window, ImportMode.Submodels, defaultSourceDir,
@@ -117,12 +117,11 @@ namespace AasxDictionaryImport
             return imported > 0;
         }
 
-        private static AdminShellV20.AdministrationShell CreateAdminShell(AdminShellV20.AdministrationShellEnv env)
+        private static AdminShell.AdministrationShell CreateAdminShell(AdminShell.AdministrationShellEnv env)
         {
-            var adminShell = new AdminShellV20.AdministrationShell()
+            var adminShell = new AdminShell.AdministrationShell()
             {
-                identification = new AdminShellV20.Identification(
-                        AdminShellV20.Identification.IRI,
+                id = new AdminShell.Identifier(
                         AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
             };
             env.AdministrationShells.Add(adminShell);

@@ -81,16 +81,6 @@ namespace AasOpcUaServer
             AddDescription("AAS:Operation",
                 @"An operation is a submodel element with input and output variables.");
 
-            AddDescription("AAS:View",
-                @"A view is a collection of referable elements w.r.t. to a specific viewpoint of one or more 
-                stakeholders.");
-
-            AddDescription("AAS:ConceptDictionary",
-                @"A dictionary contains elements that can be reused.
-				The concept dictionary contains concept descriptions.
-				Typically a concept description dictionary of an AAS contains only concept descriptions of 
-                elements used within submodels of the AAS");
-
             AddDescription("AAS:DataSpecification",
                 @"A data specification template defines the additional attributes an element may or shall have.");
 

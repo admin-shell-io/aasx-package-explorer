@@ -98,12 +98,12 @@ namespace AasxRestServerLibrary
 
         string BuildUriQueryPartId(string tag, AdminShell.Identifiable entity)
         {
-            if (entity == null || entity.identification == null)
+            if (entity == null || entity.id == null)
                 return "";
             var res = "";
             if (tag != null)
                 res += tag.Trim() + "=";
-            res += entity.identification.idType.Trim() + "," + entity.identification.id.Trim();
+            res += "" + entity.id.value.Trim();
             return res;
         }
 
@@ -174,7 +174,7 @@ namespace AasxRestServerLibrary
                 return null;
 
             // need AAS, indirect
-            var aas = env.FindAASwithSubmodel(submodel.identification);
+            var aas = env.FindAASwithSubmodel(submodel.id);
             if (aas == null)
                 return null;
 

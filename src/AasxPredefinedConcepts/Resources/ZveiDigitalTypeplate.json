@@ -1,5 +1,6 @@
 ﻿/* these items were adopted 12 JUN 2020, based on 1st draft of Y. Zhangs proposal for Submodel template */
 {
+  "Version": "AAS2.0",
   /* Nameplate */
   "SM_Nameplate": {
     "hasDataSpecification": null,

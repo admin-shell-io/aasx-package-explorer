@@ -44,9 +44,9 @@ namespace AasxRestServerLibrary
     {
         private static int counter = 1;
 
-        public AdminShell.Identification identification = null;
+        public AdminShell.Identifier identification = null;
 
-        public AasxHttpHandleIdentification(AdminShell.Identification src, string keyPreset = null)
+        public AasxHttpHandleIdentification(AdminShell.Identifier src, string keyPreset = null)
         {
             if (keyPreset == null)
                 this.Key = $"@ID{counter++:00000000}";
@@ -54,7 +54,7 @@ namespace AasxRestServerLibrary
                 this.Key = keyPreset;
             this.ExpiresInternal = DateTime.UtcNow.AddMinutes(60);
             this.Expires = this.ExpiresInternal.ToString("R");
-            this.identification = new AdminShell.Identification(src);
+            this.identification = new AdminShell.Identifier(src);
         }
     }
 

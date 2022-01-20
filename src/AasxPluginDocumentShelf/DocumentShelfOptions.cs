@@ -19,6 +19,13 @@ using AasxPredefinedConcepts;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// Note on V3.0:
+// As of Dec 2021, nobody was known using some handcrafted "AasxPluginDocumentShelf.options.json".
+// Latest changes in Dec 2021 were deeply cleaning-up the options.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginDocumentShelf
 {
     /// <summary>
@@ -42,7 +49,7 @@ namespace AasxPluginDocumentShelf
         public string UsageInfo = null;
     }
 
-    public class DocumentShelfOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
+    public class DocumentShelfOptions : AasxPluginLookupOptionsBase
     {
         public List<DocumentShelfOptionsRecord> Records = new List<DocumentShelfOptionsRecord>();
 
@@ -64,13 +71,13 @@ namespace AasxPluginDocumentShelf
             // V1.0
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
-            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsIdentifier();
             if (semIdDocumentation != null)
                 rec.AllowSubmodelSemanticId.Add(semIdDocumentation);
 
             // V1.1
             rec.AllowSubmodelSemanticId.Add(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
+                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetAutoSingleId());
 
             //
             // further models for CAD
@@ -83,9 +90,8 @@ namespace AasxPluginDocumentShelf
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShellV20.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+            rec.AllowSubmodelSemanticId.Add(
+                new AdminShell.Identifier("smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
 
             return opt;
         }

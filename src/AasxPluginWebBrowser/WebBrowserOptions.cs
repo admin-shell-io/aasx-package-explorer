@@ -14,9 +14,15 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// Note on V3.0:
+// As of Dec 2021, no options were implemented for this plug.
+// Therefore it seems to be fair enough not to implement version upgrades, yet.
+// However, AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir() is already used and can
+// easily engaged for this.
+
 namespace AasxPluginWebBrowser
 {
-    public class WebBrowserOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class WebBrowserOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
     {
         // right now, nothing!
 

@@ -28,30 +28,30 @@ namespace AasxPluginDocumentShelf
     /// </summary>
     public class DocuShelfSemanticConfig
     {
-        public AdminShell.Key SemIdDocumentation = null;
-        public AdminShell.Key SemIdDocument = null;
-        public AdminShell.Key SemIdDocumentIdValue = null;
-        public AdminShell.Key SemIdDocumentClassId = null;
-        public AdminShell.Key SemIdDocumentClassName = null;
-        public AdminShell.Key SemIdDocumentClassificationSystem = null;
-        public AdminShell.Key SemIdOrganizationName = null;
-        public AdminShell.Key SemIdOrganizationOfficialName = null;
-        public AdminShell.Key SemIdDocumentVersion = null;
-        public AdminShell.Key SemIdLanguage = null;
-        public AdminShell.Key SemIdTitle = null;
-        public AdminShell.Key SemIdDate = null;
-        public AdminShell.Key SemIdDocumentVersionIdValue = null;
-        public AdminShell.Key SemIdDigitalFile = null;
+        public AdminShell.Identifier SemIdDocumentation = null;
+        public AdminShell.Identifier SemIdDocument = null;
+        public AdminShell.Identifier SemIdDocumentIdValue = null;
+        public AdminShell.Identifier SemIdDocumentClassId = null;
+        public AdminShell.Identifier SemIdDocumentClassName = null;
+        public AdminShell.Identifier SemIdDocumentClassificationSystem = null;
+        public AdminShell.Identifier SemIdOrganizationName = null;
+        public AdminShell.Identifier SemIdOrganizationOfficialName = null;
+        public AdminShell.Identifier SemIdDocumentVersion = null;
+        public AdminShell.Identifier SemIdLanguage = null;
+        public AdminShell.Identifier SemIdTitle = null;
+        public AdminShell.Identifier SemIdDate = null;
+        public AdminShell.Identifier SemIdDocumentVersionIdValue = null;
+        public AdminShell.Identifier SemIdDigitalFile = null;
 
-        public AdminShell.Key SemIdDocumentId = null;
-        public AdminShell.Key SemIdIsPrimaryDocumentId = null;
-        public AdminShell.Key SemIdDocumentVersionId = null;
-        public AdminShell.Key SemIdSummary = null;
-        public AdminShell.Key SemIdKeywords = null;
-        public AdminShell.Key SemIdStatusValue = null;
-        public AdminShell.Key SemIdRole = null;
-        public AdminShell.Key SemIdDomainId = null;
-        public AdminShell.Key SemIdReferencedObject = null;
+        public AdminShell.Identifier SemIdDocumentId = null;
+        public AdminShell.Identifier SemIdIsPrimaryDocumentId = null;
+        public AdminShell.Identifier SemIdDocumentVersionId = null;
+        public AdminShell.Identifier SemIdSummary = null;
+        public AdminShell.Identifier SemIdKeywords = null;
+        public AdminShell.Identifier SemIdStatusValue = null;
+        public AdminShell.Identifier SemIdRole = null;
+        public AdminShell.Identifier SemIdDomainId = null;
+        public AdminShell.Identifier SemIdReferencedObject = null;
 
         public FormDescSubmodelElementCollection FormVdi2770 = null;
 
@@ -68,36 +68,36 @@ namespace AasxPluginDocumentShelf
             var preDefLib = new AasxPredefinedConcepts.DefinitionsVDI2770();
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(preDefLib);
 
-            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.GetAutoSingleId();
 
-            opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentClassId = preDefs.CD_VDI2770_DocumentClassId?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentClassName = preDefs.CD_VDI2770_DocumentClassName?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetSingleId();
+            opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetSingleId();
+            opt.SemIdDocumentClassId = preDefs.CD_VDI2770_DocumentClassId?.GetSingleId();
+            opt.SemIdDocumentClassName = preDefs.CD_VDI2770_DocumentClassName?.GetSingleId();
             opt.SemIdDocumentClassificationSystem =
-                preDefs.CD_VDI2770_DocumentClassificationSystem?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdOrganizationName = preDefs.CD_VDI2770_OrganizationName?.GetCdReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_DocumentClassificationSystem?.GetSingleId();
+            opt.SemIdOrganizationName = preDefs.CD_VDI2770_OrganizationName?.GetSingleId();
             opt.SemIdOrganizationOfficialName =
-                preDefs.CD_VDI2770_OrganizationOfficialName?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentVersion = preDefs.CD_VDI2770_DocumentVersion?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdLanguage = preDefs.CD_VDI2770_Language?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdTitle = preDefs.CD_VDI2770_Title?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDate = preDefs.CD_VDI2770_Date?.GetCdReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_OrganizationOfficialName?.GetSingleId();
+            opt.SemIdDocumentVersion = preDefs.CD_VDI2770_DocumentVersion?.GetSingleId();
+            opt.SemIdLanguage = preDefs.CD_VDI2770_Language?.GetSingleId();
+            opt.SemIdTitle = preDefs.CD_VDI2770_Title?.GetSingleId();
+            opt.SemIdDate = preDefs.CD_VDI2770_Date?.GetSingleId();
             opt.SemIdDocumentVersionIdValue =
-                preDefs.CD_VDI2770_DocumentVersionIdValue?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDigitalFile = preDefs.CD_VDI2770_DigitalFile?.GetCdReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_DocumentVersionIdValue?.GetSingleId();
+            opt.SemIdDigitalFile = preDefs.CD_VDI2770_DigitalFile?.GetSingleId();
 
             /* new, Birgit */
-            opt.SemIdDocumentId = preDefs.CD_VDI2770_DocumentId?.GetCdReference()?.GetAsExactlyOneKey();
+            opt.SemIdDocumentId = preDefs.CD_VDI2770_DocumentId?.GetSingleId();
             opt.SemIdIsPrimaryDocumentId =
-                preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDocumentVersionId = preDefs.CD_VDI2770_DocumentVersionId?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdSummary = preDefs.CD_VDI2770_Summary?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdKeywords = preDefs.CD_VDI2770_Keywords?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdStatusValue = preDefs.CD_VDI2770_StatusValue?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdRole = preDefs.CD_VDI2770_Role?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdDomainId = preDefs.CD_VDI2770_DomainId?.GetCdReference()?.GetAsExactlyOneKey();
-            opt.SemIdReferencedObject = preDefs.CD_VDI2770_ReferencedObject?.GetCdReference()?.GetAsExactlyOneKey();
+                preDefs.CD_VDI2770_IsPrimaryDocumentId?.GetSingleId();
+            opt.SemIdDocumentVersionId = preDefs.CD_VDI2770_DocumentVersionId?.GetSingleId();
+            opt.SemIdSummary = preDefs.CD_VDI2770_Summary?.GetSingleId();
+            opt.SemIdKeywords = preDefs.CD_VDI2770_Keywords?.GetSingleId();
+            opt.SemIdStatusValue = preDefs.CD_VDI2770_StatusValue?.GetSingleId();
+            opt.SemIdRole = preDefs.CD_VDI2770_Role?.GetSingleId();
+            opt.SemIdDomainId = preDefs.CD_VDI2770_DomainId?.GetSingleId();
+            opt.SemIdReferencedObject = preDefs.CD_VDI2770_ReferencedObject?.GetSingleId();
 
             return opt;
         }
@@ -250,7 +250,7 @@ namespace AasxPluginDocumentShelf
             // DocumentItem
 
             var descDoc = new FormDescSubmodelElementCollection(
-                "Document", FormMultiplicity.ZeroToMany, defs.CD_Document?.GetSingleKey(),
+                "Document", FormMultiplicity.ZeroToMany, defs.CD_Document?.GetSingleId(),
                 "Document{0:00}",
                 "Each document item comprises a set of elements describing the information of a VDI 2770 Document " +
                 "with directly attached DocumentVersion.");
@@ -258,23 +258,23 @@ namespace AasxPluginDocumentShelf
             // DocumentIdDomain
 
             var descDocIdDom = new FormDescSubmodelElementCollection(
-                "DocumentIdDomain", FormMultiplicity.OneToMany, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentIdDomain", FormMultiplicity.OneToMany, defs.CD_DocumentId?.GetSingleId(),
                 "DocumentIdDomain{0:00}",
                 "Set of information on the Document within a given domain, e.g. the providing organisation.");
             descDoc.Add(descDocIdDom);
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentDomainId", FormMultiplicity.One, defs.CD_DocumentDomainId?.GetSingleKey(),
+                "DocumentDomainId", FormMultiplicity.One, defs.CD_DocumentDomainId?.GetSingleId(),
                 "DocumentDomainId",
                 "Identification of the Domain, e.g. the providing organisation."));
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleId(),
                 "DocumentId",
                 "Identification of the Document within a given domain, e.g. the providing organisation."));
 
             descDocIdDom.Add(new FormDescProperty(
-                "IsPrimary", FormMultiplicity.ZeroToOne, defs.CD_IsPrimary?.GetSingleKey(),
+                "IsPrimary", FormMultiplicity.ZeroToOne, defs.CD_IsPrimary?.GetSingleId(),
                 "IsPrimary",
                 "Flag indicating that a DocumentId within a collection of at least two DocumentId`s is the " +
                 "‘primary’ identifier for the document. This is the preferred ID of the document (commonly from " +
@@ -283,14 +283,14 @@ namespace AasxPluginDocumentShelf
             // DocumentClassification
 
             var descDocClass = new FormDescSubmodelElementCollection(
-                "DocumentClassification", FormMultiplicity.ZeroToMany, defs.CD_DocumentClassification?.GetSingleKey(),
+                "DocumentClassification", FormMultiplicity.ZeroToMany, defs.CD_DocumentClassification?.GetSingleId(),
                 "DocumentClassification{0:00}",
                 "Set of information on the Document within a given domain, e.g. the providing organisation.");
             descDoc.Add(descDocClass);
 
             var descDocClassSystem = new FormDescProperty(
                             "ClassificationSystem",
-                            FormMultiplicity.One, defs.CD_ClassificationSystem?.GetSingleKey(),
+                            FormMultiplicity.One, defs.CD_ClassificationSystem?.GetSingleId(),
                             "ClassificationSystem",
                             "Identification of the classification system. A classification according to " +
                             "VDI2770:2018 shall be given.");
@@ -301,7 +301,7 @@ namespace AasxPluginDocumentShelf
             descDocClass.Add(descDocClassSystem);
 
             var descDocClassId = new FormDescProperty(
-                "ClassId", FormMultiplicity.One, defs.CD_ClassId?.GetSingleKey(),
+                "ClassId", FormMultiplicity.One, defs.CD_ClassId?.GetSingleId(),
                 "ClassId",
                 "ClassId of the document in VDI2770 or other.");
 
@@ -322,7 +322,7 @@ namespace AasxPluginDocumentShelf
             descDocClass.Add(descDocClassId);
 
             var descDocName = new FormDescProperty(
-                "ClassName", FormMultiplicity.One, defs.CD_ClassName?.GetSingleKey(),
+                "ClassName", FormMultiplicity.One, defs.CD_ClassName?.GetSingleId(),
                 "ClassName",
                 "ClassName of the document in VDI2770 or other. " +
                 "This property is automatically computed based on ClassId.");
@@ -341,43 +341,43 @@ namespace AasxPluginDocumentShelf
             // DocumentVersion
 
             var descDocVer = new FormDescSubmodelElementCollection(
-                "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(),
+                "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleId(),
                 "DocumentVersion",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 
             descDocVer.Add(new FormDescProperty(
-                "Languages", FormMultiplicity.OneToMany, defs.CD_Language?.GetSingleKey(), "Language{0:00}",
+                "Languages", FormMultiplicity.OneToMany, defs.CD_Language?.GetSingleId(), "Language{0:00}",
                 "List of languages used in the DocumentVersion. For most cases, " +
                 "at least one language shall be given."));
 
             descDocVer.Add(new FormDescProperty(
-                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionId?.GetSingleKey(),
+                "DocumentVersionId", FormMultiplicity.One, defs.CD_DocumentVersionId?.GetSingleId(),
                 "DocumentVersionId",
                 "Unambigous identification number of a DocumentVersion."));
 
             descDocVer.Add(new FormDescMultiLangProp(
-                "Title", FormMultiplicity.One, defs.CD_Title?.GetSingleKey(), "Title",
+                "Title", FormMultiplicity.One, defs.CD_Title?.GetSingleId(), "Title",
                 "Language dependent title of the document."));
 
             descDocVer.Add(new FormDescMultiLangProp(
-                "SubTitle", FormMultiplicity.ZeroToOne, defs.CD_SubTitle?.GetSingleKey(), "SubTitle",
+                "SubTitle", FormMultiplicity.ZeroToOne, defs.CD_SubTitle?.GetSingleId(), "SubTitle",
                 "Language dependent sub title of the document."));
 
             descDocVer.Add(new FormDescMultiLangProp(
-                "Summary", FormMultiplicity.One, defs.CD_Summary?.GetSingleKey(), "Summary",
+                "Summary", FormMultiplicity.One, defs.CD_Summary?.GetSingleId(), "Summary",
                 "Language dependent summary of the document."));
 
             descDocVer.Add(new FormDescMultiLangProp(
-                "Keywords", FormMultiplicity.One, defs.CD_KeyWords?.GetSingleKey(), "Keywords",
+                "Keywords", FormMultiplicity.One, defs.CD_KeyWords?.GetSingleId(), "Keywords",
                 "Language dependent keywords of the document."));
 
             descDocVer.Add(new FormDescProperty(
-                "SetDate", FormMultiplicity.One, defs.CD_SetDate?.GetSingleKey(), "SetDate",
+                "SetDate", FormMultiplicity.One, defs.CD_SetDate?.GetSingleId(), "SetDate",
                 "Date when the document status was set. Format is YYYY-MM-dd."));
 
             var descStatus = new FormDescProperty(
-                "StatusValue", FormMultiplicity.One, defs.CD_StatusValue?.GetSingleKey(), "StatusValue",
+                "StatusValue", FormMultiplicity.One, defs.CD_StatusValue?.GetSingleId(), "StatusValue",
                 "Each document version represents a point in time in the document life cycle. " +
                 "This status value refers to the milestones in the document life cycle. " +
                 "The following two statuses should be used for the application of this guideline: " +
@@ -386,40 +386,40 @@ namespace AasxPluginDocumentShelf
             descStatus.comboBoxChoices = new[] { "InReview", "Released" };
 
             descDocVer.Add(new FormDescProperty(
-                "OrganizationName", FormMultiplicity.One, defs.CD_OrganizationName?.GetSingleKey(), "OrganizationName",
+                "OrganizationName", FormMultiplicity.One, defs.CD_OrganizationName?.GetSingleId(), "OrganizationName",
                 "Organiziation name of the author of the Document."));
 
             descDocVer.Add(new FormDescProperty(
-                "OrganizationOfficialName", FormMultiplicity.One, defs.CD_OrganizationOfficialName?.GetSingleKey(),
+                "OrganizationOfficialName", FormMultiplicity.One, defs.CD_OrganizationOfficialName?.GetSingleId(),
                 "OrganizationOfficialName",
                 "Official name of the organization of author of the Document " +
                 "(which might be longer or include legal information)."));
 
             descDocVer.Add(new FormDescFile(
-                "DigitalFile", FormMultiplicity.OneToMany, defs.CD_DigitalFile?.GetSingleKey(), "DigitalFile{0:00}",
+                "DigitalFile", FormMultiplicity.OneToMany, defs.CD_DigitalFile?.GetSingleId(), "DigitalFile{0:00}",
                 "Digital file, which represents the Document and DocumentVersion. " +
                 "A PDF/A format is required for textual representations."));
 
             descDocVer.Add(new FormDescFile(
-                "PreviewFile", FormMultiplicity.ZeroToOne, defs.CD_PreviewFile?.GetSingleKey(), "PreviewFile{0:00}",
+                "PreviewFile", FormMultiplicity.ZeroToOne, defs.CD_PreviewFile?.GetSingleId(), "PreviewFile{0:00}",
                 "Provides a preview image of the Document, e.g. first page, in a commonly used " +
                 "image format and low resolution."));
 
             descDocVer.Add(new FormDescReferenceElement(
-                "RefersTo", FormMultiplicity.ZeroToMany, defs.CD_RefersTo?.GetSingleKey(),
+                "RefersTo", FormMultiplicity.ZeroToMany, defs.CD_RefersTo?.GetSingleId(),
                 "RefersTo{0:00}",
                 "Forms a generic RefersTo-relationship to another Document or DocumentVersion. " +
                 "They have a loose relationship."));
 
             descDocVer.Add(new FormDescReferenceElement(
-                "BasedOn", FormMultiplicity.ZeroToMany, defs.CD_BasedOn?.GetSingleKey(),
+                "BasedOn", FormMultiplicity.ZeroToMany, defs.CD_BasedOn?.GetSingleId(),
                 "BasedOn{0:00}",
                 "Forms a BasedOn-relationship to another Document or DocumentVersion. Typically states, that the " +
                 "content of the document bases on another document (e.g. specification requirements). Both have a " +
                 "strong relationship."));
 
             descDocVer.Add(new FormDescReferenceElement(
-                "TranslationOf", FormMultiplicity.ZeroToMany, defs.CD_TranslationOf?.GetSingleKey(),
+                "TranslationOf", FormMultiplicity.ZeroToMany, defs.CD_TranslationOf?.GetSingleId(),
                 "TranslationOf{0:00}",
                 "Forms a TranslationOf-relationship to another Document or DocumentVersion. Both have a " +
                 "strong relationship."));
@@ -427,7 +427,7 @@ namespace AasxPluginDocumentShelf
             // back to Document
 
             descDoc.Add(new FormDescReferenceElement(
-                "DocumentedEntity", FormMultiplicity.ZeroToOne, defs.CD_DocumentedEntity?.GetSingleKey(),
+                "DocumentedEntity", FormMultiplicity.ZeroToOne, defs.CD_DocumentedEntity?.GetSingleId(),
                 "DocumentedEntity",
                 "Identifies the Entity, which is subject to the Documentation."));
 

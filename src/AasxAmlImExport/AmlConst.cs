@@ -108,9 +108,6 @@ namespace AasxAmlImExport
 
             public static string Asset = "AssetAdministrationShellRoleClassLib/Asset";
 
-            public static string View = "AssetAdministrationShellRoleClassLib/View";
-            public static string ContainedElementRef = "AssetAdministrationShellRoleClassLib/ContainedElementRef";
-
             public static string AAS = "AssetAdministrationShellRoleClassLib/AssetAdministrationShell";
 
             public static string Submodel = "AssetAdministrationShellRoleClassLib/Submodel";

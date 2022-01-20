@@ -107,21 +107,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // check for a record in options, that matches Submodel
-#if __old
-                var found = false;
-
-                if (_options != null && _options.Records != null)
-                    foreach (var rec in _options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
-#else
-                bool found = _options?.ContainsIndexKey(sm?.semanticId?.GetAsExactlyOneKey()) ?? false;
-#endif               
+                bool found = _options?.ContainsIndex(sm?.semanticId?.GetAsIdentifier()) ?? false;
                 if (!found)
                     return null;
 

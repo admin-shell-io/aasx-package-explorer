@@ -88,13 +88,12 @@ namespace AasxAmlImExport
             return a;
         }
 
-        private static void SetIdentification(AttributeSequence aseq, AdminShell.Identification id)
+        private static void SetIdentification(AttributeSequence aseq, AdminShell.Identifier id)
         {
             if (id == null)
                 return;
             var a0 = AppendAttributeNameAndRole(aseq, "identification", AmlConst.Attributes.Identification);
-            AppendAttributeNameAndRole(a0.Attribute, "idType", AmlConst.Attributes.Identification_idType, id.idType);
-            AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id.id);
+            AppendAttributeNameAndRole(a0.Attribute, "id", AmlConst.Attributes.Identification_id, id.value);
         }
 
         private static void SetAdministration(AttributeSequence aseq, AdminShell.Administration adm)
@@ -176,28 +175,45 @@ namespace AasxAmlImExport
                 return null;
 
             var semstr = "";
-            foreach (var k in semid.Keys)
-                semstr += String.Format(
-                    "({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
+            foreach (var v in semid.Value)
+                semstr += String.Format("{0}", v.value);
 
             return semstr;
         }
 
         private static string ToAmlReference(AdminShell.Reference refid)
         {
-            if (refid == null || refid.IsEmpty)
-                return null;
-
-            var semstr = "";
-            foreach (var k in refid.Keys)
+            if (refid is AdminShell.ModelReference modrf && !modrf.IsEmpty)
             {
-                if (semstr != "")
-                    semstr += ",";
-                semstr += String.Format(
-                    "({0})({1})[{2}]{3}", k.type, k.local ? "local" : "no-local", k.idType, k.value);
+                // TODO (MIHO, 2022-01-03): this does not export referredSemId!
+
+                var semstr = "";
+                foreach (var k in modrf.Keys)
+                {
+                    if (semstr != "")
+                        semstr += ",";
+                    semstr += String.Format(
+                        "({0}){1}", k.type, k.value);
+                }
+
+                return semstr;
             }
 
-            return semstr;
+            if (refid is AdminShell.GlobalReference glbrf && !glbrf.IsEmpty)
+            {
+                var semstr = "";
+                foreach (var v in glbrf.Value)
+                {
+                    if (semstr != "")
+                        semstr += ",";
+                    semstr += String.Format(
+                        "{0}", v.value);
+                }
+
+                return semstr;
+            }
+
+            return null;
         }
 
         private static void SetSemanticId(AttributeSequence aseq, AdminShell.SemanticId semid)
@@ -303,7 +319,7 @@ namespace AasxAmlImExport
                     }
 
                     // try find the referenced element as Referable in the AAS environment
-                    var targetReferable = env.FindReferableByReference(refInReferable);
+                    var targetReferable = env.FindReferableByReference(refInReferable as AdminShell.ModelReference);
                     if (targetReferable != null && internalLinksToCreate != null)
                     {
                         internalLinksToCreate.Add(
@@ -467,10 +483,17 @@ namespace AasxAmlImExport
                             }
                             break;
 
-                        case AdminShell.ReferenceElement smer:
+                        case AdminShell.GlobalReferenceElement smegr:
                             // value == a Reference
-                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smer,
-                                smer.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smegr,
+                                smegr.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
+                                aasStyleAttributes, amlStyleAttributes);
+                            break;
+
+                        case AdminShell.ModelReferenceElement smemr:
+                            // value == a Reference
+                            ExportReferenceWithSme(env, internalLinksToCreate, ie, smemr,
+                                smemr.value, "value", AmlConst.Attributes.ReferenceElement_Value, "value",
                                 aasStyleAttributes, amlStyleAttributes);
                             break;
 
@@ -578,7 +601,7 @@ namespace AasxAmlImExport
                 return;
 
             // set some data
-            SetIdentification(parent.Attribute, sm.identification);
+            SetIdentification(parent.Attribute, sm.id);
             SetAdministration(parent.Attribute, sm.administration);
             SetReferable(parent.Attribute, sm);
             SetModelingKind(parent.Attribute, sm.kind);
@@ -620,78 +643,17 @@ namespace AasxAmlImExport
         }
 
         private static void ExportAsset(
-            InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env, AdminShell.Asset asset)
+            InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env, AdminShell.AssetInformation asset)
         {
             if (ieseq == null || env == null || asset == null)
                 return;
 
             // directly add internal element
-            var ie = AppendIeNameAndRole(ieseq, name: asset.idShort, altName: "Asset", role: AmlConst.Roles.Asset);
+            var ie = AppendIeNameAndRole(ieseq, name: asset.fakeIdShort, altName: "Asset", role: AmlConst.Roles.Asset);
 
             // set some data
-            SetIdentification(ie.Attribute, asset.identification);
-            SetAdministration(ie.Attribute, asset.administration);
-            SetReferable(ie.Attribute, asset);
-            SetAssetKind(ie.Attribute, asset.kind, attributeRole: AmlConst.Attributes.Asset_Kind);
-            SetHasDataSpecification(ie.Attribute, asset.hasDataSpecification);
-
-            // do some data directly
-
-            if (asset.assetIdentificationModelRef != null)
-                AppendAttributeNameAndRole(
-                    ie.Attribute, "assetIdentificationModelRef", AmlConst.Attributes.Asset_IdentificationModelRef,
-                    ToAmlReference(asset.assetIdentificationModelRef));
-
-            if (asset.billOfMaterialRef != null)
-                AppendAttributeNameAndRole(ie.Attribute, "billOfMaterialRef",
-                AmlConst.Attributes.Asset_BillOfMaterialRef, ToAmlReference(asset.billOfMaterialRef));
-        }
-
-        private static void ExportView(
-            AasAmlMatcher matcher, InternalElementSequence ieseq, AdminShell.AdministrationShellEnv env,
-            AdminShell.View view)
-        {
-            if (ieseq == null || env == null || view == null)
-                return;
-
-            // directly add internal element
-            var ie = AppendIeNameAndRole(ieseq, name: view.idShort, altName: "View", role: AmlConst.Roles.View);
-
-            // set some data
-            SetReferable(ie.Attribute, view);
-            SetSemanticId(ie.Attribute, view.semanticId);
-            SetHasDataSpecification(ie.Attribute, view.hasDataSpecification);
-
-            // view references
-            // from the Meeting: Views sind Listen von "Mirror-Elementen",
-            // die auf die Properties.. (IEs) der AAS verweisen.
-            // Views hängen unter der jeweiligen AAS (Referable)
-            for (int i = 0; i < view.Count; i++)
-            {
-                // access contained element
-                var ce = view[i];
-                if (ce == null)
-                    continue;
-
-                // find the referenced element
-                var targetReferable = env.FindReferableByReference(ce);
-                if (targetReferable == null)
-                    continue;
-
-                // rely on the "hope", that there is a match
-                var targetAml = matcher.GetAmlObject(targetReferable);
-                if (targetAml == null)
-                    continue;
-
-                // for the time being, make an IE
-                // Note: it is "forbidden" to set Roles for mirror elements
-                var iece = AppendIeNameAndRole(
-                    ie.InternalElement, name: ce.ListOfValues("/"), altName: "Reference",
-                    role: null);
-
-                // just convert it to an mirror element
-                iece.RefBaseSystemUnitPath = "" + targetAml.ID;
-            }
+            SetIdentification(ie.Attribute, asset.globalAssetId?.GetAsIdentifier());
+            SetAssetKind(ie.Attribute, asset.assetKind, attributeRole: AmlConst.Attributes.Asset_Kind);
         }
 
         private static void ExportAAS(
@@ -716,7 +678,7 @@ namespace AasxAmlImExport
                 insthier.InternalElement, name: aas.idShort, altName: "AAS", role: AmlConst.Roles.AAS);
 
             // set some data
-            SetIdentification(aasIE.Attribute, aas.identification);
+            SetIdentification(aasIE.Attribute, aas.id);
             SetAdministration(aasIE.Attribute, aas.administration);
             SetReferable(aasIE.Attribute, aas);
             SetHasDataSpecification(aasIE.Attribute, aas.hasDataSpecification);
@@ -727,7 +689,7 @@ namespace AasxAmlImExport
                     ToAmlReference(aas.derivedFrom));
 
             // asset
-            var asset = env.FindAsset(aas.assetRef);
+            var asset = aas.assetInformation;
             ExportAsset(aasIE.InternalElement, env, asset);
 
             // the AAS for Submodels of kind = Type willbe created on demand
@@ -765,7 +727,7 @@ namespace AasxAmlImExport
                     rq.RefRoleClassPath = AmlConst.Roles.Submodel;
 
                     // set same data data, in order to correlate, but not asset
-                    SetIdentification(aasSUC.Attribute, aas.identification);
+                    SetIdentification(aasSUC.Attribute, aas.id);
                     SetAdministration(aasSUC.Attribute, aas.administration);
                     SetReferable(aasSUC.Attribute, aas);
                     SetHasDataSpecification(aasSUC.Attribute, aas.hasDataSpecification);
@@ -817,14 +779,6 @@ namespace AasxAmlImExport
             }
 
             //
-            // Views
-            //
-
-            if (aas.views != null && aas.views.views != null)
-                foreach (var view in aas.views.views)
-                    ExportView(matcher, aasIE.InternalElement, env, view);
-
-            //
             // Internal Links
             //
             SetInternalLinks(aasIE, matcher, internalLinksToCreate);
@@ -850,7 +804,7 @@ namespace AasxAmlImExport
                 name = cd.idShort;
 
             // set data for identifiable
-            SetIdentification(aseqOuter, cd.identification);
+            SetIdentification(aseqOuter, cd.id);
             SetAdministration(aseqOuter, cd.administration);
             SetReferable(aseqOuter, cd);
 
@@ -920,7 +874,7 @@ namespace AasxAmlImExport
                 if (source61360.unitId != null)
                     AppendAttributeNameAndRole(
                         dest61360, "unitId", AmlConst.Attributes.CD_DSC61360_UnitId,
-                        ToAmlReference(AdminShell.Reference.CreateNew(source61360.unitId.Keys)));
+                        ToAmlReference(AdminShell.GlobalReference.CreateNew(source61360.unitId.Value)));
                 if (source61360.valueFormat != null)
                     AppendAttributeNameAndRole(
                         dest61360, "valueFormat", AmlConst.Attributes.CD_DSC61360_ValueFormat,
@@ -967,7 +921,7 @@ namespace AasxAmlImExport
                 SetAttributesForConceptDescription(ieCD.Attribute, ieDSC.Attribute, cd, ref name);
 
                 // set the final name
-                name += "_" + ToAmlName(cd.identification.ToString());
+                name += "_" + ToAmlName(cd.id.ToString());
                 ieCD.Name = name;
             }
         }
@@ -991,9 +945,7 @@ namespace AasxAmlImExport
                             if (y is AdminShell.Submodel smkt)
                             {
                                 if (smkt.kind != null && smkt.kind.IsTemplate &&
-                                    smki.semanticId.Matches(
-                                        AdminShell.Key.Submodel, true, smkt.identification.idType,
-                                        smkt.identification.id))
+                                    smki.semanticId.Matches(smkt.id.value))
                                 {
                                     // we have a match: Submodel kind = Instance -> Submodel kind = Type
                                     var smki_aml = matcher.GetAmlObject(smki) as InternalElementType;

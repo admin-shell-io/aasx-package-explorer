@@ -214,7 +214,7 @@ namespace AasxPackageExplorer
                     _properties.category = "PARAMETER";
                     _properties.ordered = false;
                     _properties.allowDuplicates = false;
-                    _properties.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                    _properties.kind = AdminShell.ModelingKind.CreateAsInstance();
                     _properties.semanticId = createSemanticID("properties");
                     _properties.qualifiers = new AdminShell.QualifierCollection();
                     foreach (var temp1 in objectjObject["properties"])
@@ -236,12 +236,12 @@ namespace AasxPackageExplorer
 
         // AAS SubmodelMultiLanguage Property
         public static AdminShell.MultiLanguageProperty BuildMultiLanguageProperty(
-            string idShort, List<AdminShellV20.LangStr> texts, string description)
+            string idShort, List<AdminShell.LangStr> texts, string description)
         {
             AdminShell.MultiLanguageProperty _multiLanguageProperty = new AdminShell.MultiLanguageProperty();
             _multiLanguageProperty.idShort = idShort;
             _multiLanguageProperty.category = "PARAMETER";
-            _multiLanguageProperty.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _multiLanguageProperty.kind = AdminShell.ModelingKind.CreateAsInstance();
             foreach (var text in texts)
             {
                 _multiLanguageProperty.value.langString.Add(text);
@@ -258,7 +258,7 @@ namespace AasxPackageExplorer
             arCollection.category = "PARAMETER";
             arCollection.ordered = false;
             arCollection.allowDuplicates = false;
-            arCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            arCollection.kind = AdminShell.ModelingKind.CreateAsInstance();
             arCollection.AddDescription("en", "Communication metadata describing the expected response message " +
                 "                              for additional responses.");
             arCollection.qualifiers = new AdminShell.QualifierCollection();
@@ -288,7 +288,7 @@ namespace AasxPackageExplorer
             abstractDS.category = "PARAMETER";
             abstractDS.ordered = false;
             abstractDS.allowDuplicates = false;
-            abstractDS.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            abstractDS.kind = AdminShell.ModelingKind.CreateAsInstance();
             abstractDS.qualifiers = new AdminShell.QualifierCollection();
             abstractDS.semanticId = createSemanticID(type);
             string[] qualList = { "const","default",
@@ -316,11 +316,11 @@ namespace AasxPackageExplorer
                 }
                 if (key == "titles")
                 {
-                    List<AdminShellV20.LangStr> titleList = new List<AdminShellV20.LangStr>();
+                    List<AdminShell.LangStr> titleList = new List<AdminShell.LangStr>();
                     foreach (var temp2 in dsELement.Value)
                     {
                         JProperty x = (JProperty)temp2;
-                        AdminShellV20.LangStr title = new AdminShellV20.LangStr(
+                        AdminShell.LangStr title = new AdminShell.LangStr(
                                                             (x.Name).ToString(), (x.Value).ToString());
                         titleList.Add(title);
                     }
@@ -337,7 +337,7 @@ namespace AasxPackageExplorer
                     oneOf.category = "PARAMETER";
                     oneOf.ordered = false;
                     oneOf.allowDuplicates = false;
-                    oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                    oneOf.kind = AdminShell.ModelingKind.CreateAsInstance();
                     oneOf.AddDescription("en", "Used to ensure that the data is valid " +
                                                 "against one of the specified schemas in the array.");
                     oneOf.qualifiers = new AdminShell.QualifierCollection();
@@ -394,7 +394,7 @@ namespace AasxPackageExplorer
                         arrayCollection.category = "PARAMETER";
                         arrayCollection.ordered = false;
                         arrayCollection.allowDuplicates = false;
-                        arrayCollection.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                        arrayCollection.kind = AdminShell.ModelingKind.CreateAsInstance();
                         arrayCollection.AddDescription("en", TDSemanticId.getarrayListDesc(key));
                         arrayCollection.qualifiers = new AdminShell.QualifierCollection();
                         int index = 1;
@@ -433,7 +433,7 @@ namespace AasxPackageExplorer
                 _uriVariables.category = "PARAMETER";
                 _uriVariables.ordered = false;
                 _uriVariables.allowDuplicates = false;
-                _uriVariables.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                _uriVariables.kind = AdminShell.ModelingKind.CreateAsInstance();
                 _uriVariables.semanticId = createSemanticID("uriVariables");
                 foreach (var temp in jObject["uriVariables"])
                 {
@@ -482,7 +482,7 @@ namespace AasxPackageExplorer
             tdProperties.category = "PARAMETER";
             tdProperties.ordered = false;
             tdProperties.allowDuplicates = false;
-            tdProperties.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            tdProperties.kind = AdminShell.ModelingKind.CreateAsInstance();
             tdProperties.AddDescription("en", "Properties definion of the thing Description");
             tdProperties.semanticId = createSemanticID("properties");
             foreach (var temp in tdObject["properties"])
@@ -519,7 +519,7 @@ namespace AasxPackageExplorer
             tdEvents.category = "PARAMETER";
             tdEvents.ordered = false;
             tdEvents.allowDuplicates = false;
-            tdEvents.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            tdEvents.kind = AdminShell.ModelingKind.CreateAsInstance();
             tdEvents.AddDescription("en", "All Event-based Interaction Affordances of the Thing.");
             tdEvents.semanticId = createSemanticID("events");
             foreach (var temp in jObject["events"])
@@ -538,7 +538,7 @@ namespace AasxPackageExplorer
             tdActions.category = "PARAMETER";
             tdActions.ordered = false;
             tdActions.allowDuplicates = false;
-            tdActions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            tdActions.kind = AdminShell.ModelingKind.CreateAsInstance();
             tdActions.AddDescription("en", "All Action-based Interaction Affordances of the Thing.");
             tdActions.semanticId = createSemanticID("actions");
             foreach (var temp in jObject["actions"])
@@ -580,7 +580,7 @@ namespace AasxPackageExplorer
             _tdLink.category = "PARAMETER";
             _tdLink.ordered = false;
             _tdLink.allowDuplicates = false;
-            _tdLink.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _tdLink.kind = AdminShell.ModelingKind.CreateAsInstance();
             _tdLink.AddDescription("en", "A link can be viewed as a statement of the form link" +
                 "context has a relation type resource at link target, " +
                 "where the optional target attributes may further describe the resource");
@@ -605,7 +605,7 @@ namespace AasxPackageExplorer
             tdLinks.category = "PARAMETER";
             tdLinks.ordered = false;
             tdLinks.allowDuplicates = false;
-            tdLinks.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            tdLinks.kind = AdminShell.ModelingKind.CreateAsInstance();
             tdLinks.AddDescription("en", "Provides Web links to arbitrary resources that relate to" +
                                     "the specified Thing Description.");
             tdLinks.semanticId = createSemanticID("links");
@@ -627,7 +627,7 @@ namespace AasxPackageExplorer
             _securityDefinition.category = "PARAMETER";
             _securityDefinition.ordered = false;
             _securityDefinition.allowDuplicates = false;
-            _securityDefinition.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _securityDefinition.kind = AdminShell.ModelingKind.CreateAsInstance();
             _securityDefinition.qualifiers = new AdminShell.QualifierCollection();
             if (jObject.ContainsKey("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
                                               // requires an example
@@ -665,7 +665,7 @@ namespace AasxPackageExplorer
                             _oneOf.category = "PARAMETER";
                             _oneOf.ordered = false;
                             _oneOf.allowDuplicates = false;
-                            _oneOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _oneOf.kind = AdminShell.ModelingKind.CreateAsInstance();
                             _oneOf.AddDescription("en", "	Array of two or more strings identifying other" +
                                 "named security scheme definitions, any one of which, when satisfied, " +
                                 "will allow access. Only one may be chosen for use.");
@@ -694,7 +694,7 @@ namespace AasxPackageExplorer
                             _allOf.category = "PARAMETER";
                             _allOf.ordered = false;
                             _allOf.allowDuplicates = false;
-                            _allOf.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _allOf.kind = AdminShell.ModelingKind.CreateAsInstance();
                             _allOf.AddDescription("en", "Array of two or more strings identifying other" +
                                 "named security scheme definitions, all of which must be satisfied for access.");
                             _allOf.semanticId = createSemanticID("allOf");
@@ -825,7 +825,7 @@ namespace AasxPackageExplorer
                             _scopes.category = "PARAMETER";
                             _scopes.ordered = false;
                             _scopes.allowDuplicates = false;
-                            _scopes.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _scopes.kind = AdminShell.ModelingKind.CreateAsInstance();
                             _scopes.AddDescription("en", "Set of authorization scope identifiers " +
                                 "provided as an array. These are provided in tokens returned " +
                                 "by an authorization server and associated with forms in order to " +
@@ -857,7 +857,7 @@ namespace AasxPackageExplorer
             _securityDefinitions.category = "PARAMETER";
             _securityDefinitions.ordered = false;
             _securityDefinitions.allowDuplicates = false;
-            _securityDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _securityDefinitions.kind = AdminShell.ModelingKind.CreateAsInstance();
             _securityDefinitions.AddDescription("en", "Set of named security configurations" +
                 "(definitions only). Not actually applied unless names are used in a security name-value pair.");
             _securityDefinitions.semanticId = createSemanticID("securityDefinitions");
@@ -879,7 +879,7 @@ namespace AasxPackageExplorer
             tdForm.category = "PARAMETER";
             tdForm.ordered = false;
             tdForm.allowDuplicates = false;
-            tdForm.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            tdForm.kind = AdminShell.ModelingKind.CreateAsInstance();
             tdForm.AddDescription("en", "Hypermedia controls that describe how an operation can be performed." +
                                         " Form is a  serializations of Protocol Bindings");
             tdForm.semanticId = createSemanticID("form");
@@ -898,7 +898,7 @@ namespace AasxPackageExplorer
                     _response.category = "PARAMETER";
                     _response.ordered = false;
                     _response.allowDuplicates = false;
-                    _response.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                    _response.kind = AdminShell.ModelingKind.CreateAsInstance();
                     _response.AddDescription("en", "This optional term can be used if, e.g., the output" +
                         "communication metadata differ from input metadata (e.g., output contentType differ" +
                         "from the input contentType). The response name contains metadata that is only valid for" +
@@ -913,7 +913,7 @@ namespace AasxPackageExplorer
                     _response.category = "PARAMETER";
                     _response.ordered = false;
                     _response.allowDuplicates = false;
-                    _response.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                    _response.kind = AdminShell.ModelingKind.CreateAsInstance();
                     _response.AddDescription("en", "This optional term can be used if additional" +
                         "expected responses are possible, e.g. for error reporting. Each additional" +
                         "response needs to be distinguished from others in some way (for example, by" +
@@ -944,7 +944,7 @@ namespace AasxPackageExplorer
                         _arrayElement.category = "PARAMETER";
                         _arrayElement.ordered = false;
                         _arrayElement.allowDuplicates = false;
-                        _arrayElement.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                        _arrayElement.kind = AdminShell.ModelingKind.CreateAsInstance();
                         _arrayElement.AddDescription("en", TDSemanticId.getarrayListDescription(key));
                         _arrayElement.semanticId = createSemanticID(key);
                         _arrayElement.qualifiers = new AdminShell.QualifierCollection();
@@ -985,7 +985,7 @@ namespace AasxPackageExplorer
             forms.category = "PARAMETER";
             forms.ordered = false;
             forms.allowDuplicates = false;
-            forms.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            forms.kind = AdminShell.ModelingKind.CreateAsInstance();
             forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation" +
                                            "can be performed." +
                                         "Forms are serializations of Protocol Bindings");
@@ -1000,13 +1000,7 @@ namespace AasxPackageExplorer
         // AAS Semantic ID
         public static AdminShell.SemanticId createSemanticID(string tdType)
         {
-            AdminShell.Key tdSemanticKey = new AdminShell.Key();
-            tdSemanticKey.type = "GlobalReference";
-            tdSemanticKey.local = true;
-            tdSemanticKey.idType = "IRI";
-            tdSemanticKey.value = TDSemanticId.getSemanticID(tdType);
-            AdminShell.SemanticId tdSemanticId = new AdminShell.SemanticId(tdSemanticKey);
-
+            AdminShell.SemanticId tdSemanticId = new AdminShell.SemanticId(TDSemanticId.getSemanticID(tdType));
             return tdSemanticId;
         }
 
@@ -1031,7 +1025,7 @@ namespace AasxPackageExplorer
             _schemaDefinitions.category = "PARAMETER";
             _schemaDefinitions.ordered = false;
             _schemaDefinitions.allowDuplicates = false;
-            _schemaDefinitions.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+            _schemaDefinitions.kind = AdminShell.ModelingKind.CreateAsInstance();
             _schemaDefinitions.AddDescription("en", "Set of named data schemas." +
                                 "To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
             _schemaDefinitions.qualifiers = new AdminShell.QualifierCollection();
@@ -1081,11 +1075,11 @@ namespace AasxPackageExplorer
                     }
                     if (key == "titles")
                     {
-                        List<AdminShellV20.LangStr> titleList = new List<AdminShellV20.LangStr>();
+                        List<AdminShell.LangStr> titleList = new List<AdminShell.LangStr>();
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(),
+                            AdminShell.LangStr title = new AdminShell.LangStr((x.Name).ToString(),
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
@@ -1098,8 +1092,7 @@ namespace AasxPackageExplorer
                     if (key == "id")
                     {
                         string id = thingE.Value.ToString();
-                        sm.SetIdentification("IRI", id);
-                        smref.First.idType = "IRI";
+                        sm.SetIdentification(id);
                         smref.First.value = id;
                     }
                     if (key == "properties")
@@ -1128,11 +1121,11 @@ namespace AasxPackageExplorer
                     }
                     if (key == "titles")
                     {
-                        List<AdminShellV20.LangStr> titleList = new List<AdminShellV20.LangStr>();
+                        List<AdminShell.LangStr> titleList = new List<AdminShell.LangStr>();
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AdminShellV20.LangStr title = new AdminShellV20.LangStr((x.Name).ToString(),
+                            AdminShell.LangStr title = new AdminShell.LangStr((x.Name).ToString(),
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
@@ -1173,7 +1166,7 @@ namespace AasxPackageExplorer
                             _context.category = "PARAMETER";
                             _context.ordered = false;
                             _context.allowDuplicates = false;
-                            _context.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _context.kind = AdminShell.ModelingKind.CreateAsInstance();
                             _context.AddDescription("en", "JSON-LD keyword to label the object with semantic tags ");
                             _context.semanticId = createSemanticID(key);
                             _context.qualifiers = new AdminShell.QualifierCollection();
@@ -1202,7 +1195,7 @@ namespace AasxPackageExplorer
                             _profile.category = "PARAMETER";
                             _profile.ordered = false;
                             _profile.allowDuplicates = false;
-                            _profile.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            _profile.kind = AdminShell.ModelingKind.CreateAsInstance();
                             _profile.AddDescription("en", secProfile[key].ToString());
                             _profile.qualifiers = new AdminShell.QualifierCollection();
                             int index = 1;

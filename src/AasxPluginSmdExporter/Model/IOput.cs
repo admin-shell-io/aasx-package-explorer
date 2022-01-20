@@ -157,10 +157,9 @@ namespace AasxPluginSmdExporter
         {
             if (token.SelectToken("semanticId") != null)
             {
-
                 this.SemanticId =
                     JsonConvert.DeserializeObject<AdminShellNS.AdminShell.SemanticId>(token["semanticId"].ToString());
-                this.ConceptDescription = this.SemanticId?.Keys[0].value;
+                this.ConceptDescription = "" + this.SemanticId?.First;
             }
             else
             {

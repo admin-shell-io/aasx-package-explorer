@@ -55,8 +55,8 @@ namespace AasxPluginDocumentShelf
         public string[] DeleteFilesAfterLoading = null;
 
         public enum DocRelationType { DocumentedEntity, RefersTo, BasedOn, Affecting, TranslationOf };
-        public List<Tuple<DocRelationType, AdminShell.Reference>> Relations =
-            new List<Tuple<DocRelationType, AdminShellV20.Reference>>();
+        public List<Tuple<DocRelationType, AdminShell.ModelReference>> Relations =
+            new List<Tuple<DocRelationType, AdminShell.ModelReference>>();
 
         public class FileInfo
         {
@@ -145,7 +145,7 @@ namespace AasxPluginDocumentShelf
             if (subModel?.submodelElements != null)
                 foreach (var smcDoc in
                     subModel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        _semConfig.SemIdDocument, AdminShellV20.Key.MatchMode.Relaxed))
+                        _semConfig.SemIdDocument))
                 {
                     // access
                     if (smcDoc == null || smcDoc.value == null)
@@ -154,7 +154,7 @@ namespace AasxPluginDocumentShelf
                     // look immediately for DocumentVersion, as only with this there is a valid List item
                     foreach (var smcVer in
                         smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            _semConfig.SemIdDocumentVersion, AdminShellV20.Key.MatchMode.Relaxed))
+                            _semConfig.SemIdDocumentVersion))
                     {
                         // access
                         if (smcVer == null || smcVer.value == null)
@@ -167,13 +167,12 @@ namespace AasxPluginDocumentShelf
                         // take the 1st title
                         var title =
                             "" +
-                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(_semConfig.SemIdTitle,
-                            AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(_semConfig.SemIdTitle)?.value;
 
                         // could be also a multi-language title
                         foreach (var mlp in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(
-                                _semConfig.SemIdTitle, AdminShellV20.Key.MatchMode.Relaxed))
+                                _semConfig.SemIdTitle))
                             if (mlp.value != null)
                                 title = mlp.value.GetDefaultStr(defaultLang);
 
@@ -181,25 +180,24 @@ namespace AasxPluginDocumentShelf
                         var orga =
                             "" +
                             smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                _semConfig.SemIdOrganizationOfficialName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                _semConfig.SemIdOrganizationOfficialName)?.value;
                         if (orga.Trim().Length < 1)
                             orga =
                                 "" +
                                 smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    _semConfig.SemIdOrganizationName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    _semConfig.SemIdOrganizationName)?.value;
 
                         // class infos
                         var classId =
                             "" +
                             smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                _semConfig.SemIdDocumentClassId, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                _semConfig.SemIdDocumentClassId)?.value;
 
                         // collect country codes
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdLanguage,
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdLanguage))
                         {
                             // language code
                             var candidate = "" + cclp.value;
@@ -240,8 +238,7 @@ namespace AasxPluginDocumentShelf
                                 _semConfig.SemIdDocumentVersionIdValue))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdDate,
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdDate))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
                             further = further.Substring(2);
@@ -257,7 +254,7 @@ namespace AasxPluginDocumentShelf
 
                         // filename
                         var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            _semConfig.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);
+                            _semConfig.SemIdDigitalFile);
 
                         ent.DigitalFile = new DocumentEntity.FileInfo(fl);
 
@@ -278,15 +275,14 @@ namespace AasxPluginDocumentShelf
         private static void SearchForRelations(
             AdminShell.SubmodelElementWrapperCollection smwc,
             DocumentEntity.DocRelationType drt,
-            AdminShell.Reference semId,
+            AdminShell.Identifier semId,
             DocumentEntity intoDoc)
         {
             // access
             if (smwc == null || semId == null || intoDoc == null)
                 return;
 
-            foreach (var re in smwc.FindAllSemanticIdAs<AdminShell.ReferenceElement>(semId,
-                AdminShellV20.Key.MatchMode.Relaxed))
+            foreach (var re in smwc.FindAllSemanticIdAs<AdminShell.ModelReferenceElement>(semId))
             {
                 // access 
                 if (re.value == null || re.value.Count < 1)
@@ -297,7 +293,7 @@ namespace AasxPluginDocumentShelf
                     continue;
 
                 // add
-                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, AdminShellV20.Reference>(
+                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, AdminShell.ModelReference>(
                     drt, re.value));
             }
         }
@@ -317,7 +313,7 @@ namespace AasxPluginDocumentShelf
             if (subModel.submodelElements != null)
                 foreach (var smcDoc in
                     subModel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defs11.CD_Document?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed))
+                        defs11.CD_Document.GetSingleId()))
                 {
                     // access
                     if (smcDoc == null || smcDoc.value == null)
@@ -326,7 +322,7 @@ namespace AasxPluginDocumentShelf
                     // look immediately for DocumentVersion, as only with this there is a valid List item
                     foreach (var smcVer in
                         smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            defs11.CD_DocumentVersion?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed))
+                            defs11.CD_DocumentVersion.GetSingleId()))
                     {
                         // access
                         if (smcVer == null || smcVer.value == null)
@@ -338,31 +334,28 @@ namespace AasxPluginDocumentShelf
 
                         // take the 1st title
                         var title = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_Title?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                defs11.CD_Title.GetSingleId())?.value;
 
                         // could be also a multi-language title
                         foreach (var mlp in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(
-                                defs11.CD_Title?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed))
+                                defs11.CD_Title.GetSingleId()))
                             if (mlp.value != null)
                                 title = mlp.value.GetDefaultStr(defaultLang);
 
                         // have multiple opportunities for orga
                         var orga = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_OrganizationOfficialName?.GetReference(),
-                                AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                defs11.CD_OrganizationOfficialName.GetSingleId())?.value;
                         if (orga.Trim().Length < 1)
                             orga = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_OrganizationName?.GetReference(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    defs11.CD_OrganizationName.GetSingleId())?.value;
 
                         // try find language
                         // collect country codes
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Language?.GetReference(),
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_Language.GetSingleId()))
                         {
                             // language code
                             var candidate = "" + cclp.value;
@@ -390,7 +383,7 @@ namespace AasxPluginDocumentShelf
                         var okDocClass = false;
                         foreach (var smcClass in
                             smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                                defs11.CD_DocumentClassification?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed))
+                                defs11.CD_DocumentClassification.GetSingleId()))
                         {
                             // access
                             if (smcClass?.value == null)
@@ -398,15 +391,13 @@ namespace AasxPluginDocumentShelf
 
                             // shall be a 2770 classification
                             var classSys = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_ClassificationSystem?.GetReference(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    defs11.CD_ClassificationSystem.GetSingleId())?.value;
                             if (classSys.ToLower().Trim() != DefinitionsVDI2770.Vdi2770Sys.ToLower())
                                 continue;
 
                             // class infos
                             var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_ClassId?.GetReference(),
-                                    AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    defs11.CD_ClassId.GetSingleId())?.value;
 
                             // evaluate, if in selection
                             okDocClass = okDocClass ||
@@ -426,15 +417,14 @@ namespace AasxPluginDocumentShelf
                         var further = "";
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_DocumentVersionId?.GetReference()))
+                                defs11.CD_DocumentVersionId.GetSingleId()))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
-                                defs11.CD_DocumentIdValue?.GetReference()))
+                                defs11.CD_DocumentIdValue.GetSingleId()))
                             further += "\u00b7 id: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_SetDate?.GetReference(),
-                            AdminShellV20.Key.MatchMode.Relaxed))
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_SetDate.GetSingleId()))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
                             further = further.Substring(2);
@@ -450,24 +440,24 @@ namespace AasxPluginDocumentShelf
 
                         // file informations
                         var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            defs11.CD_DigitalFile?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed);
+                            defs11.CD_DigitalFile.GetSingleId());
                         if (fl != null)
                             ent.DigitalFile = new DocumentEntity.FileInfo(fl);
 
                         fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            defs11.CD_PreviewFile?.GetReference(), AdminShellV20.Key.MatchMode.Relaxed);
+                            defs11.CD_PreviewFile.GetSingleId());
                         if (fl != null)
                             ent.PreviewFile = new DocumentEntity.FileInfo(fl);
 
                         // relations
                         SearchForRelations(smcVer.value, DocumentEntity.DocRelationType.DocumentedEntity,
-                            defs11.CD_DocumentedEntity?.GetReference(), ent);
+                            defs11.CD_DocumentedEntity.GetSingleId(), ent);
                         SearchForRelations(smcVer.value, DocumentEntity.DocRelationType.RefersTo,
-                            defs11.CD_RefersTo?.GetReference(), ent);
+                            defs11.CD_RefersTo.GetSingleId(), ent);
                         SearchForRelations(smcVer.value, DocumentEntity.DocRelationType.BasedOn,
-                            defs11.CD_BasedOn?.GetReference(), ent);
+                            defs11.CD_BasedOn.GetSingleId(), ent);
                         SearchForRelations(smcVer.value, DocumentEntity.DocRelationType.TranslationOf,
-                            defs11.CD_TranslationOf?.GetReference(), ent);
+                            defs11.CD_TranslationOf.GetSingleId(), ent);
 
                         // add
                         ent.SmVersion = DocumentEntity.SubmodelVersion.V11;
