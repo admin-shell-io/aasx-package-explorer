@@ -2,7 +2,7 @@
   "profiles": {
     "AasxToolkit": {
       "commandName": "Project",
-      "commandLineArgs": "load \"C:\\Users\\miho\\Desktop\\Siemens_Festo_Component\\03CC.aasx\" exdoc IDTA-MCAD:2022 NX out.bin"
+      "commandLineArgs": "gen * save test44.xml load test44.xml"
     }
   }
 }

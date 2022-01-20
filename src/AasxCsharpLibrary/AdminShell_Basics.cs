@@ -426,7 +426,7 @@ namespace AdminShellNS
         // Lang Str
         //
 
-        [XmlType(TypeName = "langString", Namespace = "http://www.admin-shell.io/2/0")]
+        [XmlType(TypeName = "langString", Namespace = "http://www.admin-shell.io/3/0")]
         public class LangStr
         {
             // constants
@@ -436,7 +436,7 @@ namespace AdminShellNS
 
             [MetaModelName("LangStr.lang")]
             [TextSearchable]
-            [XmlAttribute(Namespace = "http://www.admin-shell.io/2/0")]
+            [XmlAttribute(Namespace = "http://www.admin-shell.io/3/0")]
             [JsonProperty(PropertyName = "language")]
             [CountForHash]
             public string lang = "";
@@ -1643,7 +1643,7 @@ namespace AdminShellNS
 
             // members
 
-            [XmlElement(ElementName = "langString", Namespace = "http://www.admin-shell.io/aas/2/0")]
+            [XmlElement(ElementName = "langString", Namespace = "http://www.admin-shell.io/aas/3/0")]
             public ListOfLangStr langString = new ListOfLangStr();
 
             // getters / setters

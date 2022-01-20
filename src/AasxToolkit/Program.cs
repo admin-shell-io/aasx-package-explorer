@@ -43,7 +43,7 @@ namespace AasxToolkit
                 cmdArgs =>
                 {
                     var pth = cmdArgs[0];
-                    if (Path.GetExtension(pth).ToLower() != ".json")
+                    if (pth != "usb" && pth != "*" && Path.GetExtension(pth).ToLower() != ".json")
                     {
                         return new Cli.Parsing(
                             new[]

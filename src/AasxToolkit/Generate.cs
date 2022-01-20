@@ -165,13 +165,13 @@ namespace AasxToolkit
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
-                aas1.submodelRefs.Add(subCad.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subDocu.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subDatasheet.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subEng.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subVars.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM.GetModelReference() as AdminShell.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM2.GetModelReference() as AdminShell.SubmodelRef);
+                aas1.submodelRefs.Add(subCad.GetSubmodelRef());
+                aas1.submodelRefs.Add(subDocu.GetSubmodelRef());
+                aas1.submodelRefs.Add(subDatasheet.GetSubmodelRef());
+                aas1.submodelRefs.Add(subEng.GetSubmodelRef());
+                aas1.submodelRefs.Add(subVars.GetSubmodelRef());
+                aas1.submodelRefs.Add(subBOM.GetSubmodelRef());
+                aas1.submodelRefs.Add(subBOM2.GetSubmodelRef());
             }
             catch (Exception ex)
             {

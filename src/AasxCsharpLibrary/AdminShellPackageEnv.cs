@@ -518,9 +518,9 @@ namespace AdminShellNS
         {
             var nss = new XmlSerializerNamespaces();
             nss.Add("xsi", System.Xml.Schema.XmlSchema.InstanceNamespace);
-            nss.Add("aas", "http://www.admin-shell.io/aas/2/0");
-            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/2/0");
-            nss.Add("abac", "http://www.admin-shell.io/aas/abac/2/0");
+            nss.Add("aas", "http://www.admin-shell.io/aas/3/0");
+            nss.Add("IEC", "http://www.admin-shell.io/IEC61360/3/0");
+            nss.Add("abac", "http://www.admin-shell.io/aas/abac/3/0");
             return nss;
         }
 
