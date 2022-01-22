@@ -511,5 +511,14 @@
       "value": "To be filled; multiple choices separated by semicolon ';'.",
       "valueId": null
     }
+  },
+  {
+    "name": "GenericForms plugin | PresetValue",
+    "qualifier": {
+      "semanticId": null,
+      "type": "PresetValue",
+      "value": "To be filled; The default value for the property.",
+      "valueId": null
+    }
   }
 ]
