@@ -454,13 +454,23 @@ namespace AasxPluginExportTable
                 return false;
 
             // try split cell in a sequence
-            var cellseq = cell.Split(new[] { _separator }, StringSplitOptions.None);
-            if (cellseq.Length == 0)
+            var cellseq = cell.Split(new[] { _separator }, StringSplitOptions.None).ToList();
+            if (cellseq.Count == 0)
                 // zero is true
                 return true;
 
+            // what, if the the length of the actual cell data is longer than the extended
+            // sequence?
+
+            while (true && cellseq.Count > _sequence.Count)
+            {
+                var pop = cellseq.Last();
+                cellseq.RemoveAt(cellseq.Count - 1);
+                cellseq[cellseq.Count - 1] = cellseq[cellseq.Count - 1] + " " + pop.Trim();
+            }
+
             // go as far as we can
-            for (int i = 0; i < Math.Min(_sequence.Count, cellseq.Length); i++)
+            for (int i = 0; i < Math.Min(_sequence.Count, cellseq.Count); i++)
                 if (!_sequence[i].Matches(context, cellseq[i]) && !Optional)
                     return false;
 

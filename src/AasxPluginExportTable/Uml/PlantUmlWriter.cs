@@ -53,6 +53,7 @@ namespace AasxPluginExportTable.Uml
             Writeln("skinparam classAttributeIconSize 0");
             Writeln("' skinparam linetype polyline");
             Writeln("skinparam linetype ortho");
+            Writeln("mainframe SMT");
 
             Writeln("");
         }
