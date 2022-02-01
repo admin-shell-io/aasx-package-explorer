@@ -14,10 +14,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using AdminShellNS;
+using AnyUi;
 using Newtonsoft.Json;
 
 /*
- * The Instances are oragnized in a different schema than the Descriptions!
+ * The Instances are organized in a different schema than the Descriptions!
 
 Submodel                                    SMEC                                        (Prop, MLP, File..)
 
@@ -94,7 +95,12 @@ namespace AasxIntegrationBase.AasForms
         IFormInstanceParent GetInstanceParent();
     }
 
-    public class FormInstanceBase : IFormInstanceParent
+    public interface IFormRenderAnyUi
+    {
+        void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk);
+    }
+
+    public class FormInstanceBase : IFormInstanceParent, IFormRenderAnyUi
     {
         /// <summary>
         /// As the descriptions holds descriptive data and dynamic data, the edit funcitonalities
@@ -174,6 +180,20 @@ namespace AasxIntegrationBase.AasForms
             this.Touched = true;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk) { }
+
+        public static AnyUiLambdaActionPluginUpdateAnyUi NewLambdaUpdateUi()
+        {
+            var la = new AnyUiLambdaActionPluginUpdateAnyUi()
+            {
+                // TODO: improve, this is not always the case
+                PluginName = "AasxPluginGenericForms"
+            };
+            return la;
+        }
     }
 
     public class FormDescInstancesPair
@@ -252,7 +272,7 @@ namespace AasxIntegrationBase.AasForms
         }
     }
 
-    public class FormInstanceListOfSame : IFormInstanceParent
+    public class FormInstanceListOfSame : IFormInstanceParent, IFormRenderAnyUi
     {
         public FormInstanceBase parentForm = null;
         public FormDescBase workingDesc = null;
@@ -484,6 +504,147 @@ namespace AasxIntegrationBase.AasForms
             return res;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // need some preparation
+            int maxRowsBound = 9999;
+            var desc = this.workingDesc as FormDescSubmodelElement;
+            int minRows = 0, maxRows = 0;
+            bool showButtonsMinus = false, showButtonPlus = false;
+
+            // not right?
+            if (desc == null)
+                return;
+
+            // figure out, how much additional rows to render
+            if (desc.Multiplicity == FormMultiplicity.One)
+            {
+                minRows = 1;
+                maxRows = 1;
+                showButtonsMinus = false;
+                showButtonPlus = false;
+            }
+            if (desc.Multiplicity == FormMultiplicity.OneToMany)
+            {
+                minRows = 1;
+                maxRows = maxRowsBound;
+                showButtonsMinus = true;
+                showButtonPlus = true;
+            }
+            if (desc.Multiplicity == FormMultiplicity.ZeroToOne)
+            {
+                minRows = 0;
+                maxRows = 1;
+                showButtonsMinus = true;
+                showButtonPlus = true;
+            }
+            if (desc.Multiplicity == FormMultiplicity.ZeroToMany)
+            {
+                minRows = 0;
+                maxRows = maxRowsBound;
+                showButtonsMinus = true;
+                showButtonPlus = true;
+            }
+
+            // reserve instances
+            if (SubInstances == null)
+                SubInstances = new List<FormInstanceBase>();
+
+            while (SubInstances.Count < minRows)
+            {
+                var ni = desc.CreateInstance(this);
+                if (ni == null)
+                    break;
+
+                SubInstances.Add(ni);
+            }
+
+            // Intended layout:
+            // Grid
+            //   FormTitle         [+]
+            //    FormInfo
+            //   Instance 0        [-]
+            //   Instance 1        [-]
+            //   Instance 2        [-]
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 2 + SubInstances.Count, cols: 5, 
+                    colWidths: new[] { "2:", "20:", "*", "23:", "2:" }));
+
+            g.Background = AnyUiBrushes.White;
+            g.Margin = new AnyUiThickness(4.0);
+
+            uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
+                foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
+                content: $"{desc?.FormTitle}");
+
+            if (showButtonPlus)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        content: "\u2795"),
+                    (o) =>
+                    {
+                        if (SubInstances.Count < maxRows)
+                        {
+                            // add a instance
+                            var ni = desc.CreateInstance(this);
+                            if (ni != null)
+                            {
+                                SubInstances.Add(ni);
+                                return FormInstanceBase.NewLambdaUpdateUi();
+                            }
+                        }
+                        // else
+                        return new AnyUiLambdaActionNone();
+                    });
+
+
+            uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
+                setWrap: true, verticalAlignment: AnyUiVerticalAlignment.Center,
+                content: $"{desc?.FormInfo}");
+
+            // simply render the instances
+
+            int row = 1;
+            foreach (var si in SubInstances)
+            {
+                // row by row
+                var storedSI = si;
+                row++;
+
+                // Index
+                uitk.AddSmallBasicLabelTo(g, row, 1, foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
+                content: $"#{1+si?.Index}");
+
+                // button
+                if (showButtonsMinus)
+                    AnyUiUIElement.RegisterControl(
+                        uitk.AddSmallButtonTo(g, row, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                            verticalAlignment: AnyUiVerticalAlignment.Top,
+                            content: "\u2796"),
+                    (o) =>
+                    {
+                        if (SubInstances.Count > minRows && SubInstances.Contains(storedSI))
+                        {
+                            // delete
+                            // Note: the WPF implementation had a try-catch?
+                            SubInstances.Remove(storedSI);
+                            return FormInstanceBase.NewLambdaUpdateUi();
+                        }
+                        // else
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // panel with contents
+                var sp = uitk.AddSmallStackPanelTo(g, row, 2);
+                si.RenderAnyUi(sp, uitk);
+            }
+
+        }
+
     }
 
     public class FormInstanceSubmodel : FormInstanceBase, IFormListOfDifferent
@@ -582,6 +743,67 @@ namespace AasxIntegrationBase.AasForms
                 return this.PairInstances.AddOrUpdateDifferentElementsToCollection(
                         elements, packageEnv, addFilesToPackage);
             return null;
+        }
+
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override
+            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // Intended layout
+            // Grid
+            //    FormTools
+            //    SubmodelName
+            //       Quite informative text
+            //    idShort
+            //    Descriptions   [+]
+            //      single Desc  [-] 
+            //      single Desc  [-] 
+            //    SME 0
+            //    SME 1
+
+            var sp = view.Add(
+                new AnyUi.AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical });
+
+            var descsm = desc as FormDescSubmodel;
+
+            if (true)
+            {
+                var g = sp.Add(
+                    uitk.AddSmallGrid(rows: 1, cols: 2, colWidths: new[] { "*", "#", "#", "#" }));
+
+                uitk.AddSmallBasicLabelTo(g, 0, 0,
+                    content: $"Form tools");
+
+                uitk.AddSmallButtonTo(g, 0, 1,
+                    content: "Small/ Large");
+            }
+
+            if (true)
+            {
+                var g = view.Add(
+                uitk.AddSmallGrid(rows: 2, cols: 5,
+                    colWidths: new[] { "2:", "20:", "*", "18:", "2:" }));
+
+                uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
+                    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
+                    content: $"{descsm?.FormTitle} {sm?.idShort}");
+
+                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 18.0, margin: new AnyUiThickness(2.0),
+                    content: "\u2bc5");
+
+                uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
+                    setWrap: true,
+                    content: $"{descsm?.FormInfo}");
+            }
+
+            // idShort / Description
+
+            foreach (var pair in this.PairInstances)
+            {
+                pair.instances.RenderAnyUi(view, uitk);
+            }
         }
     }
 
@@ -770,6 +992,50 @@ namespace AasxIntegrationBase.AasForms
             return null;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override
+            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // Intended layout
+            // Grid
+            //    SubmodelName
+            //       Quite informative text
+            //    idShort
+            //    Descriptions   [+]
+            //      single Desc  [-] 
+            //      single Desc  [-] 
+            //    SME 0
+            //    SME 1
+
+            var sp = view.Add(
+                new AnyUi.AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical });
+
+            var descsm = desc as FormDescSubmodel;
+
+            if (true)
+            {
+                var g = view.Add(
+                    uitk.AddSmallGrid(rows: 1, cols: 2, colWidths: new[] { "#", "*" }));
+
+                uitk.AddSmallBasicLabelTo(g, 0, 0,
+                    content: $"#{descsm?.FormTitle}");
+
+                uitk.AddSmallButtonTo(g, 0, 1,
+                    content: "Inflate");
+
+                uitk.AddSmallBasicLabelTo(g, 1, 0,
+                    content: $"#{descsm?.FormInfo}");
+            }
+
+            // idShort / Description
+
+            foreach (var pair in this.PairInstances)
+            {
+                pair.instances.RenderAnyUi(view, uitk);
+            }
+        }
     }
 
     public class FormInstanceProperty : FormInstanceSubmodelElement
@@ -874,11 +1140,31 @@ namespace AasxIntegrationBase.AasForms
             if (this.subControl != null && this.subControl is FormSubControlProperty scp)
                 scp.UpdateDisplay();
         }
+
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override 
+            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // Intended layout
+            // Grid
+            //    Index
+            //    TextBox | ComboBox
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 1, cols: 2, colWidths: new[] { "#", "*" }));
+
+            uitk.AddSmallBasicLabelTo(g, 0, 0, 
+                content: $"#{Index}");
+
+            uitk.AddSmallTextBoxTo(g, 0, 1,
+                text: "Hallo");
+        }
     }
 
     public class FormInstanceMultiLangProp : FormInstanceSubmodelElement
     {
-
         public FormInstanceMultiLangProp(
             FormInstanceListOfSame parentInstance, FormDescMultiLangProp parentDesc,
             AdminShell.SubmodelElement source = null, bool deepCopy = false)
@@ -927,6 +1213,90 @@ namespace AasxIntegrationBase.AasForms
             return true;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // access
+            var mlp = sme as AdminShell.MultiLanguageProperty;
+            if (mlp?.value?.langString == null)
+                return;
+
+            // Intended layout:
+            // Grid
+            //                     [+]
+            //   LANG0 VAL0        [-]
+            //   LANG1 VAL1        [-]
+            //   LANG2 VAL2        [-]
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 1 + mlp.value.Count, cols: 3,
+                    colWidths: new[] { "60:", "*", "23:" }));
+
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 0, 2, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                    content: "\u2795"),
+                    (o) =>
+                    {                        
+                        mlp.value.langString.Add(new AdminShell.LangStr());
+                        return NewLambdaUpdateUi();
+                    });
+
+            // no content?
+            if (mlp.value.Count < 1)
+            {
+                uitk.AddSmallBasicLabelTo(g, 0, 0, colSpan: 2,
+                    foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
+                    setWrap: true, verticalAlignment: AnyUiVerticalAlignment.Center,
+                    content: "(please add at least one language)");
+                return;
+            }
+
+            // simply render the langStrs
+
+            int row = 0;
+            foreach (var ls in mlp.value.langString)
+            {
+                // row by row
+                row++;
+
+                // lang
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallComboBoxTo(g, row, 0, margin: new AnyUiThickness(1.0),
+                        text: "" + ls.lang,
+                        items: AasxLanguageHelper.GetLangCodes().ToArray()),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            ls.lang = os;
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // key
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(g, row, 1, margin: new AnyUiThickness(1.0),
+                        text: "" + ls.str),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            ls.str = os;
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // button
+                var storedLs = ls;
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, row, 2, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        content: "\u2796"),
+                    (o) =>
+                    {
+                        if (mlp.value.langString.Contains(storedLs))
+                            mlp.value.langString.Remove(storedLs);
+                        return NewLambdaUpdateUi();
+                    });
+            }
+        }
     }
 
     public class FormInstanceFile : FormInstanceSubmodelElement

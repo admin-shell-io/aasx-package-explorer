@@ -66,6 +66,7 @@
     "Remarks": [
         "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
     ],
+    "PluginPrefer" : "ANYUI",
     "PluginDll": [
         /*
     {

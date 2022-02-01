@@ -38,7 +38,7 @@
               "index": 0,
               "idType": "IRDI"
             },
-            "Multiplicity": "One",
+            "Multiplicity": "OneToMany",
             "IsReadOnly": false
           },
           {

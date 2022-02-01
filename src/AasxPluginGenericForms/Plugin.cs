@@ -27,7 +27,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public LogInstance Log = new LogInstance();
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginGenericForms.GenericFormOptions options = new AasxPluginGenericForms.GenericFormOptions();
-        private AasxPluginGenericForms.GenericFormsControl formsControl = null;
+        
+        private AasxPluginGenericForms.GenericFormsControl _formsControl = null;
+        private AasxPluginGenericForms.GenericFormsAnyUiControl _anyUiControl = null;
 
         public string GetPluginName()
         {
@@ -98,6 +100,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "fill-panel-visual-extension",
                     "When called, fill given WPF panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "fill-anyui-visual-extension",
+                    "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "update-anyui-visual-extension",
+                    "When called, updated already presented AnyUI panel with some arguments."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-list-new-submodel",
@@ -184,9 +194,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 if (action == "event-return" && args != null
                     && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
-                    && this.formsControl != null)
+                    && this._formsControl != null)
                 {
-                    this.formsControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+                    this._formsControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
                 }
 
                 if (action == "get-check-visual-extension")
@@ -197,6 +207,38 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return cve;
                 }
 
+                if (action == "fill-anyui-visual-extension")
+                {
+                    // arguments
+                    if (args == null || args.Length < 3)
+                        return null;
+
+                    // call
+                    _anyUiControl = AasxPluginGenericForms.GenericFormsAnyUiControl.FillWithAnyUiControls(
+                        Log, args[0], args[1], this.options, this.eventStack, args[2]);
+
+                    // give object back
+                    var res = new AasxPluginResultBaseObject();
+                    res.obj = _anyUiControl;
+                    return res;
+                }
+
+                if (action == "update-anyui-visual-extension" 
+                    && _anyUiControl != null)
+                {
+                    // arguments
+                    if (args == null || args.Length < 0)
+                        return null;
+
+                    // call
+                    _anyUiControl.Update(args);
+
+                    // give object back
+                    var res = new AasxPluginResultBaseObject();
+                    res.obj = 42;
+                    return res;
+                }
+
                 if (action == "fill-panel-visual-extension")
                 {
                     // arguments
@@ -204,12 +246,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         return null;
 
                     // call
-                    this.formsControl = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
+                    this._formsControl = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
                         Log, args[0], args[1], this.options, this.eventStack, args[2]);
 
                     // give object back
                     var res = new AasxPluginResultBaseObject();
-                    res.obj = this.formsControl;
+                    res.obj = this._formsControl;
                     return res;
                 }
 

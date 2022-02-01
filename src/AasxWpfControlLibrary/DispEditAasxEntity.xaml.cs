@@ -420,45 +420,90 @@ namespace AasxPackageExplorer
                 }
                 else if (entity is VisualElementPluginExtension vepe)
                 {
-                    // create controls
-                    object result = null;
+                    // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
+                    var approach = 0;
+                    var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
+                    var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
 
-                    try
-                    {
-                        // replace at top level
-                        theMasterPanel.Children.Clear();
-                        if (vepe.thePlugin != null)
-                            result = vepe.thePlugin.InvokeAction(
-                                "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
+                    if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
+                        approach = 1;
 
-                    // add?
-                    if (result == null)
-                    {
-                        // re-init display!
-#if MONOUI
-                    stack = ClearDisplayDefautlStack();
-#else
-                        stack = new AnyUiStackPanel();
-#endif
+                    if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+                        approach = 2;
 
-                        // helping message
-                        _helper.AddGroup(
-                            stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                    if (approach == 0 && hasAnyUi)
+                        approach = 2;
+
+                    if (approach == 0 && hasWpf)
+                        approach = 1;
+
+                    // NEW: Differentiate behaviour ..
+                    if (approach == 2)
+                    {
+                        //
+                        // Render panel via ANY UI !!
+                        //
+
+                        try
+                        {
+                            var uires = vepe.thePlugin.InvokeAction(
+                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable, stack);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex, 
+                                $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
+                        }
                     }
                     else
                     {
-                        // this is natively done; do NOT render Any UI to WPF
-                        inhibitRenderStackToPanel = true;
-                    }
+                        //
+                        // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
+                        //
 
-                    // show no panel nor scroll
-                    renderHints.scrollingPanel = false;
-                    renderHints.showDataPanel = false;
+                        // create controls
+                        object result = null;
+
+                        if (approach == 1)
+                            try
+                            {
+                                // replace at top level
+                                theMasterPanel.Children.Clear();
+                                if (vepe.thePlugin != null)
+                                    result = vepe.thePlugin.InvokeAction(
+                                        "fill-panel-visual-extension", 
+                                        vepe.thePackage, vepe.theReferable, theMasterPanel);
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex,
+                                    $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+                            }
+
+                        // add?
+                        if (result == null)
+                        {
+                            // re-init display!
+    #if MONOUI
+                        stack = ClearDisplayDefautlStack();
+    #else
+                            stack = new AnyUiStackPanel();
+    #endif
+
+                            // helping message
+                            _helper.AddGroup(
+                                stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                        }
+                        else
+                        {
+                            // this is natively done; do NOT render Any UI to WPF
+                            inhibitRenderStackToPanel = true;
+                        }
+
+                        // show no panel nor scroll
+                        renderHints.scrollingPanel = false;
+                        renderHints.showDataPanel = false;
+                    }
 
                 }
                 else
@@ -590,6 +635,24 @@ namespace AasxPackageExplorer
 
             // return render hints
             return renderHints;
+        }
+
+        public AnyUiUIElement GetLastRenderedRoot()
+        {
+            return _lastRenderedRootElement;
+        }
+
+        public void RedisplayRenderedRoot(AnyUiUIElement root)
+        {
+            // safe
+            _lastRenderedRootElement = root;
+
+            // redisplay
+            theMasterPanel.Children.Clear();
+            var spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: false);
+            _helper.ShowLastHighlights();
+            DockPanel.SetDock(spwpf, Dock.Top);
+            theMasterPanel.Children.Add(spwpf);
         }
 
         #endregion

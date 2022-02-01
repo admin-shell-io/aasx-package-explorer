@@ -1126,6 +1126,42 @@ namespace AasxPackageExplorer
             {
                 DisplayElements.PushEvent(lab);
             }
+
+            if (lab is AnyUiLambdaActionPluginUpdateAnyUi update)
+            {
+                // A plugin asks to re-render an exisiting panel.
+                // Can get this information?
+                var renderedRoot = DispEditEntityPanel.GetLastRenderedRoot();
+
+                if (renderedRoot is AnyUiPanel renderedPanel
+                    && renderedPanel.Children != null
+                    && renderedPanel.Children.Count > 0)
+                {
+                    // first step: invoke plugin?
+                    var plugin = Plugins.FindPluginInstance(update.PluginName);
+                    if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
+                    {
+                        try
+                        {
+                            var uires = plugin.InvokeAction(
+                                "update-anyui-visual-extension", renderedPanel);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex,
+                                $"update AnyUI based visual extension for plugin {update.PluginName}");
+                        }
+                    }
+
+                    // 2nd step: redisplay
+                    DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel);
+                } 
+                else
+                {
+                    // hard re-display
+                    throw new NotImplementedException();
+                }
+            }
         }
 
         private async Task MainTimer_HandleEntityPanel()
