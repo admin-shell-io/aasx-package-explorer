@@ -167,6 +167,9 @@ namespace AnyUi
         public static AnyUiBrush DarkBlue { get { return new AnyUiBrush(0xff00008bu); } }
         public static AnyUiBrush LightBlue { get { return new AnyUiBrush(0xffadd8e6u); } }
         public static AnyUiBrush White { get { return new AnyUiBrush(0xffffffffu); } }
+        public static AnyUiBrush LightGray { get { return new AnyUiBrush(0xffe8e8e8u); } }
+        public static AnyUiBrush MiddleGray { get { return new AnyUiBrush(0xffc8c8c8u); } }
+        public static AnyUiBrush DarkGray { get { return new AnyUiBrush(0xff808080u); } }
     }
 
     public class AnyUiBrushTuple
@@ -253,6 +256,18 @@ namespace AnyUi
     /// </summary>
     public class AnyUiLambdaActionContentsTakeOver : AnyUiLambdaActionBase
     {
+    }
+
+    /// <summary>
+    /// This event causes a call to the specified plugin to update its
+    /// already preseted AnyUi representation and will then re-render this
+    /// to the users interface.
+    /// The plugin action is supposed to be: "update-anyui-visual-extension"
+    /// </summary>
+    public class AnyUiLambdaActionPluginUpdateAnyUi : AnyUiLambdaActionBase
+    {
+        public string PluginName = "";
+        public object[] ActionArgs = null;
     }
 
     /// <summary>
@@ -426,6 +441,12 @@ namespace AnyUi
     {
         public AnyUiBrush Background;
         public List<AnyUiUIElement> Children = new List<AnyUiUIElement>();
+
+        public T Add<T>(T elem) where T : AnyUiUIElement
+        {
+            Children.Add(elem);
+            return elem;
+        }
 
         public IEnumerable<AnyUiUIElement> GetChildren()
         {

@@ -401,8 +401,8 @@ namespace AnyUi
                             wpf.Padding = GetWpfTickness(cntl.Padding);
                         if (cntl.TextWrapping.HasValue)
                             wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                        if (cntl.FontSize.HasValue)
+                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
                         wpf.Text = cntl.Text;
                    }
                 }),
@@ -423,6 +423,8 @@ namespace AnyUi
                             wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
                         if (cntl.FontWeight.HasValue)
                             wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                        if (cntl.FontSize.HasValue)
+                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
 
                         if (cntl.TextAsHyperlink)
                         {
@@ -549,7 +551,7 @@ namespace AnyUi
                             // we need this event
                             wpf.SelectionChanged += (sender, e) => {
                                 cntl.SelectedIndex = wpf.SelectedIndex;
-                                cntl.setValueLambda((string) wpf.SelectedItem);
+                                cntl.setValueLambda?.Invoke((string) wpf.SelectedItem);
                                 cntl.Text = wpf.Text;
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 // Note for MIHO: this was the dangerous outside event loop!
@@ -697,7 +699,8 @@ namespace AnyUi
         public UIElement GetOrCreateWpfElement(
             AnyUiUIElement el,
             Type superType = null,
-            bool allowCreate = true)
+            bool allowCreate = true,
+            bool allowReUse = true)
         {
             // access
             if (el == null)
@@ -714,7 +717,7 @@ namespace AnyUi
             var topClass = superType == null;
 
             // return, if already created and not (still) in recursion/ creation of base classes
-            if (dd.WpfElement != null && topClass)
+            if (dd.WpfElement != null && allowReUse && topClass)
                 return dd.WpfElement;
             if (!allowCreate)
                 return null;
@@ -734,7 +737,7 @@ namespace AnyUi
             // recurse (first)
             var bt = searchType.BaseType;
             if (bt != null)
-                GetOrCreateWpfElement(el, superType: bt);
+                GetOrCreateWpfElement(el, superType: bt, allowReUse: allowReUse);
 
             // perform the render action (for this level of attributes, second)
             foundRR.InitLambda?.Invoke(el, dd.WpfElement);
