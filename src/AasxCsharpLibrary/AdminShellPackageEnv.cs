@@ -929,8 +929,15 @@ namespace AdminShellNS
                 SaveAs(this.Filename, prefFmt: prefFmt);
 
                 // close
-                _openPackage.Flush();
-                _openPackage.Close();
+                // Note: when re-saving as XML .., then the package might not be usable any more
+                try
+                {
+                    _openPackage.Flush();
+                    _openPackage.Close();
+                } catch
+                {
+                    _openPackage = null;
+                }
 
                 // execute lambda
                 lambda?.Invoke();
@@ -944,7 +951,11 @@ namespace AdminShellNS
             finally
             {
                 // even after failing of the lambda, the package shall be re-opened
-                _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
+                // Exception: no aasx
+                if (Filename.ToLower().EndsWith(".aasx"))
+                    _openPackage = Package.Open(Filename, FileMode.OpenOrCreate);
+                else
+                    _openPackage = null;
             }
         }
 
