@@ -91,6 +91,12 @@ namespace AasxIntegrationBase
         public bool showRepoFiles = false;
     }
 
+    public class AasxPluginResultEventSelectFile : AasxPluginResultEventBase
+    {
+        public string Filter = null;
+        public bool MultiSelect = false;
+    }
+
     public class AasxPluginEventReturnBase
     {
         public AasxPluginResultEventBase sourceEvent = null;
@@ -99,6 +105,16 @@ namespace AasxIntegrationBase
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
         public AdminShell.KeyList resultKeys = null;
+    }
+
+    public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase
+    {
+        public string[] FileNames;
+    }
+
+    public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
+    {
+        public string PluginName = "";
     }
 
     public class AasxPluginResultLicense : AasxPluginResultBase

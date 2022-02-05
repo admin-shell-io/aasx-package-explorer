@@ -487,6 +487,7 @@ namespace AnyUi
                             wpf.Foreground = GetWpfBrush(cntl.Foreground);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
+
                         wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
                         wpf.AcceptsReturn = cntl.AcceptsReturn;
                         if (cntl.MaxLines != null)
@@ -668,6 +669,9 @@ namespace AnyUi
                             wpf.Foreground = GetWpfBrush(cntl.Foreground);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.FontSize.HasValue)
+                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
+
                         wpf.Content = cntl.Content;
                         wpf.ToolTip = cntl.ToolTip;
                         // callbacks
@@ -758,12 +762,10 @@ namespace AnyUi
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
+            if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+                && cntl.Child != null)
             {
-                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
-                    && cntl.Child != null)
-                {
-                    wpf.Child = GetOrCreateWpfElement(cntl.Child);
-                }
+                wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: allowReUse);
             }
 
             // call action

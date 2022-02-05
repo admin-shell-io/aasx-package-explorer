@@ -193,10 +193,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 if (action == "event-return" && args != null
-                    && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
-                    && this._formsControl != null)
+                    && args.Length >= 1 && args[0] is AasxPluginEventReturnBase evret)
                 {
-                    this._formsControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+                    if (this._formsControl != null)
+                        this._formsControl.HandleEventReturn(evret);
+                    if (_anyUiControl != null)
+                        this._anyUiControl.HandleEventReturn(evret);
                 }
 
                 if (action == "get-check-visual-extension")

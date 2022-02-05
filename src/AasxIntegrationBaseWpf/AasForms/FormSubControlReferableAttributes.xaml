@@ -32,7 +32,7 @@
         <TextBox x:Name="TextBoxIdShort" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="2" />
 
         <TextBlock x:Name="LabelDescription" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Description:"/>
-        <TextBlock x:Name="TextBlockInfo"  Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="Click '+' to add language set" Margin="2" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBlock x:Name="TextBlockInfo"  Grid.Row="1" Grid.Column="2" Text="Click '+' to add language set" Margin="0,5,3,4" Visibility="Visible" VerticalAlignment="Center" HorizontalAlignment="Right"/>
         <Button x:Name="ButtonLangPlus" Grid.Row="1" Grid.Column="3" Content="+" Margin="2" Click="Button_Click"/>
     </Grid>
 </UserControl>
