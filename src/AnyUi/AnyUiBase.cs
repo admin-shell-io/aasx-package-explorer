@@ -271,6 +271,25 @@ namespace AnyUi
     }
 
     /// <summary>
+    /// Requests the main application to display a content file or external link
+    /// </summary>
+    public class AnyUiLambdaActionDisplayContentFile : AnyUiLambdaActionBase
+    {
+        public AnyUiLambdaActionDisplayContentFile() { }
+        public AnyUiLambdaActionDisplayContentFile(
+            string fn, string mimeType = null, bool preferInternalDisplay = false)
+        {
+            this.fn = fn;
+            this.mimeType = mimeType;
+            this.preferInternalDisplay = preferInternalDisplay;
+        }
+
+        public string fn = null;
+        public string mimeType = null;
+        public bool preferInternalDisplay = false;
+    }
+
+    /// <summary>
     /// This class is the base class for event handlers, which can attached to special
     /// events of Any UI controls
     /// </summary>
@@ -421,6 +440,7 @@ namespace AnyUi
         public AnyUiBrush Foreground = null;
         public AnyUiVerticalAlignment? VerticalContentAlignment;
         public AnyUiHorizontalAlignment? HorizontalContentAlignment;
+        public double? FontSize;
     }
 
     public class AnyUiContentControl : AnyUiControl
@@ -494,25 +514,25 @@ namespace AnyUi
         public string Content = null;
     }
 
-    public class AnyUiTextBlock : AnyUiFrameworkElement
+    public class AnyUiTextBlock : AnyUiControl
     {
-        public AnyUiBrush Background;
-        public AnyUiBrush Foreground;
+        //public AnyUiBrush Background;
+        //public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiTextWrapping? TextWrapping;
         public AnyUiFontWeight? FontWeight;
-        public double? FontSize;
+        // public double? FontSize;
         public string Text = null;
     }
 
-    public class AnyUiSelectableTextBlock : AnyUiFrameworkElement
+    public class AnyUiSelectableTextBlock : AnyUiControl
     {
-        public AnyUiBrush Background;
-        public AnyUiBrush Foreground;
+        //public AnyUiBrush Background;
+        //public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiTextWrapping? TextWrapping;
         public AnyUiFontWeight? FontWeight;
-        public double? FontSize;
+        // public double? FontSize;
         public string Text = null;
         public bool TextAsHyperlink = false;
     }

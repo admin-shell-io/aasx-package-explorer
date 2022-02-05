@@ -120,6 +120,24 @@ namespace AasxPluginGenericForms
 
         #endregion
 
+        #region Event handling
+        //=============
+
+        public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
+        {
+            if (_currentFormInst?.subscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = _currentFormInst.subscribeForNextEventReturn;
+                _currentFormInst.subscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+        }
+
+        #endregion
+
         #region Update
         //=============
 

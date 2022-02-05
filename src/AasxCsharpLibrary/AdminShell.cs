@@ -680,10 +680,12 @@ namespace AdminShellNS
 
             public string ToString(int format = 0, string delimiter = ",")
             {
-                var res = "";
-                foreach (var k in this)
-                    res += k.ToString(format) + delimiter;
-                return res.TrimEnd(',');
+                var res = string.Join(delimiter, this.Select((k) => k.ToString(format)));
+                return res;
+
+                //foreach (var k in this)
+                //    res += k.ToString(format) + delimiter;
+                //return res.TrimEnd(',');
             }
 
             public static KeyList Parse(string input)

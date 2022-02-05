@@ -192,6 +192,16 @@ namespace AasxIntegrationBase.AasForms
             };
             return la;
         }
+
+        public static AasxPluginEventReturnUpdateAnyUi NewResultEventUpdateUi()
+        {
+            var la = new AasxPluginEventReturnUpdateAnyUi()
+            {
+                // TODO: improve, this is not always the case
+                PluginName = "AasxPluginGenericForms"
+            };
+            return la;
+        }
     }
 
     public class FormDescInstancesPair
@@ -568,41 +578,65 @@ namespace AasxIntegrationBase.AasForms
             //   Instance 1        [-]
             //   Instance 2        [-]
 
-            var g = view.Add(
-                uitk.AddSmallGrid(rows: 2 + SubInstances.Count, cols: 5, 
-                    colWidths: new[] { "2:", "20:", "*", "23:", "2:" }));
+            Func<object, AnyUiLambdaActionBase> lambda = null;
+            if (showButtonPlus)
+                lambda = (o) =>
+                {
+                    if (SubInstances.Count < maxRows)
+                    {
+                        // add a instance
+                        var ni = desc.CreateInstance(this);
+                        if (ni != null)
+                        {
+                            SubInstances.Add(ni);
+                            return FormInstanceBase.NewLambdaUpdateUi();
+                        }
+                    }
+                    // else
+                    return new AnyUiLambdaActionNone();
+                };
+
+            var g = FormInstanceAnyUiHelper.RenderAnyUiHead(
+                view, uitk, desc, null, 
+                extraRows: SubInstances.Count,
+                plusButtonLambda: lambda);
 
             g.Background = AnyUiBrushes.White;
             g.Margin = new AnyUiThickness(4.0);
 
-            uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
-                foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
-                content: $"{desc?.FormTitle}");
-
-            if (showButtonPlus)
-                AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                        content: "\u2795"),
-                    (o) =>
-                    {
-                        if (SubInstances.Count < maxRows)
-                        {
-                            // add a instance
-                            var ni = desc.CreateInstance(this);
-                            if (ni != null)
-                            {
-                                SubInstances.Add(ni);
-                                return FormInstanceBase.NewLambdaUpdateUi();
-                            }
-                        }
-                        // else
-                        return new AnyUiLambdaActionNone();
-                    });
+            //var g = view.Add(
+            //    uitk.AddSmallGrid(rows: 2 + SubInstances.Count, cols: 5, 
+            //        colWidths: new[] { "2:", "20:", "*", "23:", "2:" }));
 
 
-            uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
-                setWrap: true, verticalAlignment: AnyUiVerticalAlignment.Center,
-                content: $"{desc?.FormInfo}");
+            //uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
+            //    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
+            //    content: $"{desc?.FormTitle}");
+
+            //if (showButtonPlus)
+            //    AnyUiUIElement.RegisterControl(
+            //        uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+            //            content: "\u2795"),
+            //        (o) =>
+            //        {
+            //            if (SubInstances.Count < maxRows)
+            //            {
+            //                // add a instance
+            //                var ni = desc.CreateInstance(this);
+            //                if (ni != null)
+            //                {
+            //                    SubInstances.Add(ni);
+            //                    return FormInstanceBase.NewLambdaUpdateUi();
+            //                }
+            //            }
+            //            // else
+            //            return new AnyUiLambdaActionNone();
+            //        });
+
+
+            //uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
+            //    setWrap: true, verticalContentAlignment: AnyUiVerticalAlignment.Center,
+            //    content: $"{desc?.FormInfo}");
 
             // simply render the instances
 
@@ -614,13 +648,15 @@ namespace AasxIntegrationBase.AasForms
                 row++;
 
                 // Index
-                uitk.AddSmallBasicLabelTo(g, row, 1, foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
-                content: $"#{1+si?.Index}");
+                uitk.AddSmallBasicLabelTo(
+                    g, row, 1, foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
+                    margin: new AnyUiThickness(0.0, 4.0, 0.0, 0.0),
+                    content: $"#{1+si?.Index}");
 
                 // button
                 if (showButtonsMinus)
                     AnyUiUIElement.RegisterControl(
-                        uitk.AddSmallButtonTo(g, row, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        uitk.AddSmallButtonTo(g, row, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
                             verticalAlignment: AnyUiVerticalAlignment.Top,
                             content: "\u2796"),
                     (o) =>
@@ -636,13 +672,263 @@ namespace AasxIntegrationBase.AasForms
                         return new AnyUiLambdaActionNone();
                     });
 
-                // panel with contents
-                var sp = uitk.AddSmallStackPanelTo(g, row, 2);
-                si.RenderAnyUi(sp, uitk);
+                // SME specific panel with contents
+                // outer panel
+                // Note: make the panel as wide as possible (if multiplicity allows)
+                var outer = uitk.AddSmallStackPanelTo(
+                    g, row, 2, colSpan: 2 + ((!showButtonsMinus && !showButtonPlus) ? 1 : 0));
+                
+                // need to make a visual separation, if multiple instances are possible
+                if (maxRows > 1)
+                    outer.Background = AnyUiBrushes.LightGray;
+
+                // inner panel
+                var inner = outer.Add(new AnyUi.AnyUiStackPanel());
+                inner.Background = AnyUiBrushes.White;
+                inner.Margin = new AnyUiThickness(4,4,4,0);
+
+                // idShort
+                if (si.desc is FormDescSubmodelElement descsme
+                    && si is FormInstanceSubmodelElement sisme
+                    && (descsme.FormEditIdShort || descsme.FormEditDescription))
+                {
+                    FormInstanceAnyUiHelper.RenderAnyUiRefAttribs(
+                        inner, uitk, descsme, sisme.sme,
+                        touch: sisme.Touch,
+                        editIdShort: descsme.FormEditIdShort,
+                        editDesc: descsme.FormEditDescription);
+                }
+
+                // SME specifics itself
+                si.RenderAnyUi(inner, uitk);
             }
 
         }
 
+    }
+
+    public class FormInstanceAnyUiHelper
+    {
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public static AnyUiGrid RenderAnyUiHead(
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            FormDescReferable desc,
+            AdminShell.Referable rf,
+            int ?extraRows = null,
+            Func<object, AnyUiLambdaActionBase> plusButtonLambda = null,
+            Func<object, AnyUiLambdaActionBase> expandButtonLambda = null)
+        {
+            // access
+            if (desc == null)
+                return null;
+
+            // create frame
+            var g = view.Add(
+                uitk.AddSmallGrid(
+                    rows: 2 + (extraRows.HasValue ? extraRows.Value : 0), 
+                    cols: 6,
+                    colWidths: new[] { "2:", "20:", "*", "22:", "22:", "2:" }));
+
+            var wp = uitk.AddSmallWrapPanelTo(g, 0, 1, colSpan: 3);
+
+            wp.Add(new AnyUiSelectableTextBlock()
+            {
+                Foreground = AnyUiBrushes.DarkBlue,
+                FontSize = 1.3f,
+                Margin = new AnyUiThickness(0, 0, 10, 0),
+                Text = $"{desc?.FormTitle} {"" + rf?.idShort}"
+            });
+
+            if (desc.FormUrl.HasContent())
+                AnyUiUIElement.RegisterControl(
+                    wp.Add(new AnyUiButton()
+                    {
+                        MinHeight = 18.0,
+                        MaxHeight = 18.0,
+                        MinWidth = 18.0,
+                        MaxWidth = 18.0,
+                        FontSize = 1.3f,
+                        Padding = new AnyUiThickness(0, -4, 0, 0),
+                        Content = "\u21a6"
+                    }),
+                    (o) => new AnyUiLambdaActionDisplayContentFile()
+                    {
+                        fn = desc.FormUrl,
+                        mimeType = System.Net.Mime.MediaTypeNames.Text.Html,
+                        preferInternalDisplay = true
+                    });
+
+            //uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 3,
+            //    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
+            //    content: $"{descsm?.FormTitle} {sm?.idShort}");
+
+            //uitk.AddSmallButtonTo(g, 0, 3, setHeight: 18.0, margin: new AnyUiThickness(2.0),
+            //    content: "\u21a6");
+
+            if (plusButtonLambda != null)
+            {
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        content: "\u2795"), plusButtonLambda);
+            }
+            else
+            if (expandButtonLambda != null)
+            {
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 4, setHeight: 22.0, margin: new AnyUiThickness(2.0),
+                        content: "\u2bc5"), expandButtonLambda);
+            }
+
+            uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
+                setWrap: true,
+                content: $"{desc?.FormInfo}");
+
+            return g;
+        }
+
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public static AnyUiGrid RenderAnyUiRefAttribs(
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            FormDescReferable desc,
+            AdminShell.Referable rf,
+            Action touch = null,
+            bool editIdShort = false,
+            bool editDesc = false)
+        {
+            // access
+            if (desc == null || rf == null)
+                return null;
+
+            if (!editIdShort && !editDesc)
+                return null;
+
+            // create frame
+            var g = view.Add(
+                uitk.AddSmallGrid(
+                    rows: 2 
+                        + (editIdShort ? 1 : 0)
+                        + (editDesc ? 1 : 0)
+                        + (editDesc && rf.description?.langString != null ? rf.description.langString.Count : 0),
+                    cols: 6,
+                    colWidths: new[] { "2:", "60:", "60:", "*", "22:", "2:" }));
+
+            int row = 0;
+
+            // idShort
+            if (editIdShort)
+            {
+                uitk.AddSmallBasicLabelTo(g, row, 1, 
+                    foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
+                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                    content: "idShort:");
+
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(g, row, 2, colSpan: 2,
+                        margin: new AnyUiThickness(1.0),
+                        text: "" + rf.idShort),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            rf.idShort = os;
+                        touch?.Invoke();
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // finally
+                row++;
+            }
+
+            // Description
+            if (editDesc)
+            {
+                // Label in 1st row
+                uitk.AddSmallBasicLabelTo(g, row, 1,
+                    foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
+                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                    content: "Description:");
+
+                // info text only, if now langauges
+                if (rf.description?.langString == null || rf.description.langString.Count < 1)
+                    uitk.AddSmallBasicLabelTo(g, row, 2, colSpan: 2,
+                        foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                        horizontalAlignment: AnyUiHorizontalAlignment.Right,
+                        setWrap: true, margin: new AnyUiThickness(0,0,4,0),
+                        content: "('+' to add language set)");
+
+                // "Plus" in first row
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, row, 4, 
+                        setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        content: "\u2795"),
+                        (o) =>
+                        {
+                            rf.AddDescription("", "");
+                            touch?.Invoke();
+                            return FormInstanceBase.NewLambdaUpdateUi();
+                        });
+
+                // finally
+                row++;
+
+                // list single languages
+                if (rf.description?.langString != null)
+                    foreach (var ls in rf.description.langString)
+                    {
+                        // lang
+                        AnyUiUIElement.RegisterControl(
+                            uitk.AddSmallComboBoxTo(g, row, 2, margin: new AnyUiThickness(1.0),
+                                horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                                text: "" + ls.lang,
+                                items: AasxLanguageHelper.GetLangCodes().ToArray()),
+                            (o) =>
+                            {
+                                if (o is string os)
+                                    ls.lang = os;
+                                touch?.Invoke();
+                                return new AnyUiLambdaActionNone();
+                            });
+
+                        // key
+                        AnyUiUIElement.RegisterControl(
+                            uitk.AddSmallTextBoxTo(g, row, 3, margin: new AnyUiThickness(1.0),
+                                text: "" + ls.str),
+                            (o) =>
+                            {
+                                if (o is string os)
+                                    ls.str = os;
+                                touch?.Invoke();
+                                return new AnyUiLambdaActionNone();
+                            });
+
+                        // button
+                        var storedLs = ls;
+                        AnyUiUIElement.RegisterControl(
+                            uitk.AddSmallButtonTo(g, row, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                                content: "\u2796"),
+                            (o) =>
+                            {
+                                if (rf.description.langString.Contains(storedLs))
+                                    rf.description.langString.Remove(storedLs);
+                                touch?.Invoke();
+                                return FormInstanceBase.NewLambdaUpdateUi();
+                            });
+
+                        // row by row
+                        row++;
+                    }
+            }
+
+            // ok
+            return g;
+        }
     }
 
     public class FormInstanceSubmodel : FormInstanceBase, IFormListOfDifferent
@@ -778,22 +1064,11 @@ namespace AasxIntegrationBase.AasForms
                     content: "Small/ Large");
             }
 
+            // Block with Submodel name, info, url, plus
+
             if (true)
             {
-                var g = view.Add(
-                uitk.AddSmallGrid(rows: 2, cols: 5,
-                    colWidths: new[] { "2:", "20:", "*", "18:", "2:" }));
-
-                uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
-                    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
-                    content: $"{descsm?.FormTitle} {sm?.idShort}");
-
-                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 18.0, margin: new AnyUiThickness(2.0),
-                    content: "\u2bc5");
-
-                uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
-                    setWrap: true,
-                    content: $"{descsm?.FormInfo}");
+                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, descsm, sm);
             }
 
             // idShort / Description
@@ -1010,21 +1285,11 @@ namespace AasxIntegrationBase.AasForms
             var sp = view.Add(
                 new AnyUi.AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical });
 
-            var descsm = desc as FormDescSubmodel;
+            var descsm = desc as FormDescSubmodelElement;
 
             if (true)
             {
-                var g = view.Add(
-                    uitk.AddSmallGrid(rows: 1, cols: 2, colWidths: new[] { "#", "*" }));
-
-                uitk.AddSmallBasicLabelTo(g, 0, 0,
-                    content: $"#{descsm?.FormTitle}");
-
-                uitk.AddSmallButtonTo(g, 0, 1,
-                    content: "Inflate");
-
-                uitk.AddSmallBasicLabelTo(g, 1, 0,
-                    content: $"#{descsm?.FormInfo}");
+                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, descsm, sme);
             }
 
             // idShort / Description
@@ -1140,19 +1405,28 @@ namespace AasxIntegrationBase.AasForms
         public override 
             void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
+            // access
+            var prop = sme as AdminShell.Property;
+
             // Intended layout
             // Grid
             //    Index
             //    TextBox | ComboBox
 
             var g = view.Add(
-                uitk.AddSmallGrid(rows: 1, cols: 2, colWidths: new[] { "#", "*" }));
+                uitk.AddSmallGrid(rows: 1, cols: 3, colWidths: new[] { "2:", "*", "2:" }));
 
-            uitk.AddSmallBasicLabelTo(g, 0, 0, 
-                content: $"#{Index}");
-
-            uitk.AddSmallTextBoxTo(g, 0, 1,
-                text: "Hallo");
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallTextBoxTo(g, 0, 1,
+                margin: new AnyUiThickness(0,2,0,2),
+                text: "" + prop.value),
+                (o) =>
+                {
+                    if (o is string os)
+                        prop.value = os;
+                    Touch();
+                    return new AnyUiLambdaActionNone();
+                });
         }
     }
 
@@ -1224,27 +1498,35 @@ namespace AasxIntegrationBase.AasForms
             //   LANG2 VAL2        [-]
 
             var g = view.Add(
-                uitk.AddSmallGrid(rows: 1 + mlp.value.Count, cols: 3,
-                    colWidths: new[] { "60:", "*", "23:" }));
+                uitk.AddSmallGrid(rows: 1 + mlp.value.Count, cols: 5,
+                    colWidths: new[] { "2:", "60:", "*", "23:", "2:" }));
 
+            // Label in 1st row
+            uitk.AddSmallBasicLabelTo(g, 0, 1,
+                foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
+                verticalAlignment: AnyUiVerticalAlignment.Center,
+                verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                content: "Value:");
+
+            // no content? .. info on 1st row
+            if (mlp.value.Count < 1)
+            {
+                uitk.AddSmallBasicLabelTo(g, 0, 2, 
+                    foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
+                    setWrap: true, margin: new AnyUiThickness(2.0, 4.0, 0.0, 0.0),
+                    content: "(add at least one language)");
+                return;
+            }
+
+            // "Plus" button in 1st row
             AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 0, 2, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
                     content: "\u2795"),
                     (o) =>
-                    {                        
+                    {
                         mlp.value.langString.Add(new AdminShell.LangStr());
                         return NewLambdaUpdateUi();
                     });
-
-            // no content?
-            if (mlp.value.Count < 1)
-            {
-                uitk.AddSmallBasicLabelTo(g, 0, 0, colSpan: 2,
-                    foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
-                    setWrap: true, verticalAlignment: AnyUiVerticalAlignment.Center,
-                    content: "(please add at least one language)");
-                return;
-            }
 
             // simply render the langStrs
 
@@ -1256,7 +1538,8 @@ namespace AasxIntegrationBase.AasForms
 
                 // lang
                 AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallComboBoxTo(g, row, 0, margin: new AnyUiThickness(1.0),
+                    uitk.AddSmallComboBoxTo(g, row, 1, margin: new AnyUiThickness(1.0),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                         text: "" + ls.lang,
                         items: AasxLanguageHelper.GetLangCodes().ToArray()),
                     (o) =>
@@ -1268,7 +1551,7 @@ namespace AasxIntegrationBase.AasForms
 
                 // key
                 AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallTextBoxTo(g, row, 1, margin: new AnyUiThickness(1.0),
+                    uitk.AddSmallTextBoxTo(g, row, 2, margin: new AnyUiThickness(1.0),
                         text: "" + ls.str),
                     (o) =>
                     {
@@ -1280,7 +1563,7 @@ namespace AasxIntegrationBase.AasForms
                 // button
                 var storedLs = ls;
                 AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row, 2, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                    uitk.AddSmallButtonTo(g, row, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
                         content: "\u2796"),
                     (o) =>
                     {
@@ -1392,6 +1675,89 @@ namespace AasxIntegrationBase.AasForms
             return true;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // access
+            var file = sme as AdminShell.File;
+
+            // Intended layout:
+            // Grid
+            //   Drop target       [Clear]
+            //   """""""""""       [Select]
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 2, cols: 4,
+                    colWidths: new[] { "2:", "*", "#", "2:" }));
+
+            // prepare file display
+            var finfo = "Drag a file to register loading it!";
+            if (file.value.HasContent())
+                finfo = "File current: " + file.value;
+            if (FileToLoad != null)
+                finfo = "File to load: " + FileToLoad;
+
+            // drop target
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallDropBoxTo(
+                    g, 0, 1, rowSpan: 2,
+                    margin: new AnyUiThickness(2, 2, 2, 2), minHeight: 40,
+                    borderThickness: new AnyUiThickness(1),
+                    text: finfo),
+                (o) =>
+                {
+                    if (o is string os)
+                        FileToLoad = os;
+                    Touch();
+                    return NewLambdaUpdateUi();
+                });
+
+            // "Clear" button in 1st row
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
+                    content: "Clear"),
+                    (o) =>
+                    {
+                        FileToLoad = null;
+                        Touch();
+                        return NewLambdaUpdateUi();
+                    });
+
+            // "Select" button in 2nd row
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
+                    content: "Select"),
+                    (o) =>
+                    {
+                        // try find topmost instance
+                        var top = FormInstanceHelper.GetTopMostParent(this);
+                        var topBase = top as FormInstanceBase;
+                        if (topBase != null && topBase.outerEventStack != null)
+                        {
+                            // give over to event stack
+                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectFile();
+                            topBase.outerEventStack.PushEvent(ev);
+
+                            // .. and receive incoming event
+                            topBase.subscribeForNextEventReturn = (revt) =>
+                            {
+                                if (revt is AasxPluginEventReturnSelectFile rsel 
+                                    && rsel.FileNames != null && rsel.FileNames.Length > 0)
+                                {
+                                    // do it
+                                    FileToLoad = rsel.FileNames[0];
+                                    Touch();
+
+                                    // send event to re-render
+                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                }
+                            };
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
+        }
     }
 
     public class FormInstanceReferenceElement : FormInstanceSubmodelElement
@@ -1444,6 +1810,86 @@ namespace AasxIntegrationBase.AasForms
             return true;
         }
 
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // access
+            var refe = sme as AdminShell.ReferenceElement;
+            if (refe == null)
+                return;
+
+            // Intended layout:
+            // Grid
+            //   Reference info    [Clear]
+            //   """"""""""""""    [Select]
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 2, cols: 4,
+                    colWidths: new[] { "2:", "*", "#", "2:" }));
+
+            // prepare reference display
+            var info = "(no reference set)";
+            if (refe.value != null)
+                info = "(no Keys)";
+            if (refe.value.Keys.Count > 0)
+                info = refe.value.ToString(format: 1, delimiter: Environment.NewLine);
+
+            // Use a drop box as info; but now allow drop
+            uitk.AddSmallDropBoxTo(
+                g, 0, 1, rowSpan: 2,
+                margin: new AnyUiThickness(2, 2, 2, 2), minHeight: 40,
+                borderThickness: new AnyUiThickness(1),
+                text: info);
+
+            // "Clear" button in 1st row
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
+                    content: "Clear"),
+                    (o) =>
+                    {
+                        refe.value = null;
+                        Touch();
+                        return NewLambdaUpdateUi();
+                    });
+
+            // "Select" button in 2nd row
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
+                    content: "Select"),
+                    (o) =>
+                    {
+                        // try find topmost instance
+                        var top = FormInstanceHelper.GetTopMostParent(this);
+                        var topBase = top as FormInstanceBase;
+                        if (topBase != null && topBase.outerEventStack != null)
+                        {
+                            // give over to event stack
+                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
+                            ev.filterEntities = AdminShell.Key.AllElements;
+                            ev.showAuxPackage = true;
+                            ev.showRepoFiles = true;
+                            topBase.outerEventStack.PushEvent(ev);
+
+                            // .. and receive incoming event
+                            topBase.subscribeForNextEventReturn = (revt) =>
+                            {
+                                if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                                {
+                                    // do it
+                                    refe.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                                    Touch();
+
+                                    // send event to re-render
+                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                }
+                            };
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
+        }
     }
 
     public class FormInstanceRelationshipElement : FormInstanceSubmodelElement
@@ -1496,6 +1942,109 @@ namespace AasxIntegrationBase.AasForms
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Render the AnyUI representation of the current instance data structure
+        /// </summary>
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        {
+            // access
+            var rele = sme as AdminShell.RelationshipElement;
+            if (rele == null)
+                return;
+
+            // Intended layout:
+            // Grid
+            //   first
+            //   Reference info    [Clear]
+            //   """"""""""""""    [Select]
+            //   second
+            //   Reference info    [Clear]
+            //   """"""""""""""    [Select]
+
+            var g = view.Add(
+                uitk.AddSmallGrid(rows: 6, cols: 4,
+                    colWidths: new[] { "2:", "*", "#", "2:" }));
+
+            for (int i = 0; i < 2; i++)
+            {
+                // selektor
+                var valGet = (i == 0) ? rele.first : rele.second;
+                Action<AdminShell.Reference> valSet = (rf) => rele.first = rf;
+                if (i == 1)
+                    valSet = (rf) => rele.second = rf;
+                var name = (new[] { "first", "second" })[i];
+                var row = 3 * i;
+
+                // name
+                uitk.AddSmallBasicLabelTo(g, row + 0, 1,
+                    foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
+                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                    content: name);
+
+                // prepare reference display
+                var info = "(no reference set)";
+                if (valGet != null)
+                    info = "(no Keys)";
+                if (valGet.Keys.Count > 0)
+                    info = valGet.ToString(format: 1, delimiter: Environment.NewLine);
+
+                // Use a drop box as info; but now allow drop
+                uitk.AddSmallDropBoxTo(
+                    g, row + 1, 1, rowSpan: 2,
+                    margin: new AnyUiThickness(2, 2, 2, 2), minHeight: 40,
+                    borderThickness: new AnyUiThickness(1),
+                    text: info);
+
+                // "Clear" button in 1st row
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, row + 1, 2, margin: new AnyUiThickness(1.0),
+                        content: "Clear"),
+                        (o) =>
+                        {
+                            valSet(null);
+                            Touch();
+                            return NewLambdaUpdateUi();
+                        });
+
+                // "Select" button in 2nd row
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, row + 2, 2, margin: new AnyUiThickness(1.0),
+                        content: "Select"),
+                        (o) =>
+                        {
+                        // try find topmost instance
+                        var top = FormInstanceHelper.GetTopMostParent(this);
+                            var topBase = top as FormInstanceBase;
+                            if (topBase != null && topBase.outerEventStack != null)
+                            {
+                            // give over to event stack
+                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
+                                ev.filterEntities = AdminShell.Key.AllElements;
+                                ev.showAuxPackage = true;
+                                ev.showRepoFiles = true;
+                                topBase.outerEventStack.PushEvent(ev);
+
+                            // .. and receive incoming event
+                            topBase.subscribeForNextEventReturn = (revt) =>
+                                {
+                                    if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                                    {
+                                    // do it
+                                    valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
+                                    Touch();
+
+                                    // send event to re-render
+                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                    }
+                                };
+                            }
+
+                            return new AnyUiLambdaActionNone();
+                        });
+            }
         }
 
     }

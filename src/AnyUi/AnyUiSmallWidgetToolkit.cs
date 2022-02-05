@@ -53,7 +53,8 @@ namespace AnyUi
         }
 
         public AnyUiWrapPanel AddSmallWrapPanelTo(
-            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null)
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
+            int? colSpan = null)
         {
             var wp = new AnyUiWrapPanel();
             wp.Margin = margin;
@@ -61,13 +62,16 @@ namespace AnyUi
                 wp.Background = background;
             AnyUiGrid.SetRow(wp, row);
             AnyUiGrid.SetColumn(wp, col);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(wp, colSpan.Value);
             g.Children.Add(wp);
             return (wp);
         }
 
         public AnyUiStackPanel AddSmallStackPanelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
-            bool setVertical = false, bool setHorizontal = false)
+            bool setVertical = false, bool setHorizontal = false,
+            int? colSpan = null)
         {
             var sp = new AnyUiStackPanel();
             sp.Margin = margin;
@@ -79,6 +83,8 @@ namespace AnyUi
                 sp.Orientation = AnyUiOrientation.Horizontal;
             AnyUiGrid.SetRow(sp, row);
             AnyUiGrid.SetColumn(sp, col);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(sp, colSpan.Value);
             g.Children.Add(sp);
             return (sp);
         }
@@ -98,6 +104,7 @@ namespace AnyUi
         public AnyUiTextBox AddSmallTextBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
+            int? colSpan = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
             var tb = new AnyUiTextBox();
@@ -118,6 +125,8 @@ namespace AnyUi
 
             AnyUiGrid.SetRow(tb, row);
             AnyUiGrid.SetColumn(tb, col);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(tb, colSpan.Value);
             g.Children.Add(tb);
             return (tb);
         }
@@ -125,7 +134,8 @@ namespace AnyUi
         public AnyUiBorder AddSmallDropBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush borderBrush = null, AnyUiBrush background = null,
-            AnyUiThickness borderThickness = null, int minHeight = 0)
+            AnyUiThickness borderThickness = null, int minHeight = 0,
+            int? rowSpan = null, int? colSpan = null)
         {
             var brd = new AnyUiBorder();
             brd.Margin = margin;
@@ -149,13 +159,17 @@ namespace AnyUi
             tb.VerticalAlignment = AnyUiVerticalAlignment.Center;
             tb.HorizontalAlignment = AnyUiHorizontalAlignment.Center;
             tb.TextWrapping = AnyUiTextWrapping.Wrap;
-            tb.FontSize = 10.0;
+            tb.FontSize = 0.8f;
             tb.Text = text;
 
             brd.Child = tb;
 
             AnyUiGrid.SetRow(brd, row);
             AnyUiGrid.SetColumn(brd, col);
+            if (rowSpan.HasValue)
+                AnyUiGrid.SetRowSpan(brd, rowSpan.Value);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(brd, colSpan.Value);
             g.Children.Add(brd);
             return (brd);
         }
@@ -164,7 +178,8 @@ namespace AnyUi
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
-            AnyUiVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null,
+            AnyUiHorizontalAlignment? horizontalAlignment = null)
         {
             var cb = new AnyUiComboBox();
             cb.Margin = margin;
@@ -185,6 +200,8 @@ namespace AnyUi
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
             cb.HorizontalAlignment = AnyUiHorizontalAlignment.Left;
+            if (horizontalAlignment.HasValue)
+                cb.HorizontalAlignment = horizontalAlignment.Value;
             AnyUiGrid.SetRow(cb, row);
             AnyUiGrid.SetColumn(cb, col);
             g.Children.Add(cb);
@@ -281,7 +298,10 @@ namespace AnyUi
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false,
             double? fontSize = null, int? colSpan = null, bool setWrap = false,
-            AnyUiVerticalAlignment? verticalAlignment = null)
+            AnyUiVerticalAlignment? verticalAlignment = null,
+            AnyUiVerticalAlignment? verticalContentAlignment = null,
+            AnyUiHorizontalAlignment? horizontalAlignment = null,
+            AnyUiHorizontalAlignment? horizontalContentAlignment = null)
         {
             var lab = new AnyUiSelectableTextBlock();
 
@@ -299,6 +319,12 @@ namespace AnyUi
                 lab.TextWrapping = AnyUiTextWrapping.Wrap;
             if (verticalAlignment.HasValue)
                 lab.VerticalAlignment = verticalAlignment.Value;
+            if (verticalContentAlignment.HasValue)
+                lab.VerticalContentAlignment = verticalContentAlignment.Value;
+            if (horizontalAlignment.HasValue)
+                lab.HorizontalAlignment = horizontalAlignment.Value;
+            if (horizontalContentAlignment.HasValue)
+                lab.HorizontalContentAlignment = horizontalContentAlignment.Value;
             lab.Text = content;
 
             AnyUiGrid.SetRow(lab, row);

@@ -22,25 +22,26 @@
           "idType": "IRI"
         },
         "SubmodelElements": [
-          {
-            "$type": "FormMultiLangProp",
-            "FormTitle": "ManufacturerName",
-            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
-            "FormEditIdShort": false,
-            "FormEditDescription": false,
-            "PresetIdShort": "ManufacturerName",
-            "PresetCategory": "PARAMETER",
-            "KeySemanticId": {
-              "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
-              "type": "ConceptDescription",
-              "local": true,
-              "value": "0173-1#02-AAO677#002",
-              "index": 0,
-              "idType": "IRDI"
+            {
+                "$type": "FormMultiLangProp",
+                "FormTitle": "ManufacturerName",
+                "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
+                "FormUrl": "www.google.de/books", // TODO: ZeroToOne
+                "FormEditIdShort": true, // TODO: false
+                "FormEditDescription": true, // TODO: false
+                "PresetIdShort": "ManufacturerName",
+                "PresetCategory": "PARAMETER",
+                "KeySemanticId": {
+                    "$type": "AdminShellNS.AdminShellV20+Key, AasxCsharpLibrary",
+                    "type": "ConceptDescription",
+                    "local": true,
+                    "value": "0173-1#02-AAO677#002",
+                    "index": 0,
+                    "idType": "IRDI"
+                },
+                "Multiplicity": "OneToMany", // TODO: One
+                "IsReadOnly": false
             },
-            "Multiplicity": "OneToMany",
-            "IsReadOnly": false
-          },
           {
             "$type": "FormMultiLangProp",
             "FormTitle": "ManufacturerProductDesignation",
@@ -579,7 +580,7 @@
               "index": 0,
               "idType": "IRDI"
             },
-            "Multiplicity": "ZeroToOne",
+            "Multiplicity": "ZeroToMany", // TODO: ZeroToOne
             "IsReadOnly": false,
             "allowedValueTypes": [
               "string"

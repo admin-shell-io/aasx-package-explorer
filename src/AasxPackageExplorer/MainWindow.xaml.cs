@@ -1085,38 +1085,7 @@ namespace AasxPackageExplorer
 
             if (lab is AnyUiLambdaActionPluginUpdateAnyUi update)
             {
-                // A plugin asks to re-render an exisiting panel.
-                // Can get this information?
-                var renderedRoot = DispEditEntityPanel.GetLastRenderedRoot();
-
-                if (renderedRoot is AnyUiPanel renderedPanel
-                    && renderedPanel.Children != null
-                    && renderedPanel.Children.Count > 0)
-                {
-                    // first step: invoke plugin?
-                    var plugin = Plugins.FindPluginInstance(update.PluginName);
-                    if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
-                    {
-                        try
-                        {
-                            var uires = plugin.InvokeAction(
-                                "update-anyui-visual-extension", renderedPanel);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(ex,
-                                $"update AnyUI based visual extension for plugin {update.PluginName}");
-                        }
-                    }
-
-                    // 2nd step: redisplay
-                    DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel);
-                } 
-                else
-                {
-                    // hard re-display
-                    throw new NotImplementedException();
-                }
+                UiHandleReRenderAnyUiInEntityPanel(update.PluginName);
             }
         }
 
@@ -1213,6 +1182,43 @@ namespace AasxPackageExplorer
             }
 
             return null;
+        }
+
+        private void UiHandleReRenderAnyUiInEntityPanel(
+            string pluginName)
+        {
+            // A plugin asks to re-render an exisiting panel.
+            // Can get this information?
+            var renderedRoot = DispEditEntityPanel.GetLastRenderedRoot();
+
+            if (renderedRoot is AnyUiPanel renderedPanel
+                && renderedPanel.Children != null
+                && renderedPanel.Children.Count > 0)
+            {
+                // first step: invoke plugin?
+                var plugin = Plugins.FindPluginInstance(pluginName);
+                if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
+                {
+                    try
+                    {
+                        var uires = plugin.InvokeAction(
+                            "update-anyui-visual-extension", renderedPanel);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex,
+                            $"update AnyUI based visual extension for plugin {pluginName}");
+                    }
+                }
+
+                // 2nd step: redisplay
+                DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel);
+            }
+            else
+            {
+                // hard re-display
+                throw new NotImplementedException();
+            }
         }
 
         private async Task UiHandleNavigateTo(
@@ -1386,6 +1392,42 @@ namespace AasxPackageExplorer
                     }
                 }
 
+                // Select File
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel)
+                {
+                    // ask
+                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                    var dlg = new Microsoft.Win32.OpenFileDialog();
+                    dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                    if (fileSel.Filter != null)
+                        dlg.Filter = fileSel.Filter;
+                    dlg.Multiselect = fileSel.MultiSelect;
+                    var res = dlg.ShowDialog();
+                    if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                    // act
+                    if (res == true)
+                    {
+                        // formulate return event
+                        var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectFile();
+                        retev.sourceEvent = evt;
+                        retev.FileNames = dlg.FileNames;
+
+                        // fire back
+                        pluginInstance?.InvokeAction("event-return", retev);
+                    }
+                }
+
+                // Re-render Any UI Panels
+                //========================
+
+                if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+                {
+                    UiHandleReRenderAnyUiInEntityPanel(update.PluginName);
+                }
+               
                 #endregion
             }
             catch (Exception ex)
