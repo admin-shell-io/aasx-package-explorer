@@ -14,14 +14,28 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AdminShellNS;
 using Newtonsoft.Json;
 
 // ReSharper disable AssignNullToNotNullAttribute .. a bit unclear, why issues here
 
 namespace AasxIntegrationBase
 {
+    /// <summary>
+    /// Base class for an options record. This is a piece of options information, which is
+    /// associated with an id of a Submodel template.
+    /// </summary>
+    public class AasxPluginOptionsRecordBase
+    {
+    }
+
+    /// <summary>
+    /// Base class of plugin options, which may be also load from file.
+    /// </summary>
     public class AasxPluginOptionsBase
     {
+        protected MultiValueDictionary<string, AasxPluginOptionsRecordBase> _recordLookup = null;
+
         public virtual void Merge(AasxPluginOptionsBase options)
         {
         }
@@ -80,6 +94,89 @@ namespace AasxIntegrationBase
                 {
                     log?.Error(ex, $"loading additional options (${fn})");
                 }
+        }
+    }
+
+    //
+    // Extension: options (records) with lookup of semantic ids
+    //
+
+    /// <summary>
+    /// Base class for an options record. This is a piece of options information, which is
+    /// associated with an id of a Submodel template.
+    /// This base class is extended for lookup information.
+    /// </summary>
+    public class AasxPluginOptionsLookupRecordBase : AasxPluginOptionsRecordBase
+    {
+        /// <summary>
+        /// This keyword is used by the plugin options to code allowed semantic ids for
+        /// a Submodel sensitive plugin
+        /// </summary>
+        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+    }
+
+    /// <summary>
+    /// Base class of plugin options, which may be also load from file.
+    /// This base class is extended for lookup information.
+    /// </summary>
+    public class AasxPluginLookupOptionsBase : AasxPluginOptionsBase
+    {
+        private string GenerateIndexKey(AdminShell.Key key)
+        {
+            if (key == null)
+                return null;
+            // eliminate "local"
+            var k = new AdminShell.Key(key) { local = false };
+            var ndx = k?.ToString(format: 1);
+            return ndx;
+        }
+
+        public void IndexRecord(AdminShell.Key key, AasxPluginOptionsRecordBase rec)
+        {
+            if (_recordLookup == null)
+                _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();
+
+            var ndx = GenerateIndexKey(key);
+            if (!ndx.HasContent())
+                return;
+            _recordLookup.Add(ndx, rec);
+        }
+
+        public void IndexListOfRecords(IEnumerable<AasxPluginOptionsLookupRecordBase> records)
+        {
+            if (records == null)
+                return;
+
+            foreach (var rec in records)
+                if (rec?.AllowSubmodelSemanticId != null)
+                    foreach (var a2 in rec.AllowSubmodelSemanticId)
+                        IndexRecord(a2, rec);
+        }
+
+        public bool ContainsIndexKey(AdminShell.Key key)
+        {
+            // access
+            var ndx = GenerateIndexKey(key);
+            if (_recordLookup == null || !ndx.HasContent())
+                return false;
+
+            return _recordLookup.ContainsKey(ndx);
+        }
+
+        public IEnumerable<T> LookupAllIndexKey<T>(AdminShell.Key key)
+            where T : AasxPluginOptionsRecordBase
+        {
+            // access
+            var ndx = GenerateIndexKey(key);
+            if (_recordLookup == null || !ndx.HasContent())
+                yield break;
+
+            if (!_recordLookup.ContainsKey(ndx))
+                yield break;
+
+            foreach (var r in _recordLookup[ndx])
+                if (r is T rr)
+                    yield return rr;
         }
     }
 }

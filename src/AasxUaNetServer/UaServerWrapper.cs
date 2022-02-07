@@ -73,6 +73,10 @@ namespace AasxUaNetServer
         static AdminShellPackageEnv aasxEnv = null;
         static AasxUaServerOptions aasxServerOptions = null;
 
+        public bool IgnoreFurtherErrors = false;
+        public bool AllowFinallyStopped = true;
+        public bool FinallyStopped = false;
+
         public UaServerWrapper(
             bool _autoAccept, int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null,
             AasxUaServerOptions _serverOptions = null)
@@ -93,18 +97,21 @@ namespace AasxUaNetServer
                 Log.Info("will start..........");
                 ConsoleSampleServer().Wait();
                 Console.WriteLine("Server started.");
-                exitCode = ExitCode.ErrorServerRunning;
+                exitCode = ExitCode.Ok;
             }
             catch (Exception ex)
             {
-                Utils.Trace("ServiceResultException:" + ex.Message);
-                Log.Error(ex, "starting server");
-                Console.WriteLine("Exception: {0}", ex.Message);
-                exitCode = ExitCode.ErrorServerException;
-                return;
+                var st = ex.Message;
+                if (!(IgnoreFurtherErrors && (st.Contains("Mindestens ein") || st.Contains("At least"))))
+                {
+                    Utils.Trace("ServiceResultException:" + st);
+                    Log.Error(ex, "starting server");
+                    Console.WriteLine("Exception: {0}", ex.Message);
+                    exitCode = ExitCode.ErrorServerException;
+                    Stop();
+                    FinallyStopped = AllowFinallyStopped;
+                }
             }
-
-            exitCode = ExitCode.Ok;
         }
 
         public void Stop()
@@ -122,6 +129,8 @@ namespace AasxUaNetServer
                     // Stop server and dispose
                     if (_server != null)
                         _server.Stop();
+
+                    FinallyStopped = AllowFinallyStopped;
 
                     Log.Info("End of Server stopping!");
                 }
@@ -156,6 +165,8 @@ namespace AasxUaNetServer
             }
         }
 
+        private static bool _traceHandleAttached = false;
+
         private async Task ConsoleSampleServer()
         {
             ApplicationInstance application = new ApplicationInstance();
@@ -189,34 +200,60 @@ namespace AasxUaNetServer
             }
 
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error /* | Utils.TraceMasks.Information */
-                | Utils.TraceMasks.StartStop /* | Utils.TraceMasks.StackTrace */);
+            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information
+                | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
 
             // attach tracing?
-            Utils.Tracing.TraceEventHandler += (sender, args) =>
+            if (!_traceHandleAttached)
             {
-                if (this.Log != null)
+                _traceHandleAttached = true;
+                Utils.Tracing.TraceEventHandler += (sender, args) =>
                 {
-                    // bad hack
-                    if (args == null)
-                        return;
-                    if (args.TraceMask == 2 || args.TraceMask == 8 || args.TraceMask == 16)
-                        return;
+                    if (this.Log != null)
+                    {
+                        // bad hack
+                        if (args == null)
+                            return;
+                        if (args.TraceMask == Utils.TraceMasks.Information
+                            || args.TraceMask == Utils.TraceMasks.Service
+                            || args.TraceMask == Utils.TraceMasks.ServiceDetail)
+                            return;
 
-                    var st = String.Format(args.Format,
-                        // ReSharper disable once CoVariantArrayConversion
-                        // ReSharper disable once RedundantExplicitArrayCreation
-                        (args.Arguments != null ? args.Arguments : new string[] { "" }));
-                    this.Log.Info("[{0}] {1} {2} {3}",
-                        args.TraceMask, st, args.Message, args.Exception?.Message ?? "-");
-                }
-            };
+                        var st = String.Format(args.Format,
+                            // ReSharper disable once CoVariantArrayConversion
+                            // ReSharper disable once RedundantExplicitArrayCreation
+                            (args.Arguments != null ? args.Arguments : new string[] { "" }));
+
+                        // supports specially knows errors
+                        if (true == args.Exception?.InnerException?.Message?.Contains("libuv"))
+                            return;
+
+                        // suppress more errors?
+                        if (st.Contains("Mindestens ein") || st.Contains("At least"))
+                        {
+                            if (IgnoreFurtherErrors)
+                                return;
+                        }
+
+                        // errors lead to not automatically close window?
+                        if (!IgnoreFurtherErrors && args.TraceMask == Utils.TraceMasks.Error)
+                            AllowFinallyStopped = false;
+
+                        this.Log.Info("[{0}] {1} {2} {3} {4}",
+                            args.TraceMask, st, args.Message, "" + args.Exception?.Message,
+                            "" + args.Exception?.StackTrace);
+                    }
+                };
+            }
 
             // allow stopping after finalizing special jobs
             if (aasxServerOptions != null)
                 aasxServerOptions.FinalizeAction += () =>
                 {
-                    server.Stop();
+                    //// server.Stop();
+                    // changed to the following to close the window, as well
+                    Stop();
+                    IgnoreFurtherErrors = true;
                 };
 
             // start the server.

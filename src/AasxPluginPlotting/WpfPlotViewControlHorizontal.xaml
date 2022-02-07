@@ -6,7 +6,7 @@
              xmlns:scott="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
              xmlns:local="clr-namespace:AasxPluginPlotting"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="600">
+             d:DesignHeight="200" d:DesignWidth="600" Loaded="UserControl_Loaded">
 
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -17,7 +17,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <Grid>
+    <Grid x:Name="TheGrid" Background="LightBlue">
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
             <RowDefinition Height="*"/>
@@ -25,42 +25,68 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
-            <ColumnDefinition Width="24"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"/>
+        <Grid.Resources>
+            <Style x:Key="ToggleButtonStyleHeavy" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Background" Value="LightGray"/>
+                <Style.Triggers>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="BorderBrush" Value="DarkBlue"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+
+        <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
 
         <TextBox x:Name="TextboxInfo" Grid.Row="0" Grid.Column="0" Background="LightBlue"
                  Margin="1" Foreground="#ff303030" FontWeight="Bold" Text="Bla bla"
                  BorderThickness="0"
                  VerticalContentAlignment="Center"/>
 
-        <Button x:Name="ButtonHPlus" Grid.Row="0" Grid.Column="1" Click="Button_Click"
-                ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" 
-                Content="&#x1f83c;&#x1f83e;" FontSize="22" Padding="0,-6,0,0" Margin="1"/>
-        <Button x:Name="ButtonHMinus" Grid.Row="0" Grid.Column="2" Click="Button_Click"
-                ToolTip="Reduce horizontal scale (samples)" Foreground="#ff303030" 
-                Content="&#x1f83e;&#x1f83c;" FontSize="22" Padding="0,-6,0,0" Margin="1"/>
-        <Button x:Name="ButtonVPlus" Grid.Row="0" Grid.Column="3" Click="Button_Click"
-                ToolTip="Enlarge vertical scale (values)" Foreground="#ff303030" 
-                Content="&#x21c5;" FontSize="18" Padding="0,-4,0,0" Margin="1"/>
-        <Button x:Name="ButtonVMinus" Grid.Row="0" Grid.Column="4" Click="Button_Click"
-                ToolTip="Reduce vertical scale (values)" Foreground="#ff303030" 
-                Content="&#x2b7f;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
-        <Button x:Name="ButtonAuto" Grid.Row="0" Grid.Column="5" Click="Button_Click"
-                ToolTip="Auto-synchronize views" Foreground="#ff303030" 
-                Content="&#x2b6e;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
-        <Button x:Name="ButtonLarger" Grid.Row="0" Grid.Column="6" Click="Button_Click"
-                ToolTip="Enlarge plot area" Foreground="#ff303030" 
-                Content="&#x2b77;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
-        <Button x:Name="ButtonSmaller" Grid.Row="0" Grid.Column="7" Click="Button_Click"
-                ToolTip="Reduce plot area" Foreground="#ff303030" 
-                Content="&#x2b78;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+
+            <ToggleButton x:Name="ButtonScaleX" Click="Button_Click" Width="22"
+                          Style="{StaticResource ToggleButtonStyleHeavy}"
+                    ToolTip="Enlarge in X direction for new data" Foreground="#ff303030" 
+                    Content="X" FontSize="18" Padding="0,-4,0,0" Margin="1"/>
+
+            <ToggleButton x:Name="ButtonScaleY" Click="Button_Click" Width="22"
+                          Style="{StaticResource ToggleButtonStyleHeavy}"
+                    ToolTip="Enlarge in Y direction for new data" Foreground="#ff303030" 
+                    Content="Y" FontSize="18" Padding="0,-4,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonHPlus"  Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" 
+                    Content="&#x1f83c;&#x1f83e;" FontSize="22" Padding="0,-6,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonHMinus" Click="Button_Click" Width="22"
+                    ToolTip="Reduce horizontal scale (samples)" Foreground="#ff303030" 
+                    Content="&#x1f83e;&#x1f83c;" FontSize="22" Padding="0,-6,0,0" Margin="1"/>
+            
+            <Button x:Name="ButtonVPlus" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge vertical scale (values)" Foreground="#ff303030" 
+                    Content="&#x21c5;" FontSize="18" Padding="0,-4,0,0" Margin="1"/>
+            
+            <Button x:Name="ButtonVMinus" Click="Button_Click" Width="22"
+                    ToolTip="Reduce vertical scale (values)" Foreground="#ff303030" 
+                    Content="&#x2b7f;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
+            
+            <Button x:Name="ButtonAuto" Click="Button_Click" Width="22"
+                    ToolTip="Auto-synchronize views" Foreground="#ff303030" 
+                    Content="&#x2b6e;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
+            
+            <Button x:Name="ButtonLarger" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge plot area" Foreground="#ff303030" 
+                    Content="&#x2b77;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
+            
+            <Button x:Name="ButtonSmaller" Click="Button_Click" Width="22"
+                    ToolTip="Reduce plot area" Foreground="#ff303030" 
+                    Content="&#x2b78;" FontSize="18"  Padding="0,-2,0,0" Margin="1"/>
+
+        </StackPanel>
     </Grid>
 </UserControl>

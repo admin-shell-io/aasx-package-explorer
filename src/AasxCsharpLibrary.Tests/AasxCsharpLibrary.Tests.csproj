@@ -19,7 +19,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AasCore.Aas3.Package" Version="1.0.0-pre6" />
+    <PackageReference Include="AasCore.Aas3.Package" Version="1.0.0-pre7" />
     <PackageReference Include="NUnit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
   </ItemGroup>

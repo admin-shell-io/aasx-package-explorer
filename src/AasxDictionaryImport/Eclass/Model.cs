@@ -24,6 +24,7 @@ using System.Xml;
 using System.Xml.Linq;
 using AasxDictionaryImport.Model;
 using AasxPackageExplorer;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxDictionaryImport.Eclass

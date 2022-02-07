@@ -9,12 +9,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
 using ClosedXML.Excel;
@@ -33,18 +35,26 @@ namespace AasxPluginExportTable
     public class ExportTableAasEntitiesItem
     {
         public int depth;
+
+        /// <summary>
+        /// This element carries data from either SM or SME.
+        /// </summary>
+        public AdminShell.Referable Parent;
+
         public AdminShell.Submodel sm;
         public AdminShell.SubmodelElement sme;
         public AdminShell.ConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
             int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null,
-            AdminShell.ConceptDescription cd = null)
+            AdminShell.ConceptDescription cd = null,
+            AdminShell.Referable parent = null)
         {
             this.depth = depth;
             this.sm = sm;
             this.sme = sme;
             this.cd = cd;
+            this.Parent = parent;
         }
     }
 
@@ -70,25 +80,31 @@ namespace AasxPluginExportTable
 
         public int Format = 0;
 
-        public int Rows = 1, Cols = 1;
+        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 1;
 
         [JsonIgnore]
-        public int RealRows { get { return 1 + Rows; } }
+        public int RealRowsTop { get { return 1 + RowsTop; } }
+
         [JsonIgnore]
-        public int RealCols { get { return 1 + Rows; } }
+        public int RealRowsBody { get { return 1 + RowsBody; } }
+
+        [JsonIgnore]
+        public int RealCols { get { return 1 + Cols; } }
 
         public bool ReplaceFailedMatches = false;
         public string FailText = "";
 
+        public bool ActInHierarchy = false;
+
         // Note: the records contains elements for 1 + Rows, 1 + Columns fields
-        public List<string> Header = new List<string>();
-        public List<string> Elements = new List<string>();
+        public List<string> Top = new List<string>();
+        public List<string> Body = new List<string>();
 
         public bool IsValid()
         {
-            return Rows >= 1 && Cols >= 1
-                && Header != null && Header.Count >= RealRows * RealCols
-                && Elements != null && Elements.Count >= RealRows * RealCols;
+            return RowsTop >= 1 && RowsBody >= 1 && Cols >= 1
+                && Top != null && Top.Count >= RealRowsTop * RealCols
+                && Body != null && Body.Count >= RealRowsBody * RealCols;
         }
 
         //
@@ -98,19 +114,20 @@ namespace AasxPluginExportTable
         public ExportTableRecord() { }
 
         public ExportTableRecord(
-            int rows, int cols, string name = "", IEnumerable<string> header = null,
+            int rowsTop, int rowsBody, int cols, string name = "", IEnumerable<string> header = null,
             IEnumerable<string> elements = null)
         {
-            this.Rows = rows;
+            this.RowsTop = rowsTop;
+            this.RowsBody = rowsBody;
             this.Cols = cols;
             if (name != null)
                 this.Name = name;
             if (header != null)
                 foreach (var h in header)
-                    this.Header.Add(h);
+                    this.Top.Add(h);
             if (elements != null)
                 foreach (var e in elements)
-                    this.Elements.Add(e);
+                    this.Body.Add(e);
         }
 
         public void SaveToFile(string fn)
@@ -140,7 +157,7 @@ namespace AasxPluginExportTable
         public class CellRecord
         {
             public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
-                Text = "", TextWithHeaders = "";
+                Text = "", TextWithHeaders = "", Width = null;
 
             public CellRecord() { }
 
@@ -150,27 +167,27 @@ namespace AasxPluginExportTable
             }
         }
 
-        public CellRecord GetHeaderCell(int row, int col)
+        public CellRecord GetTopCell(int row, int col)
         {
             var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Header == null || i >= this.Header.Count)
+            if (row < 0 || col < 0 || this.Top == null || i >= this.Top.Count)
                 return null;
-            var cr = new CellRecord(this.Header[i]);
+            var cr = new CellRecord(this.Top[i]);
             cr.TextWithHeaders =
-                this.Header[0] + " " + this.Header[(1 + row) * (1 + this.Cols)] + " " +
-                this.Header[1 + col] + " " + cr.Text;
+                this.Top[0] + " " + this.Top[(1 + row) * (1 + this.Cols)] + " " +
+                this.Top[1 + col] + " " + cr.Text;
             return cr;
         }
 
-        public CellRecord GetElementsCell(int row, int col)
+        public CellRecord GetBodyCell(int row, int col)
         {
             var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Elements == null || i >= this.Elements.Count)
+            if (row < 0 || col < 0 || this.Body == null || i >= this.Body.Count)
                 return null;
-            var cr = new CellRecord(this.Elements[i]);
+            var cr = new CellRecord(this.Body[i]);
             cr.TextWithHeaders =
-                this.Elements[0] + " " + this.Elements[(1 + row) * (1 + this.Cols)] + " " +
-                this.Elements[1 + col] + " " + cr.Text;
+                this.Body[0] + " " + this.Body[(1 + row) * (1 + this.Cols)] + " " +
+                this.Body[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -204,6 +221,7 @@ namespace AasxPluginExportTable
             //
 
             private Regex regexReplacements = null;
+            private Regex regexStop = null;
             private Regex regexCommands = null;
             private Dictionary<string, string> repDict = null;
 
@@ -226,6 +244,11 @@ namespace AasxPluginExportTable
             {
                 if (lss == null)
                     return;
+
+                // entity in total
+                rep(head, "" + lss.ToString());
+
+                // single entities
                 foreach (var ls in lss)
                     repLangStr(head, ls);
             }
@@ -242,7 +265,17 @@ namespace AasxPluginExportTable
                     repListOfLangStr(head + "description", rf.description.langString);
                 rep(head + "elementName", "" + rf.GetElementName());
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
-                rep(head + "parent", "" + ((rf.parent?.idShort != null) ? rf.parent.idShort : "-"));
+
+                if (rf is AdminShell.SubmodelElement rfsme)
+                {
+                    rep(head + "elementShort", "" +
+                        AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                    if (!(rf is AdminShell.Property || rf is AdminShell.SubmodelElementCollection))
+                        rep(head + "elementShort2", "" +
+                            AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                }
+                if (rf is AdminShell.Referable rfpar)
+                    rep(head + "parent", "" + ((rfpar.idShort != null) ? rfpar.idShort : "-"));
             }
 
             private void repModelingKind(string head, AdminShell.ModelingKind k)
@@ -336,6 +369,7 @@ namespace AasxPluginExportTable
                 // init Regex
                 // nice tester: http://regexstorm.net/tester
                 regexReplacements = new Regex(@"%([a-zA-Z0-9.@\[\]]+)%", RegexOptions.IgnoreCase);
+                regexStop = new Regex(@"^(.*?)%stop%(.*)$", RegexOptions.IgnoreCase);
                 regexCommands = new Regex(@"%([A-Za-z0-9-_]+)=(.*?)%", RegexOptions.IgnoreCase);
 
                 // init dictionary
@@ -350,6 +384,7 @@ namespace AasxPluginExportTable
                 if (this.Item != null)
                 {
                     // shortcuts
+                    var par = this.Item.Parent;
                     var sm = this.Item.sm;
                     var sme = this.Item.sme;
                     var cd = this.Item.cd;
@@ -357,6 +392,30 @@ namespace AasxPluginExportTable
                     // general for the item
                     rep("depth", "" + this.Item.depth);
                     rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
+
+                    //-1- {Parent}
+                    if (par is AdminShell.Submodel parsm)
+                    {
+                        var head = "Parent.";
+                        repReferable(head, parsm);
+                        repModelingKind(head, parsm.kind);
+                        repQualifiable(head, parsm.qualifiers);
+                        repMultiplicty(head, parsm.qualifiers);
+                        repIdentifiable(head, parsm);
+                        //-1- {Reference} = {semanticId, isCaseOf, unitId}
+                        repReference(head, "semanticId", parsm.semanticId);
+                    }
+
+                    if (par is AdminShell.SubmodelElement parsme)
+                    {
+                        var head = "Parent.";
+                        repReferable(head, parsme);
+                        repModelingKind(head, parsme.kind);
+                        repQualifiable(head, parsme.qualifiers);
+                        repMultiplicty(head, parsme.qualifiers);
+                        //-1- {Reference} = {semanticId, isCaseOf, unitId}
+                        repReference(head, "semanticId", parsme.semanticId);
+                    }
 
                     //-1- {Referable} = {SM, SME, CD}
                     if (sm != null)
@@ -565,6 +624,12 @@ namespace AasxPluginExportTable
                         this.NumberReplacements++;
                     }
                     else
+                    if (tag == "stop")
+                    {
+                        // do nothing! see below!
+                        ;
+                    }
+                    else
                     {
                         // placeholder not found!
                         if (Record.ReplaceFailedMatches)
@@ -572,6 +637,21 @@ namespace AasxPluginExportTable
                             input = Replace(input, match.Index, match.Length, Record.FailText);
                         }
                     }
+                }
+
+                // special case
+                while (true)
+                {
+                    var matchStop = regexStop.Match(input);
+                    if (!matchStop.Success)
+                        break;
+
+                    var left = matchStop.Groups[1].ToString().Trim();
+                    var right = matchStop.Groups[2].ToString().Trim();
+                    if (left != "")
+                        input = left;
+                    else
+                        input = right;
                 }
 
                 // commit back
@@ -612,6 +692,9 @@ namespace AasxPluginExportTable
                         case "frame":
                             cr.Frame = argtl;
                             break;
+                        case "width":
+                            cr.Width = argtl;
+                            break;
                     }
 
                     // in any case, replace the wohl match!
@@ -625,57 +708,31 @@ namespace AasxPluginExportTable
         // TAB separated
         //
 
-        public bool ExportTabSeparated(string fn, ExportTableAasEntitiesList iterateAasEntities, string tab = "\t")
+        public bool ExportTabSeparated(
+            string fn,
+            List<ExportTableAasEntitiesList> iterateAasEntities,
+            string tab = "\t")
         {
             // access
             if (!IsValid())
                 return false;
 
-
             using (var f = new StreamWriter(fn))
             {
-                // header
-                var proc = new ItemProcessor(this, null);
-                for (int ri = 0; ri < this.Rows; ri++)
+
+                // over entities
+                foreach (var entities in iterateAasEntities)
                 {
-                    var line = "";
-
-                    for (int ci = 0; ci < this.Cols; ci++)
-                    {
-                        // get cell record
-                        var cr = GetHeaderCell(ri, ci);
-
-                        // process text
-                        proc.ProcessCellRecord(cr);
-
-                        // add
-                        if (line != "")
-                            line += tab;
-                        line += cr.Text;
-                    }
-
-                    f.WriteLine(line);
-                }
-
-                // elements
-                foreach (var item in iterateAasEntities)
-                {
-                    // create processing
-                    proc = new ItemProcessor(this, item);
-                    proc.Start();
-                    proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
-
-                    var lines = new List<string>();
-
-                    // all elements
-                    for (int ri = 0; ri < this.Rows; ri++)
+                    // top
+                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                    for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         var line = "";
 
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetElementsCell(ri, ci);
+                            var cr = GetTopCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -686,13 +743,50 @@ namespace AasxPluginExportTable
                             line += cr.Text;
                         }
 
-                        lines.Add(line);
+                        f.WriteLine(line);
                     }
 
-                    // export really?
-                    if (proc.NumberReplacements > 0)
-                        foreach (var line in lines)
-                            f.WriteLine(line);
+                    // elements
+                    foreach (var item in entities)
+                    {
+                        // create processing
+                        proc = new ItemProcessor(this, item);
+                        proc.Start();
+                        proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
+
+                        var lines = new List<string>();
+
+                        // all elements
+                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        {
+                            var line = "";
+
+                            for (int ci = 0; ci < this.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                if (line != "")
+                                    line += tab;
+                                line += cr.Text;
+                            }
+
+                            lines.Add(line);
+                        }
+
+                        // export really?
+                        if (proc.NumberReplacements > 0)
+                            foreach (var line in lines)
+                                f.WriteLine(line);
+                    }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                        f.WriteLine("");
                 }
             }
 
@@ -703,7 +797,7 @@ namespace AasxPluginExportTable
         // LaTex
         //
 
-        public bool ExportLaTex(string fn, ExportTableAasEntitiesList iterateAasEntities)
+        public bool ExportLaTex(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
             if (!IsValid())
@@ -796,10 +890,10 @@ namespace AasxPluginExportTable
             }
         }
 
-        public bool ExportExcel(string fn, ExportTableAasEntitiesList iterateAasEntities)
+        public bool ExportExcel(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (!IsValid() || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
                 return false;
 
             //
@@ -816,48 +910,27 @@ namespace AasxPluginExportTable
             //
 
             int rowIdx = 1;
-            int startRowIdx = rowIdx;
 
-            // header
-            if (true)
+            // over entities
+            foreach (var entities in iterateAasEntities)
             {
-                var proc = new ItemProcessor(this, null);
-                proc.Start();
+                // start
 
-                for (int ri = 0; ri < this.Rows; ri++)
+                int startRowIdx = rowIdx;
+
+                // header
+                if (true)
                 {
-                    for (int ci = 0; ci < this.Cols; ci++)
-                    {
-                        // get cell record
-                        var cr = GetHeaderCell(ri, ci);
-
-                        // process text
-                        proc.ProcessCellRecord(cr);
-
-                        // add
-                        ExportExcel_AppendTableCell(ws, cr, rowIdx + ri, 1 + ci);
-                    }
-                }
-
-                rowIdx += this.Rows;
-            }
-
-            // elements
-            if (true)
-            {
-                foreach (var item in iterateAasEntities)
-                {
-                    // create processing
-                    var proc = new ItemProcessor(this, item);
+                    // in order to access the parent information, take the first entity
+                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
                     proc.Start();
 
-                    // all elements
-                    for (int ri = 0; ri < this.Rows; ri++)
+                    for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         for (int ci = 0; ci < this.Cols; ci++)
                         {
                             // get cell record
-                            var cr = GetElementsCell(ri, ci);
+                            var cr = GetTopCell(ri, ci);
 
                             // process text
                             proc.ProcessCellRecord(cr);
@@ -867,59 +940,106 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    // export really?
-                    if (proc.NumberReplacements > 0)
-                    {
-                        // advance
-                        rowIdx += this.Rows;
-                    }
-                    else
-                    {
-                        // delete this out
-                        var rng = ws.Range(rowIdx, 1, rowIdx + this.Rows - 1, 1 + this.Cols - 1);
-                        rng.Clear();
-                    }
+                    rowIdx += this.RowsTop;
                 }
-            }
 
-            // some modifications on the whole table?
-            if (true)
-            {
-                if (rowIdx > startRowIdx + 1)
+                // elements
+                if (true)
                 {
-                    // do a explicit process of overall table cell
-                    var proc = new ItemProcessor(this, null);
-                    proc.Start();
-                    var cr = GetHeaderCell(0, 0);
-                    proc.ProcessCellRecord(cr);
-
-                    // borders?
-                    if (cr.Frame != null)
+                    foreach (var item in entities)
                     {
-                        var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+                        // create processing
+                        var proc = new ItemProcessor(this, item);
+                        proc.Start();
 
-                        if (cr.Frame == "1")
+                        // all elements
+                        for (int ri = 0; ri < this.RowsBody; ri++)
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            for (int ci = 0; ci < this.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                ExportExcel_AppendTableCell(ws, cr, rowIdx + ri, 1 + ci);
+                            }
                         }
 
-                        if (cr.Frame == "2")
+                        // export really?
+                        if (proc.NumberReplacements > 0)
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            // advance
+                            rowIdx += this.RowsBody;
                         }
-
-                        if (cr.Frame == "3")
+                        else
                         {
-                            rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                            rng.Style.Border.InsideBorder = XLBorderStyleValues.Thick;
+                            // delete this out
+                            var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
+                            rng.Clear();
                         }
                     }
-
-                    // column widths
-                    ws.Columns(1, this.Cols).AdjustToContents();
                 }
+
+                // some modifications on the whole table?
+                if (true)
+                {
+                    if (rowIdx > startRowIdx + 1)
+                    {
+                        // do a explicit process of overall table cell
+                        var proc = new ItemProcessor(this, null);
+                        proc.Start();
+                        var cr = GetTopCell(0, 0);
+                        proc.ProcessCellRecord(cr);
+
+                        // borders?
+                        if (cr.Frame != null)
+                        {
+                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+
+                            if (cr.Frame == "1")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            }
+
+                            if (cr.Frame == "2")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                            }
+
+                            if (cr.Frame == "3")
+                            {
+                                rng.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+                                rng.Style.Border.InsideBorder = XLBorderStyleValues.Thick;
+                            }
+                        }
+
+                        // column widths
+                        ws.Columns(1, this.Cols).AdjustToContents();
+
+                        // custom column width
+                        for (int ci = 0; ci < this.Cols; ci++)
+                        {
+                            // get the cell width from the very first top row
+                            var cr2 = GetTopCell(0, ci);
+                            proc.ProcessCellRecord(cr2);
+                            if (cr2?.Width != null
+                                && double.TryParse(cr2.Width, NumberStyles.Float,
+                                    CultureInfo.InvariantCulture, out var f2)
+                                && f2 > 0)
+                                ws.Column(1 + ci).Width = f2;
+                        }
+
+                    }
+                }
+
+                // leave some lines blank
+
+                rowIdx += Math.Max(0, RowsGap);
             }
 
             //
@@ -1037,7 +1157,7 @@ namespace AasxPluginExportTable
             para.Append(run);
         }
 
-        public bool ExportWord(string fn, ExportTableAasEntitiesList iterateAasEntities)
+        public bool ExportWord(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
             if (!IsValid())
@@ -1052,7 +1172,6 @@ namespace AasxPluginExportTable
                 // see: http://www.ludovicperrichon.com/create-a-word-document-with-openxml-and-c/#table
                 //
 
-
                 // Add a main document part.
                 MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
 
@@ -1064,126 +1183,97 @@ namespace AasxPluginExportTable
                 // Export
                 //
 
-                // make a table
-                Table table = body.AppendChild(new Table());
-
-                // do a process on overall table cells
-                if (true)
+                // over entities
+                foreach (var entities in iterateAasEntities)
                 {
-                    var proc = new ItemProcessor(this, null);
-                    proc.Start();
-                    var cr = GetHeaderCell(0, 0);
-                    proc.ProcessCellRecord(cr);
 
-                    // do some borders?
-                    if (cr?.Frame != null)
+                    // make a table
+                    Table table = body.AppendChild(new Table());
+
+                    // do a process on overall table cells
+                    if (true)
                     {
-                        UInt32Value thickOuter = 6;
-                        UInt32Value thickInner = 6;
-                        if (cr.Frame == "2")
-                            thickOuter = 12;
-                        if (cr.Frame == "3")
+                        var proc = new ItemProcessor(this, null);
+                        proc.Start();
+                        var cr = GetTopCell(0, 0);
+                        proc.ProcessCellRecord(cr);
+
+                        // do some borders?
+                        if (cr?.Frame != null)
                         {
-                            thickOuter = 12;
-                        }
-
-                        var tblProperties = table.AppendChild(new TableProperties());
-                        var tblBorders = tblProperties.AppendChild(new TableBorders());
-                        tblBorders.Append(
-                            new TopBorder()
+                            UInt32Value thickOuter = 6;
+                            UInt32Value thickInner = 6;
+                            if (cr.Frame == "2")
+                                thickOuter = 12;
+                            if (cr.Frame == "3")
                             {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickOuter
-                            });
-                        tblBorders.Append(
-                            new LeftBorder()
-                            {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickOuter
-                            });
-                        tblBorders.Append(
-                            new RightBorder()
-                            {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickOuter
-                            });
-                        tblBorders.Append(
-                            new BottomBorder()
-                            {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickOuter
-                            });
-                        tblBorders.Append(
-                            new InsideHorizontalBorder()
-                            {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickInner
-                            });
-                        tblBorders.Append(
-                            new InsideVerticalBorder()
-                            {
-                                Val = new EnumValue<BorderValues>(BorderValues.Thick),
-                                Color = "000000",
-                                Size = thickInner
-                            });
-                    }
-                }
+                                thickOuter = 12;
+                            }
 
-                // header
-                if (true)
-                {
-                    var proc = new ItemProcessor(this, null);
-                    proc.Start();
-
-                    for (int ri = 0; ri < this.Rows; ri++)
-                    {
-                        // new row
-                        TableRow tr = table.AppendChild(new TableRow());
-
-                        // over cells
-                        for (int ci = 0; ci < this.Cols; ci++)
-                        {
-                            // get cell record
-                            var cr = GetHeaderCell(ri, ci);
-
-                            // process text
-                            proc.ProcessCellRecord(cr);
-
-                            // add
-                            ExportWord_AppendTableCell(tr, cr);
+                            var tblProperties = table.AppendChild(new TableProperties());
+                            var tblBorders = tblProperties.AppendChild(new TableBorders());
+                            tblBorders.Append(
+                                new TopBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickOuter
+                                });
+                            tblBorders.Append(
+                                new LeftBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickOuter
+                                });
+                            tblBorders.Append(
+                                new RightBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickOuter
+                                });
+                            tblBorders.Append(
+                                new BottomBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickOuter
+                                });
+                            tblBorders.Append(
+                                new InsideHorizontalBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickInner
+                                });
+                            tblBorders.Append(
+                                new InsideVerticalBorder()
+                                {
+                                    Val = new EnumValue<BorderValues>(BorderValues.Thick),
+                                    Color = "000000",
+                                    Size = thickInner
+                                });
                         }
                     }
-                }
 
-                // elements
-                if (true)
-                {
-                    foreach (var item in iterateAasEntities)
+                    // header
+                    if (true)
                     {
-                        // create processing
-                        var proc = new ItemProcessor(this, item);
+                        // in order to access the parent information, take the first entity
+                        var proc = new ItemProcessor(this, entities.FirstOrDefault());
                         proc.Start();
 
-                        // remember rows in order to can deleten them later
-                        var newRows = new List<TableRow>();
-
-                        // all elements
-                        for (int ri = 0; ri < this.Rows; ri++)
+                        for (int ri = 0; ri < this.RowsTop; ri++)
                         {
                             // new row
                             TableRow tr = table.AppendChild(new TableRow());
-                            newRows.Add(tr);
 
                             // over cells
                             for (int ci = 0; ci < this.Cols; ci++)
                             {
                                 // get cell record
-                                var cr = GetElementsCell(ri, ci);
+                                var cr = GetTopCell(ri, ci);
 
                                 // process text
                                 proc.ProcessCellRecord(cr);
@@ -1192,19 +1282,59 @@ namespace AasxPluginExportTable
                                 ExportWord_AppendTableCell(tr, cr);
                             }
                         }
+                    }
 
-                        // export really?
-                        if (proc.NumberReplacements > 0)
+                    // elements
+                    if (true)
+                    {
+                        foreach (var item in entities)
                         {
-                            // advance
-                        }
-                        else
-                        {
-                            // delete this out
-                            foreach (var r in newRows)
-                                table.RemoveChild(r);
+                            // create processing
+                            var proc = new ItemProcessor(this, item);
+                            proc.Start();
+
+                            // remember rows in order to can deleten them later
+                            var newRows = new List<TableRow>();
+
+                            // all elements
+                            for (int ri = 0; ri < this.RowsBody; ri++)
+                            {
+                                // new row
+                                TableRow tr = table.AppendChild(new TableRow());
+                                newRows.Add(tr);
+
+                                // over cells
+                                for (int ci = 0; ci < this.Cols; ci++)
+                                {
+                                    // get cell record
+                                    var cr = GetBodyCell(ri, ci);
+
+                                    // process text
+                                    proc.ProcessCellRecord(cr);
+
+                                    // add
+                                    ExportWord_AppendTableCell(tr, cr);
+                                }
+                            }
+
+                            // export really?
+                            if (proc.NumberReplacements > 0)
+                            {
+                                // advance
+                            }
+                            else
+                            {
+                                // delete this out
+                                foreach (var r in newRows)
+                                    table.RemoveChild(r);
+                            }
                         }
                     }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                        body.AppendChild(new Paragraph(new Run(new Text(" "))));
+
                 }
 
                 //

@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxPackageExplorer
@@ -88,7 +89,8 @@ namespace AasxPackageExplorer
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
-                return derefdo is AdminShell.Referable && derefdo is AdminShell.IGetReference;
+                // success implies AdminShell.IGetReference as well
+                return derefdo is AdminShell.Referable;
             }, includeThis: true).FirstOrDefault();
 
             // check, if ve can identify a Referable, to which a symbolic link can be done ..

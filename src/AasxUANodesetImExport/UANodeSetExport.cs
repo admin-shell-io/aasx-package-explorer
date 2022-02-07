@@ -74,6 +74,25 @@ namespace AasxUANodesetImExport
             return InformationModel;
         }
 
+        // MIHO (2021-10-05): added this function in course of bug fixing
+        // see: https://github.com/admin-shell-io/aasx-package-explorer/issues/414
+        public static UANodeSet getInformationModel(Stream fileStream)
+        {
+            UANodeSet InformationModel = new UANodeSet();
+            XmlSerializer serializer = new XmlSerializer(typeof(UANodeSet));
+
+            try
+            {
+                InformationModel = (UANodeSet)serializer.Deserialize(fileStream);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in accessing or XML formatting\n\n"
+                    + ex.ToString());
+            }
+            return InformationModel;
+        }
+
         //Annotations
         //Almost every Method is build the same way:
         //1. Create UANode object and set its parameters
@@ -1005,38 +1024,38 @@ namespace AasxUANodesetImExport
                 CreateReference(
                     "HasProperty",
                     CreateProperty(
-                        concept.GetIEC61360().GetHashCode().ToString(), "BaseVariableType", "Code", "String")));
+                        concept.GetIEC61360()?.GetHashCode().ToString(), "BaseVariableType", "Code", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().dataType, "BaseVariableType", "DataType", "String")));
+                    CreateProperty(concept.GetIEC61360()?.dataType, "BaseVariableType", "DataType", "String")));
 
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().definition, "Definition")));
+                    CreateLangStrContainer(concept.GetIEC61360()?.definition, "Definition")));
             refs.Add(
                 CreateReference(
                     "HasComponent",
-                    CreateLangStrContainer(concept.GetIEC61360().preferredName, "PreferredName")));
+                    CreateLangStrContainer(concept.GetIEC61360()?.preferredName, "PreferredName")));
 
             refs.Add(
                 CreateReference(
                     "HasProperty",
                     CreateProperty(
-                        concept.GetIEC61360().shortName.ToString(), "BaseVariableType", "ShortName", "String")));
+                        concept.GetIEC61360()?.shortName.ToString(), "BaseVariableType", "ShortName", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().symbol, "BaseVariableType", "Symbol", "String")));
+                    CreateProperty(concept.GetIEC61360()?.symbol, "BaseVariableType", "Symbol", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().unit, "BaseVariableType", "Unit", "String")));
+                    CreateProperty(concept.GetIEC61360()?.unit, "BaseVariableType", "Unit", "String")));
             refs.Add(
                 CreateReference(
                     "HasProperty",
-                    CreateProperty(concept.GetIEC61360().valueFormat, "BaseVariableType", "ValueFormat", "String")));
+                    CreateProperty(concept.GetIEC61360()?.valueFormat, "BaseVariableType", "ValueFormat", "String")));
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
@@ -1052,10 +1071,11 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("BaseObjectType"));
 
-            foreach (AdminShellV20.LangStr str in list)
-            {
-                refs.Add(CreateReference("HasProperty", CreateLangStrSet(str.lang, str.str)));
-            }
+            if (list != null)
+                foreach (AdminShellV20.LangStr str in list)
+                {
+                    refs.Add(CreateReference("HasProperty", CreateLangStrSet(str.lang, str.str)));
+                }
 
             ident.References = refs.ToArray();
             root.Add((UANode)ident);
@@ -1139,12 +1159,13 @@ namespace AasxUANodesetImExport
             List<Reference> refs = new List<Reference>();
             refs.Add(CreateHasTypeDefinition("1:AASReferenceType"));
 
-            foreach (AdminShellV20.Key key in _ref.Keys)
-            {
-                refs.Add(
-                    CreateReference(
-                        "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
-            }
+            if (_ref != null)
+                foreach (AdminShellV20.Key key in _ref.Keys)
+                {
+                    refs.Add(
+                        CreateReference(
+                            "HasComponent", CreateKey(key.idType, key.local.ToString(), key.type, key.value)));
+                }
 
             obj.References = refs.ToArray();
             root.Add((UANode)obj);

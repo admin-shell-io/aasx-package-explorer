@@ -10,23 +10,54 @@ Import-Module (Join-Path $PSScriptRoot Common.psm1) -Function `
 
 function Main
 {
-    $artefactsDir = CreateAndGetArtefactsDir
-    $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
-
     Set-Location $PSScriptRoot
 
-    Write-Host "Inspecting the code with inspectcode ..."
+    $artefactsDir = CreateAndGetArtefactsDir
+    $codeInspectionPath = Join-Path $artefactsDir "resharper-code-inspection.xml"
+    New-Item -ItemType Directory -Force -Path "$artefactsDir"|Out-Null
 
     $cachesHome = Join-Path $artefactsDir "inspectcode-caches"
     New-Item -ItemType Directory -Force -Path "$cachesHome"|Out-Null
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
-    & dotnet.exe jb inspectcode `
+    $pathToSolution = "AasxPackageExplorer.sln"
+
+    Write-Host "Inspecting the code with inspectcode ..."
+    Write-Host "* Output goes to: $codeInspectionPath"
+    Write-Host "* Caches home is at: $cachesHome"
+    Write-Host "* The working directory is: $(Get-Location)"
+    Write-Host "* The path to solution is: $pathToSolution"
+
+    # We need to allow for a custom path to InspectCode since dotnet jb command fails on systems
+    # where there are spaces in the paths.
+    if (Test-Path env:INSPECT_CODE_PATH)
+    {
+        Write-Host ( `
+            "* The environment variable INSPECT_CODE_PATH has been defined, " + `
+            "inspecting with it: $($env:INSPECT_CODE_PATH)")
+
+        if ($null -eq (Test-Path $env:INSPECT_CODE_PATH -ErrorAction SilentlyContinue))
+        {
+            throw "Unable to find the specified INSPECT_CODE_PATH: $( $env:INSPECT_CODE_PATH )"
+        }
+
+        & $env:INSPECT_CODE_PATH `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
         '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
-        AasxPackageExplorer.sln
+        "$pathToSolution"
+    }
+    else
+    {
+        Write-Host "* Inspecting the code with dodtnet jb inspectcode"
+
+        & dotnet.exe jb inspectcode `
+            "-o=$codeInspectionPath" `
+            "--caches-home=$cachesHome" `
+            '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
+            "$pathToSolution"
+    }
 
     [xml]$inspection = Get-Content $codeInspectionPath
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,9 +24,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
+using AnyUi;
 using JetBrains.Annotations;
 
 namespace AasxPackageExplorer
@@ -46,7 +50,7 @@ namespace AasxPackageExplorer
         // Public events and properties
         //
 
-        public bool MultiSelect = false;
+        public int MultiSelect = 2;
 
         public event EventHandler SelectedItemChanged = null;
 
@@ -58,17 +62,52 @@ namespace AasxPackageExplorer
         {
             get
             {
-                return treeViewInner.SelectedItem as VisualElementGeneric;
+                if (this.MultiSelect != 2 || _selectedItems == null)
+                    return treeViewInner.SelectedItem as VisualElementGeneric;
+
+                // ok, only return definitve results
+                if (_selectedItems.Count == 1)
+                    return _selectedItems[0];
+
+                return null;
             }
+        }
+
+        public VisualElementGeneric TrySynchronizeToInternalTreeState()
+        {
+            var x = this.SelectedItem;
+            if (x == null && treeViewInner.SelectedItem != null)
+            {
+                x = treeViewInner.SelectedItem as VisualElementGeneric;
+
+                SuppressSelectionChangeNotification(() =>
+                {
+                    SetSelectedState(x, true);
+                });
+            }
+            return x;
         }
 
         public VisualElementGeneric GetSelectedItem()
         {
-            return treeViewInner.SelectedItem as VisualElementGeneric;
+            return this.SelectedItem;
+        }
+
+        public ListOfVisualElementBasic SelectedItems
+        {
+            get
+            {
+                return _selectedItems;
+            }
+        }
+
+        public ListOfVisualElementBasic GetSelectedItems()
+        {
+            return this.SelectedItems;
         }
 
         // Enumerate all the descendants of the visual object.
-        public static void EnumVisual(Visual myVisual, object dataObject)
+        public void EnumVisual(Visual myVisual, object dataObject)
         {
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(myVisual); i++)
             {
@@ -81,6 +120,15 @@ namespace AasxPackageExplorer
                 {
                     tvi.BringIntoView();
                     tvi.IsSelected = true;
+                    // resharper disable SuspiciousTypeConversion.Global
+                    // resharper disable ConditionIsAlwaysTrueOrFalse
+                    // resharper disable HeuristicUnreachableCode
+                    if ((object)tvi is VisualElementGeneric ve)
+                        if (!(_selectedItems.Contains(ve)))
+                            _selectedItems.Add(ve);
+                    // resharper enable SuspiciousTypeConversion.Global
+                    // resharper enable ConditionIsAlwaysTrueOrFalse
+                    // resharper enable HeuristicUnreachableCode
                     tvi.Focus();
                     return;
                 }
@@ -96,8 +144,11 @@ namespace AasxPackageExplorer
                 return;
             // VisualTreeHelper.GetChild(tv1, )
             displayedTreeViewLines[0].IsSelected = false;
+            if (_selectedItems.Contains(displayedTreeViewLines[0]))
+                _selectedItems.Remove(displayedTreeViewLines[0]);
             EnumVisual(treeViewInner, dataObject);
             treeViewInner.UpdateLayout();
+            FireSelectedItem();
         }
 
         /// <summary>
@@ -133,21 +184,63 @@ namespace AasxPackageExplorer
             InitializeComponent();
         }
 
+        //
+        // see: https://stackoverflow.com/questions/3225940/prevent-automatic-horizontal-scroll-in-treeview
+        //
+
+        private bool mSuppressRequestBringIntoView;
+
         private void TreeViewElem_RequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
+            // Alternative (1): not working completely properly
+#if __not_working_completely_properly
+            Alternative 1
             base.BringIntoView();
-
             var scrollViewer = treeViewInner.Template.FindName("_tv_scrollviewer_", treeViewInner) as ScrollViewer;
             if (scrollViewer != null)
                 Dispatcher.BeginInvoke(
                     System.Windows.Threading.DispatcherPriority.Loaded,
                     (Action)(() => scrollViewer.ScrollToLeftEnd()));
+            */
+#endif
+
+            // Alternative (2): seems working fine
+
+            // Ignore re-entrant calls
+            if (mSuppressRequestBringIntoView)
+                return;
+
+            // Cancel the current scroll attempt
+            e.Handled = true;
+
+            // Call BringIntoView using a rectangle that extends into "negative space" to the left of our
+            // actual control. This allows the vertical scrolling behaviour to operate without adversely
+            // affecting the current horizontal scroll position.
+            mSuppressRequestBringIntoView = true;
+
+            TreeViewItem tvi = sender as TreeViewItem;
+            if (tvi != null)
+            {
+                Rect newTargetRect = new Rect(-1000, 0, tvi.ActualWidth + 1000, tvi.ActualHeight);
+                tvi.BringIntoView(newTargetRect);
+            }
+
+            mSuppressRequestBringIntoView = false;
         }
 
-        /// <summary>
-        /// As the SelectedItemChanged event is also fired due to internal operations,
-        /// it is suppressed from time to time.
-        /// </summary>
+        // Correctly handle programmatically selected items
+        private void TreeViewElem_OnSelected(object sender, RoutedEventArgs e)
+        {
+            ((TreeViewItem)sender).BringIntoView();
+            e.Handled = true;
+        }
+
+        //
+        // fix: SelectedItemChanged
+        // As the SelectedItemChanged event is also fired due to internal operations,
+        // it is suppressed from time to time.
+        //
+
         private bool preventSelectedItemChanged = false;
 
         public void DisableSelectedItemChanged()
@@ -157,12 +250,12 @@ namespace AasxPackageExplorer
 
         public void EnableSelectedItemChanged()
         {
-            preventSelectedItemChanged = true;
+            preventSelectedItemChanged = false;
         }
 
         private void TreeViewInner_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (this.MultiSelect)
+            if (this.MultiSelect == 1)
                 return;
 
             if (sender != treeViewInner || preventSelectedItemChanged)
@@ -172,9 +265,17 @@ namespace AasxPackageExplorer
                 SelectedItemChanged(this, e);
         }
 
+        //
+        // further functions
+        //
+
         public void Refresh()
         {
             preventSelectedItemChanged = true;
+            // TODO (MIHO, 2021-11-09): check, if clearing selected items on refresh is required
+#if __old_version_of_code
+            _selectedItems = new ListOfVisualElementBasic();
+#endif
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
             preventSelectedItemChanged = false;
@@ -203,16 +304,48 @@ namespace AasxPackageExplorer
         // Event queuing
         //
 
-        public void PushEvent(PackCntChangeEventData data)
+        private List<AnyUiLambdaActionBase> _eventQueue = new List<AnyUiLambdaActionBase>();
+
+        public void PushEvent(AnyUiLambdaActionBase la)
         {
-            if (displayedTreeViewLines != null)
-                displayedTreeViewLines.PushEvent(data);
+            lock (_eventQueue)
+            {
+                _eventQueue.Add(la);
+            }
         }
 
         public void UpdateFromQueuedEvents()
         {
-            if (displayedTreeViewLines != null)
-                displayedTreeViewLines.UpdateFromQueuedEvents(treeViewLineCache, _lastEditMode);
+            if (displayedTreeViewLines == null)
+                return;
+
+            lock (_eventQueue)
+            {
+                foreach (var lab in _eventQueue)
+                {
+                    if (lab is AnyUiLambdaActionPackCntChange lapcc && lapcc.Change != null)
+                    {
+                        // shortcut
+                        var e = lapcc.Change;
+
+                        // for speed reasons?
+                        if (e.DisableSelectedTreeItemChange)
+                            DisableSelectedItemChanged();
+
+                        displayedTreeViewLines.UpdateByEvent(e, treeViewLineCache);
+
+                        if (e.DisableSelectedTreeItemChange)
+                            EnableSelectedItemChanged();
+                    }
+
+                    if (lab is AnyUiLambdaActionSelectMainObjects labsmo)
+                    {
+                        this.TrySelectMainDataObjects(labsmo.MainObjects);
+                    }
+                }
+
+                _eventQueue.Clear();
+            }
         }
 
         //
@@ -258,7 +391,7 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
-        public bool TrySelectMainDataObject(object dataObject, bool wishExpanded)
+        public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?
             var ve = SearchVisualElementOnMainDataObject(dataObject);
@@ -269,15 +402,27 @@ namespace AasxPackageExplorer
             return TrySelectVisualElement(ve, wishExpanded);
         }
 
-        public bool TrySelectVisualElement(VisualElementGeneric ve, bool wishExpanded)
+        public void SelectSingleVisualElement(VisualElementGeneric ve, bool preventFireItem = false)
+        {
+            if (ve == null)
+                return;
+            ve.IsSelected = true;
+            _selectedItems.Clear();
+            _selectedItems.Add(ve);
+            if (!preventFireItem)
+                FireSelectedItem();
+        }
+
+        public bool TrySelectVisualElement(VisualElementGeneric ve, bool? wishExpanded)
         {
             // access?
             if (ve == null)
                 return false;
 
-            // select
-            ve.IsSelected = true;
-            if (wishExpanded)
+            // select (but no callback!)
+            SelectSingleVisualElement(ve, preventFireItem: true);
+
+            if (wishExpanded == true)
             {
                 // go upward the tree in order to expand, as well
                 var sii = ve;
@@ -323,6 +468,11 @@ namespace AasxPackageExplorer
             }
             else
             {
+                // consider lazy loading
+                if (mem is VisualElementEnvironmentItem memei
+                    && memei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
+                    return false;
+
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
@@ -376,7 +526,8 @@ namespace AasxPackageExplorer
         public void RebuildAasxElements(
             PackageCentral packages,
             PackageCentral.Selector selector,
-            bool editMode = false, string filterElementName = null)
+            bool editMode = false, string filterElementName = null,
+            bool lazyLoadingFirst = false)
         {
             // clear tree
             displayedTreeViewLines.Clear();
@@ -389,16 +540,16 @@ namespace AasxPackageExplorer
                 // generate lines, add
                 displayedTreeViewLines.AddVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
-                    packages.MainItem?.Filename, editMode, expandMode: 1);
+                    packages.MainItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
 
                 // more?
                 if (packages.AuxAvailable &&
                     (selector == PackageCentral.Selector.MainAux
-                     || selector == PackageCentral.Selector.MainAuxFileRepo))
+                        || selector == PackageCentral.Selector.MainAuxFileRepo))
                 {
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
-                        packages.AuxItem?.Filename, editMode, expandMode: 1);
+                        packages.AuxItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // more?
@@ -409,7 +560,8 @@ namespace AasxPackageExplorer
                         fr.PopulateFakePackage(pkg);
 
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
-                        treeViewLineCache, pkg?.AasEnv, pkg, null, editMode, expandMode: 1);
+                        treeViewLineCache, pkg?.AasEnv, pkg,
+                        null, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // may be filter
@@ -464,7 +616,7 @@ namespace AasxPackageExplorer
         // may kick off the selection of multiple items (referring to 2nd function)
         private void TreeViewInner_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (!this.MultiSelect)
+            if (this.MultiSelect != 1)
                 return;
 
             // If clicking on the + of the tree
@@ -482,7 +634,7 @@ namespace AasxPackageExplorer
         // Check done to avoid deselecting everything when clicking to drag
         private void TreeViewInner_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (!this.MultiSelect)
+            if (this.MultiSelect != 1)
                 return;
 
             if (_itemToCheck != null)
@@ -513,7 +665,7 @@ namespace AasxPackageExplorer
         // does the real multi select
         private void SelectedItemChangedHandler(TreeViewItem item)
         {
-            if (!this.MultiSelect)
+            if (this.MultiSelect != 1)
                 return;
 
             ITreeViewSelectable content = (ITreeViewSelectable)item.Header;
@@ -664,5 +816,255 @@ namespace AasxPackageExplorer
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
         }
+
+        public void Test2()
+        {
+            foreach (var it in displayedTreeViewLines)
+            {
+                it.TriggerAnimateUpdate();
+            }
+        }
+
+        private void TreeViewInner_Expanded(object sender, RoutedEventArgs e)
+        {
+            // access and check
+            var tvi = e?.OriginalSource as TreeViewItem;
+            var ve = tvi?.Header as VisualElementGeneric;
+            if (ve == null || !ve.NeedsLazyLoading)
+                return;
+
+            // try execute, may take some time
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
+                displayedTreeViewLines?.ExecuteLazyLoading(ve, forceExpanded: true);
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        /// <summary>
+        /// Tries to expand all items, which aren't currently yet, e.g. because of lazy loading.
+        /// Is found to be a valid pre-requisite in case of lazy loading for 
+        /// <c>SearchVisualElementOnMainDataObject</c>.
+        /// Potentially a expensive operation.
+        /// </summary>
+        public void ExpandAllItems()
+        {
+            if (displayedTreeViewLines == null)
+                return;
+
+            // try execute, may take some time
+            Mouse.OverrideCursor = Cursors.Wait;
+            try
+            {
+                // search (materialized)
+                var candidates = FindAllVisualElement((ve) => ve.NeedsLazyLoading).ToList();
+
+                // susequently approach
+                foreach (var ve in candidates)
+                    displayedTreeViewLines.ExecuteLazyLoading(ve);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "when expanding all visual AASX elements");
+            }
+            finally
+            {
+                Mouse.OverrideCursor = null;
+            }
+        }
+
+        //
+        // Test further method:
+        // https://stackoverflow.com/questions/1163801/wpf-treeview-with-multiple-selection/6681993#6681993
+        //
+
+        private static readonly PropertyInfo IsSelectionChangeActiveProperty
+            = typeof(TreeView).GetProperty
+            (
+                "IsSelectionChangeActive",
+                BindingFlags.NonPublic | BindingFlags.Instance
+            );
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private ListOfVisualElementBasic _selectedItems = new ListOfVisualElementBasic();
+
+        private void FireSelectedItem()
+        {
+            if (!preventSelectedItemChanged && SelectedItemChanged != null)
+                SelectedItemChanged(this, null);
+        }
+
+        private void SuppressSelectionChangeNotification(Action lambda)
+        {
+            // suppress selection change notification
+            // select all selected items
+            // then restore selection change notifications
+            var isSelectionChangeActive =
+              IsSelectionChangeActiveProperty.GetValue(treeViewInner, null);
+
+            IsSelectionChangeActiveProperty.SetValue(treeViewInner, true, null);
+
+            lambda.Invoke();
+
+            IsSelectionChangeActiveProperty.SetValue
+            (
+              treeViewInner,
+              isSelectionChangeActive,
+              null
+            );
+        }
+
+        private void SetSelectedState(VisualElementGeneric ve, bool newState)
+        {
+            // ok?
+            if (ve == null)
+                return;
+
+            // new state?
+            if (newState)
+            {
+                ve.IsSelected = true;
+                if (!_selectedItems.Contains(ve))
+                    _selectedItems.Add(ve);
+            }
+            else
+            {
+                ve.IsSelected = false;
+                if (_selectedItems.Contains(ve))
+                    _selectedItems.Remove(ve);
+
+            }
+        }
+
+        private void TreeViewMutiSelect_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            var treeViewItem = treeViewInner.SelectedItem as VisualElementGeneric;
+            if (treeViewItem == null) return;
+
+            // prevention completely diables behaviour
+            if (preventSelectedItemChanged)
+                return;
+
+            // allow multiple selection
+            var toogleActiveItem = true;
+            // when control key is pressed
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                SuppressSelectionChangeNotification(() =>
+                {
+                    _selectedItems.ForEach(item => item.IsSelected = true);
+                });
+            }
+            else
+            // when shift key is pressed
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                SuppressSelectionChangeNotification(() =>
+                {
+
+                    // make sure active treeViewItem item is in
+                    SetSelectedState(treeViewItem, true);
+
+                    // try check if this gives a homogenous pictur
+                    var nx = _selectedItems.GetIndexedParentInfo();
+                    if (nx != null && nx.SharedParent?.Members != null)
+                    {
+                        for (int i = nx.MinIndex; i <= nx.MaxIndex; i++)
+                            SetSelectedState(nx.SharedParent.Members[i], true);
+                    }
+
+                    toogleActiveItem = false;
+                });
+            }
+            else
+            {
+                // deselect all selected items except the current one
+                _selectedItems.ForEach(item => item.IsSelected = (item == treeViewItem));
+                _selectedItems.Clear();
+            }
+
+            // still toggle active?
+            if (toogleActiveItem)
+            {
+                if (!_selectedItems.Contains(treeViewItem))
+                {
+                    _selectedItems.Add(treeViewItem);
+                }
+                else
+                {
+                    // deselect if already selected
+                    treeViewItem.IsSelected = false;
+                    _selectedItems.Remove(treeViewItem);
+                }
+            }
+
+            // fire event
+            FireSelectedItem();
+        }
+
+        public bool TrySelectVisualElements(ListOfVisualElementBasic ves, bool preventFireItem = false)
+        {
+            // access?
+            if (ves == null)
+                return false;
+
+            // suppressed
+            SuppressSelectionChangeNotification(() =>
+            {
+
+                // deselect all
+                foreach (var si in _selectedItems)
+                    si.IsSelected = false;
+                _selectedItems.Clear();
+
+                // select
+                foreach (var ve in ves)
+                {
+                    if (ve == null)
+                        continue;
+                    ve.IsSelected = true;
+                    _selectedItems.Add(ve);
+                }
+            });
+
+            // fire
+            if (!preventFireItem)
+                FireSelectedItem();
+
+            treeViewInner.UpdateLayout();
+
+            // OK
+            return true;
+        }
+
+        public void TrySelectMainDataObjects(IEnumerable<object> mainObjects, bool preventFireItem = false)
+        {
+            // gather objects
+            var ves = new ListOfVisualElementBasic();
+            if (mainObjects != null)
+                foreach (var mo in mainObjects)
+                {
+                    var ve = SearchVisualElementOnMainDataObject(mo);
+                    if (ve != null)
+                        ves.Add(ve);
+                }
+
+            // select
+            TrySelectVisualElements(ves, preventFireItem);
+
+            // fire event
+            FireSelectedItem();
+        }
+
     }
 }
+
+
+

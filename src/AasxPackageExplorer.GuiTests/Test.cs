@@ -13,6 +13,8 @@ using Retry = FlaUI.Core.Tools.Retry;
 using TestAttribute = NUnit.Framework.TestAttribute;
 using TimeSpan = System.TimeSpan;
 
+// ReSharper disable MergeIntoPattern
+
 namespace AasxPackageExplorer.GuiTests
 {
     public class TestBasic

@@ -19,13 +19,18 @@ using System.Windows.Documents;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xml;
+using AasxIntegrationBase.MiniMarkup;
 using AasxPackageExplorer;
-using AasxWpfControlLibrary.MiniMarkup;
+using AasxPackageLogic;
 
 namespace AasxWpfControlLibrary.WpfControls
 {
     public class MiniMarkupRichTextBox : RichTextBox
     {
+        public delegate void MiniMarkupLinkClickDelegate(MiniMarkupBase markup, string link);
+
+        public event MiniMarkupLinkClickDelegate MiniMarkupLinkClick;
+
         public void SetMarkup(string md)
         {
             this.Document.Blocks.Clear();
@@ -61,9 +66,14 @@ namespace AasxWpfControlLibrary.WpfControls
 
         private object Render(MiniMarkupBase markup)
         {
+            this.IsDocumentEnabled = true;
+            this.IsEnabled = true;
+            this.IsReadOnly = true;
+
             if (markup is MiniMarkupLine line)
             {
                 var p = new Paragraph();
+
                 p.Margin = new Thickness(0);
                 if (line.Children != null)
                     foreach (var ch in line.Children)
@@ -71,10 +81,34 @@ namespace AasxWpfControlLibrary.WpfControls
                         var x = Render(ch);
                         if (x is Run r)
                             p.Inlines.Add(r);
+                        if (x is Hyperlink hl)
+                            p.Inlines.Add(hl);
                     }
                 return p;
             }
+            else
+            if (markup is MiniMarkupLink mml)
+            {
+                var link = new Hyperlink();
+                link.IsEnabled = true;
 
+                try
+                {
+                    link.Inlines.Add("" + mml.Text);
+                    link.NavigateUri = new Uri("" + mml.LinkUri);
+                    link.RequestNavigate += (s, a) =>
+                    {
+                        MiniMarkupLinkClick?.Invoke(markup, mml.LinkUri);
+                    };
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+                return link;
+            }
+            else
             if (markup is MiniMarkupRun run)
             {
                 var txt = run.Text;
@@ -91,10 +125,11 @@ namespace AasxWpfControlLibrary.WpfControls
 
                 return r;
             }
-
+            else
             if (markup is MiniMarkupSequence seq)
             {
                 var s = new Section();
+
                 if (seq.Children != null)
                     foreach (var ch in seq.Children)
                     {

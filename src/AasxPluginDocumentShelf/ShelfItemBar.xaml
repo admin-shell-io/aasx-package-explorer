@@ -35,6 +35,8 @@
                 <ContextMenu x:Key="ContextMenuItem">
                     <MenuItem Header="Edit" Icon="{StaticResource ResourceKey=IconPencil}" Click="MenuItem_Click"/>
                     <MenuItem Header="Delete" Icon="{StaticResource ResourceKey=IconDelete}" Click="MenuItem_Click"/>
+                    <Separator/>
+                    <MenuItem Header="Save file .." Icon="&#x1F4BE;" Click="MenuItem_Click"/>
                 </ContextMenu>
                 <!-- ReSharper enable Xaml.RedundantResource -->
             </Grid.Resources>
@@ -68,7 +70,8 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="24"/>
                         </Grid.ColumnDefinitions>
-                        <Border x:Name="BorderPlaceholder" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Background="LightGray" CornerRadius="3" Margin="2">
+                        <Border x:Name="BorderPlaceholder" Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Background="LightGray" CornerRadius="3" Margin="2"
+                                PreviewMouseMove="DragSource_PreviewMouseMove" PreviewMouseLeftButtonDown="DragSource_PreviewMouseLeftButtonDown">
                             <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="8" TextAlignment="Center">No preview available</TextBlock>
                         </Border>
                         <StackPanel Grid.Row="0" Grid.Column="1" Margin="2" Orientation="Horizontal">

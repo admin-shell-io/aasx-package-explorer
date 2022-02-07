@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using AasxPackageLogic;
 using AdminShellNS;
 
 namespace AasxDictionaryImport
@@ -122,8 +123,7 @@ namespace AasxDictionaryImport
             {
                 identification = new AdminShellV20.Identification(
                         AdminShellV20.Identification.IRI,
-                        AasxPackageExplorer.Options.Curr.GenerateIdAccordingTemplate(
-                            AasxPackageExplorer.Options.Curr.TemplateIdAas)),
+                        AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas))
             };
             env.AdministrationShells.Add(adminShell);
             return adminShell;
@@ -133,7 +133,7 @@ namespace AasxDictionaryImport
         {
             if (context.UnknownReferences.Count > 0)
             {
-                AasxPackageExplorer.Log.Singleton.Info(
+                Log.Singleton.Info(
                     $"Found {context.UnknownReferences.Count} unknown references during import: " +
                     string.Join(", ", context.UnknownReferences));
             }

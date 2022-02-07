@@ -154,6 +154,7 @@ namespace WpfMtpControl
                 throw new Exception("Application instance certificate invalid!");
             }
 
+            // ReSharper disable HeuristicUnreachableCode
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (haveAppCertificate)
             {
@@ -169,11 +170,10 @@ namespace WpfMtpControl
                     CertificateValidator_CertificateValidation);
             }
             else
-            // ReSharper disable once HeuristicUnreachableCode
             {
-                // ReSharper disable once HeuristicUnreachableCode
                 Console.WriteLine("    WARN: missing application certificate, using unsecure connection.");
             }
+            // ReSharper enable HeuristicUnreachableCode
 
             Console.WriteLine("2 - Discover endpoints of {0}.", endpointURL);
             exitCode = AasOpcUaClientStatus.ErrorDiscoverEndpoints;

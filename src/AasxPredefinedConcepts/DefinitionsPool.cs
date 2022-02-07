@@ -114,6 +114,8 @@ namespace AasxPredefinedConcepts
             thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTechnicalDataV11.Static);
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.AasEvents.Static);
+
+            thePool.IndexDefinitions(AasxPredefinedConcepts.ZveiTimeSeriesDataV10.Static);
         }
 
         //

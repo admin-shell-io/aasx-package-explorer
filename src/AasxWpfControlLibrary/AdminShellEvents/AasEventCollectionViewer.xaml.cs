@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,8 +23,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using AasxIntegrationBase.MiniMarkup;
+using AasxIntegrationBaseWpf;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary.PackageCentral;
-using AdminShellEvents;
+using Newtonsoft.Json;
 
 namespace AasxWpfControlLibrary.AdminShellEvents
 {
@@ -42,6 +49,14 @@ namespace AasxWpfControlLibrary.AdminShellEvents
 
         private bool _autoTop = false;
 
+        private IFlyoutProvider _flyout;
+
+        /// <summary>
+        /// Window (handler) which provides flyout control for this control. Is expected to sit in the MainWindow.
+        /// Note: only setter, as direct access from outside shall be redirected to the original source.
+        /// </summary>
+        public IFlyoutProvider FlyoutProvider { set { _flyout = value; } }
+
         //
         // Constructor
         //
@@ -55,7 +70,22 @@ namespace AasxWpfControlLibrary.AdminShellEvents
         {
             DataGridMessages.DataContext = _eventStore;
 
-            TextBlockDetails.SetXaml("<Paragraph><Run>Hallo, world!</Run></Paragraph>");
+            RichTextBoxEvent.SetXaml("<Paragraph><Run>No event selected</Run></Paragraph>");
+
+            TabControlDetail.SelectedItem = TabItemMsgEnvelope;
+            RichTextBoxEvent.MiniMarkupLinkClick += (markup, link) =>
+            {
+                if (markup is MiniMarkupLink mml
+                    && mml.LinkObject is IAasPayloadItem pl)
+                {
+                    // jump to details
+                    TabControlDetail.SelectedItem = TabItemDetail;
+
+                    // set text
+                    RichTextBoxDetails.Document.Blocks.Clear();
+                    RichTextBoxDetails.Document.Blocks.Add(new Paragraph(new Run("" + pl.GetDetailsText())));
+                }
+            };
         }
 
         //
@@ -96,8 +126,9 @@ namespace AasxWpfControlLibrary.AdminShellEvents
         {
             if (DataGridMessages.SelectedItem is AasEventMsgEnvelope msg)
             {
+                TabControlDetail.SelectedItem = TabItemMsgEnvelope;
                 var info = msg.ToMarkup();
-                TextBlockDetails.SetMarkup(info);
+                RichTextBoxEvent.SetMarkup(info);
             }
         }
 
@@ -106,5 +137,101 @@ namespace AasxWpfControlLibrary.AdminShellEvents
             // double click on top row will activate, other row: disable
             _autoTop = DataGridMessages.SelectedIndex == 0;
         }
+
+        public void CommandBinding_ContextMenu(string cmd)
+        {
+            // access
+            if (cmd == null)
+                return;
+            cmd = cmd.ToLower().Trim();
+
+            if (cmd == "clearlist")
+            {
+                _eventStore.Clear();
+                Log.Singleton.Info("Event log cleared.");
+            }
+
+            if (cmd == "copyjson" || cmd == "savejson")
+            {
+                // in both cases, prepare list of events as string
+                var lev = new List<AasEventMsgEnvelope>();
+
+                // try to read selected items
+                foreach (var o in DataGridMessages.SelectedItems)
+                    if (o is AasEventMsgEnvelope ev)
+                        lev.Add(ev);
+
+                // fallback?
+                if (lev.Count < 1)
+                    foreach (var ev in _eventStore)
+                        lev.Add(ev);
+
+                var settings = AasxIntegrationBase.AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                    new[] { typeof(AasEventMsgEnvelope) });
+                settings.TypeNameHandling = TypeNameHandling.Auto;
+                settings.Formatting = Formatting.Indented;
+                var json = JsonConvert.SerializeObject(lev, settings);
+
+                // now decide
+                if (cmd == "copyjson")
+                {
+                    System.Windows.Clipboard.SetText(json);
+                    Log.Singleton.Info("List of all events messages (including payloads) copied to the " +
+                        "system clipboard.");
+                }
+
+                if (cmd == "savejson")
+                {
+                    // prepare dialogue
+                    var outputDlg = new Microsoft.Win32.SaveFileDialog();
+                    outputDlg.Title = "Select JSON file to be saved";
+                    outputDlg.FileName = "new-events.json";
+
+                    outputDlg.DefaultExt = "*.json";
+                    outputDlg.Filter = "JSON AAS event files (*.json)|*.json|All files (*.*)|*.*";
+
+                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.StartFlyover(new EmptyFlyout());
+                    var res = outputDlg.ShowDialog();
+                    if (Options.Curr.UseFlyovers && _flyout != null) _flyout.CloseFlyover();
+                    if (res != true)
+                        return;
+
+                    // OK!
+                    var fn = outputDlg.FileName;
+                    try
+                    {
+                        Log.Singleton.Info($"Saving AAS events to JSON file {fn} ..");
+                        File.WriteAllText(fn, json);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, $"When saving AAS events to JSON file {fn}");
+                    }
+                }
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonDetailsBack)
+            {
+                TabControlDetail.SelectedItem = TabItemMsgEnvelope;
+            }
+
+            if (sender == ButtonOptions)
+            {
+                var cm = DynamicContextMenu.CreateNew();
+
+                cm.Add(new DynamicContextItem("ClearList", "\u2205", "Clear list"));
+                cm.Add(new DynamicContextItem("CopyJson", "\u29c9", "Copy JSON"));
+                cm.Add(new DynamicContextItem("SaveJson", "\U0001f4be", "Save JSON .."));
+
+                cm.Start(sender as Button, (tag) =>
+                {
+                    CommandBinding_ContextMenu(tag);
+                });
+            }
+        }
+
     }
 }

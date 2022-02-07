@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using AnyUi;
 
 namespace AasxIntegrationBase
 {
@@ -51,8 +52,8 @@ namespace AasxIntegrationBase
         /// <param name="buttons">Buttons according to WPF standard messagebox</param>
         /// <param name="image">Image according to WPF standard messagebox</param>
         /// <returns></returns>
-        MessageBoxResult MessageBoxFlyoutShow(
-            string message, string caption, MessageBoxButton buttons, MessageBoxImage image);
+        AnyUiMessageBoxResult MessageBoxFlyoutShow(
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image);
 
         /// <summary>
         /// Returns the window for advanced modal dialogues

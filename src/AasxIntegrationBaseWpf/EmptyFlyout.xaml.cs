@@ -23,18 +23,32 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AnyUi;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase
 {
     public partial class EmptyFlyout : UserControl, IFlyoutControl
     {
-        public event IFlyoutControlClosed ControlClosed;
+        public event IFlyoutControlAction ControlClosed;
 
+        // TODO (MIHO, 2020-12-21): make DiaData non-Nullable
+        public AnyUiDialogueDataEmpty DiaData = new AnyUiDialogueDataEmpty();
 
-        public EmptyFlyout()
+        public EmptyFlyout(string message = null)
         {
             InitializeComponent();
+
+            // init
+            if (message != null)
+                DiaData.Message = message;
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // infos
+            if (DiaData.Message != null)
+                LabelMessage.Content = DiaData.Message;
         }
 
         //
@@ -56,10 +70,6 @@ namespace AasxIntegrationBase
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
             ControlClosed?.Invoke();
-        }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
         }
     }
 }

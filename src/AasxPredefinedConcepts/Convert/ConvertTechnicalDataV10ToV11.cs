@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
+// ReSharper disable MergeIntoPattern
+
 namespace AasxPredefinedConcepts.Convert
 {
     public class ConvertTechnicalDataV10ToV11Provider : ConvertProviderBase
@@ -137,17 +139,19 @@ namespace AasxPredefinedConcepts.Convert
             // delete (old) CDs
             if (deleteOldCDs)
             {
-                smcV10.RecurseOnSubmodelElements(null, null, (state, parents, current) =>
-                {
-                    var sme = current;
-                    if (sme != null && sme.semanticId != null)
-                    {
-                        var cd = package.AasEnv.FindConceptDescription(sme.semanticId);
-                        if (cd != null)
-                            if (package.AasEnv.ConceptDescriptions.Contains(cd))
-                                package.AasEnv.ConceptDescriptions.Remove(cd);
-                    }
-                });
+                sm.RecurseOnSubmodelElements(null, (state, parents, current) =>
+               {
+                   var sme = current;
+                   if (sme != null && sme.semanticId != null)
+                   {
+                       var cd = package.AasEnv.FindConceptDescription(sme.semanticId);
+                       if (cd != null)
+                           if (package.AasEnv.ConceptDescriptions.Contains(cd))
+                               package.AasEnv.ConceptDescriptions.Remove(cd);
+                   }
+                   // recurse
+                   return true;
+               });
             }
 
             // add (all) new CDs?

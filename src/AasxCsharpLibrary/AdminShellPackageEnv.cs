@@ -193,6 +193,18 @@ namespace AdminShellNS
             return rf;
         }
 
+        /// <summary>
+        /// Use this, if <c>DeserializeFromJSON</c> is too tight.
+        /// </summary>
+        public static T DeserializePureObjectFromJSON<T>(string data)
+        {
+            using (var tr = new StringReader(data))
+            {
+                var serializer = BuildDefaultAasxJsonSerializer();
+                var rf = (T)serializer.Deserialize(tr, typeof(T));
+                return rf;
+            }
+        }
     }
 
     /// <summary>
@@ -899,8 +911,11 @@ namespace AdminShellNS
         /// Temporariyl saves & closes package and executes lambda. Afterwards, the package is re-opened
         /// under the same file name
         /// </summary>
-        /// <param name="lambda"></param>
-        public void TemporarilySaveCloseAndReOpenPackage(Action lambda)
+        /// <param name="lambda">Action which is to be executed while the file is CLOSED</param>
+        /// <param name="prefFmt">Format for the saved file</param>
+        public void TemporarilySaveCloseAndReOpenPackage(
+            Action lambda,
+            AdminShellPackageEnv.SerializationFormat prefFmt = AdminShellPackageEnv.SerializationFormat.None)
         {
             // access 
             if (!this.IsOpen)
@@ -911,7 +926,7 @@ namespace AdminShellNS
             try
             {
                 // save (it will be open, still)
-                SaveAs(this.Filename);
+                SaveAs(this.Filename, prefFmt: prefFmt);
 
                 // close
                 _openPackage.Flush();
@@ -1319,7 +1334,6 @@ namespace AdminShellNS
             // get input stream
             using (var input = GetLocalStreamFromPackage(packageUri))
             {
-
                 // generate tempfile name
                 string tempext = System.IO.Path.GetExtension(packageUri);
                 string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);

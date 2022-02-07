@@ -32,5 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\SSIExtension\SSIExtension.csproj" />
   </ItemGroup>
 </Project>

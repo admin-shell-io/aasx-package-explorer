@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasxPluginDocumentShelf;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -23,11 +24,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     public class AasxPlugin : IAasxPluginInterface
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginDocumentShelf.DocumentShelfOptions options =
-            new AasxPluginDocumentShelf.DocumentShelfOptions();
-        private AasxPluginDocumentShelf.ShelfControl shelfControl = null;
+        private LogInstance _log = new LogInstance();
+        private PluginEventStack _eventStack = new PluginEventStack();
+        private DocumentShelfOptions _options =
+            new DocumentShelfOptions();
+        private ShelfControl _shelfControl = null;
 
         public string GetPluginName()
         {
@@ -37,35 +38,37 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginDocumentShelf.DocumentShelfOptions.CreateDefault();
+            _options = DocumentShelfOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
             {
                 var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<
-                        AasxPluginDocumentShelf.DocumentShelfOptions>(
+                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<DocumentShelfOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    _options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public object CheckForLogMessage()
         {
-            return Log.PopLastShortTermPrint();
+            return _log.PopLastShortTermPrint();
         }
 
         public AasxPluginActionDescriptionBase[] ListActions()
         {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(
@@ -117,13 +120,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options.AllowSubmodelSemanticIds != null)
-                    foreach (var x in this.options.AllowSubmodelSemanticIds)
-                        if (sm.semanticId != null && sm.semanticId.Matches(x))
-                        {
-                            found = true;
-                            break;
-                        }
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
+                    sm.semanticId?.GetAsExactlyOneKey()))
+                    found = true;
                 if (!found)
                     return null;
 
@@ -139,16 +139,16 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
                 var newOpt =
-                    Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginDocumentShelf.DocumentShelfOptions>(
+                    Newtonsoft.Json.JsonConvert.DeserializeObject<DocumentShelfOptions>(
                         (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    _options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    _options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -164,17 +164,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && _eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return _eventStack.PopEvent();
             }
 
             if (action == "event-return" && args != null
                 && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
-                && this.shelfControl != null)
+                && _shelfControl != null)
             {
-                this.shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+                _shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
             }
 
             if (action == "get-check-visual-extension")
@@ -194,12 +194,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 // call
-                this.shelfControl = AasxPluginDocumentShelf.ShelfControl.FillWithWpfControls(
-                    Log, args[0], args[1], this.options, this.eventStack, args[2]);
+                _shelfControl = ShelfControl.FillWithWpfControls(
+                    _log, args[0], args[1], _options, _eventStack, args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = this.shelfControl;
+                res.obj = _shelfControl;
                 return res;
             }
 
@@ -233,7 +233,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 else
                 {
-                    sm.semanticId = new AdminShell.SemanticId(options.SemIdDocumentation);
+                    sm.semanticId = new AdminShell.SemanticId(DocuShelfSemanticConfig.Singleton.SemIdDocumentation);
                     sm.idShort = "Documentation";
                 }
 

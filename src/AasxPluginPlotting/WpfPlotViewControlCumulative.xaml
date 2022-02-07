@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="AasxPluginPlotting.WpfPlotViewControlCumulative"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:scott="clr-namespace:ScottPlot;assembly=ScottPlot.WPF"
+             xmlns:local="clr-namespace:AasxPluginPlotting"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="600">
+
+    <!--
+    Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+    Author: Michael Hoffmeister
+
+    This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+    This source code may use other Open Source software components (see LICENSE.txt).
+    -->
+
+    <Grid Background="LightBlue">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="24"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <scott:WpfPlot x:Name="WpfPlotItself" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+        <TextBox x:Name="TextboxInfo" Grid.Row="0" Grid.Column="0" Background="LightBlue"
+                 Margin="1" Foreground="#ff303030" FontWeight="Bold" Text="Bla bla"
+                 BorderThickness="0"
+                 VerticalContentAlignment="Center"/>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
+
+            <Button x:Name="ButtonPrev"  Click="Button_Click" Width="22"
+                    ToolTip="Increase offset to latest sample shown" Foreground="#ff303030" 
+                    Content="&#x25c0;" FontSize="16" Padding="0,-1,0,0" Margin="1"/>
+
+            <TextBox x:Name="TextBoxSamplePos" Text="0" Width="50"
+                     HorizontalContentAlignment="Center" VerticalContentAlignment="Center" KeyDown="TextBoxSamplePos_KeyDown" />
+
+            <Button x:Name="ButtonNext"  Click="Button_Click" Width="22"
+                    ToolTip="Decrease offset to latest sample shown" Foreground="#ff303030" 
+                    Content="&#x25B6;" FontSize="16" Padding="0,-1,0,0" Margin="1,1,10,1"/>
+
+            <Button x:Name="ButtonLabels"  Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" 
+                    Content="&#x1F3F7;" FontSize="14" Padding="0,0,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonValues" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
+                    Content="&#x2211;" FontSize="14" Padding="0,-2,0,0" Margin="1"/>
+
+            <Button x:Name="ButtonPercentage" Click="Button_Click" Width="22"
+                    ToolTip="Enlarge horizontal scale (samples)" Foreground="#ff303030" FontWeight="DemiBold"
+                    Content="&#x25;" FontSize="16" Padding="0,-2,0,0" Margin="1"/>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

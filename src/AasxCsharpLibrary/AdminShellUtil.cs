@@ -428,6 +428,10 @@ namespace AdminShellNS
             if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
                 return;
 
+            // do not dive into enums
+            if (objType.IsEnum)
+                return;
+
             // look at fields, first
             var fields = objType.GetFields();
             foreach (var fi in fields)
@@ -505,5 +509,70 @@ namespace AdminShellNS
                 }
             }
         }
+
+        //
+        // Generation of Ids
+        //
+
+        private static Random MyRnd = new Random();
+
+        public static string GenerateIdAccordingTemplate(string tpl)
+        {
+            // generate a deterministic decimal digit string
+            var decimals = String.Format("{0:ffffyyMMddHHmmss}", DateTime.UtcNow);
+            decimals = new string(decimals.Reverse().ToArray());
+            // convert this to an int
+            if (!Int64.TryParse(decimals, out Int64 decii))
+                decii = MyRnd.Next(Int32.MaxValue);
+            // make an hex out of this
+            string hexamals = decii.ToString("X");
+            // make an alphanumeric string out of this
+            string alphamals = "";
+            var dii = decii;
+            while (dii >= 1)
+            {
+                var m = dii % 26;
+                alphamals += Convert.ToChar(65 + m);
+                dii = dii / 26;
+            }
+
+            // now, "salt" the strings
+            for (int i = 0; i < 32; i++)
+            {
+                var c = Convert.ToChar(48 + MyRnd.Next(10));
+                decimals += c;
+                hexamals += c;
+                alphamals += c;
+            }
+
+            // now, can just use the template
+            var id = "";
+            foreach (var tpli in tpl)
+            {
+                if (tpli == 'D' && decimals.Length > 0)
+                {
+                    id += decimals[0];
+                    decimals = decimals.Remove(0, 1);
+                }
+                else
+                if (tpli == 'X' && hexamals.Length > 0)
+                {
+                    id += hexamals[0];
+                    hexamals = hexamals.Remove(0, 1);
+                }
+                else
+                if (tpli == 'A' && alphamals.Length > 0)
+                {
+                    id += alphamals[0];
+                    alphamals = alphamals.Remove(0, 1);
+                }
+                else
+                    id += tpli;
+            }
+
+            // ok
+            return id;
+        }
+
     }
 }

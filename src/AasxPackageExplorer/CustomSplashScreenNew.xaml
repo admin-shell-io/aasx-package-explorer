@@ -38,10 +38,10 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="1" Grid.Row="0" FontSize="18" FontWeight="Bold">AASX Package Explorer</TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="1" FontSize="12" FontWeight="Bold" Margin="0,4,0,0">Copyright (c) 2018-2020 Festo AG &amp; Co.</TextBlock>
+                <TextBlock x:Name="TextBlockCopyRight" Grid.Column="1" Grid.Row="1" FontSize="12" FontWeight="Bold" Margin="0,4,0,0">Copyright (c) 2018-2021 Festo SE &amp; Co.</TextBlock>
                 <DockPanel Grid.Column="1" Grid.Row="2" Margin="0,4,0,0">
                     <TextBlock FontSize="12" FontWeight="Bold" Margin="0,0,4,0">Authors:</TextBlock>
-                    <TextBlock x:Name="TextBlockAuthors" FontSize="12" FontWeight="Bold" TextWrapping="Wrap">Michael Hoffmeister</TextBlock>
+                    <TextBlock x:Name="TextBlockAuthors" FontSize="12" FontWeight="Bold" TextWrapping="Wrap">Michael Hoffmeister and more</TextBlock>
                 </DockPanel>
 
                 <ScrollViewer  Grid.Column="1" Grid.Row="3" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
