@@ -3,6 +3,8 @@
 @using static AdminShellNS.AdminShellV20;
 @using AnyUi
 @using BlazorUI.Shared
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
 
 @{
 // resharper disable all
@@ -10,6 +12,83 @@
 
 
 @{
+
+    // Evaluate some style attributes
+    string backColor = "";
+    string foreColor = "";
+    if (Element is AnyUiControl ctrl)
+    {
+        if (ctrl.Background != null)
+        {
+            backColor = "rgb(" +
+                ctrl.Background.Color.R + ", " +
+                ctrl.Background.Color.G + ", " +
+                ctrl.Background.Color.B + ")";
+        }
+        if (ctrl.Foreground != null)
+        {
+            foreColor = "rgb(" +
+                ctrl.Foreground.Color.R + ", " +
+                ctrl.Foreground.Color.G + ", " +
+                ctrl.Foreground.Color.B + ")";
+        }
+    }
+    string style = "";
+    if (foreColor != "")
+        style += "color:" + foreColor + ";";
+    if (backColor != "")
+        style += "background-color:" + backColor + ";";
+
+    // "Normal" elements
+
+    if (Element is AnyUiLabel chlb)
+    {
+        chlb.DisplayData = DisplayData;
+        <td><span style="@style">@chlb.Content</span></td>
+    }
+
+    if (Element is AnyUiTextBlock tb)
+    {
+        tb.DisplayData = DisplayData;
+        <td><span>@tb.Text</span></td>
+    }
+
+    if (Element is AnyUiSelectableTextBlock stb)
+    {
+        stb.DisplayData = DisplayData;
+        <td><span>@stb.Text</span></td>
+    }
+
+    if (Element is AnyUiTextBox chtb)
+    {
+        chtb.DisplayData = DisplayData;
+        if (Element is AnyUiHintBubble hb)
+        {
+            if (Session.editMode)
+            {
+                <td><span style="@style">@hb.Text</span></td>
+            }
+        }
+        else
+        {
+            int w = chtb.Text.Length;
+            if (w > 60)
+                w = 60;
+            <td>
+                <span style="@style">
+                    <input size="@w" value="@chtb.Text"
+                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+                </span>
+            </td>
+            @code {
+                private void MyTextInput(AnyUiTextBox chtb, string value)
+                {
+                    chtb.setValueLambda?.Invoke(value);
+                    Program.signalNewData(0, Session.sessionNumber); // same tree, only values changed
+                }
+            }
+        }
+    }
 
     @if (Element is AnyUiButton chbt)
     {
@@ -19,7 +98,7 @@
             // resharper disable once NotAccessedVariable.Compiler
             int i = 0;
         }
-        <td><button style="@Style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
+        <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
         @code {
             private void MyClickButton(AnyUiButton chbt)
             {
@@ -33,6 +112,45 @@
             }
         }
     }
+
+    if (Element is AnyUiCheckBox cb)
+    {
+        cb.DisplayData = DisplayData;
+        <td>
+            <input type="checkbox" value="@cb.IsChecked"
+                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+            @cb.Content
+        </td>
+        @code {
+            private void MyCheck(AnyUiCheckBox cb, string value)
+            {
+                cb.setValueLambda?.Invoke(value.ToLower() == "true");
+            }
+        }
+    }
+
+    if (Element is AnyUiComboBox comb)
+    {
+        comb.DisplayData = DisplayData;
+
+        string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+        <td>
+            <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
+                    @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+                @foreach (var item in comb.Items)
+                {
+                    <option value="@item">@item</option>
+                }
+            </select>
+        </td>
+        @code {
+            private void MyComboSelect(AnyUiComboBox comb, string value)
+            {
+                comb.setValueLambda?.Invoke(value);
+                Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
+            }
+        }
+    }
 }
 
 @code {
@@ -40,7 +158,7 @@
     public AnyUiDisplayDataHtml DisplayData { get; set; }
 
     [Parameter]
-    public string Style { get; set; }
+    public Data.blazorSessionService Session { get; set; }
 
     [Parameter]
     public AnyUiUIElement Element { get; set; }

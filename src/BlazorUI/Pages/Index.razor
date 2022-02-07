@@ -357,32 +357,32 @@
                                                         continue;
                                                     }
 
-                                                    string backColor = "";
-                                                    string foreColor = "";
-                                                    if (ch is AnyUiControl ctrl)
-                                                    {
-                                                        if (ctrl.Background != null)
-                                                        {
-                                                            backColor = "rgb(" +
-                                                                ctrl.Background.Color.R + ", " +
-                                                                ctrl.Background.Color.G + ", " +
-                                                                ctrl.Background.Color.B + ")";
-                                                        }
-                                                        if (ctrl.Foreground != null)
-                                                        {
-                                                            foreColor = "rgb(" +
-                                                                ctrl.Foreground.Color.R + ", " +
-                                                                ctrl.Foreground.Color.G + ", " +
-                                                                ctrl.Foreground.Color.B + ")";
-                                                        }
-                                                    }
-                                                    string style = "";
-                                                    if (foreColor != "")
-                                                        style += "color:" + foreColor + ";";
-                                                    if (backColor != "")
-                                                        style += "background-color:" + backColor + ";";
+                                                    //string backColor = "";
+                                                    //string foreColor = "";
+                                                    //if (ch is AnyUiControl ctrl)
+                                                    //{
+                                                    //    if (ctrl.Background != null)
+                                                    //    {
+                                                    //        backColor = "rgb(" +
+                                                    //            ctrl.Background.Color.R + ", " +
+                                                    //            ctrl.Background.Color.G + ", " +
+                                                    //            ctrl.Background.Color.B + ")";
+                                                    //    }
+                                                    //    if (ctrl.Foreground != null)
+                                                    //    {
+                                                    //        foreColor = "rgb(" +
+                                                    //            ctrl.Foreground.Color.R + ", " +
+                                                    //            ctrl.Foreground.Color.G + ", " +
+                                                    //            ctrl.Foreground.Color.B + ")";
+                                                    //    }
+                                                    //}
+                                                    //string style = "";
+                                                    //if (foreColor != "")
+                                                    //    style += "color:" + foreColor + ";";
+                                                    //if (backColor != "")
+                                                    //    style += "background-color:" + backColor + ";";
 
-                                                    if (ch is AnyUiLabel chlb)
+                                                    @*if (ch is AnyUiLabel chlb)
                                                     {
                                                         chlb.DisplayData = displayData;
                                                         <td><span style="@style">@chlb.Content</span></td>
@@ -398,9 +398,9 @@
                                                     {
                                                         stb.DisplayData = displayData;
                                                         <td><span>@stb.Text</span></td>
-                                                    }
+                                                    }*@
 
-                                                    if (ch is AnyUiTextBox chtb)
+                                                    @*if (ch is AnyUiTextBox chtb)
                                                     {
                                                         chtb.DisplayData = displayData;
                                                         if (ch is AnyUiHintBubble hb)
@@ -429,7 +429,7 @@
                                                                 }
                                                             }
                                                         }
-                                                    }
+                                                    }*@
 
                                                     @*if (ch is AnyUiButton chbt)
                                                     {
@@ -454,9 +454,23 @@
                                                         }
                                                     }*@
 
-                                                    <AnyUiRenderElem DisplayData="@displayData" Style="@style" Element="@ch"/>
+                                                    // special handling
 
-                                                    if (ch is AnyUiCheckBox cb)
+                                                    if (ch is AnyUiComboBox comb)
+                                                    {
+                                                        if (prevCh is AnyUiButton)
+                                                        {
+                                                            newTab = true;
+                                                            prevCh = null;
+                                                            continue;
+                                                        }
+                                                    }
+
+                                                    <AnyUiRenderElem DisplayData="@displayData" 
+                                                                     Session="@bi" 
+                                                                     Element="@ch"/>
+
+                                                    @*if (ch is AnyUiCheckBox cb)
                                                     {
                                                         cb.DisplayData = displayData;
                                                         <td>
@@ -470,9 +484,9 @@
                                                                 cb.setValueLambda?.Invoke(value.ToLower() == "true");
                                                             }
                                                         }
-                                                    }
+                                                    }*@
 
-                                                    if (ch is AnyUiComboBox comb)
+                                                    @*if (ch is AnyUiComboBox comb)
                                                     {
                                                         comb.DisplayData = displayData;
                                                         if (prevCh is AnyUiButton)
@@ -499,7 +513,7 @@
                                                                 Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
                                                             }
                                                         }
-                                                    }
+                                                    }*@
 
                                                     prevCh = ch;
                                                     iChild++;
