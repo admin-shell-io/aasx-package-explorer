@@ -1,0 +1,10 @@
+{
+    "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
+    "PluginPrefer" : "ANYUI",
+    "PluginDll": [
+        {
+            "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
+            "Args": []
+        }
+    ]
+}

@@ -33,9 +33,7 @@ namespace BlazorUI
     public class Item
     {
         public string Text { get; set; }
-        public IEnumerable<Item>
-        Childs
-        { get; set; }
+        public IEnumerable<Item> Childs { get; set; }
         public object parent { get; set; }
         public string Type { get; set; }
         public object Tag { get; set; }
@@ -186,8 +184,58 @@ namespace BlazorUI
             loadAasx(bi, contentFn);
         }
 
+        public static void loadOptionsAndPlugins()
+        {
+            // basically copied from AASX Package Explorer
+            var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+
+            var pathToDefaultOptions = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
+
+            Console.WriteLine("Reading options from: {0} ..", pathToDefaultOptions);
+
+            var optionsInformation = new OptionsInformation();
+            OptionsInformation.ReadJson(pathToDefaultOptions, optionsInformation);
+            Options.ReplaceCurr(optionsInformation);
+
+            Console.WriteLine("Options loaded.");
+
+            // adopt pathes of manually given plugins
+            foreach (var pd in Options.Curr.PluginDll)
+            {
+                if (!System.IO.Path.IsPathRooted(pd.Path))
+                    pd.Path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(exePath), pd.Path);
+            }
+
+            // now try to automatically load plugins from the plugin dir
+            if (Options.Curr.PluginDir != null)
+            {
+                var searchDir = System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(exePath),
+                    Options.Curr.PluginDir);
+
+                Console.WriteLine(
+                    "Searching for the plugins in the plugin directory: {0}", searchDir);
+
+                var pluginDllInfos = Plugins.TrySearchPlugins(searchDir);
+
+                Console.WriteLine(
+                    $"Found {pluginDllInfos.Count} plugin(s) in the plugin directory: {searchDir}");
+
+                Options.Curr.PluginDll.AddRange(pluginDllInfos);
+            }
+
+            // load these and all of those which were specified manually
+            Console.WriteLine(
+                $"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
+
+            Plugins.LoadedPlugins = Plugins.TryActivatePlugins(Options.Curr.PluginDll);
+        }
+
         public static void Main(string[] args)
         {
+            loadOptionsAndPlugins();
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -443,13 +443,26 @@ namespace AnyUi
         public double? FontSize;
     }
 
-    public class AnyUiContentControl : AnyUiControl
+    public class AnyUiContentControl : AnyUiControl, IEnumerateChildren
     {
+        public virtual AnyUiUIElement Content { get; set; }
+
+        public IEnumerable<AnyUiUIElement> GetChildren()
+        {
+            if (Content != null)
+                yield return Content;
+        }
     }
 
-    public class AnyUiDecorator : AnyUiFrameworkElement
+    public class AnyUiDecorator : AnyUiFrameworkElement, IEnumerateChildren
     {
         public virtual AnyUiUIElement Child { get; set; }
+
+        public IEnumerable<AnyUiUIElement> GetChildren()
+        {
+            if (Child != null)
+                yield return Child;
+        }
     }
 
     public interface IEnumerateChildren
@@ -495,6 +508,17 @@ namespace AnyUi
     public class AnyUiWrapPanel : AnyUiPanel
     {
         public AnyUiOrientation? Orientation;
+    }
+
+    public class AnyUiScrollViewer : AnyUiContentControl
+    {
+        public AnyUiScrollBarVisibility? HorizontalScrollBarVisibility;
+        public AnyUiScrollBarVisibility? VerticalScrollBarVisibility;
+
+        /// <summary>
+        /// If true, can be skipped when rendered into a browser
+        /// </summary>
+        public bool SkipForBrowser = false;
     }
 
     public class AnyUiBorder : AnyUiDecorator

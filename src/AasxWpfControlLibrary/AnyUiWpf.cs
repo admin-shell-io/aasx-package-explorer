@@ -327,6 +327,19 @@ namespace AnyUi
                    }
                 }),
 
+                new RenderRec(typeof(AnyUiScrollViewer), typeof(ScrollViewer), (a, b) =>
+                {
+                   if (a is AnyUiScrollViewer cntl && b is ScrollViewer wpf)
+                   {
+                        if (cntl.HorizontalScrollBarVisibility.HasValue)
+                            wpf.HorizontalScrollBarVisibility =
+                                (ScrollBarVisibility)((int) cntl.HorizontalScrollBarVisibility.Value);
+                        if (cntl.VerticalScrollBarVisibility.HasValue)
+                            wpf.VerticalScrollBarVisibility =
+                                (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility.Value);
+                   }
+                }),
+
                 new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b) =>
                 {
                     if (a is AnyUiBorder cntl && b is Border wpf)
@@ -762,10 +775,20 @@ namespace AnyUi
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
-            if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
-                && cntl.Child != null)
             {
-                wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: allowReUse);
+                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+                    && cntl.Child != null)
+                {
+                    wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: allowReUse);
+                }
+            }
+
+            {
+                if (el is AnyUiScrollViewer cntl && dd.WpfElement is ScrollViewer wpf
+                    && cntl.Content != null)
+                {
+                    wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
+                }
             }
 
             // call action

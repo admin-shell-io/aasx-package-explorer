@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AasxPackageLogic;
 using AdminShellNS;
 using BlazorUI;
 using static AdminShellNS.AdminShellV20;
@@ -58,7 +59,27 @@ namespace BlazorUI.Data
         }
         public void buildTree(blazorSessionService bi)
         {
+            // interested plug-ins
+            var _pluginsToCheck = new List<Plugins.PluginInstance>();
+            _pluginsToCheck.Clear();
+            if (Plugins.LoadedPlugins != null)
+                foreach (var lpi in Plugins.LoadedPlugins.Values)
+                {
+                    try
+                    {
+                        var x =
+                            lpi.InvokeAction(
+                                "get-check-visual-extension") as AasxIntegrationBase.AasxPluginResultBaseObject;
+                        if (x != null && (bool)x.obj)
+                            _pluginsToCheck.Add(lpi);
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+                }
 
+            // now iterate for items
             bi.items = new List<Item>();
             for (int i = 0; i < 1; i++)
             {
@@ -75,12 +96,43 @@ namespace BlazorUI.Data
                         {
                             if (sm?.idShort != null)
                             {
+                                // add Submodel
                                 var smItem = new Item();
                                 smItem.envIndex = i;
                                 smItem.Text = sm.idShort;
                                 smItem.Tag = sm;
                                 childs.Add(smItem);
                                 List<Item> smChilds = new List<Item>();
+
+                                // add some plugins?
+                                // check for visual extensions
+                                if (_pluginsToCheck != null)
+                                    foreach (var lpi in _pluginsToCheck)
+                                    {
+                                        try
+                                        {
+                                            var ext = lpi.InvokeAction(
+                                                "call-check-visual-extension", sm)
+                                                as AasxIntegrationBase.AasxPluginResultVisualExtension;
+                                            if (ext != null)
+                                            {
+                                                var piItem = new Item()
+                                                {
+                                                    envIndex = i,
+                                                    Text = "PLUGIN",
+                                                    Tag = sm,
+                                                    Type = "Plugin"
+                                                };
+                                                smChilds.Add(piItem);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                        }
+                                    }
+
+                                // add SMEs
                                 if (sm.submodelElements != null)
                                     foreach (var sme in sm.submodelElements)
                                     {

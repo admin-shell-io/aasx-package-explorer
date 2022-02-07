@@ -46,6 +46,7 @@ namespace AnyUi
             for (int ri = 0; ri < rows; ri++)
             {
                 var gr = new AnyUiRowDefinition();
+                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
                 g.RowDefinitions.Add(gr);
             }
 
@@ -87,6 +88,31 @@ namespace AnyUi
                 AnyUiGrid.SetColumnSpan(sp, colSpan.Value);
             g.Children.Add(sp);
             return (sp);
+        }
+
+        public AnyUiScrollViewer AddSmallScrollViewerTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
+            int? colSpan = null,
+            AnyUiScrollBarVisibility? horizontalScrollBarVisibility = null,
+            AnyUiScrollBarVisibility? verticalScrollBarVisibility = null,
+            bool? skipForBrowser = null)
+        {
+            var sv = new AnyUiScrollViewer();
+            sv.Margin = margin;
+            if (background != null)
+                sv.Background = background;
+            if (horizontalScrollBarVisibility.HasValue)
+                sv.HorizontalScrollBarVisibility = horizontalScrollBarVisibility.Value;
+            if (verticalScrollBarVisibility.HasValue)
+                sv.VerticalScrollBarVisibility = verticalScrollBarVisibility.Value;
+            if (skipForBrowser.HasValue)
+                sv.SkipForBrowser = skipForBrowser.Value;
+            AnyUiGrid.SetRow(sv, row);
+            AnyUiGrid.SetColumn(sv, col);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(sv, colSpan.Value);
+            g.Children.Add(sv);
+            return (sv);
         }
 
         public AnyUiGrid AddSmallGridTo(

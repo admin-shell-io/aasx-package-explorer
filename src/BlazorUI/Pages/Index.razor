@@ -269,6 +269,7 @@
                     var displayContext = new AnyUiDisplayContextHtml(bi);
                     var displayData = new AnyUiDisplayDataHtml(displayContext);
                     bi.helper.context = displayContext;
+
                     if (selectedNode.Tag is AdministrationShell)
                     {
                         bi.stack17 = new AnyUiStackPanel();
@@ -278,6 +279,12 @@
                         if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
+                    else
+                    if (selectedNode.Tag is Submodel && selectedNode.Type == "Plugin")
+                    {
+                        ;
+                    }
+                    else
                     if (selectedNode.Tag is Submodel)
                     {
                         bi.stack17 = new AnyUiStackPanel();
@@ -288,6 +295,7 @@
                         if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
+                    else
                     if (selectedNode.Tag is SubmodelElement sme)
                     {
                         bi.stack17 = new AnyUiStackPanel();
@@ -423,7 +431,7 @@
                                                         }
                                                     }
 
-                                                    if (ch is AnyUiButton chbt)
+                                                    @*if (ch is AnyUiButton chbt)
                                                     {
                                                         chbt.DisplayData = displayData;
                                                         if (chbt.Content == "Delete")
@@ -444,7 +452,9 @@
                                                                 AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
                                                             }
                                                         }
-                                                    }
+                                                    }*@
+
+                                                    <AnyUiRenderElem DisplayData="@displayData" Style="@style" Element="@ch"/>
 
                                                     if (ch is AnyUiCheckBox cb)
                                                     {

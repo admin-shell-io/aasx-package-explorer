@@ -1,0 +1,48 @@
+﻿@page "/test"
+@using AdminShellNS
+@using static AdminShellNS.AdminShellV20;
+@using AnyUi
+@using BlazorUI.Shared
+
+@{
+// resharper disable all
+}
+
+
+@{
+
+    @if (Element is AnyUiButton chbt)
+    {
+        chbt.DisplayData = DisplayData;
+        if (chbt.Content == "Delete")
+        {
+            // resharper disable once NotAccessedVariable.Compiler
+            int i = 0;
+        }
+        <td><button style="@Style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
+        @code {
+            private void MyClickButton(AnyUiButton chbt)
+            {
+                if (chbt.SpecialAction is AnyUiSpecialActionContextMenu cntlcm)
+                {
+                    AnyUi.AnyUiDisplayContextHtml.specialActionContextMenuHtml(chbt, cntlcm);
+                    return;
+                }
+                // chbt.setValueLambda?.Invoke(chbt.Content);
+                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(chbt, chbt.Content);
+            }
+        }
+    }
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element { get; set; }
+
+}
