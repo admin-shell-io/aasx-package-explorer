@@ -153,6 +153,7 @@ namespace AasxPackageExplorer
         {
             public bool scrollingPanel = true;
             public bool showDataPanel = true;
+            public bool useInnerGrid = false;
         }
 
         // TODO (MIHO, 2020-12-24): check if required
@@ -454,6 +455,11 @@ namespace AasxPackageExplorer
                             Log.Singleton.Error(ex, 
                                 $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
                         }
+
+                        // show no panel nor scroll
+                        renderHints.scrollingPanel = false;
+                        renderHints.showDataPanel = false;
+                        renderHints.useInnerGrid = true;
                     }
                     else
                     {
@@ -577,9 +583,21 @@ namespace AasxPackageExplorer
             {
                 // rendering
                 theMasterPanel.Children.Clear();
-                var spwpf = _displayContext.GetOrCreateWpfElement(stack);
+                UIElement spwpf = null;
+                if (renderHints.useInnerGrid
+                    && stack?.Children != null
+                    && stack.Children.Count == 1
+                    && stack.Children[0] is AnyUiGrid grid)
+                {
+                    spwpf = _displayContext.GetOrCreateWpfElement(grid);
+                }
+                else
+                {
+                    spwpf = _displayContext.GetOrCreateWpfElement(stack);
+                    DockPanel.SetDock(spwpf, Dock.Top);
+                }
                 _helper.ShowLastHighlights();
-                DockPanel.SetDock(spwpf, Dock.Top);
+                
                 theMasterPanel.Children.Add(spwpf);
 
                 // register key shortcuts

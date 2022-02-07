@@ -111,11 +111,70 @@ namespace AasxPluginGenericForms
             _currentFormInst.PresetInstancesBasedOnSource(_updateSourceElements);
             _currentFormInst.outerEventStack = _eventStack;
 
-            // set background
-            view.Background = AnyUiBrushes.LightGray;
+            // bring it to the panel            
+            RenderFormInst(view, uitk, _currentFormInst);
+        }
 
-            // bring it to the panel
-            _currentFormInst.RenderAnyUi(view, uitk);
+        protected void RenderFormInst (
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+            FormInstanceSubmodel sm)
+        {
+            // make an outer grid, very simple grid of two rows: header & body
+            var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 1, colWidths: new[] { "*" }));
+            outer.RowDefinitions[2].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+
+            // at top, make buttons for the general form
+            var header = uitk.AddSmallGridTo(outer, 0, 0, 1, cols: 5, colWidths: new[] { "*", "#", "#", "#", "#" });
+
+            header.Margin = new AnyUiThickness(0);
+            header.Background = AnyUiBrushes.LightBlue;
+
+            uitk.AddSmallBasicLabelTo(header, 0, 0, margin: new AnyUiThickness(8, 6, 0, 6),
+                foreground: AnyUiBrushes.DarkBlue,
+                fontSize: 1.5f,
+                setBold: true,
+                content: $"Edit");
+
+            uitk.AddSmallButtonTo(header, 0, 1,  
+                margin: new AnyUiThickness(2), setHeight: 21,
+                padding: new AnyUiThickness(2, 0, 2, 0),
+                content: "Fix missing CDs ..");
+
+            uitk.AddSmallBasicLabelTo(header, 0, 2,
+                foreground: AnyUiBrushes.DarkBlue,
+                margin: new AnyUiThickness(4,0,4,0),
+                verticalAlignment: AnyUiVerticalAlignment.Center,
+                verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                content: "|");
+            
+            uitk.AddSmallButtonTo(header, 0, 3,
+                margin: new AnyUiThickness(2), setHeight: 21,
+                padding: new AnyUiThickness(2, 0, 2, 0),
+                content: "Cancel");
+
+            uitk.AddSmallButtonTo(header, 0, 4,
+                margin: new AnyUiThickness(2,2,4,2), setHeight: 21,
+                padding: new AnyUiThickness(2, 0, 2, 0),
+                content: "Update to AAS");
+
+            // small spacer
+            var space = uitk.AddSmallBasicLabelTo(outer, 1, 0, 
+                fontSize: 0.3f,
+                content: "", background: AnyUiBrushes.White);
+
+            // add the body, a scroll viewer
+            var scroll = uitk.AddSmallScrollViewerTo(outer, 2, 0, 
+                horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
+                verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
+                skipForBrowser: true);
+
+            // need a stack panel to add inside
+            var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
+            scroll.Content = inner;
+
+            // render the innerts of the scroll viewer
+            inner.Background = AnyUiBrushes.LightGray;
+            _currentFormInst.RenderAnyUi(inner, uitk);
         }
 
         #endregion
@@ -150,9 +209,8 @@ namespace AasxPluginGenericForms
 
             // ok, re-assign panel and re-display
             _panel = newPanel;
-            _panel.Children.Clear();
-            _panel.Background = AnyUiBrushes.LightGray;
-            _currentFormInst.RenderAnyUi(_panel, _uitk);
+            _panel.Children.Clear();            
+            RenderFormInst(_panel, _uitk, _currentFormInst);
         }
 
         #endregion
