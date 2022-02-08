@@ -1,0 +1,117 @@
+﻿@page "/test2"
+@using AdminShellNS
+@using static AdminShellNS.AdminShellV20;
+@using AnyUi
+@using BlazorUI.Shared
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+
+@{
+    // resharper disable all
+}
+
+
+@{
+
+    @* Render the table *@
+    <table @attributes="@TableAttributes" style="width: 100%;">
+        <thead>
+            <tr>
+                @for (int ci = 0; ci < _numCol; ci++)
+                {
+                    <th style="@GetColHeadStyle(ci)">@ci</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                @for (int ri = 0; ri < _numRow; ri++)
+                {
+                    <tr>
+                        @for (int ci = 0; ci < _numCol; ci++)
+                        {
+                            <td  style="@GetColHeadStyle(ci)">@ri , @ci</td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    protected AnyUiGrid _grid = null;
+
+    protected List<string> _colHeadStyles = new List<string>();
+    protected List<string> _colCellStyles = new List<string>();
+
+    [Parameter]
+    public AnyUiUIElement Element
+    {
+        get { return _grid; }
+        set
+        {
+            _grid = value as AnyUiGrid;
+            if (_grid == null || _grid.RowDefinitions == null || _grid.ColumnDefinitions == null)
+                return;
+
+            // prepare simple grid dimensions
+            _numRow = _grid.RowDefinitions.Count();
+            _numCol = _grid.ColumnDefinitions.Count();
+
+            // try to assess all column width with star
+            var sumOfStars = 0.0;
+            foreach (var cd in _grid.ColumnDefinitions)
+                if (cd?.Width?.Type == AnyUiGridUnitType.Star)
+                    sumOfStars += cd.Width.Value;
+            sumOfStars = Math.Max(sumOfStars, 1.0);
+
+            _colHeadStyles = new List<string>();
+            _colCellStyles = new List<string>();
+            foreach (var cd in _grid.ColumnDefinitions)
+            {
+                var chs = "";
+                var ccs = "white-space: nowrap;border: 1px solid black;";
+
+                if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
+                    chs = $"width:{cd.Width.Value}px;";
+                if (cd.Width?.Type == AnyUiGridUnitType.Star)
+                    chs = $"width:{Math.Floor(100.0 * cd.Width.Value / sumOfStars)}%;";
+                if (cd.Width?.Type == AnyUiGridUnitType.Auto)
+                    chs = $"";
+
+                _colHeadStyles.Add(chs);
+                _colCellStyles.Add(ccs);
+            }
+
+            ;
+        }
+    }
+
+    protected string GetColHeadStyle(int col)
+    {
+        if (_colHeadStyles == null || col < 0 || col >= _colHeadStyles.Count)
+            return "";
+        return _colHeadStyles[col];
+    }
+
+    protected string GetColCellStyle(int col)
+    {
+        if (_colCellStyles == null || col < 0 || col >= _colCellStyles.Count)
+            return "";
+        return _colCellStyles[col];
+    }
+
+    protected int _numRow { get; set; }
+    protected int _numCol { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
+}
