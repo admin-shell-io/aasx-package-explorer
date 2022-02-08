@@ -3,6 +3,7 @@
 @using static AdminShellNS.AdminShellV20;
 @using AnyUi
 @using BlazorUI.Shared
+@using BlazorUI.Pages
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
 
@@ -38,6 +39,15 @@
         style += "color:" + foreColor + ";";
     if (backColor != "")
         style += "background-color:" + backColor + ";";
+
+    // elements with children
+
+    if (Element is AnyUiGrid grid)
+    {
+        <AnyUiRenderGrid DisplayData="@DisplayData" 
+                         Session="@Session" 
+                         Element="@Element" />
+    }
 
     // "Normal" elements
 

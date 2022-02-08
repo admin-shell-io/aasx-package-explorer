@@ -4,6 +4,7 @@
 @*using BlazorUI*@
 @using AnyUi
 @using BlazorUI.Shared
+@using BlazorUI.Pages 
 @*using System*@
 @*using System.Net;*@
 @inject BlazorUI.Data.AASService SubmodelService
@@ -251,8 +252,8 @@
             </div>
         </div>
     </div>
-    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky;padding:10px">
-        <div class="sticky-top" style="word-wrap:break-word">
+    <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky;padding:10px;width:100%;">
+        <div class="sticky-top" style="word-wrap: break-word; width: 100%;">
             @{
                 if (selectedNode != null && selectedNode.Tag != null)
                 {
@@ -325,7 +326,7 @@
                             while (newTab)
                             {
                                 newTab = false;
-                                <table>
+                                <table style="width:100%;">
                                     <tr>
                                         @{
                                             do
@@ -347,7 +348,7 @@
                                                     else
                                                         ch = topCh;
 
-                                                    if (ch is AnyUiPanel chp)
+                                                    if (ch is AnyUiPanel chp && !(ch is AnyUiGrid))
                                                     {
                                                         uipStack.Push(uiPanel, iChild);
 
