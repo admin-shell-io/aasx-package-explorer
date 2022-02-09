@@ -487,6 +487,7 @@ namespace AnyUi
                 foreach (var child in Children)
                     yield return child;
         }
+
     }
 
     public class AnyUiGrid : AnyUiPanel
@@ -498,6 +499,21 @@ namespace AnyUi
         public static void SetRowSpan(AnyUiUIElement el, int value) { if (el != null) el.GridRowSpan = value; }
         public static void SetColumn(AnyUiUIElement el, int value) { if (el != null) el.GridColumn = value; }
         public static void SetColumnSpan(AnyUiUIElement el, int value) { if (el != null) el.GridColumnSpan = value; }
+
+        public AnyUiUIElement GetChildAt(int row, int col)
+        {
+            if (Children == null || RowDefinitions == null || ColumnDefinitions == null
+                || row < 0 || row >= RowDefinitions.Count
+                || col < 0 || col >= ColumnDefinitions.Count)
+                return null;
+
+            foreach (var ch in Children)
+                if (ch.GridRow.HasValue && ch.GridRow.Value == row
+                    && ch.GridColumn.HasValue && ch.GridColumn.Value == col)
+                    return ch;
+
+            return null;
+        }
     }
 
     public class AnyUiStackPanel : AnyUiPanel

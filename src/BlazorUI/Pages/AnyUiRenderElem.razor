@@ -8,7 +8,7 @@
 @inject BlazorUI.Data.blazorSessionService bi
 
 @{
-// resharper disable all
+    // resharper disable all
 }
 
 
@@ -44,10 +44,27 @@
 
     if (Element is AnyUiGrid grid)
     {
-        <AnyUiRenderGrid DisplayData="@DisplayData" 
-                         Session="@Session" 
-                         Element="@Element" />
+        <AnyUiRenderGrid DisplayData="@DisplayData"
+                         Session="@Session"
+                         Element="@grid" />
     }
+    else
+    if (Element is AnyUiWrapPanel wrap)
+    {
+        <span>wp</span>
+        <AnyUiRenderWrapPanel DisplayData="@DisplayData"
+                              Session="@Session"
+                              Element="@wrap" />
+    }
+    else
+    if (Element is AnyUiStackPanel stack)
+    {
+        <span>wp</span>
+        <AnyUiRenderStackPanel DisplayData="@DisplayData"
+                               Session="@Session"
+                               Element="@stack" />
+    }
+
 
     // "Normal" elements
 
@@ -65,6 +82,9 @@
 
     if (Element is AnyUiSelectableTextBlock stb)
     {
+        if (stb.Text == "Buffer:")
+            ;
+
         stb.DisplayData = DisplayData;
         <td><span>@stb.Text</span></td>
     }

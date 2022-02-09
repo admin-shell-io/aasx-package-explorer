@@ -1,0 +1,56 @@
+﻿@page "/test4"
+@using AdminShellNS
+@using static AdminShellNS.AdminShellV20;
+@using AnyUi
+@using BlazorUI.Shared
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+
+@{
+// resharper disable all
+}
+
+@{
+
+    @* Render the table. For the time being, ignore Orientation and stack always horzintally in one cell. *@
+    <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">
+        <tr>
+            <td>
+                @if (_panel?.Children != null)
+                    foreach (var ch in _panel.Children)
+                    {
+                        <AnyUiRenderElem DisplayData="@DisplayData"
+                                         Session="@Session"
+                                         Element="@ch" />
+                    }
+            </td>
+        </tr>
+    </table>
+
+}
+
+@code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> PanelAttributes { get; set; }
+
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    protected AnyUiWrapPanel _panel = null;
+
+    [Parameter]
+    public AnyUiWrapPanel Element
+    {
+        get { return _panel; }
+        set
+        {
+            _panel = value;
+            if (_panel == null)
+                return;
+        }
+    }
+
+}

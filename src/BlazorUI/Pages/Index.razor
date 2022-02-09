@@ -348,7 +348,9 @@
                                                     else
                                                         ch = topCh;
 
-                                                    if (ch is AnyUiPanel chp && !(ch is AnyUiGrid))
+                                                    if (ch is AnyUiPanel chp 
+                                                        && !(ch is AnyUiGrid)
+                                                        && !(ch is AnyUiWrapPanel))
                                                     {
                                                         uipStack.Push(uiPanel, iChild);
 

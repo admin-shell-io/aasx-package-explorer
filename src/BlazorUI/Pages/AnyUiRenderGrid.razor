@@ -14,12 +14,14 @@
 @{
 
     @* Render the table *@
-    <table @attributes="@TableAttributes" style="width: 100%;">
+    <table @attributes="@TableAttributes" style="width: 100%; border: 1px solid black;">
         <thead>
             <tr>
                 @for (int ci = 0; ci < _numCol; ci++)
                 {
-                    <th style="@GetColHeadStyle(ci)">@ci</th>
+                    <th style="@GetColHeadStyle(ci)">
+                        @ci
+                    </th>
                 }
             </tr>
         </thead>
@@ -30,7 +32,15 @@
                     <tr>
                         @for (int ci = 0; ci < _numCol; ci++)
                         {
-                            <td  style="@GetColHeadStyle(ci)">@ri , @ci</td>
+                            <td style="@GetColCellStyle(ci)">
+                                @{ var ch = GetChildAt(ri, ci); }
+                                @if (ch != null)
+                                {
+                                    <AnyUiRenderElem DisplayData="@DisplayData"
+                                                     Session="@Session"
+                                                     Element="@ch" />
+                                }
+                            </td>
                         }
                     </tr>
                 }
@@ -41,6 +51,9 @@
 }
 
 @code {
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
+
     [Parameter]
     public AnyUiDisplayDataHtml DisplayData { get; set; }
 
@@ -112,6 +125,9 @@
     protected int _numRow { get; set; }
     protected int _numCol { get; set; }
 
-    [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> TableAttributes { get; set; }
+    protected AnyUiUIElement GetChildAt(int row, int col)
+    {
+        return _grid?.GetChildAt(row, col);
+    }
+
 }
