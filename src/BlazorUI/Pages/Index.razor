@@ -311,8 +311,11 @@
 
                     if (view)
                     {
-                        AnyUiPanel topPanel = bi.stack17;
-                        Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
+                        
+
+
+                        @*AnyUiPanel topPanel = bi.stack17;
+                            Program.AnyUiPanelEntryStack uipStack = new Program.AnyUiPanelEntryStack();
 
                         foreach (AnyUiUIElement topCh in topPanel.Children)
                         {
@@ -358,7 +361,7 @@
                                                         iChild = 0;
                                                         iChildCount = uiPanel.Children.Count;
                                                         continue;
-                                                    }
+                                                    }*@
 
                                                     //string backColor = "";
                                                     //string foreColor = "";
@@ -457,21 +460,21 @@
                                                         }
                                                     }*@
 
-                                                    // special handling
+                        // special handling
 
-                                                    if (ch is AnyUiComboBox comb)
-                                                    {
-                                                        if (prevCh is AnyUiButton)
-                                                        {
-                                                            newTab = true;
-                                                            prevCh = null;
-                                                            continue;
-                                                        }
-                                                    }
+                        //if (ch is AnyUiComboBox comb)
+                        //{
+                        //    if (prevCh is AnyUiButton)
+                        //    {
+                        //        newTab = true;
+                        //        prevCh = null;
+                        //        continue;
+                        //    }
+                        //}
 
                                                     <AnyUiRenderElem DisplayData="@displayData" 
                                                                      Session="@bi" 
-                                                                     Element="@ch"/>
+                                                                     Element="@bi.stack17"/>
 
                                                     @*if (ch is AnyUiCheckBox cb)
                                                     {
@@ -518,14 +521,14 @@
                                                         }
                                                     }*@
 
-                                                    prevCh = ch;
+                                                    @*prevCh = ch;
                                                     iChild++;
                                                 }
                                             }
                                             while (!newTab && uipStack.getIndex() > 0);
                                         }
                                     </tr>
-                                </table>
+                                </table>*@
                             }
                         }
                     }
