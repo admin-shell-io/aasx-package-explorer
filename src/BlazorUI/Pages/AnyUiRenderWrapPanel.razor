@@ -21,6 +21,7 @@
                     {
                         <AnyUiRenderElem DisplayData="@DisplayData"
                                          Session="@Session"
+                                         Parent="@Element"
                                          Element="@ch" />
                     }
             </td>
@@ -40,6 +41,9 @@
     public Data.blazorSessionService Session { get; set; }
 
     protected AnyUiWrapPanel _panel = null;
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
 
     [Parameter]
     public AnyUiWrapPanel Element

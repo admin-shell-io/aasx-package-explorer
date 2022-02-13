@@ -157,6 +157,14 @@ namespace AnyUi
         {
             solidColorBrush = new AnyUiColor(c);
         }
+
+        public string HtmlRgb()
+        {
+            return "rgb(" +
+                solidColorBrush.R + ", " +
+                solidColorBrush.G + ", " +
+                solidColorBrush.B + ")";
+        }
     }
 
     public class AnyUiBrushes
@@ -206,6 +214,13 @@ namespace AnyUi
             Right = right;
             Bottom = bottom;
         }
+
+        public bool AllEqual =>
+            Left == Top
+            && Left == Right
+            && Left == Bottom;
+
+        public bool AllZero => AllEqual && Left == 0.0;
     }
 
     public enum AnyUiVisibility : byte
@@ -434,13 +449,15 @@ namespace AnyUi
         public object Tag = null;
     }
 
-    public class AnyUiControl : AnyUiFrameworkElement
+    public class AnyUiControl : AnyUiFrameworkElement, IGetBackground
     {
         public AnyUiBrush Background = null;
         public AnyUiBrush Foreground = null;
         public AnyUiVerticalAlignment? VerticalContentAlignment;
         public AnyUiHorizontalAlignment? HorizontalContentAlignment;
         public double? FontSize;
+
+        public AnyUiBrush GetBackground() => Background;
     }
 
     public class AnyUiContentControl : AnyUiControl, IEnumerateChildren
@@ -470,7 +487,12 @@ namespace AnyUi
         IEnumerable<AnyUiUIElement> GetChildren();
     }
 
-    public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren
+    public interface IGetBackground
+    {
+        AnyUiBrush GetBackground();
+    }
+
+    public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren, IGetBackground
     {
         public AnyUiBrush Background;
         public List<AnyUiUIElement> Children = new List<AnyUiUIElement>();
@@ -488,6 +510,7 @@ namespace AnyUi
                     yield return child;
         }
 
+        public AnyUiBrush GetBackground() => Background;
     }
 
     public class AnyUiGrid : AnyUiPanel
@@ -514,6 +537,51 @@ namespace AnyUi
 
             return null;
         }
+
+        public (int, int) GetMaxRowCol()
+        {
+            var maxRow = 0;
+            var maxCol = 0;
+            if (Children != null)
+                foreach (var ch in Children)
+                {
+                    if (ch.GridRow.HasValue)
+                    {
+                        var r = ch.GridRow.Value;
+                        if (ch.GridRowSpan.HasValue)
+                            r += -1 + ch.GridRowSpan.Value;
+                        if (r > maxRow)
+                            maxRow = r;
+                    }
+
+                    if (ch.GridColumn.HasValue)
+                    {
+                        var c = ch.GridColumn.Value;
+                        if (ch.GridColumnSpan.HasValue)
+                            c += -1 + ch.GridColumnSpan.Value;
+                        if (c > maxCol)
+                            maxCol = c;
+                    }
+                }
+            return (maxRow, maxCol);
+        }
+
+        public void FixRowColDefs()
+        {
+            var (maxRow, maxCol) = GetMaxRowCol();
+
+            if (RowDefinitions == null)
+                RowDefinitions = new List<AnyUiRowDefinition>();
+            while (RowDefinitions.Count < (1 + maxRow))
+                RowDefinitions.Add(
+                    new AnyUiRowDefinition() { Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto) });
+
+            if (ColumnDefinitions == null)
+                ColumnDefinitions = new List<AnyUiColumnDefinition>();
+            while (ColumnDefinitions.Count < (1 + maxRow))
+                ColumnDefinitions.Add(
+                    new AnyUiColumnDefinition() { Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto) });
+        }
     }
 
     public class AnyUiStackPanel : AnyUiPanel
@@ -537,7 +605,7 @@ namespace AnyUi
         public bool SkipForBrowser = false;
     }
 
-    public class AnyUiBorder : AnyUiDecorator
+    public class AnyUiBorder : AnyUiDecorator, IGetBackground
     {
         public AnyUiBrush Background = null;
         public AnyUiThickness BorderThickness;
@@ -545,6 +613,8 @@ namespace AnyUi
         public AnyUiThickness Padding;
 
         public bool IsDropBox = false;
+
+        public AnyUiBrush GetBackground() => Background;
     }
 
     public class AnyUiLabel : AnyUiContentControl
@@ -577,7 +647,7 @@ namespace AnyUi
         public bool TextAsHyperlink = false;
     }
 
-    public class AnyUiHintBubble : AnyUiTextBox
+    public class AnyUiHintBubble : AnyUiTextBlock
     {
     }
 

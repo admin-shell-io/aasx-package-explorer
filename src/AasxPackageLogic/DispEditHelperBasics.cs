@@ -224,6 +224,10 @@ namespace AasxPackageLogic
             gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
             g.ColumnDefinitions.Add(gc1);
 
+            var gr1 = new AnyUiRowDefinition();
+            gr1.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+            g.RowDefinitions.Add(gr1);
+
             var auxButton = repo != null && auxButtonTitle != null && auxButtonLambda != null;
             if (auxButton)
             {
@@ -1113,6 +1117,7 @@ namespace AasxPackageLogic
                     colDescs.Add("#");
 
                 var g2 = AddSmallGrid(1, 7 + presetNo, colDescs.ToArray());
+                g2.HorizontalAlignment = AnyUiHorizontalAlignment.Right;
                 AnyUiGrid.SetRow(g2, 0);
                 AnyUiGrid.SetColumn(g2, 1);
                 AnyUiGrid.SetColumnSpan(g2, 7);
@@ -1263,7 +1268,7 @@ namespace AasxPackageLogic
                 for (int i = 0; i < keys.Count; i++)
                     if (repo == null)
                     {
-                        // lang
+                        // type
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 1,
                             padding: new AnyUiThickness(2, 0, 0, 0),
@@ -2056,6 +2061,7 @@ namespace AasxPackageLogic
 
             // show!
             var bubble = new AnyUiHintBubble();
+            bubble.FontSize = 0.8f;
             bubble.Margin = new AnyUiThickness(2, 4, 2, 0);
             bubble.Text = string.Join("\r\n", textsToShow);
             if (highestSev == HintCheck.Severity.High)

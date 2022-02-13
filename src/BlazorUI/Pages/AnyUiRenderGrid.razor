@@ -7,14 +7,26 @@
 @inject BlazorUI.Data.blazorSessionService bi
 
 @{
-    // resharper disable all
+// resharper disable all
 }
 
 
 @{
 
-    @* Render the table *@
-    <table @attributes="@TableAttributes" style="width: 100%; border: 1px solid black;">
+@* Render the table *@
+
+
+var tablestyle = new StylePile("width: 100%; border: 1px solid black;");
+if ((Parent is AnyUiWrapPanel pwp && pwp.Orientation == AnyUiOrientation.Horizontal)
+     || (Parent is AnyUiStackPanel psp && psp.Orientation == AnyUiOrientation.Horizontal))
+{
+    tablestyle -= "width";
+    tablestyle += "display: inline-table";
+}
+
+<table @attributes="@TableAttributes" style="@tablestyle">
+    @if (Debug)
+    {
         <thead>
             <tr>
                 @for (int ci = 0; ci < _numCol; ci++)
@@ -25,28 +37,41 @@
                 }
             </tr>
         </thead>
-        <tbody>
-            @{
-                @for (int ri = 0; ri < _numRow; ri++)
-                {
-                    <tr>
-                        @for (int ci = 0; ci < _numCol; ci++)
+    }
+    <tbody>
+        @{
+            @for (int ri = 0; ri < _numRow; ri++)
+            {
+                <tr>
+                    @for (int ci = 0; ci < _numCol; ci++)
+                    {
+
+                        var ch = GetChildAt(ri, ci); 
+                        if (ch != null)
                         {
-                            <td style="@GetColCellStyle(ci)">
-                                @{ var ch = GetChildAt(ri, ci); }
-                                @if (ch != null)
-                                {
-                                    <AnyUiRenderElem DisplayData="@DisplayData"
-                                                     Session="@Session"
-                                                     Element="@ch" />
-                                }
+                            var colspan = 1;
+                            if (ch.GridColumnSpan.HasValue && ch.GridColumnSpan.Value > 1)
+                                colspan = ch.GridColumnSpan.Value;
+
+                            <td style="@GetCellStyle(ri, ci)" colspan="@colspan">
+                                <AnyUiRenderElem DisplayData="@DisplayData"
+                                                 Session="@Session"
+                                                 Parent="@Element"
+                                                 Element="@ch" />
                             </td>
+
+                            ci += (colspan - 1);
                         }
-                    </tr>
-                }
+                        else
+                        {
+                            <td/>
+                        }
+                    }
+                </tr>
             }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
 }
 
@@ -66,14 +91,24 @@
     protected List<string> _colCellStyles = new List<string>();
 
     [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
     public AnyUiUIElement Element
     {
         get { return _grid; }
         set
         {
             _grid = value as AnyUiGrid;
-            if (_grid == null || _grid.RowDefinitions == null || _grid.ColumnDefinitions == null)
+            if (_grid?.Children == null || _grid.RowDefinitions == null || _grid.ColumnDefinitions == null)
                 return;
+
+            if (_grid.Children.Count > 0 && _grid.Children[0] is AnyUiSelectableTextBlock stb
+                && stb.Text == "semanticId:")
+                ;
+
+            // try fix?
+            _grid.FixRowColDefs();
 
             // prepare simple grid dimensions
             _numRow = _grid.RowDefinitions.Count();
@@ -84,7 +119,9 @@
             foreach (var cd in _grid.ColumnDefinitions)
                 if (cd?.Width?.Type == AnyUiGridUnitType.Star)
                     sumOfStars += cd.Width.Value;
-            sumOfStars = Math.Max(sumOfStars, 1.0);
+
+            // make sure to have a weight > 0.0 for balancing single columns
+            var starWeight = Math.Max(sumOfStars, 1.0);
 
             _colHeadStyles = new List<string>();
             _colCellStyles = new List<string>();
@@ -96,12 +133,21 @@
                 if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
                     chs = $"width:{cd.Width.Value}px;";
                 if (cd.Width?.Type == AnyUiGridUnitType.Star)
-                    chs = $"width:{Math.Floor(100.0 * cd.Width.Value / sumOfStars)}%;";
+                    chs = $"width:{Math.Floor(100.0 * cd.Width.Value / starWeight)}%;";
                 if (cd.Width?.Type == AnyUiGridUnitType.Auto)
                     chs = $"";
 
                 _colHeadStyles.Add(chs);
                 _colCellStyles.Add(ccs);
+            }
+
+            // if there is absolutely no star in the table, we have to introduce one!
+            // this will allow the "auto" columns to stick together left or right
+            if (sumOfStars < 0.001)
+            {
+                _numCol++;
+                _colHeadStyles.Add("width:100%;");
+                _colCellStyles.Add(";border: 1px dashed green");
             }
 
             ;
@@ -115,11 +161,26 @@
         return _colHeadStyles[col];
     }
 
-    protected string GetColCellStyle(int col)
+    protected StylePile GetCellStyle(int row, int col)
     {
-        if (_colCellStyles == null || col < 0 || col >= _colCellStyles.Count)
-            return "";
-        return _colCellStyles[col];
+        if (_colCellStyles == null
+            || row < 0 || row >= _numRow
+            || col < 0 || col >= _colCellStyles.Count)
+            return new StylePile();
+
+        // column style yes .. now as style pile
+        var sp = new StylePile(_colCellStyles[col]);
+
+        // attach attributes "lend" from the child?
+        var ch = GetChildAt(row, col);
+        if (ch != null)
+        {
+            if (ch is AnyUi.IGetBackground igb)
+                sp.Add("background-color", igb.GetBackground()?.HtmlRgb(), doNotSetIfNull: true);
+        }
+
+        // ok, back
+        return sp;
     }
 
     protected int _numRow { get; set; }
@@ -129,5 +190,7 @@
     {
         return _grid?.GetChildAt(row, col);
     }
+
+    protected bool Debug = false;
 
 }
