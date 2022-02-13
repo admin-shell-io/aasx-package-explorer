@@ -15,120 +15,167 @@
 @{
 
     // Evaluate some style attributes
-    string backColor = "";
-    string foreColor = "";
+
+    var style = new StylePile();
+
     if (Element is AnyUiControl ctrl)
     {
-        if (ctrl.Background != null)
-        {
-            backColor = "rgb(" +
-                ctrl.Background.Color.R + ", " +
-                ctrl.Background.Color.G + ", " +
-                ctrl.Background.Color.B + ")";
-        }
-        if (ctrl.Foreground != null)
-        {
-            foreColor = "rgb(" +
-                ctrl.Foreground.Color.R + ", " +
-                ctrl.Foreground.Color.G + ", " +
-                ctrl.Foreground.Color.B + ")";
-        }
+        style.Add("color", ctrl.Foreground?.HtmlRgb(), doNotSetIfNull: true);
+        style.Add("background-color", ctrl.Background?.HtmlRgb(), doNotSetIfNull: true);
     }
-    string style = "";
-    if (foreColor != "")
-        style += "color:" + foreColor + ";";
-    if (backColor != "")
-        style += "background-color:" + backColor + ";";
 
     // elements with children
 
     if (Element is AnyUiGrid grid)
     {
+        if (grid.Children.Count > 0 && grid.Children[0] is AnyUiSelectableTextBlock stb2
+            && stb2.Text == "semanticId:")
+            ;
+
         <AnyUiRenderGrid DisplayData="@DisplayData"
                          Session="@Session"
+                         Parent="@Parent"
                          Element="@grid" />
     }
     else
     if (Element is AnyUiWrapPanel wrap)
     {
-        <span>wp</span>
+        @*<span>wp</span>*@
         <AnyUiRenderWrapPanel DisplayData="@DisplayData"
                               Session="@Session"
+                              Parent="@Parent"
                               Element="@wrap" />
     }
     else
     if (Element is AnyUiStackPanel stack)
     {
-        <span>wp</span>
+        @*<span>sp</span>*@
         <AnyUiRenderStackPanel DisplayData="@DisplayData"
                                Session="@Session"
+                               Parent="@Parent"
                                Element="@stack" />
     }
 
 
     // "Normal" elements
 
-    if (Element is AnyUiLabel chlb)
+    if (Element is AnyUiHintBubble hb)
     {
-        chlb.DisplayData = DisplayData;
-        <td><span style="@style">@chlb.Content</span></td>
-    }
+        if (Session.editMode)
+        {
 
-    if (Element is AnyUiTextBlock tb)
-    {
-        tb.DisplayData = DisplayData;
-        <td><span>@tb.Text</span></td>
-    }
+            // outer style
+            style.SetSpecifics(
+                padding: hb.Padding,
+                textWrapping: hb.TextWrapping,
+                fontSizeRel: hb.FontSize,
+                fontWeight: hb.FontWeight);
 
+            style.Set("color", hb.Background?.HtmlRgb(), add: true, doNotSetIfNull: true);
+            
+            // inner style (pure text)
+            var innerstyle = new StylePile();
+            innerstyle.Add("color", hb.Foreground?.HtmlRgb(), doNotSetIfNull: true);
+
+            // element
+            <div class="hintbox sb1" style="@style">
+                <span style="@innerstyle">@hb.Text</span>
+            </div>
+        }
+    }
+    else
     if (Element is AnyUiSelectableTextBlock stb)
     {
         if (stb.Text == "Buffer:")
             ;
 
         stb.DisplayData = DisplayData;
-        <td><span>@stb.Text</span></td>
+
+        style.SetSpecifics(
+            padding: stb.Padding,
+            textWrapping: stb.TextWrapping,
+            fontSizeRel: stb.FontSize,
+            fontWeight: stb.FontWeight);
+
+        if (stb.TextAsHyperlink)
+        {
+            <a href="@stb.Text" style="@style">@stb.Text</a>
+        }
+        else
+        {
+            <span style="@style">@stb.Text</span>
+        }
+    }
+    else
+    if (Element is AnyUiTextBlock tb)
+    {
+        tb.DisplayData = DisplayData;
+
+        style.SetSpecifics(
+            padding: tb.Padding,
+            textWrapping: tb.TextWrapping,
+            fontSizeRel: tb.FontSize,
+            fontWeight: tb.FontWeight);
+
+        <span style="@style">@tb.Text</span>
+    }
+    else
+    if (Element is AnyUiLabel chlb)
+    {
+        chlb.DisplayData = DisplayData;
+
+        style.SetSpecifics(
+            padding: chlb.Padding,
+            fontSizeRel: chlb.FontSize,
+            fontWeight: chlb.FontWeight);
+
+        <span style="@style">@chlb.Content</span>
     }
 
     if (Element is AnyUiTextBox chtb)
     {
         chtb.DisplayData = DisplayData;
-        if (Element is AnyUiHintBubble hb)
+
+        //int w = chtb.Text.Length;
+        //if (w > 60)
+        //    w = 60;
+        // size="@w"
+
+        if (Parent is AnyUiGrid)
         {
-            if (Session.editMode)
+            style += "width: 100%";
+            style += "box-sizing: border-box";
+        }
+
+        <input style="@style" value="@chtb.Text"
+                @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
+
+        @code {
+            private void MyTextInput(AnyUiTextBox chtb, string value)
             {
-                <td><span style="@style">@hb.Text</span></td>
+                chtb.setValueLambda?.Invoke(value);
+                Program.signalNewData(0, Session.sessionNumber); // same tree, only values changed
             }
-        }
-        else
-        {
-            int w = chtb.Text.Length;
-            if (w > 60)
-                w = 60;
-            <td>
-                <span style="@style">
-                    <input size="@w" value="@chtb.Text"
-                           @onchange="@((ChangeEventArgs __e) => MyTextInput(chtb, __e.Value.ToString()))" />
-                </span>
-            </td>
-            @code {
-                private void MyTextInput(AnyUiTextBox chtb, string value)
-                {
-                    chtb.setValueLambda?.Invoke(value);
-                    Program.signalNewData(0, Session.sessionNumber); // same tree, only values changed
-                }
-            }
-        }
+        }        
     }
 
     @if (Element is AnyUiButton chbt)
     {
         chbt.DisplayData = DisplayData;
-        if (chbt.Content == "Delete")
+
+        style.SetSpecifics(
+            padding: chbt.Padding,
+            fontSizeRel: chbt.FontSize);
+
+        if (Parent is AnyUiGrid)
         {
-            // resharper disable once NotAccessedVariable.Compiler
-            int i = 0;
+            style += "width: 100%";
+            style += "box-sizing: border-box";
+
+            style.SetMinMaxWidth(Element);
         }
-        <td><button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button></td>
+
+        <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
         @code {
             private void MyClickButton(AnyUiButton chbt)
             {
@@ -146,11 +193,11 @@
     if (Element is AnyUiCheckBox cb)
     {
         cb.DisplayData = DisplayData;
-        <td>
-            <input type="checkbox" value="@cb.IsChecked"
-                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
-            @cb.Content
-        </td>
+
+        <input type="checkbox" value="@cb.IsChecked"
+               @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+        @cb.Content
+
         @code {
             private void MyCheck(AnyUiCheckBox cb, string value)
             {
@@ -163,16 +210,31 @@
     {
         comb.DisplayData = DisplayData;
 
-        string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-        <td>
-            <select class="form-control selectpicker" value="@comb.Text" style="width:@w"
-                    @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
-                @foreach (var item in comb.Items)
-                {
-                    <option value="@item">@item</option>
-                }
-            </select>
-        </td>
+        style.SetSpecifics(
+            padding: comb.Padding,
+            fontSizeRel: comb.FontSize);
+
+        if (Parent is AnyUiGrid)
+        {
+            style += "width: 100%";
+            style += "box-sizing: border-box";
+
+            style.SetMinMaxWidth(Element);
+        }
+        else
+        {
+            string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+            style += "width:@w";
+        }
+
+        <select class="form-control selectpicker" value="@comb.Text" style="@style"
+                @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
+            @foreach (var item in comb.Items)
+            {
+                <option value="@item">@item</option>
+            }
+        </select>
+
         @code {
             private void MyComboSelect(AnyUiComboBox comb, string value)
             {
@@ -191,6 +253,34 @@
     public Data.blazorSessionService Session { get; set; }
 
     [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
     public AnyUiUIElement Element { get; set; }
 
 }
+
+<style>
+    .hintbox {
+        width: 100%;
+        margin: 5px auto;
+        padding: 5px;
+        text-align: left;
+        font-weight: normal;
+        font-family: arial;
+        position: relative;
+    }
+
+    .sb1:before {
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        border-left: 10px solid;
+        border-right: 10px solid transparent;
+        border-top: 10px solid;
+        border-bottom: 10px solid transparent;
+        left: 19px;
+        bottom: -19px;
+    }
+</style>

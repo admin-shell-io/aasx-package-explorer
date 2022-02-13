@@ -59,6 +59,8 @@ namespace AnyUi
         {
             _context = context;
         }
+
+        public double GetScale() => 1.3; 
     }
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {

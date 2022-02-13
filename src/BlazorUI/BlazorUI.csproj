@@ -34,6 +34,10 @@
     <None Include="BlazorUI.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="StylePile.cs">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StylePile.txt</LastGenOutput>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +59,15 @@
     <None Update="start-server.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="StylePile.txt">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StylePile.cs</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

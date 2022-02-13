@@ -25,6 +25,7 @@
                         {
                             <AnyUiRenderElem DisplayData="@DisplayData"
                                              Session="@Session"
+                                             Parent="@Element"
                                              Element="@ch" />
                         }
                 </td>
@@ -35,19 +36,13 @@
     @if (_panel != null && _panel.Orientation == AnyUiOrientation.Vertical)
     {
         @* Render the STACK VERTICALLY *@
-        <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">
-            <thead>
-                <tr>
-                    <th>
-                        0
-                    </th>
-                </tr>
-            </thead>
+        <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">            
             <tbody>
                 @{
                     @if (_panel?.Children != null)
                         foreach (var ch in _panel.Children)
                         {
+                            ;
                             <tr>
                                 <td>
                                     <AnyUiRenderElem DisplayData="@DisplayData"
@@ -71,6 +66,9 @@
 
     [Parameter]
     public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
 
     protected AnyUiStackPanel _panel = null;
 
