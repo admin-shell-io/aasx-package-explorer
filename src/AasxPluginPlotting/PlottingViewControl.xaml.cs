@@ -1729,6 +1729,7 @@ namespace AasxPluginPlotting
                 // this loop iterates through it and adds the data to the time series plot. Otherwise, if no
                 // SubmodelCollections were found (count = 0), it will look one level deeper and check if elements
                 // from type SubmodelElementCollection are found there, adding them to the plot afterwards too.
+                // resharper disable once PossibleMultipleEnumeration
                 if (smcAllValues.Count() != 0)
                 {
                     // find segements
