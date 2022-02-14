@@ -1722,9 +1722,10 @@ namespace AasxPluginPlotting
                 tsd.Args = PlotArguments.Parse(smcts.HasQualifierOfType("TimeSeries.Args")?.value);
 
                 var tssReference = pcts.CD_TimeSeriesSegment.GetReference();
-                var smcAllValues = smcts.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
+                var smcAllValues = smcts.value.
+                    FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
 
-                // If we have a SubmodelCollection where the TimeSeries data is at the properties level (such as source type),
+                // If we have a SubmodelCollection where the TimeSeries data is at the properties level
                 // this loop iterates through it and adds the data to the time series plot. Otherwise, if no
                 // SubmodelCollections were found (count = 0), it will look one level deeper and check if elements
                 // from type SubmodelElementCollection are found there, adding them to the plot afterwards too.
@@ -1742,7 +1743,8 @@ namespace AasxPluginPlotting
                     {
                         if (v.submodelElement is AdminShell.SubmodelElementCollection sme)
                         {
-                            smcAllValues = sme.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
+                            smcAllValues = sme.value.
+                                FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
                             // find segements
                             foreach (var smcseg in smcAllValues)
                             {
