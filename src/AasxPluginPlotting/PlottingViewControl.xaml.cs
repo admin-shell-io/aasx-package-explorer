@@ -1732,7 +1732,8 @@ namespace AasxPluginPlotting
                 // resharper disable once PossibleMultipleEnumeration
                 if (smcAllValues.Count() != 0)
                 {
-                    // find segements
+                    // find segments
+                    // resharper disable once PossibleMultipleEnumeration
                     foreach (var smcseg in smcAllValues)
                     {
                         TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
