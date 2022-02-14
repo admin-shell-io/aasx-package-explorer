@@ -855,8 +855,8 @@ MIHO,
 
 ## AasxPluginPlotting\PlottingViewControl.xaml.cs
 
-[Line 1957, column 21](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPluginPlotting/PlottingViewControl.xaml.cs#L1957
+[Line 1985, column 21](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPluginPlotting/PlottingViewControl.xaml.cs#L1985
 ), 
 MIHO,
 2021-11-09
