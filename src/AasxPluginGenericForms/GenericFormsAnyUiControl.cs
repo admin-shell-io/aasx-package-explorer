@@ -141,10 +141,15 @@ namespace AasxPluginGenericForms
                 setBold: true,
                 content: $"Edit");
 
-            uitk.AddSmallButtonTo(header, 0, 1,  
-                margin: new AnyUiThickness(2), setHeight: 21,
-                padding: new AnyUiThickness(2, 0, 2, 0),
-                content: "Fix missing CDs ..");
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(header, 0, 1,
+                    margin: new AnyUiThickness(2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Fix missing CDs .."),
+                (o) =>
+                {
+                    return ButtonTabPanels_Click("ButtonFixCDs");
+                });
 
             uitk.AddSmallBasicLabelTo(header, 0, 2,
                 foreground: AnyUiBrushes.DarkBlue,
@@ -152,16 +157,26 @@ namespace AasxPluginGenericForms
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 verticalContentAlignment: AnyUiVerticalAlignment.Center,
                 content: "|");
-            
-            uitk.AddSmallButtonTo(header, 0, 3,
-                margin: new AnyUiThickness(2), setHeight: 21,
-                padding: new AnyUiThickness(2, 0, 2, 0),
-                content: "Cancel");
 
-            uitk.AddSmallButtonTo(header, 0, 4,
-                margin: new AnyUiThickness(2,2,4,2), setHeight: 21,
-                padding: new AnyUiThickness(2, 0, 2, 0),
-                content: "Update to AAS");
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(header, 0, 3,
+                    margin: new AnyUiThickness(2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Cancel"),
+                (o) =>
+                {
+                    return ButtonTabPanels_Click("ButtonCancel");
+                });
+
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(header, 0, 4,
+                    margin: new AnyUiThickness(2,2,4,2), setHeight: 21,
+                    padding: new AnyUiThickness(2, 0, 2, 0),
+                    content: "Update to AAS"),
+                (o) =>
+                {
+                    return ButtonTabPanels_Click("ButtonUpdate");
+                });
 
             // small spacer
             var space = uitk.AddSmallBasicLabelTo(outer, 1, 0, 
@@ -230,5 +245,127 @@ namespace AasxPluginGenericForms
 
         #endregion
 
+        #region Button clicks
+        //=============
+
+        private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd)
+        {
+            if (cmd == "ButtonCancel")
+            {
+                // re-display (tree & panel)
+                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };
+            }
+
+            if (cmd == "ButtonUpdate")
+            {
+                // add
+                if (this._currentFormInst != null
+                    && _package != null
+                    && _options != null
+                    && _submodel != null)
+                {
+                    // on this level of the hierarchy, shall a new SMEC be created or shall
+                    // the existing source of elements be used?
+                    AdminShell.SubmodelElementWrapperCollection currentElements = null;
+                    if (_formInUpdateMode && _updateSourceElements != null)
+                    {
+                        currentElements = _updateSourceElements;
+                    }
+                    else
+                    {
+                    }
+
+                    // create a sequence of SMEs
+                    try
+                    {
+                        _currentFormInst.AddOrUpdateDifferentElementsToCollection(
+                            currentElements, _package, addFilesToPackage: true, editSource: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        _log?.Error(ex, "when adding Document");
+                    }
+
+#if __may_be_not__
+                    // save directly to ensure consistency
+                    try
+                    {
+                        if (thePackage.Filename != null)
+                            thePackage.SaveAs(thePackage.Filename);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (theLogger != null)
+                            theLogger.Log(
+                                $"Saving package {thePackage.Filename} failed for adding Document " +
+                                $"and gave: {ex.Message}");
+                    }
+#endif
+                }
+                else
+                {
+                    _log?.Error("Preconditions for adding entities from GenericForm not met.");
+                }
+
+                // re-display (tree & panel)
+                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };
+            }
+
+            if (cmd == "ButtonFixCDs")
+            {
+                // check if CDs are present
+                if (_currentFormRecord == null || _currentFormRecord.ConceptDescriptions == null ||
+                    _currentFormRecord.ConceptDescriptions.Count < 1)
+                {
+                    _log?.Error(
+                        "Not able to find appropriate ConceptDescriptions in the GeneralForm option records. " +
+                        "Aborting.");
+                    return new AnyUiLambdaActionNone();
+                }
+
+                // check for Environment
+                var env = _package?.AasEnv;
+                if (env == null)
+                {
+                    _log?.Error(
+                        "Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
+                    return new AnyUiLambdaActionNone();
+                }
+
+#if __not_possible
+                // be safe?
+                if (MessageBoxResult.Yes != MessageBox.Show(
+                    "Add missing ConceptDescriptions to the AAS?", "Question",
+                    MessageBoxButton.YesNo, MessageBoxImage.Warning))
+                    return;
+#endif
+
+                // ok, check
+                int nr = 0;
+                foreach (var cd in _currentFormRecord.ConceptDescriptions)
+                {
+                    if (cd == null || cd.identification == null)
+                        continue;
+                    var cdFound = env.FindConceptDescription(cd.identification);
+                    if (cdFound != null)
+                        continue;
+                    // ok, add
+                    var newCd = new AdminShell.ConceptDescription(cd);
+                    env.ConceptDescriptions.Add(newCd);
+                    nr++;
+                }
+
+                // ok
+                _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
+
+                // re-display (tree & panel)
+                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel } ;
+            }
+
+            // no?
+            return new AnyUiLambdaActionNone();
+        }
+
+#endregion
     }
 }

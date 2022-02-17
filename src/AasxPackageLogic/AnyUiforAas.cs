@@ -44,13 +44,11 @@ namespace AasxPackageLogic
         }
     }
 
-    public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
-    public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionBase
+    // public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
+    
+    public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionRedrawAllElementsBase
     {
-        public object NextFocus = null;
-        public bool? IsExpanded = null;
         public DispEditHighlight.HighlightFieldInfo HighlightField = null;
-        public bool OnlyReFocus = false;
 
         public AnyUiLambdaActionRedrawAllElements(
             object nextFocus, bool? isExpanded = true,
