@@ -82,14 +82,19 @@ namespace BlazorUI
 
         public StylePile(StylePile other)
         {
-            if (other != null)
-                foreach (var se in other)
-                    Add(new StyleElem(se));
+            Add(other);
         }
 
         public StylePile(string elemInit)
         {
             Add(elemInit);
+        }
+
+        public void Add(StylePile other)
+        {
+            if (other != null)
+                foreach (var se in other)
+                    Add(new StyleElem(se));
         }
 
         public void Add(string elemInit)
@@ -175,7 +180,10 @@ namespace BlazorUI
         public void SetSpecifics(
             AnyUiBrush foreground = null,
             AnyUiBrush background = null,
+            AnyUiBrush borderBrush = null,
+            AnyUiThickness margin = null,
             AnyUiThickness padding = null,
+            AnyUiThickness borderThickness = null,
             AnyUiTextWrapping? textWrapping = null,
             double? fontSizeRel = null,
             AnyUiFontWeight? fontWeight = null
@@ -188,6 +196,17 @@ namespace BlazorUI
             // colors
             Set("color", foreground?.HtmlRgb(), doNotSetIfNull: true, add: true);
             Set("background-color", background?.HtmlRgb(), doNotSetIfNull: true, add: true);
+            Set("border-color", borderBrush?.HtmlRgb(), doNotSetIfNull: true, add: true);
+
+            if (margin != null)
+            {
+                // https://developer.mozilla.org/de/docs/Web/CSS/margin
+                if (margin.AllEqual)
+                    Set("margin", $"{margin.Left}px", add: true);
+                else
+                    Set("margin", $"{margin.Top}px {margin.Right}px {margin.Bottom}px {margin.Left}px ",
+                        add: true);
+            }
 
             if (padding != null)
             {
@@ -198,6 +217,21 @@ namespace BlazorUI
                     Set("padding", $"{padding.Top}px {padding.Right}px {padding.Bottom}px {padding.Left}px ", 
                         add: true);
             }
+
+            if (borderThickness != null)
+            {
+                // https://www.w3schools.com/cssref/pr_border-color.asp
+                // https://developer.mozilla.org/de/docs/Web/CSS/border-width
+                if (borderThickness.AllEqual)
+                    Set("border-width", $"{borderThickness.Left}px", add: true);
+                else
+                    Set("border-width", $"{borderThickness.Top}px {borderThickness.Right}px " +
+                            $"{borderThickness.Bottom}px {borderThickness.Left}px ",
+                        add: true);
+            }
+
+            if (borderBrush != null || borderThickness != null)
+                Set("border-style", $"solid", add: true);
 
             if (textWrapping.HasValue && textWrapping.Value != AnyUiTextWrapping.NoWrap)
             {
@@ -228,6 +262,28 @@ namespace BlazorUI
                 Set("min-width", FormattableString.Invariant($"{scale * fe.MinWidth.Value}px"), add: true);
             if (fe.MaxWidth.HasValue)
                 Set("max-width", FormattableString.Invariant($"{scale * fe.MaxWidth.Value}px"), add: true);
+        }
+
+        public void SetAlignments(AnyUiUIElement elem,
+            bool allowStretch = true)
+        {
+            if (!(elem is AnyUiFrameworkElement fe))
+                return;
+
+            if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Left)
+            {
+
+            }
+            else
+            if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Right)
+            {
+                // Set("float", "right");
+            }
+            else
+            {
+                Set("width", "100%", add: true);
+                Set("box-sizing", "border-box", add: true);
+            }
         }
     }
 }

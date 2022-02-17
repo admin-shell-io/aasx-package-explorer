@@ -12,22 +12,49 @@
 
 @{
 
-    @* Render the table. For the time being, ignore Orientation and stack always horzintally in one cell. *@
-    <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">
-        <tr>
-            <td>
-                @if (_panel?.Children != null)
-                    foreach (var ch in _panel.Children)
-                    {
-                        <AnyUiRenderElem DisplayData="@DisplayData"
-                                         Session="@Session"
-                                         Parent="@Element"
-                                         Element="@ch" />
-                    }
-            </td>
-        </tr>
-    </table>
+    // access
+    if (_panel == null)
+        return;
 
+    // because of not working with table, need an outer <div>
+    var divOuterStyle = new StylePile();
+    divOuterStyle.SetSpecifics(
+        margin: _panel.Margin);
+
+    //
+    // Eval different table attributes
+    //
+
+    var panelStyle = new StylePile();
+
+    panelStyle.Add("background-color", _panel.Background?.HtmlRgb(), doNotSetIfNull: true);
+
+    if (AnyUiDisplayDataHtml.DebugFrames)
+        panelStyle.Set("border", "1px solid black", add: true);
+
+    panelStyle.Set("width", "100%", add: true);
+
+    //
+    // Render
+    //
+
+    <div style="@divOuterStyle">
+        @* Render the table. For the time being, ignore Orientation and stack always horzintally in one cell. *@
+        <table @attributes="@PanelAttributes" style="@panelStyle">
+            <tr>
+                <td>
+                    @if (_panel?.Children != null)
+                        foreach (var ch in _panel.Children)
+                        {
+                            <AnyUiRenderElem DisplayData="@DisplayData"
+                                             Session="@Session"
+                                             Parent="@Element"
+                                             Element="@ch" />
+                        }
+                </td>
+            </tr>
+        </table>
+    </div>
 }
 
 @code {

@@ -95,7 +95,8 @@ namespace AnyUi
             int? colSpan = null,
             AnyUiScrollBarVisibility? horizontalScrollBarVisibility = null,
             AnyUiScrollBarVisibility? verticalScrollBarVisibility = null,
-            bool? skipForBrowser = null)
+            bool? skipForBrowser = null,
+            double? initialScrollPosition = null)
         {
             var sv = new AnyUiScrollViewer();
             sv.Margin = margin;
@@ -107,6 +108,8 @@ namespace AnyUi
                 sv.VerticalScrollBarVisibility = verticalScrollBarVisibility.Value;
             if (skipForBrowser.HasValue)
                 sv.SkipForBrowser = skipForBrowser.Value;
+            if (initialScrollPosition.HasValue)
+                sv.InitialScrollPosition = initialScrollPosition.Value;
             AnyUiGrid.SetRow(sv, row);
             AnyUiGrid.SetColumn(sv, col);
             if (colSpan.HasValue)

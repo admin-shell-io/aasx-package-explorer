@@ -131,6 +131,11 @@ namespace AasxIntegrationBase.AasForms
         }
 
         /// <summary>
+        /// This STATIC flag indicates, if the form instances shall create WPF controls or not.
+        /// </summary>
+        public static bool createSubControls = true;
+
+        /// <summary>
         /// The WPF (sub) control, to which this instance is attached to
         /// </summary>
         public UserControl subControl = null;
@@ -1210,8 +1215,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlSMEC();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlSMEC();
+                this.subControl.DataContext = this;
+            }
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -1268,8 +1276,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override
-            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
             // Intended layout
             // Grid
@@ -1287,7 +1295,7 @@ namespace AasxIntegrationBase.AasForms
 
             var descsm = desc as FormDescSubmodelElement;
 
-            if (true)
+            if (false)
             {
                 FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, descsm, sme);
             }
@@ -1296,7 +1304,16 @@ namespace AasxIntegrationBase.AasForms
 
             foreach (var pair in this.PairInstances)
             {
-                pair.instances.RenderAnyUi(view, uitk);
+                // Note: make the panel as wide as possible (if multiplicity allows)
+                var outer = view.Add(new AnyUi.AnyUiStackPanel());
+                outer.Background = AnyUiBrushes.LightGray;
+
+                // inner panel
+                var inner = outer.Add(new AnyUi.AnyUiStackPanel());
+                inner.Background = AnyUiBrushes.White;
+                inner.Margin = new AnyUiThickness(4, 4, 4, 0);
+
+                pair.instances.RenderAnyUi(inner, uitk);
             }
         }
     }
@@ -1340,8 +1357,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlProperty();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlProperty();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>
@@ -1407,6 +1427,9 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var prop = sme as AdminShell.Property;
+            var pDesc = desc as FormDescProperty;
+            if (prop == null || pDesc == null)
+                return;
 
             // Intended layout
             // Grid
@@ -1416,17 +1439,50 @@ namespace AasxIntegrationBase.AasForms
             var g = view.Add(
                 uitk.AddSmallGrid(rows: 1, cols: 3, colWidths: new[] { "2:", "*", "2:" }));
 
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallTextBoxTo(g, 0, 1,
-                margin: new AnyUiThickness(0,2,0,2),
-                text: "" + prop.value),
-                (o) =>
-                {
-                    if (o is string os)
-                        prop.value = os;
-                    Touch();
-                    return new AnyUiLambdaActionNone();
-                });
+            // which control?
+            if (pDesc.comboBoxChoices != null && pDesc.comboBoxChoices.Length > 0)
+            {
+                var editableMode = (pDesc.valueFromComboBoxIndex == null ||
+                    pDesc.valueFromComboBoxIndex.Length < 1);
+
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallComboBoxTo(g, 0, 1,
+                        margin: new AnyUiThickness(0, 2, 0, 2),
+                        horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                        items: pDesc.comboBoxChoices,
+                        isEditable: editableMode),
+                        (o) =>
+                        {
+                            if (!(o is int idx))
+                                return new AnyUiLambdaActionNone();
+
+                            var items = pDesc.valueFromComboBoxIndex;
+                            if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
+                            {
+                                Touch();
+                                prop.value = "" + items[idx];
+
+                                // TODO
+                                parentInstance?.TriggerSlaveEvents(this, Index);
+                            }
+
+                            return new AnyUiLambdaActionNone();
+                        });
+            }
+            else
+            {
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(g, 0, 1,
+                    margin: new AnyUiThickness(0, 2, 0, 2),
+                    text: "" + prop.value),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            prop.value = os;
+                        Touch();
+                        return new AnyUiLambdaActionNone();
+                    });
+            }
         }
     }
 
@@ -1455,8 +1511,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlMultiLangProp();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlMultiLangProp();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>
@@ -1487,7 +1546,7 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var mlp = sme as AdminShell.MultiLanguageProperty;
-            if (mlp?.value?.langString == null)
+            if (mlp == null)
                 return;
 
             // Intended layout:
@@ -1508,8 +1567,20 @@ namespace AasxIntegrationBase.AasForms
                 verticalContentAlignment: AnyUiVerticalAlignment.Center,
                 content: "Value:");
 
+            // "Plus" button in 1st row
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                    content: "\u2795"),
+                    (o) =>
+                    {
+                        if (mlp.value?.langString == null)
+                            mlp.value = new AdminShell.LangStringSet();
+                        mlp.value.langString.Add(new AdminShell.LangStr());
+                        return NewLambdaUpdateUi();
+                    });
+
             // no content? .. info on 1st row
-            if (mlp.value.Count < 1)
+            if (mlp.value?.langString == null || mlp.value.Count < 1)
             {
                 uitk.AddSmallBasicLabelTo(g, 0, 2, 
                     foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
@@ -1517,16 +1588,6 @@ namespace AasxIntegrationBase.AasForms
                     content: "(add at least one language)");
                 return;
             }
-
-            // "Plus" button in 1st row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                    content: "\u2795"),
-                    (o) =>
-                    {
-                        mlp.value.langString.Add(new AdminShell.LangStr());
-                        return NewLambdaUpdateUi();
-                    });
 
             // simply render the langStrs
 
@@ -1605,8 +1666,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlFile();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlFile();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>
@@ -1720,6 +1784,7 @@ namespace AasxIntegrationBase.AasForms
                     content: "Clear"),
                     (o) =>
                     {
+                        file.value = "";
                         FileToLoad = null;
                         Touch();
                         return NewLambdaUpdateUi();
@@ -1785,8 +1850,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlReferenceElement();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlReferenceElement();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>
@@ -1918,8 +1986,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlRelationshipElement();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlRelationshipElement();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>
@@ -2074,8 +2145,11 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
-            this.subControl = new FormSubControlCapability();
-            this.subControl.DataContext = this;
+            if (createSubControls)
+            {
+                this.subControl = new FormSubControlCapability();
+                this.subControl.DataContext = this;
+            }
         }
 
         /// <summary>

@@ -60,7 +60,9 @@ namespace AnyUi
             _context = context;
         }
 
-        public double GetScale() => 1.3; 
+        public double GetScale() => 1.4;
+
+        public static bool DebugFrames;
     }
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {
@@ -134,6 +136,8 @@ namespace AnyUi
                     var s = sessions[i];
                     if (s.htmlDotnetEventIn)
                     {
+                        AnyUiLambdaActionBase ret = null;
+
                         switch (s.htmlDotnetEventType)
                         {
                             case "setValueLambda":
@@ -141,7 +145,7 @@ namespace AnyUi
                                 object o = s.htmlDotnetEventInputs[1];
                                 s.htmlDotnetEventIn = false;
                                 s.htmlDotnetEventInputs.Clear();
-                                AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                ret = el?.setValueLambda?.Invoke(o);
                                 break;
                             case "contextMenu":
                                 el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
@@ -169,7 +173,12 @@ namespace AnyUi
                                 break;
                         }
                         while (s.htmlDotnetEventOut) ;
-                        Program.signalNewData(2, s.sessionNumber); // build new tree
+
+                        // determine, which (visual) update has to be done
+                        int ndm = 2;
+                        if (ret is AnyUiLambdaActionNone)
+                            ndm = 0;
+                        Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret); // build new tree
                     }
                     i++;
                 }

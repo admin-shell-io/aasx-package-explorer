@@ -582,6 +582,7 @@
             },
             "Multiplicity": "ZeroToMany", // TODO: ZeroToOne
             "IsReadOnly": false,
+            "comboBoxChoices": [ "Alpha", "Beta", "Gamma" ],
             "allowedValueTypes": [
               "string"
             ],

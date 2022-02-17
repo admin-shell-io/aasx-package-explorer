@@ -109,6 +109,9 @@ namespace AasxPluginGenericForms
             // the Submodel elements need to have parents
             sm.SetAllParents();
 
+            // do INDEED create WPF controls
+            FormInstanceBase.createSubControls = true;
+
             // create TOP control
             var shelfCntl = new GenericFormsControl();
             shelfCntl.Start(log, package, sm, options, eventStack);

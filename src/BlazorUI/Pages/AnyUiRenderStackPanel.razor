@@ -13,48 +13,77 @@
 
 @{
 
-    @if (_panel != null && _panel.Orientation == AnyUiOrientation.Horizontal)
-    {
-        @* Render the STACK HORIZONTALLY *@
+    // access
+    if (_panel == null)
+        return;
 
-        <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">
-            <tr>
-                <td>
-                    @if (_panel?.Children != null)
-                        foreach (var ch in _panel.Children)
-                        {
-                            <AnyUiRenderElem DisplayData="@DisplayData"
-                                             Session="@Session"
-                                             Parent="@Element"
-                                             Element="@ch" />
-                        }
-                </td>
-            </tr>
-        </table>
-    }
+    // because of not working with table, need an outer <div>
+    var divOuterStyle = new StylePile();
+    divOuterStyle.SetSpecifics(
+        margin: _panel.Margin);
 
-    @if (_panel != null && _panel.Orientation == AnyUiOrientation.Vertical)
-    {
-        @* Render the STACK VERTICALLY *@
-        <table @attributes="@PanelAttributes" style="width: 100%; border: 1px solid black;">            
-            <tbody>
-                @{
-                    @if (_panel?.Children != null)
-                        foreach (var ch in _panel.Children)
-                        {
-                            ;
-                            <tr>
-                                <td>
-                                    <AnyUiRenderElem DisplayData="@DisplayData"
-                                                     Session="@Session"
-                                                     Element="@ch" />
-                                </td>
-                            </tr>
-                        }
-                }
-            </tbody>
-        </table>
-    }
+    //
+    // Eval different table attributes
+    //
+
+    var panelStyle = new StylePile();
+
+    panelStyle.Add("background-color", _panel.Background?.HtmlRgb(), doNotSetIfNull: true);
+
+    if (AnyUiDisplayDataHtml.DebugFrames)
+        panelStyle.Set("border", "1px solid black", add: true);
+
+    panelStyle.Set("width", "100%", add: true);
+
+    //
+    // Render
+    //
+
+    <div style="@divOuterStyle">
+        @if (_panel != null && _panel.Orientation == AnyUiOrientation.Horizontal)
+        {
+            @* Render the STACK HORIZONTALLY *@
+
+            <table @attributes="@PanelAttributes" style="@panelStyle">
+                <tr>
+                    <td>
+                        @if (_panel?.Children != null)
+                            foreach (var ch in _panel.Children)
+                            {
+                                <AnyUiRenderElem DisplayData="@DisplayData"
+                                                 Session="@Session"
+                                                 Parent="@Element"
+                                                 Element="@ch" />
+                            }
+                    </td>
+                </tr>
+            </table>
+        }
+
+        @if (_panel.Orientation == null
+            || (_panel != null && _panel.Orientation == AnyUiOrientation.Vertical))
+        {
+            @* Default code .. Render the STACK VERTICALLY *@
+            <table @attributes="@PanelAttributes" style="@panelStyle">
+                <tbody>
+                    @{
+                        @if (_panel?.Children != null)
+                            foreach (var ch in _panel.Children)
+                            {
+                                ;
+                                <tr>
+                                    <td>
+                                        <AnyUiRenderElem DisplayData="@DisplayData"
+                                                         Session="@Session"
+                                                         Element="@ch" />
+                                    </td>
+                                </tr>
+                            }
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
 }
 
 @code {
@@ -81,6 +110,11 @@
             _panel = value;
             if (_panel == null)
                 return;
+
+            if ((_panel.DebugTag as string) == "CIDSP1")
+                ;
+            if ((_panel.DebugTag as string) == "CIDSP2")
+                ;
         }
     }
 

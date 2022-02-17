@@ -120,7 +120,8 @@ namespace BlazorUI.Data
                                                 {
                                                     envIndex = i,
                                                     Text = "PLUGIN",
-                                                    Tag = sm,
+                                                    Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance, 
+                                                                AasxIntegrationBase.AasxPluginResultVisualExtension>(bi.env, sm, lpi, ext),
                                                     Type = "Plugin"
                                                 };
                                                 smChilds.Add(piItem);

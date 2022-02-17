@@ -1196,6 +1196,7 @@ namespace AasxPackageExplorer
                 && renderedPanel.Children.Count > 0)
             {
                 // first step: invoke plugin?
+                var useInnerGrid = false;
                 var plugin = Plugins.FindPluginInstance(pluginName);
                 if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
                 {
@@ -1203,6 +1204,7 @@ namespace AasxPackageExplorer
                     {
                         var uires = plugin.InvokeAction(
                             "update-anyui-visual-extension", renderedPanel);
+                        useInnerGrid = true;
                     }
                     catch (Exception ex)
                     {
@@ -1212,7 +1214,7 @@ namespace AasxPackageExplorer
                 }
 
                 // 2nd step: redisplay
-                DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel);
+                DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel, useInnerGrid: useInnerGrid);
             }
             else
             {
