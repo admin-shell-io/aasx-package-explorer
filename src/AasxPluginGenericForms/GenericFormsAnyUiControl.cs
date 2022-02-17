@@ -72,6 +72,9 @@ namespace AasxPluginGenericForms
             // the Submodel elements need to have parents
             sm.SetAllParents();
 
+            // do NOT create WPF controls
+            FormInstanceBase.createSubControls = false;
+
             // factory this object
             var shelfCntl = new GenericFormsAnyUiControl();
             shelfCntl.Start(log, package, sm, options, eventStack, panel);
@@ -115,9 +118,12 @@ namespace AasxPluginGenericForms
             RenderFormInst(view, uitk, _currentFormInst);
         }
 
+        protected double _lastScrollPosition = 0.0;
+
         protected void RenderFormInst (
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
-            FormInstanceSubmodel sm)
+            FormInstanceSubmodel sm,
+            double ?initialScrollPos = null)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 1, colWidths: new[] { "*" }));
@@ -163,10 +169,19 @@ namespace AasxPluginGenericForms
                 content: "", background: AnyUiBrushes.White);
 
             // add the body, a scroll viewer
-            var scroll = uitk.AddSmallScrollViewerTo(outer, 2, 0, 
-                horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
-                verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                skipForBrowser: true);
+            var scroll = AnyUiUIElement.RegisterControl(
+                uitk.AddSmallScrollViewerTo(outer, 2, 0,
+                    horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
+                    verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
+                    skipForBrowser: true, initialScrollPosition: initialScrollPos),
+                (o) =>
+                {
+                    if (o is Tuple<double, double> positions)
+                    {
+                        _lastScrollPosition = positions.Item2;
+                    }
+                    return new AnyUiLambdaActionNone();
+                }) as AnyUiScrollViewer;
 
             // need a stack panel to add inside
             var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
@@ -210,7 +225,7 @@ namespace AasxPluginGenericForms
             // ok, re-assign panel and re-display
             _panel = newPanel;
             _panel.Children.Clear();            
-            RenderFormInst(_panel, _uitk, _currentFormInst);
+            RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
         }
 
         #endregion

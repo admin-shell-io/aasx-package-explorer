@@ -378,6 +378,13 @@ namespace AnyUi
         public AnyUiLambdaActionBase takeOverLambda = null;
 
         /// <summary>
+        /// Arbitrary object/ tag exclusively used for ad-hoc debug. Do not use for long-term
+        /// purposes.
+        /// </summary>
+        [JsonIgnore]
+        public object DebugTag = null;
+
+        /// <summary>
         /// This function attaches the above lambdas accordingly to a given user control.
         /// It is to be used, when an abstract AnyUi... is being created and the according WPF element
         /// will be activated later.
@@ -538,6 +545,50 @@ namespace AnyUi
             return null;
         }
 
+        public AnyUiUIElement IsCoveredBySpanCell(
+            int row, int col,
+            bool returnOnRootCell = false,
+            bool returnOnSpanCell = false)
+        {
+            if (Children == null || RowDefinitions == null || ColumnDefinitions == null
+                || row < 0 || row >= RowDefinitions.Count
+                || col < 0 || col >= ColumnDefinitions.Count)
+                return null;
+
+            foreach (var ch in Children)
+            {
+                // valid at all?
+                if (ch.GridRow == null || ch.GridColumn == null)
+                    continue;
+
+                // first check, if in intervals
+
+                var rowSpan = 1;
+                if (ch.GridRowSpan.HasValue && ch.GridRowSpan.Value > 1)
+                    rowSpan = ch.GridRowSpan.Value;
+
+                var colSpan = 1;
+                if (ch.GridColumnSpan.HasValue && ch.GridColumnSpan.Value > 1)
+                    colSpan = ch.GridColumnSpan.Value;
+
+                if (row >= ch.GridRow.Value && (row <= ch.GridRow.Value + rowSpan - 1)
+                    && col >= ch.GridColumn.Value && (col <= ch.GridColumn.Value + colSpan - 1))
+                {
+                    // at least in ..
+                    // .. but first check for root ..
+                    if (returnOnRootCell 
+                        && ch.GridRow.Value == row && ch.GridColumn.Value == col)
+                        return ch;
+
+                    // .. check for spans
+                    if (returnOnSpanCell)
+                        return ch;
+                }
+            }
+
+            return null;
+        }
+
         public (int, int) GetMaxRowCol()
         {
             var maxRow = 0;
@@ -578,7 +629,7 @@ namespace AnyUi
 
             if (ColumnDefinitions == null)
                 ColumnDefinitions = new List<AnyUiColumnDefinition>();
-            while (ColumnDefinitions.Count < (1 + maxRow))
+            while (ColumnDefinitions.Count < (1 + maxCol))
                 ColumnDefinitions.Add(
                     new AnyUiColumnDefinition() { Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto) });
         }
@@ -598,6 +649,8 @@ namespace AnyUi
     {
         public AnyUiScrollBarVisibility? HorizontalScrollBarVisibility;
         public AnyUiScrollBarVisibility? VerticalScrollBarVisibility;
+
+        public double? InitialScrollPosition = null;
 
         /// <summary>
         /// If true, can be skipped when rendered into a browser

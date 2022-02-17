@@ -660,16 +660,30 @@ namespace AasxPackageExplorer
             return _lastRenderedRootElement;
         }
 
-        public void RedisplayRenderedRoot(AnyUiUIElement root)
+        public void RedisplayRenderedRoot(AnyUiUIElement root, bool useInnerGrid = false)
         {
             // safe
             _lastRenderedRootElement = root;
 
             // redisplay
             theMasterPanel.Children.Clear();
-            var spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: false);
+            UIElement spwpf = null;
+
+            if (useInnerGrid
+                && root is AnyUiStackPanel stack
+                && stack?.Children != null
+                && stack.Children.Count == 1
+                && stack.Children[0] is AnyUiGrid grid)
+            {
+                spwpf = _displayContext.GetOrCreateWpfElement(grid, allowReUse: false);
+            }
+            else
+            {
+                spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: false);
+                DockPanel.SetDock(spwpf, Dock.Top);
+            }
+
             _helper.ShowLastHighlights();
-            DockPanel.SetDock(spwpf, Dock.Top);
             theMasterPanel.Children.Add(spwpf);
         }
 

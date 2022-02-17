@@ -3,6 +3,7 @@
 @using static AdminShellNS.AdminShellV20;
 @*using BlazorUI*@
 @using AnyUi
+@using AasxPackageLogic 
 @using BlazorUI.Shared
 @using BlazorUI.Pages 
 @*using System*@
@@ -281,9 +282,38 @@
                             view = true;
                     }
                     else
-                    if (selectedNode.Tag is Submodel && selectedNode.Type == "Plugin")
+                    if (selectedNode.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance,
+                            AasxIntegrationBase.AasxPluginResultVisualExtension> callInfo
+                        && selectedNode.Type == "Plugin")
                     {
-                        ;
+                        var env = callInfo.Item1;
+                        var sm = callInfo.Item2;
+                        var plugin = callInfo.Item3;
+
+                        if (env != null && sm != null && plugin != null)
+                        {
+                            try
+                            {
+                                bi.stack17 = new AnyUiStackPanel();
+                                bi.stack17.Orientation = AnyUiOrientation.Vertical;
+
+                                if (_onlyUpdatePluginUi && bi.stack17 != null)
+                                {
+                                    plugin.InvokeAction("update-anyui-visual-extension", bi.stack17);
+                                    _onlyUpdatePluginUi = false;
+                                }
+                                else
+                                    plugin.InvokeAction("fill-anyui-visual-extension", env, sm, bi.stack17);
+
+                                if (bi.stack17.Children.Count != 0)
+                                    view = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex,
+                                    $"render AnyUI based visual extension for plugin {plugin.name}");
+                            }
+                        }
                     }
                     else
                     if (selectedNode.Tag is Submodel)
@@ -389,7 +419,7 @@
             //ExpandedNodes.Add(Items.Skip(1).Take(1).First().Childs.Skip(1).First());
 
             SubmodelService.NewDataAvailable += NewData;
-            
+
         }
     }
 
@@ -400,6 +430,8 @@
 
     int newDataMode = 0;
 
+    protected bool _onlyUpdatePluginUi = false;
+
     void NewData(object source, EventArgs args)
     {
         // update = true;
@@ -407,11 +439,19 @@
         {
             if (ndm.signalSessionNumber == bi.sessionNumber)
             {
+                // state change for inner logic
                 if (newDataMode == 0)
                     // newDataMode = Program.getSignalNewDataMode();
                     newDataMode = ndm.signalNewDataMode;
+
+                // some events may affect
+                if (ndm.signalNewLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi)
+                    _onlyUpdatePluginUi = true;
+
+                // re-create items
                 Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
 
+                // trigger redraw
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
             }
@@ -704,6 +744,13 @@
         if (item == null)
         {
             return "";
+        }
+
+        if (item.Type == "Plugin"
+            && item.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance,
+                AasxIntegrationBase.AasxPluginResultVisualExtension> tag)
+        {
+            return $" [{tag.Item4?.Tag}] {tag.Item4?.Caption}";
         }
 
         string ret = "NULL";

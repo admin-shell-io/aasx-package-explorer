@@ -331,12 +331,24 @@ namespace AnyUi
                 {
                    if (a is AnyUiScrollViewer cntl && b is ScrollViewer wpf)
                    {
+                        // attributes
                         if (cntl.HorizontalScrollBarVisibility.HasValue)
                             wpf.HorizontalScrollBarVisibility =
                                 (ScrollBarVisibility)((int) cntl.HorizontalScrollBarVisibility.Value);
                         if (cntl.VerticalScrollBarVisibility.HasValue)
                             wpf.VerticalScrollBarVisibility =
                                 (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility.Value);
+
+                        // initial position (before attaching callback)
+                        if (cntl.InitialScrollPosition.HasValue)
+                            wpf.ScrollToVerticalOffset(cntl.InitialScrollPosition.Value);
+
+                        // callbacks
+                        wpf.ScrollChanged += (object sender, ScrollChangedEventArgs e) =>
+                        {
+                            cntl.setValueLambda?.Invoke(
+                                new Tuple<double, double>(e.HorizontalOffset, e.VerticalOffset));
+                        };
                    }
                 }),
 

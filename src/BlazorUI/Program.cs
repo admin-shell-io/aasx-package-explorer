@@ -54,11 +54,14 @@ namespace BlazorUI
             // resharper disable once MemberHidesStaticFromOuterClass
             public int signalNewDataMode;
             public int signalSessionNumber;
+            public AnyUiLambdaActionBase signalNewLambdaAction;
 
-            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0)
+
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0, AnyUiLambdaActionBase newLambdaAction = null)
             {
                 signalNewDataMode = mode;
                 signalSessionNumber = sessionNumber;
+                signalNewLambdaAction = newLambdaAction;
             }
         }
 
@@ -119,15 +122,17 @@ namespace BlazorUI
             signalNewData(3, bi.sessionNumber); // build new tree, all nodes closed
         }
 
+
         // 0 == same tree, only values changed
         // 1 == same tree, structure may change
         // 2 == build new tree, keep open nodes
         // 3 == build new tree, all nodes closed
         public static int signalNewDataMode = 2;
-        public static void signalNewData(int mode, int sessionNumber = 0)
+        public static void signalNewData(int mode, int sessionNumber = 0,
+            AnyUiLambdaActionBase newLambdaAction = null)
         {
             signalNewDataMode = mode;
-            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber));
+            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber, newLambdaAction));
         }
         public static int getSignalNewDataMode()
         {
