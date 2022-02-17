@@ -305,6 +305,22 @@ namespace AnyUi
     }
 
     /// <summary>
+    /// Request to redraw the current element/ entity.
+    /// </summary>
+    public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
+
+    /// <summary>
+    /// Reqeust to redraw the full tree of elements, may set new focus or
+    /// expand state.
+    /// </summary>
+    public class AnyUiLambdaActionRedrawAllElementsBase : AnyUiLambdaActionBase
+    {
+        public object NextFocus = null;
+        public bool? IsExpanded = null;
+        public bool OnlyReFocus = false;
+    }
+
+    /// <summary>
     /// This class is the base class for event handlers, which can attached to special
     /// events of Any UI controls
     /// </summary>

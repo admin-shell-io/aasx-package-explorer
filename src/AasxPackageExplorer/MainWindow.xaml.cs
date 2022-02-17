@@ -1001,7 +1001,7 @@ namespace AasxPackageExplorer
                     await MainTimer_HandleLambdaAction(ac);
 
             // what to do?
-            if (lab is AnyUiLambdaActionRedrawAllElements wish)
+            if (lab is AnyUiLambdaActionRedrawAllElementsBase wish)
             {
                 // edit mode affects the total element view
                 if (!wish.OnlyReFocus)
@@ -1017,7 +1017,10 @@ namespace AasxPackageExplorer
                     DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
                 }
                 // fake selection
-                RedrawElementView(hightlightField: wish.HighlightField);
+                DispEditHighlight.HighlightFieldInfo hfi = null;
+                if (lab is AnyUiLambdaActionRedrawAllElements wishhl)
+                    hfi = wishhl.HighlightField;
+                RedrawElementView(hightlightField: hfi);
                 DisplayElements.Refresh();
                 ContentTakeOver.IsEnabled = false;
             }

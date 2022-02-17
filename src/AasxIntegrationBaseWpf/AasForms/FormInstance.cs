@@ -1576,6 +1576,7 @@ namespace AasxIntegrationBase.AasForms
                         if (mlp.value?.langString == null)
                             mlp.value = new AdminShell.LangStringSet();
                         mlp.value.langString.Add(new AdminShell.LangStr());
+                        Touch();
                         return NewLambdaUpdateUi();
                     });
 
@@ -1607,6 +1608,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         if (o is string os)
                             ls.lang = os;
+                        Touch();
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -1618,6 +1620,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         if (o is string os)
                             ls.str = os;
+                        Touch();
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -1630,6 +1633,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         if (mlp.value.langString.Contains(storedLs))
                             mlp.value.langString.Remove(storedLs);
+                        Touch();
                         return NewLambdaUpdateUi();
                     });
             }
