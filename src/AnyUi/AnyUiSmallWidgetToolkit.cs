@@ -7,11 +7,18 @@ using System.Text.RegularExpressions;
 namespace AnyUi
 {
     public class AnyUiSmallWidgetToolkit
-    {
-        public AnyUiGrid AddSmallGrid(int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
+    {       
+        public AnyUiGrid AddSmallGrid(int rows, int cols, 
+            string[] colWidths = null, string[] rowHeights = null,
+            AnyUiThickness margin = null, AnyUiBrush background = null)
         {
             var g = new AnyUiGrid();
             g.Margin = margin;
+            if (background != null)
+                g.Background = background;
+
+            var cws = AnyUiListOfGridLength.Parse(colWidths);
+            var rhs = AnyUiListOfGridLength.Parse(rowHeights);
 
             // Cols
             for (int ci = 0; ci < cols; ci++)
@@ -19,26 +26,10 @@ namespace AnyUi
                 var gc = new AnyUiColumnDefinition();
                 // default
                 gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-                // width definition
-                if (colWidths != null && colWidths.Length > ci && colWidths[ci] != null)
-                {
-                    double scale = 1.0;
-                    var kind = colWidths[ci].Trim();
-                    var m = Regex.Match(colWidths[ci].Trim(), @"([0-9.+-]+)(.$)");
-                    if (m.Success && m.Groups.Count >= 2)
-                    {
-                        var scaleSt = m.Groups[1].ToString().Trim();
-                        if (Double.TryParse(scaleSt, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
-                            scale = d;
-                        kind = m.Groups[2].ToString().Trim();
-                    }
-                    if (kind == "#")
-                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Auto);
-                    if (kind == "*")
-                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Star);
-                    if (kind == ":")
-                        gc.Width = new AnyUiGridLength(scale, AnyUiGridUnitType.Pixel);
-                }
+                // width definition?
+                if (cws != null && cws.Count > ci && cws[ci] != null)
+                    gc.Width = cws[ci];
+                // add
                 g.ColumnDefinitions.Add(gc);
             }
 
@@ -46,7 +37,12 @@ namespace AnyUi
             for (int ri = 0; ri < rows; ri++)
             {
                 var gr = new AnyUiRowDefinition();
+                // default
                 gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
+                // height definition?
+                if (rhs != null && rhs.Count > ri && rhs[ri] != null)
+                    gr.Height = rhs[ri];
+                // add
                 g.RowDefinitions.Add(gr);
             }
 
@@ -120,9 +116,11 @@ namespace AnyUi
 
         public AnyUiGrid AddSmallGridTo(
             AnyUiGrid g, int row, int col,
-            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
+            int rows, int cols, 
+            string[] colWidths = null, string[] rowHeights = null,
+            AnyUiThickness margin = null, AnyUiBrush background = null)
         {
-            var inner = AddSmallGrid(rows, cols, colWidths, margin);
+            var inner = AddSmallGrid(rows, cols, colWidths, rowHeights, margin, background);
             inner.Margin = margin;
             AnyUiGrid.SetRow(inner, row);
             AnyUiGrid.SetColumn(inner, col);
@@ -130,11 +128,25 @@ namespace AnyUi
             return (inner);
         }
 
+        public AnyUiImage AddSmallImageTo(
+            AnyUiGrid g, int row, int col,
+            AnyUiThickness margin = null)
+        {
+            var img = new AnyUiImage();
+            if (margin != null)
+                img.Margin = margin;
+            AnyUiGrid.SetRow(img, row);
+            AnyUiGrid.SetColumn(img, col);
+            g.Children.Add(img);
+            return (img);
+        }
+
         public AnyUiTextBox AddSmallTextBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             int? colSpan = null,
-            AnyUiVerticalAlignment? verticalContentAlignment = null)
+            AnyUiVerticalAlignment? verticalContentAlignment = null,
+            double? fontSize = null)
         {
             var tb = new AnyUiTextBox();
             tb.Margin = margin;
@@ -143,6 +155,8 @@ namespace AnyUi
                 tb.Foreground = foreground;
             if (background != null)
                 tb.Background = background;
+            if (fontSize != null)
+                tb.FontSize = fontSize;
             tb.Text = text;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;

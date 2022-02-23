@@ -228,7 +228,7 @@ namespace AasxPluginDocumentShelf
                             }
 
                             // take over data?
-                            if (lambdaEntity.ImgContainer != null)
+                            if (lambdaEntity.ImgContainerWpf != null)
                             {
                                 // trigger display image
                                 lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
@@ -470,7 +470,7 @@ namespace AasxPluginDocumentShelf
                     // make viewbox to host __later__ created image!
                     var vb = new Viewbox();
                     vb.Stretch = Stretch.Uniform;
-                    ent.ImgContainer = vb;
+                    ent.ImgContainerWpf = vb;
 
                     // if a preview file exists, try load directly, but not interfere
                     // we delayed load logic, as these images might get more detailed
@@ -499,7 +499,7 @@ namespace AasxPluginDocumentShelf
                     {
                         var img = new Image();
                         img.Source = referableHashToCachedBitmap[ent.ReferableHash];
-                        ent.ImgContainer.Child = img;
+                        ent.ImgContainerWpf.Child = img;
                     }
                     else
                     {

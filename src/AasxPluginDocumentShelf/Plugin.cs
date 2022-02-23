@@ -29,6 +29,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private DocumentShelfOptions _options =
             new DocumentShelfOptions();
         private ShelfControl _shelfControl = null;
+        private AasxPluginDocumentShelf.ShelfAnyUiControl _anyUiControl = null;
 
         public string GetPluginName()
         {
@@ -93,6 +94,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "fill-panel-visual-extension",
                     "When called, fill given WPF panel with control for graph display."));
+            res.Add(
+            new AasxPluginActionDescriptionBase(
+                    "fill-anyui-visual-extension",
+                    "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "update-anyui-visual-extension",
+                    "When called, updated already presented AnyUI panel with some arguments."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-list-new-submodel",
@@ -183,6 +192,38 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 cve.strType = "True";
                 cve.obj = true;
                 return cve;
+            }
+
+            if (action == "fill-anyui-visual-extension")
+            {
+                // arguments
+                if (args == null || args.Length < 3)
+                    return null;
+
+                // call
+                _anyUiControl = AasxPluginDocumentShelf.ShelfAnyUiControl.FillWithAnyUiControls(
+                    _log, args[0], args[1], _options, _eventStack, args[2]);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = _anyUiControl;
+                return res;
+            }
+
+            if (action == "update-anyui-visual-extension"
+                && _anyUiControl != null)
+            {
+                // arguments
+                if (args == null || args.Length < 0)
+                    return null;
+
+                // call
+                _anyUiControl.Update(args);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = 42;
+                return res;
             }
 
             if (action == "fill-panel-visual-extension")

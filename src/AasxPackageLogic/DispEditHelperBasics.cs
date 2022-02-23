@@ -365,7 +365,7 @@ namespace AasxPackageLogic
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
             AddSmallLabelTo(g, 0, 0, content: caption);
-            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin);
+            var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin: margin);
 
             // in total
             view.Children.Add(g);
