@@ -56,6 +56,46 @@ namespace AnyUi
         }
     }
 
+    public class AnyUiListOfGridLength : List<AnyUiGridLength>
+    {
+        public static AnyUiListOfGridLength Parse(string[] input)
+        {
+            // access
+            if (input == null)
+                return null;
+
+            var res = new AnyUiListOfGridLength();
+            foreach (var part in input)
+            {
+                // default
+                var gl = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+
+                // work on part of input
+                double scale = 1.0;
+                var kind = part.Trim();
+                var m = Regex.Match(kind, @"([0-9.+-]+)(.$)");
+                if (m.Success && m.Groups.Count >= 2)
+                {
+                    var scaleSt = m.Groups[1].ToString().Trim();
+                    if (Double.TryParse(scaleSt, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
+                        scale = d;
+                    kind = m.Groups[2].ToString().Trim();
+                }
+                if (kind == "#")
+                    gl = new AnyUiGridLength(scale, AnyUiGridUnitType.Auto);
+                if (kind == "*")
+                    gl = new AnyUiGridLength(scale, AnyUiGridUnitType.Star);
+                if (kind == ":")
+                    gl = new AnyUiGridLength(scale, AnyUiGridUnitType.Pixel);
+
+                // add
+                res.Add(gl);
+            }
+
+            return res;
+        }
+    }
+
     public class AnyUiColumnDefinition
     {
         public AnyUiGridLength Width;
@@ -66,6 +106,14 @@ namespace AnyUi
     {
         public AnyUiGridLength Height;
         public double? MinHeight;
+
+        public AnyUiRowDefinition() { }
+
+        public AnyUiRowDefinition(double value, AnyUiGridUnitType type = AnyUiGridUnitType.Auto, double? minHeight = null)
+        {
+            Height = new AnyUiGridLength(value, type);
+            MinHeight = minHeight;
+        }
     }
 
     public class AnyUiColor
@@ -761,5 +809,19 @@ namespace AnyUi
         public string ToolTip = null;
 
         public AnyUiSpecialActionBase SpecialAction;
+    }
+
+    public class AnyUiCountryFlag : AnyUiFrameworkElement
+    {
+        public string ISO3166Code = "";
+    }
+
+    public class AnyUiImage : AnyUiFrameworkElement
+    {
+        /// <summary>
+        /// The bitmap data; as anonymous object (because of dependencies).
+        /// Probably a ImageSource
+        /// </summary>
+        public object Bitmap = null;
     }
 }

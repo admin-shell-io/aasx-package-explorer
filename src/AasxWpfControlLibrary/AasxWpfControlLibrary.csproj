@@ -34,6 +34,7 @@
     <Resource Include="Resources\Icon_AASX_40x40_W.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CountryFlag" Version="2.1.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

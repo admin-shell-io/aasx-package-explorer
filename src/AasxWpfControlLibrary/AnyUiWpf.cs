@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
@@ -485,6 +486,26 @@ namespace AnyUi
                        if (cntl.Padding != null)
                            wpf.Padding = GetWpfTickness(cntl.Padding);
                        wpf.Text = cntl.Text;
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiImage), typeof(Image), (a, b) =>
+                {
+                   if (a is AnyUiImage cntl && b is Image wpf)
+                   {
+                        if (cntl.Bitmap is BitmapSource bs)
+                            wpf.Source = bs;
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiCountryFlag), typeof(CountryFlag.CountryFlag), (a, b) =>
+                {
+                   if (a is AnyUiCountryFlag cntl && b is CountryFlag.CountryFlag wpf)
+                   {
+                        // need to translate two enums
+                        foreach (var ev in (CountryFlag.CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
+                            if (Enum.GetName(typeof(CountryFlag.CountryCode), ev)?.Trim().ToUpper() == cntl.ISO3166Code)
+                                wpf.Code = ev;
                    }
                 }),
 

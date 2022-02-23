@@ -71,12 +71,12 @@ namespace AasxPluginDocumentShelf
             TextBlockFurther.Text = "" + data.FurtherInfo;
 
             // Image to be (later) shown
-            if (data.ImgContainer != null)
+            if (data.ImgContainerWpf != null)
             {
                 BorderPlaceholder.Background = Brushes.White;
                 BorderPlaceholder.BorderThickness = new Thickness(1);
                 BorderPlaceholder.BorderBrush = Brushes.DarkGray;
-                BorderPlaceholder.Child = data.ImgContainer;
+                BorderPlaceholder.Child = data.ImgContainerWpf;
             }
         }
 

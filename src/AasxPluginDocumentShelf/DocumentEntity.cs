@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPluginDocumentShelf
 {
@@ -45,7 +46,8 @@ namespace AasxPluginDocumentShelf
         public string FurtherInfo = "";
         public string[] CountryCodes;
         public FileInfo DigitalFile, PreviewFile;
-        public System.Windows.Controls.Viewbox ImgContainer = null;
+        public System.Windows.Controls.Viewbox ImgContainerWpf = null;
+        public AnyUiImage ImgContainerAnyUi = null;
         public string ReferableHash = null;
 
         public AdminShell.SubmodelElementWrapperCollection SourceElementsDocument = null;
@@ -99,7 +101,7 @@ namespace AasxPluginDocumentShelf
         }
 
         /// <summary>
-        /// This function needs to be called a part of tick-Thread in STA / UI thread
+        /// This function needs to be called as part of tick-Thread in STA / UI thread
         /// </summary>
         public BitmapImage LoadImageFromPath(string fn)
         {
@@ -111,9 +113,19 @@ namespace AasxPluginDocumentShelf
             try
             {
                 var bi = new BitmapImage(new Uri(fn, UriKind.RelativeOrAbsolute));
-                var img = new Image();
-                img.Source = bi;
-                ImgContainer.Child = img;
+
+                if (ImgContainerWpf != null)
+                {
+                    var img = new Image();
+                    img.Source = bi;
+                    ImgContainerWpf.Child = img;
+                }
+
+                if (ImgContainerAnyUi != null)
+                {
+                    ImgContainerAnyUi.Bitmap = bi;
+                }
+
                 return bi;
             }
             catch (Exception ex)
