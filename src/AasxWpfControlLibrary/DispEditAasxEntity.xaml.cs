@@ -660,7 +660,10 @@ namespace AasxPackageExplorer
             return _lastRenderedRootElement;
         }
 
-        public void RedisplayRenderedRoot(AnyUiUIElement root, bool useInnerGrid = false)
+        public void RedisplayRenderedRoot(
+            AnyUiUIElement root, 
+            AnyUiPluginUpdateMode mode, 
+            bool useInnerGrid = false)
         {
             // safe
             _lastRenderedRootElement = root;
