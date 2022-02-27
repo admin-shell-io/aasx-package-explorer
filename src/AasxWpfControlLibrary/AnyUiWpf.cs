@@ -763,7 +763,8 @@ namespace AnyUi
             AnyUiUIElement el,
             Type superType = null,
             bool allowCreate = true,
-            bool allowReUse = true)
+            bool allowReUse = true,
+            AnyUiPluginUpdateMode mode = AnyUiPluginUpdateMode.All)
         {
             // access
             if (el == null)
@@ -779,7 +780,17 @@ namespace AnyUi
             // most specialized class or in recursion/ creation of base classes?
             var topClass = superType == null;
 
-            // return, if already created and not (still) in recursion/ creation of base classes
+            // special case: update status only
+            if (mode == AnyUiPluginUpdateMode.StatusToUi
+                && dd.WpfElement != null && allowReUse && topClass)
+            {
+                if (el.Touched && el.TouchLambda != null)
+                    el.TouchLambda(mode);
+                el.Touched = false;
+                return dd.WpfElement;
+            }
+
+            // special case: return, if already created and not (still) in recursion/ creation of base classes
             if (dd.WpfElement != null && allowReUse && topClass)
                 return dd.WpfElement;
             if (!allowCreate)

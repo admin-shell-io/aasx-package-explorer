@@ -321,6 +321,8 @@ namespace AnyUi
     {
     }
 
+    public enum AnyUiPluginUpdateMode { All, StatusToUi }
+
     /// <summary>
     /// This event causes a call to the specified plugin to update its
     /// already preseted AnyUi representation and will then re-render this
@@ -331,6 +333,7 @@ namespace AnyUi
     {
         public string PluginName = "";
         public object[] ActionArgs = null;
+        public AnyUiPluginUpdateMode UpdateMode = AnyUiPluginUpdateMode.All;
     }
 
     /// <summary>
@@ -442,11 +445,19 @@ namespace AnyUi
         public AnyUiLambdaActionBase takeOverLambda = null;
 
         /// <summary>
-        /// Arbitrary object/ tag exclusively used for ad-hoc debug. Do not use for long-term
-        /// purposes.
+        /// Indicates, that the status of the element was updated
         /// </summary>
-        [JsonIgnore]
-        public object DebugTag = null;
+        public bool Touched;
+
+        /// <summary>
+        /// Touches the element
+        /// </summary>
+        public virtual void Touch() { Touched = true; }
+
+        /// <summary>
+        /// Can be set by the rendering of the element to perform status updates, if touched.
+        /// </summary>
+        public Action<AnyUiPluginUpdateMode> TouchLambda = null;
 
         /// <summary>
         /// This function attaches the above lambdas accordingly to a given user control.
