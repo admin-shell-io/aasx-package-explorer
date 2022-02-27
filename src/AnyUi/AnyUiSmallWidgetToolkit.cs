@@ -130,11 +130,14 @@ namespace AnyUi
 
         public AnyUiImage AddSmallImageTo(
             AnyUiGrid g, int row, int col,
-            AnyUiThickness margin = null)
+            AnyUiThickness margin = null,
+            AnyUiStretch? stretch = null)
         {
             var img = new AnyUiImage();
             if (margin != null)
                 img.Margin = margin;
+            if (stretch != null)
+                img.Stretch = stretch.Value;
             AnyUiGrid.SetRow(img, row);
             AnyUiGrid.SetColumn(img, col);
             g.Children.Add(img);
@@ -295,7 +298,8 @@ namespace AnyUi
             string[] menuHeaders,
             Func<object, AnyUiLambdaActionBase> menuItemLambda,
             AnyUiThickness margin = null, AnyUiThickness padding = null,
-            AnyUiBrush foreground = null, AnyUiBrush background = null)
+            AnyUiBrush foreground = null, AnyUiBrush background = null,
+            double? fontSize = null, AnyUiFontWeight? fontWeight = null)
         {
             // construct button
             var but = new AnyUiButton();
@@ -305,6 +309,10 @@ namespace AnyUi
                 but.Foreground = foreground;
             if (background != null)
                 but.Background = background;
+            if (fontSize.HasValue)
+                but.FontSize = fontSize;
+            if (fontWeight.HasValue)
+                but.FontWeight = fontWeight.Value;
             but.Content = content;
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
@@ -376,6 +384,51 @@ namespace AnyUi
                 AnyUiGrid.SetColumnSpan(lab, colSpan.Value);
             g.Children.Add(lab);
             return (lab);
+        }
+
+        public T Set<T>(T fe,
+            AnyUiThickness margin = null, 
+            AnyUiBrush foreground = null,
+            AnyUiBrush background = null,
+            int? minWidth = null, int? maxWidth = null,
+            AnyUiHorizontalAlignment? horizontalAlignment = null,
+            AnyUiHorizontalAlignment? horizontalContentAlignment = null,
+            AnyUiVerticalAlignment? verticalAlignment = null,
+            AnyUiVerticalAlignment? verticalContentAlignment = null) where T : AnyUiFrameworkElement
+        {
+            // access
+            if (fe == null)
+                return null;
+
+            // FrameworkElem
+            if (margin != null)
+                fe.Margin = margin;
+            if (horizontalAlignment != null)
+                fe.HorizontalAlignment = horizontalAlignment;
+            if (verticalAlignment != null)
+                fe.VerticalAlignment = verticalAlignment;
+
+            if (minWidth.HasValue)
+                fe.MinWidth = minWidth;
+            if (maxWidth.HasValue)
+                fe.MaxWidth = maxWidth;
+
+            // ContentControl
+            if (fe is AnyUiContentControl ctl)
+            {
+                if (foreground != null)
+                    ctl.Foreground = foreground;
+                if (background != null)
+                    ctl.Background = background;
+
+                if (horizontalContentAlignment != null)
+                    ctl.HorizontalContentAlignment = horizontalContentAlignment;
+                if (verticalContentAlignment != null)
+                    ctl.VerticalContentAlignment = verticalContentAlignment;
+            }
+
+            // chain
+            return fe;
         }
 
     }

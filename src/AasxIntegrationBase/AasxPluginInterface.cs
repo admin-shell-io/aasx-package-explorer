@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
+using AnyUi;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -93,8 +94,20 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventSelectFile : AasxPluginResultEventBase
     {
+        public bool SaveDialogue = false;
+        public string Title = null;
+        public string FileName = null;
+        public string DefaultExt = null;
         public string Filter = null;
         public bool MultiSelect = false;
+    }
+
+    public class AasxPluginResultEventMessageBox : AasxPluginResultEventBase
+    {
+        public string Caption = "Question";
+        public string Message = "";
+        public AnyUiMessageBoxButton Buttons = AnyUiMessageBoxButton.YesNoCancel;
+        public AnyUiMessageBoxImage Image = AnyUiMessageBoxImage.None;
     }
 
     public class AasxPluginEventReturnBase
@@ -112,9 +125,16 @@ namespace AasxIntegrationBase
         public string[] FileNames;
     }
 
+    public class AasxPluginEventReturnMessageBox : AasxPluginEventReturnBase
+    {
+        public AnyUiMessageBoxResult Result = AnyUiMessageBoxResult.None;
+    }
+
     public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
     {
         public string PluginName = "";
+        public AnyUiPluginUpdateMode Mode = AnyUiPluginUpdateMode.All;
+        public bool UseInnerGrid = false;
     }
 
     public class AasxPluginResultLicense : AasxPluginResultBase

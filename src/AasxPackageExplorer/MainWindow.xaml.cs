@@ -29,6 +29,7 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
@@ -1112,8 +1113,11 @@ namespace AasxPackageExplorer
                         }
                     }
 
-                    // 2nd step: redisplay
-                    DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel, update.UpdateMode);
+                    // 2nd step: redisplay                                                          
+                    DispEditEntityPanel.RedisplayRenderedRoot(
+                        renderedPanel,                         
+                        update.UpdateMode,
+                        useInnerGrid: update.UseInnerGrid);
                 } 
                 else
                 {
@@ -1219,7 +1223,7 @@ namespace AasxPackageExplorer
         }
 
         private void UiHandleReRenderAnyUiInEntityPanel(
-            string pluginName)
+            string pluginName, AnyUiPluginUpdateMode mode, bool useInnerGrid = false)
         {
             // A plugin asks to re-render an exisiting panel.
             // Can get this information?
@@ -1230,7 +1234,7 @@ namespace AasxPackageExplorer
                 && renderedPanel.Children.Count > 0)
             {
                 // first step: invoke plugin?
-                var useInnerGrid = false;
+                // Note: is OK to have plugin name to null in order to disable calling plugin
                 var plugin = Plugins.FindPluginInstance(pluginName);
                 if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
                 {
@@ -1238,7 +1242,6 @@ namespace AasxPackageExplorer
                     {
                         var uires = plugin.InvokeAction(
                             "update-anyui-visual-extension", renderedPanel);
-                        useInnerGrid = true;
                     }
                     catch (Exception ex)
                     {
@@ -1248,7 +1251,10 @@ namespace AasxPackageExplorer
                 }
 
                 // 2nd step: redisplay
-                DispEditEntityPanel.RedisplayRenderedRoot(renderedPanel, useInnerGrid: useInnerGrid);
+                DispEditEntityPanel.RedisplayRenderedRoot(
+                    renderedPanel, 
+                    mode: mode, 
+                    useInnerGrid: useInnerGrid);
             }
             else
             {
@@ -1435,11 +1441,22 @@ namespace AasxPackageExplorer
                 {
                     // ask
                     if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                    var dlg = new Microsoft.Win32.OpenFileDialog();
+                    FileDialog dlg = null;
+                    if (fileSel.SaveDialogue)
+                        dlg = new Microsoft.Win32.SaveFileDialog();
+                    else
+                        dlg = new Microsoft.Win32.OpenFileDialog();
                     dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                    if (fileSel.Title != null)
+                        dlg.Title = fileSel.Title;
+                    if (fileSel.FileName != null)
+                        dlg.FileName = fileSel.FileName;
+                    if (fileSel.DefaultExt != null)
+                        dlg.DefaultExt = fileSel.DefaultExt;
                     if (fileSel.Filter != null)
                         dlg.Filter = fileSel.Filter;
-                    dlg.Multiselect = fileSel.MultiSelect;
+                    if (dlg is Microsoft.Win32.OpenFileDialog ofd)
+                        ofd.Multiselect = fileSel.MultiSelect;
                     var res = dlg.ShowDialog();
                     if (Options.Curr.UseFlyovers) this.CloseFlyover();
 
@@ -1456,12 +1473,27 @@ namespace AasxPackageExplorer
                     }
                 }
 
+                // Message Box
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox)
+                {
+                    // modal
+                    var uc = new MessageBoxFlyout(evMsgBox.Message, evMsgBox.Caption, 
+                                    evMsgBox.Buttons, evMsgBox.Image);
+                    this.StartFlyoverModal(uc);
+
+                    // fire back
+                    pluginInstance?.InvokeAction("event-return", 
+                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = uc.Result });
+                }
+
                 // Re-render Any UI Panels
                 //========================
 
                 if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
                 {
-                    UiHandleReRenderAnyUiInEntityPanel(update.PluginName);
+                    UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
                
                 #endregion

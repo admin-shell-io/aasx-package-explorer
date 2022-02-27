@@ -50,6 +50,7 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\UIComponents.Flags.Blazor\UIComponents.Flags.Blazor.csproj" />
   </ItemGroup>
 
   <ItemGroup>

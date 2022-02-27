@@ -121,7 +121,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SSIExtension", "SSIExtensio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginKnownSubmodels", "AasxPluginKnownSubmodels\AasxPluginKnownSubmodels.csproj", "{49046502-71CE-4F6A-97C5-324F88FA6F75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIComponents.Flags.Blazor", "UIComponents.Flags.Blazor\UIComponents.Flags.Blazor.csproj", "{BEB47CF1-976D-4BF4-B668-586F314608F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorCoutryFlag", "BlazorCoutryFlag\BlazorCoutryFlag.csproj", "{BEB47CF1-976D-4BF4-B668-586F314608F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

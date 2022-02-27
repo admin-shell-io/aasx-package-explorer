@@ -1,0 +1,87 @@
+﻿@namespace UIComponents.Flags
+
+@{
+    /*
+     * Blazor.CountryFlag
+     * Code from: https://github.com/MikeCodesDotNET/BlazorFlags
+     * License: MIT
+     * Changed to framwork: core3.1
+     */
+}
+
+
+<span class="@flagIconClass @Class" style="@backgroundStyle @Style"></span>
+
+@code {
+
+    [Parameter]
+    public Country Country { get; set; }
+
+    [Parameter]
+    public bool IsRounded { get; set; }
+
+    [Parameter]
+    public bool HasShadow { get; set; }
+
+    [Parameter]
+    public FlagSize Size { get; set; }
+
+    [Parameter]
+    public string Background { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+
+    private string backgroundStyle
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(Background))
+                return $"background-image: url(\"{Background}\");";
+            else
+                 return $"background-image: url(\"_content/UIComponents.Flags.Blazor/flags.png\");"; 
+        }
+    }
+
+
+    private string flagIconCountry
+    {
+        get
+        {
+            var country = this.Country.ToString().ToLower().Replace("_", "-");
+            return $"f-{country}";
+        }
+    }
+
+
+    private string flagMargin
+    {
+        get
+        {
+            switch (this.Size)
+            {
+                case FlagSize.Small:
+                    return "small-flag";              
+                case FlagSize.Large:
+                    return "large-flag";
+                default:
+                    return "normal-flag"; 
+                
+            }
+        }
+    }
+
+    private string flagIconClass
+    {
+        get
+        {
+            var rnd = IsRounded ? "rounded" : string.Empty;
+            var shdw = HasShadow ? "shadow" : string.Empty;
+
+            return $"flag {flagIconCountry} {flagMargin} {rnd} {shdw}".Trim();
+        }
+    }   
+}

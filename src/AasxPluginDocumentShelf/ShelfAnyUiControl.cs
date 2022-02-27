@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
@@ -24,12 +28,39 @@ namespace AasxPluginDocumentShelf
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
 
+        private static DocuShelfSemanticConfig _semConfigV10 = DocuShelfSemanticConfig.CreateDefaultV10();
+
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
+
+        private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
+
+        private DocumentEntity.SubmodelVersion _renderedVersion = DocumentEntity.SubmodelVersion.Default;
+
+        private List<DocumentEntity> _renderedEntities = new List<DocumentEntity>();
+
+        private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
+
+        #endregion
+
+        #region Cache for already generated Images
+        //========================================
+
+        private static Dictionary<string, BitmapImage> referableHashToCachedBitmap =
+            new Dictionary<string, BitmapImage>();
 
         #endregion
 
         #region Constructors, as for WPF control
         //=============
+
+        public ShelfAnyUiControl()
+        {
+            // Timer for loading
+            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+            dispatcherTimer.Start();
+        }
 
         public void Start(
             LogInstance log,
@@ -99,14 +130,14 @@ namespace AasxPluginDocumentShelf
                 return;
 
             // right now: hardcoded check for mdoel version
-            var modelVersion = DocumentEntity.SubmodelVersion.Default;
+            _renderedVersion = DocumentEntity.SubmodelVersion.Default;
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
             if (_submodel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
-                modelVersion = DocumentEntity.SubmodelVersion.V11;
+                _renderedVersion = DocumentEntity.SubmodelVersion.V11;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
-                modelVersion = DocumentEntity.SubmodelVersion.V10;
+                _renderedVersion = DocumentEntity.SubmodelVersion.V10;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
-                modelVersion = DocumentEntity.SubmodelVersion.V11;
+                _renderedVersion = DocumentEntity.SubmodelVersion.V11;
 
             // set usage info
             var useinf = foundRec.UsageInfo;
@@ -117,16 +148,16 @@ namespace AasxPluginDocumentShelf
             //    defaultLang = AasxLanguageHelper.LangEnumToISO639String[(int)theViewModel.TheSelectedLanguage];
 
             // make new list box items
-            var its = new List<DocumentEntity>();
-            if (modelVersion != DocumentEntity.SubmodelVersion.V11)
-                its = ListOfDocumentEntity.ParseSubmodelForV10(
+            _renderedEntities = new List<DocumentEntity>();
+            if (_renderedVersion != DocumentEntity.SubmodelVersion.V11)
+                _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV10(
                     _package, _submodel, _options, defaultLang, 0, AasxLanguageHelper.LangEnum.Any); // selectedDocClass, selectedLanguage);
             else
-                its = ListOfDocumentEntity.ParseSubmodelForV11(
+                _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV11(
                     _package, _submodel, defs11, defaultLang, 0, AasxLanguageHelper.LangEnum.Any); // selectedDocClass, selectedLanguage);
 
             // bring it to the panel            
-            RenderPanelOutside(view, uitk, modelVersion, useinf, defaultLang, its);
+            RenderPanelOutside(view, uitk, _renderedVersion, useinf, defaultLang, _renderedEntities);
         }
 
         protected double _lastScrollPosition = 0.0;
@@ -282,10 +313,57 @@ namespace AasxPluginDocumentShelf
             if (its != null)
                 foreach (var de in its)
                 {
-                    var rde = RenderDocumentEntity(uitk, de);
+                    var rde = RenderAnyUiDocumentEntity(uitk, de);
                     if (rde != null)
                         inner.Add(rde);
                 }
+
+            // post process
+            foreach (var ent in its)
+            {
+                // if a preview file exists, try load directly, but not interfere
+                // we delayed load logic, as these images might get more detailed
+                if (ent.PreviewFile?.Path?.HasContent() == true)
+                {
+                    var inputFn = ent.PreviewFile.Path;
+
+                    // from package?
+                    if (CheckIfPackageFile(inputFn))
+                        inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+
+                    ent.LoadImageFromPath(inputFn);
+                }
+
+                // delayed load logic
+                // can already put a generated image into the viewbox?
+                if (referableHashToCachedBitmap != null &&
+                    referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
+                {
+                    ent.ImgContainerAnyUi.Bitmap = referableHashToCachedBitmap[ent.ReferableHash];
+                }
+                else
+                {
+                    // trigger generation of image
+
+                    // check if already in list
+                    DocumentEntity foundDe = null;
+                    foreach (var de in theDocEntitiesToPreview)
+                        if (ent.ReferableHash == de.ReferableHash)
+                            foundDe = de;
+
+                    lock (theDocEntitiesToPreview)
+                    {
+                        if (foundDe != null)
+                            theDocEntitiesToPreview.Remove(foundDe);
+                        theDocEntitiesToPreview.Add(ent);
+                    }
+                }
+
+                // attach events and add
+                ent.DoubleClick += DocumentEntity_DoubleClick;
+                ent.MenuClick += DocumentEntity_MenuClick;
+                ent.DragStart += DocumentEntity_DragStart;
+            }
         }
 
         public AnyUiFrameworkElement RenderAnyUiDocumentEntity (
@@ -299,7 +377,8 @@ namespace AasxPluginDocumentShelf
             var border = new AnyUiBorder()
             {
                 BorderBrush = AnyUiBrushes.DarkGray,
-                BorderThickness = new AnyUiThickness(1),
+                BorderThickness = new AnyUiThickness(0.5),
+                Padding = new AnyUiThickness(1),
                 Margin = new AnyUiThickness(3)
             };
 
@@ -316,16 +395,22 @@ namespace AasxPluginDocumentShelf
             var sp1 = uitk.AddSmallStackPanelTo(g, 0, 1,
                 setHorizontal: true);
 
-            var wpCountries = sp1.Add(new AnyUiWrapPanel() { Orientation = AnyUiOrientation.Horizontal });
+            var wpCountries = sp1.Add(new AnyUiWrapPanel() { 
+                HorizontalAlignment = AnyUiHorizontalAlignment.Left,
+                Orientation = AnyUiOrientation.Horizontal });
 
             foreach (var code in de.CountryCodes)
                 wpCountries.Add(new AnyUiCountryFlag()
                 {
+                    HorizontalAlignment = AnyUiHorizontalAlignment.Left,
                     ISO3166Code = code,
-                    MinHeight = 14, MaxHeight = 14
+                    Margin = new AnyUiThickness(0,0, 3, 0),
+                    MinHeight = 14, MaxHeight = 14, MaxWidth = 20
                 }); 
 
             var orga = sp1.Add(new AnyUiTextBlock() { 
+                HorizontalAlignment = AnyUiHorizontalAlignment.Left,
+                HorizontalContentAlignment = AnyUiHorizontalAlignment.Left,
                 Text = $"{de.Organization}",
                 FontSize = 0.8f,
                 FontWeight = AnyUiFontWeight.Bold
@@ -347,12 +432,17 @@ namespace AasxPluginDocumentShelf
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 verticalContentAlignment: AnyUiVerticalAlignment.Center,
                 fontSize: 0.8f,
-                content: $"FURTHER INFO");
+                content: $"{de.FurtherInfo}");
 
             // Image
 
-            uitk.AddSmallImageTo(g, 1, 0,
-                margin: new AnyUiThickness(2));
+            de.ImgContainerAnyUi =
+                uitk.Set(
+                    uitk.AddSmallImageTo(g, 1, 0, 
+                        margin: new AnyUiThickness(2),
+                        stretch: AnyUiStretch.Fill),
+                    horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
+                    verticalAlignment: AnyUiVerticalAlignment.Stretch);
 
             // context menu
 
@@ -376,14 +466,12 @@ namespace AasxPluginDocumentShelf
                     },
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0),
+                    fontWeight: AnyUiFontWeight.Bold,
                     menuItemLambda: (o) =>
                     {
                         if (o is int ti)
-                            switch (ti)
-                            {
-                                case 0:
-                                    break;
-                            }
+                            // awkyard, but for compatibility to WPF version
+                            de?.RaiseMenuClick((new string[] { "Edit", "Delete", "Save file .." })[ti], null);
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -396,8 +484,29 @@ namespace AasxPluginDocumentShelf
         #region Event handling
         //=============
 
+        private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;
+
         public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
-        {            
+        {
+            if (_menuSubscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = _menuSubscribeForNextEventReturn;
+                _menuSubscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+
+            //if (this.currentFormInst?.subscribeForNextEventReturn != null)
+            //{
+            //    // delete first
+            //    var tempLambda = this.currentFormInst.subscribeForNextEventReturn;
+            //    this.currentFormInst.subscribeForNextEventReturn = null;
+
+            //    // execute
+            //    tempLambda(evtReturn);
+            //}
         }
 
         #endregion
@@ -420,8 +529,271 @@ namespace AasxPluginDocumentShelf
 
         #endregion
 
-        #region Button clicks
-        //=============
+        #region Callbacks
+        //===============
+
+        private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
+        {
+            // first check
+            if (e == null || menuItemHeader == null)
+                return;
+
+            //// what to do?
+            //if (tag == null && menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
+            //    e.SourceElementsDocumentVersion != null)
+            //{
+            //    // show the edit panel
+            //    OuterTabControl.SelectedItem = TabPanelEdit;
+            //    ButtonAddUpdateDoc.Content = "Update";
+
+            //    // make a template description for the content (remeber it)
+            //    formInUpdateMode = true;
+            //    updateSourceElements = e.SourceElementsDocument;
+
+            //    var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDesc(theOptions);
+
+            //    // latest version (from resources)
+            //    if (e.SmVersion == DocumentEntity.SubmodelVersion.V11)
+            //    {
+            //        desc = DocuShelfSemanticConfig.CreateVdi2770v11TemplateDesc();
+            //    }
+
+            //    this.currentFormDescription = desc;
+
+            //    // take over existing data
+            //    this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
+            //    this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
+            //    this.currentFormInst.outerEventStack = theEventStack;
+
+            //    // bring it to the panel
+            //    var elementsCntl = new FormListOfDifferentControl();
+            //    elementsCntl.ShowHeader = false;
+            //    elementsCntl.DataContext = this.currentFormInst;
+            //    ScrollViewerForm.Content = elementsCntl;
+
+            //    // OK
+            //    return;
+            //}
+
+            if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null 
+                && e.SourceElementsDocumentVersion != null && _submodel?.submodelElements != null 
+                && _options != null)
+            {
+                // the source elements need to match a Document
+                var semConf = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
+                var found = false;
+                foreach (var smcDoc in
+                    _submodel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                        semConf.SemIdDocument))
+                    if (smcDoc?.value == e.SourceElementsDocument)
+                    {
+                        // identify as well the DocumentVersion
+                        // (convert to List() because of Count() below)
+                        var allVers =
+                            e.SourceElementsDocument.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                                semConf.SemIdDocumentVersion).ToList();
+                        foreach (var smcVer in allVers)
+                            if (smcVer?.value == e.SourceElementsDocumentVersion)
+                            {
+                                // found 
+                                found = true;
+
+                                // access
+                                if (smcVer == null || smcVer.value == null || smcDoc == null || smcDoc.value == null)
+                                    continue;
+
+                                // ask back via event stack
+                                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventMessageBox()
+                                {
+                                    Caption = "Question",
+                                    Message = "Delete Document?",
+                                    Buttons = AnyUiMessageBoxButton.YesNo,
+                                    Image = AnyUiMessageBoxImage.Warning
+                                });
+
+                                // .. and receive incoming event
+                                _menuSubscribeForNextEventReturn = (revt) =>
+                                {
+                                    if (revt is AasxPluginEventReturnMessageBox rmb
+                                        && rmb.Result == AnyUiMessageBoxResult.Yes)
+                                    {
+                                        try
+                                        {
+                                            // confirmed! -> delete
+                                            if (allVers.Count < 2)
+                                                // remove the whole document!
+                                                _submodel.submodelElements.Remove(smcDoc);
+                                            else
+                                                // remove only the document version
+                                                e.SourceElementsDocument.Remove(smcVer);
+
+                                            // re-display also in Explorer
+                                            _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements());
+
+                                            // log
+                                            _log?.Info("Deleted Document(Version).");
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            _log?.Error(ex, "while saveing digital file to user specified loacation");
+                                        }
+                                    }
+                                };
+
+                                // OK
+                                return;
+                            }
+
+                        // ReSharper enable PossibleMultipleEnumeration
+                    }
+
+                if (!found)
+                    _log?.Error("Document element was not found properly!");
+            }
+
+            // save digital file?
+            if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
+            {
+                // make a file available
+                var inputFn = e.DigitalFile.Path;
+
+                if (CheckIfPackageFile(inputFn))
+                    inputFn = _package?.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path);
+
+                if (!inputFn.HasContent())
+                {
+                    _log.Error("Error making digital file available. Aborting!");
+                    return;
+                }
+
+                // ask for a file name via event stack
+                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventSelectFile()
+                {
+                    SaveDialogue = true,
+                    Title = "Save digital file as ..",
+                    FileName = System.IO.Path.GetFileName(e.DigitalFile.Path),
+                    DefaultExt = "*" + System.IO.Path.GetExtension(e.DigitalFile.Path)
+                });
+
+                // .. and receive incoming event
+                _menuSubscribeForNextEventReturn = (revt) =>
+                {
+                    if (revt is AasxPluginEventReturnSelectFile rsel
+                        && rsel.FileNames != null && rsel.FileNames.Length > 0)
+                    {
+                        try
+                        {
+                            // do it
+                            File.Copy(inputFn, rsel.FileNames[0], overwrite: true);
+                            _log.Info("Successfully saved {0}", rsel.FileNames[0]);
+                        }
+                        catch (Exception ex)
+                        {
+                            _log.Error(ex, "while saving digital file to user specified loacation");
+                        }
+                    }
+                };
+            }
+
+            //// check for a document reference
+            //if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
+            //    && reltup.Item2 != null && reltup.Item2.Count > 0)
+            //{
+            //    var evt = new AasxPluginResultEventNavigateToReference();
+            //    evt.targetReference = new AdminShell.Reference(reltup.Item2);
+            //    this.theEventStack.PushEvent(evt);
+            //}
+        }
+
+        private void DocumentEntity_DoubleClick(DocumentEntity e)
+        {
+            // first check
+            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1
+                || _eventStack == null)
+                return;
+
+            //try
+            //{
+            //    // temp input
+            //    var inputFn = e.DigitalFile.Path;
+            //    try
+            //    {
+            //        if (!inputFn.ToLower().Trim().StartsWith("http://")
+            //                && !inputFn.ToLower().Trim().StartsWith("https://"))
+            //            inputFn = thePackage.MakePackageFileAvailableAsTempFile(inputFn);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Log.Error(ex, "Making local file available");
+            //    }
+
+            //    // give over to event stack
+            //    var evt = new AasxPluginResultEventDisplayContentFile();
+            //    evt.fn = inputFn;
+            //    evt.mimeType = e.DigitalFile.MimeType;
+            //    this.theEventStack.PushEvent(evt);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, "when double-click");
+            //}
+        }
+
+        protected bool _inDragStart = false;
+
+        private void DocumentEntity_DragStart(DocumentEntity e)
+        {
+            // first check
+            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1 || _inDragStart)
+            {
+                _inDragStart = false;
+                return;
+            }
+
+            // lock
+            _inDragStart = true;
+
+            //// hastily prepare data
+            //try
+            //{
+            //    // make a file available
+            //    var inputFn = e.DigitalFile.Path;
+
+            //    // check if it an address in the package only
+            //    if (!inputFn.Trim().StartsWith("/"))
+            //    {
+            //        Log.Error("Can only drag package local files!");
+            //        _inDragStart = false;
+            //        return;
+            //    }
+
+            //    // now should make available
+            //    if (CheckIfPackageFile(inputFn))
+            //        inputFn = thePackage.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path, keepFilename: true);
+
+            //    if (!inputFn.HasContent())
+            //    {
+            //        Log.Error("Error making digital file available. Aborting!");
+            //        return;
+            //    }
+
+            //    // Package the data.
+            //    DataObject data = new DataObject();
+            //    data.SetFileDropList(new System.Collections.Specialized.StringCollection() { inputFn });
+
+            //    // Inititate the drag-and-drop operation.
+            //    DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, "when initiate file dragging");
+            //    _inDragStart = false;
+            //    return;
+            //}
+
+            // unlock
+            _inDragStart = false;
+        }
 
         private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd)
         {
@@ -435,6 +807,167 @@ namespace AasxPluginDocumentShelf
             return new AnyUiLambdaActionNone();
         }
 
-#endregion
+        #endregion
+
+        #region Timer
+        //===========
+
+        private object mutexDocEntitiesInPreview = new object();
+        private int numDocEntitiesInPreview = 0;
+        private const int maxDocEntitiesInPreview = 3;
+
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // access
+            if (_renderedEntities == null || theDocEntitiesToPreview == null)
+                return;
+
+            // each tick check for one image, if a preview shall be done
+            if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0 &&
+                numDocEntitiesInPreview < maxDocEntitiesInPreview)
+            {
+                // pop
+                DocumentEntity ent = null;
+                lock (theDocEntitiesToPreview)
+                {
+                    ent = theDocEntitiesToPreview[0];
+                    theDocEntitiesToPreview.RemoveAt(0);
+                }
+
+                try
+                {
+                    // temp input
+                    var inputFn = ent?.DigitalFile?.Path;
+                    if (inputFn != null)
+                    {
+                        // from package?
+                        if (CheckIfPackageFile(inputFn))
+                            inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
+
+                        // temp output
+                        string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
+
+                        // remember these for later deletion
+                        ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
+
+                        // start process
+                        string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
+                        string exeFn = System.IO.Path.Combine(
+                            System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
+
+                        var startInfo = new ProcessStartInfo(exeFn, arguments)
+                        {
+                            WindowStyle = ProcessWindowStyle.Hidden
+                        };
+
+                        var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+
+                        DocumentEntity lambdaEntity = ent;
+                        string outputFnBuffer = outputFn;
+                        process.Exited += (sender2, args) =>
+                        {
+                            // release number of parallel processes
+                            lock (mutexDocEntitiesInPreview)
+                            {
+                                numDocEntitiesInPreview--;
+                            }
+
+                            // take over data?
+                            if (lambdaEntity.ImgContainerAnyUi != null)
+                            {
+                                // trigger display image
+                                lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
+                            }
+                        };
+
+                        try
+                        {
+                            process.Start();
+                        }
+                        catch (Exception ex)
+                        {
+                            AdminShellNS.LogInternally.That.Error(
+                                ex, $"Failed to start the process: {startInfo.FileName} " +
+                                    $"with arguments {string.Join(" ", startInfo.Arguments)}");
+                        }
+
+                        // limit the number of parallel executions
+                        lock (mutexDocEntitiesInPreview)
+                        {
+                            numDocEntitiesInPreview++;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+            }
+
+            // over all items in order to check, if a prepared image shall be displayed
+            var updateDisplay = false;
+            foreach (var de in _renderedEntities)
+            {
+                if (de == null)
+                    continue;
+
+                if (de.ImageReadyToBeLoaded != null)
+                {
+                    // never again
+                    var tempFn = de.ImageReadyToBeLoaded;
+                    de.ImageReadyToBeLoaded = null;
+
+                    // try load
+                    try
+                    {
+                        // convert here, as the tick-Thread in STA / UI thread
+                        var bi = de.LoadImageFromPath(tempFn);
+                        updateDisplay = true;
+
+                        // now delete the associated files file!
+                        if (de.DeleteFilesAfterLoading != null)
+                            foreach (var fn in de.DeleteFilesAfterLoading)
+                                // it is quite likely (e.g. http:// files) that the delete fails!
+                                try
+                                {
+                                    File.Delete(fn);
+                                }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                }
+
+                        // remember in the cache
+                        if (bi != null
+                            && referableHashToCachedBitmap != null
+                            && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
+                            referableHashToCachedBitmap[de.ReferableHash] = bi;
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+                }
+            }
+
+            if (_eventStack != null && updateDisplay)
+                _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi() { 
+                    PluginName = null, // do NOT call the plugin before rendering
+                    Mode = AnyUiPluginUpdateMode.StatusToUi,
+                    UseInnerGrid = true
+                });
+        }
+
+        #endregion
+
+        #region Utilities
+        //===============
+
+        private bool CheckIfPackageFile(string fn)
+        {
+            return fn.StartsWith(@"/");
+        }
+
+        #endregion
     }
 }
