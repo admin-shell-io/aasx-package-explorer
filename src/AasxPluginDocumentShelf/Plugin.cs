@@ -31,9 +31,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private ShelfControl _shelfControl = null;
         private AasxPluginDocumentShelf.ShelfAnyUiControl _anyUiControl = null;
 
+        public static string PluginName = "AasxPluginDocumentShelf";
+
         public string GetPluginName()
         {
-            return "AasxPluginDocumentShelf";
+            return PluginName;
         }
 
         public void InitPlugin(string[] args)

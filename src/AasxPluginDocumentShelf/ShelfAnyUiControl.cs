@@ -28,8 +28,6 @@ namespace AasxPluginDocumentShelf
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
 
-        private static DocuShelfSemanticConfig _semConfigV10 = DocuShelfSemanticConfig.CreateDefaultV10();
-
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
         private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
@@ -39,6 +37,14 @@ namespace AasxPluginDocumentShelf
         private List<DocumentEntity> _renderedEntities = new List<DocumentEntity>();
 
         private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
+
+        // members for form editing
+
+        protected FormDescSubmodelElementCollection currentFormDescription = null;
+        protected FormInstanceSubmodelElementCollection currentFormInst = null;
+
+        protected bool formInUpdateMode = false;
+        protected AdminShell.SubmodelElementWrapperCollection updateSourceElements = null;
 
         #endregion
 
@@ -77,8 +83,12 @@ namespace AasxPluginDocumentShelf
             _eventStack = eventStack;
             _panel = panel;
 
+            // no form, yet
+            currentFormDescription = null;
+            currentFormInst = null;
+
             // fill given panel
-            DisplaySubmodel(_panel, _uitk);
+            DisplayFullShelf(_panel, _uitk);
         }
 
         public static ShelfAnyUiControl FillWithAnyUiControls(
@@ -114,7 +124,7 @@ namespace AasxPluginDocumentShelf
         #region Display Submodel
         //=============
 
-        private void DisplaySubmodel(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        private void DisplayFullShelf(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
             // test trivial access
             if (_options == null || _submodel?.semanticId == null)
@@ -401,7 +411,7 @@ namespace AasxPluginDocumentShelf
                     && ed.Mask == AnyUiEventMask.LeftDown
                     && ed.ClickCount == 2)
                 {
-                    ;
+                    de.RaiseDoubleClick();
                 }
                 return new AnyUiLambdaActionNone();
             };
@@ -415,7 +425,6 @@ namespace AasxPluginDocumentShelf
             border.Child = g;
 
             // Orga and Country flags flapping in the breez
-
             var sp1 = uitk.AddSmallStackPanelTo(g, 0, 1,
                 setHorizontal: true);
 
@@ -441,8 +450,8 @@ namespace AasxPluginDocumentShelf
             });
 
             // Title
-
             uitk.AddSmallBasicLabelTo(g, 1, 1,
+                textIsSelectable: false,
                 margin: new AnyUiThickness(2),
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 verticalContentAlignment: AnyUiVerticalAlignment.Center,
@@ -450,8 +459,8 @@ namespace AasxPluginDocumentShelf
                 content: $"{de.Title}");
 
             // further info
-
             uitk.AddSmallBasicLabelTo(g, 2, 1,
+                textIsSelectable: false,
                 margin: new AnyUiThickness(2),
                 verticalAlignment: AnyUiVerticalAlignment.Center,
                 verticalContentAlignment: AnyUiVerticalAlignment.Center,
@@ -459,7 +468,6 @@ namespace AasxPluginDocumentShelf
                 content: $"{de.FurtherInfo}");
 
             // Image
-
             de.ImgContainerAnyUi =
                 uitk.Set(
                     uitk.AddSmallImageTo(g, 1, 0, 
@@ -468,19 +476,19 @@ namespace AasxPluginDocumentShelf
                     horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                     verticalAlignment: AnyUiVerticalAlignment.Stretch);
 
+            // image allows drag
+            de.ImgContainerAnyUi.EmitEvent = AnyUiEventMask.DragStart;
+            de.ImgContainerAnyUi.setValueLambda = (o) =>
+            {
+                if (o is AnyUiEventData ed
+                    && ed.Mask == AnyUiEventMask.DragStart)
+                {
+                    de.RaiseDragStart();
+                }
+                return new AnyUiLambdaActionNone();
+            };
+
             // context menu
-
-            //AnyUiUIElement.RegisterControl(
-            //    uitk.AddSmallButtonTo(g, 2, 2, margin: new AnyUiThickness(2.0),
-            //        verticalAlignment: AnyUiVerticalAlignment.Top,
-            //        content: "\u22ee"),
-            //        (o) =>
-            //        {
-            //            return new AnyUiLambdaActionNone();
-            //        });
-
-
-            // button [hamburger]
             uitk.AddSmallContextMenuItemTo(g, 2, 2, 
                     "\u22ee",
                     new[] {
@@ -547,8 +555,18 @@ namespace AasxPluginDocumentShelf
 
             // ok, re-assign panel and re-display
             _panel = newPanel;
-            _panel.Children.Clear();            
-            // RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
+            _panel.Children.Clear();
+
+            // two different views can be renders
+            if (currentFormInst != null)
+            {
+                // RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
+            }
+            else
+            {
+                // the default: the full shelf
+                DisplayFullShelf(_panel, _uitk);
+            }
         }
 
         #endregion
@@ -562,42 +580,35 @@ namespace AasxPluginDocumentShelf
             if (e == null || menuItemHeader == null)
                 return;
 
-            //// what to do?
-            //if (tag == null && menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
-            //    e.SourceElementsDocumentVersion != null)
-            //{
-            //    // show the edit panel
-            //    OuterTabControl.SelectedItem = TabPanelEdit;
-            //    ButtonAddUpdateDoc.Content = "Update";
+            // what to do?
+            if (tag == null && menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
+                e.SourceElementsDocumentVersion != null)
+            {
+                // make a template description for the content (remeber it)
+                formInUpdateMode = true;
+                updateSourceElements = e.SourceElementsDocument;
 
-            //    // make a template description for the content (remeber it)
-            //    formInUpdateMode = true;
-            //    updateSourceElements = e.SourceElementsDocument;
+                var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
+                var defs = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
+                this.currentFormDescription = desc;
 
-            //    var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDesc(theOptions);
+                // take over existing data
+                this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
+                this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
+                this.currentFormInst.outerEventStack = _eventStack;
 
-            //    // latest version (from resources)
-            //    if (e.SmVersion == DocumentEntity.SubmodelVersion.V11)
-            //    {
-            //        desc = DocuShelfSemanticConfig.CreateVdi2770v11TemplateDesc();
-            //    }
+                // bring it to the panel by redrawing the plugin
+                _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+                {
+                    // get the always currentplugin name
+                    PluginName = AasxIntegrationBase.AasxPlugin.PluginName, 
+                    Mode = AnyUiPluginUpdateMode.All,
+                    UseInnerGrid = true
+                });
 
-            //    this.currentFormDescription = desc;
-
-            //    // take over existing data
-            //    this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
-            //    this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
-            //    this.currentFormInst.outerEventStack = theEventStack;
-
-            //    // bring it to the panel
-            //    var elementsCntl = new FormListOfDifferentControl();
-            //    elementsCntl.ShowHeader = false;
-            //    elementsCntl.DataContext = this.currentFormInst;
-            //    ScrollViewerForm.Content = elementsCntl;
-
-            //    // OK
-            //    return;
-            //}
+                // OK
+                return;
+            }
 
             if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null 
                 && e.SourceElementsDocumentVersion != null && _submodel?.submodelElements != null 
@@ -736,31 +747,32 @@ namespace AasxPluginDocumentShelf
                 || _eventStack == null)
                 return;
 
-            //try
-            //{
-            //    // temp input
-            //    var inputFn = e.DigitalFile.Path;
-            //    try
-            //    {
-            //        if (!inputFn.ToLower().Trim().StartsWith("http://")
-            //                && !inputFn.ToLower().Trim().StartsWith("https://"))
-            //            inputFn = thePackage.MakePackageFileAvailableAsTempFile(inputFn);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Log.Error(ex, "Making local file available");
-            //    }
+            try
+            {
+                // temp input
+                var inputFn = e.DigitalFile.Path;
+                try
+                {
+                    if (!inputFn.ToLower().Trim().StartsWith("http://")
+                            && !inputFn.ToLower().Trim().StartsWith("https://"))
+                        inputFn = _package?.MakePackageFileAvailableAsTempFile(inputFn);
+                }
+                catch (Exception ex)
+                {
+                    _log?.Error(ex, "Making local file available");
+                }
 
-            //    // give over to event stack
-            //    var evt = new AasxPluginResultEventDisplayContentFile();
-            //    evt.fn = inputFn;
-            //    evt.mimeType = e.DigitalFile.MimeType;
-            //    this.theEventStack.PushEvent(evt);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error(ex, "when double-click");
-            //}
+                // give over to event stack
+                _eventStack?.PushEvent(new AasxPluginResultEventDisplayContentFile()
+                {
+                    fn = inputFn,
+                    mimeType = e.DigitalFile.MimeType
+                });
+            }
+            catch (Exception ex)
+            {
+                _log?.Error(ex, "when double-click");
+            }
         }
 
         protected bool _inDragStart = false;
@@ -777,43 +789,39 @@ namespace AasxPluginDocumentShelf
             // lock
             _inDragStart = true;
 
-            //// hastily prepare data
-            //try
-            //{
-            //    // make a file available
-            //    var inputFn = e.DigitalFile.Path;
+            // hastily prepare data
+            try
+            {
+                // make a file available
+                var inputFn = e.DigitalFile.Path;
 
-            //    // check if it an address in the package only
-            //    if (!inputFn.Trim().StartsWith("/"))
-            //    {
-            //        Log.Error("Can only drag package local files!");
-            //        _inDragStart = false;
-            //        return;
-            //    }
+                // check if it an address in the package only
+                if (!inputFn.Trim().StartsWith("/"))
+                {
+                    _log?.Error("Can only drag package local files!");
+                    _inDragStart = false;
+                    return;
+                }
 
-            //    // now should make available
-            //    if (CheckIfPackageFile(inputFn))
-            //        inputFn = thePackage.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path, keepFilename: true);
+                // now should make available
+                if (CheckIfPackageFile(inputFn))
+                    inputFn = _package?.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path, keepFilename: true);
 
-            //    if (!inputFn.HasContent())
-            //    {
-            //        Log.Error("Error making digital file available. Aborting!");
-            //        return;
-            //    }
+                if (!inputFn.HasContent())
+                {
+                    _log?.Error("Error making digital file available. Aborting!");
+                    return;
+                }
 
-            //    // Package the data.
-            //    DataObject data = new DataObject();
-            //    data.SetFileDropList(new System.Collections.Specialized.StringCollection() { inputFn });
-
-            //    // Inititate the drag-and-drop operation.
-            //    DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error(ex, "when initiate file dragging");
-            //    _inDragStart = false;
-            //    return;
-            //}
+                // start the operation
+                e.ImgContainerAnyUi?.DisplayData?.DoDragDropFiles(e.ImgContainerAnyUi, new[] { inputFn });
+            }
+            catch (Exception ex)
+            {
+                _log?.Error(ex, "when initiate file dragging");
+                _inDragStart = false;
+                return;
+            }
 
             // unlock
             _inDragStart = false;

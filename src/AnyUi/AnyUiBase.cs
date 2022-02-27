@@ -297,6 +297,10 @@ namespace AnyUi
 
     public class AnyUiDisplayDataBase
     {
+        /// <summary>
+        /// Initiates a drop operation with one ore more files given by filenames.
+        /// </summary>
+        public virtual void DoDragDropFiles(AnyUiUIElement elem, string[] files) { }
     }
 
     //
@@ -833,15 +837,8 @@ namespace AnyUi
         public string Text = null;
     }
 
-    public class AnyUiSelectableTextBlock : AnyUiControl
+    public class AnyUiSelectableTextBlock : AnyUiTextBlock
     {
-        //public AnyUiBrush Background;
-        //public AnyUiBrush Foreground;
-        public AnyUiThickness Padding;
-        public AnyUiTextWrapping? TextWrapping;
-        public AnyUiFontWeight? FontWeight;
-        // public double? FontSize;
-        public string Text = null;
         public bool TextAsHyperlink = false;
     }
 
