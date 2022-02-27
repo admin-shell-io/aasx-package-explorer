@@ -150,8 +150,17 @@ namespace AasxPluginDocumentShelf
         /// <summary>
         /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
         /// </summary>
-        /// <param name="opt"></param>
-        /// <returns></returns>
+        public static FormDescSubmodelElementCollection CreateVdi2770TemplateDescFor(
+            DocumentEntity.SubmodelVersion ver, DocumentShelfOptions opt)
+        {
+            if (ver == DocumentEntity.SubmodelVersion.V11)
+                return CreateVdi2770v11TemplateDesc();
+            return CreateVdi2770TemplateDesc(opt);
+        }
+
+        /// <summary>
+        /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
+        /// </summary>
         public static FormDescSubmodelElementCollection CreateVdi2770TemplateDesc(DocumentShelfOptions opt)
         {
             if (opt == null)

@@ -42,6 +42,29 @@ namespace AnyUi
         {
             this.Context = Context;
         }
+
+        /// <summary>
+        /// Initiates a drop operation with one ore more files given by filenames.
+        /// </summary>
+        public override void DoDragDropFiles(AnyUiUIElement elem, string[] files) 
+        {
+            // access 
+            if (files == null || files.Length < 1)
+                return;
+            var sc = new System.Collections.Specialized.StringCollection();
+            sc.AddRange(files);
+
+            // WPF element
+            var dd = elem?.DisplayData as AnyUiDisplayDataWpf;
+
+            // start
+            DataObject data = new DataObject();
+            data.SetFileDropList(sc);
+
+            // Inititate the drag-and-drop operation.
+            DragDrop.DoDragDrop(dd?.WpfElement, data, DragDropEffects.Copy | DragDropEffects.Move);
+        }
+
     }
 
     public class AnyUiDisplayContextWpf : AnyUiContextBase
@@ -486,21 +509,6 @@ namespace AnyUi
                 {
                    if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf)
                    {
-                        if (cntl.Background != null)
-                            wpf.Background = GetWpfBrush(cntl.Background);
-                        if (cntl.Foreground != null)
-                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                        if (cntl.Padding != null)
-                            wpf.Padding = GetWpfTickness(cntl.Padding);
-                        if (cntl.TextWrapping.HasValue)
-                            wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                        if (cntl.FontSize.HasValue)
-                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
-
                         if (cntl.TextAsHyperlink)
                         {
                             var hl = new System.Windows.Documents.Hyperlink()

@@ -368,16 +368,21 @@ namespace AnyUi
             return (cb);
         }
 
-        public AnyUiSelectableTextBlock AddSmallBasicLabelTo(
+        public AnyUiTextBlock AddSmallBasicLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false,
             double? fontSize = null, int? colSpan = null, bool setWrap = false,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             AnyUiHorizontalAlignment? horizontalAlignment = null,
-            AnyUiHorizontalAlignment? horizontalContentAlignment = null)
+            AnyUiHorizontalAlignment? horizontalContentAlignment = null,
+            bool textIsSelectable = true)
         {
-            var lab = new AnyUiSelectableTextBlock();
+            AnyUiTextBlock lab = null;
+            if (textIsSelectable) 
+                lab = new AnyUiSelectableTextBlock();
+            else
+                lab = new AnyUiTextBlock();
 
             lab.Margin = margin;
             lab.Padding = padding;
