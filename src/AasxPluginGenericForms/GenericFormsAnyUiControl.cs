@@ -188,7 +188,7 @@ namespace AasxPluginGenericForms
                 uitk.AddSmallScrollViewerTo(outer, 2, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    skipForBrowser: true, initialScrollPosition: initialScrollPos),
+                    skipForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: initialScrollPos),
                 (o) =>
                 {
                     if (o is Tuple<double, double> positions)

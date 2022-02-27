@@ -199,6 +199,9 @@ namespace AnyUi
         [JsonIgnore]
         private ListOfRenderRec RenderRecs = new ListOfRenderRec();
 
+        [JsonIgnore]
+        private Point _dragStartPoint = new Point(0, 0);
+
         private string FilterForBadText(string input)
         {
             var res = new StringBuilder();
@@ -233,6 +236,34 @@ namespace AnyUi
                         if (cntl.MaxWidth.HasValue)
                             wpf.MaxWidth = cntl.MaxWidth.Value;
                         wpf.Tag = cntl.Tag;
+
+                        if ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                            wpf.MouseLeftButtonDown += (s5, e5) => cntl.setValueLambda?.Invoke(
+                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount));
+
+                        if ((cntl.EmitEvent & AnyUiEventMask.DragStart) > 0)
+                        {
+                            wpf.MouseLeftButtonDown +=(s6, e6) =>
+                            {
+                                _dragStartPoint = e6.GetPosition(null);
+                            };
+
+                            wpf.PreviewMouseMove += (s7, e7) =>
+                            {
+                                if (e7.LeftButton == MouseButtonState.Pressed)
+                                {
+                                    Point position = e7.GetPosition(null);
+                                    if (Math.Abs(position.X - _dragStartPoint.X) 
+                                            > SystemParameters.MinimumHorizontalDragDistance 
+                                        || Math.Abs(position.Y - _dragStartPoint.Y) 
+                                            > SystemParameters.MinimumVerticalDragDistance)
+                                    {
+                                        cntl.setValueLambda?.Invoke(
+                                            new AnyUiEventData(AnyUiEventMask.DragStart, cntl));
+                                    }
+                                }
+                            };
+                        }
                     }
                 }),
 
@@ -524,6 +555,8 @@ namespace AnyUi
                                     wpf.Source = bs2;
                             }
                         };
+
+                        
                    }
                 }),
 

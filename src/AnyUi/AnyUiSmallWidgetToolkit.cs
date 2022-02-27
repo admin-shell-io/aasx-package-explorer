@@ -49,6 +49,29 @@ namespace AnyUi
             return g;
         }
 
+        public AnyUiBorder AddSmallBorderTo(
+            AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
+            int? colSpan = null, int? rowSpan = null,
+            AnyUiThickness borderThickness = null, AnyUiBrush borderBrush = null)
+        {
+            var brd = new AnyUiBorder();
+            brd.Margin = margin;
+            if (background != null)
+                brd.Background = background;
+            if (borderThickness != null)
+                brd.BorderThickness = borderThickness;
+            if (borderBrush != null)
+                brd.BorderBrush = borderBrush;
+            AnyUiGrid.SetRow(brd, row);
+            AnyUiGrid.SetColumn(brd, col);
+            if (rowSpan.HasValue)
+                AnyUiGrid.SetRowSpan(brd, rowSpan.Value);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(brd, colSpan.Value);
+            g.Children.Add(brd);
+            return (brd);
+        }
+
         public AnyUiWrapPanel AddSmallWrapPanelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
             int? colSpan = null)
@@ -91,7 +114,7 @@ namespace AnyUi
             int? colSpan = null,
             AnyUiScrollBarVisibility? horizontalScrollBarVisibility = null,
             AnyUiScrollBarVisibility? verticalScrollBarVisibility = null,
-            bool? skipForBrowser = null,
+            AnyUiTargetPlatform? skipForTarget = null,
             double? initialScrollPosition = null)
         {
             var sv = new AnyUiScrollViewer();
@@ -102,8 +125,8 @@ namespace AnyUi
                 sv.HorizontalScrollBarVisibility = horizontalScrollBarVisibility.Value;
             if (verticalScrollBarVisibility.HasValue)
                 sv.VerticalScrollBarVisibility = verticalScrollBarVisibility.Value;
-            if (skipForBrowser.HasValue)
-                sv.SkipForBrowser = skipForBrowser.Value;
+            if (skipForTarget.HasValue)
+                sv.SkipForTarget = skipForTarget.Value;
             if (initialScrollPosition.HasValue)
                 sv.InitialScrollPosition = initialScrollPosition.Value;
             AnyUiGrid.SetRow(sv, row);
@@ -394,7 +417,8 @@ namespace AnyUi
             AnyUiHorizontalAlignment? horizontalAlignment = null,
             AnyUiHorizontalAlignment? horizontalContentAlignment = null,
             AnyUiVerticalAlignment? verticalAlignment = null,
-            AnyUiVerticalAlignment? verticalContentAlignment = null) where T : AnyUiFrameworkElement
+            AnyUiVerticalAlignment? verticalContentAlignment = null,
+            AnyUiTargetPlatform? skipForTarget = null) where T : AnyUiFrameworkElement
         {
             // access
             if (fe == null)
@@ -412,6 +436,9 @@ namespace AnyUi
                 fe.MinWidth = minWidth;
             if (maxWidth.HasValue)
                 fe.MaxWidth = maxWidth;
+
+            if (skipForTarget.HasValue)
+                fe.SkipForTarget = skipForTarget.Value;
 
             // ContentControl
             if (fe is AnyUiContentControl ctl)

@@ -293,7 +293,7 @@ namespace AasxPluginDocumentShelf
                 uitk.AddSmallScrollViewerTo(outer, 3, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    skipForBrowser: true, initialScrollPosition: initialScrollPos),
+                    skipForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: initialScrollPos),
                 (o) =>
                 {
                     if (o is Tuple<double, double> positions)
@@ -373,13 +373,37 @@ namespace AasxPluginDocumentShelf
             if (de == null)
                 return new AnyUiStackPanel();
 
-            // make a border
-            var border = new AnyUiBorder()
+            // make a outer grid
+            var outerG = uitk.AddSmallGrid(1, 1,
+                colWidths: new[] { "*" }, rowHeights: new[] { "*" },
+                margin: new AnyUiThickness(0));
+
+            // make background border
+            for (int i=2; i>0; i--)
+                uitk.AddSmallBorderTo(outerG, 0, 0,
+                    margin: new AnyUiThickness(3 + 2*i, 3 + 2*i, 3 + 4 - 2*i, 3 + 4 - 2*i),
+                    background: AnyUiBrushes.White,
+                    borderBrush: AnyUiBrushes.Black,
+                    borderThickness: new AnyUiThickness(1.0));
+
+            // make the border, which will get content
+            var border = uitk.AddSmallBorderTo(outerG, 0, 0, 
+                margin: new AnyUiThickness(3, 3, 3 + 4, 3 + 4),
+                background: AnyUiBrushes.White,
+                borderBrush: AnyUiBrushes.Black,
+                borderThickness: new AnyUiThickness(1.0));
+
+            // the border emits double clicks
+            border.EmitEvent = AnyUiEventMask.LeftDown;
+            border.setValueLambda = (o) =>
             {
-                BorderBrush = AnyUiBrushes.DarkGray,
-                BorderThickness = new AnyUiThickness(0.5),
-                Padding = new AnyUiThickness(1),
-                Margin = new AnyUiThickness(3)
+                if (o is AnyUiEventData ed
+                    && ed.Mask == AnyUiEventMask.LeftDown
+                    && ed.ClickCount == 2)
+                {
+                    ;
+                }
+                return new AnyUiLambdaActionNone();
             };
 
             // make a grid
@@ -476,7 +500,7 @@ namespace AasxPluginDocumentShelf
                     });
 
             // ok
-            return border;
+            return outerG;
         }
 
         #endregion
