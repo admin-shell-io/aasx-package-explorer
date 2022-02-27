@@ -4,6 +4,7 @@
 @using AnyUi
 @using BlazorUI.Shared
 @using BlazorUI.Pages
+@using UIComponents.Flags
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
 
@@ -286,8 +287,17 @@
         }
         else
         {
-            string w = (comb.Text.Length * 11 + 60).ToString() + "px";
-            style += "width:@w";
+            style += "width: auto";
+            style += "box-sizing: border-box";
+            style += "display:inline-block";
+
+            style.SetMinMaxWidth(Element);
+
+            if (comb.Text != null)
+            {
+                string w = (comb.Text.Length * 11 + 60).ToString() + "px";
+                style += $"width: {w}";
+            }
         }
 
         <select class="form-control selectpicker" value="@comb.Text" style="@style"
@@ -305,6 +315,20 @@
                 Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
             }
         }
+    }
+
+    if (Element is AnyUiCountryFlag flag)
+    {
+        style += "width: auto";
+        style += "box-sizing: border-box";
+        style += "display:inline-block";
+
+        style.SetMinMaxWidth(Element);
+
+        var country = Country.DE;
+        var size = FlagSize.Small;
+
+        <CountryFlag Country="@country" Size="@size" Class="mx-3"></CountryFlag>
     }
 }
 

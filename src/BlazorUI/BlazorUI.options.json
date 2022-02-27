@@ -5,6 +5,10 @@
         {
             "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
             "Args": []
-        }
+        },
+      {
+        "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
+        "Args": []
+      }
     ]
 }

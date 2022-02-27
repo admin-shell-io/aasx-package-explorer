@@ -180,10 +180,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
 
             if (action == "event-return" && args != null
-                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase
-                && _shelfControl != null)
+                && args.Length >= 1 && args[0] is AasxPluginEventReturnBase erb)
             {
-                _shelfControl.HandleEventReturn(args[0] as AasxPluginEventReturnBase);
+                if (_shelfControl != null)
+                    _shelfControl.HandleEventReturn(erb);
+                if (_anyUiControl != null)
+                    _anyUiControl.HandleEventReturn(erb);
             }
 
             if (action == "get-check-visual-extension")

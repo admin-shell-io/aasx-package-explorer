@@ -195,7 +195,8 @@ namespace AasxIntegrationBase.AasForms
             var la = new AnyUiLambdaActionPluginUpdateAnyUi()
             {
                 // TODO: improve, this is not always the case
-                PluginName = "AasxPluginGenericForms"
+                PluginName = "AasxPluginGenericForms",
+                UseInnerGrid = true
             };
             return la;
         }
@@ -205,7 +206,8 @@ namespace AasxIntegrationBase.AasForms
             var la = new AasxPluginEventReturnUpdateAnyUi()
             {
                 // TODO: improve, this is not always the case
-                PluginName = "AasxPluginGenericForms"
+                PluginName = "AasxPluginGenericForms",
+                UseInnerGrid = true
             };
             return la;
         }

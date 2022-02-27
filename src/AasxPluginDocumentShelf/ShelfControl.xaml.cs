@@ -46,7 +46,7 @@ namespace AasxPluginDocumentShelf
         private AdminShellPackageEnv thePackage = null;
         private AdminShell.Submodel theSubmodel = null;
         private DocumentShelfOptions theOptions = null;
-        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.CreateDefault();
+        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.CreateDefaultV10();
         private PluginEventStack theEventStack = null;
 
         private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";

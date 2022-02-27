@@ -246,6 +246,11 @@ namespace AnyUi
                        if (cntl.HorizontalContentAlignment.HasValue)
                            wpf.HorizontalContentAlignment =
                             (HorizontalAlignment)((int) cntl.HorizontalContentAlignment.Value);
+
+                       if (cntl.FontSize.HasValue)
+                            wpf.FontSize = cntl.FontSize.Value;
+                       if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                    }
                 }),
 
@@ -508,6 +513,17 @@ namespace AnyUi
                    {
                         if (cntl.Bitmap is BitmapSource bs)
                             wpf.Source = bs;
+
+                        wpf.Stretch = (Stretch)(int) cntl.Stretch;
+
+                        cntl.TouchLambda = (mode) =>
+                        {
+                            if (mode == AnyUiPluginUpdateMode.StatusToUi)
+                            {
+                                if (cntl.Bitmap is BitmapSource bs2)
+                                    wpf.Source = bs2;
+                            }
+                        };
                    }
                 }),
 
@@ -784,9 +800,17 @@ namespace AnyUi
             if (mode == AnyUiPluginUpdateMode.StatusToUi
                 && dd.WpfElement != null && allowReUse && topClass)
             {
+                // itself
                 if (el.Touched && el.TouchLambda != null)
                     el.TouchLambda(mode);
                 el.Touched = false;
+
+                // recurse into
+                if (el is AnyUi.IEnumerateChildren ien)
+                    foreach (var elch in ien.GetChildren())
+                        GetOrCreateWpfElement(elch, allowCreate: false, allowReUse: true, mode: mode);
+
+                // return (effectively TOP element)
                 return dd.WpfElement;
             }
 

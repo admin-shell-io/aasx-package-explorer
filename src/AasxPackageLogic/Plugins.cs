@@ -115,7 +115,7 @@ namespace AasxPackageLogic
 
         public static PluginInstance FindPluginInstance(string pname)
         {
-            if (LoadedPlugins == null || !LoadedPlugins.ContainsKey(pname))
+            if (LoadedPlugins == null || !pname.HasContent() || !LoadedPlugins.ContainsKey(pname))
                 return null;
             return LoadedPlugins[pname];
         }

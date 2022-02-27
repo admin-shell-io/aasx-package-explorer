@@ -672,17 +672,19 @@ namespace AasxPackageExplorer
             theMasterPanel.Children.Clear();
             UIElement spwpf = null;
 
+            var allowReUse = mode == AnyUiPluginUpdateMode.StatusToUi;
+
             if (useInnerGrid
                 && root is AnyUiStackPanel stack
                 && stack?.Children != null
                 && stack.Children.Count == 1
                 && stack.Children[0] is AnyUiGrid grid)
             {
-                spwpf = _displayContext.GetOrCreateWpfElement(grid, allowReUse: false);
+                spwpf = _displayContext.GetOrCreateWpfElement(grid, allowReUse: allowReUse, mode: mode);
             }
             else
             {
-                spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: false);
+                spwpf = _displayContext.GetOrCreateWpfElement(root, allowReUse: allowReUse, mode: mode);
                 DockPanel.SetDock(spwpf, Dock.Top);
             }
 

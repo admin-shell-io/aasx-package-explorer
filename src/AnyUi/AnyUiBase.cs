@@ -278,6 +278,14 @@ namespace AnyUi
         Collapsed = 2
     }
 
+    public enum AnyUiStretch
+    {
+        None,
+        Fill,
+        Uniform,
+        UniformToFill
+    }
+
     //
     // bridge objects between AnyUI base classes and implementations
     //
@@ -334,6 +342,7 @@ namespace AnyUi
         public string PluginName = "";
         public object[] ActionArgs = null;
         public AnyUiPluginUpdateMode UpdateMode = AnyUiPluginUpdateMode.All;
+        public bool UseInnerGrid = false;
     }
 
     /// <summary>
@@ -438,6 +447,13 @@ namespace AnyUi
         public Func<object, AnyUiLambdaActionBase> setValueLambda = null;
 
         /// <summary>
+        /// Arbitrary object/ tag exclusively used for ad-hoc debug. Do not use for long-term
+        /// purposes.
+        /// </summary>
+        [JsonIgnore]
+        public object DebugTag = null;
+
+        /// <summary>
         /// If not null, this lambda result is automatically emitted as outside action,
         /// when the control "feels" to have a "final" selection (Enter, oder ComboBox selected)
         /// </summary>
@@ -453,6 +469,33 @@ namespace AnyUi
         /// Touches the element
         /// </summary>
         public virtual void Touch() { Touched = true; }
+
+        //public class TouchProperty<T>
+        //{
+        //    protected T _value;
+        //    protected Action _touched;
+        //    public T Value { 
+        //        get { 
+        //            return _value; 
+        //        } 
+        //        set
+        //        {
+        //            _value = value;
+        //            _touched?.Invoke();
+        //        }
+        //    }
+
+        //    public TouchProperty(Action touched)
+        //    {
+        //        _touched = touched;
+        //    }
+
+        //    public TouchProperty(Action touched, T inital)
+        //    {
+        //        _value = inital;
+        //        _touched = touched;
+        //    }
+        //}
 
         /// <summary>
         /// Can be set by the rendering of the element to perform status updates, if touched.
@@ -538,6 +581,7 @@ namespace AnyUi
         public AnyUiVerticalAlignment? VerticalContentAlignment;
         public AnyUiHorizontalAlignment? HorizontalContentAlignment;
         public double? FontSize;
+        public AnyUiFontWeight? FontWeight;
 
         public AnyUiBrush GetBackground() => Background;
     }
@@ -832,7 +876,11 @@ namespace AnyUi
         /// <summary>
         /// The bitmap data; as anonymous object (because of dependencies).
         /// Probably a ImageSource
+        /// Setting touches to update
         /// </summary>
-        public object Bitmap = null;
+        public object Bitmap { get { return _bitmap; } set { _bitmap = value; Touch(); } }
+        private object _bitmap = null;
+
+        public AnyUiStretch Stretch = AnyUiStretch.None;
     }
 }
