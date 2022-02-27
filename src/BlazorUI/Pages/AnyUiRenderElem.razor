@@ -67,13 +67,13 @@
     if (Element is AnyUiScrollViewer scroll)
     {
         @*<span>sp</span>*@
-
+        
         if (scroll.Content != null)
         {
             style.SetSpecifics(
                 margin: scroll.Margin);
 
-            if (!scroll.SkipForBrowser && scroll.MaxHeight.HasValue)
+            if (!(scroll.SkipForTarget == AnyUiTargetPlatform.Browser) && scroll.MaxHeight.HasValue)
             {
                 style.Set("height", FormattableString.Invariant($"{scroll.MaxHeight.Value}px"), add: true);
                 style.Set("overflow-y", "scroll", add: true);
@@ -96,7 +96,8 @@
     {
         @*<span>sp</span>*@
 
-        if (border.Child != null)
+        if (border.Child != null
+            && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
         {
 
             // Note: the following does not work; the <div> is NOT spanning the height; 

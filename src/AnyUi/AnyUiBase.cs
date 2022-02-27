@@ -27,6 +27,11 @@ namespace AnyUi
     // required Enums and helper classes
     //
 
+    /// <summary>
+    /// AnyUI can be rendered to different platforms
+    /// </summary>
+    public enum AnyUiTargetPlatform { None = 0, Wpf = 1, Browser = 2 }
+        
     public enum AnyUiGridUnitType { Auto = 0, Pixel = 1, Star = 2 }
 
     public enum AnyUiHorizontalAlignment { Left = 0, Center = 1, Right = 2, Stretch = 3 }
@@ -422,7 +427,13 @@ namespace AnyUi
         /// <summary>
         /// Serves as alpha-numeric name to later bind specific implementations to it
         /// </summary>
-        public string Name = null;
+        public string Name = null;        
+
+        /// <summary>
+        /// If true, can be skipped when rendered into a browser
+        /// </summary>
+        public AnyUiTargetPlatform SkipForTarget = AnyUiTargetPlatform.None;
+
 
         /// <summary>
         /// This onjects builds the bridge to the specific implementation, e.g., WPF.
@@ -560,6 +571,24 @@ namespace AnyUi
         }
     }
 
+    public enum AnyUiEventMask { None = 0, LeftDown = 1, DragStart = 2 }
+
+    public class AnyUiEventData
+    {
+        public AnyUiEventMask Mask;
+        public int ClickCount;
+        public AnyUiUIElement Source;
+
+        public AnyUiEventData() { }
+
+        public AnyUiEventData(AnyUiEventMask mask, AnyUiUIElement source, int clickCount = 1)
+        {
+            Mask = mask;
+            Source = source;
+            ClickCount = clickCount;
+        }
+    }
+
     public class AnyUiFrameworkElement : AnyUiUIElement
     {
         public AnyUiThickness Margin;
@@ -572,6 +601,8 @@ namespace AnyUi
         public double? MaxWidth;
 
         public object Tag = null;
+
+        public AnyUiEventMask EmitEvent;        
     }
 
     public class AnyUiControl : AnyUiFrameworkElement, IGetBackground
@@ -770,11 +801,6 @@ namespace AnyUi
         public AnyUiScrollBarVisibility? VerticalScrollBarVisibility;
 
         public double? InitialScrollPosition = null;
-
-        /// <summary>
-        /// If true, can be skipped when rendered into a browser
-        /// </summary>
-        public bool SkipForBrowser = false;
     }
 
     public class AnyUiBorder : AnyUiDecorator, IGetBackground
