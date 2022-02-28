@@ -25,11 +25,9 @@ namespace AasxPluginGenericForms
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
-        protected bool _formInUpdateMode = false;
-        protected AdminShell.SubmodelElementWrapperCollection _updateSourceElements = null;
+        protected AnyUiRenderGenericForm _form = null;
 
-        protected GenericFormsOptionsRecord _currentFormRecord = null;
-        protected FormInstanceSubmodel _currentFormInst = null;
+        public GenericFormsOptionsRecord _currentFormRecord = null;
 
         #endregion
 
@@ -104,109 +102,26 @@ namespace AasxPluginGenericForms
             if (_currentFormRecord.FormSubmodel == null || _currentFormRecord.FormSubmodel.SubmodelElements == null)
                 return;
 
-            // initialize form
-            _formInUpdateMode = true;
-            _updateSourceElements = _submodel.submodelElements;
+            // prepare form instance, take over existing data
+            var fi = new FormInstanceSubmodel(_currentFormRecord.FormSubmodel);
+            fi.InitReferable(_currentFormRecord.FormSubmodel, _submodel);
+            fi.PresetInstancesBasedOnSource(_submodel.submodelElements);
+            fi.outerEventStack = _eventStack;
 
-            // take over existing data
-            _currentFormInst = new FormInstanceSubmodel(_currentFormRecord.FormSubmodel);
-            _currentFormInst.InitReferable(_currentFormRecord.FormSubmodel, _submodel);
-            _currentFormInst.PresetInstancesBasedOnSource(_updateSourceElements);
-            _currentFormInst.outerEventStack = _eventStack;
+            // initialize form
+            _form = new AnyUiRenderGenericForm(
+                fi, 
+                updateMode: true);
 
             // bring it to the panel            
-            RenderFormInst(view, uitk, _currentFormInst);
+            _form.RenderFormInst(view, uitk,
+                lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
+                lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
+                lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
         }
 
-        protected double _lastScrollPosition = 0.0;
 
-        protected void RenderFormInst (
-            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
-            FormInstanceSubmodel sm,
-            double ?initialScrollPos = null)
-        {
-            // make an outer grid, very simple grid of two rows: header & body
-            var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 1, colWidths: new[] { "*" }));
-            outer.RowDefinitions[2].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-
-            // at top, make buttons for the general form
-            var header = uitk.AddSmallGridTo(outer, 0, 0, 1, cols: 5, colWidths: new[] { "*", "#", "#", "#", "#" });
-
-            header.Margin = new AnyUiThickness(0);
-            header.Background = AnyUiBrushes.LightBlue;
-
-            uitk.AddSmallBasicLabelTo(header, 0, 0, margin: new AnyUiThickness(8, 6, 0, 6),
-                foreground: AnyUiBrushes.DarkBlue,
-                fontSize: 1.5f,
-                setBold: true,
-                content: $"Edit");
-
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 1,
-                    margin: new AnyUiThickness(2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Fix missing CDs .."),
-                (o) =>
-                {
-                    return ButtonTabPanels_Click("ButtonFixCDs");
-                });
-
-            uitk.AddSmallBasicLabelTo(header, 0, 2,
-                foreground: AnyUiBrushes.DarkBlue,
-                margin: new AnyUiThickness(4,0,4,0),
-                verticalAlignment: AnyUiVerticalAlignment.Center,
-                verticalContentAlignment: AnyUiVerticalAlignment.Center,
-                content: "|");
-
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 3,
-                    margin: new AnyUiThickness(2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Cancel"),
-                (o) =>
-                {
-                    return ButtonTabPanels_Click("ButtonCancel");
-                });
-
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 4,
-                    margin: new AnyUiThickness(2,2,4,2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Update to AAS"),
-                (o) =>
-                {
-                    return ButtonTabPanels_Click("ButtonUpdate");
-                });
-
-            // small spacer
-            var space = uitk.AddSmallBasicLabelTo(outer, 1, 0, 
-                fontSize: 0.3f,
-                content: "", background: AnyUiBrushes.White);
-
-            // add the body, a scroll viewer
-            var scroll = AnyUiUIElement.RegisterControl(
-                uitk.AddSmallScrollViewerTo(outer, 2, 0,
-                    horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
-                    verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    skipForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: initialScrollPos),
-                (o) =>
-                {
-                    if (o is Tuple<double, double> positions)
-                    {
-                        _lastScrollPosition = positions.Item2;
-                    }
-                    return new AnyUiLambdaActionNone();
-                }) as AnyUiScrollViewer;
-
-            // need a stack panel to add inside
-            var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
-            scroll.Content = inner;
-
-            // render the innerts of the scroll viewer
-            inner.Background = AnyUiBrushes.LightGray;
-            _currentFormInst.RenderAnyUi(inner, uitk);
-        }
-
+      
         #endregion
 
         #region Event handling
@@ -214,15 +129,7 @@ namespace AasxPluginGenericForms
 
         public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
         {
-            if (_currentFormInst?.subscribeForNextEventReturn != null)
-            {
-                // delete first
-                var tempLambda = _currentFormInst.subscribeForNextEventReturn;
-                _currentFormInst.subscribeForNextEventReturn = null;
-
-                // execute
-                tempLambda(evtReturn);
-            }
+            _form?.HandleEventReturn(evtReturn);
         }
 
         #endregion
@@ -239,8 +146,13 @@ namespace AasxPluginGenericForms
 
             // ok, re-assign panel and re-display
             _panel = newPanel;
-            _panel.Children.Clear();            
-            RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
+            _panel.Children.Clear();
+
+            _form?.RenderFormInst(_panel, _uitk,
+                setLastScrollPos: true,
+                lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
+                lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
+                lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
         }
 
         #endregion
@@ -259,7 +171,7 @@ namespace AasxPluginGenericForms
             if (cmd == "ButtonUpdate")
             {
                 // add
-                if (this._currentFormInst != null
+                if (this._form != null
                     && _package != null
                     && _options != null
                     && _submodel != null)
@@ -267,9 +179,9 @@ namespace AasxPluginGenericForms
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
                     AdminShell.SubmodelElementWrapperCollection currentElements = null;
-                    if (_formInUpdateMode && _updateSourceElements != null)
+                    if (_form.InUpdateMode)
                     {
-                        currentElements = _updateSourceElements;
+                        currentElements = _submodel.submodelElements;
                     }
                     else
                     {
@@ -278,7 +190,7 @@ namespace AasxPluginGenericForms
                     // create a sequence of SMEs
                     try
                     {
-                        _currentFormInst.AddOrUpdateDifferentElementsToCollection(
+                        _form.FormInstance.AddOrUpdateDifferentElementsToCollection(
                             currentElements, _package, addFilesToPackage: true, editSource: true);
                     }
                     catch (Exception ex)
@@ -318,7 +230,7 @@ namespace AasxPluginGenericForms
                     _currentFormRecord.ConceptDescriptions.Count < 1)
                 {
                     _log?.Error(
-                        "Not able to find appropriate ConceptDescriptions in the GeneralForm option records. " +
+                        "Not able to find appropriate ConceptDescriptions in the GenericForm option records. " +
                         "Aborting.");
                     return new AnyUiLambdaActionNone();
                 }
