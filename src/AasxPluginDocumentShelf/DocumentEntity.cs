@@ -37,7 +37,7 @@ namespace AasxPluginDocumentShelf
 
         public event DocumentEntityEvent DragStart = null;
 
-        public enum SubmodelVersion { Default, V10, V11 }
+        public enum SubmodelVersion { Default= 0, V10 = 1, V11 = 2 }
 
         public SubmodelVersion SmVersion = SubmodelVersion.Default;
 

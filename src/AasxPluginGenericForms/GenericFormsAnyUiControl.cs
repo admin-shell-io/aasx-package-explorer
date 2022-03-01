@@ -25,7 +25,7 @@ namespace AasxPluginGenericForms
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
-        protected AnyUiRenderGenericForm _form = null;
+        protected AnyUiRenderForm _form = null;
 
         public GenericFormsOptionsRecord _currentFormRecord = null;
 
@@ -109,7 +109,7 @@ namespace AasxPluginGenericForms
             fi.outerEventStack = _eventStack;
 
             // initialize form
-            _form = new AnyUiRenderGenericForm(
+            _form = new AnyUiRenderForm(
                 fi, 
                 updateMode: true);
 
@@ -190,8 +190,9 @@ namespace AasxPluginGenericForms
                     // create a sequence of SMEs
                     try
                     {
-                        _form.FormInstance.AddOrUpdateDifferentElementsToCollection(
-                            currentElements, _package, addFilesToPackage: true, editSource: true);
+                        if (_form.FormInstance is FormInstanceSubmodelElementCollection fismec)
+                            fismec.AddOrUpdateDifferentElementsToCollection(
+                                currentElements, _package, addFilesToPackage: true);
                     }
                     catch (Exception ex)
                     {
