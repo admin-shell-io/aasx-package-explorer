@@ -9,15 +9,15 @@ using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 
-namespace AasxPluginGenericForms
+namespace AasxIntegrationBase.AasForms
 {
-    public class AnyUiRenderGenericForm
+    public class AnyUiRenderForm
     {
         protected bool _formInUpdateMode = false;
-        protected FormInstanceSubmodel _currentFormInst = null;
+        protected FormInstanceBase _currentFormInst = null;
 
-        public AnyUiRenderGenericForm(
-            FormInstanceSubmodel formInstance,
+        public AnyUiRenderForm(
+            FormInstanceBase formInstance,
             bool updateMode = false)
         {
             _currentFormInst = formInstance;
@@ -26,7 +26,7 @@ namespace AasxPluginGenericForms
 
         public bool InUpdateMode => _formInUpdateMode;
 
-        public FormInstanceSubmodel FormInstance => _currentFormInst;
+        public FormInstanceBase FormInstance => _currentFormInst;
 
         protected double _lastScrollPosition = 0.0;
 

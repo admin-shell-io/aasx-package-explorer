@@ -868,7 +868,7 @@ namespace AnyUi
                 return null;
 
             // create wpfElement accordingly?
-            if (dd.WpfElement == null && topClass)
+            if (/* dd.WpfElement == null && */ topClass)
                 dd.WpfElement = (UIElement)Activator.CreateInstance(foundRR.WpfType);
             if (dd.WpfElement == null)
                 return null;

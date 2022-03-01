@@ -387,6 +387,7 @@ namespace AnyUi
         public object NextFocus = null;
         public bool? IsExpanded = null;
         public bool OnlyReFocus = false;
+        public bool RedrawCurrentEntity = false;
     }
 
     /// <summary>

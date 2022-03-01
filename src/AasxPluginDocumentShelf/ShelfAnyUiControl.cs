@@ -33,6 +33,7 @@ namespace AasxPluginDocumentShelf
         private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
 
         private DocumentEntity.SubmodelVersion _renderedVersion = DocumentEntity.SubmodelVersion.Default;
+        private DocumentEntity.SubmodelVersion _selectedVersion = DocumentEntity.SubmodelVersion.Default;
 
         private List<DocumentEntity> _renderedEntities = new List<DocumentEntity>();
 
@@ -40,11 +41,7 @@ namespace AasxPluginDocumentShelf
 
         // members for form editing
 
-        protected FormDescSubmodelElementCollection currentFormDescription = null;
-        protected FormInstanceSubmodelElementCollection currentFormInst = null;
-
-        protected bool formInUpdateMode = false;
-        protected AdminShell.SubmodelElementWrapperCollection updateSourceElements = null;
+        protected AnyUiRenderForm _form = null;
 
         #endregion
 
@@ -84,8 +81,7 @@ namespace AasxPluginDocumentShelf
             _panel = panel;
 
             // no form, yet
-            currentFormDescription = null;
-            currentFormInst = null;
+            _form = null;
 
             // fill given panel
             DisplayFullShelf(_panel, _uitk);
@@ -148,6 +144,7 @@ namespace AasxPluginDocumentShelf
                 _renderedVersion = DocumentEntity.SubmodelVersion.V10;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
+            _selectedVersion = _renderedVersion;
 
             // set usage info
             var useinf = foundRec.UsageInfo;
@@ -215,10 +212,7 @@ namespace AasxPluginDocumentShelf
                     margin: new AnyUiThickness(2), setHeight: 21,
                     padding: new AnyUiThickness(2, 0, 2, 0),
                     content: "Add Document .."),
-                (o) =>
-                {
-                    return new AnyUiLambdaActionNone();
-                });
+                (o) => ButtonTabPanels_Click("ButtonAddDocument"));
 
             //
             // Usage info
@@ -274,16 +268,29 @@ namespace AasxPluginDocumentShelf
                 return new AnyUiLambdaActionNone();
             });
 
-            var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiCheckBox()
+            var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
-                Content = "latest SMT",
-                IsChecked = modelVersion == DocumentEntity.SubmodelVersion.V11,
-                VerticalAlignment = AnyUiVerticalAlignment.Center
+                MinWidth = 100,
+                Items = (new string[] { "V1.0", "V1.1" }).ToList<object>(),
+                SelectedIndex = _renderedVersion == DocumentEntity.SubmodelVersion.V11 ? 1 : 0,
             }), (o) =>
             {
+                if (o is int oi)
+                    _selectedVersion = (DocumentEntity.SubmodelVersion)(oi + 1);
                 return new AnyUiLambdaActionNone();
             });
+
+            //var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiCheckBox()
+            //{
+            //    Margin = new AnyUiThickness(6, 4, 4, 4),
+            //    Content = "latest SMT",
+            //    IsChecked = modelVersion == DocumentEntity.SubmodelVersion.V11,
+            //    VerticalAlignment = AnyUiVerticalAlignment.Center
+            //}), (o) =>
+            //{
+            //    return new AnyUiLambdaActionNone();
+            //});
 
             //
             // Scroll area
@@ -558,9 +565,14 @@ namespace AasxPluginDocumentShelf
             _panel.Children.Clear();
 
             // two different views can be renders
-            if (currentFormInst != null)
+            if (_form != null)
             {
                 // RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
+
+                _form.RenderFormInst(_panel, _uitk,
+                    lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
+                    lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
+                    lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
             }
             else
             {
@@ -574,6 +586,8 @@ namespace AasxPluginDocumentShelf
         #region Callbacks
         //===============
 
+        private AdminShell.SubmodelElementWrapperCollection _updateSourceElements = null;
+
         private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
             // first check
@@ -584,18 +598,32 @@ namespace AasxPluginDocumentShelf
             if (tag == null && menuItemHeader == "Edit" && e.SourceElementsDocument != null &&
                 e.SourceElementsDocumentVersion != null)
             {
-                // make a template description for the content (remeber it)
-                formInUpdateMode = true;
-                updateSourceElements = e.SourceElementsDocument;
-
+                // prepare form instance, take over existing data
                 var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
-                var defs = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
-                this.currentFormDescription = desc;
+                _updateSourceElements = e.SourceElementsDocument;
 
-                // take over existing data
-                this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
-                this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
-                this.currentFormInst.outerEventStack = _eventStack;
+                var fi = new FormInstanceSubmodelElementCollection(null, desc);
+                fi.PresetInstancesBasedOnSource(_updateSourceElements);
+                fi.outerEventStack = _eventStack;
+
+                // initialize form
+                _form = new AnyUiRenderForm(
+                    fi,
+                    updateMode: true);
+
+
+                //// make a template description for the content (remeber it)
+                //formInUpdateMode = true;
+                //updateSourceElements = e.SourceElementsDocument;
+
+                //var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
+                //var defs = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
+                //this.currentFormDescription = desc;
+
+                //// take over existing data
+                //this.currentFormInst = new FormInstanceSubmodelElementCollection(null, currentFormDescription);
+                //this.currentFormInst.PresetInstancesBasedOnSource(updateSourceElements);
+                //this.currentFormInst.outerEventStack = _eventStack;
 
                 // bring it to the panel by redrawing the plugin
                 _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
@@ -832,7 +860,174 @@ namespace AasxPluginDocumentShelf
             if (cmd == "ButtonCancel")
             {
                 // re-display (tree & panel)
+                return new AnyUiLambdaActionRedrawAllElementsBase() { RedrawCurrentEntity = true };
+            }
+
+            if (cmd == "ButtonUpdate")
+            {
+                // add
+                if (this._form != null
+                    && _package != null
+                    && _options != null
+                    && _submodel != null)
+                {
+                    // on this level of the hierarchy, shall a new SMEC be created or shall
+                    // the existing source of elements be used?
+                    AdminShell.SubmodelElementWrapperCollection currentElements = null;
+                    if (_form.InUpdateMode)
+                    {
+                        currentElements = _updateSourceElements;
+                    }
+                    else
+                    {
+                        currentElements = new AdminShell.SubmodelElementWrapperCollection();
+                    }
+
+                    // create a sequence of SMEs
+                    try
+                    {
+                        if (_form.FormInstance is FormInstanceSubmodelElementCollection fismec)
+                            fismec.AddOrUpdateDifferentElementsToCollection(
+                                currentElements, _package, addFilesToPackage: true);
+
+                        _log?.Info("Document elements updated. Do not forget to save, if necessary!");
+                    }
+                    catch (Exception ex)
+                    {
+                        _log?.Error(ex, "when adding Document");
+                    }
+
+                    // the InstSubmodel, which started the process, should have a "fresh" SMEC available
+                    // make it unique in the Documentens Submodel
+                    var newSmc = (_form.FormInstance as FormInstanceSubmodelElementCollection)?.sme 
+                            as AdminShell.SubmodelElementCollection;
+
+                    // if not update, put them into the Document's Submodel
+                    if (!_form.InUpdateMode && currentElements != null && newSmc != null)
+                    {
+                        // make newSmc unique in the cotext of the Submodel
+                        FormInstanceHelper.MakeIdShortUnique(_submodel.submodelElements, newSmc);
+
+                        // add the elements
+                        newSmc.value = currentElements;
+
+                        // add the whole SMC
+                        _submodel.Add(newSmc);
+                    }
+                }
+                else
+                {
+                    _log?.Error("Preconditions for update entities from Document not met.");
+                }
+
+                // re-display (tree & panel)
                 return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };
+            }
+
+            if (cmd == "ButtonFixCDs")
+            {
+                // check if CDs are present
+                var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
+                    new AasxPredefinedConcepts.DefinitionsVDI2770());
+                var theCds = theDefs.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+
+                // v11
+                if (_selectedVersion == DocumentEntity.SubmodelVersion.V11)
+                {
+                    theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
+                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+                }
+
+                if (theCds.Count < 1)
+                {
+                    _log?.Error(
+                        "Not able to find appropriate ConceptDescriptions in pre-definitions. " +
+                        "Aborting.");
+                    return new AnyUiLambdaActionNone();
+                }
+
+                // check for Environment
+                var env = _package?.AasEnv;
+                if (env == null)
+                {
+                    _log?.Error(
+                        "Not able to access AAS environment for set of Submodel's ConceptDescriptions. Aborting.");
+                    return new AnyUiLambdaActionNone();
+                }
+
+                // ask back via event stack
+                _eventStack?.PushEvent(new AasxIntegrationBase.AasxPluginResultEventMessageBox()
+                {
+                    Caption = "Question",
+                    Message = "Add missing ConceptDescriptions to the AAS?",
+                    Buttons = AnyUiMessageBoxButton.YesNo,
+                    Image = AnyUiMessageBoxImage.Warning
+                });
+
+                // .. and receive incoming event
+                _menuSubscribeForNextEventReturn = (revt) =>
+                {
+                    if (revt is AasxPluginEventReturnMessageBox rmb
+                        && rmb.Result == AnyUiMessageBoxResult.Yes)
+                    {
+                        try
+                        {
+                            // ok, check
+                            int nr = 0;
+                            foreach (var x in theCds)
+                            {
+                                var cd = x as AdminShell.ConceptDescription;
+                                if (cd == null || cd.identification == null)
+                                    continue;
+                                var cdFound = env.FindConceptDescription(cd.identification);
+                                if (cdFound != null)
+                                    continue;
+                                // ok, add
+                                var newCd = new AdminShell.ConceptDescription(cd);
+                                env.ConceptDescriptions.Add(newCd);
+                                nr++;
+                            }
+
+                            // ok
+                            _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
+                        }
+                        catch (Exception ex)
+                        {
+                            _log?.Error(ex, "when adding ConceptDescriptions for Document");
+                        }
+                    }
+                };
+
+                // ok; event pending, nothing here
+                return new AnyUiLambdaActionNone();
+            }
+
+            if (cmd == "ButtonAddDocument")
+            {
+                // prepare form instance, take over existing data
+                var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDescFor(_renderedVersion, _options);
+                _updateSourceElements = null;
+
+                var fi = new FormInstanceSubmodelElementCollection(null, desc);
+                fi.outerEventStack = _eventStack;
+
+                // initialize form
+                _form = new AnyUiRenderForm(
+                    fi,
+                    updateMode: false);
+
+                // bring it to the panel by redrawing the plugin
+                _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+                {
+                    // get the always currentplugin name
+                    PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                    Mode = AnyUiPluginUpdateMode.All,
+                    UseInnerGrid = true
+                });
+
+                // OK
+                return new AnyUiLambdaActionNone();
             }
 
             // no?

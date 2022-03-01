@@ -1048,9 +1048,19 @@ namespace AasxPackageExplorer
             // what to do?
             if (lab is AnyUiLambdaActionRedrawAllElementsBase wish)
             {
+                // 2022-02-28: Try to kee focus
+                if (wish.RedrawCurrentEntity && wish.NextFocus == null)
+                {
+                    // figure out the current business object
+                    if (DisplayElements != null && DisplayElements.SelectedItem != null &&
+                        DisplayElements.SelectedItem != null)
+                        wish.NextFocus = DisplayElements.SelectedItem.GetMainDataObject();
+                }
+
                 // edit mode affects the total element view
                 if (!wish.OnlyReFocus)
                     RedrawAllAasxElements();
+
                 // the selection will be shifted ..
                 if (wish.NextFocus != null)
                 {
