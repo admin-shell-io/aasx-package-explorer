@@ -35,13 +35,16 @@ namespace AasxPluginDocumentShelf
         private DocumentEntity.SubmodelVersion _renderedVersion = DocumentEntity.SubmodelVersion.Default;
         private DocumentEntity.SubmodelVersion _selectedVersion = DocumentEntity.SubmodelVersion.Default;
 
+        protected DefinitionsVDI2770.Vdi2770DocClass _selectedDocClass = DefinitionsVDI2770.Vdi2770DocClass.All;
+        protected AasxLanguageHelper.LangEnum _selectedLang = AasxLanguageHelper.LangEnum.Any;
+
         private List<DocumentEntity> _renderedEntities = new List<DocumentEntity>();
 
         private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
 
         // members for form editing
 
-        protected AnyUiRenderForm _form = null;
+        protected AnyUiRenderForm _formDoc = null;
 
         #endregion
 
@@ -81,10 +84,10 @@ namespace AasxPluginDocumentShelf
             _panel = panel;
 
             // no form, yet
-            _form = null;
+            _formDoc = null;
 
             // fill given panel
-            DisplayFullShelf(_panel, _uitk);
+            RenderFullShelf(_panel, _uitk);
         }
 
         public static ShelfAnyUiControl FillWithAnyUiControls(
@@ -120,7 +123,7 @@ namespace AasxPluginDocumentShelf
         #region Display Submodel
         //=============
 
-        private void DisplayFullShelf(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        private void RenderFullShelf(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
             // test trivial access
             if (_options == null || _submodel?.semanticId == null)
@@ -144,7 +147,7 @@ namespace AasxPluginDocumentShelf
                 _renderedVersion = DocumentEntity.SubmodelVersion.V10;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
-            _selectedVersion = _renderedVersion;
+            _selectedVersion =  _renderedVersion;
 
             // set usage info
             var useinf = foundRec.UsageInfo;
@@ -158,10 +161,10 @@ namespace AasxPluginDocumentShelf
             _renderedEntities = new List<DocumentEntity>();
             if (_renderedVersion != DocumentEntity.SubmodelVersion.V11)
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV10(
-                    _package, _submodel, _options, defaultLang, 0, AasxLanguageHelper.LangEnum.Any); // selectedDocClass, selectedLanguage);
+                    _package, _submodel, _options, defaultLang, (int) _selectedDocClass, _selectedLang); 
             else
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV11(
-                    _package, _submodel, defs11, defaultLang, 0, AasxLanguageHelper.LangEnum.Any); // selectedDocClass, selectedLanguage);
+                    _package, _submodel, defs11, defaultLang, (int) _selectedDocClass, _selectedLang); 
 
             // bring it to the panel            
             RenderPanelOutside(view, uitk, _renderedVersion, useinf, defaultLang, _renderedEntities);
@@ -204,6 +207,12 @@ namespace AasxPluginDocumentShelf
                     content: "Add Entity .."),
                 (o) =>
                 {
+                    // mode change
+                    _formEntity = new AnyUiPanelEntity();
+                    _formDoc = null;
+
+                    //redisplay
+                    PushUpdateEvent();
                     return new AnyUiLambdaActionNone();
                 });
 
@@ -247,31 +256,37 @@ namespace AasxPluginDocumentShelf
             var controls = uitk.AddSmallWrapPanelTo(outer, 1, 0, 
                 background: AnyUiBrushes.MiddleGray, margin: new AnyUiThickness(0, 0, 0, 2));
 
-            var cbClasses = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox() {
+            AnyUiComboBox cbClasses= null, cbLangs = null;
+
+            cbClasses = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox() {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
-                MinWidth = 120,
+                MinWidth = 140,
                 Items = classes,
-                SelectedIndex = 0
+                SelectedIndex = (int) _selectedDocClass
             }), (o) =>
             {
+                _selectedDocClass = (DefinitionsVDI2770.Vdi2770DocClass) cbClasses.SelectedIndex;
+                PushUpdateEvent();
                 return new AnyUiLambdaActionNone();
             });
 
-            var cbLangs = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            cbLangs = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
-                MinWidth = 100,
+                MinWidth = 120,
                 Items = langs,
-                SelectedIndex = 0
+                SelectedIndex = (int) _selectedLang
             }), (o) =>
             {
+                _selectedLang = (AasxLanguageHelper.LangEnum)cbLangs.SelectedIndex;
+                PushUpdateEvent();
                 return new AnyUiLambdaActionNone();
             });
 
             var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
-                MinWidth = 100,
+                MinWidth = 60,
                 Items = (new string[] { "V1.0", "V1.1" }).ToList<object>(),
                 SelectedIndex = _renderedVersion == DocumentEntity.SubmodelVersion.V11 ? 1 : 0,
             }), (o) =>
@@ -280,17 +295,6 @@ namespace AasxPluginDocumentShelf
                     _selectedVersion = (DocumentEntity.SubmodelVersion)(oi + 1);
                 return new AnyUiLambdaActionNone();
             });
-
-            //var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiCheckBox()
-            //{
-            //    Margin = new AnyUiThickness(6, 4, 4, 4),
-            //    Content = "latest SMT",
-            //    IsChecked = modelVersion == DocumentEntity.SubmodelVersion.V11,
-            //    VerticalAlignment = AnyUiVerticalAlignment.Center
-            //}), (o) =>
-            //{
-            //    return new AnyUiLambdaActionNone();
-            //});
 
             //
             // Scroll area
@@ -303,14 +307,13 @@ namespace AasxPluginDocumentShelf
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
 
-
             // add the body, a scroll viewer
             outer.RowDefinitions[3] = new AnyUiRowDefinition(1.0, AnyUiGridUnitType.Star);
             var scroll = AnyUiUIElement.RegisterControl(
                 uitk.AddSmallScrollViewerTo(outer, 3, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    skipForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: initialScrollPos),
+                    flattenForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: initialScrollPos),
                 (o) =>
                 {
                     if (o is Tuple<double, double> positions)
@@ -344,11 +347,17 @@ namespace AasxPluginDocumentShelf
                 {
                     var inputFn = ent.PreviewFile.Path;
 
-                    // from package?
-                    if (CheckIfPackageFile(inputFn))
-                        inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+                    try
+                    {
+                        // from package?
+                        if (CheckIfPackageFile(inputFn))
+                            inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
 
-                    ent.LoadImageFromPath(inputFn);
+                        ent.LoadImageFromPath(inputFn);
+                    } catch (Exception ex)
+                    {
+                        _log?.Error(ex, $"when loading preview image {inputFn}");
+                    }
                 }
 
                 // delayed load logic
@@ -396,12 +405,14 @@ namespace AasxPluginDocumentShelf
                 margin: new AnyUiThickness(0));
 
             // make background border
-            for (int i=2; i>0; i--)
-                uitk.AddSmallBorderTo(outerG, 0, 0,
-                    margin: new AnyUiThickness(3 + 2*i, 3 + 2*i, 3 + 4 - 2*i, 3 + 4 - 2*i),
-                    background: AnyUiBrushes.White,
-                    borderBrush: AnyUiBrushes.Black,
-                    borderThickness: new AnyUiThickness(1.0));
+            for (int i = 2; i > 0; i--)
+                uitk.Set(
+                    uitk.AddSmallBorderTo(outerG, 0, 0,
+                        margin: new AnyUiThickness(3 + 2 * i, 3 + 2 * i, 3 + 4 - 2 * i, 3 + 4 - 2 * i),
+                        background: AnyUiBrushes.White,
+                        borderBrush: AnyUiBrushes.Black,
+                        borderThickness: new AnyUiThickness(1.0)),
+                    skipForTarget: AnyUiTargetPlatform.Browser);
 
             // make the border, which will get content
             var border = uitk.AddSmallBorderTo(outerG, 0, 0, 
@@ -477,9 +488,10 @@ namespace AasxPluginDocumentShelf
             // Image
             de.ImgContainerAnyUi =
                 uitk.Set(
-                    uitk.AddSmallImageTo(g, 1, 0, 
+                    uitk.AddSmallImageTo(g, 0, 0,  
                         margin: new AnyUiThickness(2),
-                        stretch: AnyUiStretch.Fill),
+                        stretch: AnyUiStretch.Uniform),
+                    rowSpan: 3,
                     horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                     verticalAlignment: AnyUiVerticalAlignment.Stretch);
 
@@ -520,13 +532,118 @@ namespace AasxPluginDocumentShelf
 
         #endregion
 
+        #region Create entity
+        //=====================
+
+        protected AnyUiPanelEntity _formEntity = null;
+
+        protected class AnyUiPanelEntity
+        {
+            public string IdShort = "";
+
+            public void RenderAnyUi(
+                AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+                Func<object, AnyUiLambdaActionBase> lambdaCancel = null,
+                Func<object, AnyUiLambdaActionBase> lambdaAdd = null)
+            {
+                // will have (in future) a text box
+
+                AnyUiTextBox tbIdShort = null;
+
+                //
+                // make an outer grid, very simple grid of rows: header, spacer, body
+                //
+
+                var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 1, colWidths: new[] { "*" }));
+                outer.RowDefinitions[2].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
+
+                // at top, make buttons for the general form
+                var header = uitk.AddSmallGridTo(outer, 0, 0, 1, cols: 5, colWidths: new[] { "*", "#", "#", "#", "#" });
+
+                header.Margin = new AnyUiThickness(0);
+                header.Background = AnyUiBrushes.LightBlue;
+
+                //
+                // Blue bar
+                //
+
+                uitk.AddSmallBasicLabelTo(header, 0, 0, margin: new AnyUiThickness(8, 6, 0, 6),
+                    foreground: AnyUiBrushes.DarkBlue,
+                    fontSize: 1.5f,
+                    setBold: true,
+                    content: $"Entity");
+
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(header, 0, 1,
+                        margin: new AnyUiThickness(2), setHeight: 21,
+                        padding: new AnyUiThickness(4, 0, 4, 0),
+                        content: "Cancel"),
+                    lambdaCancel);
+
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(header, 0, 2,
+                        margin: new AnyUiThickness(2), setHeight: 21,
+                        padding: new AnyUiThickness(4, 0, 4, 0),
+                        content: "Add"),
+                    lambdaAdd);
+
+                // small spacer
+                outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
+                var space = uitk.AddSmallBasicLabelTo(outer, 1, 0,
+                    fontSize: 0.3f,
+                    verticalAlignment: AnyUiVerticalAlignment.Top,
+                    content: "", background: AnyUiBrushes.White);
+
+                //
+                // Grid with entries
+                //
+
+                var body = uitk.AddSmallGridTo(outer, 2, 0, rows: 1, cols: 2, 
+                    colWidths: new[] { "#", "*" },
+                    background:AnyUiBrushes.LightGray);
+
+                uitk.AddSmallBasicLabelTo(body, 0, 0,
+                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                    margin: new AnyUiThickness(0,0,4,0),
+                    content: "idShort:");
+
+                tbIdShort = (AnyUiTextBox) AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallTextBoxTo(body, 0, 1,
+                        margin: new AnyUiThickness(2,10,2,10),
+                        text: "" + IdShort),
+                    (o) =>
+                    {
+                        if (o is string os)
+                            IdShort = os;
+                        return new AnyUiLambdaActionNone();
+                    });
+            }
+
+        }
+
+#endregion
+
         #region Event handling
         //=============
 
         private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;
 
+        protected void PushUpdateEvent(AnyUiPluginUpdateMode mode = AnyUiPluginUpdateMode.All)
+        {
+            // bring it to the panel by redrawing the plugin
+            _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+            {
+                // get the always currentplugin name
+                PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                Mode = mode,
+                UseInnerGrid = true
+            });
+        }
+
         public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
         {
+            // demands from shelf
             if (_menuSubscribeForNextEventReturn != null)
             {
                 // delete first
@@ -535,6 +652,16 @@ namespace AasxPluginDocumentShelf
 
                 // execute
                 tempLambda(evtReturn);
+
+                // finish
+                return;
+            }
+
+            // check, if a form is active
+            if (_formDoc != null)
+            {
+                _formDoc.HandleEventReturn(evtReturn);
+                return;
             }
 
             //if (this.currentFormInst?.subscribeForNextEventReturn != null)
@@ -564,12 +691,20 @@ namespace AasxPluginDocumentShelf
             _panel = newPanel;
             _panel.Children.Clear();
 
-            // two different views can be renders
-            if (_form != null)
+            // multiple different views can be renders
+            if (_formEntity != null)
+            {
+                _formEntity.RenderAnyUi(_panel, _uitk,
+                    lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancelEntity"),
+                    lambdaAdd: (o) => ButtonTabPanels_Click("ButtonAddEntity"));
+            }
+            else
+            if (_formDoc != null)
             {
                 // RenderFormInst(_panel, _uitk, _currentFormInst, initialScrollPos: _lastScrollPosition);
 
-                _form.RenderFormInst(_panel, _uitk,
+                _formDoc.RenderFormInst(_panel, _uitk,
+                    setLastScrollPos: true,
                     lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
                     lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
                     lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
@@ -577,7 +712,7 @@ namespace AasxPluginDocumentShelf
             else
             {
                 // the default: the full shelf
-                DisplayFullShelf(_panel, _uitk);
+                RenderFullShelf(_panel, _uitk);
             }
         }
 
@@ -605,9 +740,10 @@ namespace AasxPluginDocumentShelf
                 var fi = new FormInstanceSubmodelElementCollection(null, desc);
                 fi.PresetInstancesBasedOnSource(_updateSourceElements);
                 fi.outerEventStack = _eventStack;
+                fi.OuterPluginName = AasxIntegrationBase.AasxPlugin.PluginName;
 
                 // initialize form
-                _form = new AnyUiRenderForm(
+                _formDoc = new AnyUiRenderForm(
                     fi,
                     updateMode: true);
 
@@ -626,13 +762,7 @@ namespace AasxPluginDocumentShelf
                 //this.currentFormInst.outerEventStack = _eventStack;
 
                 // bring it to the panel by redrawing the plugin
-                _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
-                {
-                    // get the always currentplugin name
-                    PluginName = AasxIntegrationBase.AasxPlugin.PluginName, 
-                    Mode = AnyUiPluginUpdateMode.All,
-                    UseInnerGrid = true
-                });
+                PushUpdateEvent();
 
                 // OK
                 return;
@@ -855,7 +985,7 @@ namespace AasxPluginDocumentShelf
             _inDragStart = false;
         }
 
-        private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd)
+        private AnyUiLambdaActionBase ButtonTabPanels_Click(string cmd, string arg = null)
         {
             if (cmd == "ButtonCancel")
             {
@@ -866,7 +996,7 @@ namespace AasxPluginDocumentShelf
             if (cmd == "ButtonUpdate")
             {
                 // add
-                if (this._form != null
+                if (this._formDoc != null
                     && _package != null
                     && _options != null
                     && _submodel != null)
@@ -874,7 +1004,7 @@ namespace AasxPluginDocumentShelf
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
                     AdminShell.SubmodelElementWrapperCollection currentElements = null;
-                    if (_form.InUpdateMode)
+                    if (_formDoc.InUpdateMode)
                     {
                         currentElements = _updateSourceElements;
                     }
@@ -886,7 +1016,7 @@ namespace AasxPluginDocumentShelf
                     // create a sequence of SMEs
                     try
                     {
-                        if (_form.FormInstance is FormInstanceSubmodelElementCollection fismec)
+                        if (_formDoc.FormInstance is FormInstanceSubmodelElementCollection fismec)
                             fismec.AddOrUpdateDifferentElementsToCollection(
                                 currentElements, _package, addFilesToPackage: true);
 
@@ -899,11 +1029,11 @@ namespace AasxPluginDocumentShelf
 
                     // the InstSubmodel, which started the process, should have a "fresh" SMEC available
                     // make it unique in the Documentens Submodel
-                    var newSmc = (_form.FormInstance as FormInstanceSubmodelElementCollection)?.sme 
+                    var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme 
                             as AdminShell.SubmodelElementCollection;
 
                     // if not update, put them into the Document's Submodel
-                    if (!_form.InUpdateMode && currentElements != null && newSmc != null)
+                    if (!_formDoc.InUpdateMode && currentElements != null && newSmc != null)
                     {
                         // make newSmc unique in the cotext of the Submodel
                         FormInstanceHelper.MakeIdShortUnique(_submodel.submodelElements, newSmc);
@@ -1011,22 +1141,47 @@ namespace AasxPluginDocumentShelf
 
                 var fi = new FormInstanceSubmodelElementCollection(null, desc);
                 fi.outerEventStack = _eventStack;
+                fi.OuterPluginName = AasxIntegrationBase.AasxPlugin.PluginName;
 
                 // initialize form
-                _form = new AnyUiRenderForm(
+                _formDoc = new AnyUiRenderForm(
                     fi,
                     updateMode: false);
 
                 // bring it to the panel by redrawing the plugin
-                _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
-                {
-                    // get the always currentplugin name
-                    PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
-                    Mode = AnyUiPluginUpdateMode.All,
-                    UseInnerGrid = true
-                });
+                PushUpdateEvent();
 
                 // OK
+                return new AnyUiLambdaActionNone();
+            }
+
+            if (cmd == "ButtonCancelEntity")
+            {
+                // reset view
+                _formEntity = null;
+                _formDoc = null;
+
+                // redisplay
+                PushUpdateEvent();
+                return new AnyUiLambdaActionNone();
+            }
+
+            if (cmd == "ButtonAddEntity" && _formEntity.IdShort.HasContent())
+            {
+                // add entity
+                _submodel?.SmeForWrite?.CreateSMEForCD<AdminShell.Entity>(
+                    AasxPredefinedConcepts.VDI2770v11.Static.CD_DocumentedEntity,
+                    idShort: "" + _formEntity.IdShort.Trim(),
+                    addSme: true);
+
+                _log?.Info($"Entity {_formEntity.IdShort} added.");
+
+                // reset view
+                _formEntity = null;
+                _formDoc = null;
+
+                // redisplay tree and plugin
+                _eventStack?.PushEvent(new AasxPluginResultEventRedrawAllElements());
                 return new AnyUiLambdaActionNone();
             }
 

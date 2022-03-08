@@ -114,7 +114,7 @@ namespace AnyUi
             int? colSpan = null,
             AnyUiScrollBarVisibility? horizontalScrollBarVisibility = null,
             AnyUiScrollBarVisibility? verticalScrollBarVisibility = null,
-            AnyUiTargetPlatform? skipForTarget = null,
+            AnyUiTargetPlatform? flattenForTarget = null,
             double? initialScrollPosition = null)
         {
             var sv = new AnyUiScrollViewer();
@@ -125,8 +125,8 @@ namespace AnyUi
                 sv.HorizontalScrollBarVisibility = horizontalScrollBarVisibility.Value;
             if (verticalScrollBarVisibility.HasValue)
                 sv.VerticalScrollBarVisibility = verticalScrollBarVisibility.Value;
-            if (skipForTarget.HasValue)
-                sv.SkipForTarget = skipForTarget.Value;
+            if (flattenForTarget.HasValue)
+                sv.FlattenForTarget = flattenForTarget.Value;
             if (initialScrollPosition.HasValue)
                 sv.InitialScrollPosition = initialScrollPosition.Value;
             AnyUiGrid.SetRow(sv, row);
@@ -415,6 +415,8 @@ namespace AnyUi
         }
 
         public T Set<T>(T fe,
+            int? row = null, int? col = null,
+            int? colSpan = null, int? rowSpan = null,
             AnyUiThickness margin = null, 
             AnyUiBrush foreground = null,
             AnyUiBrush background = null,
@@ -430,6 +432,15 @@ namespace AnyUi
                 return null;
 
             // FrameworkElem
+            if (row.HasValue)
+                AnyUiGrid.SetRow(fe, row.Value);
+            if (col.HasValue)
+                AnyUiGrid.SetColumn(fe, col.Value);
+            if (rowSpan.HasValue)
+                AnyUiGrid.SetRowSpan(fe, rowSpan.Value);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(fe, colSpan.Value);
+
             if (margin != null)
                 fe.Margin = margin;
             if (horizontalAlignment != null)

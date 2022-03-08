@@ -390,7 +390,9 @@ namespace AnyUi
 
                         // initial position (before attaching callback)
                         if (cntl.InitialScrollPosition.HasValue)
+                        {
                             wpf.ScrollToVerticalOffset(cntl.InitialScrollPosition.Value);
+                        }
 
                         // callbacks
                         wpf.ScrollChanged += (object sender, ScrollChangedEventArgs e) =>
@@ -583,6 +585,7 @@ namespace AnyUi
                         if (cntl.MaxLines != null)
                             wpf.MaxLines = cntl.MaxLines.Value;
                         wpf.Text = cntl.Text;
+                        
                         // callbacks
                         cntl.originalValue = "" + cntl.Text;
                         wpf.TextChanged += (sender, e) => {
@@ -596,6 +599,15 @@ namespace AnyUi
                                 e.Handled = true;
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 EmitOutsideAction(cntl.takeOverLambda);
+                            }
+                        };
+
+                        // updates
+                        cntl.TouchLambda = (mode) =>
+                        {
+                            if (mode == AnyUiPluginUpdateMode.StatusToUi)
+                            {
+                                wpf.Text = cntl.Text;
                             }
                         };
                     }

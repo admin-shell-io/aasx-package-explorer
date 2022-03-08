@@ -186,7 +186,8 @@ namespace BlazorUI
             AnyUiThickness borderThickness = null,
             AnyUiTextWrapping? textWrapping = null,
             double? fontSizeRel = null,
-            AnyUiFontWeight? fontWeight = null
+            AnyUiFontWeight? fontWeight = null,
+            bool fillWidth = false
             )
         {
             // defaults, if not otherwise stated
@@ -263,6 +264,46 @@ namespace BlazorUI
             if (fe.MaxWidth.HasValue)
                 Set("max-width", FormattableString.Invariant($"{scale * fe.MaxWidth.Value}px"), add: true);
         }
+
+        //public void SetFillWidth(
+        //    AnyUiThickness margin = null,
+        //    bool fillWidth = false,
+        //    bool setInlineBlock = false
+        //    )
+        //{
+        //    if (fillWidth)
+        //    {
+        //        Set("width", FormattableString.Invariant(
+        //            $"calc(100% - {margin?.Width ?? 0.0}px)"), add: true);
+        //        Set("box-sizing", "border-box", add: true);
+
+        //        if (setInlineBlock)
+        //            Set("display", "inline-block", add: true);
+        //    }
+        //}
+
+        public void SetFillWidth(
+            AnyUiUIElement element,
+            AnyUiHtmlFillMode fillmode,
+            AnyUiThickness margin = null,
+            bool setMinMaxWidth = false,
+            bool setInlineBlock = false
+            )
+        {
+            if (fillmode == AnyUiHtmlFillMode.FillWidth)
+            {
+                Set("width", FormattableString.Invariant(
+                    $"calc(100% - {margin?.Width ?? 0.0}px)"), add: true);
+                Set("box-sizing", "border-box", add: true);
+            }
+
+            if (element != null && setMinMaxWidth)
+                SetMinMaxWidth(element);
+
+            if (setInlineBlock)
+                Set("display", "inline-block", add: true);
+        }
+
 
         public void SetAlignments(AnyUiUIElement elem,
             bool allowStretch = true)

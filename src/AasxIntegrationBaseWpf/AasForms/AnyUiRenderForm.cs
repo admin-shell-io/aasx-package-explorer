@@ -28,7 +28,7 @@ namespace AasxIntegrationBase.AasForms
 
         public FormInstanceBase FormInstance => _currentFormInst;
 
-        protected double _lastScrollPosition = 0.0;
+        protected double? _lastScrollPosition = null;
 
         public void RenderFormInst(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
@@ -100,20 +100,21 @@ namespace AasxIntegrationBase.AasForms
 
             // add the body, a scroll viewer
             double? isc = null;
-            if (setLastScrollPos)
-                isc = _lastScrollPosition;
+            if (setLastScrollPos && _lastScrollPosition.HasValue)
+                isc = _lastScrollPosition.Value;
 
             var scroll = AnyUiUIElement.RegisterControl(
                 uitk.AddSmallScrollViewerTo(outer, 2, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    skipForTarget: AnyUiTargetPlatform.Browser, 
+                    flattenForTarget: AnyUiTargetPlatform.Browser, 
                     initialScrollPosition: isc),
                 (o) =>
                 {
                     if (o is Tuple<double, double> positions)
                     {
-                        _lastScrollPosition = positions.Item2;
+                        if (positions.Item2 > 5)
+                            _lastScrollPosition = positions.Item2;
                     }
                     return new AnyUiLambdaActionNone();
                 }) as AnyUiScrollViewer;

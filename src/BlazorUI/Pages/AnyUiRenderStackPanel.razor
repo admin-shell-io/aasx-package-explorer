@@ -43,8 +43,8 @@
         @if (_panel != null && _panel.Orientation == AnyUiOrientation.Horizontal)
         {
             @* Render the STACK HORIZONTALLY *@
-
-            <table @attributes="@PanelAttributes" style="@panelStyle">
+            @* Note: the stack panel with horizontal orientation does NOT pass the FillMode! *@
+            <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiRenderStackPanel.razor HOR">
                 <tr>
                     <td>
                         @if (_panel?.Children != null)
@@ -53,7 +53,8 @@
                                 <AnyUiRenderElem DisplayData="@DisplayData"
                                                  Session="@Session"
                                                  Parent="@Element"
-                                                 Element="@ch" />
+                                                 Element="@ch"
+                                                 FillMode="@AnyUiHtmlFillMode.None" />
                             }
                     </td>
                 </tr>
@@ -64,7 +65,8 @@
             || (_panel != null && _panel.Orientation == AnyUiOrientation.Vertical))
         {
             @* Default code .. Render the STACK VERTICALLY *@
-            <table @attributes="@PanelAttributes" style="@panelStyle">
+            @* Note: the stack panel with horizontal orientation does pass the FillMode, likely fill too width! *@
+            <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiRenderStackPanel.razor VER">
                 <tbody>
                     @{
                         @if (_panel?.Children != null)
@@ -75,7 +77,8 @@
                                     <td>
                                         <AnyUiRenderElem DisplayData="@DisplayData"
                                                          Session="@Session"
-                                                         Element="@ch" />
+                                                         Element="@ch"
+                                                         FillMode="@FillMode" />
                                     </td>
                                 </tr>
                             }
@@ -98,6 +101,9 @@
 
     [Parameter]
     public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
 
     protected AnyUiStackPanel _panel = null;
 

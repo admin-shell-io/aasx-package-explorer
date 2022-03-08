@@ -115,6 +115,11 @@ namespace AasxIntegrationBase.AasForms
         public PluginEventStack outerEventStack = null;
 
         /// <summary>
+        /// If not null specifies the plugin name, to which form events shall be directed
+        /// </summary>
+        public string OuterPluginName = null;
+
+        /// <summary>
         /// For the TOPMOST instance, receive the next incoming event ..
         /// </summary>
         public Action<AasxPluginEventReturnBase> subscribeForNextEventReturn = null;
@@ -139,6 +144,12 @@ namespace AasxIntegrationBase.AasForms
         /// The WPF (sub) control, to which this instance is attached to
         /// </summary>
         public UserControl subControl = null;
+
+        /// <summary>
+        /// Set by RenderAnyUito hold the main element of an instance, e.g. to 
+        /// trigger updates
+        /// </summary>
+        public AnyUiControl MainControl = null;
 
         public int Index
         {
@@ -188,12 +199,18 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk) { }
 
-        public static AnyUiLambdaActionPluginUpdateAnyUi NewLambdaUpdateUi()
+        public static AnyUiLambdaActionPluginUpdateAnyUi NewLambdaUpdateUi(IFormInstanceParent current)
         {
+            // expensive to get the plugin name
+            var pn = "AasxPluginGenericForms";
+            var topmost = FormInstanceHelper.GetTopMostParent(current) as FormInstanceBase;
+            if (topmost?.OuterPluginName != null)
+                pn = topmost?.OuterPluginName;
+
             var la = new AnyUiLambdaActionPluginUpdateAnyUi()
             {
                 // TODO: improve, this is not always the case
-                PluginName = "AasxPluginGenericForms",
+                PluginName = pn,
                 UseInnerGrid = true
             };
             return la;
@@ -208,6 +225,39 @@ namespace AasxIntegrationBase.AasForms
                 UseInnerGrid = true
             };
             return la;
+        }
+
+        /// <summary>
+        /// Use this function to push events to the outside.
+        /// It might adapt the plugin name (important to receive back!)
+        /// </summary>
+        public void PushAndAdaptEventFromTop(
+            AasxPluginResultEventBase evt,
+            Action<AasxPluginEventReturnBase> subscribeForReturn = null)
+        {
+            // access
+            if (evt == null)
+                return;
+
+            // identify top
+            var top = FormInstanceHelper.GetTopMostParent(this);
+            var topBase = top as FormInstanceBase;
+            if (topBase == null)
+                return;
+
+            // adapt?
+            if (topBase.OuterPluginName != null  
+                && evt is AasxPluginEventReturnUpdateAnyUi update)
+            {
+                update.PluginName = topBase.OuterPluginName;
+            }
+
+            // push if possible
+            topBase.outerEventStack?.PushEvent(evt);
+
+            // subscribe?
+            if (subscribeForReturn != null)
+                topBase.subscribeForNextEventReturn = subscribeForReturn;
         }
     }
 
@@ -595,8 +645,8 @@ namespace AasxIntegrationBase.AasForms
                         var ni = desc.CreateInstance(this);
                         if (ni != null)
                         {
-                            SubInstances.Add(ni);
-                            return FormInstanceBase.NewLambdaUpdateUi();
+                            SubInstances.Add(ni);                            
+                            return FormInstanceBase.NewLambdaUpdateUi(this);
                         }
                     }
                     // else
@@ -673,7 +723,7 @@ namespace AasxIntegrationBase.AasForms
                             // delete
                             // Note: the WPF implementation had a try-catch?
                             SubInstances.Remove(storedSI);
-                            return FormInstanceBase.NewLambdaUpdateUi();
+                            return FormInstanceBase.NewLambdaUpdateUi(this);
                         }
                         // else
                         return new AnyUiLambdaActionNone();
@@ -700,7 +750,7 @@ namespace AasxIntegrationBase.AasForms
                     && (descsme.FormEditIdShort || descsme.FormEditDescription))
                 {
                     FormInstanceAnyUiHelper.RenderAnyUiRefAttribs(
-                        inner, uitk, descsme, sisme.sme,
+                        inner, uitk, descsme, sisme.sme, current: this,
                         touch: sisme.Touch,
                         editIdShort: descsme.FormEditIdShort,
                         editDesc: descsme.FormEditDescription);
@@ -802,6 +852,7 @@ namespace AasxIntegrationBase.AasForms
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             FormDescReferable desc,
             AdminShell.Referable rf,
+            IFormInstanceParent current,
             Action touch = null,
             bool editIdShort = false,
             bool editDesc = false)
@@ -879,7 +930,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             rf.AddDescription("", "");
                             touch?.Invoke();
-                            return FormInstanceBase.NewLambdaUpdateUi();
+                            return FormInstanceBase.NewLambdaUpdateUi(current);
                         });
 
                 // finally
@@ -925,7 +976,7 @@ namespace AasxIntegrationBase.AasForms
                                 if (rf.description.langString.Contains(storedLs))
                                     rf.description.langString.Remove(storedLs);
                                 touch?.Invoke();
-                                return FormInstanceBase.NewLambdaUpdateUi();
+                                return FormInstanceBase.NewLambdaUpdateUi(current);
                             });
 
                         // row by row
@@ -1419,6 +1470,18 @@ namespace AasxIntegrationBase.AasForms
             // refresh
             if (this.subControl != null && this.subControl is FormSubControlProperty scp)
                 scp.UpdateDisplay();
+
+            if (MainControl is AnyUiTextBox mtb)
+            {
+                mtb.Text = pThis.value;
+                mtb.Touch();
+            }
+
+            if (MainControl is AnyUiComboBox mcb && mcb.IsEditable == true)
+            {
+                mcb.Text = pThis.value;
+                mcb.Touch();
+            }
         }
 
         /// <summary>
@@ -1446,8 +1509,8 @@ namespace AasxIntegrationBase.AasForms
             {
                 var editableMode = (pDesc.valueFromComboBoxIndex == null ||
                     pDesc.valueFromComboBoxIndex.Length < 1);
-
-                AnyUiUIElement.RegisterControl(
+                
+                MainControl = (AnyUiComboBox) AnyUiUIElement.RegisterControl(
                     uitk.AddSmallComboBoxTo(g, 0, 1,
                         margin: new AnyUiThickness(0, 2, 0, 2),
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
@@ -1455,25 +1518,47 @@ namespace AasxIntegrationBase.AasForms
                         isEditable: editableMode),
                         (o) =>
                         {
-                            if (!(o is int idx))
+                            if (!(MainControl is AnyUiComboBox mcb) || mcb.SelectedIndex == null)
                                 return new AnyUiLambdaActionNone();
-
+                   
+                            var idx = mcb.SelectedIndex.Value;
                             var items = pDesc.valueFromComboBoxIndex;
                             if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
                             {
                                 Touch();
                                 prop.value = "" + items[idx];
 
-                                // TODO
+                                // dependent values
                                 parentInstance?.TriggerSlaveEvents(this, Index);
+
+                                // Note: sending an lambda update will not work (is ignored by combox box), therefore
+                                // emitting event via evewnt stack
+                                PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                             }
 
                             return new AnyUiLambdaActionNone();
                         });
+
+                // may select a specific item given by a dedicated value range?
+                var mcb2 = MainControl as AnyUiComboBox;
+                if (pDesc.valueFromComboBoxIndex != null && pDesc.valueFromComboBoxIndex.Length >= 1)
+                {
+                    for (int i = 0; i < pDesc.valueFromComboBoxIndex.Length; i++)
+                        if (pDesc.valueFromComboBoxIndex[i].Trim() == prop.value)
+                        {
+                            mcb2.SelectedIndex = i;
+                            break;
+                        }
+                }
+                else
+                {
+                    // editable combo box, initialize normal
+                    mcb2.Text = "" + prop.value;
+                }
             }
             else
             {
-                AnyUiUIElement.RegisterControl(
+                MainControl = AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(g, 0, 1,
                     margin: new AnyUiThickness(0, 2, 0, 2),
                     text: "" + prop.value),
@@ -1483,7 +1568,7 @@ namespace AasxIntegrationBase.AasForms
                             prop.value = os;
                         Touch();
                         return new AnyUiLambdaActionNone();
-                    });
+                    }) as AnyUiControl;
             }
         }
     }
@@ -1579,7 +1664,7 @@ namespace AasxIntegrationBase.AasForms
                             mlp.value = new AdminShell.LangStringSet();
                         mlp.value.langString.Add(new AdminShell.LangStr());
                         Touch();
-                        return NewLambdaUpdateUi();
+                        return NewLambdaUpdateUi(this);
                     });
 
             // no content? .. info on 1st row
@@ -1636,7 +1721,7 @@ namespace AasxIntegrationBase.AasForms
                         if (mlp.value.langString.Contains(storedLs))
                             mlp.value.langString.Remove(storedLs);
                         Touch();
-                        return NewLambdaUpdateUi();
+                        return NewLambdaUpdateUi(this);
                     });
             }
         }
@@ -1781,7 +1866,7 @@ namespace AasxIntegrationBase.AasForms
                     if (o is string os)
                         FileToLoad = os;
                     Touch();
-                    return NewLambdaUpdateUi();
+                    return NewLambdaUpdateUi(this);
                 });
 
             // "Clear" button in 1st row
@@ -1793,7 +1878,7 @@ namespace AasxIntegrationBase.AasForms
                         file.value = "";
                         FileToLoad = null;
                         Touch();
-                        return NewLambdaUpdateUi();
+                        return NewLambdaUpdateUi(this);
                     });
 
             // "Select" button in 2nd row
@@ -1802,17 +1887,11 @@ namespace AasxIntegrationBase.AasForms
                     content: "Select"),
                     (o) =>
                     {
-                        // try find topmost instance
-                        var top = FormInstanceHelper.GetTopMostParent(this);
-                        var topBase = top as FormInstanceBase;
-                        if (topBase != null && topBase.outerEventStack != null)
-                        {
-                            // give over to event stack
-                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectFile();
-                            topBase.outerEventStack.PushEvent(ev);
-
-                            // .. and receive incoming event
-                            topBase.subscribeForNextEventReturn = (revt) =>
+                        // kick off dialogue in main application
+                        var tempI = this;
+                        tempI.PushAndAdaptEventFromTop(
+                            new AasxIntegrationBase.AasxPluginResultEventSelectFile(),
+                            (revt) =>
                             {
                                 if (revt is AasxPluginEventReturnSelectFile rsel 
                                     && rsel.FileNames != null && rsel.FileNames.Length > 0)
@@ -1822,10 +1901,10 @@ namespace AasxIntegrationBase.AasForms
                                     Touch();
 
                                     // send event to re-render
-                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                 }
-                            };
-                        }
+                            });
+                        
                         return new AnyUiLambdaActionNone();
                     });
         }
@@ -1925,7 +2004,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         refe.value = null;
                         Touch();
-                        return NewLambdaUpdateUi();
+                        return NewLambdaUpdateUi(this);
                     });
 
             // "Select" button in 2nd row
@@ -1934,20 +2013,16 @@ namespace AasxIntegrationBase.AasForms
                     content: "Select"),
                     (o) =>
                     {
-                        // try find topmost instance
-                        var top = FormInstanceHelper.GetTopMostParent(this);
-                        var topBase = top as FormInstanceBase;
-                        if (topBase != null && topBase.outerEventStack != null)
-                        {
-                            // give over to event stack
-                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                            ev.filterEntities = AdminShell.Key.AllElements;
-                            ev.showAuxPackage = true;
-                            ev.showRepoFiles = true;
-                            topBase.outerEventStack.PushEvent(ev);
-
-                            // .. and receive incoming event
-                            topBase.subscribeForNextEventReturn = (revt) =>
+                        // kick off dialogue in main application
+                        var tempI = this;
+                        tempI.PushAndAdaptEventFromTop(
+                            new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
+                            {
+                                filterEntities = AdminShell.Key.AllElements,
+                                showAuxPackage = true,
+                                showRepoFiles = true
+                            },
+                            (revt) =>
                             {
                                 if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                                 {
@@ -1956,10 +2031,9 @@ namespace AasxIntegrationBase.AasForms
                                     Touch();
 
                                     // send event to re-render
-                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                 }
-                            };
-                        }
+                            });                        
 
                         return new AnyUiLambdaActionNone();
                     });
@@ -2083,7 +2157,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             valSet(null);
                             Touch();
-                            return NewLambdaUpdateUi();
+                            return NewLambdaUpdateUi(this);
                         });
 
                 // "Select" button in 2nd row
@@ -2092,20 +2166,16 @@ namespace AasxIntegrationBase.AasForms
                         content: "Select"),
                         (o) =>
                         {
-                        // try find topmost instance
-                        var top = FormInstanceHelper.GetTopMostParent(this);
-                            var topBase = top as FormInstanceBase;
-                            if (topBase != null && topBase.outerEventStack != null)
-                            {
-                            // give over to event stack
-                            var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                                ev.filterEntities = AdminShell.Key.AllElements;
-                                ev.showAuxPackage = true;
-                                ev.showRepoFiles = true;
-                                topBase.outerEventStack.PushEvent(ev);
-
-                            // .. and receive incoming event
-                            topBase.subscribeForNextEventReturn = (revt) =>
+                            // kick off dialogue in main application
+                            var tempI = this;
+                            tempI.PushAndAdaptEventFromTop(
+                                new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
+                                {
+                                    filterEntities = AdminShell.Key.AllElements,
+                                    showAuxPackage = true,
+                                    showRepoFiles = true
+                                },
+                                (revt) =>
                                 {
                                     if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                                     {
@@ -2114,10 +2184,9 @@ namespace AasxIntegrationBase.AasForms
                                     Touch();
 
                                     // send event to re-render
-                                    topBase.outerEventStack.PushEvent(NewResultEventUpdateUi());
+                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                     }
-                                };
-                            }
+                                });                            
 
                             return new AnyUiLambdaActionNone();
                         });

@@ -22,6 +22,14 @@
 
     Element.DisplayData = DisplayData;
 
+    // skipForTarget skips the element, with some special cases, 
+    // which are handled particularily
+
+    if ((Element.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+    {
+        return;
+    }
+
     // Evaluate some style attributes
 
     var style = new StylePile();
@@ -43,7 +51,8 @@
         <AnyUiRenderGrid DisplayData="@DisplayData"
                          Session="@Session"
                          Parent="@Parent"
-                         Element="@grid" />
+                         Element="@grid"
+                         FillMode="@FillMode" />
     }
     else
     if (Element is AnyUiWrapPanel wrap)
@@ -52,7 +61,8 @@
         <AnyUiRenderWrapPanel DisplayData="@DisplayData"
                               Session="@Session"
                               Parent="@Parent"
-                              Element="@wrap" />
+                              Element="@wrap"
+                              FillMode="@FillMode" />
     }
     else
     if (Element is AnyUiStackPanel stack)
@@ -61,7 +71,8 @@
         <AnyUiRenderStackPanel DisplayData="@DisplayData"
                                Session="@Session"
                                Parent="@Parent"
-                               Element="@stack" />
+                               Element="@stack"
+                               FillMode="@FillMode" />
     }
     else
     if (Element is AnyUiScrollViewer scroll)
@@ -73,7 +84,7 @@
             style.SetSpecifics(
                 margin: scroll.Margin);
 
-            if (!(scroll.SkipForTarget == AnyUiTargetPlatform.Browser) && scroll.MaxHeight.HasValue)
+            if (!(scroll.FlattenForTarget == AnyUiTargetPlatform.Browser) && scroll.MaxHeight.HasValue)
             {
                 style.Set("height", FormattableString.Invariant($"{scroll.MaxHeight.Value}px"), add: true);
                 style.Set("overflow-y", "scroll", add: true);
@@ -83,11 +94,12 @@
                 // div should work out of the box
             }
 
-            <div style="@style">
+            <div style="@style" data-source="AnyUiRenderElem.razor scroll">
                 <AnyUiRenderElem DisplayData="@DisplayData"
                                  Session="@Session"
                                  Parent="@Element"
-                                 Element="@scroll.Content" />
+                                 Element="@scroll.Content"
+                                 FillMode="@FillMode"/>
             </div>
         }
     }
@@ -97,20 +109,27 @@
         @*<span>sp</span>*@
 
         if (border.Child != null
-            && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
+                && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
         {
+            style.SetSpecifics(
+                margin: border.Margin,
+                padding: border.Padding,
+                borderBrush: border.BorderBrush,
+                borderThickness: border.BorderThickness);
 
             // Note: the following does not work; the <div> is NOT spanning the height; 
             // therefore, vertical centering does not work!
 
-            style.Set("height", "100%", add: true);
-            style.Set("display", "inline-block", add: true);
+            style.SetFillWidth(Element, FillMode, border.Margin, setMinMaxWidth: true, setInlineBlock: true);
 
-            <div style="@style">
+            style.Set("height", "100%", add: true);
+
+            <div style="@style" data-source="AnyUiRenderElem.razor border">
                 <AnyUiRenderElem DisplayData="@DisplayData"
                                  Session="@Session"
                                  Parent="@Element"
-                                 Element="@border.Child" />
+                                 Element="@border.Child" 
+                                 FillMode="@FillMode" />
             </div>
         }
     }
@@ -145,7 +164,7 @@
             // see: https://codingislove.com/css-speech-bubbles/
 
             // element
-            <div class="hintbox sb1" style="@style">
+            <div class="hintbox sb1" style="@style" data-source="AnyUiRenderElem.razor hint">
                 <span style="@innerstyle">@hb.Text</span>
             </div>
         }
@@ -162,6 +181,8 @@
             textWrapping: stb.TextWrapping,
             fontSizeRel: stb.FontSize,
             fontWeight: stb.FontWeight);
+
+        style.SetFillWidth(Element, FillMode, stb.Margin, setMinMaxWidth: true);
 
         if (stb.TextAsHyperlink)
         {
@@ -182,6 +203,8 @@
             fontSizeRel: tb.FontSize,
             fontWeight: tb.FontWeight);
 
+        style.SetFillWidth(Element, FillMode, tb.Margin, setMinMaxWidth: true);
+
         <span style="@style">@tb.Text</span>
     }
     else
@@ -192,6 +215,8 @@
             padding: chlb.Padding,
             fontSizeRel: chlb.FontSize,
             fontWeight: chlb.FontWeight);
+
+        style.SetFillWidth(Element, FillMode, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);            
 
         <span style="@style">@chlb.Content</span>
     }
@@ -230,18 +255,15 @@
 
     @if (Element is AnyUiButton chbt)
     {
+        if (chbt.Content.Length == 1)
+            ;
+
         style.SetSpecifics(
             margin: chbt.Margin,
             padding: chbt.Padding,
             fontSizeRel: chbt.FontSize);
 
-        if (Parent is AnyUiGrid)
-        {
-            style += "width: 100%";
-            style += "box-sizing: border-box";
-
-            style.SetMinMaxWidth(Element);
-        }
+        style.SetFillWidth(Element, FillMode, chbt.Margin, setMinMaxWidth: true);
 
         <button style="@style" @onclick="() => MyClickButton(chbt)">@chbt.Content</button>
         @code {
@@ -301,6 +323,13 @@
             }
         }
 
+        if (comb.SelectedIndex.HasValue 
+            && comb.Items != null
+            && comb.SelectedIndex.Value >= 0 && comb.SelectedIndex.Value < comb.Items.Count)
+        {
+            comb.Text = "" + comb.Items[comb.SelectedIndex.Value];
+        }
+
         <select class="form-control selectpicker" value="@comb.Text" style="@style"
                 @onchange="@((ChangeEventArgs __e) => MyComboSelect(comb, __e.Value.ToString()))">
             @foreach (var item in comb.Items)
@@ -346,6 +375,8 @@
     [Parameter]
     public AnyUiUIElement Element { get; set; }
 
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
 }
 
 <style>
