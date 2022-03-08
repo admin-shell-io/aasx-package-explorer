@@ -274,6 +274,8 @@ namespace AnyUi
             && Left == Bottom;
 
         public bool AllZero => AllEqual && Left == 0.0;
+
+        public double Width => Left + Right;
     }
 
     public enum AnyUiVisibility : byte
@@ -438,7 +440,6 @@ namespace AnyUi
         /// If true, can be skipped when rendered into a browser
         /// </summary>
         public AnyUiTargetPlatform SkipForTarget = AnyUiTargetPlatform.None;
-
 
         /// <summary>
         /// This onjects builds the bridge to the specific implementation, e.g., WPF.
@@ -685,19 +686,17 @@ namespace AnyUi
         public static void SetColumn(AnyUiUIElement el, int value) { if (el != null) el.GridColumn = value; }
         public static void SetColumnSpan(AnyUiUIElement el, int value) { if (el != null) el.GridColumnSpan = value; }
 
-        public AnyUiUIElement GetChildAt(int row, int col)
+        public IEnumerable<AnyUiUIElement> GetChildsAt(int row, int col)
         {
             if (Children == null || RowDefinitions == null || ColumnDefinitions == null
                 || row < 0 || row >= RowDefinitions.Count
                 || col < 0 || col >= ColumnDefinitions.Count)
-                return null;
+                yield break;
 
             foreach (var ch in Children)
                 if (ch.GridRow.HasValue && ch.GridRow.Value == row
                     && ch.GridColumn.HasValue && ch.GridColumn.Value == col)
-                    return ch;
-
-            return null;
+                    yield return ch;         
         }
 
         public AnyUiUIElement IsCoveredBySpanCell(
@@ -805,7 +804,16 @@ namespace AnyUi
         public AnyUiScrollBarVisibility? HorizontalScrollBarVisibility;
         public AnyUiScrollBarVisibility? VerticalScrollBarVisibility;
 
+        /// <summary>
+        /// In case of (re-) display, scroll immediately to a desireded vertical position
+        /// </summary>
         public double? InitialScrollPosition = null;
+
+        /// <summary>
+        /// If true, create not a scrollable area, but simply add childs below
+        /// (that is: use system provided scrolling)
+        /// </summary>
+        public AnyUiTargetPlatform FlattenForTarget = AnyUiTargetPlatform.None;
     }
 
     public class AnyUiBorder : AnyUiDecorator, IGetBackground

@@ -50,6 +50,9 @@ namespace AnyUi
         public List<object> htmlEventInputs = new List<object>();
         public List<object> htmlEventOutputs = new List<object>();
     }
+
+    public enum AnyUiHtmlFillMode { None, FillWidth }
+    
     public class AnyUiDisplayDataHtml : AnyUiDisplayDataBase
     {
         [JsonIgnore]
@@ -64,6 +67,7 @@ namespace AnyUi
 
         public static bool DebugFrames;
     }
+    
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {
         [JsonIgnore]

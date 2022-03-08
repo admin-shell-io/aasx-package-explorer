@@ -712,7 +712,7 @@ namespace AasxPackageExplorer
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
             MainTimer.Tick += async (s, a) =>
             {
-                await MainTimer_Tick(s, a);
+                 await MainTimer_Tick(s, a);
             };
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
@@ -2348,7 +2348,7 @@ namespace AasxPackageExplorer
                 if (MainSpaceGrid != null && MainSpaceGrid.ColumnDefinitions.Count >= 3)
                 {
                     MainSpaceGrid.ColumnDefinitions[0].Width = new GridLength(this.ActualWidth / 5);
-                    MainSpaceGrid.ColumnDefinitions[4].Width = new GridLength(this.ActualWidth / 3);
+                    MainSpaceGrid.ColumnDefinitions[4].Width = new GridLength(this.ActualWidth / 2.5);
                 }
             }
         }

@@ -1043,11 +1043,16 @@ namespace AdminShellNS
             if (_openPackage == null)
                 throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
 
-            // gte part
-            var part = _openPackage.GetPart(new Uri(uriString, UriKind.RelativeOrAbsolute));
+            // exist
+            var puri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+            if (!_openPackage.PartExists(puri))
+                throw (new Exception(string.Format($"AASX Package has no part {uriString}. Aborting!")));
+
+            // get part
+            var part = _openPackage.GetPart(puri);
             if (part == null)
                 throw (new Exception(
-                    string.Format($"Cannot access URI {uriString} in {_fn} not opened. Aborting!")));
+                    string.Format($"Cannot access part {uriString} in {_fn}. Aborting!")));
             return part.GetStream(mode);
         }
 

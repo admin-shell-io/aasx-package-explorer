@@ -429,7 +429,7 @@ namespace AasxPackageExplorer
                     if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
                         approach = 1;
 
-                    if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+                    if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
                         approach = 2;
 
                     if (approach == 0 && hasAnyUi)

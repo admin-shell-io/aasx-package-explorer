@@ -70,8 +70,8 @@
     // Render
     //
 
-    <div style="@divOuterStyle">
-        <table @attributes="@TableAttributes" style="@tablestyle">
+    <div style="@divOuterStyle" data-source="AnyUiRenderGrid.razor outerStyle">
+        <table @attributes="@TableAttributes" style="@tablestyle" data-source="AnyUiRenderGrid.razor">
             @if (true)
             {
                 <thead>
@@ -96,9 +96,15 @@
                             @for (int ci = 0; ci < _numCol; ci++)
                             {
                                 // this checks exactly for the root coordinates (no span coordinates)
-                                var ch = GetChildAt(ri, ci);
-                                if (ch != null)
+                                var foundContent = false;
+                                foreach (var ch in GetChildsAt(ri, ci))
                                 {
+                                    // allowed?
+                                    if (ch == null || (ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+                                    continue;
+                                    foundContent = true;
+
+                                    // eval more grid  coordinates
                                     var colspan = 1;
                                     if (ch.GridColumnSpan.HasValue && ch.GridColumnSpan.Value > 1)
                                         colspan = ch.GridColumnSpan.Value;
@@ -139,15 +145,16 @@
                                     }
 
                                     // now render
-                                    <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan">
+                                    <td style="@tdStyle" colspan="@colspan" rowspan="@rowspan" data-source="AnyUiRenderGrid.razor tdStyle">
 
                                         @if (divWithStyle != null)
                                         {
-                                            <div style="@divWithStyle">
+                                            <div style="@divWithStyle" data-source="AnyUiRenderGrid.razor divWithStyle">
                                                 <AnyUiRenderElem DisplayData="@DisplayData"
                                                                  Session="@Session"
                                                                  Parent="@Element"
-                                                                 Element="@ch" />
+                                                                 Element="@ch"
+                                                                 FillMode="@FillMode" />
                                             </div>
                                         }
                                         else
@@ -155,13 +162,14 @@
                                             <AnyUiRenderElem DisplayData="@DisplayData"
                                                              Session="@Session"
                                                              Parent="@Element"
-                                                             Element="@ch" />
+                                                             Element="@ch" 
+                                                             FillMode="@FillMode" />
                                         }
                                     </td>
-
-                                    // ci += (colspan - 1);
                                 }
-                                else
+
+                                // if nothing, provide <td/> in any case
+                                if (!foundContent)
                                 {
                                     // if not root, check if a spanned coordinate
                                     var span = _grid.IsCoveredBySpanCell(ri, ci, returnOnSpanCell: true);
@@ -182,17 +190,20 @@
 }
 
 @code {
-        [Parameter(CaptureUnmatchedValues = true)]
-        public Dictionary<string, object> TableAttributes { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> TableAttributes { get; set; }
 
-        [Parameter]
-        public AnyUiDisplayDataHtml DisplayData { get; set; }
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
 
-        [Parameter]
-        public Data.blazorSessionService Session { get; set; }
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
 
-        [Parameter]
-        public StylePile InitStyle { get; set; }
+    [Parameter]
+    public StylePile InitStyle { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
 
     protected AnyUiGrid _grid = null;
 
@@ -253,7 +264,7 @@
                     ccs += " border: 1px solid black;";
 
                 if (cd.Width?.Type == AnyUiGridUnitType.Pixel)
-                    chs = $"min-width:{cd.Width.Value * scale}px;";
+                    chs = FormattableString.Invariant($"min-width:{cd.Width.Value * scale}px;");
                 if (cd.Width?.Type == AnyUiGridUnitType.Star)
                     chs = FormattableString.Invariant($"width:{Math.Floor(100.0 * cd.Width.Value / starWeight)}%;");
                 if (cd.Width?.Type == AnyUiGridUnitType.Auto)
@@ -294,17 +305,19 @@
         var sp = new StylePile(_colCellStyles[col]);
 
         // attach attributes "lend" from the child?
-        var ch = GetChildAt(row, col);
-        if (ch != null)
+        foreach (var ch in GetChildsAt(row, col))
         {
-            if (ch is AnyUi.IGetBackground igb)
-                sp.Add("background-color", igb.GetBackground()?.HtmlRgb(), doNotSetIfNull: true);
+            if (ch == null || (ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
+                continue;
 
-            if (ch is AnyUiBorder border)
-                sp.SetSpecifics(
-                    margin: border.Margin,
-                    borderBrush: border.BorderBrush,
-                    borderThickness: border.BorderThickness);
+            //if (ch is AnyUi.IGetBackground igb)
+            //    sp.Add("background-color", igb.GetBackground()?.HtmlRgb(), doNotSetIfNull: true);
+
+            //if (ch is AnyUiBorder border)
+            //    sp.SetSpecifics(
+            //        margin: border.Margin,
+            //        borderBrush: border.BorderBrush,
+            //        borderThickness: border.BorderThickness);
         }
 
         // ok, back
@@ -314,9 +327,13 @@
     protected int _numRow { get; set; }
     protected int _numCol { get; set; }
 
-    protected AnyUiUIElement GetChildAt(int row, int col)
+    protected IEnumerable<AnyUiUIElement> GetChildsAt(int row, int col)
     {
-        return _grid?.GetChildAt(row, col);
+        if (_grid == null)
+            yield break;
+
+        foreach (var ch in _grid.GetChildsAt(row, col))
+            yield return ch;
     }
 
     protected bool Debug = false;

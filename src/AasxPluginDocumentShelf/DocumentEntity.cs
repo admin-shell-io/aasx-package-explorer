@@ -415,7 +415,7 @@ namespace AasxPluginDocumentShelf
                             if (classSys.ToLower().Trim() != VDI2770v11.Vdi2770Sys.ToLower())
                                 continue;
 
-                            // class infos
+                            // class id
                             var classId = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defs11.CD_ClassId?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;

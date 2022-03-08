@@ -40,16 +40,19 @@
 
     <div style="@divOuterStyle">
         @* Render the table. For the time being, ignore Orientation and stack always horzintally in one cell. *@
-        <table @attributes="@PanelAttributes" style="@panelStyle">
+        <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiWrapPanel.razor">
             <tr>
                 <td>
                     @if (_panel?.Children != null)
                         foreach (var ch in _panel.Children)
                         {
+                            @* Note: the wrap panel does NOT pass the FillMode! *@
+
                             <AnyUiRenderElem DisplayData="@DisplayData"
                                              Session="@Session"
                                              Parent="@Element"
-                                             Element="@ch" />
+                                             Element="@ch"
+                                             FillMode="@AnyUiHtmlFillMode.None" />
                         }
                 </td>
             </tr>
@@ -84,4 +87,6 @@
         }
     }
 
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
 }
