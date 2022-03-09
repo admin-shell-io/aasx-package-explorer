@@ -62,10 +62,22 @@ namespace AasxPluginDocumentShelf
         public ShelfAnyUiControl()
         {
             // Timer for loading
-            System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-            dispatcherTimer.Tick += DispatcherTimer_Tick;
-            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-            dispatcherTimer.Start();
+            //System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            //dispatcherTimer.Tick += DispatcherTimer_Tick;
+            //dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+            //dispatcherTimer.Start();
+
+            //var _timer = new System.Threading.Timer((e) =>
+            //{
+            //    DispatcherTimer_Tick(null, null);
+            //}, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(1000));
+
+            // Note: this timer shall work for all sorts of applications?
+            // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
+            var _timer2 = new System.Timers.Timer(1000);
+            _timer2.Elapsed += DispatcherTimer_Tick;
+            _timer2.Enabled = true;
+            _timer2.Start();
         }
 
         public void Start(

@@ -31,6 +31,8 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using BlazorUI;
+using BlazorUI.Pages;
+using Microsoft.AspNetCore.Components;
 using Newtonsoft.Json;
 
 namespace AnyUi
@@ -57,6 +59,7 @@ namespace AnyUi
     {
         [JsonIgnore]
         public AnyUiDisplayContextHtml _context;
+        public ComponentBase _component;
 
         public AnyUiDisplayDataHtml(AnyUiDisplayContextHtml context)
         {
@@ -350,6 +353,40 @@ namespace AnyUi
             }
             // result
             return dialogueData.Result;
+        }
+
+        public void UpdateRenderElements(AnyUiUIElement el, AnyUiPluginUpdateMode mode)
+        {
+            //
+            // access
+            //
+            if (el == null)
+                return;
+
+            //
+            // differentiate
+            //
+
+            if (el is AnyUiImage elimg)
+            {
+                if (elimg.Touched
+                    && elimg.Bitmap is System.Windows.Media.Imaging.BitmapImage bi
+                    && elimg.DisplayData is AnyUiDisplayDataHtml eldd
+                    && eldd._component is AnyUiRenderImage elri)
+                {
+                    elri.Redraw();
+                    el.Touched = false;
+                }
+            }
+
+            //
+            // recurse
+            //
+
+            if (el is AnyUi.IEnumerateChildren ien)
+                foreach (var elch in ien.GetChildren())
+                    UpdateRenderElements(elch, mode: mode);
+
         }
     }
 }

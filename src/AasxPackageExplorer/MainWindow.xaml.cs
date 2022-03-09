@@ -1575,7 +1575,8 @@ namespace AasxPackageExplorer
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
                 var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
-                await HandleApplicationEvent(evt, lpi);
+                if (evt != null)
+                    await HandleApplicationEvent(evt, lpi);
             }
 
             // check for application events from main app
