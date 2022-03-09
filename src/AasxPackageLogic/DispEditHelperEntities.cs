@@ -2465,8 +2465,8 @@ namespace AasxPackageLogic
             }
 
             AdminShell.ConceptDescription jumpToCD = null;
-            if (sme.semanticId != null && sme.semanticId.Count > 0)
-                jumpToCD = env.FindConceptDescription(sme.semanticId.Keys);
+            if (sme?.semanticId != null && sme.semanticId.Count > 0)
+                jumpToCD = env?.FindConceptDescription(sme.semanticId.Keys);
 
             if (jumpToCD != null && editMode)
             {

@@ -6,10 +6,12 @@
 @using AasxPackageLogic 
 @using BlazorUI.Shared
 @using BlazorUI.Pages 
+@using System.Threading
 @*using System*@
 @*using System.Net;*@
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
+@implements IDisposable
 
 @{
 // resharper disable all
@@ -376,16 +378,16 @@
     /*
     public class Item
     {
-        public string Text { get; set; }
-        public IEnumerable<Item>
-        Childs
-        { get; set; }
-        public object parent { get; set; }
-        public string Type { get; set; }
-        public object Tag { get; set; }
-        public Referable ParentContainer { get; set; }
-        public SubmodelElementWrapper Wrapper { get; set; }
-        public int envIndex { get; set; }
+    public string Text { get; set; }
+    public IEnumerable<Item>
+    Childs
+    { get; set; }
+    public object parent { get; set; }
+    public string Type { get; set; }
+    public object Tag { get; set; }
+    public Referable ParentContainer { get; set; }
+    public SubmodelElementWrapper Wrapper { get; set; }
+    public int envIndex { get; set; }
     }
     */
 
@@ -422,11 +424,6 @@
             SubmodelService.NewDataAvailable += NewData;
 
         }
-    }
-
-    public void Dispose()
-    {
-        SubmodelService.NewDataAvailable -= NewData;
     }
 
     int newDataMode = 0;
@@ -676,8 +673,8 @@
         /*
         if (o is Referable)
         {
-            ret = (o as Referable).GetElementName();
-            return (ret);
+        ret = (o as Referable).GetElementName();
+        return (ret);
         }
         */
 
@@ -896,5 +893,107 @@
             }
         }
         return (ret);
+    }
+
+    private Timer _timer;
+
+    protected override void OnInitialized()
+    {
+        _timer = new System.Threading.Timer((e) =>
+        {
+            MainTimer_HandleApplicationEvents();
+        }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(1000));
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+        SubmodelService.NewDataAvailable -= NewData;
+    }
+
+    private bool _inTimer = false;
+
+    private void MainTimer_HandleApplicationEvents()
+    {
+        if (_inTimer)
+            return;
+        _inTimer = true;
+        // check if a plug-in has some work to do ..
+        foreach (var lpi in Plugins.LoadedPlugins.Values)
+        {
+            var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
+            if (evt !=null)
+                HandleApplicationEvent(evt, lpi);
+        }
+        _inTimer = false;
+    }
+
+    private void HandleApplicationEvent(
+            AasxIntegrationBase.AasxPluginResultEventBase evt,
+            Plugins.PluginInstance pluginInstance)
+    {
+        try
+        {
+            // Navigate To
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
+                && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
+            {
+            }
+
+            // Display Content Url
+            //====================
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                && evtDispCont.fn != null)
+            {
+            }
+
+            // Redraw All
+            //===========
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
+            {
+            }
+
+            // Select AAS entity
+            //=======================
+
+            var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
+            if (evSelectEntity != null)
+            {
+            }
+
+            // Select File
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel)
+            {
+            }
+
+            // Message Box
+            //============
+
+            if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox)
+            {
+            }
+
+            // Re-render Any UI Panels
+            //========================
+
+            if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+            {
+                if (bi.helper.context is AnyUiDisplayContextHtml context)
+                {
+                    context.UpdateRenderElements(bi.stack17, update.Mode);                    
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Singleton.Error(
+                ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
+        }
     }
 }

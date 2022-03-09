@@ -548,6 +548,11 @@ namespace AnyUi
                         {
                             if (mode == AnyUiPluginUpdateMode.StatusToUi)
                             {
+                                //var xx = new BitmapImage(
+                                //    new Uri("pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp", UriKind.RelativeOrAbsolute));
+
+                                //wpf.Source = xx;
+
                                 if (cntl.Bitmap is BitmapSource bs2)
                                     wpf.Source = bs2;
                             }

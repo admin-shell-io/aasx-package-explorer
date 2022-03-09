@@ -133,6 +133,17 @@
             </div>
         }
     }
+    else
+    // Further elements referring to another razor component   
+    // (because they may have further code)
+    if (Element is AnyUiImage img)
+    {
+        <AnyUiRenderImage DisplayData="@DisplayData"
+                          Session="@Session"
+                          Parent="@Parent"
+                          Element="@img" 
+                          FillMode="@FillMode" />
+    }
 
     // "Normal" elements
 
@@ -360,6 +371,7 @@
 
         <CountryFlag Country="@country" Size="@size" Class="mx-3"></CountryFlag>
     }
+
 }
 
 @code {

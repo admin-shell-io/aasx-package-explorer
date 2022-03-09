@@ -905,14 +905,54 @@ namespace AnyUi
 
     public class AnyUiImage : AnyUiFrameworkElement
     {
+
+        /// <summary>
+        /// Guid of the image. Created by the constructor.
+        /// </summary>
+        public string ImageGuid = "";
+
         /// <summary>
         /// The bitmap data; as anonymous object (because of dependencies).
         /// Probably a ImageSource
         /// Setting touches to update
         /// </summary>
-        public object Bitmap { get { return _bitmap; } set { _bitmap = value; Touch(); } }
+        public object Bitmap { get { return _bitmap; } set { _bitmap = value; ReGuid(); Touch(); } }
         private object _bitmap = null;
 
+        /// <summary>
+        /// Stretch mode
+        /// </summary>
         public AnyUiStretch Stretch = AnyUiStretch.None;
+
+        //
+        // Constructors
+        //
+
+        public AnyUiImage() { ReGuid(); }
+
+        /// <summary>
+        /// Initialize upon constructor, e.g. GUID
+        /// </summary>
+        protected void ReGuid()
+        {
+            ImageGuid = "IMG" + Guid.NewGuid().ToString("N");
+            if (_imageDictionary.ContainsKey(ImageGuid))
+                _imageDictionary.Remove(ImageGuid);
+            _imageDictionary.Add(ImageGuid, this);
+        }
+
+        //
+        // Singleton: Dictionary to find images
+        //
+
+        protected static Dictionary<string, AnyUiImage> _imageDictionary = new Dictionary<string, AnyUiImage>();
+
+        public static AnyUiImage FindImage(string guid)
+        {
+            if (guid == null || !_imageDictionary.ContainsKey(guid))
+                return null;
+
+            return _imageDictionary[guid];
+        }
     }
 }
