@@ -98,7 +98,7 @@ namespace AasxPredefinedConcepts
                     "Operator-specific module name.");
 
                 CD_Description = CreateSparseConceptDescription("en", "IRI",
-                    "MtpFile",
+                    "Description",
                     "https://admin-shell.io/vdi/2658/1/0/PEASubmodel/Description",
                     "Operator-specific module description.");
 
