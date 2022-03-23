@@ -182,7 +182,7 @@ namespace AasxPackageExplorer
                     CheckIfToFlushEvents();
 
                     // as saving changes the structure of pending supplementary files, re-display
-                    RedrawAllAasxElements();
+                    RedrawAllAasxElements(keepFocus: true);
                 }
                 catch (Exception ex)
                 {

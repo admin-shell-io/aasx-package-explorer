@@ -1617,6 +1617,27 @@ namespace AdminShellNS
                 return res;
             }
 
+            public string GetExactStrForLang(string lang)
+            {
+                // start
+                if (lang == null)
+                    return null;
+                string res = null;
+
+                // exact search
+                foreach (var ls in this)
+                    if (ls.lang.Trim().ToLower() == lang)
+                        res = ls.str;
+
+                // found?
+                return res;
+            }
+
+            public bool ContainsLang(string lang)
+            {
+                return GetExactStrForLang(lang) != null;
+            }
+
             public bool AllLangSameString()
             {
                 if (this.Count < 2)

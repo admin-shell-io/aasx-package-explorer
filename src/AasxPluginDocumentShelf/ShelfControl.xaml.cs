@@ -476,13 +476,19 @@ namespace AasxPluginDocumentShelf
                     // we delayed load logic, as these images might get more detailed
                     if (ent.PreviewFile?.Path?.HasContent() == true)
                     {
-                        var inputFn = ent.PreviewFile.Path;
+                        try
+                        {
+                            var inputFn = ent.PreviewFile.Path;
 
-                        // from package?
-                        if (CheckIfPackageFile(inputFn))
-                            inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+                            // from package?
+                            if (CheckIfPackageFile(inputFn))
+                                inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
 
-                        ent.LoadImageFromPath(inputFn);
+                            ent.LoadImageFromPath(inputFn);
+                        } catch (Exception ex)
+                        {
+                            Log?.Error(ex, "when loading preview file for " + ent.Title);
+                        }
                     }
 
                     // delayed load logic

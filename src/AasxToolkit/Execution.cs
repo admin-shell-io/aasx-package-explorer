@@ -126,6 +126,29 @@ namespace AasxToolkit
 
                             break;
                         }
+                    case Instruction.ExtractDoc exdoc:
+                        {
+                            if (package == null)
+                            {
+                                Console.Error.WriteLine(
+                                    "You must load a package (`load`) before you can save data.");
+                                return -1;
+                            }
+
+                            try
+                            {
+                                Extract.Extract2770Doc(package, exdoc.DocSys, exdoc.DocClass, exdoc.Target);
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine(
+                                    "While extract document {0} {1} {2}: {3} at {4}", 
+                                        exdoc.DocSys, exdoc.DocClass, exdoc.Target, ex.Message, ex.StackTrace);
+                                return -1;
+                            }
+
+                            break;
+                        }
                     case Instruction.Validate validate:
                         {
                             try

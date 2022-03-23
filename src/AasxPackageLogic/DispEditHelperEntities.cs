@@ -879,7 +879,9 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntitySupplementaryFile(
-            PackageCentral.PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode,
+            PackageCentral.PackageCentral packages,
+            VisualElementSupplementalFile entity,
+            AdminShellPackageSupplementaryFile psf, bool editMode,
             AnyUiStackPanel stack)
         {
             //
@@ -896,6 +898,10 @@ namespace AasxPackageLogic
                                 "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
+                            // try remember where we are
+                            var sibling = entity.FindSibling()?.GetDereferencedMainDataObject();
+
+                            // delete
                             try
                             {
                                 packages.Main.DeleteSupplementaryFile(psf);
@@ -907,9 +913,21 @@ namespace AasxPackageLogic
                             {
                                 Log.Singleton.Error(ex, "Deleting file in package");
                             }
-                            return new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
-                                VisualElementEnvironmentItem.ItemType.Package));
+
+                            // try to re-focus to a sibling
+                            if (sibling != null)
+                            {
+                                // stay around
+                                return new AnyUiLambdaActionRedrawAllElements(
+                                    nextFocus: sibling);
+                            }
+                            else
+                            {
+                                // jump to root
+                                return new AnyUiLambdaActionRedrawAllElements(
+                                    nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
+                                        VisualElementEnvironmentItem.ItemType.Package));
+                            }
                         }
 
                     return new AnyUiLambdaActionNone();
@@ -3336,7 +3354,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             this.uploadAssistance.SourcePath = v as string;
-                            return new AnyUiLambdaActionNone();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }, minHeight: 40);
 
                     this.AddAction(

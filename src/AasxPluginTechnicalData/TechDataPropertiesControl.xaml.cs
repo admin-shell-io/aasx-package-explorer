@@ -82,7 +82,8 @@ namespace AasxPluginTechnicalData
                 // make up semantics
                 if (sme.semanticId != null)
                 {
-                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleKey()))
+                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleKey(), 
+                            AdminShellV20.Key.MatchMode.Relaxed))
                         semantics = "(not available)";
                     else
                     {
@@ -118,7 +119,8 @@ namespace AasxPluginTechnicalData
 
                 // special function?
                 if (sme is AdminShell.SubmodelElementCollection &&
-                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey(), 
+                            AdminShellV20.Key.MatchMode.Relaxed))
                 {
                     // finalize current row group??
                     ;
@@ -145,7 +147,8 @@ namespace AasxPluginTechnicalData
                 }
                 else
                 if (sme is AdminShell.SubmodelElementCollection &&
-                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey()))
+                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey(), 
+                        AdminShellV20.Key.MatchMode.Relaxed))
                 {
                     // finalize current row group??
                     ;

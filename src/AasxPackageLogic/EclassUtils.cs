@@ -164,6 +164,8 @@ namespace AasxPackageLogic
 
             double progressPerFile = 1.0 / a.eclassFiles.Count;
 
+            var lastTimeOfUpdate = DateTime.Now;
+
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
@@ -230,8 +232,11 @@ namespace AasxPackageLogic
                                     }
 
                                     numElems++;
-                                    if (numElems % 500 == 0)
+                                    if (numElems % 500 == 0
+                                        && (DateTime.Now - lastTimeOfUpdate).TotalMilliseconds > 1000)
                                     {
+                                        lastTimeOfUpdate = DateTime.Now;
+
                                         long currPos = fileSteam.Position;
                                         double frac = Math.Min(
                                             100.0d * progressPerFile * (fileNdx) +
@@ -581,7 +586,8 @@ namespace AasxPackageLogic
                         ds.preferredName = new AdminShell.LangStringSetIEC61360();
 
                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.preferredName.Add(ls);
+                    if (!ds.preferredName.ContainsLang(ls?.lang))
+                        ds.preferredName.Add(ls);
                 });
 
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
@@ -590,7 +596,8 @@ namespace AasxPackageLogic
                         ds.definition = new AdminShell.LangStringSetIEC61360();
 
                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.definition.Add(ls);
+                    if (!ds.definition.ContainsLang(ls?.lang))
+                        ds.definition.Add(ls);
                 });
 
                 // <domain xsi:type="ontoml:REAL_MEASURE_TYPE_Type">
