@@ -72,12 +72,24 @@ namespace AasxPluginDocumentShelf
             //    DispatcherTimer_Tick(null, null);
             //}, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(1000));
 
-            // Note: this timer shall work for all sorts of applications?
-            // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
-            var _timer2 = new System.Timers.Timer(1000);
-            _timer2.Elapsed += DispatcherTimer_Tick;
-            _timer2.Enabled = true;
-            _timer2.Start();
+            // see: https://stackoverflow.com/questions/5143599/detecting-whether-on-ui-thread-in-wpf-and-winforms
+            var dispatcher = System.Windows.Threading.Dispatcher.FromThread(System.Threading.Thread.CurrentThread);
+            if (dispatcher != null)
+            {
+                var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimer.Tick += DispatcherTimer_Tick;
+                dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+                dispatcherTimer.Start();
+            }
+            else
+            {
+                // Note: this timer shall work for all sorts of applications?
+                // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
+                var _timer2 = new System.Timers.Timer(1000);
+                _timer2.Elapsed += DispatcherTimer_Tick;
+                _timer2.Enabled = true;
+                _timer2.Start();
+            }
         }
 
         public void Start(
@@ -365,6 +377,8 @@ namespace AasxPluginDocumentShelf
                         if (CheckIfPackageFile(inputFn))
                             inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
 
+                        // inputFn = @"C:\MIHO\Develop\Aasx\repo\sample.png";
+
                         ent.LoadImageFromPath(inputFn);
                     } catch (Exception ex)
                     {
@@ -434,11 +448,11 @@ namespace AasxPluginDocumentShelf
                 borderThickness: new AnyUiThickness(1.0));
 
             // the border emits double clicks
-            border.EmitEvent = AnyUiEventMask.LeftDown;
+            border.EmitEvent = AnyUiEventMask.LeftDouble;
             border.setValueLambda = (o) =>
             {
                 if (o is AnyUiEventData ed
-                    && ed.Mask == AnyUiEventMask.LeftDown
+                    && ed.Mask == AnyUiEventMask.LeftDouble
                     && ed.ClickCount == 2)
                 {
                     de.RaiseDoubleClick();

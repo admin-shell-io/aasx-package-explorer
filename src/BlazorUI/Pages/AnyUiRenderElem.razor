@@ -109,7 +109,7 @@
         @*<span>sp</span>*@
 
         if (border.Child != null
-                && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
+                    && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
         {
             style.SetSpecifics(
                 margin: border.Margin,
@@ -124,13 +124,25 @@
 
             style.Set("height", "100%", add: true);
 
-            <div style="@style" data-source="AnyUiRenderElem.razor border">
+            //var emitOC = (border.EmitEvent & AnyUiEventMask.LeftDown) > 0;
+
+            //<div style="@style" data-source="AnyUiRenderElem.razor border"
+            //     @onclick="@((ev) => EventSenderTest(ev, Element))">
+            //    <AnyUiRenderElem DisplayData="@DisplayData"
+            //                     Session="@Session"
+            //                     Parent="@Element"
+            //                     Element="@border.Child" 
+            //                     FillMode="@FillMode" />
+            //</div>
+
+            <AnyUiDecorateEmit Element="border"
+                                FillMode="@FillMode">
                 <AnyUiRenderElem DisplayData="@DisplayData"
                                  Session="@Session"
                                  Parent="@Element"
                                  Element="@border.Child" 
                                  FillMode="@FillMode" />
-            </div>
+            </AnyUiDecorateEmit>
         }
     }
     else
@@ -389,6 +401,16 @@
 
     [Parameter]
     public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void EventTest(MouseEventArgs e)
+    {
+        ;
+    }
+
+    public void EventSenderTest(MouseEventArgs e, object sender)
+    {
+        ;
+    }
 }
 
 <style>

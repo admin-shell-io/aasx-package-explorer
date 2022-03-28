@@ -1325,6 +1325,12 @@ namespace AdminShellNS
             _aasEnv = null;
         }
 
+        public void Flush()
+        {
+            if (_openPackage != null)
+                _openPackage.Flush();
+        }
+
         public void Dispose()
         {
             Close();

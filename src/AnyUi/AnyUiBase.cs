@@ -577,7 +577,7 @@ namespace AnyUi
         }
     }
 
-    public enum AnyUiEventMask { None = 0, LeftDown = 1, DragStart = 2 }
+    public enum AnyUiEventMask { None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4 }
 
     public class AnyUiEventData
     {

@@ -1,14 +1,17 @@
 ﻿@page "/"
 @using AdminShellNS
+@using AasxIntegrationBase
 @using static AdminShellNS.AdminShellV20;
 @*using BlazorUI*@
 @using AnyUi
 @using AasxPackageLogic 
 @using BlazorUI.Shared
 @using BlazorUI.Pages 
+@using BlazorUI.Utils
 @using System.Threading
 @*using System*@
 @*using System.Net;*@
+@inject IJSRuntime JSRuntime
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
 @implements IDisposable
@@ -29,88 +32,175 @@
                 @if (session != null && sessionHtmlEventIn)
                 {
                     <Modal @bind-Open="sessionHtmlEventIn" Close="OnClose">
-                        <form method="dialog">
-                            @if (session.htmlEventInputs.Count != 0)
-                            {
-                                switch (session.htmlEventType)
+                        
+                        @if (session.htmlEventType == "MessageBoxFlyoutShow" && session.htmlEventInputs.Count >= 2)
+                        {
+                            string message = (string)session.htmlEventInputs[0];
+                            string caption = (string)session.htmlEventInputs[1];
+                            AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)session.htmlEventInputs[2];
+                            session.htmlEventInputs.Clear();
+
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">@caption</span></p>
+                                <br />
+                                <p>@message</p>
+                                <br />
+                                @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
                                 {
-                                    case "MessageBoxFlyoutShow":
-                                        string message = (string)session.htmlEventInputs[0];
-                                        string caption = (string)session.htmlEventInputs[1];
-                                        AnyUiMessageBoxButton buttons = (AnyUiMessageBoxButton)session.htmlEventInputs[2];
-                                        session.htmlEventInputs.Clear();
-                                        <p><span style="font-weight:bold">@caption</span></p>
-                                        <br />
-                                        <p>@message</p>
-                                        <br />
-                                        @if (buttons == AnyUiMessageBoxButton.OK || buttons == AnyUiMessageBoxButton.OKCancel)
+                                    <button value="OK">OK</button>
+                                }
+                                @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
+                                {
+                                    <button value="Yes">Yes</button>
+                                    <button value="No">No</button>
+                                }
+                                @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
+                                {
+                                    <button value="Cancel">Cancel</button>
+                                }
+                            </form>
+                        }
+                        else
+                        if (session.htmlEventType == "ModalSelectFile")
+                        {
+                            session.htmlEventInputs.Clear();
+
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">Select file</span></p>
+                                <br />                                        
+                                <InputFile OnChange="HandleFileSelected2" />
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </form>
+                            @code {
+                                async Task HandleFileSelected2(IFileListEntry[] files)
+                                {                                               
+                                    // try get the file contents
+                                    string targetFn = null;
+                                    try
+                                    {
+                                        var file = files.FirstOrDefault();
+                                        if (file != null)
                                         {
-                                            <button value="OK">OK</button>
+                                            var fn = System.IO.Path.Combine(
+                                                        System.IO.Path.GetTempPath(), 
+                                                        System.IO.Path.GetFileName(file.Name));
+                                            var fileStream = System.IO.File.Create(fn);
+                                            await file.Data.CopyToAsync(fileStream);
+                                            fileStream.Close();
+                                            targetFn = fn;
                                         }
-                                        @if (buttons == AnyUiMessageBoxButton.YesNo || buttons == AnyUiMessageBoxButton.YesNoCancel)
-                                        {
-                                            <button value="Yes">Yes</button>
-                                            <button value="No">No</button>
-                                        }
-                                        @if (buttons == AnyUiMessageBoxButton.YesNoCancel || buttons == AnyUiMessageBoxButton.OKCancel)
-                                        {
-                                            <button value="Cancel">Cancel</button>
-                                        }
-                                        break;
-                                    case "StartFlyoverModal":
-                                        AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)session.htmlEventInputs[0];
-                                        if (dialogueData is AnyUiDialogueDataTextEditor ddte)
-                                        {
-                                            string flyCaption = ddte.Caption + " - read only";
-                                            flyText = ddte.Text;
-                                            session.htmlEventInputs.Clear();
-                                            <p><span style="font-weight:bold">@flyCaption</span></p>
-                                            // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
-                                            <textarea cols="100" rows="20"
-                                                      style="resize:both;">@flyText</textarea>
-                                            <br />
-                                            <button value="OK">OK</button>
-                                            <button value="Cancel">Cancel</button>
-                                        }
-                                        if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
-                                        {
-                                            int sizeDdsfl = ddsfl.ListOfItems.Count;
-                                            int iDdsfl = 0;
-                                            <select class="form-control selectpicker" size="@sizeDdsfl"
-                                                    @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
-                                                @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
-                                                {
-                                                    // menu item itself
-                                                    string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
-                                                    <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
-                                                }
-                                            </select>
-                                        }
-                                        break;
-                                    case "contextMenu":
-                                        // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
-                                        AnyUiSpecialActionContextMenu cntlcm =
-                                            (AnyUiSpecialActionContextMenu)session.htmlEventInputs[1];
-                                        var nmi = cntlcm.MenuItemHeaders.Length / 2;
-                                        int i = 0;
-                                        string icon = "" + cntlcm.MenuItemHeaders[0];
-                                        string header = "" + cntlcm.MenuItemHeaders[1];
-                                        session.htmlEventInputs.Clear();
-                                        // string v = i + ": " + icon + " " + header;
-                                        <select class="form-control selectpicker" size="@nmi"
-                                                @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
-                                            @for (i = 0; i < nmi; i++)
-                                            {
-                                                // menu item itself
-                                                icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
-                                                header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
-                                                <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
-                                            }
-                                        </select>
-                                        break;
+                                    }
+                                    catch
+                                    {
+                                    }
+
+                                    // finally: the modal dialog will be closed!
+                                    session.htmlEventIn = false;
+                                    session.htmlEventType = null;
+                                    session.htmlEventInputs.Clear();
+                                    session.htmlEventOut = true;                                            
+                                    session.htmlEventOutputs.Clear();
+                                    session.htmlEventOutputs.Add(targetFn);
                                 }
                             }
-                        </form>
+                        }
+                        else
+                        if (session.htmlEventType == "ModalSelectEntity")
+                        {
+                            session.htmlEventInputs.Clear();
+
+                            <p><span style="font-weight:bold">Select AAS entity</span></p>
+                            <br />                                                       
+                            <div style="max-width: 70%; max-height: 70%">
+                            <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
+                                    @bind-ExpandedNodes="ExpandedNodes"
+                                    @bind-SelectedNode="SelectedNode"
+                                    HasChildNodes="@(item => item.Childs?.Any() == true)">
+                                <TitleTemplate>                                                
+                                    <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
+                                    <strong><span style="color:blue">@getSymbols(context)</span></strong>
+                                </TitleTemplate>
+                            </Tree>
+                            <br />                                                                                
+                            </div>
+
+                            <form method="dialog">
+                                <button value="OK">OK</button>
+                                <button value="Cancel">Cancel</button>
+                            </form>
+                        }
+                        else
+                        if (session.htmlEventType == "StartFlyoverModal" && session.htmlEventInputs.Count >= 1)
+                        {
+                            AnyUiDialogueDataBase dialogueData = (AnyUiDialogueDataBase)session.htmlEventInputs[0];
+                            if (dialogueData is AnyUiDialogueDataTextEditor ddte)
+                            {
+                                string flyCaption = ddte.Caption + " - read only";
+                                flyText = ddte.Text;
+                                session.htmlEventInputs.Clear();
+                                            
+                                <form method="dialog">
+                                    <p><span style="font-weight:bold">@flyCaption</span></p>
+                                    // <textarea cols="80" rows="20" @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">@flyText</textarea>
+                                    <textarea cols="100" rows="20"
+                                                style="resize:both;">@flyText</textarea>
+                                    <br />
+                                    <button value="OK">OK</button>
+                                    <button value="Cancel">Cancel</button>
+                                </form>
+                            }
+                            if (dialogueData is AnyUiDialogueDataSelectFromList ddsfl)
+                            {
+                                int sizeDdsfl = ddsfl.ListOfItems.Count;
+                                int iDdsfl = 0;
+
+                                <form method="dialog">
+                                    <select class="form-control selectpicker" size="@sizeDdsfl"
+                                            @onchange="@((ChangeEventArgs __e) => MyDialogDataSelectFromList(__e.Value.ToString()))">
+                                        @for (iDdsfl = 0; iDdsfl < sizeDdsfl; iDdsfl++)
+                                        {
+                                            // menu item itself
+                                            string textDdsfl = ddsfl.ListOfItems[iDdsfl].Text;
+                                            <option value="@(iDdsfl + ": " + textDdsfl)">@(iDdsfl + ": " + textDdsfl)</option>
+                                        }
+                                    </select>
+                                </form>
+                            }
+                        }
+                        else
+                        if (session.htmlEventType == "contextMenu" && session.htmlEventInputs.Count >= 1)
+                        {
+                            // AnyUiUIElement el = (AnyUiUIElement)AnyUiDisplayContextHtml.htmlEventInputs[0];
+                            AnyUiSpecialActionContextMenu cntlcm =
+                                (AnyUiSpecialActionContextMenu)session.htmlEventInputs[1];
+                            var nmi = cntlcm.MenuItemHeaders.Length / 2;
+                            int i = 0;
+                            string icon = "" + cntlcm.MenuItemHeaders[0];
+                            string header = "" + cntlcm.MenuItemHeaders[1];
+                            session.htmlEventInputs.Clear();
+                            // string v = i + ": " + icon + " " + header;
+                            <form method="dialog">
+                                <select class="form-control selectpicker" size="@nmi"
+                                        @onchange="@((ChangeEventArgs __e) => MyContextMenuSelect(__e.Value.ToString()))">
+                                    @for (i = 0; i < nmi; i++)
+                                    {
+                                        // menu item itself
+                                        icon = "" + cntlcm.MenuItemHeaders[2 * i + 0];
+                                        header = "" + cntlcm.MenuItemHeaders[2 * i + 1];
+                                        <option value="@(i + ": " + icon + " " + header)">@(i + ": " + icon + " " + header)</option>
+                                    }
+                                </select>
+                            </form>
+                        }
+                        else
+                        {
+                            session.htmlEventInputs.Clear();
+                            <form method="dialog">
+                                <p><span style="font-weight:bold">Something went wrong!</span></p>
+                                <br /> 
+                                <button value="Cancel">Cancel</button>
+                            </form>
+                        }
                     </Modal>
                 }
 
@@ -203,9 +293,10 @@
                             Enter URL of AASX Server REST API (without /server/listaas)<br />
                         </span>
                     }
-                    <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"
-                          @bind-SelectedNode="SelectedNode"
+                    @* @bind-SelectedNode="SelectedNode" *@
+                    <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
                           @bind-ExpandedNodes="ExpandedNodes"
+                          @bind-SelectedNode="SelectedNode"
                           HasChildNodes="@(item => item.Childs?.Any() == true)">
                         <TitleTemplate>
                             @{ //// SubmodelService.syncSubTree(context);
@@ -299,13 +390,15 @@
                                 bi.stack17 = new AnyUiStackPanel();
                                 bi.stack17.Orientation = AnyUiOrientation.Vertical;
 
-                                if (_onlyUpdatePluginUi && bi.stack17 != null)
+                                if (_onlyUpdatePluginUi)
                                 {
                                     plugin.InvokeAction("update-anyui-visual-extension", bi.stack17);
-                                    _onlyUpdatePluginUi = false;
+                                    // _onlyUpdatePluginUi = false;
                                 }
                                 else
+                                {
                                     plugin.InvokeAction("fill-anyui-visual-extension", env, sm, bi.stack17);
+                                }
 
                                 if (bi.stack17.Children.Count != 0)
                                     view = true;
@@ -393,6 +486,8 @@
 
     List<Item> Items = null;
 
+    protected int _inhibitSelectNodeForPanel = 0;
+
     IList<Item> ExpandedNodes = new List<Item>();
     Item selectedNode;
     Item SelectedNode
@@ -400,10 +495,26 @@
         get { return selectedNode; }
         set
         {
+            // always remember
             selectedNode = value;
+
+            // inhibited
+            if (_inhibitSelectNodeForPanel > 0)
+            {
+                _inhibitSelectNodeForPanel--;
+                return;
+            }
+
+            // no? execute!
+            _onlyUpdatePluginUi = false;
             // OnSelectNode(selectedNode);
         }
     }
+
+    //protected void SelectedNodeChanged(Item i)
+    //{
+
+    //}
 
     // protected override void OnInitialized()
     protected override void OnAfterRender(bool firstRender)
@@ -444,12 +555,25 @@
 
                 // some events may affect
                 if (ndm.signalNewLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi)
+                    // force the sticky update mode to true
                     _onlyUpdatePluginUi = true;
+
+                if (ndm.onlyUpdateAasxPanel)
+                    _onlyUpdatePluginUi = true;
+
+                if (ndm.signalNewLambdaAction is AnyUiLambdaActionRedrawAllElementsBase)
+                    // force the sticky update mode to false, because of total redraw
+                    _onlyUpdatePluginUi = false;
+
+                if (ndm.signalNewLambdaAction is AnyUiLambdaActionRedrawEntity)
+                    // force the sticky update mode to false, because of redraw of entity
+                    _onlyUpdatePluginUi = false;
 
                 // re-create items
                 Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
 
-                // trigger redraw
+                // trigger redraw (but inhibit for plugin-redraw)
+                _inhibitSelectNodeForPanel += 1;
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
             }
@@ -509,6 +633,9 @@
                     newDataMode = 0;
                     break;
             }
+
+            // remember new (same?) selected node, but do not redraw pluging
+            _inhibitSelectNodeForPanel += 1;
             SelectedNode = selectedNode;
             // update = false;
             // updateNode(viewItems[0]);
@@ -934,6 +1061,8 @@
     {
         try
         {
+            var context = bi.helper.context as AnyUiDisplayContextHtml;
+
             // Navigate To
             //============
 
@@ -948,6 +1077,15 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                 && evtDispCont.fn != null)
             {
+                InvokeAsync(async () => {
+                    //var file = System.IO.File.ReadAllBytes(evtDispCont.fn);
+                    //var fileName = System.IO.Path.GetFileName(evtDispCont.fn);
+                    //// Send the data to JS to actually download the file
+                    //await JSRuntime.InvokeVoidAsync("BlazorDisplayFile", fileName, "application/octet-stream", file);
+                    //// await InvokeAsync(() => Program.loadAasx(bi, bi.aasxFileSelected));
+                    await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
+                    this.StateHasChanged();
+                });
             }
 
             // Redraw All
@@ -955,6 +1093,9 @@
 
             if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
             {
+                ;
+                Program.signalNewData(2, bi.sessionNumber, 
+                    new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true));
             }
 
             // Select AAS entity
@@ -963,6 +1104,40 @@
             var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
             if (evSelectEntity != null)
             {
+                ;
+                var found = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
+                if (found != null)
+                {
+                    // select function
+                    found.htmlEventInputs.Clear();
+                    found.htmlEventType = "ModalSelectEntity";
+                    found.htmlEventIn = true;
+                    found.htmlEventInputs.Add(null); // required to pass check on receiver
+
+                    // perform
+                    Program.signalNewData(0, found.sessionNumber, 
+                        onlyUpdateAasxPanel: true); // build new tree
+
+                    while (!found.htmlEventOut) Task.Delay(1) ;
+
+                    // result
+                    //if (found.htmlEventOutputs.Count == 1
+                    //    && found.htmlEventOutputs[0] is string fn)
+                    //{
+                    //    pluginInstance?.InvokeAction("event-return", 
+                    //        new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
+                    //        {
+                    //            FileNames = new [] { fn }
+                    //        });
+                    //}
+
+                    // clean
+                    found.htmlEventType = "";
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventIn = false;
+                }
             }
 
             // Select File
@@ -970,13 +1145,53 @@
 
             if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel)
             {
+                var found = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
+                if (found != null)
+                {
+                    // select function
+                    found.htmlEventInputs.Clear();
+                    found.htmlEventType = "ModalSelectFile";
+                    found.htmlEventIn = true;
+                    found.htmlEventInputs.Add(null); // required to pass check on receiver
+
+                    // perform
+                    Program.signalNewData(0, found.sessionNumber, 
+                        onlyUpdateAasxPanel: true); // build new tree
+
+                    while (!found.htmlEventOut) Task.Delay(1) ;
+
+                    // result
+                    if (found.htmlEventOutputs.Count == 1
+                        && found.htmlEventOutputs[0] is string fn)
+                    {
+                        pluginInstance?.InvokeAction("event-return", 
+                            new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
+                            {
+                                FileNames = new [] { fn }
+                            });
+                    }
+
+                    // clean
+                    found.htmlEventType = "";
+                    found.htmlEventOutputs.Clear();
+                    found.htmlEventOut = false;
+                    found.htmlEventInputs.Clear();
+                    found.htmlDotnetEventIn = false;
+                }
             }
 
             // Message Box
             //============
 
-            if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox)
+            if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox
+                && context != null)
             {
+                var res = context.MessageBoxFlyoutShow(
+                    evMsgBox.Message, evMsgBox.Caption, evMsgBox.Buttons, evMsgBox.Image);
+
+                // fire back
+                pluginInstance?.InvokeAction("event-return", 
+                    new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = res });
             }
 
             // Re-render Any UI Panels
@@ -984,9 +1199,25 @@
 
             if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
             {
-                if (bi.helper.context is AnyUiDisplayContextHtml context)
+                if (context != null)
                 {
-                    context.UpdateRenderElements(bi.stack17, update.Mode);                    
+                    if (update.Mode == AnyUiPluginUpdateMode.StatusToUi)
+                    { 
+                        // only update some parameters
+                        context.UpdateRenderElements(bi.stack17, update.Mode);
+                    }
+                    else
+                    if (update.Mode == AnyUiPluginUpdateMode.All)
+                    {
+                        // next redraw will only update from plugin
+                        _onlyUpdatePluginUi = true;
+
+                        //// re-create items
+                        //Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
+
+                        // trigger redraw
+                        InvokeAsync(() => this.StateHasChanged());
+                    }
                 }
             }
         }
@@ -996,4 +1227,6 @@
                 ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
         }
     }
+
+
 }

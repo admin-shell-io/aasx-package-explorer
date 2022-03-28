@@ -55,13 +55,16 @@ namespace BlazorUI
             public int signalNewDataMode;
             public int signalSessionNumber;
             public AnyUiLambdaActionBase signalNewLambdaAction;
+            public bool onlyUpdateAasxPanel;
 
-
-            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0, AnyUiLambdaActionBase newLambdaAction = null)
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0, 
+                AnyUiLambdaActionBase newLambdaAction = null,
+                bool onlyUpdatePanel = false)
             {
                 signalNewDataMode = mode;
                 signalSessionNumber = sessionNumber;
                 signalNewLambdaAction = newLambdaAction;
+                onlyUpdateAasxPanel = onlyUpdatePanel;
             }
         }
 
@@ -116,7 +119,7 @@ namespace BlazorUI
             bi.container = null;
             if (bi.env != null)
                 bi.env.Dispose();
-            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected);
+            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected, indirectLoadSave: true);
             bi.editMode = false;
             bi.thumbNail = null;
             signalNewData(3, bi.sessionNumber); // build new tree, all nodes closed
@@ -129,11 +132,15 @@ namespace BlazorUI
         // 3 == build new tree, all nodes closed
         public static int signalNewDataMode = 2;
         public static void signalNewData(int mode, int sessionNumber = 0,
-            AnyUiLambdaActionBase newLambdaAction = null)
+            AnyUiLambdaActionBase newLambdaAction = null,
+            bool onlyUpdateAasxPanel = false)
         {
             signalNewDataMode = mode;
-            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber, newLambdaAction));
+            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(
+                mode, sessionNumber, 
+                newLambdaAction, onlyUpdatePanel: onlyUpdateAasxPanel));
         }
+
         public static int getSignalNewDataMode()
         {
             int mode = signalNewDataMode;
