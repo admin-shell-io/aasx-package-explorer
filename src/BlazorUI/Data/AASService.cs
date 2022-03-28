@@ -248,18 +248,19 @@ namespace BlazorUI.Data
         void createEntityItems(Item smeRootItem, Entity e, int i)
         {
             List<Item> smChilds = new List<Item>();
-            foreach (var s in e.statements)
-            {
-                if (s?.submodelElement != null)
+            if (e.statements != null)
+                foreach (var s in e.statements)
                 {
-                    var smeItem = new Item();
-                    smeItem.envIndex = i;
-                    smeItem.Text = s.submodelElement.idShort;
-                    smeItem.Type = "In";
-                    smeItem.Tag = s.submodelElement;
-                    smChilds.Add(smeItem);
+                    if (s?.submodelElement != null)
+                    {
+                        var smeItem = new Item();
+                        smeItem.envIndex = i;
+                        smeItem.Text = s.submodelElement.idShort;
+                        smeItem.Type = "In";
+                        smeItem.Tag = s.submodelElement;
+                        smChilds.Add(smeItem);
+                    }
                 }
-            }
             smeRootItem.Childs = smChilds;
             foreach (var c in smChilds)
                 c.parent = smeRootItem;

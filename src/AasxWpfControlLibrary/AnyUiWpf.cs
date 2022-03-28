@@ -260,7 +260,8 @@ namespace AnyUi
                             wpf.MaxWidth = cntl.MaxWidth.Value;
                         wpf.Tag = cntl.Tag;
 
-                        if ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                        if ( ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                            || ((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) )
                             wpf.MouseLeftButtonDown += (s5, e5) => cntl.setValueLambda?.Invoke(
                                 new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount));
 

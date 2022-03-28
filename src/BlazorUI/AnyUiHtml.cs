@@ -164,7 +164,8 @@ namespace AnyUi
                                 s.htmlDotnetEventIn = false;
                                 s.htmlDotnetEventInputs.Clear();
                                 s.htmlEventIn = true;
-                                Program.signalNewData(1, s.sessionNumber); // same tree, but structure may change
+                                Program.signalNewData(1, s.sessionNumber, 
+                                    onlyUpdateAasxPanel: true); // same tree, but structure may change
 
                                 while (!s.htmlEventOut) ;
                                 int bufferedI = 0;
@@ -185,7 +186,8 @@ namespace AnyUi
                         int ndm = 2;
                         if (ret is AnyUiLambdaActionNone)
                             ndm = 0;
-                        Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret); // build new tree
+                        Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret,
+                            onlyUpdateAasxPanel : true) ; // build new tree
                     }
                     i++;
                 }
