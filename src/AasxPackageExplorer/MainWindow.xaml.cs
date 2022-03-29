@@ -25,6 +25,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -742,10 +743,6 @@ namespace AasxPackageExplorer
                 if (repo == null || fi == null)
                     return;
 
-                var location = repo.GetFullItemLocation(fi.Location);
-                if (location == null)
-                    return;
-
                 // safety?
                 if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
@@ -766,36 +763,63 @@ namespace AasxPackageExplorer
                     copts = fi.ContainerOptions;
 
                 // try load ..
-                try
+                if (repo is PackageContainerAasxFileRepository restRepository)
                 {
+                    if (restRepository.IsAspNetConnection)
+                    {
+                        var container = restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        if (container != null)
+                        {
+                            //fi.Env = env;
+                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false,
+                            storeFnToLRU: fi.PackageId);
+                        }
+
+                        Log.Singleton.Info($"Successfully loaded AASX Package with PackageId {fi.PackageId}");
+
+                        if (senderList is PackageContainerListControl pclc)
+                            pclc.RedrawStatus();
+                    }
+                }
+                else
+                {
+                    var location = repo.GetFullItemLocation(fi.Location);
+                    if (location == null)
+                        return;
                     Log.Singleton.Info($"Auto-load file from repository {location} into container");
 
-                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        _packageCentral,
-                        location,
-                        location,
-                        overrideLoadResident: true,
-                        takeOver: fi,
-                        fi.ContainerList,
-                        containerOptions: copts,
-                        runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                    try
+                    {
+                        var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                            _packageCentral,
+                            location,
+                            location,
+                            overrideLoadResident: true,
+                            takeOver: fi,
+                            fi.ContainerList,
+                            containerOptions: copts,
+                            runtimeOptions: _packageCentral.CentralRuntimeOptions);
 
-                    if (container == null)
-                        Log.Singleton.Error($"Failed to load AASX from {location}");
-                    else
-                        UiLoadPackageWithNew(_packageCentral.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false,
-                            storeFnToLRU: location);
+                        if (container == null)
+                            Log.Singleton.Error($"Failed to load AASX from {location}");
+                        else
+                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                                takeOverContainer: container, onlyAuxiliary: false,
+                                storeFnToLRU: location);
 
-                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                        Log.Singleton.Info($"Successfully loaded AASX {location}");
 
-                    if (senderList is PackageContainerListControl pclc)
-                        pclc.RedrawStatus();
+                        if (senderList is PackageContainerListControl pclc)
+                            pclc.RedrawStatus();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, $"When auto-loading {location}");
-                }
+
+
             };
 
             // what happens on a file drop -> dispatch

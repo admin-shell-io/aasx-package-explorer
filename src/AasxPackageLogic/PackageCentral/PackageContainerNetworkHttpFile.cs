@@ -261,7 +261,7 @@ namespace AasxPackageLogic.PackageCentral
                     var givenFn = Location;
                     if (contentFn != null)
                         givenFn = contentFn;
-                    TempFn = CreateNewTempFn(givenFn, IsFormat);
+                    TempFn = CreateNewTempFn(givenFn, IsFormat); //Why temp file, no use of file_name
                     runtimeOptions?.Log?.Info($".. downloading and scanning by proxy/firewall {client.BaseAddress} " +
                         $"and request {requestPath} .. ");
 

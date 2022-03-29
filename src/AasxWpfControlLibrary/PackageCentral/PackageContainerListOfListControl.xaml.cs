@@ -27,6 +27,7 @@ using AasxIntegrationBaseWpf;
 using AasxPackageExplorer;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AnyUi;
 
 namespace AasxWpfControlLibrary.PackageCentral
@@ -290,6 +291,36 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
                 }
 
+                if (cmd == "filerepoaddtoserver")
+                {
+                    var inputDialog = new Microsoft.Win32.OpenFileDialog();
+                    inputDialog.Title = "AASX Package File to be uploaded in the file repository";
+                    inputDialog.Filter = "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|All files (*.*)|*.*";
+                    _flyout.StartFlyover(new EmptyFlyout());
+                    var okClicked = inputDialog.ShowDialog();
+                    _flyout.CloseFlyover();
+
+                    if (okClicked != true)
+                    {
+                        return;
+                    }
+
+                    if (inputDialog.FileName.Length < 1 || inputDialog.FileNames.Length > 1)
+                    {
+                        return;
+                    }
+
+                    //Add file to package explorer's unnamed repo
+                    //fr.AddByAasxFn(_packageCentral, inputDialog.FileNames[0]);
+
+                    if (fr is PackageContainerAasxFileRepository fileRepo)
+                    {
+                        //Add the file to File Server
+                        int packageId = fileRepo.AddPackageToServer(inputDialog.FileNames[0]);
+                        fileRepo.LoadAasxFile(_packageCentral, inputDialog.FileNames[0], packageId);
+                    }
+                }
+
                 if (cmd == "filerepomultiadd")
                 {
                     // get the input files
@@ -395,6 +426,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                             "FileRepoMakeRelative", "\u2699", "Make AASX filenames relative .."));
 
                     cm.Add(new DynamicContextItem("FileRepoAddCurrent", "\u2699", "Add current AAS"));
+                    cm.Add(new DynamicContextItem("FileRepoAddToServer", "\u2699", "Add AASX File to File Repository"));
                     cm.Add(new DynamicContextItem("FileRepoMultiAdd", "\u2699", "Add multiple AASX files .."));
                     cm.Add(new DynamicContextItem("FileRepoAddFromServer", "\u2699", "Add from REST server .."));
                     cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));

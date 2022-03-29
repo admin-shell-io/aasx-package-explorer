@@ -40,17 +40,40 @@ namespace AasxPackageLogic.PackageCentral
         [JsonIgnore]
         public Uri Endpoint;
 
+        private AasxFileServerInterfaceService _aasxFileService;
+
+        public bool IsAspNetConnection { get; set; }
+
         //
         // Constructor
         //
 
         public PackageContainerListHttpRestRepository(string location)
         {
+            //TODO:Remove
+            if (location.Contains('?'))
+            {
+                var splitTokens = location.Split(new[] { '?' }, 2);
+                if (splitTokens[1].Equals("asp.net", StringComparison.OrdinalIgnoreCase))
+                {
+                    IsAspNetConnection = true;
+                }
+                location = splitTokens[0];
+            }
             // always have a location
             Endpoint = new Uri(location);
 
-            // directly set endpoint
-            _connector = new PackageConnectorHttpRest(null, Endpoint);
+            if (IsAspNetConnection)
+            {
+                _aasxFileService = new AasxFileServerInterfaceService(location);
+            }
+            else
+            {
+                // directly set endpoint
+                _connector = new PackageConnectorHttpRest(null, Endpoint);
+            }
+
+
         }
 
         //
@@ -67,13 +90,10 @@ namespace AasxPackageLogic.PackageCentral
         /// <returns>If a successfull retrieval could be made</returns>
         public async Task<bool> SyncronizeFromServerAsync()
         {
-            // access
             if (true != _connector?.IsValid())
                 return false;
-
             // try get a list of items from the connector
             var items = await _connector.GenerateRepositoryFromEndpointAsync();
-
             // just re-set
             FileMap.Clear();
             foreach (var fi in items)
