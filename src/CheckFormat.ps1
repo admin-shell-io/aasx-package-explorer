@@ -20,7 +20,7 @@ function Main
     $artefactsDir = CreateAndGetArtefactsDir
 
     $reportPath = Join-Path $artefactsDir "dotnet-format-report.json"
-    dotnet format --check --report $reportPath --exclude "**/DocTest*.cs"
+    dotnet format --verify-no-changes --report $reportPath --exclude "**/DocTest*.cs"
     $formatReport = Get-Content $reportPath |ConvertFrom-Json
     if ($formatReport.Count -ge 1)
     {

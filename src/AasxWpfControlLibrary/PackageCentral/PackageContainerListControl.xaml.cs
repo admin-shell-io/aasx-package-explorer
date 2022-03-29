@@ -43,6 +43,8 @@ namespace AasxWpfControlLibrary.PackageCentral
         public event Action<Control, PackageContainerListBase, string[]>
             FileDrop;
 
+        public event EventHandler FileUnloadEvent;
+
         private PackageContainerListBase theFileRepository = null;
         public PackageContainerListBase FileRepository
         {
@@ -197,6 +199,12 @@ namespace AasxWpfControlLibrary.PackageCentral
             if (mi?.Name == "MenuItemDelete" && fi != null)
             {
                 this.FileRepository?.Remove(fi);
+            }
+
+            if (mi?.Name == "MenuItemDeleteFromFileRepo" && fi != null)
+            {
+                this.FileRepository?.DeletePackageFromServer(fi);
+
             }
 
             if (mi?.Name == "MenuItemMoveUp" && fi != null)

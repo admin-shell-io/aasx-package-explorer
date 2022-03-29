@@ -234,6 +234,12 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
+
+        public virtual void DeletePackageFromServer(PackageContainerRepoItem repoItem)
+        {
+            Remove(repoItem);
+        }
+
         //
         // Converters & generators
         //
