@@ -1,14 +1,18 @@
 {
-    "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
-    "PluginPrefer" : "ANYUI",
-    "PluginDll": [
-        {
-            "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
-            "Args": []
-        },
-      {
-        "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
-        "Args": []
-      }
-    ]
+  "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
+  "PluginPrefer" : "ANYUI",
+  "PluginDll": [
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
+      "Args": []
+    }
+  ]
 }

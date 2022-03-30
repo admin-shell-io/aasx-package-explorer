@@ -72,7 +72,7 @@ namespace AasxPluginTechnicalData
         {
             // access
             if (sm == null)
-                return;
+                return;            
 
             // section General
             var smcGeneral = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(

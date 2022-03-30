@@ -167,7 +167,7 @@ namespace AnyUi
                                 Program.signalNewData(1, s.sessionNumber, 
                                     onlyUpdateAasxPanel: true); // same tree, but structure may change
 
-                                while (!s.htmlEventOut) ;
+                                while (!s.htmlEventOut) Task.Delay(1) ;
                                 int bufferedI = 0;
                                 if (s.htmlEventOutputs.Count == 1)
                                 {
@@ -180,7 +180,7 @@ namespace AnyUi
                                 //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
                                 break;
                         }
-                        while (s.htmlDotnetEventOut) ;
+                        while (s.htmlDotnetEventOut) Task.Delay(1) ;
 
                         // determine, which (visual) update has to be done
                         int ndm = 2;
@@ -207,7 +207,7 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        while (found.htmlDotnetEventIn) ;
+                        while (found.htmlDotnetEventIn) Task.Delay(1) ;
                         found.htmlEventInputs.Clear();
                         found.htmlDotnetEventType = "setValueLambda";
                         found.htmlDotnetEventInputs.Add(el);
@@ -229,7 +229,7 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        while (found.htmlDotnetEventIn) ;
+                        while (found.htmlDotnetEventIn) Task.Delay(1);
                         found.htmlEventInputs.Clear();
                         found.htmlDotnetEventType = "contextMenu";
                         found.htmlDotnetEventInputs.Add(el);
@@ -275,7 +275,7 @@ namespace AnyUi
                 found.htmlEventIn = true;
                 Program.signalNewData(2, found.sessionNumber); // build new tree
 
-                while (!found.htmlEventOut) ;
+                while (!found.htmlEventOut) Task.Delay(1) ;
                 if (found.htmlEventOutputs.Count == 1)
                     r = (AnyUiMessageBoxResult)found.htmlEventOutputs[0];
 
@@ -327,7 +327,7 @@ namespace AnyUi
                 found.htmlEventIn = true;
                 Program.signalNewData(2, found.sessionNumber); // build new tree
 
-                while (!found.htmlEventOut) ;
+                while (!found.htmlEventOut) Task.Delay(1);
                 if (dialogueData is AnyUiDialogueDataTextEditor ddte)
                 {
                     if (found.htmlEventOutputs.Count == 2)

@@ -42,7 +42,7 @@ namespace AasxPluginDocumentShelf
         public string UsageInfo = null;
     }
 
-    public class DocumentShelfOptions : AasxIntegrationBase.AasxPluginLookupOptionsBase
+    public class DocumentShelfOptions : AasxPluginLookupOptionsBase
     {
         public List<DocumentShelfOptionsRecord> Records = new List<DocumentShelfOptionsRecord>();
 

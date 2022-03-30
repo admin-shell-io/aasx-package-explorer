@@ -114,7 +114,7 @@
                             <div style="max-width: 70%; max-height: 70%">
                             <Tree Nodes="Items" ChildSelector="@(item => item.Childs)"                          
                                     @bind-ExpandedNodes="ExpandedNodes"
-                                    @bind-SelectedNode="SelectedNode"
+                                    SelectedNodeChanged="new EventCallback<Item>(null, (Action<Item>) SelectedNodeChangedModal)"
                                     HasChildNodes="@(item => item.Childs?.Any() == true)">
                                 <TitleTemplate>                                                
                                     <span style="color:white;background-color:blue;">@ViewNodeType(context)</span> @ViewNodeID(context)@ViewNodeInfo(context)
@@ -128,6 +128,18 @@
                                 <button value="OK">OK</button>
                                 <button value="Cancel">Cancel</button>
                             </form>
+
+                            @code {
+                                public void SelectedNodeChangedModal(Item im)
+                                {
+                                    ;
+                                    if (session != null)
+                                    {
+                                        session.htmlEventOutputs.Clear();
+                                        session.htmlEventOutputs.Add(im?.Referable);
+                                    }
+                                }
+                            }
                         }
                         else
                         if (session.htmlEventType == "StartFlyoverModal" && session.htmlEventInputs.Count >= 1)
@@ -239,11 +251,11 @@
                     {
                         session.htmlEventIn = false;
                         session.htmlEventInputs.Clear();
-                        session.htmlEventOutputs.Clear();
                         switch (session.htmlEventType)
                         {
                             case "MessageBoxFlyoutShow":
 
+                                session.htmlEventOutputs.Clear();
                                 AnyUiMessageBoxResult r = AnyUiMessageBoxResult.None;
                                 switch (value)
                                 {
@@ -262,7 +274,13 @@
                                 }
                                 session.htmlEventOutputs.Add(r);
                                 break;
+
+                            case "ModalSelectEntity":
+                                // result is already in the session.htmlEventOutputs
+                                break;
+
                             case "StartFlyoverModal":
+                                session.htmlEventOutputs.Clear();
                                 session.htmlEventOutputs.Add(flyText);
                                 switch (value)
                                 {
@@ -274,7 +292,13 @@
                                         break;
                                 }
                                 break;
+                            
                             case "contextMenu":
+                                session.htmlEventOutputs.Clear();                               
+                                break;
+
+                            default:
+                                session.htmlEventOutputs.Clear();                               
                                 break;
                         }
                         session.htmlEventOut = true;
@@ -1121,15 +1145,17 @@
                     while (!found.htmlEventOut) Task.Delay(1) ;
 
                     // result
-                    //if (found.htmlEventOutputs.Count == 1
-                    //    && found.htmlEventOutputs[0] is string fn)
-                    //{
-                    //    pluginInstance?.InvokeAction("event-return", 
-                    //        new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
-                    //        {
-                    //            FileNames = new [] { fn }
-                    //        });
-                    //}
+                    if (found.htmlEventOutputs.Count == 1
+                        && found.htmlEventOutputs[0] is AdminShell.Referable rf)
+                    {
+                        var kl = new AdminShell.KeyList();
+                        rf?.CollectReferencesByParent(kl);
+                         pluginInstance?.InvokeAction("event-return", 
+                            new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
+                            {
+                                resultKeys = kl
+                            });
+                    }
 
                     // clean
                     found.htmlEventType = "";

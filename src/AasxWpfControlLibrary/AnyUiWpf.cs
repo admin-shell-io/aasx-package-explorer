@@ -136,6 +136,8 @@ namespace AnyUi
                 res.Width = GetWpfGridLength(cd.Width);
             if (cd?.MinWidth.HasValue == true)
                 res.MinWidth = cd.MinWidth.Value;
+            if (cd?.MaxWidth.HasValue == true)
+                res.MaxWidth = cd.MaxWidth.Value;
             return res;
         }
 
@@ -417,6 +419,8 @@ namespace AnyUi
                             wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.CornerRadius != null)
+                            wpf.CornerRadius  = new CornerRadius(cntl.CornerRadius.Value);
                         // callbacks
                         if (cntl.IsDropBox)
                         {

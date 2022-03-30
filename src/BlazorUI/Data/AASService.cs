@@ -96,11 +96,17 @@ namespace BlazorUI.Data
                         {
                             if (sm?.idShort != null)
                             {
+                                // Submodel with parents
+                                sm.SetAllParents();
+
                                 // add Submodel
-                                var smItem = new Item();
-                                smItem.envIndex = i;
-                                smItem.Text = sm.idShort;
-                                smItem.Tag = sm;
+                                var smItem = new Item()
+                                {
+                                    Referable = sm,
+                                    envIndex = i,
+                                    Text = sm.idShort,
+                                    Tag = sm
+                                };
                                 childs.Add(smItem);
                                 List<Item> smChilds = new List<Item>();
 
@@ -118,6 +124,7 @@ namespace BlazorUI.Data
                                             {
                                                 var piItem = new Item()
                                                 {
+                                                    Referable = sm,
                                                     envIndex = i,
                                                     Text = "PLUGIN",
                                                     Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance, 
@@ -137,12 +144,15 @@ namespace BlazorUI.Data
                                 if (sm.submodelElements != null)
                                     foreach (var sme in sm.submodelElements)
                                     {
-                                        var smeItem = new Item();
-                                        smeItem.envIndex = i;
-                                        smeItem.Text = sme.submodelElement.idShort;
-                                        smeItem.Tag = sme.submodelElement;
-                                        smeItem.ParentContainer = sm;
-                                        smeItem.Wrapper = sme;
+                                        var smeItem = new Item()
+                                        {
+                                            Referable = sme?.submodelElement,
+                                            envIndex = i,
+                                            Text = sme.submodelElement.idShort,
+                                            Tag = sme.submodelElement,
+                                            ParentContainer = sm,
+                                            Wrapper = sme
+                                        };
                                         smChilds.Add(smeItem);
                                         if (sme.submodelElement is SubmodelElementCollection)
                                         {
