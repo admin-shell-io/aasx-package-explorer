@@ -52,7 +52,8 @@ namespace AnyUi
         public AnyUiBorder AddSmallBorderTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
             int? colSpan = null, int? rowSpan = null,
-            AnyUiThickness borderThickness = null, AnyUiBrush borderBrush = null)
+            AnyUiThickness borderThickness = null, AnyUiBrush borderBrush = null,
+            double? cornerRadius = null)
         {
             var brd = new AnyUiBorder();
             brd.Margin = margin;
@@ -62,6 +63,8 @@ namespace AnyUi
                 brd.BorderThickness = borderThickness;
             if (borderBrush != null)
                 brd.BorderBrush = borderBrush;
+            if (cornerRadius != null)
+                brd.CornerRadius = cornerRadius;
             AnyUiGrid.SetRow(brd, row);
             AnyUiGrid.SetColumn(brd, col);
             if (rowSpan.HasValue)
@@ -154,13 +157,16 @@ namespace AnyUi
         public AnyUiImage AddSmallImageTo(
             AnyUiGrid g, int row, int col,
             AnyUiThickness margin = null,
-            AnyUiStretch? stretch = null)
+            AnyUiStretch? stretch = null,
+            object bitmap = null)
         {
             var img = new AnyUiImage();
             if (margin != null)
                 img.Margin = margin;
             if (stretch != null)
                 img.Stretch = stretch.Value;
+            if (bitmap != null)
+                img.Bitmap = bitmap;
             AnyUiGrid.SetRow(img, row);
             AnyUiGrid.SetColumn(img, col);
             g.Children.Add(img);
@@ -246,7 +252,9 @@ namespace AnyUi
         public AnyUiComboBox AddSmallComboBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
-            int minWidth = -1, int maxWidth = -1, string[] items = null, bool isEditable = false,
+            int minWidth = -1, int maxWidth = -1, 
+            string[] items = null, int? selectedIndex = null,
+            bool isEditable = false,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             AnyUiHorizontalAlignment? horizontalAlignment = null)
         {
@@ -264,6 +272,8 @@ namespace AnyUi
             if (items != null)
                 foreach (var i in items)
                     cb.Items.Add("" + i);
+            if (selectedIndex != null)
+                cb.SelectedIndex = selectedIndex;
             cb.Text = text;
             cb.IsEditable = isEditable;
             if (verticalContentAlignment != null)
@@ -421,6 +431,7 @@ namespace AnyUi
             AnyUiBrush foreground = null,
             AnyUiBrush background = null,
             int? minWidth = null, int? maxWidth = null,
+            int? minHeight = null, int? maxHeight = null,
             AnyUiHorizontalAlignment? horizontalAlignment = null,
             AnyUiHorizontalAlignment? horizontalContentAlignment = null,
             AnyUiVerticalAlignment? verticalAlignment = null,
@@ -452,6 +463,11 @@ namespace AnyUi
                 fe.MinWidth = minWidth;
             if (maxWidth.HasValue)
                 fe.MaxWidth = maxWidth;
+
+            if (minHeight.HasValue)
+                fe.MinHeight = minHeight;
+            if (maxHeight.HasValue)
+                fe.MaxHeight = maxHeight;
 
             if (skipForTarget.HasValue)
                 fe.SkipForTarget = skipForTarget.Value;

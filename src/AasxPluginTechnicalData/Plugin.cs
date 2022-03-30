@@ -24,13 +24,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     public class AasxPlugin : IAasxPluginInterface
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginTechnicalData.TechnicalDataOptions options =
+        private LogInstance _log = new LogInstance();
+        private PluginEventStack _eventStack = new PluginEventStack();
+        private AasxPluginTechnicalData.TechnicalDataOptions _options =
             new AasxPluginTechnicalData.TechnicalDataOptions();
 
-        private AasxPluginTechnicalData.TechnicalDataViewControl viewControl =
-            new AasxPluginTechnicalData.TechnicalDataViewControl();
+        private AasxPluginTechnicalData.TechnicalDataViewControl _viewControl = null;
+
+        private AasxPluginTechnicalData.TechnicalDataAnyUiControl _anyUiControl = null;
 
         public string GetPluginName()
         {
@@ -40,10 +41,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         public void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginTechnicalData.TechnicalDataOptions.CreateDefault();
+            _options = AasxPluginTechnicalData.TechnicalDataOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -53,22 +54,25 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         AasxPluginTechnicalData.TechnicalDataOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public object CheckForLogMessage()
         {
-            return Log.PopLastShortTermPrint();
+            return _log.PopLastShortTermPrint();
         }
 
         public AasxPluginActionDescriptionBase[] ListActions()
         {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(
@@ -91,6 +95,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "fill-panel-visual-extension",
                     "When called, fill given WPF panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "fill-anyui-visual-extension",
+                    "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "update-anyui-visual-extension",
+                    "When called, updated already presented AnyUI panel with some arguments."));
             return res.ToArray();
         }
 
@@ -110,8 +122,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options != null && this.options.Records != null)
-                    foreach (var rec in this.options.Records)
+                if (this._options != null && this._options.Records != null)
+                    foreach (var rec in this._options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
                                 if (sm.semanticId != null && sm.semanticId.Matches(x))
@@ -137,13 +149,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginTechnicalData.TechnicalDataOptions>(
                         (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -160,10 +172,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && this._eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return this._eventStack.PopEvent();
             }
 
             if (action == "get-check-visual-extension")
@@ -172,6 +184,38 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 cve.strType = "True";
                 cve.obj = true;
                 return cve;
+            }
+
+            if (action == "fill-anyui-visual-extension")
+            {
+                // arguments
+                if (args == null || args.Length < 3)
+                    return null;
+
+                // call
+                _anyUiControl = AasxPluginTechnicalData.TechnicalDataAnyUiControl.FillWithAnyUiControls(
+                    _log, args[0], args[1], _options, _eventStack, args[2]);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = _anyUiControl;
+                return res;
+            }
+
+            if (action == "update-anyui-visual-extension"
+                && _anyUiControl != null)
+            {
+                // arguments
+                if (args == null || args.Length < 0)
+                    return null;
+
+                // call
+                _anyUiControl.Update(args);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = 42;
+                return res;
             }
 
             if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)
@@ -187,13 +231,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 sm.SetAllParents();
 
                 // create TOP control
-                this.viewControl = new AasxPluginTechnicalData.TechnicalDataViewControl();
-                this.viewControl.Start(package, sm, options, eventStack);
-                master.Children.Add(this.viewControl);
+                this._viewControl = new AasxPluginTechnicalData.TechnicalDataViewControl();
+                this._viewControl.Start(package, sm, _options, _eventStack);
+                master.Children.Add(this._viewControl);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = this.viewControl;
+                res.obj = this._viewControl;
                 return res;
             }
 

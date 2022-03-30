@@ -318,7 +318,7 @@ namespace BlazorUI
             else
             if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Right)
             {
-                // Set("float", "right");
+                Set("float", "right", add: true);
             }
             else
             {

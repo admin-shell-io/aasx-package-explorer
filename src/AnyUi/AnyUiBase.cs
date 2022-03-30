@@ -104,7 +104,7 @@ namespace AnyUi
     public class AnyUiColumnDefinition
     {
         public AnyUiGridLength Width;
-        public double? MinWidth;
+        public double? MinWidth, MaxWidth;
     }
 
     public class AnyUiRowDefinition
@@ -822,6 +822,7 @@ namespace AnyUi
         public AnyUiThickness BorderThickness;
         public AnyUiBrush BorderBrush = null;
         public AnyUiThickness Padding;
+        public double? CornerRadius = null;
 
         public bool IsDropBox = false;
 

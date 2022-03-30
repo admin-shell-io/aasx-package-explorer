@@ -32,6 +32,7 @@ namespace BlazorUI
 {
     public class Item
     {
+        public AdminShell.Referable Referable;
         public string Text { get; set; }
         public IEnumerable<Item> Childs { get; set; }
         public object parent { get; set; }

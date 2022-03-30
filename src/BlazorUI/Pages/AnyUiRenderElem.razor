@@ -205,7 +205,8 @@
             fontSizeRel: stb.FontSize,
             fontWeight: stb.FontWeight);
 
-        style.SetFillWidth(Element, FillMode, stb.Margin, setMinMaxWidth: true);
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, stb.Margin, setMinMaxWidth: true);
+        style.SetAlignments(Element);
 
         if (stb.TextAsHyperlink)
         {
@@ -226,7 +227,8 @@
             fontSizeRel: tb.FontSize,
             fontWeight: tb.FontWeight);
 
-        style.SetFillWidth(Element, FillMode, tb.Margin, setMinMaxWidth: true);
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, tb.Margin, setMinMaxWidth: true);
+        style.SetAlignments(Element);
 
         <span style="@style">@tb.Text</span>
     }
@@ -239,7 +241,8 @@
             fontSizeRel: chlb.FontSize,
             fontWeight: chlb.FontWeight);
 
-        style.SetFillWidth(Element, FillMode, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);            
+        style.SetFillWidth(Element, AnyUiHtmlFillMode.None, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);
+        style.SetAlignments(Element);
 
         <span style="@style">@chlb.Content</span>
     }
