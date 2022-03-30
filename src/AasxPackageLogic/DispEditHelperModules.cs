@@ -188,7 +188,8 @@ namespace AasxPackageLogic
         // Identifiable
         //
 
-        public void DisplayOrEditEntityIdentifiable(AnyUiStackPanel stack,
+        public void DisplayOrEditEntityIdentifiable(
+            AdminShell.AdministrationShellEnv env, AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
             DispEditInjectAction injectToId = null,
@@ -253,12 +254,57 @@ namespace AasxPackageLogic
                     {
                         if (i == 0)
                         {
-                            var dr = new DiaryReference(identifiable);
-                            identifiable.identification.idType = AdminShell.Identification.IRI;
-                            identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
-                                templateForIdString);
-                            this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
+                            var res = this.context.MessageBoxFlyoutShow(
+                                    "When generating new identification, rename all occurences " +
+                                    "in the AAS environment? " + Environment.NewLine + 
+                                    "(This operation cannot be reverted!)",
+                                    "Identifiable", AnyUiMessageBoxButton.YesNoCancel, AnyUiMessageBoxImage.Warning);
+
+                            if (res == AnyUiMessageBoxResult.Yes && env != null)
+                            {
+                                // new id
+                                var newId = new AdminShell.Identification(
+                                    AdminShell.Identification.IRI,
+                                    AdminShellUtil.GenerateIdAccordingTemplate(templateForIdString));
+
+                                // rename
+                                var lrf = env.RenameIdentifiable<AdminShell.Asset>(
+                                    identifiable.identification,
+                                    newId);
+
+                                // diary
+                                var dr = new DiaryReference(identifiable);
+                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
+
+                                // use this information to emit events
+                                if (lrf != null)
+                                {
+                                    foreach (var rf in lrf)
+                                    {
+                                        var rfi = rf.FindParentFirstIdentifiable();
+                                        if (rfi != null)
+                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                    }
+                                }
+
+                                Log.Singleton.Info("Generating and renamimg performed.");
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
+                            }
+
+                            if (res == AnyUiMessageBoxResult.No) {
+                                // single rename
+                                var dr = new DiaryReference(identifiable);
+                                identifiable.identification.idType = AdminShell.Identification.IRI;
+                                identifiable.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                    templateForIdString);
+                                this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
+
+                                Log.Singleton.Info("New id generated.");
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
+                            }
+
+                            // nope
+                            return new AnyUiLambdaActionNone();
                         }
                         if (i >= 1)
                         {

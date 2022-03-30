@@ -99,7 +99,7 @@ namespace AasxPackageLogic
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
-                stack, asset,
+                env, stack, asset,
                 Options.Curr.TemplateIdAsset,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Input", "Rename" },
@@ -1203,7 +1203,7 @@ namespace AasxPackageLogic
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
-                stack, aas,
+                env, stack, aas,
                 Options.Curr.TemplateIdAas,
                 null,
                 checkForIri: true);
@@ -1626,7 +1626,7 @@ namespace AasxPackageLogic
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
-                    stack, submodel,
+                    env, stack, submodel,
                     (submodel.kind.kind.Trim().ToLower() == "template")
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
@@ -1796,7 +1796,7 @@ namespace AasxPackageLogic
             // Identifiable
 
             this.DisplayOrEditEntityIdentifiable(
-                stack, cd,
+                env, stack, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Rename" },

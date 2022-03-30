@@ -8161,6 +8161,7 @@ namespace AdminShellNS
 
                 this.ordered = src.ordered;
                 this.allowDuplicates = src.allowDuplicates;
+                this.value = new SubmodelElementWrapperCollection();
                 if (!shallowCopy)
                     foreach (var smw in src.value)
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
