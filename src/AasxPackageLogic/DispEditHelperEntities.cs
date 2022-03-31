@@ -98,7 +98,7 @@ namespace AasxPackageLogic
                 (ds) => { asset.hasDataSpecification = ds; }, relatedReferable: asset);
 
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
+            this.DisplayOrEditEntityIdentifiable<AdminShell.Asset>(
                 env, stack, asset,
                 Options.Curr.TemplateIdAsset,
                 new DispEditHelperModules.DispEditInjectAction(
@@ -1202,7 +1202,7 @@ namespace AasxPackageLogic
                 (ds) => { aas.hasDataSpecification = ds; }, relatedReferable: aas);
 
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
+            this.DisplayOrEditEntityIdentifiable<AdminShell.AdministrationShell>(
                 env, stack, aas,
                 Options.Curr.TemplateIdAas,
                 null,
@@ -1625,7 +1625,7 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
                 // Identifiable
-                this.DisplayOrEditEntityIdentifiable(
+                this.DisplayOrEditEntityIdentifiable<AdminShell.Submodel>(
                     env, stack, submodel,
                     (submodel.kind.kind.Trim().ToLower() == "template")
                         ? Options.Curr.TemplateIdSubmodelTemplate
@@ -1795,7 +1795,7 @@ namespace AasxPackageLogic
 
             // Identifiable
 
-            this.DisplayOrEditEntityIdentifiable(
+            this.DisplayOrEditEntityIdentifiable<AdminShell.ConceptDescription>(
                 env, stack, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(

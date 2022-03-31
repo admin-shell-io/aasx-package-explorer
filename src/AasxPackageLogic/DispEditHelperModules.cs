@@ -188,12 +188,13 @@ namespace AasxPackageLogic
         // Identifiable
         //
 
-        public void DisplayOrEditEntityIdentifiable(
+        public void DisplayOrEditEntityIdentifiable<T>(
             AdminShell.AdministrationShellEnv env, AnyUiStackPanel stack,
             AdminShell.Identifiable identifiable,
             string templateForIdString,
             DispEditInjectAction injectToId = null,
             bool checkForIri = true)
+            where T : AdminShell.Identifiable
         {
             // access
             if (stack == null || identifiable == null)
@@ -268,7 +269,7 @@ namespace AasxPackageLogic
                                     AdminShellUtil.GenerateIdAccordingTemplate(templateForIdString));
 
                                 // rename
-                                var lrf = env.RenameIdentifiable<AdminShell.Asset>(
+                                var lrf = env.RenameIdentifiable<T>(
                                     identifiable.identification,
                                     newId);
 
