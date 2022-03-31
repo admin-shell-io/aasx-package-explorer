@@ -83,9 +83,21 @@ namespace AasxPluginDocumentShelf
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShellV20.Key(
+            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
                 AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
                 "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+
+            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
+                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
+                "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
+
+            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
+                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
+                "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
+
+            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
+                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
+                "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
 
             return opt;
         }

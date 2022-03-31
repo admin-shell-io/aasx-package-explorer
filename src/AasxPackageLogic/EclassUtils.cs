@@ -164,6 +164,8 @@ namespace AasxPackageLogic
 
             double progressPerFile = 1.0 / a.eclassFiles.Count;
 
+            var lastTimeOfUpdate = DateTime.Now;
+
             for (int fileNdx = 0; fileNdx < a.eclassFiles.Count; fileNdx++)
             {
                 long totalSize = 1 + new System.IO.FileInfo(a.eclassFiles[fileNdx].fn).Length;
@@ -230,8 +232,11 @@ namespace AasxPackageLogic
                                     }
 
                                     numElems++;
-                                    if (numElems % 500 == 0)
+                                    if (numElems % 500 == 0
+                                        && (DateTime.Now - lastTimeOfUpdate).TotalMilliseconds > 1000)
                                     {
+                                        lastTimeOfUpdate = DateTime.Now;
+
                                         long currPos = fileSteam.Position;
                                         double frac = Math.Min(
                                             100.0d * progressPerFile * (fileNdx) +
@@ -580,8 +585,10 @@ namespace AasxPackageLogic
                     if (ds.preferredName == null)
                         ds.preferredName = new AdminShell.LangStringSetIEC61360();
 
-                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.preferredName.Add(ls);
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    if (!ds.preferredName.ContainsLang(ls?.lang))
+                        ds.preferredName.Add(ls);
+                    // ReSharper enable PossibleNullReferenceException
                 });
 
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
@@ -589,27 +596,12 @@ namespace AasxPackageLogic
                     if (ds.definition == null)
                         ds.definition = new AdminShell.LangStringSetIEC61360();
 
-                    // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
-                    ds.definition.Add(ls);
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    if (!ds.definition.ContainsLang(ls?.lang))
+                        ds.definition.Add(ls);
+                    // ReSharper enable PossibleNullReferenceException
                 });
 
-                // <domain xsi:type="ontoml:REAL_MEASURE_TYPE_Type">
-                //   <unit unit_ref="0173-1#05-AAA351#002"/>
-                // </domain >
-                // <unitsml:Unit dimensionURL="0173-1#Z2-AAA173#001" xml:id="id0173-1x05-AAA351x002">
-                //   <unitsml:UnitName xml:lang="de-DE">Hz</unitsml:UnitName>
-                //   <unitsml:UnitName xml:lang="en-US">Hz</unitsml:UnitName>
-                //   <unitsml:UnitSymbol type="ASCII">Hz</unitsml:UnitSymbol>
-                //   <unitsml:CodeListValue codeListName="IRDI" unitCodeValue="0173-1#05-AAA351#002" />
-                // <unitsml:Quantity dimensionURL="0173-1#Z2-AAA173#001" xml:id="id0173-1xZ4-BAJ257x001">
-                //   <unitsml:QuantityName xml:lang="de-DE">Frequenz</unitsml:QuantityName>
-                //   <unitsml:QuantityName xml:lang="en-US">frequency</unitsml:QuantityName>
-                //   <unitsml:QuantitySymbol type="IRDI">0173-1#Z4-BAJ257#001</unitsml:QuantitySymbol>
-                //   <unitsml:UnitReference xml:lang="en-US" name="hertz" url="0173-1#05-AAA351#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="megahertz" url="0173-1#05-AAA581#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="terahertz" url="0173-1#05-AAA190#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="gigahertz" url="0173-1#05-AAA505#002" />
-                //   <unitsml:UnitReference xml:lang="en-US" name="kilohertz" url="0173-1#05-AAA033#002" />
             }
 
             // Phase 2: fix some shortcomings

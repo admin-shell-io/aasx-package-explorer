@@ -182,7 +182,7 @@ namespace AasxPackageExplorer
                     CheckIfToFlushEvents();
 
                     // as saving changes the structure of pending supplementary files, re-display
-                    RedrawAllAasxElements();
+                    RedrawAllAasxElements(keepFocus: true);
                 }
                 catch (Exception ex)
                 {
@@ -264,6 +264,8 @@ namespace AasxPackageExplorer
 
                         // preferred format
                         var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
+                        if (dlg.FilterIndex == 1)
+                            prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
                         if (dlg.FilterIndex == 2)
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
@@ -271,12 +273,13 @@ namespace AasxPackageExplorer
                         RememberForInitialDirectory(dlg.FileName);
                         await _packageCentral.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
 
-                        // backup
-                        if (Options.Curr.BackupDir != null)
-                            _packageCentral.MainItem.Container.BackupInDir(
-                                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                                Options.Curr.BackupFiles,
-                                PackageContainerBase.BackupType.FullCopy);
+                        // backup (only for AASX)
+                        if (dlg.FilterIndex == 0)
+                            if (Options.Curr.BackupDir != null)
+                                _packageCentral.MainItem.Container.BackupInDir(
+                                    System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+                                    Options.Curr.BackupFiles,
+                                    PackageContainerBase.BackupType.FullCopy);
                         // as saving changes the structure of pending supplementary files, re-display
                         RedrawAllAasxElements();
                     }

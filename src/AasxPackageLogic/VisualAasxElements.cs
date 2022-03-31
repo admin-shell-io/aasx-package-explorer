@@ -40,10 +40,10 @@ namespace AasxPackageLogic
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
-        public ObservableCollection<VisualElementGeneric> Members { get; set; }
+        public ListOfVisualElement Members { get; set; }
 
         /// <summary>
-        /// Number of of memebers at the top of the list, whcih are virtual (e.g. by plug-ins)
+        /// Number of of members at the top of the list, whcih are virtual (e.g. by plug-ins)
         /// and not represented by the AAS-element's children.
         /// </summary>
         public int VirtualMembersAtTop = 0;
@@ -94,7 +94,7 @@ namespace AasxPackageLogic
 
         public VisualElementGeneric()
         {
-            this.Members = new ObservableCollection<VisualElementGeneric>();
+            this.Members = new ListOfVisualElement();
         }
 
         /// <summary>
@@ -306,6 +306,12 @@ namespace AasxPackageLogic
             return null;
         }
 
+        public VisualElementGeneric FindSibling(bool before = true, bool after = true)
+        {
+            // need parent -> members
+            return Parent?.Members?.FindSibling(this);
+        }
+
         public AdminShell.KeyList BuildKeyListToTop(
             bool includeAas = false)
         {
@@ -490,6 +496,7 @@ namespace AasxPackageLogic
             }
             return res;
         }
+
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
@@ -1333,6 +1340,25 @@ namespace AasxPackageLogic
                         AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     }
                 }
+        }
+
+        public VisualElementGeneric FindSibling(VisualElementGeneric item, bool before = true, bool after = true)
+        {
+            // find index of item
+            var i = this.IndexOf(item);
+            if (i < 0)
+                return null;
+
+            // before?
+            if (before)
+                return this[i - 1];
+
+            // after
+            if (after && i < this.Count - 1)
+                return this[i + 1];
+
+            // no
+            return null;
         }
 
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
