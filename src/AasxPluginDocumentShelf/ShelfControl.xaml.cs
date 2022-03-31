@@ -485,7 +485,8 @@ namespace AasxPluginDocumentShelf
                                 inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
 
                             ent.LoadImageFromPath(inputFn);
-                        } catch (Exception ex)
+                        }
+                        catch (Exception ex)
                         {
                             Log?.Error(ex, "when loading preview file for " + ent.Title);
                         }

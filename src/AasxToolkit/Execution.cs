@@ -142,7 +142,7 @@ namespace AasxToolkit
                             catch (Exception ex)
                             {
                                 Console.Error.WriteLine(
-                                    "While extract document {0} {1} {2}: {3} at {4}", 
+                                    "While extract document {0} {1} {2}: {3} at {4}",
                                         exdoc.DocSys, exdoc.DocClass, exdoc.Target, ex.Message, ex.StackTrace);
                                 return -1;
                             }

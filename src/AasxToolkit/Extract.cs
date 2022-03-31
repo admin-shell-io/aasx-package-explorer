@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AdminShellNS;
 using AasxIntegrationBase;
+using AdminShellNS;
 
 namespace AasxToolkit
 {
@@ -24,7 +24,8 @@ namespace AasxToolkit
             string findSys, string findClass, string targetFn)
         {
             // access
-            if (package?.AasEnv?.Submodels == null || !findSys.HasContent() || !findClass.HasContent() || !targetFn.HasContent())
+            if (package?.AasEnv?.Submodels == null || !findSys.HasContent()
+                || !findClass.HasContent() || !targetFn.HasContent())
                 return;
 
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
@@ -90,7 +91,7 @@ namespace AasxToolkit
                                     defs11.CD_ClassId?.GetReference(), mm)?.value;
 
                             // found?
-                            clsFound = clsFound ||(findSys.Trim().ToLower() == classSys.Trim().ToLower()
+                            clsFound = clsFound || (findSys.Trim().ToLower() == classSys.Trim().ToLower()
                                 && findClass.Trim().ToLower() == classId.Trim().ToLower());
 
                         }

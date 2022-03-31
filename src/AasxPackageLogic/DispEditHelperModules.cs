@@ -256,7 +256,7 @@ namespace AasxPackageLogic
                         {
                             var res = this.context.MessageBoxFlyoutShow(
                                     "When generating new identification, rename all occurences " +
-                                    "in the AAS environment? " + Environment.NewLine + 
+                                    "in the AAS environment? " + Environment.NewLine +
                                     "(This operation cannot be reverted!)",
                                     "Identifiable", AnyUiMessageBoxButton.YesNoCancel, AnyUiMessageBoxImage.Warning);
 
@@ -291,7 +291,8 @@ namespace AasxPackageLogic
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
                             }
 
-                            if (res == AnyUiMessageBoxResult.No) {
+                            if (res == AnyUiMessageBoxResult.No)
+                            {
                                 // single rename
                                 var dr = new DiaryReference(identifiable);
                                 identifiable.identification.idType = AdminShell.Identification.IRI;
