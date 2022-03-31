@@ -1350,7 +1350,7 @@ namespace AasxPackageLogic
                 return null;
 
             // before?
-            if (before && i >= 0)
+            if (before)
                 return this[i - 1];
 
             // after
@@ -1945,8 +1945,6 @@ namespace AasxPackageLogic
 
             // Test for VirtualEntities. Allow a string comparison
             var mdo = tvl.GetMainDataObject();
-            if (mdo is AdminShellPackageSupplementaryFile sff)
-                ;
             if (mdo == null)
                 yield break;
             var s1 = mdo as string;

@@ -146,7 +146,7 @@ namespace AasxToolkit
                         }
                         catch (Exception ex)
                         {
-                            ;
+                            Log.WriteLine("Error {0}", ex.Message);
                         }
                     }
                 }
