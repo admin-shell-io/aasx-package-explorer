@@ -179,32 +179,32 @@ MIHO,
     this does not prevent the corner case, that we could have
     * multiple dataSpecificationIEC61360 in this list, which would be an error
 
-[Line 3447, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3447
+[Line 3468, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3468
 ), 
 MIHO,
 2020-08-27
 
     According to spec, cardinality is [1..1][1..n]
 
-[Line 3451, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3451
+[Line 3472, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3472
 ), 
 MIHO,
 2020-08-27
 
     According to spec, cardinality is [0..1][1..n]
 
-[Line 3482, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3482
+[Line 3503, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3503
 ), 
 MIHO,
 2020-08-27
 
     According to spec, cardinality is [0..1][1..n]
 
-[Line 3761, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3761
+[Line 3782, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L3782
 ), 
 MIHO,
 2020-08-30
@@ -212,32 +212,32 @@ MIHO,
     align wording of the member ("embeddedDataSpecification") with the 
     * wording of the other entities ("hasDataSpecification")
 
-[Line 4518, column 33](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L4518
+[Line 4539, column 33](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L4539
 ), 
 MIHO,
 2020-08-26
 
     not very elegant, yet. Avoid temporary collection
 
-[Line 5277, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5277
+[Line 5298, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5298
 ), 
 Michael Hoffmeister,
 2020-08-01
 
     check, if Json has Qualifiers or not
 
-[Line 5745, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5745
+[Line 5766, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5766
 ), 
 MIHO,
 2021-07-08
 
     obvious error .. info should receive semanticId .. but would change
 
-[Line 5839, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5839
+[Line 5860, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L5860
 ), 
 MIHO,
 2021-08-12
@@ -245,16 +245,16 @@ MIHO,
     consider using:
     Activator.CreateInstance(pl.GetType(), new object[] { pl })
 
-[Line 6204, column 21](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L6204
+[Line 6225, column 21](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L6225
 ), 
 MIHO,
 2020-07-31
 
     would be nice to use IEnumerateChildren for this ..
 
-[Line 6340, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L6340
+[Line 6361, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShell.cs#L6361
 ), 
 MIHO,
 2021-10-18
@@ -297,8 +297,8 @@ Michael Hoffmeister,
 
     use a unified function to create a serializer
 
-[Line 608, column 37](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShellPackageEnv.cs#L608
+[Line 611, column 37](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxCsharpLibrary/AdminShellPackageEnv.cs#L611
 ), 
 MIHO,
 2021-01-02
@@ -469,16 +469,16 @@ MIHO,
 
 ## AasxPackageExplorer\MainWindow.xaml.cs
 
-[Line 314, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L314
+[Line 333, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L333
 ), 
 MIHO,
 2020-12-31
 
     check for ANYUI MIHO
 
-[Line 343, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L343
+[Line 362, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L362
 ), 
 MIHO,
 2021-12-27
@@ -486,8 +486,8 @@ MIHO,
     consider extending for better testing or
     * script running
 
-[Line 1435, column 29](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1435
+[Line 1454, column 29](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1454
 ), 
 MIHO,
 2021-10-28
@@ -496,24 +496,24 @@ MIHO,
     * to instrument event updates in a way that they're automatically
     * visualized
 
-[Line 1540, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1540
+[Line 1559, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1559
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 1551, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1551
+[Line 1570, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1570
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 2245, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2245
+[Line 2264, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2264
 ), 
 MIHO,
 2021-06-08
@@ -599,24 +599,24 @@ MIHO,
 
 ## AasxPackageLogic\DispEditHelperEntities.cs
 
-[Line 1486, column 37](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L1486
+[Line 1504, column 37](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L1504
 ), 
 MIHO,
 2021-08-17
 
     create events for CDs are not emitted!
 
-[Line 1867, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L1867
+[Line 1885, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L1885
 ), 
 MIHO,
 2020-09-01
 
     extend the lines below to cover also data spec. for units
 
-[Line 3671, column 25](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L3671
+[Line 3689, column 25](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/DispEditHelperEntities.cs#L3689
 ), 
 MIHO,
 2021-02-16
@@ -825,8 +825,8 @@ MIHO,
 
     check if commented out because of non-working multi-select?
 
-[Line 2347, column 25](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/VisualAasxElements.cs#L2347
+[Line 2373, column 25](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/VisualAasxElements.cs#L2373
 ), 
 MIHO,
 2021-06-11
@@ -1125,8 +1125,8 @@ Michael Hoffmeister,
 
 ## AasxWpfControlLibrary\AnyUiWpf.cs
 
-[Line 962, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/AnyUiWpf.cs#L962
+[Line 986, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/AnyUiWpf.cs#L986
 ), 
 MIHO,
 2020-12-21
