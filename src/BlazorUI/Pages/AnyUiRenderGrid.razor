@@ -101,7 +101,7 @@
                                 {
                                     // allowed?
                                     if (ch == null || (ch.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
-                                    continue;
+                                        continue;
                                     foundContent = true;
 
                                     // eval more grid  coordinates
@@ -142,6 +142,18 @@
                                             tdStyle.Set("vertical-align", "middle", add: true);
                                             tdStyle.Set("height", "100%", add: true);
                                         }
+                                    }
+
+                                    // special case for childs, which are borders. Only applying the border styles to the <td>
+                                    // will guarentee a border filling width AND height!
+
+                                    if (ch is AnyUiBorder chbrd)
+                                    {
+                                        tdStyle.SetSpecifics(
+                                            margin: chbrd.Margin,
+                                            padding: chbrd.Padding,
+                                            borderBrush: chbrd.BorderBrush,
+                                            borderThickness: chbrd.BorderThickness);
                                     }
 
                                     // now render
@@ -259,7 +271,7 @@
             foreach (var cd in _grid.ColumnDefinitions)
             {
                 var chs = "";
-                var ccs = "white-space: nowrap;";
+                var ccs = ""; // XXX white-space: nowrap;";
                 if (AnyUiDisplayDataHtml.DebugFrames)
                     ccs += " border: 1px solid black;";
 

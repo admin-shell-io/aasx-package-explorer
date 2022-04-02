@@ -111,6 +111,9 @@
         if (border.Child != null
                     && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
         {
+            if (border.BorderThickness != null)
+                ;
+
             style.SetSpecifics(
                 margin: border.Margin,
                 padding: border.Padding,
@@ -136,6 +139,7 @@
             //</div>
 
             <AnyUiDecorateEmit Element="border"
+                               GrandParent="Parent"
                                 FillMode="@FillMode">
                 <AnyUiRenderElem DisplayData="@DisplayData"
                                  Session="@Session"
@@ -195,8 +199,8 @@
     else
     if (Element is AnyUiSelectableTextBlock stb)
     {
-        if (stb.Text == "Buffer:")
-            ;
+        if (stb.Text.Contains("IP67"))
+            ;        
 
         style.SetSpecifics(
             margin: stb.Margin,
@@ -210,11 +214,11 @@
 
         if (stb.TextAsHyperlink)
         {
-            <a href="@stb.Text" style="@style">@stb.Text</a>
+            <a href="@stb.Text" style="@style"><MultiLineText InputString="@stb.Text"/></a>
         }
         else
         {
-            <span style="@style">@stb.Text</span>
+            <span style="@style"><MultiLineText InputString="@stb.Text" /></span>
         }
     }
     else
@@ -230,7 +234,7 @@
         style.SetFillWidth(Element, AnyUiHtmlFillMode.None, tb.Margin, setMinMaxWidth: true);
         style.SetAlignments(Element);
 
-        <span style="@style">@tb.Text</span>
+        <span style="@style"><MultiLineText InputString="@tb.Text" /></span>
     }
     else
     if (Element is AnyUiLabel chlb)
@@ -244,7 +248,7 @@
         style.SetFillWidth(Element, AnyUiHtmlFillMode.None, chlb.Margin, setMinMaxWidth: true, setInlineBlock: true);
         style.SetAlignments(Element);
 
-        <span style="@style">@chlb.Content</span>
+        <span style="@style"><MultiLineText InputString="@chlb.Content" /></span>
     }
 
     if (Element is AnyUiTextBox chtb)
