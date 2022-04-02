@@ -191,8 +191,10 @@ namespace BlazorUI
             )
         {
             // defaults, if not otherwise stated
-            if (textWrapping == null || textWrapping.Value == AnyUiTextWrapping.NoWrap)
+            if (textWrapping.HasValue && textWrapping.Value == AnyUiTextWrapping.NoWrap)
                 Set("white-space", "nowrap", add: true);
+            else
+                Set("text-wrap", "break-word", add: true);
 
             // colors
             Set("color", foreground?.HtmlRgb(), doNotSetIfNull: true, add: true);

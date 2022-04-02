@@ -2,12 +2,22 @@
 
 @{
 
+    var style = new StylePile();
+
+    style.SetFillWidth(Element, FillMode, null, setMinMaxWidth: true, setInlineBlock: true);
+
+    if (Element is AnyUiBorder border
+        &&!(GrandParent is AnyUiGrid))
+    {
+        style.SetSpecifics(
+            margin: border.Margin,
+            padding: border.Padding,
+            borderBrush: border.BorderBrush,
+            borderThickness: border.BorderThickness);
+    }
+
     if ((Element.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
     {
-        var style = new StylePile();
-
-        style.SetFillWidth(Element, FillMode, null, setMinMaxWidth: true, setInlineBlock: true);
-
         <span style="@style" data-source="AnyUiDecorateEmit"
               @ondblclick="@((ev) => EventSenderTest(ev, Element, 2))">
             @ChildContent
@@ -16,10 +26,6 @@
     else
     if ((Element.EmitEvent & AnyUiEventMask.LeftDown) > 0)
     {
-        var style = new StylePile();
-
-        style.SetFillWidth(Element, FillMode, null, setMinMaxWidth: true, setInlineBlock: true);
-
         <span style="@style" data-source="AnyUiDecorateEmit"
               @onclick="@((ev) => EventSenderTest(ev, Element, 1))">
             @ChildContent
@@ -27,7 +33,9 @@
     }
     else
     {
-        @ChildContent
+        <span style="@style" data-source="AnyUiDecorateEmit">
+            @ChildContent
+        </span>
     }
 
 }
@@ -38,6 +46,9 @@
 
     [Parameter]
     public AnyUiFrameworkElement Element { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement GrandParent { get; set; }
 
     [Parameter]
     public AnyUiHtmlFillMode FillMode { get; set; }

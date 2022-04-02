@@ -582,7 +582,7 @@ namespace AnyUi
                 {
                     if (a is AnyUiTextBox cntl && b is TextBox wpf)
                     {
-                        // members
+                        // members  
                         if (cntl.Background != null)
                             wpf.Background = GetWpfBrush(cntl.Background);
                         if (cntl.Foreground != null)

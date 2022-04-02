@@ -123,7 +123,7 @@ namespace AasxPluginTechnicalData
             AdminShell.Submodel sm, string defaultLang = null)
         {
             // make an outer grid, very simple grid of two rows: header & body
-            var outer = view.Add(uitk.AddSmallGrid(rows: 5, cols: 1, colWidths: new[] { "*" }));
+            var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
 
             //
             // Bluebar
@@ -209,7 +209,26 @@ namespace AasxPluginTechnicalData
             };
             scroll.Content = inner;
             RenderPanelInner(inner, uitk, theDefs, package, sm, defaultLang);
+
+            //
+            // Footer area
+            //
+
+            // small spacer
+            outer.RowDefinitions[5] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
+            uitk.AddSmallBasicLabelTo(outer, 5, 0,
+                fontSize: 0.3f,
+                verticalAlignment: AnyUiVerticalAlignment.Top,
+                content: "", background: AnyUiBrushes.White);
+
+            // header
+            var footer = uitk.AddSmallStackPanelTo(outer, 6, 0, setVertical: true);
+            RenderPanelFooter(footer, uitk, theDefs, package, sm, defaultLang);
         }
+
+        #endregion
+
+        #region Header
 
         protected class ClassificationRecord
         {
@@ -418,10 +437,16 @@ namespace AasxPluginTechnicalData
             }
         }
 
+        #endregion
+
+        #region Inner
+
         protected class TripleRowData
         {
             public string Heading = null;
             public AnyUiThickness HeadMargin = null;
+            public double? FontSize;
+            public AnyUiFontWeight FontWeight;
             public string Name = "", Semantics = "", Value = "";
         }
 
@@ -442,14 +467,17 @@ namespace AasxPluginTechnicalData
                 if (row == null)
                     continue;
 
+                if (row.Value.Contains("IP67"))
+                    ;
+
                 if (row.Heading.HasContent())
                 {
                     // heading
-                    uitk.AddSmallBasicLabelTo(grid, ri, 0, margin: row.HeadMargin,
-                        fontSize: 1.4f,
-                        setBold: true,
+                    var hlb = uitk.AddSmallBasicLabelTo(grid, ri, 0, margin: row.HeadMargin,
                         colSpan: 3,
                         content: row.Heading);
+                    hlb.FontSize = row.FontSize;
+                    hlb.FontWeight = row.FontWeight;
                 }
                 else
                 {
@@ -463,7 +491,9 @@ namespace AasxPluginTechnicalData
                         brd.Child = new AnyUiSelectableTextBlock()
                         {
                             Text = cols[ci],
-                            Padding = new AnyUiThickness(1)
+                            Padding = new AnyUiThickness(1),
+                            FontSize = row.FontSize,
+                            FontWeight = row.FontWeight,
                         };
                     }
                 }
@@ -538,7 +568,9 @@ namespace AasxPluginTechnicalData
                     rows.Add(new TripleRowData()
                     {
                         Heading = "" + dispName,
-                        HeadMargin= new AnyUiThickness(0, 6, 0, 4)
+                        HeadMargin= new AnyUiThickness(-2 + 4*depth, 6, 0, 4),
+                        FontSize = 1.4f,
+                        FontWeight = AnyUiFontWeight.Bold
                     }); 
 
                     // recurse into that (again, new group)
@@ -554,7 +586,9 @@ namespace AasxPluginTechnicalData
                     rows.Add(new TripleRowData()
                     {
                         Heading = "" + dispName,
-                        HeadMargin = new AnyUiThickness(0, 4, 0, 2)
+                        HeadMargin = new AnyUiThickness(-2 + 4*depth, 4, 0, 2),
+                        FontSize = 1.2f,
+                        FontWeight = AnyUiFontWeight.Bold
                     });
 
                     // recurse into that
@@ -598,7 +632,8 @@ namespace AasxPluginTechnicalData
             {
                 Name = "Property",
                 Semantics = "Semantics",
-                Value = "Value"
+                Value = "Value",
+                FontWeight = AnyUiFontWeight.Bold
             });
 
             // recurse
@@ -606,6 +641,55 @@ namespace AasxPluginTechnicalData
 
             // render
             RenderTripleRowData(view, uitk, rows.ToArray());
+        }
+
+        #endregion
+
+        #region Footer
+
+        protected void RenderPanelFooter(
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            ConceptModelZveiTechnicalData theDefs,
+            AdminShellPackageEnv package,
+            AdminShell.Submodel sm, string defaultLang = null)
+        {
+            // access
+            if (view == null || uitk == null || sm == null)
+                return;
+
+            // gather data for footer
+            var validDate = "";
+            var tsl = new List<string>();
+
+            var smcFurther = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                theDefs.CD_FurtherInformation.GetSingleKey());
+            if (smcFurther != null)
+            {
+                // single items
+                validDate = "" + smcFurther.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                    theDefs.CD_ValidDate.GetSingleKey())?.value;
+
+                // Lines
+                foreach (var smw in
+                    smcFurther.value.FindAllSemanticId(
+                        theDefs.CD_TextStatement.GetSingleKey(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
+                    tsl.Add("" + smw?.submodelElement?.ValueAsText(defaultLang));
+            }
+
+            // make an grid with two columns, first a bit wider 
+            var outer = view.Add(uitk.AddSmallGrid(rows: 4, cols: 2, 
+                            colWidths: new[] { "*", "#" }, background: AnyUiBrushes.White));
+            outer.ColumnDefinitions[1].MaxWidth = 200;
+
+            // fill
+            uitk.AddSmallBasicLabelTo(outer, 0, 1,
+                fontSize: 1.0f,
+                content: validDate);
+
+            for (int i=0; i<tsl.Count; i++)
+                uitk.AddSmallBasicLabelTo(outer, 0 + i, 0,
+                fontSize: 1.0f,
+                content: tsl[i]);
         }
 
         #endregion
