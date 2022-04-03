@@ -356,6 +356,9 @@
                                         s.CopyTo(m);
                                         bi.thumbNail = System.Convert.ToBase64String(m.ToArray());
                                     }
+
+                                    // it is indespensible to properly close the thumbnail stream!
+                                    s.Close();
                                 }
                             }
                             if (bi.thumbNail != null)
