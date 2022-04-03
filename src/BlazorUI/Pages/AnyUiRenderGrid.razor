@@ -66,6 +66,16 @@
         tablestyle += "display: inline-table";
     }
 
+    // do a quite painful investigation, if rounded corners are required in the table
+    // this would require "border-collapse: separate" to work
+    var hasCornerRadius = false;
+    if (_grid?.Children != null)
+        foreach (var gch in _grid.Children)
+            if (gch is AnyUiBorder gchbrd && gchbrd.BorderThickness != null && gchbrd.CornerRadius.HasValue)
+                hasCornerRadius = true;
+    if (hasCornerRadius)
+        tablestyle += "border-collapse: separate";
+
     // 
     // Render
     //
@@ -142,6 +152,14 @@
                                             tdStyle.Set("vertical-align", "middle", add: true);
                                             tdStyle.Set("height", "100%", add: true);
                                         }
+
+                                    }
+
+                                    if (ch is AnyUiControl cntl)
+                                    {
+                                        if (cntl.HorizontalContentAlignment.HasValue 
+                                            && cntl.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Center)
+                                            tdStyle.Set("text-align", "center", add: true);
                                     }
 
                                     // special case for childs, which are borders. Only applying the border styles to the <td>
@@ -153,7 +171,8 @@
                                             margin: chbrd.Margin,
                                             padding: chbrd.Padding,
                                             borderBrush: chbrd.BorderBrush,
-                                            borderThickness: chbrd.BorderThickness);
+                                            borderThickness: chbrd.BorderThickness,
+                                            cornerRadius: chbrd.CornerRadius);
                                     }
 
                                     // now render

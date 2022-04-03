@@ -228,6 +228,12 @@ namespace AasxPluginTechnicalData
 
         #endregion
 
+        #region TEST
+
+
+
+        #endregion
+
         #region Header
 
         protected class ClassificationRecord

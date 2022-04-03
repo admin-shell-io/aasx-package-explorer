@@ -184,6 +184,7 @@ namespace BlazorUI
             AnyUiThickness margin = null,
             AnyUiThickness padding = null,
             AnyUiThickness borderThickness = null,
+            double? cornerRadius = null,
             AnyUiTextWrapping? textWrapping = null,
             double? fontSizeRel = null,
             AnyUiFontWeight? fontWeight = null,
@@ -228,13 +229,19 @@ namespace BlazorUI
                 if (borderThickness.AllEqual)
                     Set("border-width", $"{borderThickness.Left}px", add: true);
                 else
-                    Set("border-width", $"{borderThickness.Top}px {borderThickness.Right}px " +
-                            $"{borderThickness.Bottom}px {borderThickness.Left}px ",
+                    Set("border-width", 
+                        FormattableString.Invariant($"{borderThickness.Top}px {borderThickness.Right}px ") +
+                        FormattableString.Invariant($"{borderThickness.Bottom}px {borderThickness.Left}px "),
                         add: true);
             }
 
             if (borderBrush != null || borderThickness != null)
                 Set("border-style", $"solid", add: true);
+
+            if (cornerRadius.HasValue)
+                // in order to work properly, the table requieres: "border-collapse: separate;"
+                // note: radius itself needs to be much larger compared to WPF
+                Set("border-radius", FormattableString.Invariant($"{4.0*cornerRadius}px"), add: true);
 
             if (textWrapping.HasValue && textWrapping.Value != AnyUiTextWrapping.NoWrap)
             {
@@ -254,41 +261,45 @@ namespace BlazorUI
             }
         }
 
-        public void SetMinMaxWidth(AnyUiUIElement elem)
+        public void SetMinMaxWidthHeight(
+            AnyUiUIElement elem,
+            bool setWidth = true,
+            bool setHeight = false)
         {
             if (!(elem is AnyUiFrameworkElement fe))
                 return;
 
             var scale = (elem.DisplayData as AnyUiDisplayDataHtml)?.GetScale() ?? 1.0;
 
-            if (fe.MinWidth.HasValue)
-                Set("min-width", FormattableString.Invariant($"{scale * fe.MinWidth.Value}px"), add: true);
-            if (fe.MaxWidth.HasValue)
-                Set("max-width", FormattableString.Invariant($"{scale * fe.MaxWidth.Value}px"), add: true);
+            if (setWidth)
+            {
+                if (fe.MinWidth.HasValue)
+                    Set("min-width", FormattableString.Invariant($"{scale * fe.MinWidth.Value}px"), add: true);
+                if (fe.MaxWidth.HasValue)
+                    Set("max-width", FormattableString.Invariant($"{scale * fe.MaxWidth.Value}px"), add: true);
+            }
+
+            if (setHeight)
+            {
+                if (fe.MinHeight.HasValue)
+                {
+                    Set("min-height", FormattableString.Invariant($"{scale * fe.MinHeight.Value}px"), add: true);
+                    Set("object-fit", "scale-down", add: true);
+                }
+                if (fe.MaxHeight.HasValue)
+                {
+                    Set("max-height", FormattableString.Invariant($"{scale * fe.MaxHeight.Value}px"), add: true);
+                    Set("object-fit", "scale-down", add: true);
+                }
+            }
         }
-
-        //public void SetFillWidth(
-        //    AnyUiThickness margin = null,
-        //    bool fillWidth = false,
-        //    bool setInlineBlock = false
-        //    )
-        //{
-        //    if (fillWidth)
-        //    {
-        //        Set("width", FormattableString.Invariant(
-        //            $"calc(100% - {margin?.Width ?? 0.0}px)"), add: true);
-        //        Set("box-sizing", "border-box", add: true);
-
-        //        if (setInlineBlock)
-        //            Set("display", "inline-block", add: true);
-        //    }
-        //}
 
         public void SetFillWidth(
             AnyUiUIElement element,
             AnyUiHtmlFillMode fillmode,
             AnyUiThickness margin = null,
             bool setMinMaxWidth = false,
+            bool setMinMaxHeight = false,
             bool setInlineBlock = false
             )
         {
@@ -299,8 +310,8 @@ namespace BlazorUI
                 Set("box-sizing", "border-box", add: true);
             }
 
-            if (element != null && setMinMaxWidth)
-                SetMinMaxWidth(element);
+            if (element != null && (setMinMaxWidth || setMinMaxHeight))
+                SetMinMaxWidthHeight(element, setWidth: setMinMaxWidth, setHeight: setMinMaxHeight);
 
             if (setInlineBlock)
                 Set("display", "inline-block", add: true);
@@ -315,12 +326,16 @@ namespace BlazorUI
 
             if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Left)
             {
-
-            }
+}
             else
             if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Right)
             {
                 Set("float", "right", add: true);
+            }
+            else
+            if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Center)
+            {
+                // center needs to be handled in the grid cell!
             }
             else
             {
