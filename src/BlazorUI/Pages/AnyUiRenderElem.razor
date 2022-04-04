@@ -275,10 +275,7 @@
         @code {
             private void MyTextInput(AnyUiTextBox chtb, string value)
             {
-                var la = chtb.setValueLambda?.Invoke(value);
-                if (la is AnyUiLambdaActionNone)
-                    return;
-                Program.signalNewData(0, Session.sessionNumber, la); // same tree, only values changed
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, chtb, value);
             }
         }
     }
@@ -291,7 +288,8 @@
         style.SetSpecifics(
             margin: chbt.Margin,
             padding: chbt.Padding,
-            fontSizeRel: chbt.FontSize);
+            fontSizeRel: chbt.FontSize,
+            forceNoWrap: true);
 
         style.SetFillWidth(Element, FillMode, chbt.Margin, setMinMaxWidth: true);
 
@@ -319,7 +317,7 @@
         @code {
             private void MyCheck(AnyUiCheckBox cb, string value)
             {
-                cb.setValueLambda?.Invoke(value.ToLower() == "true");
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, cb, value.ToLower() == "true");
             }
         }
     }
@@ -371,8 +369,8 @@
         @code {
             private void MyComboSelect(AnyUiComboBox comb, string value)
             {
-                comb.setValueLambda?.Invoke(value);
-                Program.signalNewData(0, bi.sessionNumber); // same tree, only values changed
+                comb.EvalSelectedIndex(value);
+                Program.EvalSetValueLambdaAndHandleReturn(Session.sessionNumber, comb, value);
             }
         }
     }

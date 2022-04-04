@@ -188,11 +188,12 @@ namespace BlazorUI
             AnyUiTextWrapping? textWrapping = null,
             double? fontSizeRel = null,
             AnyUiFontWeight? fontWeight = null,
-            bool fillWidth = false
+            bool fillWidth = false,
+            bool forceNoWrap = false
             )
         {
             // defaults, if not otherwise stated
-            if (textWrapping.HasValue && textWrapping.Value == AnyUiTextWrapping.NoWrap)
+            if (forceNoWrap || (textWrapping.HasValue && textWrapping.Value == AnyUiTextWrapping.NoWrap))
                 Set("white-space", "nowrap", add: true);
             else
                 Set("text-wrap", "break-word", add: true);

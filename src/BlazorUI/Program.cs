@@ -142,6 +142,20 @@ namespace BlazorUI
                 newLambdaAction, onlyUpdatePanel: onlyUpdateAasxPanel));
         }
 
+        public static void EvalSetValueLambdaAndHandleReturn(
+            int sessionNumber, AnyUiUIElement elem, object value = null)
+        {
+            // access
+            if (elem == null)
+                return;
+
+            // evaluate & action
+            var la = elem.setValueLambda?.Invoke(value);
+            if (la is AnyUiLambdaActionNone)
+                return;
+            signalNewData(0, sessionNumber, la); // same tree, only values changed
+        }
+
         public static int getSignalNewDataMode()
         {
             int mode = signalNewDataMode;
@@ -251,6 +265,7 @@ namespace BlazorUI
             loadOptionsAndPlugins();
             CreateHostBuilder(args).Build().Run();
         }
+
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

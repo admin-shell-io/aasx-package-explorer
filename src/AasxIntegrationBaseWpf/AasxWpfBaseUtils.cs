@@ -155,6 +155,8 @@ namespace AasxIntegrationBase
                 bi.StreamSource = thumbStream;
                 bi.EndInit();
 
+                thumbStream.Close();
+
                 // note: no closing required, as BitmapImage (OnLoad!) will close it!
                 // give this back
                 return bi;
