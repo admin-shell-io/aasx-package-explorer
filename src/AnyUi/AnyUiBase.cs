@@ -878,6 +878,17 @@ namespace AnyUi
         public string Text = null;
 
         public int? SelectedIndex;
+
+        public void EvalSelectedIndex(string value)
+        {
+            if (value == null)
+                return;
+
+            if (Items != null)
+                for (int i = 0; i < Items.Count; i++)
+                    if (Items[i] as string == value)
+                        SelectedIndex = i;
+        }
     }
 
     public class AnyUiCheckBox : AnyUiContentControl

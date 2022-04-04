@@ -33,9 +33,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private AasxPluginTechnicalData.TechnicalDataAnyUiControl _anyUiControl = null;
 
+        public static string PluginName = "AasxPluginTechnicalData";
+
         public string GetPluginName()
         {
-            return "AasxPluginTechnicalData";
+            return PluginName;
         }
 
         public void InitPlugin(string[] args)

@@ -56,7 +56,7 @@ namespace AasxPluginTechnicalData
             _panel = panel;
 
             // fill given panel
-            RenderFullShelf(_panel, _uitk, _package, _submodel, defaultLang: null);
+            RenderFullView(_panel, _uitk, _package, _submodel, defaultLang: null);
         }
 
         public static TechnicalDataAnyUiControl FillWithAnyUiControls(
@@ -89,7 +89,7 @@ namespace AasxPluginTechnicalData
         #region Display Submodel
         //=============
 
-        private void RenderFullShelf(
+        private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
             AdminShell.Submodel sm, string defaultLang = null)
@@ -115,6 +115,9 @@ namespace AasxPluginTechnicalData
         }
 
         protected double _lastScrollPosition = 0.0;
+
+        protected int _selectedLangIndex = 0;
+        protected string _selectedLangStr = null;
 
         protected void RenderPanelOutside (
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
@@ -146,18 +149,30 @@ namespace AasxPluginTechnicalData
                                     typeof(AasxLanguageHelper.LangEnum)))
                 langs.Add("Lang - " + AasxLanguageHelper.LangEnumToISO639String[(int)dc]);
 
-            AnyUiUIElement.RegisterControl(
+            if (_selectedLangStr == null)
+                _selectedLangStr = defaultLang;
+
+            AnyUiComboBox cbLang = null;
+            cbLang = AnyUiUIElement.RegisterControl(
                 uitk.Set(
                     uitk.AddSmallComboBoxTo(bluebar, 0, 1,
                         margin: new AnyUiThickness(2), minWidth: 120,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         items: langs.ToArray(),
-                        selectedIndex : 0),
+                        selectedIndex : _selectedLangIndex),
                     maxHeight: 21),
                 (o) =>
                 {
-                    return new AnyUiLambdaActionNone();
-                });
+                    if (!cbLang.SelectedIndex.HasValue)
+                        return new AnyUiLambdaActionNone();
+                    _selectedLangIndex = cbLang.SelectedIndex.Value;
+                    _selectedLangStr = AasxLanguageHelper.LangEnumToISO639String[_selectedLangIndex];
+                    return new AnyUiLambdaActionPluginUpdateAnyUi()
+                    {
+                        PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                        UseInnerGrid = true
+                    };
+                }) as AnyUiComboBox;
 
             //
             // Header area
@@ -208,7 +223,7 @@ namespace AasxPluginTechnicalData
                 Margin = new AnyUiThickness(2)
             };
             scroll.Content = inner;
-            RenderPanelInner(inner, uitk, theDefs, package, sm, defaultLang);
+            RenderPanelInner(inner, uitk, theDefs, package, sm, _selectedLangStr);
 
             //
             // Footer area
@@ -225,12 +240,6 @@ namespace AasxPluginTechnicalData
             var footer = uitk.AddSmallStackPanelTo(outer, 6, 0, setVertical: true);
             RenderPanelFooter(footer, uitk, theDefs, package, sm, defaultLang);
         }
-
-        #endregion
-
-        #region TEST
-
-
 
         #endregion
 
@@ -707,13 +716,15 @@ namespace AasxPluginTechnicalData
         {
             // check args
             if (args == null || args.Length < 1
-                || !(args[0] is AnyUiStackPanel newPanel)) 
+                || !(args[0] is AnyUiStackPanel newPanel))
                 return;
 
-            {
-                // the default: the full shelf
-                RenderFullShelf(_panel, _uitk, _package, _submodel, defaultLang: null);
-            }
+            // ok, re-assign panel and re-display
+            _panel = newPanel;
+            _panel.Children.Clear();
+
+            // the default: the full shelf
+            RenderFullView(_panel, _uitk, _package, _submodel, defaultLang: null);
         }
 
         #endregion
