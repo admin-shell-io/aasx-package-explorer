@@ -33,6 +33,16 @@ namespace AasxPluginTechnicalData
 
         #endregion
 
+        #region Members to be kept for state/ update
+        //=============
+
+        protected double _lastScrollPosition = 0.0;
+
+        protected int _selectedLangIndex = 0;
+        protected string _selectedLangStr = null;
+
+        #endregion
+
         #region Constructors, as for WPF control
         //=============
 
@@ -114,11 +124,6 @@ namespace AasxPluginTechnicalData
             RenderPanelOutside(view, uitk, theDefs, package, sm, defaultLang);
         }
 
-        protected double _lastScrollPosition = 0.0;
-
-        protected int _selectedLangIndex = 0;
-        protected string _selectedLangStr = null;
-
         protected void RenderPanelOutside (
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
@@ -187,7 +192,7 @@ namespace AasxPluginTechnicalData
 
             // header
             var header = uitk.AddSmallStackPanelTo(outer, 2, 0, setVertical: true);
-            RenderPanelHeader(header, uitk, theDefs, package, sm, defaultLang);
+            RenderPanelHeader(header, uitk, theDefs, package, sm, _selectedLangStr);
 
             //
             // Scroll area
@@ -238,12 +243,13 @@ namespace AasxPluginTechnicalData
 
             // header
             var footer = uitk.AddSmallStackPanelTo(outer, 6, 0, setVertical: true);
-            RenderPanelFooter(footer, uitk, theDefs, package, sm, defaultLang);
+            RenderPanelFooter(footer, uitk, theDefs, package, sm, _selectedLangStr);
         }
 
         #endregion
 
         #region Header
+        //=============
 
         protected class ClassificationRecord
         {
@@ -455,6 +461,7 @@ namespace AasxPluginTechnicalData
         #endregion
 
         #region Inner
+        //=============
 
         protected class TripleRowData
         {
@@ -661,6 +668,7 @@ namespace AasxPluginTechnicalData
         #endregion
 
         #region Footer
+        //=============
 
         protected void RenderPanelFooter(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,

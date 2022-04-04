@@ -13,6 +13,10 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
       "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
+      "Args": []
     }
   ]
 }
