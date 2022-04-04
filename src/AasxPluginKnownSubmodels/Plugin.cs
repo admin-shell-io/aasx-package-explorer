@@ -29,8 +29,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options
             = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
 
-        private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl
-            = new AasxPluginKnownSubmodels.KnownSubmodelsControl();
+        private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl = null;
+
+        private AasxPluginKnownSubmodels.KnownSubmodelAnyUiControl _anyUiControl = null;
+
 
         public string GetPluginName()
         {
@@ -74,6 +76,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         {
             _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
+            
             // for speed reasons, have the most often used at top!
             res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension",
                 "When called with Referable, returns possibly visual extension for it."));
@@ -88,6 +91,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "Returns true, if plug-ins checks for visual extension."));
             res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension",
                 "When called, fill given WPF panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-anyui-visual-extension",
+                "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "update-anyui-visual-extension",
+                "When called, updated already presented AnyUI panel with some arguments."));
 
             return res.ToArray();
         }
@@ -170,6 +179,38 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 cve.strType = "True";
                 cve.obj = true;
                 return cve;
+            }
+
+            if (action == "fill-anyui-visual-extension")
+            {
+                // arguments
+                if (args == null || args.Length < 3)
+                    return null;
+
+                // call
+                _anyUiControl = AasxPluginKnownSubmodels.KnownSubmodelAnyUiControl.FillWithAnyUiControls(
+                    _log, args[0], args[1], _options, _eventStack, args[2]);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = _anyUiControl;
+                return res;
+            }
+
+            if (action == "update-anyui-visual-extension"
+                && _anyUiControl != null)
+            {
+                // arguments
+                if (args == null || args.Length < 0)
+                    return null;
+
+                // call
+                _anyUiControl.Update(args);
+
+                // give object back
+                var res = new AasxPluginResultBaseObject();
+                res.obj = 42;
+                return res;
             }
 
             if (action == "fill-panel-visual-extension" && _viewerControl != null)
