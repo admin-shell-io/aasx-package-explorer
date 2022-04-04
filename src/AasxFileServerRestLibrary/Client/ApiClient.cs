@@ -187,7 +187,7 @@ namespace IO.Swagger.Client
 
             InterceptRequest(request);
             var response = RestClient.ExecuteAsync(request).GetAwaiter().GetResult();
-            //TODO:May need to change response.Result
+            //TODO (jtikekar, 2022-04-04): May need to change response.Result
             InterceptResponse(request, response);
 
             return (Object)response;
@@ -299,7 +299,7 @@ namespace IO.Swagger.Client
                 return response.RawBytes;
             }
 
-            // TODO: ? if (type.IsAssignableFrom(typeof(Stream)))
+            // TODO (jtikekar, 2022-04-04): ? if (type.IsAssignableFrom(typeof(Stream)))
             if (type == typeof(Stream))
             {
                 if (headers != null)

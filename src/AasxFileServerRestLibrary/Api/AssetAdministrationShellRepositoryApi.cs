@@ -365,7 +365,7 @@ namespace IO.Swagger.Api
         /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns>AssetInformation</returns>
-        //TODO:Change during v3 upgrade
+        //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //AssetInformation GetAssetInformation (string aasIdentifier);
         AdminShellV20.Asset GetAssetInformation(string aasIdentifier);
 
@@ -378,7 +378,7 @@ namespace IO.Swagger.Api
         /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns>ApiResponse of AssetInformation</returns>
-        //TODO:Change during v3 upgrade
+        //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //ApiResponse<AssetInformation> GetAssetInformationWithHttpInfo (string aasIdentifier);
         ApiResponse<AdminShellV20.Asset> GetAssetInformationWithHttpInfo(string aasIdentifier);
         /// <summary>
@@ -2150,7 +2150,7 @@ namespace IO.Swagger.Api
         /// <value>The base path</value>
         public String GetBasePath()
         {
-            //TODO:Change
+            //TODO (jtikekar, 2022-04-04): Change
             return this.Configuration.BasePath;
             //return this.Configuration.ApiClient.RestClient.BaseUrl.ToString();
         }
@@ -4091,7 +4091,7 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            //TODO:Change duting V3 upgrade
+            //TODO (jtikekar, 2022-04-04): Change duting V3 upgrade
             //return new ApiResponse<AssetAdministrationShell>(localVarStatusCode,
             //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
             //    (AssetAdministrationShell) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShell)));
@@ -4172,7 +4172,7 @@ namespace IO.Swagger.Api
         /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns>AssetInformation</returns>
-        //TODO:Change to V3
+        //TODO (jtikekar, 2022-04-04): Change to V3
         //public AssetInformation GetAssetInformation (string aasIdentifier)
         public AdminShellV20.Asset GetAssetInformation(string aasIdentifier)
         {
@@ -4187,7 +4187,7 @@ namespace IO.Swagger.Api
         /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
         /// <param name="aasIdentifier">The Asset Administration Shell’s unique id (BASE64-URL-encoded)</param>
         /// <returns>ApiResponse of AssetInformation</returns>
-        //TODO:Change during v3 upgrade
+        //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //public ApiResponse< AssetInformation > GetAssetInformationWithHttpInfo (string aasIdentifier)
         public ApiResponse<AdminShellV20.Asset> GetAssetInformationWithHttpInfo(string aasIdentifier)
         {

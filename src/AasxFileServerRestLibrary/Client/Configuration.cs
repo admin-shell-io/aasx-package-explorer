@@ -232,7 +232,7 @@ namespace IO.Swagger.Client
             {
                 _basePath = value;
                 // pass-through to ApiClient if it's set.
-                //TODO:Change
+                //TODO (jtikekar, 2022-04-04): Change
                 //if(_apiClient != null) {
                 //    _apiClient.RestClient.BaseUrl = new Uri(_basePath);
                 //}
@@ -259,7 +259,7 @@ namespace IO.Swagger.Client
                 }
                 else
                 {
-                    //TODO:Change
+                    //TODO (jtikekar, 2022-04-04): Change
                     return _timeout;
                     //return ApiClient.RestClient.Timeout;
                 }

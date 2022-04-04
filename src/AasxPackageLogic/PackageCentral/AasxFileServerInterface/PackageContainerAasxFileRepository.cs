@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 {
-    //TODO:Unused inheritance
     public class PackageContainerAasxFileRepository : PackageContainerListBase
     {
         public Uri Endpoint { get; private set; }
@@ -33,7 +32,6 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
         public string Text { get; }
 
-        //TODO:May need to remove
         public bool IsAspNetConnection { get; private set; }
 
         public void GeneratePackageRepository()
@@ -61,7 +59,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
                 {
                     Env = new AdminShellPackageEnv(fileName, indirectLoadSave: false),
                     ContainerList = this,
-                    IsFormat = PackageContainerBase.Format.AASX, //TODO:Based on file
+                    IsFormat = PackageContainerBase.Format.AASX,        //TODO (jtikekar, 2022-04-04): Based on file
                     PackageId = packageId
                 };
                 runtimeOptions?.Log?.Info($".. successfully opened as AASX environment: {container.Env?.AasEnv?.ToString()}");

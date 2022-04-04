@@ -118,7 +118,7 @@ namespace AasxPackageLogic.PackageCentral
         {
             try
             {
-                //TODO:
+                //TODO (jtikekar, 2022-04-04): aasIds?
                 var aasIds = new List<string>();
                 var fileContent = File.ReadAllBytes(copyFileName);
                 var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileContent, copyFileName, Base64UrlEncoder.Encode(packageId));
@@ -190,7 +190,7 @@ namespace AasxPackageLogic.PackageCentral
                 Log.Singleton.Error(ex.Message);
             }
 
-            //TODO:CHange
+            //TODO (jtikekar, 2022-04-04): Change
             return null;
         }
     }

@@ -371,7 +371,7 @@ namespace IO.Swagger.Api
         /// <value>The base path</value>
         public String GetBasePath()
         {
-            //TODO:Change
+            //TODO (jtikekar, 2022-04-04): Change
             return this.Configuration.BasePath;
             //return this.Configuration.ApiClient.RestClient.BaseUrl.ToString();
         }
@@ -737,7 +737,7 @@ namespace IO.Swagger.Api
             //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
             //    (AssetAdministrationShell)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShell)));
 
-            //TODO:Change during refactoring
+            //TODO (jtikekar, 2022-04-04): Change during refactoring
             var aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(localVarResponse.Content);
             return new ApiResponse<AssetAdministrationShell>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),

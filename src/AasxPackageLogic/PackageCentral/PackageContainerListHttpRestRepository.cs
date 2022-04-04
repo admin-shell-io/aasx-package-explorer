@@ -40,8 +40,6 @@ namespace AasxPackageLogic.PackageCentral
         [JsonIgnore]
         public Uri Endpoint;
 
-        private AasxFileServerInterfaceService _aasxFileService;
-
         public bool IsAspNetConnection { get; set; }
 
         //
@@ -50,28 +48,11 @@ namespace AasxPackageLogic.PackageCentral
 
         public PackageContainerListHttpRestRepository(string location)
         {
-            //TODO:Remove
-            if (location.Contains('?'))
-            {
-                var splitTokens = location.Split(new[] { '?' }, 2);
-                if (splitTokens[1].Equals("asp.net", StringComparison.OrdinalIgnoreCase))
-                {
-                    IsAspNetConnection = true;
-                }
-                location = splitTokens[0];
-            }
             // always have a location
             Endpoint = new Uri(location);
 
-            if (IsAspNetConnection)
-            {
-                _aasxFileService = new AasxFileServerInterfaceService(location);
-            }
-            else
-            {
-                // directly set endpoint
-                _connector = new PackageConnectorHttpRest(null, Endpoint);
-            }
+            // directly set endpoint
+            _connector = new PackageConnectorHttpRest(null, Endpoint);
 
 
         }
