@@ -43,7 +43,7 @@ namespace BlazorUI.Data
         public static int sessionCounter = 0;
         public int sessionNumber = 0;
         public static int sessionTotal = 0;
-        public List<Item> items = null;
+        public ListOfItems items = null;
         public Thread htmlDotnetThread = null;
 
         public blazorSessionService()

@@ -28,6 +28,64 @@ namespace BlazorUI.Data
         public string text { get; set; }
     }
 
+    public class Item
+    {
+        public AdminShell.Referable Referable;
+        public string Text { get; set; }
+        public IEnumerable<Item> Childs { get; set; }
+        public object parent { get; set; }
+        public string Type { get; set; }
+        public object Tag { get; set; }
+        public AdminShellV20.Referable ParentContainer { get; set; }
+        public AdminShellV20.SubmodelElementWrapper Wrapper { get; set; }
+        public int envIndex { get; set; }
+
+        public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
+        {
+        }
+    }
+
+    public class ListOfItems : List<Item>
+    {
+        public IEnumerable<Item> FindItems(IEnumerable<Item> childs, Func<Item, bool> predicate)
+        {
+            // access
+            if (childs == null)
+                yield break;
+
+            // broad search
+            foreach (var ch in childs)
+                if (predicate == null || predicate.Invoke(ch))
+                    yield return ch;
+
+            foreach (var ch in childs)
+                FindItems(ch.Childs, predicate);
+        }
+
+        public Item FindSubmodel(string smid)
+        {
+            // access
+            if (smid == null)
+                return null;
+
+            return FindItems(this, (it) =>
+            {
+                return it?.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid;
+            }).FirstOrDefault();
+        }
+
+        public static void AddToExpandNodesFor(IList<Item> expanded, Item it)
+        {
+            if (it == null)
+                return;
+
+            if (expanded != null)
+                expanded.Add(it);
+            AddToExpandNodesFor(expanded, it.parent as Item);
+        }
+    }
+
+
     public class AASService
     {
 
@@ -40,7 +98,7 @@ namespace BlazorUI.Data
         }
         public event EventHandler NewDataAvailable;
 
-        public List<Item> GetTree(blazorSessionService bi, Item selectedNode, IList<Item> ExpandedNodes)
+        public ListOfItems GetTree(blazorSessionService bi, Item selectedNode, IList<Item> ExpandedNodes)
         {
             Item.updateVisibleTree(bi.items, selectedNode, ExpandedNodes);
             return bi.items;
@@ -80,7 +138,7 @@ namespace BlazorUI.Data
                 }
 
             // now iterate for items
-            bi.items = new List<Item>();
+            bi.items = new ListOfItems();
             for (int i = 0; i < 1; i++)
             {
                 Item root = new Item();
