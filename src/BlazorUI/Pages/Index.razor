@@ -8,12 +8,17 @@
 @using BlazorUI.Shared
 @using BlazorUI.Pages 
 @using BlazorUI.Utils
+@using BlazorUI.Data
 @using System.Threading
+@using Microsoft.AspNetCore.WebUtilities
+@using AasxPackageLogic.PackageCentral;
 @*using System*@
 @*using System.Net;*@
 @inject IJSRuntime JSRuntime
 @inject BlazorUI.Data.AASService SubmodelService
 @inject BlazorUI.Data.blazorSessionService bi
+@inject NavigationManager NavManager
+
 @implements IDisposable
 
 @{
@@ -495,23 +500,9 @@
 
     // resharper disable all
 
-    /*
-    public class Item
-    {
-    public string Text { get; set; }
-    public IEnumerable<Item>
-    Childs
-    { get; set; }
-    public object parent { get; set; }
-    public string Type { get; set; }
-    public object Tag { get; set; }
-    public Referable ParentContainer { get; set; }
-    public SubmodelElementWrapper Wrapper { get; set; }
-    public int envIndex { get; set; }
-    }
-    */
 
-    List<Item> Items = null;
+
+    ListOfItems Items = null;
 
     protected int _inhibitSelectNodeForPanel = 0;
 
@@ -538,12 +529,11 @@
         }
     }
 
-    //protected void SelectedNodeChanged(Item i)
+    //protectezd void SelectedNodeChanged(Item i)
     //{
 
     //}
 
-    // protected override void OnInitialized()
     protected override void OnAfterRender(bool firstRender)
     {
         // OnInitialized() allways called twice
@@ -552,6 +542,10 @@
 
         if (firstRender)
         {
+            //
+            // normal rendering
+            //
+
             SubmodelService.buildTree(bi);
             Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
             // StateHasChanged();
@@ -561,6 +555,71 @@
 
             SubmodelService.NewDataAvailable += NewData;
 
+            //
+            // check query params
+            //
+
+            // investigate query parameters if to load special AAS or SMs ..
+            var aasIndex = -1;
+            string smId = null;
+            string pluginId = null;
+
+            var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+            var qdict = QueryHelpers.ParseQuery(uri.Query);
+
+            if (qdict != null)
+            {
+                if (qdict.TryGetValue("aasndx", out var qndx))
+                    if (int.TryParse(Convert.ToString(qndx), out var ndx))
+                        aasIndex = ndx;
+
+                if (qdict.TryGetValue("smid", out var qsmid))
+                    smId = BlazorUtils.Base64Decode(Convert.ToString(qsmid));
+
+                if (qdict.TryGetValue("plugin", out var qplugin))
+                    pluginId = Convert.ToString(qplugin);
+            }
+
+            //
+            // load?
+            //
+
+            if (aasIndex >= 0)
+            {
+                // try to load files?
+                Program.loadAasxFiles(bi, load: false);
+
+                if (bi.repository?.FileMap?.Count > 0
+                    && aasIndex >= 0 && aasIndex < bi.repository.FileMap?.Count)
+                {
+                    var repoFile = bi.repository.FileMap[aasIndex];
+                    bi.container = PackageContainerFactory.GuessAndCreateFor(bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                    bi.env = bi.container.Env;
+                    bi.aasxFileSelected = "";
+                    bi.editMode = false;
+                    bi.thumbNail = null;
+                    Program.signalNewData(3, bi.sessionNumber);
+                }
+                else
+                if (bi.aasxFiles?.Length > 0
+                    && aasIndex >= 0 && aasIndex < bi.aasxFiles.Length)
+                {
+                    InvokeAsync(() =>
+                    {
+                        Program.loadAasx(bi, bi.aasxFiles[aasIndex]);
+                        Program.signalNewData(3, bi.sessionNumber);
+                        // StateHasChanged();
+
+                        // only here, we can changed to SM / plugin
+                        var itsm = Items?.FindSubmodel(smId);
+                        if (itsm != null)
+                        {
+                            ListOfItems.AddToExpandNodesFor(ExpandedNodes, itsm);
+                            SelectedNode = itsm;
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -1105,11 +1164,6 @@
                 && evtDispCont.fn != null)
             {
                 InvokeAsync(async () => {
-                    //var file = System.IO.File.ReadAllBytes(evtDispCont.fn);
-                    //var fileName = System.IO.Path.GetFileName(evtDispCont.fn);
-                    //// Send the data to JS to actually download the file
-                    //await JSRuntime.InvokeVoidAsync("BlazorDisplayFile", fileName, "application/octet-stream", file);
-                    //// await InvokeAsync(() => Program.loadAasx(bi, bi.aasxFileSelected));
                     await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
                     this.StateHasChanged();
                 });
@@ -1121,7 +1175,7 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
             {
                 ;
-                Program.signalNewData(2, bi.sessionNumber, 
+                Program.signalNewData(2, bi.sessionNumber,
                     new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true));
             }
 
@@ -1142,7 +1196,7 @@
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
-                    Program.signalNewData(0, found.sessionNumber, 
+                    Program.signalNewData(0, found.sessionNumber,
                         onlyUpdateAasxPanel: true); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;
@@ -1153,11 +1207,11 @@
                     {
                         var kl = new AdminShell.KeyList();
                         rf?.CollectReferencesByParent(kl);
-                         pluginInstance?.InvokeAction("event-return", 
-                            new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
-                            {
-                                resultKeys = kl
-                            });
+                        pluginInstance?.InvokeAction("event-return",
+                           new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
+                           {
+                               resultKeys = kl
+                           });
                     }
 
                     // clean
@@ -1184,7 +1238,7 @@
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
-                    Program.signalNewData(0, found.sessionNumber, 
+                    Program.signalNewData(0, found.sessionNumber,
                         onlyUpdateAasxPanel: true); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;
@@ -1193,7 +1247,7 @@
                     if (found.htmlEventOutputs.Count == 1
                         && found.htmlEventOutputs[0] is string fn)
                     {
-                        pluginInstance?.InvokeAction("event-return", 
+                        pluginInstance?.InvokeAction("event-return",
                             new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
                             {
                                 FileNames = new [] { fn }
@@ -1219,7 +1273,7 @@
                     evMsgBox.Message, evMsgBox.Caption, evMsgBox.Buttons, evMsgBox.Image);
 
                 // fire back
-                pluginInstance?.InvokeAction("event-return", 
+                pluginInstance?.InvokeAction("event-return",
                     new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = res });
             }
 
@@ -1231,7 +1285,7 @@
                 if (context != null)
                 {
                     if (update.Mode == AnyUiPluginUpdateMode.StatusToUi)
-                    { 
+                    {
                         // only update some parameters
                         context.UpdateRenderElements(bi.stack17, update.Mode);
                     }
@@ -1256,6 +1310,4 @@
                 ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
         }
     }
-
-
 }
