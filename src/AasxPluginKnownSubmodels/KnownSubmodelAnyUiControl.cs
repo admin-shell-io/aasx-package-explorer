@@ -148,7 +148,7 @@ namespace AasxPluginKnownSubmodels
 
             // small spacer
             outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            uitk.AddSmallBasicLabelTo(outer, 3, 0, 
+            uitk.AddSmallBasicLabelTo(outer, 1, 0, 
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -156,7 +156,7 @@ namespace AasxPluginKnownSubmodels
             // add the body, a scroll viewer
             outer.RowDefinitions[2] = new AnyUiRowDefinition(1.0, AnyUiGridUnitType.Star);
             var scroll = AnyUiUIElement.RegisterControl(
-                uitk.AddSmallScrollViewerTo(outer, 4, 0,
+                uitk.AddSmallScrollViewerTo(outer, 2, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
                     flattenForTarget: AnyUiTargetPlatform.Browser, initialScrollPosition: _lastScrollPosition),
@@ -197,13 +197,22 @@ namespace AasxPluginKnownSubmodels
             if (view == null || uitk == null || sm == null || rec == null)
                 return;
 
+            // border around the whole item
+            var brd = view.Add(new AnyUiBorder()
+            {
+                BorderBrush = AnyUiBrushes.DarkBlue,
+                BorderThickness = new AnyUiThickness(1.0),
+                Margin = new AnyUiThickness(2.0),
+                Padding = new AnyUiThickness(2.0),
+            });
+
             // make an grid with two columns, first a bit wider 
-            var outer = view.Add(uitk.AddSmallGrid(rows: 3, cols: 2,
-                            colWidths: new[] { "#", "*" }, background: AnyUiBrushes.White));
-            outer.ColumnDefinitions[1].MaxWidth = 200;
+            var outer = brd.SetChild(uitk.AddSmallGrid(rows: 4, cols: 2,
+                            colWidths: new[] { "#", "*" }, 
+                            rowHeights: new[] { "#", "#", "#", "#" },
+                            background: AnyUiBrushes.White));
 
             // fill bitmap
-
             BitmapImage imageData = null;
             try
             {
@@ -225,26 +234,41 @@ namespace AasxPluginKnownSubmodels
                         margin: new AnyUiThickness(2),
                         stretch: AnyUiStretch.Uniform,
                         bitmap: imageData),
-                    rowSpan: 3,
+                    rowSpan: 4,
                     maxHeight: 150, maxWidth: 150,
                     horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                     verticalAlignment: AnyUiVerticalAlignment.Stretch);
 
             // labels
             uitk.AddSmallBasicLabelTo(outer, 0, 1,
+                margin:new AnyUiThickness(8, 2, 0, 0),
                 fontSize: 1.2f,
                 setBold: true,
                 content: "" + rec.Header);
 
             uitk.AddSmallBasicLabelTo(outer, 1, 1,
+                margin: new AnyUiThickness(8, 2, 0, 0),
                 fontSize: 1.0f,
                 setWrap: true,
                 content: "" + rec.Content);
 
-            uitk.AddSmallBasicLabelTo(outer, 2, 1,
-                fontSize: 1.0f,
-                setWrap: true,
-                content: "" + rec.FurtherUrl);
+            AnyUiUIElement.RegisterControl(
+                uitk.AddSmallBasicLabelTo(outer, 2, 1,
+                    margin: new AnyUiThickness(8, 2, 0, 0),
+                    fontSize: 1.0f,
+                    setWrap: true,
+                    setHyperLink: true,
+                    content: "" + rec.FurtherUrl),
+                (o) =>
+                {
+                    if (o is AnyUiSelectableTextBlock stb && stb.Text.HasContent())
+                        return new AnyUiLambdaActionDisplayContentFile()
+                        {
+                            fn = stb.Text,
+                            preferInternalDisplay = true
+                        };
+                    return new AnyUiLambdaActionNone();
+                });            
 
         }
 

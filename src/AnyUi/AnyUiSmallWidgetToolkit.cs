@@ -381,7 +381,7 @@ namespace AnyUi
         public AnyUiTextBlock AddSmallBasicLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false,
-            double? fontSize = null, int? colSpan = null, bool setWrap = false,
+            double? fontSize = null, int? colSpan = null, bool setWrap = false, bool setHyperLink = false,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             AnyUiHorizontalAlignment? horizontalAlignment = null,
@@ -389,8 +389,13 @@ namespace AnyUi
             bool textIsSelectable = true)
         {
             AnyUiTextBlock lab = null;
-            if (textIsSelectable) 
-                lab = new AnyUiSelectableTextBlock();
+            if (textIsSelectable)
+            {
+                var stb = new AnyUiSelectableTextBlock();
+                if (setHyperLink)
+                    stb.TextAsHyperlink = true;
+                lab = stb;
+            }
             else
                 lab = new AnyUiTextBlock();
 

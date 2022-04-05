@@ -643,6 +643,13 @@ namespace AnyUi
             if (Child != null)
                 yield return Child;
         }
+
+        public T SetChild<T>(T child)
+            where T : AnyUiUIElement
+        {
+            Child = child;
+            return child;
+        }
     }
 
     public interface IEnumerateChildren
