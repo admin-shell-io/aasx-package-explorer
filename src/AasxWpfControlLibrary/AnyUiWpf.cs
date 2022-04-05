@@ -677,8 +677,8 @@ namespace AnyUi
                             // we need this event
                             wpf.SelectionChanged += (sender, e) => {
                                 cntl.SelectedIndex = wpf.SelectedIndex;
-                                cntl.setValueLambda?.Invoke((string) wpf.SelectedItem);
                                 cntl.Text = wpf.Text;
+                                EmitOutsideAction(cntl.setValueLambda?.Invoke((string) wpf.SelectedItem));
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 // Note for MIHO: this was the dangerous outside event loop!
                                 EmitOutsideAction(cntl.takeOverLambda);
