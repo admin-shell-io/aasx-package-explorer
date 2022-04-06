@@ -500,7 +500,9 @@
 
     // resharper disable all
 
-
+    // Gets a reference to the MainLayout component
+    [CascadingParameter]
+    public MainLayout Layout { get; set; }
 
     ListOfItems Items = null;
 
@@ -560,15 +562,21 @@
             //
 
             // investigate query parameters if to load special AAS or SMs ..
+            var header = -1;
             var aasIndex = -1;
             string smId = null;
-            string pluginId = null;
+            string pluginTag = null;
 
             var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
             var qdict = QueryHelpers.ParseQuery(uri.Query);
 
             if (qdict != null)
             {
+                if (qdict.TryGetValue("header", out var qhead))
+                    if (int.TryParse(Convert.ToString(qhead), out var head)
+                        && head >= 0 && head <= 1)
+                        header = head;
+
                 if (qdict.TryGetValue("aasndx", out var qndx))
                     if (int.TryParse(Convert.ToString(qndx), out var ndx))
                         aasIndex = ndx;
@@ -577,7 +585,7 @@
                     smId = BlazorUtils.Base64Decode(Convert.ToString(qsmid));
 
                 if (qdict.TryGetValue("plugin", out var qplugin))
-                    pluginId = Convert.ToString(qplugin);
+                    pluginTag = Convert.ToString(qplugin);
             }
 
             //
@@ -610,12 +618,21 @@
                         Program.signalNewData(3, bi.sessionNumber);
                         // StateHasChanged();
 
+                        // dísable features in MainLayout?
+                        if (Layout != null && header >= 0)
+                            Layout.ShowHeader = header > 0;
+
                         // only here, we can changed to SM / plugin
-                        var itsm = Items?.FindSubmodel(smId);
+                        Item itsm = null;
+                        if (smId != null && pluginTag != null)
+                            itsm = Items?.FindSubmodelPlugin(smId, pluginTag);
+                        else
+                            itsm = Items?.FindSubmodel(smId);
                         if (itsm != null)
                         {
                             ListOfItems.AddToExpandNodesFor(ExpandedNodes, itsm);
                             SelectedNode = itsm;
+                            StateHasChanged();
                         }
                     });
                 }
