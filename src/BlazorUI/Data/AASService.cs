@@ -59,7 +59,8 @@ namespace BlazorUI.Data
                     yield return ch;
 
             foreach (var ch in childs)
-                FindItems(ch.Childs, predicate);
+                foreach (var x in FindItems(ch.Childs, predicate))
+                    yield return x;
         }
 
         public Item FindSubmodel(string smid)
@@ -71,6 +72,24 @@ namespace BlazorUI.Data
             return FindItems(this, (it) =>
             {
                 return it?.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid;
+            }).FirstOrDefault();
+        }
+
+        public Item FindSubmodelPlugin(string smid, string pluginTag)
+        {
+            // access
+            if (smid == null || pluginTag == null)
+                return null;
+
+            return FindItems(this, (it) =>
+            {
+            if (it?.parent == null || !(it.parent is Item parit))
+                return false;
+            return parit.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid
+                && it.Type == "Plugin"
+                && it.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                        Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
+                && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower();
             }).FirstOrDefault();
         }
 

@@ -7,6 +7,8 @@
 
 @{
 // resharper disable all
+
+// see: https://stackoverflow.com/questions/65198814/how-to-pass-a-value-from-a-page-to-the-layout-in-blazor
 }
 
 @*@<div class="sidebar">
@@ -15,7 +17,11 @@
     <div class="top-row px-4">
     <tr style="max-height:100%">
 *@
+
+<CascadingValue Value="this">
 <div class="main">
+    @if (_showHeader)
+    {
     <div class="top-row px-5">
         <div class="col-12 row">
             <table border="0" cellspacing="2">
@@ -226,8 +232,8 @@
                             <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
                         }
                         <span>&nbsp&nbsp&nbsp&nbsp</span>
-                        @code {
-                            private async void onSave()
+                                @code {
+                                private async void onSave()
                             {
                                 try
                                 {
@@ -272,14 +278,28 @@
                                     }
                                 }
                             }
-                        }
+}
                     </td>
                 </tr>
             </table>
         </div>
     </div>
-
-    <div class="content px-4">
-        @Body
+        }
+        <div class="content px-4">
+            @Body
+        </div>
     </div>
-</div>
+</CascadingValue>
+@code
+{
+    protected bool _showHeader = true;
+    public bool ShowHeader { 
+        get { 
+            return _showHeader; 
+        } 
+        set { 
+            _showHeader = value; 
+            StateHasChanged(); 
+        } 
+    }
+}
