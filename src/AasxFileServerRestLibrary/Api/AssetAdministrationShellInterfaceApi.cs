@@ -11,10 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using RestSharp;
+using AdminShellNS;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
-using AdminShellNS;
+using RestSharp;
 //using AdminShellNS;
 
 namespace IO.Swagger.Api
