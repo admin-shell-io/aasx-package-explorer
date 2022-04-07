@@ -70,6 +70,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="10"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="4"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
@@ -77,8 +79,17 @@
             <Label Grid.Row="1" Grid.Column="0" Foreground="White" FontWeight="Bold">Format:</Label>
             <ComboBox x:Name="ComboBoxFormat" Grid.Row="1" Grid.Column="1"  MinWidth="150" Height="20" Margin="2"/>
 
-            <Label Grid.Row="3" Grid.Column="0" Foreground="White" FontWeight="Bold">Row header:</Label>
+            <Label Grid.Row="3" Grid.Column="0" Foreground="White" FontWeight="Bold">Time stamp start:</Label>
             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                <TextBox x:Name="TextBoxStartTime" Width="160" Foreground="White" 
+                         Background="#ff202e4c" HorizontalAlignment="Left"
+                         HorizontalContentAlignment="Left" VerticalContentAlignment="Center" 
+                         Margin="2" Text=""/>
+                <Label Foreground="LightGray">(empty = no time stamps)</Label>
+            </StackPanel>
+
+            <Label Grid.Row="5" Grid.Column="0" Foreground="White" FontWeight="Bold">Row header:</Label>
+            <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
                 <TextBox x:Name="TextBoxRowHeader" Width="60" Foreground="White" 
                          Background="#ff202e4c" HorizontalAlignment="Left"
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" 
@@ -86,8 +97,8 @@
                 <Label Foreground="LightGray">(1 based, 0 disables headers)</Label>
             </StackPanel>
 
-            <Label Grid.Row="5" Grid.Column="0" Foreground="White" FontWeight="Bold">Row data:</Label>
-            <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal">
+            <Label Grid.Row="7" Grid.Column="0" Foreground="White" FontWeight="Bold">Row data:</Label>
+            <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal">
                 <TextBox x:Name="TextBoxRowData" Width="60" Foreground="White" 
                          Background="#ff202e4c" HorizontalAlignment="Left"
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" 
@@ -95,31 +106,31 @@
                 <Label Foreground="LightGray">(1 based)</Label>
             </StackPanel>
 
-            <Label Grid.Row="7" Grid.Column="0" Foreground="White" FontWeight="Bold">Column timeseries:</Label>
-            <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal">
+            <Label Grid.Row="9" Grid.Column="0" Foreground="White" FontWeight="Bold">Column time deltas:</Label>
+            <StackPanel Grid.Row="9" Grid.Column="1" Orientation="Horizontal">
                 <TextBox x:Name="TextBoxColumnTime" Width="60" Foreground="White" 
                          Background="#ff202e4c" HorizontalAlignment="Left"
                          HorizontalContentAlignment="Right" VerticalContentAlignment="Center" 
                          Margin="2" Text="1"/>
-                <Label Foreground="LightGray">(1 based, 0 disables timeseries)</Label>
+                <Label Foreground="LightGray">(1 based, 0 = delta fix to 1 sec)</Label>
             </StackPanel>
 
-            <Label Grid.Row="9" Grid.Column="0" Foreground="White" FontWeight="Bold">Column data:</Label>
-            <TextBox x:Name="TextBoxColumnData" Grid.Row="9" Grid.Column="1"
+            <Label Grid.Row="11" Grid.Column="0" Foreground="White" FontWeight="Bold">Column data:</Label>
+            <TextBox x:Name="TextBoxColumnData" Grid.Row="11" Grid.Column="1"
                      Width="60" Foreground="White" 
                      Background="#ff202e4c" HorizontalAlignment="Left"
                      HorizontalContentAlignment="Right" VerticalContentAlignment="Center" 
                      Margin="2" Text="2"/>
 
-            <Label Grid.Row="11" Grid.Column="0" Foreground="White" FontWeight="Bold">Number of data columns:</Label>
-            <TextBox x:Name="TextBoxNumData" Grid.Row="11" Grid.Column="1"
+            <Label Grid.Row="13" Grid.Column="0" Foreground="White" FontWeight="Bold">Number of data columns:</Label>
+            <TextBox x:Name="TextBoxNumData" Grid.Row="13" Grid.Column="1"
                      Width="60" Foreground="White" 
                      Background="#ff202e4c" HorizontalAlignment="Left"
                      HorizontalContentAlignment="Right" VerticalContentAlignment="Center" 
                      Margin="2" Text="1"/>
 
-            <Label Grid.Row="13" Grid.Column="0" Foreground="White" FontWeight="Bold">Set SM semanticId:</Label>
-            <CheckBox Grid.Row="13" Grid.Column="1" x:Name="CheckBoxSetSmSemId" Foreground="LightGray"
+            <Label Grid.Row="15" Grid.Column="0" Foreground="White" FontWeight="Bold">Set SM semanticId:</Label>
+            <CheckBox Grid.Row="15" Grid.Column="1" x:Name="CheckBoxSetSmSemId" Foreground="LightGray"
                       VerticalAlignment="Center">(will re-set the semantic Id of the SUbmodel)</CheckBox>
 
         </Grid>

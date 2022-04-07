@@ -31,6 +31,8 @@ namespace AasxPluginExportTable.TimeSeries
 
         public FormatEnum Format = 0;
 
+        public string StartTime = "";
+
         public int RowHeader = 1;
         public int RowData = 2;
         public int ColTime = 1;

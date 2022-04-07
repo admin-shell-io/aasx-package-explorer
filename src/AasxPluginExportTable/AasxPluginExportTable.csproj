@@ -22,6 +22,7 @@
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="LICENSE.TXT">

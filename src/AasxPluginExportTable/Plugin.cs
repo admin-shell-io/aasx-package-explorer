@@ -275,6 +275,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // prep options
                 var imop = new ImportTimeSeriesOptions();
+                imop.StartTime = ImportTimeSeries.ConvertToIso8601(DateTime.UtcNow);
 
                 // dialogue for user options
                 var uc = new ImportTimeSeriesFlyout();
@@ -317,7 +318,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // use functionality
                 Log.Info($"Importing time series from file: {fn} ..");
-                ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, uc.Result, fn);
+                ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, uc.Result, fn, Log);
             }
 
             // default

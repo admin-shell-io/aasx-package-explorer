@@ -92,6 +92,8 @@ namespace AasxPluginExportTable
 
             int i = 0;
 
+            x.StartTime = TextBoxStartTime.Text;
+
             if (int.TryParse(TextBoxRowHeader.Text, out i))
                 x.RowData = i;
 
@@ -120,6 +122,7 @@ namespace AasxPluginExportTable
 
             // take over
             ComboBoxFormat.SelectedIndex = (int)preset.Format;
+            TextBoxStartTime.Text = "" + preset.StartTime;
             TextBoxRowHeader.Text = "" + preset.RowHeader;
             TextBoxRowData.Text = "" + preset.RowData;
             TextBoxColumnTime.Text = "" + preset.ColTime;
