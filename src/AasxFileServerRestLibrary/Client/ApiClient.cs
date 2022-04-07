@@ -64,14 +64,7 @@ namespace IO.Swagger.Client
         {
             Configuration = config ?? IO.Swagger.Client.Configuration.Default;
 
-            var options = new RestClientOptions()
-            {
-                //UserAgent = Configuration.UserAgent,
-                Timeout = Configuration.Timeout,
-                BaseUrl = new Uri(Configuration.BasePath)
-            };
-
-            RestClient = new RestClient(options);
+            RestClient = new RestClient(Configuration.BasePath);
 
             //RestClient = new RestClient(Configuration.BasePath);
         }
@@ -86,14 +79,8 @@ namespace IO.Swagger.Client
             if (String.IsNullOrEmpty(basePath))
                 throw new ArgumentException("basePath cannot be empty");
 
-            var options = new RestClientOptions()
-            {
-                UserAgent = Configuration.UserAgent,
-                Timeout = Configuration.Timeout,
-                BaseUrl = new Uri(Configuration.BasePath)
-            };
 
-            RestClient = new RestClient(options);
+            RestClient = new RestClient(Configuration.BasePath);
             Configuration = Client.Configuration.Default;
         }
 
@@ -151,7 +138,7 @@ namespace IO.Swagger.Client
             {
                 //request.AddFile(param.Value.Name, param.Value.Writer, param.Value.FileName, param.Value.ContentType);
                 //request.AddFile(param.Value.Name, param.Value.FileName, param.Value.ContentType);
-                request.AddFile(param.Value.Name, param.Value.GetFile, param.Value.FileName, param.Value.ContentType);
+                request.AddFile(param.Value.Name, param.Value.FileName, param.Value.ContentType);
             }
 
             if (postBody != null) // http body (model or byte[]) parameter
@@ -186,7 +173,7 @@ namespace IO.Swagger.Client
                 pathParams, contentType);
 
             InterceptRequest(request);
-            var response = RestClient.ExecuteAsync(request).GetAwaiter().GetResult();
+            RestResponse response = (RestResponse)RestClient.ExecuteAsync(request).GetAwaiter().GetResult();
             //TODO (jtikekar, 2022-04-04): May need to change response.Result
             InterceptResponse(request, response);
 
@@ -215,7 +202,7 @@ namespace IO.Swagger.Client
                 path, method, queryParams, postBody, headerParams, formParams, fileParams,
                 pathParams, contentType);
             InterceptRequest(request);
-            var response = await RestClient.ExecuteAsync(request);
+            RestResponse response = (RestResponse)await RestClient.ExecuteAsync(request);
             InterceptResponse(request, response);
             return (Object)response;
         }
