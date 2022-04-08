@@ -66,6 +66,10 @@ namespace IO.Swagger.Client
 
             RestClient = new RestClient(Configuration.BasePath);
 
+            //IWebProxy proxy = WebRequest.DefaultWebProxy;
+            //proxy.Credentials = CredentialCache.DefaultCredentials;
+            RestClient.Proxy = GetProxy();
+
             //RestClient = new RestClient(Configuration.BasePath);
         }
 
@@ -107,6 +111,47 @@ namespace IO.Swagger.Client
         /// </summary>
         /// <value>An instance of the RestClient</value>
         public RestClient RestClient { get; set; }
+
+        static WebProxy proxy = null;
+
+        //TODO: jtikekar(): Add this at Global level
+        public WebProxy GetProxy()
+        {
+            if (proxy != null)
+            {
+                string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
+                string proxyAddress = "";
+                string username = "";
+                string password = "";
+                if (System.IO.File.Exists(proxyFile))
+                {
+                    using (System.IO.StreamReader sr = new System.IO.StreamReader(proxyFile))
+                    {
+                        // ReSharper disable MethodHasAsyncOverload
+                        proxyAddress = sr.ReadLine();
+                        username = sr.ReadLine();
+                        password = sr.ReadLine();
+                        // ReSharper enable MethodHasAsyncOverload
+                    }
+
+                    if (proxyAddress != "" && username != "" && password != "")
+                    {
+                        proxy = new System.Net.WebProxy();
+                        Uri newUri = new Uri(proxyAddress);
+                        proxy.Address = newUri;
+                        proxy.Credentials = new System.Net.NetworkCredential(username, password);
+                    }
+                }
+                else
+                {
+                    proxy = new WebProxy();
+                    proxy.Credentials = CredentialCache.DefaultCredentials;
+                }
+
+            }
+            return proxy;
+        }
+
 
         // Creates and sets up a RestRequest prior to a call.
         private RestRequest PrepareRequest(
