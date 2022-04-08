@@ -50,25 +50,39 @@ namespace AasxPackageLogic.PackageCentral
                     //Get AAS and Asset
                     foreach (var aasId in packageDescription.AasIds)
                     {
-                        var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId));
-                        if (aas != null)
+                        try
                         {
-                            //Get Asset
-                            var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId));
-                            if (asset != null)
+                            var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId));
+                            if (aas != null)
                             {
-                                var packageContainer = new PackageContainerRepoItem()
+                                //Get Asset
+                                try
                                 {
-                                    ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
-                                    //Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,"server", "getaasx", aasi.Index),
-                                    Description = $"\"{"" + aas.idShort}\",\"{"" + asset.idShort}\"",
-                                    Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.idShort).SubstringMax(0, 3),
-                                    PackageId = packageDescription.PackageId
-                                };
-                                packageContainer.AasIds.Add("" + aas.identification?.id);
-                                packageContainer.AssetIds.Add("" + asset.identification?.id);
-                                output.Add(packageContainer);
+                                    var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId));
+                                    if (asset != null)
+                                    {
+                                        var packageContainer = new PackageContainerRepoItem()
+                                        {
+                                            ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
+                                            //Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,"server", "getaasx", aasi.Index),
+                                            Description = $"\"{"" + aas.idShort}\",\"{"" + asset.idShort}\"",
+                                            Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.idShort).SubstringMax(0, 3),
+                                            PackageId = packageDescription.PackageId
+                                        };
+                                        packageContainer.AasIds.Add("" + aas.identification?.id);
+                                        packageContainer.AssetIds.Add("" + asset.identification?.id);
+                                        output.Add(packageContainer);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(ex.Message);
+                                }
                             }
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex.Message);
                         }
                     }
                 }
