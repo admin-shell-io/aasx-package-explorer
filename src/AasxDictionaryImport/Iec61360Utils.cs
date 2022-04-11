@@ -60,7 +60,7 @@ namespace AasxDictionaryImport
             AddDescriptions(submodel, data);
             AddDataSpecification(env, submodel, data);
 
-            adminShell.AddSubmodelRef(submodel.GetReference() as AdminShellV20.SubmodelRef);
+            adminShell.AddSubmodelRef(new AdminShell.SubmodelRef(submodel.GetReference()));
             env.Submodels.Add(submodel);
 
             return submodel;

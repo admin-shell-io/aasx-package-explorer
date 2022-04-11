@@ -74,6 +74,7 @@
                     <RoutedUICommand x:Key="ExportTable" Text="ExportTable" />
                     <RoutedUICommand x:Key="ImportTable" Text="ImportTable" />
                     <RoutedUICommand x:Key="ExportUml" Text="ExportUml" />
+                    <RoutedUICommand x:Key="ImportTimeSeries" Text="ImportTimeSeries" />
                     <RoutedUICommand x:Key="ServerRest" Text="ServerRest" />
                     <RoutedUICommand x:Key="MQTTPub" Text="MQTTPub" />
                     <RoutedUICommand x:Key="ServerPluginEmptySample" Text="ServerPluginEmptySample" />
@@ -244,6 +245,7 @@
         <CommandBinding Command="{StaticResource ExportTable}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportTable}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportUml}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ImportTimeSeries}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ServerRest}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource MQTTPub}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ServerPluginEmptySample}" Executed="CommandBinding_Executed"/>
@@ -371,6 +373,7 @@
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
                             <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
+                            <MenuItem Header="Read time series values into SubModel .." Command="{StaticResource ImportTimeSeries}"/>
                             <MenuItem Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
                         </MenuItem>
                         <MenuItem Header="Export ..">

@@ -6564,7 +6564,8 @@ namespace AdminShellNS
             // a little more business logic
 
             public T CreateSMEForCD<T>(ConceptDescription cd, string category = null, string idShort = null,
-                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
+                string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
+                where T : SubmodelElement, new()
             {
                 // access
                 if (cd == null)
@@ -6592,6 +6593,8 @@ namespace AdminShellNS
                 };
                 if (category != null)
                     sme.category = category;
+                if (isTemplate)
+                    sme.kind = ModelingKind.CreateAsTemplate();
 
                 // if its a SMC, make sure its accessible
                 if (sme is SubmodelElementCollection smc)
