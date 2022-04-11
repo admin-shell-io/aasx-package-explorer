@@ -269,7 +269,7 @@ namespace AasxPluginDocumentShelf
                 "Identification of the Domain, e.g. the providing organisation."));
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentId", FormMultiplicity.One, defs.CD_DocumentIdValue?.GetSingleKey(),
                 "DocumentId",
                 "Identification of the Document within a given domain, e.g. the providing organisation."));
 
