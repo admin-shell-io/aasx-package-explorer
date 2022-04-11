@@ -65,7 +65,7 @@ namespace AasxIntegrationBase.AasForms
             // access
             if (sme == null)
                 return;
-            
+
             collection = collection ?? new AdminShell.SubmodelElementWrapperCollection();
 
             // check, if to make idShort unique?
