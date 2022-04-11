@@ -25,7 +25,7 @@
           {
             "$type": "FormMultiLangProp",
             "FormTitle": "ManufacturerName",
-            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
+            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation..",
             "FormEditIdShort": false,
             "FormEditDescription": false,
             "PresetIdShort": "ManufacturerName",
@@ -796,7 +796,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "ManNam",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -883,7 +883,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "ManProDes",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -970,7 +970,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Add",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1057,7 +1057,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Dep",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1144,7 +1144,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Str",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1231,7 +1231,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "ZipCod",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1318,7 +1318,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "POBox",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1405,7 +1405,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "ZipCodOfPOBox",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1492,7 +1492,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "CitTow",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1579,7 +1579,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "StaCou",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1666,7 +1666,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "NatCod",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1753,7 +1753,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "VATNum",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1840,7 +1840,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "AddRem",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -1927,7 +1927,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "AddOfAddLin",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2014,7 +2014,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Pho",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2101,7 +2101,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "TelNum",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2188,7 +2188,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "TypOfTel",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2275,7 +2275,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Fax",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2362,7 +2362,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "FaxNum",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2449,7 +2449,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "TypOfFaxNum",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2536,7 +2536,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Ema",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2623,7 +2623,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "EmaAdd",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2710,7 +2710,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "PubKey",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2797,7 +2797,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "TypOfEmaAdd",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2884,7 +2884,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "TypOfPubKey",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -2971,7 +2971,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "ManProFam",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3058,7 +3058,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "SerNum",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3145,7 +3145,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "YeaOfCon",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3232,7 +3232,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Markings",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3304,7 +3304,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "Marking",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3377,7 +3377,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "MarkingName",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3449,7 +3449,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "MarkingFile",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3521,7 +3521,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "MarkingAdditionalText",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3593,7 +3593,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "AssetSpecificProperties",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3665,7 +3665,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "GuidelineSpecificProperties",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
@@ -3737,7 +3737,7 @@
             "version": "",
             "revision": "1"
           },
-          "idShort": "",
+          "idShort": "GuiForConDec",
           "modelType": {
             "$type": "AdminShellNS.AdminShellV20+JsonModelTypeWrapper, AasxCsharpLibrary",
             "name": "ConceptDescription"
