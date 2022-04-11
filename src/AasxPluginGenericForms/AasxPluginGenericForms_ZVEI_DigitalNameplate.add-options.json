@@ -25,7 +25,7 @@
           {
             "$type": "FormMultiLangProp",
             "FormTitle": "ManufacturerName",
-            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation.",
+            "FormInfo": "Legally valid designation of the natural or judicial person which is directly responsible for the design, production, packaging and labeling of a product in respect to its being brought into circulation..",
             "FormEditIdShort": false,
             "FormEditDescription": false,
             "PresetIdShort": "ManufacturerName",
