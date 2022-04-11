@@ -7246,15 +7246,15 @@ namespace AdminShellNS
                     "boolean", "date", "dateTime",
                     "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
                     "positiveInteger",
-                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                    "double", "duration",
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger", 
+                    "negativeInteger", "double", "duration",
                     "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
             public static string[] ValueTypes_Number = new[] {
                     "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
                     "positiveInteger",
-                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                    "double", "float" };
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger", 
+                    "negativeInteger", "double", "float" };
 
             public DataElement() { }
 
