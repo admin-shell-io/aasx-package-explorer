@@ -72,7 +72,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -80,7 +81,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
-            res.Add(new AasxPluginActionDescriptionBase("import-time-series", "Import time series data from a table file."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "import-time-series", "Import time series data from a table file."));
             return res.ToArray();
         }
 

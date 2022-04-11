@@ -19,10 +19,10 @@ using System.Windows;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Schema;
-using ClosedXML.Excel;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
+using ClosedXML.Excel;
 using Newtonsoft.Json;
 
 namespace AasxPluginExportTable.TimeSeries
@@ -38,7 +38,7 @@ namespace AasxPluginExportTable.TimeSeries
         //
         // Public interface
         //
-        
+
         public static void ImportTimeSeriesFromFile(
             AdminShell.AdministrationShellEnv env,
             AdminShell.Submodel submodel,
@@ -57,7 +57,7 @@ namespace AasxPluginExportTable.TimeSeries
             {
                 // which importer?
                 var imp = new ImportTimeSeries();
-                
+
                 if (options.Format == ImportTimeSeriesOptions.FormatEnum.Excel)
                 {
                     imp._log = log;
@@ -72,9 +72,9 @@ namespace AasxPluginExportTable.TimeSeries
                 if (!imp.WriteSeries(options, submodel))
                 {
                     log?.Error($"Error writing timeseries data !");
-                    return;
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 log?.Error(ex, $"importing time series file {fn}");
             }
@@ -132,7 +132,7 @@ namespace AasxPluginExportTable.TimeSeries
 
                 // sum of strings
                 var sb = new List<string>();
-                for (int i=startOfList; i<=endOfList; i++)
+                for (int i = startOfList; i <= endOfList; i++)
                 {
                     // access
                     var row = this[i];
@@ -196,7 +196,8 @@ namespace AasxPluginExportTable.TimeSeries
             {
                 // tra gather delta
                 double ofs = 0.0;
-                if (options.ColTime > 0) {
+                if (options.ColTime > 0)
+                {
                     var st = "" + _provider.Cell(rowI, options.ColTime - 1);
                     st = st.Replace(',', '.');
                     if (double.TryParse(st, NumberStyles.Float, CultureInfo.InvariantCulture, out double fd))
@@ -226,7 +227,7 @@ namespace AasxPluginExportTable.TimeSeries
                 // ok, add
                 var rec = new TimeSeriesRow()
                 {
-                    TimeStamp = (options.ColTime > 0) 
+                    TimeStamp = (options.ColTime > 0)
                         ? startTimeDT + TimeSpan.FromSeconds(ofs)
                         : startTimeDT + TimeSpan.FromSeconds(startTimeOfs),
                     Data = data
@@ -243,7 +244,7 @@ namespace AasxPluginExportTable.TimeSeries
         }
 
         protected bool WriteSeries(
-            ImportTimeSeriesOptions options, 
+            ImportTimeSeriesOptions options,
             AdminShell.Submodel submodel)
         {
             // access 
@@ -277,7 +278,6 @@ namespace AasxPluginExportTable.TimeSeries
 
                 // chunk of records (idea: simply copy!)
                 var chunk = _rows;
-                var startIndex = 0;
 
                 // attributes for this
 
@@ -325,6 +325,7 @@ namespace AasxPluginExportTable.TimeSeries
                 for (int di = 0; di < options.NumData; di++)
                 {
                     // variable
+                    // ReSharper disable once UseFormatSpecifierInInterpolation
                     var ids = $"TimeSeriesVariable_{(1 + di).ToString("D2")}";
                     if (options.RowHeader >= 1 && _columnNames.Count > di)
                         ids += "_" + _columnNames[di];

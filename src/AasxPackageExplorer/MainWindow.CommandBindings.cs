@@ -2418,7 +2418,8 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(bo));
         }
 
-        public void CommandBinding_ExportImportTableUml(bool import = false, bool exportUml = false, bool importTimeSeries = false)
+        public void CommandBinding_ExportImportTableUml(
+            bool import = false, bool exportUml = false, bool importTimeSeries = false)
         {
             // trivial things
             if (!_packageCentral.MainAvailable)

@@ -26,6 +26,7 @@
   "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
   "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
   "EclassDir": ".\\eclass\\",
+  "DictImportDir": "C:\\MIHO\\Develop\\Aasx\\aasx-package-explorer\\src\\AasxPackageExplorer\\bin\\x64\\Debug\\net472",
   /* "LogoFile": "SpecPI40_t.png", */
   "LogoFile": "SpecPI40_t.png",
   "QualifiersFile": "qualifier-presets.json",

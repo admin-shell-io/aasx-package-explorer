@@ -730,7 +730,7 @@ namespace AasxPackageLogic
             else
             {
                 this.Caption = "Missing Submodel for Reference!";
-                this.Info = "->" + this.theSubmodelRef.ToString();
+                this.Info = "->" + ((this.theSubmodelRef == null) ? "<null>" : this.theSubmodelRef.ToString());
             }
         }
 

@@ -31,6 +31,8 @@ using AasxPluginExportTable.Uml;
 using AdminShellNS;
 using Newtonsoft.Json;
 
+// ReSharper disable InlineOutVariableDeclaration
+
 namespace AasxPluginExportTable
 {
     public partial class ImportTimeSeriesFlyout : UserControl, IFlyoutControl
