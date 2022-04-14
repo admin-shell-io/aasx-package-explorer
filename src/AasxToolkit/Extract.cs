@@ -29,7 +29,7 @@ namespace AasxToolkit
                 return;
 
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
+            var mm = AdminShell.Key.MatchMode.Relaxed;                     
 
             // filter out Submodels
             foreach (var sm in package.AasEnv?.FindAllSubmodelGroupedByAAS((aas, sm) =>
