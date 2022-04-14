@@ -156,7 +156,7 @@ namespace AasxPluginDocumentShelf
             // CountryFlag does not work in XAML (at least not in Release binary)
             ResetCountryRadioButton(RadioLangEN, CountryFlag.CountryCode.GB);
             ResetCountryRadioButton(RadioLangDE, CountryFlag.CountryCode.DE);
-            ResetCountryRadioButton(RadioLangCN, CountryFlag.CountryCode.CN);
+            ResetCountryRadioButton(RadioLangZH, CountryFlag.CountryCode.CN);
             ResetCountryRadioButton(RadioLangJP, CountryFlag.CountryCode.JP);
             ResetCountryRadioButton(RadioLangKR, CountryFlag.CountryCode.KR);
             ResetCountryRadioButton(RadioLangFR, CountryFlag.CountryCode.FR);

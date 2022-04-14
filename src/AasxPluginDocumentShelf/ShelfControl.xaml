@@ -115,11 +115,11 @@
                                 <Label Content="DE"/>
                             </WrapPanel>
                         </RadioButton>
-                        <RadioButton x:Name="RadioLangCN" VerticalContentAlignment="Center" Margin="3"
-                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=CN}">
+                        <RadioButton x:Name="RadioLangZH" VerticalContentAlignment="Center" Margin="3"
+                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=ZH}">
                             <WrapPanel Width="30">
                                 <!-- <cf:CountryFlag Code="CN" Width="30"/> -->
-                                <Label Content="CN"/>
+                                <Label Content="ZH"/>
                             </WrapPanel>
                         </RadioButton>
                         <RadioButton x:Name="RadioLangJP" VerticalContentAlignment="Center" Margin="3"
