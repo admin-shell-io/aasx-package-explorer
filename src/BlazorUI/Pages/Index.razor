@@ -378,6 +378,7 @@
             </div>
         </div>
     </div>
+    <!-- right panel -->
     <div class="col-8" style="border-style:solid;border-color:blue;border-radius:8px;position:sticky;padding:10px;width:100%;">
         <div class="sticky-top" style="word-wrap: break-word; width: 100%;">
             @{
@@ -945,11 +946,15 @@
         }
         if (o is MultiLanguageProperty)
         {
-            ret += "Lang";
+            ret += "MLP";
         }
         if (o is RelationshipElement)
         {
             ret += "Rel";
+        }
+        if (o is AnnotatedRelationshipElement)
+        {
+            ret += "ARel";
         }
         if (o is ReferenceElement)
         {

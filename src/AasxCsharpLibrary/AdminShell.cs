@@ -5817,18 +5817,18 @@ namespace AdminShellNS
 
             public static AdequateElementEnum[] AdequateElementsDataElement =
             {
-            AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
-            AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
-            AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
-        };
+                AdequateElementEnum.SubmodelElementCollection, AdequateElementEnum.RelationshipElement,
+                AdequateElementEnum.AnnotatedRelationshipElement, AdequateElementEnum.Capability,
+                AdequateElementEnum.Operation, AdequateElementEnum.BasicEvent, AdequateElementEnum.Entity
+            };
 
             public static string[] AdequateElementNames = { "Unknown", "SubmodelElementCollection", "Property",
-            "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
-            "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
+                "MultiLanguageProperty", "Range", "File", "Blob", "ReferenceElement", "RelationshipElement",
+                "AnnotatedRelationshipElement", "Capability", "Operation", "BasicEvent", "Entity" };
 
             public static string[] AdequateElementShortName = { null, "SMC", null,
-            "MLP", null, null, null, "Ref", "Rel",
-            "ARel", null, null, "Event", "Entity" };
+                "MLP", null, null, null, "Ref", "Rel",
+                "ARel", null, null, "Event", "Entity" };
 
             // constructors
 

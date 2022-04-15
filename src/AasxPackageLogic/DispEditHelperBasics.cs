@@ -304,7 +304,8 @@ namespace AasxPackageLogic
 
         public AnyUiSelectableTextBlock AddSmallLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false)
+            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, 
+            bool setBold = false, bool setNoWrap = false)
         {
             var lab = new AnyUiSelectableTextBlock();
 
@@ -316,6 +317,8 @@ namespace AasxPackageLogic
                 lab.Background = background;
             if (setBold)
                 lab.FontWeight = AnyUiFontWeight.Bold;
+            if (setNoWrap)
+                lab.TextWrapping = AnyUiTextWrapping.NoWrap;
             lab.Text = content;
 
             // check, which content
@@ -452,7 +455,9 @@ namespace AasxPackageLogic
                 }
 
             // Label for key
-            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), 
+                setNoWrap: true,
+                content: "" + key + ":");
 
             // Label / TextBox for value
             if (repo == null)
@@ -716,7 +721,9 @@ namespace AasxPackageLogic
             g.RowDefinitions.Add(gr);
 
             // key label
-            var x = AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key);
+            var x = AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+                setNoWrap: true,
+                content: "" + key);
             x.VerticalAlignment = AnyUiVerticalAlignment.Center;
 
             // 1 + action button
@@ -806,7 +813,9 @@ namespace AasxPackageLogic
             }
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+                setNoWrap: true,
+                content: "" + key + ":");
 
             // populate [+]
             if (repo != null)
@@ -835,6 +844,7 @@ namespace AasxPackageLogic
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 1,
                             padding: new AnyUiThickness(2, 0, 0, 0),
+                            setNoWrap: true,
                             content: "[" + langStr[i].lang + "]");
 
                         // str
@@ -874,6 +884,8 @@ namespace AasxPackageLogic
                         var tbStr = AddSmallTextBoxTo(
                             g, 0 + i + rowOfs, 2,
                             margin: new AnyUiThickness(2, 2, 2, 2),
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center,
                             text: "" + langStr[currentI].str);
                         AnyUiUIElement.RegisterControl(
                             tbStr,
@@ -895,6 +907,7 @@ namespace AasxPackageLogic
                                 g, 0 + i + rowOfs, 3,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 padding: new AnyUiThickness(5, 0, 5, 0),
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
                                 content: "-"),
                             (o) =>
                             {
@@ -1272,18 +1285,21 @@ namespace AasxPackageLogic
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 1,
                             padding: new AnyUiThickness(2, 0, 0, 0),
+                            setNoWrap: true,
                             content: "(" + keys[i].type + ")");
 
                         // local
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 2,
                             padding: new AnyUiThickness(2, 0, 0, 0),
+                            setNoWrap: true,
                             content: "" + ((keys[i].local) ? "(local)" : "(no-local)"));
 
                         // id type
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 3,
                             padding: new AnyUiThickness(2, 0, 0, 0),
+                            setNoWrap: true,
                             content: "[" + keys[i].idType + "]");
 
                         // value
@@ -1348,6 +1364,7 @@ namespace AasxPackageLogic
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 content: "local",
                                 isChecked: keys[currentI].local,
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                             (o) =>
                             {
@@ -1386,6 +1403,7 @@ namespace AasxPackageLogic
                             g, 0 + i + rowOfs, 4,
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             text: "" + keys[currentI].value,
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
                             verticalContentAlignment: AnyUiVerticalAlignment.Center);
                         AnyUiUIElement.RegisterControl(
                             tbValue,
@@ -1413,6 +1431,7 @@ namespace AasxPackageLogic
                                 },
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 padding: new AnyUiThickness(5, 0, 5, 0),
+                                verticalAlignment: AnyUiVerticalAlignment.Center,
                                 menuItemLambda: (o) =>
                                 {
                                     var action = false;

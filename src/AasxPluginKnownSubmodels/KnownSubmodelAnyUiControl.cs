@@ -235,6 +235,7 @@ namespace AasxPluginKnownSubmodels
                         stretch: AnyUiStretch.Uniform,
                         bitmap: imageData),
                     rowSpan: 4,
+                    minWidth: 150,
                     maxHeight: 150, maxWidth: 150,
                     horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
                     verticalAlignment: AnyUiVerticalAlignment.Stretch);

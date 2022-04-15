@@ -196,7 +196,14 @@ namespace BlazorUI
             if (forceNoWrap || (textWrapping.HasValue && textWrapping.Value == AnyUiTextWrapping.NoWrap))
                 Set("white-space", "nowrap", add: true);
             else
+            {
+                // https://stackoverflow.com/questions/36418352/css-word-wrap-break-word-wont-work
                 Set("text-wrap", "break-word", add: true);
+                Set("overflow-wrap", "break-word", add: true);
+                Set("word-break", "break-all", add: true);
+                Set("word-break", "break-all", add: true);
+                Set("hyphens", "auto", add: true);
+            }
 
             // colors
             Set("color", foreground?.HtmlRgb(), doNotSetIfNull: true, add: true);
@@ -320,7 +327,8 @@ namespace BlazorUI
 
 
         public void SetAlignments(AnyUiUIElement elem,
-            bool allowStretch = true)
+            bool allowStretch = true,
+            bool setVertical = false)
         {
             if (!(elem is AnyUiFrameworkElement fe))
                 return;
@@ -342,6 +350,15 @@ namespace BlazorUI
             {
                 Set("width", "100%", add: true);
                 Set("box-sizing", "border-box", add: true);
+            }
+
+            // vertical as well (in general, should be set by the table)?
+            if (setVertical)
+            {
+                if (fe.HorizontalAlignment.HasValue && fe.VerticalAlignment.Value == AnyUiVerticalAlignment.Center)
+                {
+                    Set("vertical-align", "center", add: true);
+                }
             }
         }
     }
