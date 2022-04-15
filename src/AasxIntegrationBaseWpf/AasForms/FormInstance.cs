@@ -807,7 +807,7 @@ namespace AasxIntegrationBase.AasForms
                         MinHeight = 18.0,
                         MaxHeight = 18.0,
                         MinWidth = 18.0,
-                        MaxWidth = 18.0,
+                        // MaxWidth = 18.0,
                         FontSize = 1.3f,
                         Padding = new AnyUiThickness(0, -4, 0, 0),
                         Content = "\u21a6"

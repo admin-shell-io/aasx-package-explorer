@@ -154,6 +154,7 @@
     // (because they may have further code)
     if (Element is AnyUiImage img)
     {
+        ;
         <AnyUiRenderImage DisplayData="@DisplayData"
                           Session="@Session"
                           Parent="@Parent"
@@ -310,9 +311,15 @@
 
     if (Element is AnyUiCheckBox cb)
     {
-        <input type="checkbox" value="@cb.IsChecked"
-               @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
-        @cb.Content
+        // style.SetSpecifics(margin: cb.Margin);
+        // style.SetAlignments(Element);
+        style.Set("white-space", "nowrap", add: true);
+
+        <span style="@style">
+            <input type="checkbox" value="@cb.IsChecked"
+                   @onchange="@((ChangeEventArgs __e) => MyCheck(cb, __e.Value.ToString()))" />
+            @cb.Content
+        </span>
 
         @code {
             private void MyCheck(AnyUiCheckBox cb, string value)

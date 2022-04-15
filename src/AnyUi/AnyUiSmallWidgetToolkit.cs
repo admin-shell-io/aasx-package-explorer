@@ -177,6 +177,7 @@ namespace AnyUi
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             int? colSpan = null,
+            AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             double? fontSize = null)
         {
@@ -190,6 +191,8 @@ namespace AnyUi
             if (fontSize != null)
                 tb.FontSize = fontSize;
             tb.Text = text;
+            if (verticalAlignment != null)
+                tb.VerticalAlignment = verticalAlignment;
             if (verticalContentAlignment != null)
                 tb.VerticalContentAlignment = verticalContentAlignment.Value;
 
@@ -332,7 +335,8 @@ namespace AnyUi
             Func<object, AnyUiLambdaActionBase> menuItemLambda,
             AnyUiThickness margin = null, AnyUiThickness padding = null,
             AnyUiBrush foreground = null, AnyUiBrush background = null,
-            double? fontSize = null, AnyUiFontWeight? fontWeight = null)
+            double? fontSize = null, AnyUiFontWeight? fontWeight = null,
+            AnyUiVerticalAlignment? verticalAlignment = null)
         {
             // construct button
             var but = new AnyUiButton();
@@ -346,6 +350,8 @@ namespace AnyUi
                 but.FontSize = fontSize;
             if (fontWeight.HasValue)
                 but.FontWeight = fontWeight.Value;
+            if (verticalAlignment != null)
+                but.VerticalAlignment = verticalAlignment.Value;
             but.Content = content;
             AnyUiGrid.SetRow(but, row);
             AnyUiGrid.SetColumn(but, col);
@@ -359,6 +365,7 @@ namespace AnyUi
         public AnyUiCheckBox AddSmallCheckBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", bool isChecked = false, AnyUiBrush foreground = null, AnyUiBrush background = null,
+            AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null)
         {
             var cb = new AnyUiCheckBox();
@@ -370,6 +377,8 @@ namespace AnyUi
                 cb.Background = background;
             cb.Content = content;
             cb.IsChecked = isChecked;
+            if (verticalAlignment!= null)
+                cb.VerticalAlignment = verticalAlignment.Value;
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
             AnyUiGrid.SetRow(cb, row);
