@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using BlazorUI.Data;
@@ -30,11 +31,11 @@ using Newtonsoft.Json;
 
 namespace BlazorUI
 {
-    
-
     public class Program
     {
         public static event EventHandler NewDataAvailable;
+
+        public static PackageContainerListBase Repo;
 
         public class NewDataAvailableArgs : EventArgs
         {
@@ -244,6 +245,15 @@ namespace BlazorUI
                 $"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
 
             Plugins.LoadedPlugins = Plugins.TryActivatePlugins(Options.Curr.PluginDll);
+
+            // load repot
+            var pathToDefaultRepo = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".repo.json");
+            if (File.Exists(pathToDefaultRepo))
+            {
+                Repo = PackageContainerListFactory.GuessAndCreateNew(pathToDefaultRepo);
+            }
         }
 
         public static void Main(string[] args)
@@ -251,7 +261,6 @@ namespace BlazorUI
             loadOptionsAndPlugins();
             CreateHostBuilder(args).Build().Run();
         }
-
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)

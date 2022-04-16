@@ -620,8 +620,8 @@
                         // StateHasChanged();
 
                         // dísable features in MainLayout?
-                        if (Layout != null && header >= 0)
-                            Layout.ShowHeader = header > 0;
+                        if (Layout != null && header >= 0 && header <= 1)
+                            Layout.ShowHeader = header;
 
                         // only here, we can changed to SM / plugin
                         Item itsm = null;
