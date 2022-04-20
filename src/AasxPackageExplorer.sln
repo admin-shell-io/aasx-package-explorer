@@ -135,7 +135,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "es6numberserializer", "es6n
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{5BA4D327-1907-4F5A-BC90-5EA939497BFC}"
 EndProject
-Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "AASXPackageExplorerSetup", "AASXPackageExplorerSetup\AASXPackageExplorerSetup.wixproj", "{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}"
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "AasxPackageExplorerSetup", "AASXPackageExplorerSetup\AasxPackageExplorerSetup.wixproj", "{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,6 +165,7 @@ Global
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.DebugWithoutCEF|x86.ActiveCfg = Release|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.DebugWithoutCEF|x86.Build.0 = Release|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Release|Any CPU.ActiveCfg = Release|x64
+		{569B369E-9393-4F57-994E-6B84398FD7CC}.Release|Any CPU.Build.0 = Release|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Release|x64.ActiveCfg = Release|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Release|x64.Build.0 = Release|x64
 		{569B369E-9393-4F57-994E-6B84398FD7CC}.Release|x86.ActiveCfg = Release|x64
@@ -594,6 +595,7 @@ Global
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.DebugWithoutCEF|x86.ActiveCfg = Release|x64
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.DebugWithoutCEF|x86.Build.0 = Release|x64
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.Release|Any CPU.ActiveCfg = Release|x64
+		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.Release|Any CPU.Build.0 = Release|x64
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.Release|x64.ActiveCfg = Release|x64
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.Release|x64.Build.0 = Release|x64
 		{AA2A09A7-1E92-4572-9411-249C392ED6A6}.Release|x86.ActiveCfg = Release|x64
