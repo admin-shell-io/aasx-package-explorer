@@ -1350,7 +1350,7 @@ namespace AasxPackageLogic
                 return null;
 
             // before?
-            if (before)
+            if (before && i > 0)
                 return this[i - 1];
 
             // after
