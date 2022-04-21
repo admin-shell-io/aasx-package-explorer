@@ -31,7 +31,7 @@ function Main {
             "MsaglWpfControl/VNode.cs" `
             "AasxFileServerRestLibrary/**" `
         --max-lines-in-file 100000 `
-        --max-line-length 120 `
+        --max-line-length 240 `
         --ignore-lines-matching '[a-z]+://[^ \t]+$'
 
     if($LASTEXITCODE -ne 0)
