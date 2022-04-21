@@ -29,6 +29,7 @@ function Main {
             "MsaglWpfControl/GraphViewer.cs" `
             "MsaglWpfControl/VEdge.cs" `
             "MsaglWpfControl/VNode.cs" `
+            "AasxFileServerRestLibrary/**" `
         --max-lines-in-file 100000 `
         --max-line-length 120 `
         --ignore-lines-matching '[a-z]+://[^ \t]+$'
