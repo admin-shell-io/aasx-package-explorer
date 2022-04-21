@@ -22,7 +22,6 @@ namespace AasxPackageLogic.PackageCentral
 {
     public class AasxFileServerInterfaceService
     {
-        private string _basePath;
         private AASXFileServerInterfaceApi _fileApiInstance;
         private AssetAdministrationShellRepositoryApi _aasApiInstace;
 
@@ -30,7 +29,7 @@ namespace AasxPackageLogic.PackageCentral
         {
             try
             {
-                _basePath = basePath;
+                var _basePath = basePath;
 
                 Configuration configuration = new Configuration
                 {
@@ -181,7 +180,6 @@ namespace AasxPackageLogic.PackageCentral
                             while ((currentBlockSize = stream.Read(buffer, 0, buffer.Length)) > 0)
                             {
                                 totalBytes += currentBlockSize;
-                                double percentage = (double)totalBytes * 100.0 / fileSize;
 
                                 file.Write(buffer, 0, currentBlockSize);
 

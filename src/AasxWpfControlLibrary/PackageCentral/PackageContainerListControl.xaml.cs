@@ -43,8 +43,6 @@ namespace AasxWpfControlLibrary.PackageCentral
         public event Action<Control, PackageContainerListBase, string[]>
             FileDrop;
 
-        public event EventHandler FileUnloadEvent;
-
         private PackageContainerListBase theFileRepository = null;
         public PackageContainerListBase FileRepository
         {

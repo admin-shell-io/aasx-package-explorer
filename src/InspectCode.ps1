@@ -45,7 +45,7 @@ function Main
         & $env:INSPECT_CODE_PATH `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
-        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
+        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**' `
         "$pathToSolution"
     }
     else
@@ -55,7 +55,7 @@ function Main
         & dotnet.exe jb inspectcode `
             "-o=$codeInspectionPath" `
             "--caches-home=$cachesHome" `
-            '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
+            '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**' `
             "$pathToSolution"
     }
 

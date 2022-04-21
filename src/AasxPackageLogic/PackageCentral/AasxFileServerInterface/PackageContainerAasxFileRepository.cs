@@ -38,8 +38,6 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             _aasxFileService = new AasxFileServerInterfaceService(inputText);
         }
 
-        public string Text { get; }
-
         public bool IsAspNetConnection { get; private set; }
 
         public void GeneratePackageRepository()
