@@ -1810,6 +1810,72 @@ namespace AasxPackageLogic
             return ndx + 1;
         }
 
+        public int AddUnqiueElementBefore<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
+            AdminShell.SubmodelElementWrapper entity,
+            AdminShell.SubmodelElementWrapper existing,
+            bool checkForUniqueness = true)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || entity == null || existing == null)
+                return -1;
+
+            // check uniqueness??
+            if (entity.submodelElement?.idShort.HasContent() == true
+                && list.FindFirstIdShort(entity.submodelElement.idShort) != null)
+            {
+                this.MakeNewReferableUnique(entity.submodelElement);
+            }
+
+            // pass over
+            return AddElementInListBefore<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        public int AddUnqiueElementAfter<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
+            AdminShell.SubmodelElementWrapper entity,
+            AdminShell.SubmodelElementWrapper existing,
+            bool checkForUniqueness = true)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || entity == null || existing == null)
+                return -1;
+
+            // check uniqueness??
+            if (entity.submodelElement?.idShort.HasContent() == true
+                && list.FindFirstIdShort(entity.submodelElement.idShort) != null)
+            {
+                this.MakeNewReferableUnique(entity.submodelElement);
+            }
+
+            // pass over
+            return AddElementInListAfter<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        public void CheckIfMakeElementUnique(
+            AdminShell.Referable rf,
+            AdminShell.IEnumerateChildren children)
+        {
+            // access
+            if (rf == null || children == null)
+                return;
+
+            // check
+            var exist = false;
+            if (rf.idShort.HasContent())
+            {
+                foreach (var smw in children.EnumerateChildren())
+                    if (smw?.submodelElement?.idShort?.Trim() == rf.idShort.Trim())
+                        exist = true;
+            }
+
+            // make unique?
+            if (exist)
+                this.MakeNewReferableUnique(rf);
+        }
+
         //
         // List manipulations (multiple entities)
         //
@@ -2256,8 +2322,13 @@ namespace AasxPackageLogic
                                 AdminShell.Key.ConceptDescription, true, newcd.identification.idType,
                                 newcd.identification.id)))
                     {
+                        // make sure that local flag is set in order to lookup CD in the entities panel
+                        t.semanticId[0].local = true;
+
+                        // add to the CDs
                         env.ConceptDescriptions.Add(newcd);
 
+                        // diary
                         this.AddDiaryEntry(newcd, new DiaryEntryStructChange(StructuralChangeReason.Create));
                     }
                 }
