@@ -311,7 +311,6 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                     //Add file to package explorer's unnamed repo
-                    //fr.AddByAasxFn(_packageCentral, inputDialog.FileNames[0]);
 
                     if (fr is PackageContainerAasxFileRepository fileRepo)
                     {

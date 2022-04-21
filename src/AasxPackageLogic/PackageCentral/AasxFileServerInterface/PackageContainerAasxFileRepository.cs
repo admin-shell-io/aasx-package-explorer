@@ -62,7 +62,6 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
             if (!String.IsNullOrEmpty(fileName))
             {
-                //var env = new AdminShellPackageEnv(fileName, indirectLoadSave: false);
                 var container = new AasxFilePackageContainerBase
                 {
                     Env = new AdminShellPackageEnv(fileName, indirectLoadSave: false),

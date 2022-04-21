@@ -770,7 +770,6 @@ namespace AasxPackageExplorer
                         var container = restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
                         if (container != null)
                         {
-                            //fi.Env = env;
                             UiLoadPackageWithNew(_packageCentral.MainItem,
                             takeOverContainer: container, onlyAuxiliary: false,
                             storeFnToLRU: fi.PackageId);
