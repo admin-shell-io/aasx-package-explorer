@@ -114,7 +114,6 @@ namespace IO.Swagger.Client
 
         static WebProxy proxy = null;
 
-        //TODO: jtikekar(): Add this at Global level
         public WebProxy GetProxy()
         {
             if (proxy != null)
