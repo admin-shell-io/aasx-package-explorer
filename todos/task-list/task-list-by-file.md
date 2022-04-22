@@ -469,16 +469,16 @@ MIHO,
 
 ## AasxPackageExplorer\MainWindow.xaml.cs
 
-[Line 333, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L333
+[Line 335, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L335
 ), 
 MIHO,
 2020-12-31
 
     check for ANYUI MIHO
 
-[Line 362, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L362
+[Line 364, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L364
 ), 
 MIHO,
 2021-12-27
@@ -486,8 +486,8 @@ MIHO,
     consider extending for better testing or
     * script running
 
-[Line 1454, column 29](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1454
+[Line 1456, column 29](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1456
 ), 
 MIHO,
 2021-10-28
@@ -496,24 +496,24 @@ MIHO,
     * to instrument event updates in a way that they're automatically
     * visualized
 
-[Line 1559, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1559
+[Line 1561, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1561
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 1570, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1570
+[Line 1572, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1572
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 2264, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2264
+[Line 2266, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2266
 ), 
 MIHO,
 2021-06-08
