@@ -29,7 +29,7 @@ function Main
     Write-Host "* The working directory is: $(Get-Location)"
     Write-Host "* The path to solution is: $pathToSolution"
 
-    Write-Host "* Inspecting the code with dodtnet jb inspectcode"
+    Write-Host "* Inspecting the code with dotnet jb inspectcode"
 
     & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `

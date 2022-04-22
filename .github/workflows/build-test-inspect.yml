@@ -26,7 +26,7 @@ jobs:
       - name: Install .NET core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.100'
+          dotnet-version: '3.1.x'
 
       - name: Install tools for build-test-inspect
         working-directory: src
