@@ -135,8 +135,11 @@ namespace AasxPackageExplorer
             theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
         }
 
-        public void RedrawAllAasxElements()
+        public void RedrawAllAasxElements(bool keepFocus = false)
         {
+            // focus info
+            var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
+
             var t = "AASX Package Explorer";
             if (_packageCentral.MainAvailable)
                 t += " - " + _packageCentral.MainItem.ToString();
@@ -156,6 +159,22 @@ namespace AasxPackageExplorer
             DisplayElements.RebuildAasxElements(
                 _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
                 lazyLoadingFirst: true);
+
+            // ok .. try re-focus!!
+            if (keepFocus)
+            {
+                // make sure that Submodel is expanded
+                this.DisplayElements.ExpandAllItems();
+
+                // still proceed?
+                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(focusMdo,
+                        alsoDereferenceObjects: true);
+
+                if (veFound != null)
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+            }
+
+            // display again
             DisplayElements.Refresh();
 
 #if _log_times
@@ -195,6 +214,8 @@ namespace AasxPackageExplorer
             else
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
+
+
 
         private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
         {

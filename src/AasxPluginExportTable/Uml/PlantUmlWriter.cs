@@ -157,6 +157,9 @@ namespace AasxPluginExportTable.Uml
 
         public void ProcessSubmodel(AdminShell.Submodel submodel)
         {
+            Writeln("mainframe SMT " + submodel.idShort);
+            Writeln("");
+
             ProcessEntity(null, submodel);
         }
 

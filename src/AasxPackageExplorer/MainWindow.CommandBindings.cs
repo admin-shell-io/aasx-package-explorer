@@ -183,7 +183,7 @@ namespace AasxPackageExplorer
                     CheckIfToFlushEvents();
 
                     // as saving changes the structure of pending supplementary files, re-display
-                    RedrawAllAasxElements();
+                    RedrawAllAasxElements(keepFocus: true);
                 }
                 catch (Exception ex)
                 {
@@ -265,6 +265,8 @@ namespace AasxPackageExplorer
 
                         // preferred format
                         var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
+                        if (dlg.FilterIndex == 1)
+                            prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
                         if (dlg.FilterIndex == 2)
                             prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
@@ -272,12 +274,13 @@ namespace AasxPackageExplorer
                         RememberForInitialDirectory(dlg.FileName);
                         await _packageCentral.MainItem.SaveAsAsync(dlg.FileName, prefFmt: prefFmt);
 
-                        // backup
-                        if (Options.Curr.BackupDir != null)
-                            _packageCentral.MainItem.Container.BackupInDir(
-                                System.IO.Path.GetFullPath(Options.Curr.BackupDir),
-                                Options.Curr.BackupFiles,
-                                PackageContainerBase.BackupType.FullCopy);
+                        // backup (only for AASX)
+                        if (dlg.FilterIndex == 0)
+                            if (Options.Curr.BackupDir != null)
+                                _packageCentral.MainItem.Container.BackupInDir(
+                                    System.IO.Path.GetFullPath(Options.Curr.BackupDir),
+                                    Options.Curr.BackupFiles,
+                                    PackageContainerBase.BackupType.FullCopy);
                         // as saving changes the structure of pending supplementary files, re-display
                         RedrawAllAasxElements();
                     }
@@ -551,6 +554,9 @@ namespace AasxPackageExplorer
             if (cmd == "submodelwrite")
                 CommandBinding_SubmodelWrite();
 
+            if (cmd == "rdfread")
+                CommandBinding_RDFRead();
+
             if (cmd == "submodelput")
                 CommandBinding_SubmodelPut();
 
@@ -625,6 +631,9 @@ namespace AasxPackageExplorer
 
             if (cmd == "exportuml")
                 CommandBinding_ExportImportTableUml(exportUml: true);
+
+            if (cmd == "importtimeseries")
+                CommandBinding_ExportImportTableUml(importTimeSeries: true);
 
             if (cmd == "serverpluginemptysample")
                 CommandBinding_ExecutePluginServer(
@@ -2130,6 +2139,50 @@ namespace AasxPackageExplorer
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
+        public void CommandBinding_RDFRead()
+
+        {
+            VisualElementSubmodelRef ve = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.Title = "Select RDF file to be imported";
+            dlg.Filter = "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+                try
+                {
+                    // do it
+                    RememberForInitialDirectory(dlg.FileName);
+                    AasxBammRdfImExport.BAMMRDFimport.ImportInto(
+                        dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "When importing, an error occurred");
+                }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
+
+
+
         public void CommandBinding_ExportAML()
         {
             // get the output file
@@ -2423,7 +2476,8 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(bo));
         }
 
-        public void CommandBinding_ExportImportTableUml(bool import = false, bool exportUml = false)
+        public void CommandBinding_ExportImportTableUml(
+            bool import = false, bool exportUml = false, bool importTimeSeries = false)
         {
             // trivial things
             if (!_packageCentral.MainAvailable)
@@ -2434,7 +2488,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            // a SubmodelRef shall be exported
+            // a SubmodelRef shall be exported/ imported
             VisualElementSubmodelRef ve1 = null;
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
                 ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
@@ -2442,7 +2496,7 @@ namespace AasxPackageExplorer
             if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
             {
                 MessageBoxFlyoutShow(
-                    "No valid Submodel selected for exporting/ importing.", "Export table or UML",
+                    "No valid Submodel selected for exporting/ importing.", "Export table/ UML/ time series",
                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
                 return;
             }
@@ -2452,6 +2506,8 @@ namespace AasxPackageExplorer
             var actionName = (!import) ? "export-submodel" : "import-submodel";
             if (exportUml)
                 actionName = "export-uml";
+            if (importTimeSeries)
+                actionName = "import-time-series";
             var pi = Plugins.FindPluginInstance(pluginName);
             if (pi == null || !pi.HasAction(actionName))
             {

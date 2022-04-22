@@ -397,14 +397,14 @@ namespace AasxPluginDocumentShelf
                                 continue;
 
                             // shall be a 2770 classification
-                            var classSys = "" + smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            var classSys = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defs11.CD_ClassificationSystem?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
-                            if (classSys.ToLower().Trim() != DefinitionsVDI2770.Vdi2770Sys.ToLower())
+                            if (classSys.ToLower().Trim() != VDI2770v11.Vdi2770Sys.ToLower())
                                 continue;
 
                             // class infos
-                            var classId = "" + smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                            var classId = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defs11.CD_ClassId?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
 

@@ -25,16 +25,25 @@
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="0" Content="Provider" Margin="0,0,10,0" VerticalAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="0" Content="Provider:" Margin="0,0,10,0" VerticalAlignment="Center"/>
             <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ComboBoxProvider" MinWidth="50"
                 SelectionChanged="ComboBoxProvider_SelectionChanged" VerticalAlignment="Center"
                 HorizontalAlignment="Stretch"/>
 
-            <Label Grid.Row="1" Grid.Column="0" x:Name="LabelQuery" MinWidth="50" Margin="0,0,10,0" VerticalAlignment="Center"/>
+            <Label Grid.Row="1" Grid.Column="0" x:Name="LabelQuery"
+                   Content="Class:" Margin="0,0,10,0" VerticalAlignment="Center"/>
             <TextBox Grid.Row="1" Grid.Column="1" x:Name="TextBoxQuery" Text="{Binding Query}" MinWidth="150"
                 VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+
+            <Label Grid.Row="2" Grid.Column="0" Content="Examples:" Margin="0,0,10,0" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="39022401" 
+                     VerticalAlignment="Center" IsReadOnly="True" BorderThickness="0"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Text="0173-1---ADVANCED_1_1#01-ADN862#010" 
+                     VerticalAlignment="Center"  IsReadOnly="True" BorderThickness="0"/>
         </Grid>
 
         <WrapPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,10,0,0">
