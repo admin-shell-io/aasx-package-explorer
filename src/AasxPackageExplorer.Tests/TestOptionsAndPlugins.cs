@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AasxPackageLogic;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using File = System.IO.File;
@@ -28,6 +29,7 @@ namespace AasxPackageExplorer.Tests
     }
 
     [TestFixture]
+    [UsedImplicitly]
     public class TestParseArguments
     {
         [Test]
@@ -264,6 +266,7 @@ namespace AasxPackageExplorer.Tests
     }
 
     [TestFixture]
+    [UsedImplicitly]
     public class TestLoadPlugins
     {
         [Test]
