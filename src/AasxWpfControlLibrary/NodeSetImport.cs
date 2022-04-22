@@ -280,6 +280,7 @@ namespace AasxPackageExplorer
             var msme = AdminShell.SubmodelElementCollection.CreateNew("Models", null, msemanticID);
             msme.semanticId.Keys.Add(AdminShell.Key.CreateNew("UATypeName", false, "OPC", "Models"));
             innerSme.Add(msme);
+
             // modeluri
             msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + "models/modeluri");
             var mp = AdminShell.Property.CreateNew("ModelUri", null, msemanticID);

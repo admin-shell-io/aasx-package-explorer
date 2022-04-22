@@ -1,0 +1,69 @@
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:bamm:org.example:Movement:1.0.0#> .
+
+
+:Movement a bamm:Aspect;
+    bamm:name "Movement";
+    bamm:preferredName "Movement"@en;
+    bamm:description "Aspect for movement information"@en;
+    bamm:properties (:isMoving :speedLimitWarning :position);
+    bamm:operations ().
+:isMoving a bamm:Property;
+    bamm:name "isMoving";
+    bamm:preferredName "Moving"@en;
+    bamm:description "Flag indicating whether the asset is currently moving"@en;
+    bamm:characteristic bamm-c:Boolean.
+:speedLimitWarning a bamm:Property;
+    bamm:name "speedLimitWarning";
+    bamm:preferredName "Speed Limit Warning"@en;
+    bamm:description "Indicates if the speed limit is adhered to."@en;
+    bamm:characteristic :TrafficLight.
+:position a bamm:Property;
+    bamm:name "position";
+    bamm:preferredName "Position"@en;
+    bamm:description "Indicates a position"@en;
+    bamm:characteristic :SpatialPositionCharacteristic.
+:TrafficLight a bamm-c:Enumeration;
+    bamm:name "TrafficLight";
+    bamm:preferredName "Warning Level"@en;
+    bamm:description "Represents if speed of position change is within specification (green), within tolerance (yellow), or outside specification (red)."@en;
+    bamm:dataType xsd:string;
+    bamm-c:values ("green" "yellow" "red").
+:SpatialPosition a bamm:Entity;
+    bamm:name "SpatialPosition";
+    bamm:preferredName "Spatial Position"@en;
+    bamm:description "Position in space, described along three axis, with the third axis optional, if all positions are in a plane."@en;
+    bamm:properties (:x :y :z).
+:x a bamm:Property;
+    bamm:name "x";
+    bamm:preferredName "x"@en;
+    bamm:description "x coordinate in space"@en;
+    bamm:characteristic :Coordinate.
+:y a bamm:Property;
+    bamm:name "y";
+    bamm:preferredName "y"@en;
+    bamm:description "y coordinate in space"@en;
+    bamm:characteristic :Coordinate.
+:z a bamm:Property;
+    bamm:name "z";
+    bamm:preferredName "z"@en;
+    bamm:description "z coordinate in space"@en;
+    bamm:characteristic :Coordinate;
+    bamm:optional "true"^^xsd:boolean.
+:Coordinate a bamm-c:Measurement;
+    bamm:name "Coordinate";
+    bamm:preferredName "Coordinate"@en;
+    bamm:description "Represents a coordinate along an axis in space."@en;
+    bamm:dataType xsd:float;
+    bamm-c:unit unit:metre.
+:SpatialPositionCharacteristic a bamm-c:SingleEntity;
+    bamm:name "SpatialPositionCharacteristic";
+    bamm:preferredName "Spatial Position Characteristic"@en;
+    bamm:description "Represents a single position in space with optional z coordinate."@en;
+    bamm:dataType :SpatialPosition.
