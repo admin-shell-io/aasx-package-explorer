@@ -553,6 +553,9 @@ namespace AasxPackageExplorer
             if (cmd == "submodelwrite")
                 CommandBinding_SubmodelWrite();
 
+            if (cmd == "rdfread")
+                CommandBinding_RDFRead();
+
             if (cmd == "submodelput")
                 CommandBinding_SubmodelPut();
 
@@ -2124,6 +2127,50 @@ namespace AasxPackageExplorer
 
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
+
+        public void CommandBinding_RDFRead()
+
+        {
+            VisualElementSubmodelRef ve = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid SubModel selected.", "Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            // ok!
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+
+            var dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            dlg.Title = "Select RDF file to be imported";
+            dlg.Filter = "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = dlg.ShowDialog();
+            if (res == true)
+                try
+                {
+                    // do it
+                    RememberForInitialDirectory(dlg.FileName);
+                    AasxBammRdfImExport.BAMMRDFimport.ImportInto(
+                        dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "When importing, an error occurred");
+                }
+
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+        }
+
+
 
         public void CommandBinding_ExportAML()
         {

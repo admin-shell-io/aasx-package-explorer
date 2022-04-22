@@ -19,7 +19,6 @@ Copyright (c) 2020 SICK AG <info@sick.de>
 Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
 author: Monisha Macharla Vasu
 
-
 The AASX Package Explorer is licensed under the Apache License 2.0
 (Apache-2.0, see below).
 
@@ -29,7 +28,7 @@ The implementation uses the concepts of the document "Details of the Asset
 Administration Shell" published on www.plattform-i40.de which is licensed
 under Creative Commons CC BY-ND 3.0 DE.
 
-When using ECLASS or IEC CDD data, please check the corresponding license
+When using eCl@ss or IEC CDD data, please check the corresponding license
 conditions.
 
 -------------------------------------------------------------------------------
@@ -89,6 +88,8 @@ The MSAGL (Microsoft Automatic Graph Layout) is licensed under the MIT license
 
 Glob (https://www.nuget.org/packages/Glob/) is licensed under the MIT license
 (MIT, see below).
+
+The dotNetRDF is licensed under the MIT license (MIT, see below).
 -------------------------------------------------------------------------------
 
 
@@ -280,7 +281,7 @@ With respect to cefSharp
 
 (https://raw.githubusercontent.com/cefsharp/CefSharp/master/LICENSE)
 
-Copyright © The CefSharp Authors. All rights reserved.
+Copyright ┬® The CefSharp Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
@@ -643,7 +644,7 @@ With resepct to CountryFlag
 
 The Code Project Open License (CPOL) 1.02
 
-Copyright © 2017 Meshack Musundi
+Copyright ┬® 2017 Meshack Musundi
 
 Preamble
 
@@ -784,7 +785,7 @@ WORKS.
 
 Indemnity. You agree to defend, indemnify and hold harmless the Author and the
 Publisher from and against any claims, suits, losses, damages, liabilities,
-costs, and expenses (including reasonable legal or attorneys’ fees)
+costs, and expenses (including reasonable legal or attorneysÔÇÖ fees)
 resulting from or relating to any use of the Work by You.
 
 Limitation on Liability. EXCEPT TO THE EXTENT REQUIRED BY APPLICABLE LAW,
