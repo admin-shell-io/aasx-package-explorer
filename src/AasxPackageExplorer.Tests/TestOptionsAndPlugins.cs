@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using AasxPackageLogic;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using File = System.IO.File;
 using InvalidOperationException = System.InvalidOperationException;
@@ -26,6 +27,7 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
     public class TestParseArguments
     {
         [Test]
@@ -261,6 +263,7 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
     public class TestLoadPlugins
     {
         [Test]
