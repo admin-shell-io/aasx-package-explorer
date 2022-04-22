@@ -462,7 +462,7 @@ namespace AasxPluginExportTable
             // what, if the the length of the actual cell data is longer than the extended
             // sequence?
 
-            while (true && cellseq.Count > _sequence.Count)
+            while (cellseq.Count > _sequence.Count)
             {
                 var pop = cellseq.Last();
                 cellseq.RemoveAt(cellseq.Count - 1);
