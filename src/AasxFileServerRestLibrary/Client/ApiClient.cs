@@ -116,7 +116,7 @@ namespace IO.Swagger.Client
 
         public WebProxy GetProxy()
         {
-            if (proxy != null)
+            if (proxy == null)
             {
                 string proxyFile = Environment.GetFolderPath(Environment.SpecialFolder.Personal) + "/proxy.dat";
                 string proxyAddress = "";
