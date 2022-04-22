@@ -29,7 +29,7 @@ namespace AasxPackageExplorer.Tests
     }
 
     [TestFixture]
-    [UsedImplicitly]
+    // ReSharper disable UnusedType.Global
     public class TestParseArguments
     {
         [Test]
@@ -266,7 +266,7 @@ namespace AasxPackageExplorer.Tests
     }
 
     [TestFixture]
-    [UsedImplicitly]
+    // ReSharper disable UnusedType.Global
     public class TestLoadPlugins
     {
         [Test]
