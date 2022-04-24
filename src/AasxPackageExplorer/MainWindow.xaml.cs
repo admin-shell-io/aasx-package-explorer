@@ -1145,9 +1145,10 @@ namespace AasxPackageExplorer
             {
                 // A plugin asks to re-render an exisiting panel.
                 // Can get this information?
-                var renderedRoot = DispEditEntityPanel.GetLastRenderedRoot();
+                var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
-                if (renderedRoot is AnyUiPanel renderedPanel
+                if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>
+                    && renderedInfo.Item2 is AnyUiPanel renderedPanel
                     && renderedPanel.Children != null
                     && renderedPanel.Children.Count > 0)
                 {
@@ -1158,7 +1159,7 @@ namespace AasxPackageExplorer
                         try
                         {
                             var uires = plugin.InvokeAction(
-                                "update-anyui-visual-extension", renderedPanel);
+                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1);
                         }
                         catch (Exception ex)
                         {
@@ -1281,9 +1282,10 @@ namespace AasxPackageExplorer
         {
             // A plugin asks to re-render an exisiting panel.
             // Can get this information?
-            var renderedRoot = DispEditEntityPanel.GetLastRenderedRoot();
+            var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
-            if (renderedRoot is AnyUiPanel renderedPanel
+            if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> 
+                && renderedInfo.Item2 is AnyUiPanel renderedPanel
                 && renderedPanel.Children != null
                 && renderedPanel.Children.Count > 0)
             {

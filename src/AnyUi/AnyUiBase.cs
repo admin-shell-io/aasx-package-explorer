@@ -173,9 +173,9 @@ namespace AnyUi
                 return AnyUiColors.Default;
             UInt32 ui = 0;
             if (st.Length == 9)
-                ui = Convert.ToUInt32(st.Substring(1));
+                ui = Convert.ToUInt32(st.Substring(1), 16);
             if (st.Length == 7)
-                ui = 0xff000000u | Convert.ToUInt32(st.Substring(1));
+                ui = 0xff000000u | Convert.ToUInt32(st.Substring(1), 16);
             return new AnyUiColor(ui);
         }
     }
@@ -291,6 +291,67 @@ namespace AnyUi
         Fill,
         Uniform,
         UniformToFill
+    }
+
+    public struct AnyUiPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+
+        public AnyUiPoint(double x, double y) { X = x; Y = y; }
+    }
+
+    public struct AnyUiRect
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Width { get; set; }
+        public double Height { get; set; }
+    }
+
+    public class AnyUiPointCollection : List<AnyUiPoint>
+    {
+        public AnyUiPoint FindCG()
+        {
+            if (this.Count < 1)
+                return new AnyUiPoint(0, 0);
+
+            AnyUiPoint sum = new AnyUiPoint(0, 0);
+            foreach (var p in this)
+            {
+                sum.X += p.X;
+                sum.Y += p.Y;
+            }
+
+            sum.X /= this.Count;
+            sum.Y /= this.Count;
+
+            return sum;
+        }
+
+        public AnyUiRect FindBoundingBox()
+        {
+            var res = new AnyUiRect()
+            {
+                X = double.MaxValue,
+                Y = double.MaxValue
+            };
+            
+            foreach (var p in this)
+            {
+                if (p.X < res.X)
+                    res.X = p.Y;
+                if (p.Y < res.Y)
+                    res.Y = p.Y;
+
+                if (p.X > res.X + res.Width)
+                    res.Width = p.X - res.X;
+                if (p.Y > res.Y + res.Height)
+                    res.Height = p.Y - res.Y;
+            }
+
+            return res;
+        }
     }
 
     //
@@ -428,6 +489,10 @@ namespace AnyUi
     /// </summary>
     public class AnyUiUIElement
     {
+        // these attributes are typically managed by the (automatic) layout
+        // exception: shapes
+        public double X, Y, Width, Height;
+
         // these attributes are managed by the Grid.SetRow.. functions
         public int? GridRow, GridRowSpan, GridColumn, GridColumnSpan;
 
@@ -529,9 +594,10 @@ namespace AnyUi
         /// <param name="setValue">Lambda called, whenever the value is changed</param>
         /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
-        public static AnyUiUIElement RegisterControl(
-            AnyUiUIElement cntl, Func<object, AnyUiLambdaActionBase> setValue,
+        public static T RegisterControl<T>(
+            T cntl, Func<object, AnyUiLambdaActionBase> setValue,
             AnyUiLambdaActionBase takeOverLambda = null)
+            where T : AnyUiUIElement
         {
             // access
             if (cntl == null)
@@ -577,21 +643,26 @@ namespace AnyUi
         }
     }
 
-    public enum AnyUiEventMask { None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4 }
+    public enum AnyUiEventMask { None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4,
+        MouseAll = LeftDown + LeftDouble }
 
     public class AnyUiEventData
     {
         public AnyUiEventMask Mask;
         public int ClickCount;
-        public AnyUiUIElement Source;
+        public object Source;
+        public AnyUiPoint RelOrigin;
 
         public AnyUiEventData() { }
 
-        public AnyUiEventData(AnyUiEventMask mask, AnyUiUIElement source, int clickCount = 1)
+        public AnyUiEventData(AnyUiEventMask mask, object source, int clickCount = 1, 
+            AnyUiPoint? relOrigin = null)
         {
             Mask = mask;
             Source = source;
             ClickCount = clickCount;
+            if (relOrigin.HasValue)
+                RelOrigin = relOrigin.Value;
         }
     }
 
@@ -609,6 +680,29 @@ namespace AnyUi
         public object Tag = null;
 
         public AnyUiEventMask EmitEvent;        
+    }
+
+    /// <summary>
+    /// This is the base class for all primitive shapes in AnyUI.
+    /// In WPF this is a subclass of FrameworkElement.
+    /// </summary>
+    public class AnyUiShape : AnyUiFrameworkElement
+    {
+        public AnyUiBrush Fill, Stroke;
+        public double? StrokeThickness;
+    }
+
+    public class AnyUiRectangle : AnyUiShape
+    {
+    }
+
+    public class AnyUiEllipse : AnyUiShape
+    {
+    }
+
+    public class AnyUiPolygon : AnyUiShape
+    {
+        public AnyUiPointCollection Points = new AnyUiPointCollection();
     }
 
     public class AnyUiControl : AnyUiFrameworkElement, IGetBackground
@@ -652,6 +746,11 @@ namespace AnyUi
         }
     }
 
+    public class AnyUiViewbox : AnyUiDecorator
+    {
+        public AnyUiStretch Stretch = AnyUiStretch.None;
+    }
+
     public interface IEnumerateChildren
     {
         IEnumerable<AnyUiUIElement> GetChildren();
@@ -665,11 +764,17 @@ namespace AnyUi
     public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren, IGetBackground
     {
         public AnyUiBrush Background;
-        public List<AnyUiUIElement> Children = new List<AnyUiUIElement>();
+        
+        private List<AnyUiUIElement> _children = new List<AnyUiUIElement>();
+        public List<AnyUiUIElement> Children { 
+            get { return _children; } 
+            set { _children = value; Touch() } 
+        } 
 
         public T Add<T>(T elem) where T : AnyUiUIElement
         {
             Children.Add(elem);
+            Touch();
             return elem;
         }
 
@@ -806,6 +911,10 @@ namespace AnyUi
         public AnyUiOrientation? Orientation;
     }
 
+    public class AnyUiCanvas : AnyUiPanel
+    {
+    }
+
     public class AnyUiScrollViewer : AnyUiContentControl
     {
         public AnyUiScrollBarVisibility? HorizontalScrollBarVisibility;
@@ -849,9 +958,11 @@ namespace AnyUi
         //public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiTextWrapping? TextWrapping;
-        public AnyUiFontWeight? FontWeight;
+        // public AnyUiFontWeight? FontWeight;
         // public double? FontSize;
-        public string Text = null;
+
+        public string Text { get { return _text; } set { _text = value; Touch(); } }
+        private string _text = null;
     }
 
     public class AnyUiSelectableTextBlock : AnyUiTextBlock

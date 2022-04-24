@@ -8769,6 +8769,22 @@ namespace AdminShellNS
                 return null;
             }
 
+            public T CreateSMEForCD<T>(ConceptDescription cd, string category = null, string idShort = null,
+                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
+            {
+                if (this.statements == null)
+                    this.statements = new SubmodelElementWrapperCollection();
+                return this.statements.CreateSMEForCD<T>(cd, category, idShort, idxTemplate, maxNum, addSme);
+            }
+
+            public T CreateSMEForIdShort<T>(string idShort, string category = null,
+                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
+            {
+                if (this.statements == null)
+                    this.statements = new SubmodelElementWrapperCollection();
+                return this.statements.CreateSMEForIdShort<T>(idShort, category, idxTemplate, maxNum, addSme);
+            }
+
             // entity type
 
             public EntityTypeEnum GetEntityType()

@@ -390,5 +390,15 @@ namespace AnyUi
                     UpdateRenderElements(elch, mode: mode);
 
         }
+
+        /// <summary>
+        /// If supported by implementation technology, will set Clipboard (copy/ paste buffer)
+        /// of the main application computer.
+        /// </summary>
+        public override void ClipboardSet(AnyUiClipboardData cb)
+        {
+            // TODO
+            // see: https://www.meziantou.net/copying-text-to-clipboard-in-a-blazor-application.htm
+        }
     }
 }
