@@ -448,7 +448,8 @@ namespace AasxPackageExplorer
                         try
                         {
                             var uires = vepe.thePlugin.InvokeAction(
-                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable, stack);
+                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable, 
+                                stack, _displayContext);
                         }
                         catch (Exception ex)
                         {
@@ -655,9 +656,10 @@ namespace AasxPackageExplorer
             return renderHints;
         }
 
-        public AnyUiUIElement GetLastRenderedRoot()
+        public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()
         {
-            return _lastRenderedRootElement;
+            return new Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>(
+                _displayContext, _lastRenderedRootElement);
         }
 
         public void RedisplayRenderedRoot(

@@ -19,6 +19,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
@@ -166,6 +167,47 @@ namespace AnyUi
             return res;
         }
 
+        public Point GetWpfPoint(AnyUiPoint p)
+        {
+            return new Point(p.X, p.Y);
+        }
+
+        public AnyUiPoint GetAnyUiPoint(Point p)
+        {
+            return new AnyUiPoint(p.X, p.Y);
+        }
+
+        //public Shape RenderWpfShapeTo(Canvas canvas, AnyUiShape uis)
+        //{
+        //    if (canvas == null)
+        //        return null;
+
+        //    Action<Shape, AnyUiShape> setShape = (shp, uishp) =>
+        //    {
+        //        if (uishp.Fill != null)
+        //            shp.Fill = GetWpfBrush(uishp.Fill);
+        //        if (uishp.Stroke != null)
+        //            shp.Stroke = GetWpfBrush(uishp.Stroke);
+        //        if (uishp.StrokeThickness.HasValue)
+        //            shp.StrokeThickness = uishp.StrokeThickness.Value;
+        //        shp.Width = uishp.Width;
+        //        shp.Height = uishp.Height;
+        //        shp.Tag = uishp.Tag;
+        //        Canvas.SetLeft(shp, uishp.X);
+        //        Canvas.SetTop(shp, uishp.Y);
+        //    };
+
+        //    if (uis is AnyUiRectangle uirect)
+        //    {
+        //        var x = new Rectangle();
+        //        setShape(x, uis);
+        //        canvas.Children.Add(x);
+        //        return x;
+        //    }
+
+        //    return null;
+        //}
+
         //
         // Handling of outside actions
         //
@@ -253,8 +295,17 @@ namespace AnyUi
 
                         if ( ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
                             || ((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) )
-                            wpf.MouseLeftButtonDown += (s5, e5) => cntl.setValueLambda?.Invoke(
-                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount));
+                        {
+                            wpf.MouseLeftButtonDown += (s5, e5) => {
+                                // get the current coordinates relative to the framework element
+                                // (onlythis could be sensible information to an any ui business logic)
+                                var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
+                                // send event and emit return
+                                EmitOutsideAction(
+                                    cntl.setValueLambda?.Invoke(
+                                        new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                            };
+                        }
 
                         if ((cntl.EmitEvent & AnyUiEventMask.DragStart) > 0)
                         {
@@ -294,7 +345,8 @@ namespace AnyUi
                             (HorizontalAlignment)((int) cntl.HorizontalContentAlignment.Value);
 
                        if (cntl.FontSize.HasValue)
-                            wpf.FontSize = cntl.FontSize.Value;
+                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
+
                        if (cntl.FontWeight.HasValue)
                             wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                    }
@@ -309,8 +361,18 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiDecorator), typeof(Decorator), (a, b) =>
                 {
-                   if (a is AnyUiDecorator && b is Decorator)
+                    if (a is AnyUiDecorator cntl && b is Decorator wpf)
+                    {
+                        // child
+                        wpf.Child = GetOrCreateWpfElement(cntl.Child);
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiViewbox), typeof(Viewbox), (a, b) =>
+                {
+                   if (a is AnyUiViewbox cntl && b is Viewbox wpf)
                    {
+                        wpf.Stretch = (Stretch)(int) cntl.Stretch;
                    }
                 }),
 
@@ -379,6 +441,99 @@ namespace AnyUi
                    }
                 }),
 
+                new RenderRec(typeof(AnyUiShape), typeof(Shape), (a, b) =>
+                {
+                    if (a is AnyUiShape cntl && b is Shape wpf)
+                    {
+                        if (cntl.Fill != null)
+                            wpf.Fill = GetWpfBrush(cntl.Fill);
+                        if (cntl.Stroke != null)
+                            wpf.Stroke = GetWpfBrush(cntl.Stroke);
+                        if (cntl.StrokeThickness.HasValue)
+                            wpf.StrokeThickness = cntl.StrokeThickness.Value;
+                        wpf.Tag = cntl.Tag;
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiRectangle), typeof(Rectangle), (a, b) =>
+                {
+                    if (a is AnyUiRectangle cntl && b is Rectangle wpf)
+                    {
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiEllipse), typeof(Ellipse), (a, b) =>
+                {
+                    if (a is AnyUiEllipse cntl && b is Ellipse wpf)
+                    {
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiPolygon), typeof(Polygon), (a, b) =>
+                {
+                    if (a is AnyUiPolygon cntl && b is Polygon wpf)
+                    {
+                        // points
+                        if (cntl.Points != null)
+                            foreach (var p in cntl.Points)
+                                wpf.Points.Add(GetWpfPoint(p));
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiCanvas), typeof(Canvas), (a, b) =>
+                {
+                   if (a is AnyUiCanvas cntl && b is Canvas wpf)
+                   {
+                        // Children are added but deserve some post processing
+                        cntl.TouchLambda = (mode) =>
+                        {
+                            if (mode == AnyUiPluginUpdateMode.StatusToUi)
+                            {
+                            }
+                        };
+
+                        if (cntl.Children.Count == wpf.Children.Count)
+                            for (int i=0; i < cntl.Children.Count; i++)
+                            {
+                                var cc = cntl.Children[i] as AnyUiFrameworkElement;
+                                var cw = wpf.Children[i] as FrameworkElement;
+                                if (cc != null && cw != null)
+                                {
+                                    cw.Width = cc.Width;
+                                    cw.Height = cc.Height;
+                                    Canvas.SetLeft(cw, cc.X);
+                                    Canvas.SetTop(cw, cc.Y);
+                                }
+                            }
+                        ;
+
+                        // need to subscribe for events?
+                        if ((cntl.EmitEvent & AnyUiEventMask.MouseAll) > 0)
+                        {
+                            wpf.MouseDown += (s,e) =>
+                            {
+                                // get the current coordinates relative to the framework element
+                                // (onlythis could be sensible information to an any ui business logic)
+                                var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
+
+                                // try to find AnyUI element emitting the event
+                                object auiSource = null;
+                                foreach (var ch in cntl.Children)
+                                    if ((ch?.DisplayData as AnyUiDisplayDataWpf)?.WpfElement == e.Source)
+                                        auiSource = ch;
+                                
+                                // send event and emit return
+                                if (e.ChangedButton == MouseButton.Left)
+                                {
+                                    EmitOutsideAction(
+                                        cntl.setValueLambda?.Invoke(
+                                            new AnyUiEventData(AnyUiEventMask.LeftDown, auiSource, e.ClickCount, p)));
+                                }
+                            };
+                        }
+                   }
+                }),
+
                 new RenderRec(typeof(AnyUiScrollViewer), typeof(ScrollViewer), (a, b) =>
                 {
                    if (a is AnyUiScrollViewer cntl && b is ScrollViewer wpf)
@@ -421,6 +576,7 @@ namespace AnyUi
                             wpf.Padding = GetWpfTickness(cntl.Padding);
                         if (cntl.CornerRadius != null)
                             wpf.CornerRadius  = new CornerRadius(cntl.CornerRadius.Value);
+                        
                         // callbacks
                         if (cntl.IsDropBox)
                         {
@@ -493,9 +649,13 @@ namespace AnyUi
                             wpf.Padding = GetWpfTickness(cntl.Padding);
                         if (cntl.TextWrapping.HasValue)
                             wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
-                        if (cntl.FontSize.HasValue)
-                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
                         wpf.Text = cntl.Text;
+
+                        cntl.TouchLambda = (mode) =>
+                        {
+                            if (mode == AnyUiPluginUpdateMode.StatusToUi)
+                                wpf.Text = cntl.Text;
+                        };
                    }
                 }),
 
@@ -553,11 +713,6 @@ namespace AnyUi
                         {
                             if (mode == AnyUiPluginUpdateMode.StatusToUi)
                             {
-                                //var xx = new BitmapImage(
-                                //    new Uri("pack://application:,,,/AasxWpfControlLibrary;component/Resources/Icon_AASX_40x40_W.bmp", UriKind.RelativeOrAbsolute));
-
-                                //wpf.Source = xx;
-
                                 if (cntl.Bitmap is BitmapSource bs2)
                                     wpf.Source = bs2;
                             }
@@ -781,8 +936,6 @@ namespace AnyUi
                             wpf.Foreground = GetWpfBrush(cntl.Foreground);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
-                        if (cntl.FontSize.HasValue)
-                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
 
                         wpf.Content = cntl.Content;
                         wpf.ToolTip = cntl.ToolTip;
@@ -893,7 +1046,8 @@ namespace AnyUi
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
-            {
+            // TODO: Delete, as already fulfilled by render recs!
+            if (false) {
                 if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
                     && cntl.Child != null)
                 {

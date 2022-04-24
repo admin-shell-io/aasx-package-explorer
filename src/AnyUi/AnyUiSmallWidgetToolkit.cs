@@ -49,6 +49,26 @@ namespace AnyUi
             return g;
         }
 
+        public T AddSmallFrameworkElementTo<T>(
+            AnyUiGrid g, int row, int col, 
+            T fe,
+            AnyUiThickness margin = null,
+            int? colSpan = null, int? rowSpan = null)
+            where T : AnyUiFrameworkElement
+        {
+            if (margin != null)
+                fe.Margin = margin;
+            AnyUiGrid.SetRow(fe, row);
+            AnyUiGrid.SetColumn(fe, col);
+            if (rowSpan.HasValue)
+                AnyUiGrid.SetRowSpan(fe, rowSpan.Value);
+            if (colSpan.HasValue)
+                AnyUiGrid.SetColumnSpan(fe, colSpan.Value);
+            g.Children.Add(fe);
+            return (fe);
+        }
+
+
         public AnyUiBorder AddSmallBorderTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiBrush background = null,
             int? colSpan = null, int? rowSpan = null,
@@ -450,7 +470,8 @@ namespace AnyUi
             AnyUiHorizontalAlignment? horizontalContentAlignment = null,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
-            AnyUiTargetPlatform? skipForTarget = null) where T : AnyUiFrameworkElement
+            AnyUiTargetPlatform? skipForTarget = null,
+            AnyUiEventMask? eventMask = null) where T : AnyUiFrameworkElement
         {
             // access
             if (fe == null)
@@ -472,6 +493,9 @@ namespace AnyUi
                 fe.HorizontalAlignment = horizontalAlignment;
             if (verticalAlignment != null)
                 fe.VerticalAlignment = verticalAlignment;
+
+            if (eventMask.HasValue)
+                fe.EmitEvent = eventMask.Value;
 
             if (minWidth.HasValue)
                 fe.MinWidth = minWidth;
