@@ -223,6 +223,38 @@ namespace IO.Swagger.Client
 
             return (Object)response;
         }
+
+        /// <summary>
+        /// Makes the HTTP request (Sync).
+        /// </summary>
+        /// <param name="path">URL path.</param>
+        /// <param name="method">HTTP method.</param>
+        /// <param name="queryParams">Query parameters.</param>
+        /// <param name="postBody">HTTP body (POST request).</param>
+        /// <param name="headerParams">Header parameters.</param>
+        /// <param name="formParams">Form parameters.</param>
+        /// <param name="fileParams">File parameters.</param>
+        /// <param name="pathParams">Path parameters.</param>
+        /// <param name="contentType">Content Type of the request</param>
+        /// <returns>Object</returns>
+        public async System.Threading.Tasks.Task<Object> CallApiAsyncWithDelegate(
+            String path, RestSharp.Method method, List<KeyValuePair<String, String>> queryParams, Object postBody,
+            Dictionary<String, String> headerParams, Dictionary<String, String> formParams,
+            Dictionary<String, FileParameter> fileParams, Dictionary<String, String> pathParams,
+            String contentType, Action<Stream, IHttpResponse> delegateMethod)
+        {
+            var request = PrepareRequest(
+                path, method, queryParams, postBody, headerParams, formParams, fileParams,
+                pathParams, contentType);
+
+            InterceptRequest(request);
+            request.AdvancedResponseWriter = delegateMethod;
+            RestResponse response = (RestResponse)await RestClient.ExecuteAsync(request);
+            //TODO (jtikekar, 2022-04-04): May need to change response.Result
+            InterceptResponse(request, response);
+
+            return (Object)response;
+        }
         /// <summary>
         /// Makes the asynchronous HTTP request.
         /// </summary>

@@ -10,7 +10,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
 using RestSharp;
@@ -548,6 +550,69 @@ namespace IO.Swagger.Api
             RestResponse localVarResponse = (RestResponse)this.Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
+
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
+
+            if (ExceptionFactory != null)
+            {
+                Exception exception = ExceptionFactory("GetAASXByPackageId", localVarResponse);
+                if (exception != null) throw exception;
+            }
+
+            var apiResponse = new ApiResponse<byte[]>(localVarStatusCode,
+                localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
+                (byte[])this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(byte[])));
+
+            apiResponse.Headers.Add("ContentLength", localVarResponse.ContentLength.ToString());
+
+            //return new ApiResponse<byte[]>(localVarStatusCode,
+            //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
+            //    (byte[]) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(byte[])));
+
+            return apiResponse;
+        }
+
+
+        /// <summary>
+        /// Returns a specific AASX package from the server 
+        /// </summary>
+        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <param name="packageId">The package Id (BASE64-URL-encoded)</param>
+        /// <param name="action">action to be called for advanced response writer</param>
+        /// <returns>ApiResponse of byte[]</returns>
+        public async Task<ApiResponse<byte[]>> GetAASXByPackageIdWithHttpInfo(string packageId, Action<Stream, IHttpResponse> action)
+        {
+            // verify the required parameter 'packageId' is set
+            if (packageId == null)
+                throw new ApiException(400, "Missing required parameter 'packageId' when calling AASXFileServerInterfaceApi->GetAASXByPackageId");
+
+            var localVarPath = "/packages/{packageId}";
+            var localVarPathParams = new Dictionary<String, String>();
+            var localVarQueryParams = new List<KeyValuePair<String, String>>();
+            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<String, String>();
+            var localVarFileParams = new Dictionary<String, FileParameter>();
+            Object localVarPostBody = null;
+
+            // to determine the Content-Type header
+            String[] localVarHttpContentTypes = new String[] {
+            };
+            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+
+            // to determine the Accept header
+            String[] localVarHttpHeaderAccepts = new String[] {
+                "application/asset-administration-shell-package"
+            };
+            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            if (localVarHttpHeaderAccept != null)
+                localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
+
+            if (packageId != null) localVarPathParams.Add("packageId", this.Configuration.ApiClient.ParameterToString(packageId)); // path parameter
+
+            // make the HTTP request
+            RestResponse localVarResponse = (RestResponse) await this.Configuration.ApiClient.CallApiAsyncWithDelegate(localVarPath,
+                Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
+                localVarPathParams, localVarHttpContentType, action);
 
             int localVarStatusCode = (int)localVarResponse.StatusCode;
 
