@@ -793,18 +793,24 @@ namespace AasxIntegrationBase.AasForms
 
             // If the source element has a value, keep it. Otherwise, look for
             // a default value and apply that.
-            if (!String.IsNullOrEmpty(pSource?.value)) {
+            if (!String.IsNullOrEmpty(pSource?.value))
+            {
                 p.value = pSource.value;
-            } else if (!String.IsNullOrWhiteSpace(parentDesc.presetValue)) {
+            }
+            else if (!String.IsNullOrWhiteSpace(parentDesc.presetValue))
+            {
                 p.value = parentDesc.presetValue;
                 this.Touch();
             }
 
             // If the source element has a valueType, keep it. Otherwise, look for
             // a default valueType and apply that.
-            if (!String.IsNullOrWhiteSpace(pSource?.valueType)) {
+            if (!String.IsNullOrWhiteSpace(pSource?.valueType))
+            {
                 p.valueType = pSource.valueType;
-            } else if (parentDesc.allowedValueTypes.Length == 1) {
+            }
+            else if (parentDesc.allowedValueTypes.Length == 1)
+            {
                 p.valueType = parentDesc.allowedValueTypes[0];
                 this.Touch();
             }

@@ -483,7 +483,8 @@ namespace AasxIntegrationBase.AasForms
             this.InitSme(res);
             if (this.presetValue != null)
                 res.value = this.presetValue;
-            if (this.allowedValueTypes.Length == 1) {
+            if (this.allowedValueTypes.Length == 1)
+            {
                 res.valueType = this.allowedValueTypes[0];
             }
             return res;
