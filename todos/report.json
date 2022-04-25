@@ -335,6 +335,122 @@
     ]
   },
   {
+    "path": "AasxFileServerRestLibrary\\Api\\AASXFileServerInterfaceApi.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 313,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxFileServerRestLibrary\\Api\\AssetAdministrationShellInterfaceApi.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 373,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change during refactoring",
+        "line": 739,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxFileServerRestLibrary\\Api\\AssetAdministrationShellRepositoryApi.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change during v3 upgrade",
+        "line": 367,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change during v3 upgrade",
+        "line": 380,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 2152,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change duting V3 upgrade",
+        "line": 4093,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change to V3",
+        "line": 4174,
+        "column": 8,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change during v3 upgrade",
+        "line": 4189,
+        "column": 8,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxFileServerRestLibrary\\Client\\ApiClient.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): May need to change response.Result",
+        "line": 220,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): ? if (type.IsAssignableFrom(typeof(Stream)))",
+        "line": 332,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxFileServerRestLibrary\\Client\\Configuration.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 234,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 261,
+        "column": 20,
+        "status": "ok"
+      }
+    ]
+  },
+  {
     "path": "AasxFormatCst\\AasxToCst.cs",
     "records": [
       {
@@ -388,21 +504,21 @@
       {
         "prefix": "TODO",
         "suffix": " (mristin, 2020-11-13): @MIHO please check -- Options should be null, not empty?",
-        "line": 173,
+        "line": 177,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (Marko Ristin, 2021-07-09): not clear, how this test could pass. As of today,",
-        "line": 297,
+        "line": 303,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (Marko Ristin, 2021-07-09): could not fix",
-        "line": 301,
+        "line": 307,
         "column": 16,
         "status": "ok"
       }
@@ -426,42 +542,42 @@
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2020-12-31): check for ANYUI MIHO",
-        "line": 334,
+        "line": 335,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-12-27): consider extending for better testing or\r\n             * script running",
-        "line": 363,
+        "line": 364,
         "column": 12,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-10-28): Check, if a better solution exists \r\n                             * to instrument event updates in a way that they\u0027re automatically\r\n                             * visualized",
-        "line": 1455,
+        "line": 1478,
         "column": 28,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-10-09): prepare path to be relative",
-        "line": 1560,
+        "line": 1583,
         "column": 48,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-10-09): prepare path to be relative",
-        "line": 1571,
+        "line": 1594,
         "column": 48,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-06-08): find the root cause instead of doing a quick-fix",
-        "line": 2265,
+        "line": 2288,
         "column": 16,
         "status": "ok"
       }
@@ -591,6 +707,37 @@
     ]
   },
   {
+    "path": "AasxPackageLogic\\PackageCentral\\AasxFileServerInterface\\AasxFileServerInterfaceService.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): aasIds?",
+        "line": 141,
+        "column": 16,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Change",
+        "line": 212,
+        "column": 12,
+        "status": "ok"
+      }
+    ]
+  },
+  {
+    "path": "AasxPackageLogic\\PackageCentral\\AasxFileServerInterface\\PackageContainerAasxFileRepository.cs",
+    "records": [
+      {
+        "prefix": "TODO",
+        "suffix": " (jtikekar, 2022-04-04): Based on file",
+        "line": 66,
+        "column": 72,
+        "status": "ok"
+      }
+    ]
+  },
+  {
     "path": "AasxPackageLogic\\PackageCentral\\PackageCentral.cs",
     "records": [
       {
@@ -608,63 +755,63 @@
       {
         "prefix": "TODO",
         "suffix": " (all, 2021-01-30): check periodically for supported element types",
-        "line": 246,
+        "line": 247,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue",
-        "line": 304,
-        "column": 12,
-        "status": "ok"
-      },
-      {
-        "prefix": "TODO",
-        "suffix": " (MIHO, 2021-01-04): ValueIds still missing ..",
         "line": 305,
         "column": 12,
         "status": "ok"
       },
       {
         "prefix": "TODO",
+        "suffix": " (MIHO, 2021-01-04): ValueIds still missing ..",
+        "line": 306,
+        "column": 12,
+        "status": "ok"
+      },
+      {
+        "prefix": "TODO",
         "suffix": " (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic",
-        "line": 649,
+        "line": 650,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-05-21): make sure, this is required by the specification!",
-        "line": 750,
+        "line": 751,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-10-09): Modify missing!!",
-        "line": 786,
+        "line": 787,
         "column": 12,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-05-28): to be implemented",
-        "line": 834,
+        "line": 835,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-05-28): to be implemented",
-        "line": 843,
+        "line": 844,
         "column": 16,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-05-28): to be implemented",
-        "line": 852,
+        "line": 853,
         "column": 16,
         "status": "ok"
       }
@@ -726,7 +873,7 @@
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2020-08-05): refacture this with DispEditHelper.cs",
-        "line": 323,
+        "line": 329,
         "column": 8,
         "status": "ok"
       }
@@ -738,7 +885,7 @@
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-01-08): check, how to make absolute",
-        "line": 105,
+        "line": 106,
         "column": 12,
         "status": "ok"
       }
@@ -1236,14 +1383,14 @@
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase",
-        "line": 122,
+        "line": 123,
         "column": 20,
         "status": "ok"
       },
       {
         "prefix": "TODO",
         "suffix": " (MIHO, 2021-01-09): check to use moveup/down of the PackageContainerListBase",
-        "line": 133,
+        "line": 134,
         "column": 20,
         "status": "ok"
       }

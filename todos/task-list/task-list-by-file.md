@@ -391,6 +391,120 @@ Robin,
 
     check this code
 
+## AasxFileServerRestLibrary\Api\AASXFileServerInterfaceApi.cs
+
+[Line 314, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AASXFileServerInterfaceApi.cs#L314
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
+## AasxFileServerRestLibrary\Api\AssetAdministrationShellInterfaceApi.cs
+
+[Line 374, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellInterfaceApi.cs#L374
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
+[Line 740, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellInterfaceApi.cs#L740
+), 
+jtikekar,
+2022-04-04
+
+    Change during refactoring
+
+## AasxFileServerRestLibrary\Api\AssetAdministrationShellRepositoryApi.cs
+
+[Line 368, column 9](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L368
+), 
+jtikekar,
+2022-04-04
+
+    Change during v3 upgrade
+
+[Line 381, column 9](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L381
+), 
+jtikekar,
+2022-04-04
+
+    Change during v3 upgrade
+
+[Line 2153, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L2153
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
+[Line 4094, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L4094
+), 
+jtikekar,
+2022-04-04
+
+    Change duting V3 upgrade
+
+[Line 4175, column 9](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L4175
+), 
+jtikekar,
+2022-04-04
+
+    Change to V3
+
+[Line 4190, column 9](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AssetAdministrationShellRepositoryApi.cs#L4190
+), 
+jtikekar,
+2022-04-04
+
+    Change during v3 upgrade
+
+## AasxFileServerRestLibrary\Client\ApiClient.cs
+
+[Line 221, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/ApiClient.cs#L221
+), 
+jtikekar,
+2022-04-04
+
+    May need to change response.Result
+
+[Line 333, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/ApiClient.cs#L333
+), 
+jtikekar,
+2022-04-04
+
+    ? if (type.IsAssignableFrom(typeof(Stream)))
+
+## AasxFileServerRestLibrary\Client\Configuration.cs
+
+[Line 235, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/Configuration.cs#L235
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
+[Line 262, column 21](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/Configuration.cs#L262
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
 ## AasxFormatCst\AasxToCst.cs
 
 [Line 227, column 29](
@@ -433,24 +547,24 @@ MIHO,
 
 ## AasxPackageExplorer.Tests\TestOptionsAndPlugins.cs
 
-[Line 174, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L174
+[Line 178, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L178
 ), 
 mristin,
 2020-11-13
 
     @MIHO please check -- Options should be null, not empty?
 
-[Line 298, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L298
+[Line 304, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L304
 ), 
 Marko Ristin,
 2021-07-09
 
     not clear, how this test could pass. As of today,
 
-[Line 302, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L302
+[Line 308, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer.Tests/TestOptionsAndPlugins.cs#L308
 ), 
 Marko Ristin,
 2021-07-09
@@ -469,16 +583,16 @@ MIHO,
 
 ## AasxPackageExplorer\MainWindow.xaml.cs
 
-[Line 335, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L335
+[Line 336, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L336
 ), 
 MIHO,
 2020-12-31
 
     check for ANYUI MIHO
 
-[Line 364, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L364
+[Line 365, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L365
 ), 
 MIHO,
 2021-12-27
@@ -486,8 +600,8 @@ MIHO,
     consider extending for better testing or
     * script running
 
-[Line 1456, column 29](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1456
+[Line 1479, column 29](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1479
 ), 
 MIHO,
 2021-10-28
@@ -496,24 +610,24 @@ MIHO,
     * to instrument event updates in a way that they're automatically
     * visualized
 
-[Line 1561, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1561
+[Line 1584, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1584
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 1572, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1572
+[Line 1595, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1595
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 2266, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2266
+[Line 2289, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2289
 ), 
 MIHO,
 2021-06-08
@@ -644,6 +758,34 @@ MIHO,
 
     eliminate ModifyRepo. Right now, it is used as boolean flag while editing
 
+## AasxPackageLogic\PackageCentral\AasxFileServerInterface\AasxFileServerInterfaceService.cs
+
+[Line 142, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L142
+), 
+jtikekar,
+2022-04-04
+
+    aasIds?
+
+[Line 213, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L213
+), 
+jtikekar,
+2022-04-04
+
+    Change
+
+## AasxPackageLogic\PackageCentral\AasxFileServerInterface\PackageContainerAasxFileRepository.cs
+
+[Line 67, column 73](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/PackageContainerAasxFileRepository.cs#L67
+), 
+jtikekar,
+2022-04-04
+
+    Based on file
+
 ## AasxPackageLogic\PackageCentral\PackageCentral.cs
 
 [Line 257, column 9](
@@ -656,72 +798,72 @@ MIHO,
 
 ## AasxPackageLogic\PackageCentral\PackageConnectorHttpRest.cs
 
-[Line 247, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L247
+[Line 248, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L248
 ), 
 all,
 2021-01-30
 
     check periodically for supported element types
 
-[Line 305, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L305
+[Line 306, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L306
 ), 
 MIHO,
 2021-01-03
 
     check to handle more SMEs for AasEventMsgUpdateValue
 
-[Line 306, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L306
+[Line 307, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L307
 ), 
 MIHO,
 2021-01-04
 
     ValueIds still missing ..
 
-[Line 650, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L650
+[Line 651, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L651
 ), 
 MIHO,
 2021-11-07
 
     refactor use of SetParentsForSME to be generic
 
-[Line 751, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L751
+[Line 752, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L752
 ), 
 MIHO,
 2021-05-21
 
     make sure, this is required by the specification!
 
-[Line 787, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L787
+[Line 788, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L788
 ), 
 MIHO,
 2021-10-09
 
     Modify missing!!
 
-[Line 835, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L835
+[Line 836, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L836
 ), 
 MIHO,
 2021-05-28
 
     to be implemented
 
-[Line 844, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L844
+[Line 845, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L845
 ), 
 MIHO,
 2021-05-28
 
     to be implemented
 
-[Line 853, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L853
+[Line 854, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageConnectorHttpRest.cs#L854
 ), 
 MIHO,
 2021-05-28
@@ -777,8 +919,8 @@ MIHO,
 
 ## AasxPackageLogic\PackageCentral\PackageContainerListBase.cs
 
-[Line 324, column 9](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageContainerListBase.cs#L324
+[Line 330, column 9](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageContainerListBase.cs#L330
 ), 
 MIHO,
 2020-08-05
@@ -787,8 +929,8 @@ MIHO,
 
 ## AasxPackageLogic\PackageCentral\PackageContainerListHttpRestRepository.cs
 
-[Line 106, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageContainerListHttpRestRepository.cs#L106
+[Line 107, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/PackageContainerListHttpRestRepository.cs#L107
 ), 
 MIHO,
 2021-01-08
@@ -1252,16 +1394,16 @@ MIHO,
 
 ## AasxWpfControlLibrary\PackageCentral\PackageContainerListOfListControl.xaml.cs
 
-[Line 123, column 21](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/PackageCentral/PackageContainerListOfListControl.xaml.cs#L123
+[Line 124, column 21](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/PackageCentral/PackageContainerListOfListControl.xaml.cs#L124
 ), 
 MIHO,
 2021-01-09
 
     check to use moveup/down of the PackageContainerListBase
 
-[Line 134, column 21](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/PackageCentral/PackageContainerListOfListControl.xaml.cs#L134
+[Line 135, column 21](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxWpfControlLibrary/PackageCentral/PackageContainerListOfListControl.xaml.cs#L135
 ), 
 MIHO,
 2021-01-09
