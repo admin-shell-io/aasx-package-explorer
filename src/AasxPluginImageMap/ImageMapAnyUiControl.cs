@@ -167,7 +167,17 @@ namespace AasxPluginImageMap
                 (o)=>
                 {
                     _showRegions = (bool) o;
-                    return new AnyUiLambdaActionNone();
+                    
+                    // will touch values for canvas
+                    SetRegions(forceTransparent: !_showRegions);
+
+                    // therefore no complete redraw
+                    return new AnyUiLambdaActionPluginUpdateAnyUi()
+                    {
+                        PluginName = null, // do NOT call plugin!
+                        UpdateMode = AnyUiRenderMode.StatusToUi,
+                        UseInnerGrid = true
+                    };
                 });
 
             //
@@ -209,7 +219,7 @@ namespace AasxPluginImageMap
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
                         PluginName = null, // do NOT call plugin!
-                        UpdateMode = AnyUiPluginUpdateMode.StatusToUi,
+                        UpdateMode = AnyUiRenderMode.StatusToUi,
                         UseInnerGrid = true
                     };
                 });
@@ -287,7 +297,7 @@ namespace AasxPluginImageMap
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
                         PluginName = null, // do NOT call plugin!
-                        UpdateMode = AnyUiPluginUpdateMode.StatusToUi,
+                        UpdateMode = AnyUiRenderMode.StatusToUi,
                         UseInnerGrid = true
                     };
                 });
@@ -314,7 +324,7 @@ namespace AasxPluginImageMap
             //
 
             SetInfos();
-            SetRegions(forceTransparent: false);
+            SetRegions(forceTransparent: false && !_showRegions);
         }
 
 #endregion

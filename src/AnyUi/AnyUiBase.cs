@@ -178,6 +178,20 @@ namespace AnyUi
                 ui = 0xff000000u | Convert.ToUInt32(st.Substring(1), 16);
             return new AnyUiColor(ui);
         }
+
+        public string ToHtmlString(int format)
+        {
+            if (format == 1)
+                // ARGB
+                return $"#{A:X2}{R:X2}{G:X2}{B:X2}";
+
+            if (format == 2)
+                // ARGB
+                return FormattableString.Invariant($"rgba({R},{G},{B},{(A / 255.0):0.###})");
+
+            // default just RGB
+            return $"#{R:X2}{G:X2}{B:X2}";
+        }
     }
 
     public class AnyUiColors
@@ -307,6 +321,36 @@ namespace AnyUi
         public double Y { get; set; }
         public double Width { get; set; }
         public double Height { get; set; }
+
+        public double X2 => X + Width;
+        public double Y2 => Y + Height;
+
+        public AnyUiRect(AnyUiRect other)
+        {
+            X = other.X; 
+            Y = other.Y; 
+            Width = other.Width; 
+            Height = other.Height;
+        }
+
+        public AnyUiRect(double x, double y, double w, double h)
+        {
+            X = x;
+            Y = y;
+            Width = w;
+            Height = h;
+        }
+
+        public static AnyUiRect Max(AnyUiRect r1, AnyUiRect r2)
+        {
+            var x0 = Math.Min(r1.X, r2.Y);
+            var y0 = Math.Min(r1.Y, r2.Y);
+
+            var x2 = Math.Max(r1.X2, r2.X2);
+            var y2 = Math.Max(r1.Y2, r2.Y2);
+
+            return new AnyUiRect(x0, y0, x2 - x0, y2 - y0);
+        }
     }
 
     public class AnyUiPointCollection : List<AnyUiPoint>
@@ -401,7 +445,7 @@ namespace AnyUi
     {
     }
 
-    public enum AnyUiPluginUpdateMode { All, StatusToUi }
+    public enum AnyUiRenderMode { All, StatusToUi }
 
     /// <summary>
     /// This event causes a call to the specified plugin to update its
@@ -413,7 +457,7 @@ namespace AnyUi
     {
         public string PluginName = "";
         public object[] ActionArgs = null;
-        public AnyUiPluginUpdateMode UpdateMode = AnyUiPluginUpdateMode.All;
+        public AnyUiRenderMode UpdateMode = AnyUiRenderMode.All;
         public bool UseInnerGrid = false;
     }
 
@@ -582,7 +626,7 @@ namespace AnyUi
         /// <summary>
         /// Can be set by the rendering of the element to perform status updates, if touched.
         /// </summary>
-        public Action<AnyUiPluginUpdateMode> TouchLambda = null;
+        // public Action<AnyUiRenderMode> TouchLambda = null;
 
         /// <summary>
         /// This function attaches the above lambdas accordingly to a given user control.
@@ -690,19 +734,32 @@ namespace AnyUi
     {
         public AnyUiBrush Fill, Stroke;
         public double? StrokeThickness;
+
+        public virtual AnyUiRect FindBoundingBox() => new AnyUiRect();
     }
 
     public class AnyUiRectangle : AnyUiShape
     {
+        public override AnyUiRect FindBoundingBox() => 
+            new AnyUiRect(X, Y, Width, Height );
     }
 
     public class AnyUiEllipse : AnyUiShape
     {
+        public override AnyUiRect FindBoundingBox() =>
+            new AnyUiRect(X, Y, Width, Height);
     }
 
     public class AnyUiPolygon : AnyUiShape
     {
         public AnyUiPointCollection Points = new AnyUiPointCollection();
+
+        public override AnyUiRect FindBoundingBox()
+        {
+            if (Points == null || Points.Count < 1)
+                return new AnyUiRect();
+            return Points.FindBoundingBox();
+        }
     }
 
     public class AnyUiControl : AnyUiFrameworkElement, IGetBackground
@@ -768,7 +825,7 @@ namespace AnyUi
         private List<AnyUiUIElement> _children = new List<AnyUiUIElement>();
         public List<AnyUiUIElement> Children { 
             get { return _children; } 
-            set { _children = value; Touch() } 
+            set { _children = value; Touch(); } 
         } 
 
         public T Add<T>(T elem) where T : AnyUiUIElement

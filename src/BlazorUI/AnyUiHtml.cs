@@ -357,7 +357,7 @@ namespace AnyUi
             return dialogueData.Result;
         }
 
-        public void UpdateRenderElements(AnyUiUIElement el, AnyUiPluginUpdateMode mode)
+        public void UpdateRenderElements(AnyUiUIElement el, AnyUiRenderMode mode)
         {
             //
             // access

@@ -1,0 +1,250 @@
+﻿@page "/testMultiCanvas"
+@using AnyUi
+@using BlazorUI.Shared
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+
+@{
+// resharper disable all
+}
+
+@{
+    // access
+    if (Canvas == null)
+        return;
+
+    //
+    // style
+    //
+
+    var canvStyle = new StylePile();
+
+    canvStyle.SetSpecifics(margin: Canvas.Margin);
+    canvStyle.SetFillWidth(Canvas, FillMode, Canvas.Margin, setMinMaxWidth: true, setMinMaxHeight: true);
+
+    //
+    // Add image?
+    //
+
+    if (BackgroundImage != null)
+    {
+        var path = "/api/image/" + BackgroundImage.ImageGuid;
+
+        <div style="">
+            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference" @onload="HandleImageOnLoad"/>
+        </div>
+
+        <button @onclick="HandleImageOnLoad">Test</button> 
+
+        // book keeping
+        // TODO: make it nice!!
+        var dd = new AnyUiDisplayDataHtml(DisplayData._context);
+        dd._component = this;
+        BackgroundImage.DisplayData = dd;
+    }
+
+    if (false && BackgroundImage != null)
+    {
+        var path = "/api/image/" + BackgroundImage.ImageGuid;
+        canvStyle.Set("background", "url('" + path + "')", add: true);
+
+        // book keeping
+        // TODO: make it nice!!
+        var dd = new AnyUiDisplayDataHtml(DisplayData._context);
+        dd._component = this;
+        BackgroundImage.DisplayData = dd;
+    }
+
+    //
+    // Canvas
+    // see:https://github.com/BlazorExtensions/Canvas
+    //
+
+    var dims = GetCanvasDimensions();
+    <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiCanvas Canvas { get; set; }
+
+    [Parameter]
+    public AnyUiImage BackgroundImage { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void Redraw()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    //
+    // Dimensioning
+    //
+
+    protected Tuple<int, int> GetCanvasDimensions()
+    {
+        // if background image, then its leading
+        if (BackgroundImage.Bitmap != null && BackgroundImage.Bitmap is System.Windows.Media.Imaging.BitmapSource bi)
+        {
+            return new Tuple<int, int>(Convert.ToInt32(bi.Width), Convert.ToInt32(bi.Height));
+        }
+
+        // canvas .. look into contents
+        var res = new AnyUiRect(0, 0, 404, 404);
+        if (Canvas?.Children != null)
+            foreach (var ch in Canvas?.Children)
+                if (ch is AnyUiShape shp)
+                    res = AnyUiRect.Max(res, shp.FindBoundingBox());
+
+        // return
+        return new Tuple<int, int>(Convert.ToInt32(res.Width), Convert.ToInt32(res.Height));
+    }
+
+    //
+    // Canvas handling
+    //
+
+    private Canvas2DContext _context;
+
+    protected BECanvasComponent _canvasReference;
+
+    protected ElementReference _imgReference;
+
+    protected async void HandleImageOnLoad()
+    {
+        var ctx = await this._canvasReference.CreateCanvas2DAsync();
+        if (ctx != null && BackgroundImage != null)
+        {
+            await ctx.DrawImageAsync(_imgReference, 0, 0);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // create an API
+        this._context = await this._canvasReference.CreateCanvas2DAsync();
+
+        //await this._context.SetFillStyleAsync("green");
+        //await this._context.FillRectAsync(10, 100, 100, 100);
+        //await this._context.SetFontAsync("48px serif");
+        //await this._context.StrokeTextAsync("Hello Blazor!!!", 10, 100);
+
+        // draw background info?
+        if (BackgroundImage != null)
+        {
+            await this._context.DrawImageAsync(_imgReference, 0, 0);
+        }
+
+        // iterate over shapes ..
+        if (Canvas?.Children != null)
+            foreach (var ch in Canvas.Children)
+            {
+                //if (ch is AnyUiShape shape)
+                //{
+                //    if (shape.Fill != null)
+                //        await this._context.SetFillStyleAsync(shape.Fill.ToString());
+                //    else
+                //        await this._context.SetFillStyleAsync("#000000");
+
+                //    if (shape.Stroke != null)
+                //        await this._context.SetStrokeStyleAsync(shape.Stroke.ToString());
+                //    else
+                //        await this._context.SetStrokeStyleAsync("#000000");
+
+                //    if (shape.StrokeThickness.HasValue)
+                //        await this._context.LineWidth = shape.StrokeThickness.Value;
+                //    else
+                //        await this._context.LineWidth = 1.0f;
+                //}
+
+                string fillStyle = "#000000", strokeStyle = "#000000";
+                var lineWidth = 0.0f; 
+                if (ch is AnyUiShape shape)
+                {
+                    if (shape.Fill?.Color != null)
+                        fillStyle = shape.Fill.Color.ToHtmlString(2);
+
+                    if (shape.Stroke?.Color != null)
+                        strokeStyle = shape.Stroke.Color.ToHtmlString(2);
+
+                    if (shape.StrokeThickness.HasValue)
+                        lineWidth = (float) shape.StrokeThickness.Value;
+                }
+
+                if (ch is AnyUiRectangle rect)
+                {
+                    // await this._context.FillRectAsync(rect.X, rect.Y, rect.Width, rect.Height);
+
+                    await this._context.BeginPathAsync();
+                    await this._context.RectAsync(rect.X, rect.Y, rect.Width, rect.Height);
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (rect.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (rect.Fill != null)
+                        await this._context.FillAsync();
+                }
+
+                if (ch is AnyUiEllipse ell)
+                {
+                    // await this._context.el
+
+                    await this._context.BeginPathAsync();
+                    await this._context.ArcAsync(
+                        ell.X + ell.Width / 2, 
+                        ell.Y + ell.Height / 2, 
+                        (ell.Width + ell.Height) / 4.0, // radius as mix between X/Y radius
+                        0, 2 * Math.PI);
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (ell.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (ell.Fill != null)
+                        await this._context.FillAsync();
+                }
+
+                if (ch is AnyUiPolygon poly)
+                {
+                    // await this._context.el
+
+                    await this._context.BeginPathAsync();
+
+                    if (poly.Points != null && poly.Points.Count >= 2)
+                    {
+                        // start point
+                        await this._context.MoveToAsync(poly.Points[0].X, poly.Points[0].Y);
+
+                        // next points
+                        for (int i=1; i<poly.Points.Count; i++)
+                            await this._context.LineToAsync(poly.Points[i].X, poly.Points[i].Y);
+                    }
+
+                    await this._context.ClosePathAsync();
+
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (poly.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (poly.Fill != null)
+                        await this._context.FillAsync();
+                }
+            }
+    }
+}

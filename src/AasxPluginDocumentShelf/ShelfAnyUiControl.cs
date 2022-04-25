@@ -209,7 +209,8 @@ namespace AasxPluginDocumentShelf
             outer.RowDefinitions[2].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
 
             // at top, make buttons for the general form
-            var header = uitk.AddSmallGridTo(outer, 0, 0, 1, cols: 5, colWidths: new[] { "*", "#", "#", "#", "#" });
+            var header = uitk.AddSmallGridTo(outer, 0, 0, rows: 2, cols: 5, 
+                    colWidths: new[] { "*", "#", "#", "#", "#" });
 
             header.Margin = new AnyUiThickness(0);
             header.Background = AnyUiBrushes.LightBlue;
@@ -255,7 +256,7 @@ namespace AasxPluginDocumentShelf
                 uitk.AddSmallBasicLabelTo(header, 1, 0, colSpan: 5,
                     margin: new AnyUiThickness(8, 2, 2, 2),
                     foreground: AnyUiBrushes.DarkBlue,
-                    fontSize: 0.6f, setWrap: true,
+                    fontSize: 0.8f, setWrap: true,
                     content: usageInfo);
 
             //
@@ -655,7 +656,7 @@ namespace AasxPluginDocumentShelf
 
         private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;
 
-        protected void PushUpdateEvent(AnyUiPluginUpdateMode mode = AnyUiPluginUpdateMode.All)
+        protected void PushUpdateEvent(AnyUiRenderMode mode = AnyUiRenderMode.All)
         {
             // bring it to the panel by redrawing the plugin
             _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
@@ -1361,7 +1362,7 @@ namespace AasxPluginDocumentShelf
             if (_eventStack != null && updateDisplay)
                 _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi() { 
                     PluginName = null, // do NOT call the plugin before rendering
-                    Mode = AnyUiPluginUpdateMode.StatusToUi,
+                    Mode = AnyUiRenderMode.StatusToUi,
                     UseInnerGrid = true
                 });
         }

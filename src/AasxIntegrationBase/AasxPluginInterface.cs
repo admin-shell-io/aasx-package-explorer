@@ -133,7 +133,7 @@ namespace AasxIntegrationBase
     public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
     {
         public string PluginName = "";
-        public AnyUiPluginUpdateMode Mode = AnyUiPluginUpdateMode.All;
+        public AnyUiRenderMode Mode = AnyUiRenderMode.All;
         public bool UseInnerGrid = false;
     }
 

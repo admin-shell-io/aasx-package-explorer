@@ -12,7 +12,6 @@
     // resharper disable all
 }
 
-
 @{
     // access
     if (Element == null || DisplayData == null)
@@ -30,7 +29,9 @@
         return;
     }
 
+    //
     // Evaluate some style attributes
+    //
 
     var style = new StylePile();
 
@@ -40,7 +41,27 @@
         style.Add("background-color", ctrl.Background?.HtmlRgb(), doNotSetIfNull: true);
     }
 
+    //
+    // try detect some special conditions
+    //
+
+    if (Element is AnyUiViewbox t1vb
+        && t1vb.Child is AnyUiGrid t1g
+        && t1g.Children?.Count == 2
+        && t1g.Children[0] is AnyUiImage t1img
+        && t1g.Children[1] is AnyUiCanvas t1cvs)
+    {
+        <AnyUiRenderMultiCanvas DisplayData="@DisplayData"
+                                Session="@Session"
+                                Parent="@Parent"
+                                Canvas="@t1cvs"
+                                BackgroundImage="@t1img"
+                                FillMode="@FillMode" />
+    }
+
+    //
     // elements with children
+    //
 
     if (Element is AnyUiGrid grid)
     {
@@ -162,13 +183,9 @@
                           FillMode="@FillMode" />
     }
 
+    //
     // "Normal" elements
-
-    //if (Element is AnyUiFrameworkElement fe)
-    //{
-    //    style.SetAlignments(fe);
-    //    style.SetMinMaxWidth(fe);
-    //}
+    //
 
     if (Element is AnyUiHintBubble hb)
     {
@@ -254,11 +271,6 @@
 
     if (Element is AnyUiTextBox chtb)
     {
-        //int w = chtb.Text.Length;
-        //if (w > 60)
-        //    w = 60;
-        // size="@w"
-
         style.SetSpecifics(
             margin: chtb.Margin,
             padding: chtb.Padding,

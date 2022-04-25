@@ -664,7 +664,7 @@ namespace AasxPackageExplorer
 
         public void RedisplayRenderedRoot(
             AnyUiUIElement root, 
-            AnyUiPluginUpdateMode mode, 
+            AnyUiRenderMode mode, 
             bool useInnerGrid = false)
         {
             // safe
@@ -674,7 +674,7 @@ namespace AasxPackageExplorer
             theMasterPanel.Children.Clear();
             UIElement spwpf = null;
 
-            var allowReUse = mode == AnyUiPluginUpdateMode.StatusToUi;
+            var allowReUse = mode == AnyUiRenderMode.StatusToUi;
 
             if (useInnerGrid
                 && root is AnyUiStackPanel stack

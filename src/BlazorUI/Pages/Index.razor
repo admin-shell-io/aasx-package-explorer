@@ -1308,13 +1308,13 @@
             {
                 if (context != null)
                 {
-                    if (update.Mode == AnyUiPluginUpdateMode.StatusToUi)
+                    if (update.Mode == AnyUiRenderMode.StatusToUi)
                     {
                         // only update some parameters
                         context.UpdateRenderElements(bi.stack17, update.Mode);
                     }
                     else
-                    if (update.Mode == AnyUiPluginUpdateMode.All)
+                    if (update.Mode == AnyUiRenderMode.All)
                     {
                         // next redraw will only update from plugin
                         _onlyUpdatePluginUi = true;
