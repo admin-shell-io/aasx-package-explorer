@@ -22,12 +22,14 @@
 
   <ItemGroup>
     <None Remove="LICENSE.txt" />
+    <None Remove="Resources\sample.png" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\sample.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
     <PackageReference Include="BlazorInputFile" Version="0.2.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>

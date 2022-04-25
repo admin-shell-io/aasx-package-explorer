@@ -1234,7 +1234,7 @@ namespace AasxPackageExplorer
         }
 
         private void UiHandleReRenderAnyUiInEntityPanel(
-            string pluginName, AnyUiPluginUpdateMode mode, bool useInnerGrid = false)
+            string pluginName, AnyUiRenderMode mode, bool useInnerGrid = false)
         {
             // A plugin asks to re-render an exisiting panel.
             // Can get this information?

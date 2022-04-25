@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows.Media.Imaging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -34,7 +35,7 @@ namespace BlazorUI.Controllers
             var img = AnyUiImage.FindImage(id);
             if (img != null)
             {
-                if (img?.Bitmap is System.Windows.Media.Imaging.BitmapImage bitmap)
+                if (img?.Bitmap is BitmapSource bitmap)
                 {
                     BitmapEncoder encoder = new PngBitmapEncoder();
                     encoder.Frames.Add(BitmapFrame.Create(bitmap));
@@ -49,8 +50,18 @@ namespace BlazorUI.Controllers
             }
 
             // default case
-            var bb = System.IO.File.ReadAllBytes(@"C:\MIHO\Develop\Aasx\repo\sample.png");
-            return base.File(bb, "image/png");
+            // var bb = System.IO.File.ReadAllBytes(@"C:\MIHO\Develop\Aasx\repo\sample.png");
+            using (var stream = Assembly
+                    .GetExecutingAssembly()
+                    .GetManifestResourceStream("BlazorUI.Resources.sample.png"))
+            {
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    var bb = ms.ToArray();
+                    return base.File(bb, "image/png");
+                }
+            }
         }
 
         //[HttpGet]
