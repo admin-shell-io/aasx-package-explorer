@@ -29,6 +29,7 @@ using System.Xml.Serialization;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
@@ -899,10 +900,20 @@ namespace AasxPackageExplorer
                 if (!uc.Result)
                     return;
 
-                var fr = new PackageContainerListHttpRestRepository(uc.Text);
-                await fr.SyncronizeFromServerAsync();
-                this.UiAssertFileRepository(visible: true);
-                _packageCentral.Repositories.AddAtTop(fr);
+                if (uc.Text.Contains("asp.net"))
+                {
+                    var fileRepository = new PackageContainerAasxFileRepository(uc.Text);
+                    fileRepository.GeneratePackageRepository();
+                    this.UiAssertFileRepository(visible: true);
+                    _packageCentral.Repositories.AddAtTop(fileRepository);
+                }
+                else
+                {
+                    var fr = new PackageContainerListHttpRestRepository(uc.Text);
+                    await fr.SyncronizeFromServerAsync();
+                    this.UiAssertFileRepository(visible: true);
+                    _packageCentral.Repositories.AddAtTop(fr);
+                }
             }
 
             if (cmd == "filerepoquery")
