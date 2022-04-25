@@ -998,6 +998,7 @@ namespace AasxIntegrationBase.AasForms
 
                             // save
                             file.value = targetPath + targetFn;
+                            file.mimeType = AdminShellPackageEnv.GuessMimeType(targetFn);
 
                             if (addFilesToPackage)
                             {
@@ -1019,6 +1020,7 @@ namespace AasxIntegrationBase.AasForms
             if (file != null && Touched && fileSource != null && editSource)
             {
                 fileSource.value = file.value;
+                fileSource.mimeType = file.mimeType;
                 return false;
             }
             return true;
