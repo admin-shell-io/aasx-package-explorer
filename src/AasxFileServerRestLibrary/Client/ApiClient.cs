@@ -182,7 +182,7 @@ namespace IO.Swagger.Client
             {
                 //request.AddFile(param.Value.Name, param.Value.Writer, param.Value.FileName, param.Value.ContentType);
                 //request.AddFile(param.Value.Name, param.Value.FileName, param.Value.ContentType);
-                request.AddFile(param.Value.Name, param.Value.FileName, param.Value.ContentType);
+                request.AddFile(param.Value.Name, param.Value.Writer, param.Value.Name, param.Value.ContentLength);
             }
 
             if (postBody != null) // http body (model or byte[]) parameter
