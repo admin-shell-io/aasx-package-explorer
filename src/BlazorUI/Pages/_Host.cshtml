@@ -36,9 +36,26 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <!-- blazor boiler plate -->
     <script src="~/js/blazor-modal.js"></script>
     <script src="_framework/blazor.server.js"></script>
+    
+    <!-- used for HTML5 canvas drawing / translating click events-->
+    <!-- see: https://www.codeproject.com/Articles/5269947/Drawing-with-the-HTML-Canvas-Element-in-Blazor-Ser -->
+    <!-- see also: https://stackoverflow.com/questions/5598743/finding-elements-position-relative-to-the-document -->
     <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    <script>
+    function getDivCanvasOffsets(el) {
+        var obj = {};
+        // obj.offsetLeft = el.offsetLeft;
+        obj.offsetLeft = el.getBoundingClientRect().left; // + document.documentElement.scrollLeft
+        // obj.offsetTop = el.offsetTop;
+        obj.offsetTop = el.getBoundingClientRect().top; // + document.documentElement.scrollTop
+        return JSON.stringify(obj);
+    }
+    </script>
+
+    <!-- File input dialogue -->
     <script src="_content/BlazorInputFile/inputfile.js"></script>
     <script>
         function BlazorDownloadFile(filename, contentType, content) {

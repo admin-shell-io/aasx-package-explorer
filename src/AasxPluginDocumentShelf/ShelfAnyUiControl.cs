@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AasxIntegrationBaseWpf;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using AnyUi;
@@ -392,7 +393,8 @@ namespace AasxPluginDocumentShelf
                 if (referableHashToCachedBitmap != null &&
                     referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
                 {
-                    ent.ImgContainerAnyUi.Bitmap = referableHashToCachedBitmap[ent.ReferableHash];
+                    ent.ImgContainerAnyUi.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(
+                        referableHashToCachedBitmap[ent.ReferableHash]);
                 }
                 else
                 {

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AasxIntegrationBaseWpf;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -301,14 +302,15 @@ namespace AasxPluginTechnicalData
                     smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
                         theDefs.CD_ManufacturerName.GetSingleKey())?.value;
 
-                BitmapImage imageManuLogo = null;
+                AnyUiBitmapInfo imageManuLogo = null;
                 if (package != null)
                 {
-                    imageManuLogo = AasxWpfBaseUtils.LoadBitmapImageFromPackage(
+                    var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(
                         package,
                         smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
                             theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
                         );
+                    imageManuLogo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
                 }
 
                 // render information
@@ -351,14 +353,15 @@ namespace AasxPluginTechnicalData
 
                 // gather
 
-                var pil = new List<object>();
+                var pil = new List<AnyUiBitmapInfo>();
                 foreach (var pi in
                             smcGeneral.value.FindAllSemanticIdAs<AdminShell.File>(
                                 theDefs.CD_ProductImage.GetSingleKey()))
                 {
-                    var data = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
-                    if (data != null)
-                        pil.Add(data);
+                    var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
+                    var imgInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                    if (imgInfo != null)
+                        pil.Add(imgInfo);
                 }
 
                 // ok, render?

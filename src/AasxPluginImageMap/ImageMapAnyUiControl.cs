@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AasxIntegrationBaseWpf;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -353,9 +354,18 @@ namespace AasxPluginImageMap
 
             // set?
             var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
+
+            //var stream = new MemoryStream(bitmapdata);
+            //var bi = new System.Windows.Media.Imaging.BitmapImage();
+
+            //bi.BeginInit();
+            //bi.StreamSource = stream;
+            //bi.EndInit();
+            bi.Freeze();
+
             if (_backgroundImage != null && bi != null)
             {
-                _backgroundImage.Bitmap = bi;
+                _backgroundImage.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
                 _backgroundSize = bi.Width + bi.Height;
             }
         }
