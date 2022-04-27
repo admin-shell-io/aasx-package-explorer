@@ -60,13 +60,16 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         try
                         {
-                            var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId));
+                            var aasAndAsset = _fileApiInstance.GetAssetAdministrationShellAndAssetByPackageId(Base64UrlEncoder.Encode(packageDescription.PackageId), Base64UrlEncoder.Encode(aasId));
+                            //var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId))
+                            var aas = aasAndAsset.aas;
                             if (aas != null)
                             {
                                 //Get Asset
                                 try
                                 {
-                                    var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId));
+                                    var asset = aasAndAsset.asset;
+                                    //var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId))
                                     if (asset != null)
                                     {
                                         var packageContainer = new PackageContainerRepoItem()
@@ -167,7 +170,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     if (response.StatusCode == 200)
                     {
-                        return delegateInstance.fileName;
+                        return delegateInstance.FileName;
                     }
                     else
                     {
@@ -188,7 +191,7 @@ namespace AasxPackageLogic.PackageCentral
         class SaveAasxPackageToFile
         {
             private PackCntRuntimeOptions runtimeOptions;
-            public string fileName { get; set; }
+            public string FileName { get; set; }
             internal SaveAasxPackageToFile(PackCntRuntimeOptions runtimeOptions)
             {
                 this.runtimeOptions = runtimeOptions;
@@ -231,7 +234,7 @@ namespace AasxPackageLogic.PackageCentral
                         file.Close();
                         str.Close();
                     }
-                    this.fileName = fileName;
+                    this.FileName = fileName;
                 }
             }
         }
