@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AdminShellNS;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
 using RestSharp;
@@ -610,7 +611,7 @@ namespace IO.Swagger.Api
             if (packageId != null) localVarPathParams.Add("packageId", this.Configuration.ApiClient.ParameterToString(packageId)); // path parameter
 
             // make the HTTP request
-            RestResponse localVarResponse = (RestResponse) await this.Configuration.ApiClient.CallApiAsyncWithDelegate(localVarPath,
+            RestResponse localVarResponse = (RestResponse)await this.Configuration.ApiClient.CallApiAsyncWithDelegate(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType, action);
 
@@ -1153,6 +1154,68 @@ namespace IO.Swagger.Api
             return new ApiResponse<Object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
                 null);
+        }
+
+        public AssetAdministrationShellAndAsset GetAssetAdministrationShellAndAssetByPackageId(string packageId, string aasIdentifier)
+        {
+            ApiResponse<AssetAdministrationShellAndAsset> localVarResponse = GetAssetAdministrationShellAndAssetByPackageIdWithHttpInfo(packageId, aasIdentifier);
+            return localVarResponse.Data;
+        }
+
+        private ApiResponse<AssetAdministrationShellAndAsset> GetAssetAdministrationShellAndAssetByPackageIdWithHttpInfo(string packageId, string aasIdentifier)
+        {
+            // verify the required parameter 'aasIdentifier' is set
+            if (packageId == null)
+                throw new ApiException(400, "Missing required parameter 'packageId' when calling AssetAdministrationShellRepositoryApi->GetAssetAdministrationShellByPackageId");
+
+            // verify the required parameter 'aasIdentifier' is set
+            if (aasIdentifier == null)
+                throw new ApiException(400, "Missing required parameter 'aasIdentifier' when calling AssetAdministrationShellRepositoryApi->GetAssetAdministrationShellByPackageId");
+
+            var localVarPath = "/packages/{packageId}/shells/{aasIdentifier}";
+            var localVarPathParams = new Dictionary<String, String>();
+            var localVarQueryParams = new List<KeyValuePair<String, String>>();
+            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<String, String>();
+            var localVarFileParams = new Dictionary<String, FileParameter>();
+            Object localVarPostBody = null;
+
+            // to determine the Content-Type header
+            String[] localVarHttpContentTypes = new String[] {
+            };
+            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+
+            // to determine the Accept header
+            String[] localVarHttpHeaderAccepts = new String[] {
+                "application/json"
+            };
+            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            if (localVarHttpHeaderAccept != null)
+                localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
+
+            if (aasIdentifier != null) localVarPathParams.Add("packageId", this.Configuration.ApiClient.ParameterToString(packageId)); // path parameter
+            if (aasIdentifier != null) localVarPathParams.Add("aasIdentifier", this.Configuration.ApiClient.ParameterToString(aasIdentifier)); // path parameter
+
+            // make the HTTP request
+            RestResponse localVarResponse = (RestResponse)this.Configuration.ApiClient.CallApi(localVarPath,
+                Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
+                localVarPathParams, localVarHttpContentType);
+
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
+
+            if (ExceptionFactory != null)
+            {
+                Exception exception = ExceptionFactory("GetAssetAdministrationShellByPackageId", localVarResponse);
+                if (exception != null) throw exception;
+            }
+
+            //TODO (jtikekar, 2022-04-04): Change duting V3 upgrade
+            //return new ApiResponse<AssetAdministrationShell>(localVarStatusCode,
+            //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
+            //    (AssetAdministrationShell) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShell)));
+            return new ApiResponse<AssetAdministrationShellAndAsset>(localVarStatusCode,
+                localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
+                (AssetAdministrationShellAndAsset)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShellAndAsset)));
         }
 
     }
