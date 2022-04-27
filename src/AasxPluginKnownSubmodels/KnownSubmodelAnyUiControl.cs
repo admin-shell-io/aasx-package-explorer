@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AasxIntegrationBaseWpf;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -213,7 +214,7 @@ namespace AasxPluginKnownSubmodels
                             background: AnyUiBrushes.White));
 
             // fill bitmap
-            BitmapImage imageData = null;
+            AnyUiBitmapInfo bitmapInfo = null;
             try
             {
                 // figure our relative path
@@ -224,16 +225,17 @@ namespace AasxPluginKnownSubmodels
                 var imagePath = Path.Combine(basePath, rec.ImageLink);
 
                 // load
-                imageData = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
+                var bi = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
+                bitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
             }
             catch {; }
 
-            if (imageData != null)
+            if (bitmapInfo != null)
                 uitk.Set(
                     uitk.AddSmallImageTo(outer, 0, 0,
                         margin: new AnyUiThickness(2),
                         stretch: AnyUiStretch.Uniform,
-                        bitmap: imageData),
+                        bitmap: bitmapInfo),
                     rowSpan: 4,
                     minWidth: 150,
                     maxHeight: 150, maxWidth: 150,

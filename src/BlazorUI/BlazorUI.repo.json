@@ -74,6 +74,32 @@
       "description": "Phoenix Contact Power Supply",
       "tag": "PxC",
       "Location": "..\\..\\..\\07_PhoenixContact.aasx"
+    },
+    {
+      "$type": "LocalFile",
+      "code": "",
+      "Options": {
+        "LoadResident": false,
+        "StayConnected": true,
+        "UpdatePeriod": 1000
+      },
+      "AssetIds": [
+        "http://smart.festo.com/asset/99920211117093744000025740"
+      ],
+      "AasIds": [
+        "http://smart.festo.com/aas/99920211117093744000010570"
+      ],
+      "SubmodelIds": [
+        "http://smart.festo.com/id/instance/99920211117093744000035212",
+        "http://smart.festo.com/id/instance/99920211117093745000011053",
+        "http://smart.festo.com/id/instance/99920211117093745000028644",
+        "http://smart.festo.com/id/instance/99920211117093746000017232",
+        "http://smart.festo.com/id/instance/99920211117093746000022136",
+        "http://smart.festo.com/id/instance/99920211117093746000030548"
+      ],
+      "description": "Festo SPAU pressure sensor",
+      "tag": "FPS",
+      "Location": "..\\..\\..\\09_Festo_SPAU_VR3.aasx"
     }
   ]
 }

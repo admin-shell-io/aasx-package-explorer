@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using AnyUi;
+using AasxIntegrationBaseWpf;
 
 namespace AasxPluginDocumentShelf
 {
@@ -123,7 +124,7 @@ namespace AasxPluginDocumentShelf
 
                 if (ImgContainerAnyUi != null)
                 {
-                    ImgContainerAnyUi.Bitmap = bi;
+                    ImgContainerAnyUi.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
                 }
 
                 return bi;

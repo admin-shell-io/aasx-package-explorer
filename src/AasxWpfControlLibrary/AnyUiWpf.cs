@@ -742,7 +742,7 @@ namespace AnyUi
                    {
                         if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
                         {
-                            if (cntl.Bitmap is BitmapSource bs)
+                            if (cntl.BitmapInfo?.ImageSource is BitmapSource bs)
                                 wpf.Source = bs;
 
                             wpf.Stretch = (Stretch)(int) cntl.Stretch;

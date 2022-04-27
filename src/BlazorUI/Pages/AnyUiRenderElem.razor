@@ -51,11 +51,13 @@
         && t1g.Children[0] is AnyUiImage t1img
         && t1g.Children[1] is AnyUiCanvas t1cvs)
     {
+        <!-- <span style="background-image: url('https://images.unsplash.com/photo-1579353977828-2a4eab540b9a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8c2FtcGxlfGVufDB8fDB8fA%3D%3D&w=1000&q=80')"> -->
+
         <AnyUiRenderMultiCanvas DisplayData="@DisplayData"
                                 Session="@Session"
                                 Parent="@Parent"
                                 Canvas="@t1cvs"
-                                BackgroundImage="@t1img"
+                                BackgroundImage="@t1img"                                
                                 FillMode="@FillMode" />
     }
 
@@ -232,11 +234,23 @@
 
         if (stb.TextAsHyperlink)
         {
-            <a href="@stb.Text" style="@style"><MultiLineText InputString="@stb.Text"/></a>
+            <a href="@stb.Text" style="@style">
+                <!-- <MultiLineText InputString="@stb.Text"/> -->
+                <AnyUiRenderMultiText DisplayData="@DisplayData"
+                          Session="@Session"
+                          Parent="@Parent"
+                          Element="@Element" />
+            </a>
         }
         else
         {
-            <span style="@style"><MultiLineText InputString="@stb.Text" /></span>
+            <span style="@style">
+                <!-- <MultiLineText InputString="@stb.Text" /> -->
+                <AnyUiRenderMultiText DisplayData="@DisplayData"
+                          Session="@Session"
+                          Parent="@Parent"
+                          Element="@Element" />
+            </span>
         }
     }
     else

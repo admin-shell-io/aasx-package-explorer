@@ -343,7 +343,7 @@ namespace AnyUi
 
         public static AnyUiRect Max(AnyUiRect r1, AnyUiRect r2)
         {
-            var x0 = Math.Min(r1.X, r2.Y);
+            var x0 = Math.Min(r1.X, r2.X);
             var y0 = Math.Min(r1.Y, r2.Y);
 
             var x2 = Math.Max(r1.X2, r2.X2);
@@ -685,6 +685,20 @@ namespace AnyUi
                     foreach (var x in child.FindAllNamed())
                         yield return x;
         }
+
+        /// <summary>
+        /// Find all children in the (deep) hierarchy, and invoke predicate.
+        /// </summary>
+        public IEnumerable<AnyUiUIElement> FindAll(Func<AnyUiUIElement, bool> predicate = null)
+        {
+            if (predicate == null || predicate.Invoke(this))
+                yield return this;
+
+            if (this is IEnumerateChildren en)
+                foreach (var child in en.GetChildren())
+                    foreach (var x in child.FindAll(predicate))
+                        yield return x;
+        }
     }
 
     public enum AnyUiEventMask { None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4,
@@ -736,18 +750,40 @@ namespace AnyUi
         public double? StrokeThickness;
 
         public virtual AnyUiRect FindBoundingBox() => new AnyUiRect();
+
+        public virtual bool IsHit(AnyUiPoint pt) => false;
     }
 
     public class AnyUiRectangle : AnyUiShape
     {
         public override AnyUiRect FindBoundingBox() => 
             new AnyUiRect(X, Y, Width, Height );
+
+        public override bool IsHit(AnyUiPoint pt) =>
+            (pt.X >= this.X) && (pt.X <= this.X + this.Width)
+            && (pt.Y >= this.Y) && (pt.Y <= this.Y + this.Height);
     }
 
     public class AnyUiEllipse : AnyUiShape
     {
         public override AnyUiRect FindBoundingBox() =>
             new AnyUiRect(X, Y, Width, Height);
+
+        public override bool IsHit(AnyUiPoint pt)
+        {
+            // see: https://www.geeksforgeeks.org/check-if-a-point-is-inside-outside-or-on-the-ellipse/
+            var h = this.X + this.Width / 2.0;
+            var k = this.Y + this.Height / 2.0;
+            var a = this.Width / 2.0;
+            var b = this.Height / 2.0;
+
+            int p = ((int)Math.Pow((pt.X - h), 2) /
+                    (int)Math.Pow(a, 2)) +
+                    ((int)Math.Pow((pt.Y - k), 2) /
+                    (int)Math.Pow(b, 2));
+
+            return p <= 1;
+        }
     }
 
     public class AnyUiPolygon : AnyUiShape
@@ -759,6 +795,39 @@ namespace AnyUi
             if (Points == null || Points.Count < 1)
                 return new AnyUiRect();
             return Points.FindBoundingBox();
+        }
+
+        // see: https://stackoverflow.com/questions/4243042/c-sharp-point-in-polygon
+        /// <summary>
+        /// Determines if the given point is inside the polygon
+        /// </summary>
+        /// <param name="polygon">the vertices of polygon</param>
+        /// <param name="testPoint">the given point</param>
+        /// <returns>true if the point is inside the polygon; otherwise, false</returns>
+        private static bool IsPointInPolygon4(AnyUiPoint[] polygon, AnyUiPoint testPoint)
+        {
+            bool result = false;
+            int j = polygon.Count() - 1;
+            for (int i = 0; i < polygon.Count(); i++)
+            {
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+                {
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+        public override bool IsHit(AnyUiPoint pt)
+        {
+            if (Points == null || Points.Count < 1)
+                return false;
+
+            return IsPointInPolygon4(Points.ToArray(), pt);
         }
     }
 
@@ -1090,6 +1159,25 @@ namespace AnyUi
         public string ISO3166Code = "";
     }
 
+    public class AnyUiBitmapInfo
+    {
+        /// <summary>
+        /// The bitmap data; as anonymous object (because of dependencies). 
+        /// Expected is a BitmapSource/ ImageSource.
+        /// </summary>
+        public object ImageSource;
+
+        /// <summary>
+        /// Pixel-dimensions of the bitmap given by providing functionality.
+        /// </summary>
+        public double PixelWidth, PixelHeight;
+
+        /// <summary>
+        /// Bitmap as data bytes in PNG-format.
+        /// </summary>
+        public byte[] PngData;
+    }
+
     public class AnyUiImage : AnyUiFrameworkElement
     {
 
@@ -1103,8 +1191,8 @@ namespace AnyUi
         /// Probably a ImageSource
         /// Setting touches to update
         /// </summary>
-        public object Bitmap { get { return _bitmap; } set { _bitmap = value; ReGuid(); Touch(); } }
-        private object _bitmap = null;
+        public AnyUiBitmapInfo BitmapInfo { get { return _bitmapInfo; } set { _bitmapInfo = value; ReGuid(); Touch(); } }
+        private AnyUiBitmapInfo _bitmapInfo = null;
 
         /// <summary>
         /// Stretch mode

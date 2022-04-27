@@ -619,14 +619,14 @@
                     {
                         Program.loadAasx(bi, bi.aasxFiles[aasIndex]);
                         Program.signalNewData(3, bi.sessionNumber);
-                        // StateHasChanged();
+                    // StateHasChanged();
 
-                        // dísable features in MainLayout?
-                        if (Layout != null && header >= 0 && header <= 2)
+                    // dísable features in MainLayout?
+                    if (Layout != null && header >= 0 && header <= 2)
                             Layout.ShowHeader = header;
 
-                        // only here, we can changed to SM / plugin
-                        Item itsm = null;
+                    // only here, we can changed to SM / plugin
+                    Item itsm = null;
                         if (smId != null && pluginTag != null)
                             itsm = Items?.FindSubmodelPlugin(smId, pluginTag);
                         else
@@ -660,9 +660,21 @@
                     newDataMode = ndm.signalNewDataMode;
 
                 // some events may affect
-                if (ndm.signalNewLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi)
+                if (ndm.signalNewLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi lapu)
+                {                    
+                    if (!lapu.PluginName.HasContent())
+                    {
+                        // special case: Do NOT involve plugin, just update values of elemt
+                        // without updating the complete razor
+                        UpdateTreeWithTouchedValues();
+
+                        // stop the flow here
+                        return;
+                    }
+
                     // force the sticky update mode to true
                     _onlyUpdatePluginUi = true;
+                }
 
                 if (ndm.onlyUpdateAasxPanel)
                     _onlyUpdatePluginUi = true;
@@ -687,6 +699,25 @@
     }
 
     bool update = true;
+
+    protected void UpdateTreeWithTouchedValues()
+    {
+        // access
+        var root = bi.stack17;
+        if (root == null)
+            return;
+
+        // recurse over all
+        foreach (var el in root.FindAll())
+            if (el?.Touched == true && el.DisplayData is AnyUiDisplayDataHtml dd)
+            {
+                // clear
+                el.Touched = false;
+
+                // trigger action
+                dd.TouchLambda?.Invoke(el);
+            }
+    }
 
     string updateVisibleTree(List<Item> viewItems, Item selectedNode)
     {

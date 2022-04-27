@@ -178,7 +178,7 @@ namespace AnyUi
             AnyUiGrid g, int row, int col,
             AnyUiThickness margin = null,
             AnyUiStretch? stretch = null,
-            object bitmap = null)
+            AnyUiBitmapInfo bitmap = null)
         {
             var img = new AnyUiImage();
             if (margin != null)
@@ -186,7 +186,7 @@ namespace AnyUi
             if (stretch != null)
                 img.Stretch = stretch.Value;
             if (bitmap != null)
-                img.Bitmap = bitmap;
+                img.BitmapInfo = bitmap;
             AnyUiGrid.SetRow(img, row);
             AnyUiGrid.SetColumn(img, col);
             g.Children.Add(img);

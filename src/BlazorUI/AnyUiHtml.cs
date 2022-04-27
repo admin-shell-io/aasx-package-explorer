@@ -59,11 +59,20 @@ namespace AnyUi
     {
         [JsonIgnore]
         public AnyUiDisplayContextHtml _context;
+
+        [JsonIgnore]
         public ComponentBase _component;
 
-        public AnyUiDisplayDataHtml(AnyUiDisplayContextHtml context)
+        [JsonIgnore]
+        public Action<AnyUiUIElement> TouchLambda;
+
+        public AnyUiDisplayDataHtml(
+            AnyUiDisplayContextHtml context,
+            Action<AnyUiUIElement> touchLambda = null)
         {
             _context = context;
+            if (touchLambda != null)
+                TouchLambda = touchLambda;
         }
 
         public double GetScale() => 1.4;
@@ -198,7 +207,7 @@ namespace AnyUi
 
         public static void setValueLambdaHtml(AnyUiUIElement el, object o)
         {
-            var dc = (el.DisplayData as AnyUiDisplayDataHtml)?._context;
+            var dc = (el?.DisplayData as AnyUiDisplayDataHtml)?._context;
             if (dc != null)
             {
                 var sessionNumber = dc._bi.sessionNumber;
@@ -372,7 +381,7 @@ namespace AnyUi
             if (el is AnyUiImage elimg)
             {
                 if (elimg.Touched
-                    && elimg.Bitmap is System.Windows.Media.Imaging.BitmapImage bi
+                    && elimg.BitmapInfo?.ImageSource is System.Windows.Media.Imaging.BitmapImage bi
                     && elimg.DisplayData is AnyUiDisplayDataHtml eldd
                     && eldd._component is AnyUiRenderImage elri)
                 {

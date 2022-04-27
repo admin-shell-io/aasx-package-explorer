@@ -35,10 +35,16 @@ namespace BlazorUI.Controllers
             var img = AnyUiImage.FindImage(id);
             if (img != null)
             {
-                if (img?.Bitmap is BitmapSource bitmap)
+                if (img.BitmapInfo?.PngData != null)
+                {
+                    return base.File(img.BitmapInfo.PngData, "image/png");
+                }
+                
+                if (img?.BitmapInfo?.ImageSource is BitmapSource bitmap)
                 {
                     BitmapEncoder encoder = new PngBitmapEncoder();
-                    encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                    var bmp = new WriteableBitmap(bitmap);
+                    encoder.Frames.Add(BitmapFrame.Create(bmp));
 
                     using (var memStream = new System.IO.MemoryStream())
                     {
