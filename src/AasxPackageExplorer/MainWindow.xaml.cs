@@ -788,7 +788,7 @@ namespace AasxPackageExplorer
                 {
                     if (restRepository.IsAspNetConnection)
                     {
-                        var container = restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
                         if (container != null)
                         {
                             UiLoadPackageWithNew(_packageCentral.MainItem,

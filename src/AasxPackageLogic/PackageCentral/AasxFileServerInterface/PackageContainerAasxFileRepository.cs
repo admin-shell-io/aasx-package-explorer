@@ -54,9 +54,9 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             }
         }
 
-        public AasxFilePackageContainerBase LoadAasxFileFromServer(string packageId, PackCntRuntimeOptions runtimeOptions)
+        public async Task<AasxFilePackageContainerBase> LoadAasxFileFromServer(string packageId, PackCntRuntimeOptions runtimeOptions)
         {
-            string fileName = _aasxFileService.LoadAasxPackage(packageId, runtimeOptions);
+            string fileName = await _aasxFileService.LoadAasxPackageAsync(packageId, runtimeOptions);
 
             if (!String.IsNullOrEmpty(fileName))
             {

@@ -17,6 +17,7 @@ using AdminShellNS;
 using IO.Swagger.Api;
 using IO.Swagger.Client;
 using Microsoft.IdentityModel.Tokens;
+using RestSharp;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -59,13 +60,16 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         try
                         {
-                            var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId));
+                            var aasAndAsset = _fileApiInstance.GetAssetAdministrationShellAndAssetByPackageId(Base64UrlEncoder.Encode(packageDescription.PackageId), Base64UrlEncoder.Encode(aasId));
+                            //var aas = _aasApiInstace.GetAssetAdministrationShellById(Base64UrlEncoder.Encode(aasId))
+                            var aas = aasAndAsset.aas;
                             if (aas != null)
                             {
                                 //Get Asset
                                 try
                                 {
-                                    var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId));
+                                    var asset = aasAndAsset.asset;
+                                    //var asset = _aasApiInstace.GetAssetInformation(Base64UrlEncoder.Encode(aasId))
                                     if (asset != null)
                                     {
                                         var packageContainer = new PackageContainerRepoItem()
@@ -156,47 +160,17 @@ namespace AasxPackageLogic.PackageCentral
             return Task.CompletedTask;
         }
 
-        internal string LoadAasxPackage(string packageId, PackCntRuntimeOptions runtimeOptions)
+        internal async Task<string> LoadAasxPackageAsync(string packageId, PackCntRuntimeOptions runtimeOptions)
         {
             try
             {
-                var response = _fileApiInstance.GetAASXByPackageIdWithHttpInfo(Base64UrlEncoder.Encode(packageId));
+                var delegateInstance = new SaveAasxPackageToFile(runtimeOptions);
+                var response = await _fileApiInstance.GetAASXByPackageIdWithHttpInfo(Base64UrlEncoder.Encode(packageId), delegateInstance.Action);
                 if (response != null)
                 {
                     if (response.StatusCode == 200)
                     {
-                        var fileContent = response.Data;
-                        var stream = new MemoryStream(fileContent);
-                        response.Headers.TryGetValue("X-FileName", out string fileName);
-                        response.Headers.TryGetValue("ContentLength", out string contentLength);
-                        long.TryParse(contentLength, out long fileSize);
-
-                        using (var file = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
-                        {
-                            var buffer = new byte[4024];
-                            long totalBytes = 0;
-                            int currentBlockSize = 0;
-
-                            while ((currentBlockSize = stream.Read(buffer, 0, buffer.Length)) > 0)
-                            {
-                                totalBytes += currentBlockSize;
-
-                                file.Write(buffer, 0, currentBlockSize);
-
-                                if (fileSize > totalBytes)
-                                {
-                                    runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
-                                    fileSize, totalBytes);
-                                }
-
-                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
-                                runtimeOptions?.Log?.Info($".. download done with {totalBytes} bytes read!");
-                            }
-
-                            file.Close();
-                        }
-
-                        return fileName;
+                        return delegateInstance.FileName;
                     }
                     else
                     {
@@ -212,6 +186,57 @@ namespace AasxPackageLogic.PackageCentral
 
             //TODO (jtikekar, 2022-04-04): Change
             return null;
+        }
+
+        class SaveAasxPackageToFile
+        {
+            private PackCntRuntimeOptions runtimeOptions;
+            public string FileName { get; set; }
+            internal SaveAasxPackageToFile(PackCntRuntimeOptions runtimeOptions)
+            {
+                this.runtimeOptions = runtimeOptions;
+            }
+
+            internal void Action(Stream str, IHttpResponse httpResp)
+            {
+                if (httpResp.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    var headerDict = httpResp.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value));
+                    headerDict.TryGetValue("X-FileName", out string fileName);
+                    headerDict.TryGetValue("Content-Length", out string contentLength);
+                    long.TryParse(contentLength, out long fileSize);
+
+                    using (var file = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        var buffer = new byte[100000];
+                        long totalBytes = 0;
+                        int currentBlockSize = 0;
+
+                        while ((currentBlockSize = str.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            totalBytes += currentBlockSize;
+
+                            file.Write(buffer, 0, currentBlockSize);
+
+                            if (fileSize > totalBytes)
+                            {
+                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                                fileSize, totalBytes);
+                            }
+                            else
+                            {
+                                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
+                                runtimeOptions?.Log?.Info($".. download done with {totalBytes} bytes read!");
+                            }
+
+                        }
+
+                        file.Close();
+                        str.Close();
+                    }
+                    this.FileName = fileName;
+                }
+            }
         }
     }
 }
