@@ -393,13 +393,21 @@ Robin,
 
 ## AasxFileServerRestLibrary\Api\AASXFileServerInterfaceApi.cs
 
-[Line 314, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AASXFileServerInterfaceApi.cs#L314
+[Line 317, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AASXFileServerInterfaceApi.cs#L317
 ), 
 jtikekar,
 2022-04-04
 
     Change
+
+[Line 1212, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Api/AASXFileServerInterfaceApi.cs#L1212
+), 
+jtikekar,
+2022-04-04
+
+    Change duting V3 upgrade
 
 ## AasxFileServerRestLibrary\Api\AssetAdministrationShellInterfaceApi.cs
 
@@ -479,8 +487,16 @@ jtikekar,
 
     May need to change response.Result
 
-[Line 333, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/ApiClient.cs#L333
+[Line 253, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/ApiClient.cs#L253
+), 
+jtikekar,
+2022-04-04
+
+    May need to change response.Result
+
+[Line 365, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxFileServerRestLibrary/Client/ApiClient.cs#L365
 ), 
 jtikekar,
 2022-04-04
@@ -760,16 +776,16 @@ MIHO,
 
 ## AasxPackageLogic\PackageCentral\AasxFileServerInterface\AasxFileServerInterfaceService.cs
 
-[Line 142, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L142
+[Line 146, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L146
 ), 
 jtikekar,
 2022-04-04
 
     aasIds?
 
-[Line 213, column 13](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L213
+[Line 187, column 13](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageLogic/PackageCentral/AasxFileServerInterface/AasxFileServerInterfaceService.cs#L187
 ), 
 jtikekar,
 2022-04-04
