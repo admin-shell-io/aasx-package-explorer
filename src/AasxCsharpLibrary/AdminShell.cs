@@ -1617,6 +1617,27 @@ namespace AdminShellNS
                 return res;
             }
 
+            public string GetExactStrForLang(string lang)
+            {
+                // start
+                if (lang == null)
+                    return null;
+                string res = null;
+
+                // exact search
+                foreach (var ls in this)
+                    if (ls.lang.Trim().ToLower() == lang)
+                        res = ls.str;
+
+                // found?
+                return res;
+            }
+
+            public bool ContainsLang(string lang)
+            {
+                return GetExactStrForLang(lang) != null;
+            }
+
             public bool AllLangSameString()
             {
                 if (this.Count < 2)
@@ -6543,7 +6564,8 @@ namespace AdminShellNS
             // a little more business logic
 
             public T CreateSMEForCD<T>(ConceptDescription cd, string category = null, string idShort = null,
-                string idxTemplate = null, int maxNum = 999, bool addSme = false) where T : SubmodelElement, new()
+                string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
+                where T : SubmodelElement, new()
             {
                 // access
                 if (cd == null)
@@ -6571,6 +6593,8 @@ namespace AdminShellNS
                 };
                 if (category != null)
                     sme.category = category;
+                if (isTemplate)
+                    sme.kind = ModelingKind.CreateAsTemplate();
 
                 // if its a SMC, make sure its accessible
                 if (sme is SubmodelElementCollection smc)
@@ -7246,15 +7270,15 @@ namespace AdminShellNS
                     "boolean", "date", "dateTime",
                     "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
                     "positiveInteger",
-                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                    "double", "duration",
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger",
+                    "negativeInteger", "double", "duration",
                     "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" };
 
             public static string[] ValueTypes_Number = new[] {
                     "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
                     "positiveInteger",
-                    "unsignedLong", "unsignedShort", "unsignedByte", "nonPositiveInteger", "negativeInteger",
-                    "double", "float" };
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte", "nonPositiveInteger",
+                    "negativeInteger", "double", "float" };
 
             public DataElement() { }
 
@@ -8140,6 +8164,7 @@ namespace AdminShellNS
 
                 this.ordered = src.ordered;
                 this.allowDuplicates = src.allowDuplicates;
+                this.value = new SubmodelElementWrapperCollection();
                 if (!shallowCopy)
                     foreach (var smw in src.value)
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));

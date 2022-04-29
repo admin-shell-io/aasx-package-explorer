@@ -1,73 +1,74 @@
 {
-    /* "AasxToLoad" :  "sample-techdata.aasx", */
-    /* "AasxToLoad": "..\\..\\..\\..\\AasxToolkit\\bin\\Debug\\sample.aasx", */
-    /* "AasxToLoad": "sample-hsu.aasx", */
-    /* "AasxToLoad": "MTPsample.aasx", */
-    /* "AasxToLoad": "sample-generated-modified.aasx", */
-    /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
-    /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
-    /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
-    "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
-    /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
-    /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
-    /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
-    /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
-    /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
-    /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
-    "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
-    "WindowLeft": -1,
-    "WindowTop": -1,
-    "WindowWidth": 900,
-    "WindowHeight": 600,
-    "WindowMaximized": false,
-    "TemplateIdAas": "www.example.com/ids/aas/DDDD_DDDD_DDDD_DDDD",
-    "TemplateIdAsset": "www.example.com/ids/asset/DDDD_DDDD_DDDD_DDDD",
-    "TemplateIdSubmodelInstance": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
-    "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
-    "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
-    "EclassDir": ".\\eclass\\",
-    /* "LogoFile": "SpecPI40_t.png", */
-    "LogoFile": "SpecPI40_t.png",
-    "QualifiersFile": "qualifier-presets.json",
-    "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
-    "UseFlyovers": true,
-    "SplashTime": 1000,
-    "InternalBrowser": false,
-    "EclassTwoPass": true,
-    "BackupDir": ".\\backup",
-    "BackupFiles": 10,
-    "RestServerHost": "localhost",
-    "RestServerPort": "1111",
-    "WriteDefaultOptionsFN": null /* "options-written.json" */,
-    "IndirectLoadSave": true,
-    "AccentColors": {},
-    "LoadWithoutPrompt": true,
-    "ShowIdAsIri": false,
-    "VerboseConnect": true,
-    "DefaultStayConnected": true,
-    "DefaultUpdatePeriod": 1000,
-    "StayConnectOptions": "REST-QUEUE", // SIM
-    /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
-    /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
-    /* "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711", */
-    "DefaultConnectRepositoryLocation": "https://admin-shell-io.com/51711",
-    "MqttPublisherOptions": {
-        "BrokerUrl": "192.168.178.97:1883",
-        "MqttRetain": false,
-        "EnableFirstPublish": true,
-        "FirstTopicAAS": "AAS",
-        "FirstTopicSubmodel": "{aas}/Submodel_{sm}",
-        "EnableEventPublish": true,
-        "EventTopic": "Events/aas/{aas}/sm/{sm}/{path}",
-        "SingleValuePublish": true,
-        "SingleValueFirstTime": true,
-        "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
-    },
-    "Remarks": [
-        "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
-    ],
-    "PluginDll": [
-        /*
+  /* "AasxToLoad" :  "sample-techdata.aasx", */
+  /* "AasxToLoad": "..\\..\\..\\..\\AasxToolkit\\bin\\Debug\\sample.aasx", */
+  /* "AasxToLoad": "sample-hsu.aasx", */
+  /* "AasxToLoad": "MTPsample.aasx", */
+  /* "AasxToLoad": "sample-generated-modified.aasx", */
+  /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
+  /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json", */
+  "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\Siemens_Festo_Component\\Siemens-Festo-Assembly-repo-local.json",
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
+  /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
+  /*"AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
+  "WindowLeft": -1,
+  "WindowTop": -1,
+  "WindowWidth": 900,
+  "WindowHeight": 600,
+  "WindowMaximized": false,
+  "TemplateIdAas": "www.example.com/ids/aas/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdAsset": "www.example.com/ids/asset/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelInstance": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
+  "EclassDir": ".\\eclass\\",
+  "DictImportDir": "C:\\MIHO\\Develop\\Aasx\\aasx-package-explorer\\src\\AasxPackageExplorer\\bin\\x64\\Debug\\net472",
+  /* "LogoFile": "SpecPI40_t.png", */
+  "LogoFile": "SpecPI40_t.png",
+  "QualifiersFile": "qualifier-presets.json",
+  "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
+  "UseFlyovers": true,
+  "SplashTime": 1000,
+  "InternalBrowser": false,
+  "EclassTwoPass": true,
+  "BackupDir": ".\\backup",
+  "BackupFiles": 10,
+  "RestServerHost": "localhost",
+  "RestServerPort": "1111",
+  "WriteDefaultOptionsFN": null /* "options-written.json" */,
+  "IndirectLoadSave": true,
+  "AccentColors": {},
+  "LoadWithoutPrompt": true,
+  "ShowIdAsIri": false,
+  "VerboseConnect": true,
+  "DefaultStayConnected": true,
+  "DefaultUpdatePeriod": 1000,
+  "StayConnectOptions": "REST-QUEUE", // SIM
+  /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
+  /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
+  /* "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711", */
+  "DefaultConnectRepositoryLocation": "https://admin-shell-io.com/51711",
+  "MqttPublisherOptions": {
+    "BrokerUrl": "192.168.178.97:1883",
+    "MqttRetain": false,
+    "EnableFirstPublish": true,
+    "FirstTopicAAS": "AAS",
+    "FirstTopicSubmodel": "{aas}/Submodel_{sm}",
+    "EnableEventPublish": true,
+    "EventTopic": "Events/aas/{aas}/sm/{sm}/{path}",
+    "SingleValuePublish": true,
+    "SingleValueFirstTime": true,
+    "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
+  },
+  "Remarks": [
+    "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
+  ],
+  "PluginDll": [
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -85,50 +86,6 @@
       "Args": [],
       "Options": null
     }, */
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
-            "Args": []
-        },
-        {
-            "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
-            "Args": []
-        } /*,
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",

@@ -56,7 +56,7 @@
                 "Multiplicity": "One",
                 "IsReadOnly": false,
                 "allowedValueTypes": [
-                  ""
+                  "string"
                 ],
                 "presetValue": ""
               },
@@ -79,7 +79,7 @@
                 "presetMimeType": ""
               },
               {
-                "$type": "FormProperty",
+                "$type": "FormMultiLangProp",
                 "FormTitle": "ManufacturerProductDesignation",
                 "FormEditIdShort": false,
                 "FormEditDescription": false,
@@ -93,11 +93,7 @@
                   "idType": "IRI"
                 },
                 "Multiplicity": "One",
-                "IsReadOnly": false,
-                "allowedValueTypes": [
-                  "string"
-                ],
-                "presetValue": ""
+                "IsReadOnly": false
               },
               {
                 "$type": "FormProperty",
@@ -400,7 +396,7 @@
             "IsReadOnly": false,
             "value": [
               {
-                "$type": "FormProperty",
+                "$type": "FormMultiLangProp",
                 "FormTitle": "TextStatement",
                 "FormEditIdShort": false,
                 "FormEditDescription": false,
@@ -414,11 +410,7 @@
                   "idType": "IRI"
                 },
                 "Multiplicity": "ZeroToMany",
-                "IsReadOnly": false,
-                "allowedValueTypes": [
-                  "string"
-                ],
-                "presetValue": ""
+                "IsReadOnly": false
               },
               {
                 "$type": "FormProperty",

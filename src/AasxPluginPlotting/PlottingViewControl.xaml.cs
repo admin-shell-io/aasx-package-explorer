@@ -1721,11 +1721,39 @@ namespace AasxPluginPlotting
                 // plot arguments for time series
                 tsd.Args = PlotArguments.Parse(smcts.HasQualifierOfType("TimeSeries.Args")?.value);
 
-                // find segements
-                foreach (var smcseg in smcts.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    pcts.CD_TimeSeriesSegment.GetReference(), mm))
+                var tssReference = pcts.CD_TimeSeriesSegment.GetReference();
+                var smcAllValues = smcts.value.
+                    FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
+
+                // If we have a SubmodelCollection where the TimeSeries data is at the properties level
+                // this loop iterates through it and adds the data to the time series plot. Otherwise, if no
+                // SubmodelCollections were found (count = 0), it will look one level deeper and check if elements
+                // from type SubmodelElementCollection are found there, adding them to the plot afterwards too.
+                // resharper disable once PossibleMultipleEnumeration
+                if (smcAllValues.Count() != 0)
                 {
-                    TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
+                    // find segments
+                    // resharper disable once PossibleMultipleEnumeration
+                    foreach (var smcseg in smcAllValues)
+                    {
+                        TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
+                    }
+                }
+                else
+                {
+                    foreach (var v in smcts.value)
+                    {
+                        if (v.submodelElement is AdminShell.SubmodelElementCollection sme)
+                        {
+                            smcAllValues = sme.value.
+                                FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(tssReference, mm);
+                            // find segements
+                            foreach (var smcseg in smcAllValues)
+                            {
+                                TimeSeriesAddSegmentData(pcts, mm, tsd, smcseg);
+                            }
+                        }
+                    }
                 }
             }
 

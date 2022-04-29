@@ -63,8 +63,10 @@ namespace AasxIntegrationBase.AasForms
             AdminShell.SubmodelElementWrapperCollection collection, AdminShell.SubmodelElement sme)
         {
             // access
-            if (collection == null || sme == null)
+            if (sme == null)
                 return;
+
+            collection = collection ?? new AdminShell.SubmodelElementWrapperCollection();
 
             // check, if to make idShort unique?
             if (sme.idShort.Contains("{0"))
@@ -788,24 +790,29 @@ namespace AasxIntegrationBase.AasForms
             // check, if a source is present
             this.sourceSme = source;
             var pSource = this.sourceSme as AdminShell.Property;
-            if (pSource != null)
+
+            // If the source element has a value, keep it. Otherwise, look for
+            // a default value and apply that.
+            if (!String.IsNullOrEmpty(pSource?.value))
             {
-                // take over
-                p.valueType = pSource.valueType;
                 p.value = pSource.value;
             }
-            else
+            else if (!String.IsNullOrWhiteSpace(parentDesc.presetValue))
             {
-                // some more preferences
-                if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.valueType = parentDesc.allowedValueTypes[0];
+                p.value = parentDesc.presetValue;
+                this.Touch();
+            }
 
-                if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
-                {
-                    p.value = parentDesc.presetValue;
-                    // immediately set touched in order to have this value saved
-                    this.Touch();
-                }
+            // If the source element has a valueType, keep it. Otherwise, look for
+            // a default valueType and apply that.
+            if (!String.IsNullOrWhiteSpace(pSource?.valueType))
+            {
+                p.valueType = pSource.valueType;
+            }
+            else if (parentDesc.allowedValueTypes.Length == 1)
+            {
+                p.valueType = parentDesc.allowedValueTypes[0];
+                this.Touch();
             }
 
             // create user control
@@ -996,6 +1003,7 @@ namespace AasxIntegrationBase.AasForms
 
                             // save
                             file.value = targetPath + targetFn;
+                            file.mimeType = AdminShellPackageEnv.GuessMimeType(targetFn);
 
                             if (addFilesToPackage)
                             {
@@ -1017,6 +1025,7 @@ namespace AasxIntegrationBase.AasForms
             if (file != null && Touched && fileSource != null && editSource)
             {
                 fileSource.value = file.value;
+                fileSource.mimeType = file.mimeType;
                 return false;
             }
             return true;

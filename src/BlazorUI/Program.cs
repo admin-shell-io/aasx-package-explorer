@@ -45,8 +45,6 @@ namespace BlazorUI
 
         public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
         {
-            // resharper disable once NotAccessedVariable.Compiler
-            int i = 0;
         }
     }
     public class Program

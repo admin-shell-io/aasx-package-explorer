@@ -334,6 +334,9 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
+        //This is for Asp.NetCore Rest APIs
+        public string PackageId { get; internal set; }
+
         public override void Close()
         {
             base.Close();

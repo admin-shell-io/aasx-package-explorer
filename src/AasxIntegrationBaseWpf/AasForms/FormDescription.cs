@@ -483,6 +483,10 @@ namespace AasxIntegrationBase.AasForms
             this.InitSme(res);
             if (this.presetValue != null)
                 res.value = this.presetValue;
+            if (this.allowedValueTypes.Length == 1)
+            {
+                res.valueType = this.allowedValueTypes[0];
+            }
             return res;
         }
     }
@@ -490,7 +494,7 @@ namespace AasxIntegrationBase.AasForms
     [DisplayName("FormMultiLangProp")]
     public class FormDescMultiLangProp : FormDescSubmodelElement
     {
-        public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "cn", "kr" };
+        public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "zh", "kr" };
 
         public FormDescMultiLangProp() { }
 

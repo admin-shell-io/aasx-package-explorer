@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using AasxPackageLogic;
+using JetBrains.Annotations;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using File = System.IO.File;
 using InvalidOperationException = System.InvalidOperationException;
@@ -26,6 +28,8 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
+    // ReSharper disable UnusedType.Global
     public class TestParseArguments
     {
         [Test]
@@ -261,6 +265,8 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
+    // ReSharper disable UnusedType.Global
     public class TestLoadPlugins
     {
         [Test]

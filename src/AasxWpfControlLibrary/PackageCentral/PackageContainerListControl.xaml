@@ -35,6 +35,11 @@
                         <TextBlock Text="&#x2702;"/>
                     </MenuItem.Icon>
                 </MenuItem>
+                <MenuItem Name="MenuItemDeleteFromFileRepo" Header="Delete From AASX File Repository" Click="MenuItem_Click">
+                    <MenuItem.Icon>
+                        <TextBlock Text="&#x2702;"/>
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Name="MenuItemMoveUp" Header="Move Up" Click="MenuItem_Click">
                     <MenuItem.Icon>
                         <TextBlock Text="&#x25b2;"/>
