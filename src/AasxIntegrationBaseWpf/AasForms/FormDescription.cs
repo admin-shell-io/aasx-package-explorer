@@ -641,4 +641,112 @@ namespace AasxIntegrationBase.AasForms
 
     }
 
+    [DisplayName("FormDescRelationshipElement")]
+    public class FormDescRelationshipElement : FormDescSubmodelElement
+    {
+        /// <summary>
+        /// pre-set a filter for allowed SubmodelElement types.
+        /// </summary>
+        [JsonProperty(Order = 20)]
+        public string presetFilter = "";
+
+        public FormDescRelationshipElement() { }
+
+        // Constructors
+        //=============
+
+        public FormDescRelationshipElement(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false,
+            string presetFilter = null)
+            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+        {
+            if (presetFilter != null)
+                this.presetFilter = presetFilter;
+        }
+
+        public FormDescRelationshipElement(FormDescRelationshipElement other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.presetFilter = other.presetFilter;
+        }
+
+        public override FormDescSubmodelElement Clone()
+        {
+            return new FormDescRelationshipElement(this);
+        }
+
+        /// <summary>
+        /// Build a new instance, based on the description data
+        /// </summary>
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        {
+            return new FormInstanceRelationshipElement(parentInstance, this, source);
+        }
+
+        public AdminShell.RelationshipElement GenerateDefault()
+        {
+            var res = new AdminShell.RelationshipElement();
+            this.InitSme(res);
+            return res;
+        }
+
+    }
+
+    [DisplayName("FormDescCapability")]
+    public class FormDescCapability : FormDescSubmodelElement
+    {
+        /// <summary>
+        /// pre-set a filter for allowed SubmodelElement types.
+        /// </summary>
+        [JsonProperty(Order = 20)]
+        public string presetFilter = "";
+
+        public FormDescCapability() { }
+
+        // Constructors
+        //=============
+
+        public FormDescCapability(
+            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string presetIdShort, string formInfo = null, bool isReadOnly = false,
+            string presetFilter = null)
+            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+        {
+            if (presetFilter != null)
+                this.presetFilter = presetFilter;
+        }
+
+        public FormDescCapability(FormDescCapability other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.presetFilter = other.presetFilter;
+        }
+
+        public override FormDescSubmodelElement Clone()
+        {
+            return new FormDescCapability(this);
+        }
+
+        /// <summary>
+        /// Build a new instance, based on the description data
+        /// </summary>
+        public override FormInstanceSubmodelElement CreateInstance(
+            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+        {
+            return new FormInstanceCapability(parentInstance, this, source);
+        }
+
+        public AdminShell.Capability GenerateDefault()
+        {
+            var res = new AdminShell.Capability();
+            this.InitSme(res);
+            return res;
+        }
+
+    }
+
 }
