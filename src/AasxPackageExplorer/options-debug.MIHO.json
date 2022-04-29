@@ -87,132 +87,133 @@
       "Options": null
     }, */
     // Festo specific from here on
+    /*
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
       "Args": []
     },
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
-      "Args": [] 
+      "Args": []
     }
     */
-    ],
-    "SecureConnectPresets": [
-        {
-            "Name": "Internet Demo",
-            "Protocol": {
-                "Value": "Azure",
-                "Choices": [
-                    "Unprotected",
-                    "OpenID Connect",
-                    "Azure"
-                ]
-            },
-            "AuthorizationServer": {
-                "Value": "http://auth1.phoenix.com",
-                "Choices": [
-                    "http://auth2.phoenix.com",
-                    "http://auth1.phoenix.com",
-                    "http://auth3.phoenix.com"
-                ]
-            },
-            "AasServer": {
-                "Value": "http://aas2.phoenix.com",
-                "Choices": [
-                    "http://aas3.phoenix.com",
-                    "http://aas2.phoenix.com",
-                    "http://aas1.phoenix.com"
-                ]
-            },
-            "CertificateFile": {
-                "Value": "wieso.txt",
-                "Choices": [
-                    "C:\\FILE1.TXT",
-                    "C:\\FILE2.TXT",
-                    "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
-                ]
-            },
-            "Password": {
-                "Value": "sescret",
-                "Choices": [
-                    "geheim",
-                    "hidden",
-                    "Pand0ra"
-                ]
-            }
-        },
-        {
-            "Name": "Only Intranet",
-            "Protocol": {
-                "Value": "Unprotected",
-                "Choices": [
-                    "Unprotected",
-                    "OpenID Connect",
-                    "Azure"
-                ]
-            },
-            "AuthorizationServer": {
-                "Value": "http://auth3.phoenix.com",
-                "Choices": [
-                    "http://auth2.phoenix.com",
-                    "http://auth1.phoenix.com",
-                    "http://auth3.phoenix.com"
-                ]
-            },
-            "AasServer": {
-                "Value": "http://aas1.phoenix.com",
-                "Choices": [
-                    "http://aas3.phoenix.com",
-                    "http://aas2.phoenix.com",
-                    "http://aas1.phoenix.com"
-                ]
-            },
-            "CertificateFile": {
-                "Value": "wieso22.txt",
-                "Choices": [
-                    "C:\\FILE1.TXT",
-                    "C:\\FILE2.TXT",
-                    "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
-                ]
-            }
-        }
-    ],
-    "IntegratedConnectPresets": [
-        {
-            "Name": "Empty",
-            "Location": "",
-            "Username": "",
-            "Password": ""
-        },
-        {
-            "Name": "First of admin-shell-io.com",
-            "Location": "http://admin-shell-io.com:51310/server/getaasx/0",
-            "Username": "",
-            "Password": "",
-            "StayConnected": true
-        },
-        {
-            "Name": "DEMO",
-            "Location": "http://demo/",
-            "Username": "Foo",
-            "Password": "Bar",
-            "AutoClose": false
-        },
-        {
-            "Name": "Long loading of admin-shell-io.com",
-            "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
-            "Username": "",
-            "Password": "",
-            "StayConnected": true,
-            "AutoClose": false
-        },
-        {
-            "Name": "Latest testing",
-            "Location": "http://admin-shell-io.com:52001/server/getaasx/0",
-            "Username": "",
-            "Password": "",
-            "StayConnected": true,
-            "AutoClose": false
-        }
-    ]
+  ],
+  "SecureConnectPresets": [
+      {
+          "Name": "Internet Demo",
+          "Protocol": {
+              "Value": "Azure",
+              "Choices": [
+                  "Unprotected",
+                  "OpenID Connect",
+                  "Azure"
+              ]
+          },
+          "AuthorizationServer": {
+              "Value": "http://auth1.phoenix.com",
+              "Choices": [
+                  "http://auth2.phoenix.com",
+                  "http://auth1.phoenix.com",
+                  "http://auth3.phoenix.com"
+              ]
+          },
+          "AasServer": {
+              "Value": "http://aas2.phoenix.com",
+              "Choices": [
+                  "http://aas3.phoenix.com",
+                  "http://aas2.phoenix.com",
+                  "http://aas1.phoenix.com"
+              ]
+          },
+          "CertificateFile": {
+              "Value": "wieso.txt",
+              "Choices": [
+                  "C:\\FILE1.TXT",
+                  "C:\\FILE2.TXT",
+                  "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+              ]
+          },
+          "Password": {
+              "Value": "sescret",
+              "Choices": [
+                  "geheim",
+                  "hidden",
+                  "Pand0ra"
+              ]
+          }
+      },
+      {
+          "Name": "Only Intranet",
+          "Protocol": {
+              "Value": "Unprotected",
+              "Choices": [
+                  "Unprotected",
+                  "OpenID Connect",
+                  "Azure"
+              ]
+          },
+          "AuthorizationServer": {
+              "Value": "http://auth3.phoenix.com",
+              "Choices": [
+                  "http://auth2.phoenix.com",
+                  "http://auth1.phoenix.com",
+                  "http://auth3.phoenix.com"
+              ]
+          },
+          "AasServer": {
+              "Value": "http://aas1.phoenix.com",
+              "Choices": [
+                  "http://aas3.phoenix.com",
+                  "http://aas2.phoenix.com",
+                  "http://aas1.phoenix.com"
+              ]
+          },
+          "CertificateFile": {
+              "Value": "wieso22.txt",
+              "Choices": [
+                  "C:\\FILE1.TXT",
+                  "C:\\FILE2.TXT",
+                  "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+              ]
+          }
+      }
+  ],
+  "IntegratedConnectPresets": [
+      {
+          "Name": "Empty",
+          "Location": "",
+          "Username": "",
+          "Password": ""
+      },
+      {
+          "Name": "First of admin-shell-io.com",
+          "Location": "http://admin-shell-io.com:51310/server/getaasx/0",
+          "Username": "",
+          "Password": "",
+          "StayConnected": true
+      },
+      {
+          "Name": "DEMO",
+          "Location": "http://demo/",
+          "Username": "Foo",
+          "Password": "Bar",
+          "AutoClose": false
+      },
+      {
+          "Name": "Long loading of admin-shell-io.com",
+          "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
+          "Username": "",
+          "Password": "",
+          "StayConnected": true,
+          "AutoClose": false
+      },
+      {
+          "Name": "Latest testing",
+          "Location": "http://admin-shell-io.com:52001/server/getaasx/0",
+          "Username": "",
+          "Password": "",
+          "StayConnected": true,
+          "AutoClose": false
+      }
+  ]
 }
