@@ -65,7 +65,7 @@ namespace AasxPluginExportTable.Uml
         {
             var one = AasFormConstants.FormMultiplicityAsUmlCardinality[(int)FormMultiplicity.One];
             string res = one;
-            var q = sme?.qualifiers.FindType("Multiplicity");
+            var q = sme?.qualifiers?.FindType("Multiplicity");
             if (q != null)
             {
                 foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
