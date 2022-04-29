@@ -19,8 +19,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Xml.Linq;
-using AasxPackageLogic;
 using AasxDictionaryImport.Model;
+using AasxPackageLogic;
+using AdminShellNS;
 
 namespace AasxDictionaryImport
 {
@@ -91,6 +92,8 @@ namespace AasxDictionaryImport
             LoadCachedImports();
         }
 
+        // ReSharper disable PossibleNullReferenceException
+
         private void LoadCachedImports()
         {
             var indexFile = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), $"cache.index.xml");
@@ -99,33 +102,37 @@ namespace AasxDictionaryImport
                 if (File.Exists(indexFile))
                 {
                     XDocument doc = XDocument.Load(indexFile);
-                    foreach (var cacheEl in doc.Root.Elements("CachedElement"))
-                    {
-                        var fileName = cacheEl.Attribute("FileName").Value;
-                        if (File.Exists(fileName) && cacheEl.Attribute("Source").Value.Equals("Online"))
+                    if (doc?.Root != null)
+                        foreach (var cacheEl in doc.Root.Elements("CachedElement"))
                         {
-                            ICollection<Model.IDataProvider> providers =
-                                DataProviders.Where(p => p.IsFetchSupported).ToList();
-                            foreach (var provider in providers)
+                            if (cacheEl == null)
+                                continue;
+                            var fileName = cacheEl.Attribute("FileName").Value;
+                            if (File.Exists(fileName) && cacheEl.Attribute("Source").Value.Equals("Online"))
                             {
-                                if (cacheEl.Attribute("Provider").Value.Equals(provider.Name))
+                                ICollection<Model.IDataProvider> providers =
+                                    DataProviders.Where(p => p.IsFetchSupported).ToList();
+                                foreach (var provider in providers)
                                 {
-                                    var source = provider.OpenPath(fileName, Model.DataSourceType.Online);
-                                    ComboBoxSource.Items.Add(source);
-                                    break;
+                                    if (cacheEl.Attribute("Provider").Value.Equals(provider.Name))
+                                    {
+                                        var source = provider.OpenPath(fileName, Model.DataSourceType.Online);
+                                        ComboBoxSource.Items.Add(source);
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
                 }
             }
-            catch (ArgumentNullException e)
+            catch (ArgumentNullException ex)
             {
                 /* Nothing to do */
+                LogInternally.That.SilentlyIgnoredError(ex);
             }
 
         }
-        
+
         private void SaveCachedIndex()
         {
             var indexFile = Path.Combine(Path.Combine(Path.GetTempPath(), $"aasx.import"), $"cache.index.xml");
@@ -146,6 +153,8 @@ namespace AasxDictionaryImport
             }
             doc.Save(indexFile);
         }
+
+        // ReSharper enable PossibleNullReferenceException
 
         public IEnumerable<Model.IElement> GetResult()
         {
@@ -206,7 +215,7 @@ namespace AasxDictionaryImport
             SaveCachedIndex();
             Close();
         }
-        
+
         private void ButtonCancel_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = false;

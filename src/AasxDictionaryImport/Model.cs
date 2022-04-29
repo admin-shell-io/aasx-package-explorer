@@ -75,6 +75,7 @@ namespace AasxDictionaryImport.Model
         /// returns true for this path, this method will always succeed.  Otherwise it will throw an exception.
         /// </summary>
         /// <param name="path">The path of the data set to open</param>
+        /// <param name="type">Type</param>
         /// <returns>A data source that reads from the given path</returns>
         /// <exception cref="ImportException">If the path could not be accessed or does not contain valid data for this
         /// data provider</exception>
