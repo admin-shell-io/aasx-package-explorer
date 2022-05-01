@@ -39,6 +39,7 @@
             <WrapPanel>
                 <Label Content="Source:" Margin="0,0,10,0" VerticalAlignment="Center"/>
                 <ComboBox x:Name="ComboBoxSource" Width="250" Margin="0,0,10,0" SelectionChanged="ComboBoxSource_SelectionChanged" VerticalAlignment="Center"/>
+                <Button Content="Clear" Margin="0,0,10,0" Padding="5,0" VerticalAlignment="Center" Click="ButtonClear_Click"/>
                 <Button Content="Open Local File" Padding="5,0" Click="ButtonOpenFile_Click" VerticalAlignment="Center" Margin="0,0,10,0"/>
                 <Button x:Name="ButtonFetchOnline" Content="Fetch Online" Padding="5,0" Click="ButtonFetchOnline_Click" VerticalAlignment="Center" Margin="0,0,10,0"/>
             </WrapPanel>
@@ -86,7 +87,7 @@
                   Click="CheckBoxAllIecCddAttributes_Click"/>
 
         <WrapPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,10,0,0" HorizontalAlignment="Right">
-            <Button Content="Cancel" Width="75" Margin="0,0,10,0" IsCancel="True"/>
+            <Button Content="Cancel" Width="75" Margin="0,0,10,0" IsCancel="True" Click="ButtonCancel_Click"/>
             <Button x:Name="ButtonImport" Content="Import" Width="75" IsDefault="True" IsEnabled="False" Click="ButtonImport_Click"/>
         </WrapPanel>
 
