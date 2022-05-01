@@ -52,6 +52,13 @@ namespace AasxPackageLogic
             public double ofs = 0.0;
 
             /// <summary>
+            /// C# string format string to format a double value pretty.
+            /// Note: e.g. F4 for 4 floating point precision digits.
+            /// Note: D0 for decimal integer
+            /// </summary>
+            public string fmt;
+
+            /// <summary>
             /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
             /// Applicable on: Submodel
             /// </summary>
@@ -160,6 +167,19 @@ namespace AasxPackageLogic
             {
                 // set value
                 prop.value = res.Value.ToString(CultureInfo.InvariantCulture);
+
+                // re-format?
+                if (args.fmt.HasContent())
+                {
+                    try
+                    {
+                        prop.value = res.Value.ToString(args.fmt, CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInternally.That.CompletelyIgnoredError(ex);
+                    }
+                }
 
                 // send event
                 if (emitEvent != null)

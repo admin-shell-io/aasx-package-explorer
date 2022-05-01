@@ -310,7 +310,7 @@ namespace AasxPluginTechnicalData
                         smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
                             theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
                         );
-                    imageManuLogo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                    imageManuLogo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                 }
 
                 // render information
@@ -359,7 +359,7 @@ namespace AasxPluginTechnicalData
                                 theDefs.CD_ProductImage.GetSingleKey()))
                 {
                     var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
-                    var imgInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                    var imgInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                     if (imgInfo != null)
                         pil.Add(imgInfo);
                 }

@@ -61,6 +61,8 @@ namespace AasxPluginImageMap
 
         public ImageMapAnyUiControl()
         {
+            // start a timer
+            AnyUiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
         }
 
         public void Start(
@@ -170,7 +172,7 @@ namespace AasxPluginImageMap
                     _showRegions = (bool) o;
                     
                     // will touch values for canvas
-                    SetRegions(forceTransparent: !_showRegions);
+                    RenderImageEntities(forceTransparent: !_showRegions);
 
                     // therefore no complete redraw
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
@@ -325,7 +327,7 @@ namespace AasxPluginImageMap
             //
 
             SetInfos();
-            SetRegions(forceTransparent: false && !_showRegions);
+            RenderImageEntities(forceTransparent: !_showRegions);
         }
 
 #endregion
@@ -365,7 +367,7 @@ namespace AasxPluginImageMap
 
             if (_backgroundImage != null && bi != null)
             {
-                _backgroundImage.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                _backgroundImage.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                 _backgroundSize = bi.Width + bi.Height;
             }
         }
@@ -377,7 +379,7 @@ namespace AasxPluginImageMap
             return String.Join(", ",
                 _clickedCoordinates.Select((cc) =>
                {
-                   return FormattableString.Invariant($"({cc.X:F1}, {cc.Y:F1})");
+                   return FormattableString.Invariant($"{cc.X:F1}, {cc.Y:F1}");
                }));
         }
 
@@ -423,11 +425,13 @@ namespace AasxPluginImageMap
                 new AnyUiBrush(textColor));
         }
 
-        private void SetRegions(bool forceTransparent)
+        private void RenderImageEntities(bool forceTransparent)
         {
             // access
             if (_submodel?.submodelElements == null || _canvas == null)
                 return;
+            var defs = AasxPredefinedConcepts.ImageMap.Static;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
 
             // result
             var res = new List<AnyUiUIElement>();
@@ -442,8 +446,7 @@ namespace AasxPluginImageMap
             // entities
             int index = -1;
             foreach (var ent in _submodel.submodelElements.FindAllSemanticIdAs<AdminShell.Entity>(
-                AasxPredefinedConcepts.ImageMap.Static.CD_EntityOfImageMap.GetReference(),
-                AdminShellV20.Key.MatchMode.Relaxed))
+                defs.CD_EntityOfImageMap.GetReference(), mm))
             {
                 // access
                 if (ent?.statements == null)
@@ -451,8 +454,7 @@ namespace AasxPluginImageMap
 
                 // find all regions known
                 foreach (var prect in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    defs.CD_RegionRect.GetReference(), mm))
                 {
                     // access
                     if (!(prect?.value.HasContent() == true))
@@ -499,8 +501,7 @@ namespace AasxPluginImageMap
                 }
 
                 foreach (var pcirc in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    defs.CD_RegionCircle.GetReference(), mm))
                 {
                     // access
                     if (!(pcirc?.value.HasContent() == true))
@@ -548,8 +549,7 @@ namespace AasxPluginImageMap
                 }
 
                 foreach (var ppoly in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon.GetReference(),
-                    AdminShellV20.Key.MatchMode.Relaxed))
+                    defs.CD_RegionPolygon.GetReference(), mm))
                 {
                     // access
                     if (!(ppoly?.value.HasContent() == true))
@@ -576,11 +576,8 @@ namespace AasxPluginImageMap
                         Points = pc,
                         Fill = cols.Item1,
                         Stroke = cols.Item2,
-                        StrokeThickness = 4.0f
+                        StrokeThickness = 1.0f
                     });
-                    //AddPolygon(this.CanvasContent, ppoly,
-                    //    pts,
-                    //    cols.Item1, cols.Item2);
 
                     // construct text
                     if (!forceTransparent)
@@ -605,7 +602,27 @@ namespace AasxPluginImageMap
                 }
             }
 
-            ;
+            // TEST
+
+            if (false)
+            {
+                res.Add(new AnyUiLabel()
+                {
+                    Tag = "TEST",
+                    X = 300,
+                    Y = 5,
+                    Width = 400,
+                    Height = 40,
+                    HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+                    HorizontalContentAlignment = AnyUiHorizontalAlignment.Center,
+                    VerticalAlignment = AnyUiVerticalAlignment.Center,
+                    VerticalContentAlignment = AnyUiVerticalAlignment.Center,
+                    Foreground = AnyUiBrushes.DarkBlue,
+                    Background = AnyUiBrushes.LightGray,
+                    FontSize = fontSize,
+                    Content = "TEST" + DateTime.UtcNow.ToString()
+                });
+            }
 
             // try sort in order not to click on the (large, rectangular) labels, but on the 
             // 'real' shapes
@@ -613,6 +630,400 @@ namespace AasxPluginImageMap
 
             // set
             _canvas.Children = res;
+        }
+
+        protected class DataPointInfo
+        {
+            public string Value, ValueType;
+            public ImageMapArguments Args;
+
+            public static DataPointInfo CreateFrom(AdminShell.SubmodelElement sme)
+            {
+                if (sme is AdminShell.Property prop)
+                    return new DataPointInfo()
+                    {
+                        Value = prop.value,
+                        ValueType = prop.valueType
+                    };
+
+                if (sme is AdminShell.MultiLanguageProperty mlp)
+                    return new DataPointInfo()
+                    {
+                        Value = mlp.value?.GetDefaultStr(),
+                        ValueType = "string"
+                    };
+
+                return null;
+            }
+
+            public double? EvalAsDouble(bool forceDouble = false)
+            {
+                // try to convert to double
+                var vt = ValueType?.Trim().ToLower();
+                if ((forceDouble || vt == "float" || vt == "double"))
+                {
+                    if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
+                    {
+                        try
+                        {
+                            return dbl;
+                        }
+                        catch
+                        {
+                            ;
+                        }
+                    }
+                }
+
+                // else: pass thru
+                return null;
+            }
+
+            public string EvalAsDisplayText()
+            {
+                // try to convert to double
+                var dbl = EvalAsDouble();
+                if (dbl.HasValue && Args?.fmt.HasContent() == true)
+                {
+                    try
+                    {
+                        return dbl.Value.ToString(Args.fmt, CultureInfo.InvariantCulture);
+                    }
+                    catch
+                    {
+                        ;
+                    }
+                }
+
+                // else: take as text
+                var res = Value;
+
+                // some manipulations?
+                res = AdminShellUtil.ReplacePercentPlaceholder(res, "%utc%",
+                    () => DateTime.UtcNow.ToString(), StringComparison.InvariantCultureIgnoreCase);
+
+                // ok
+                return res;
+            }
+
+            public AnyUiBrush EvalAsBrush()
+            {
+                // access
+                if (!Value.HasContent())
+                    return AnyUiBrushes.Transparent;
+
+                // work on and conditionally substitute value
+                var work = "" + Value;
+                
+                if (Args?.colorset != null)
+                {
+                    if (Args.colorset == ImageMapArguments.ColorSetType.Bool
+                        && Args.colors != null && Args.colors.Length >= 2)
+                    {
+                        // try eval boolean state
+                        var state = true;
+                        var tw = work.Trim().ToLower();
+                        if (tw == "" || tw == "0" || tw == "false")
+                            state = false;
+
+                        // simply pick color
+                        work = state ? Args.colors[1] : Args.colors[0];
+                    }
+
+                    if (Args.colorset == ImageMapArguments.ColorSetType.Switch
+                        && Args.colors != null && Args.colors.Length >= 2)
+                    {
+                        // try eval double value
+                        var dbl = EvalAsDouble();
+                        if (dbl.HasValue)
+                        {
+                            // eval boolean state
+                            var state = dbl.Value >= Args.level0;
+
+                            // simply pick color
+                            work = state ? Args.colors[1] : Args.colors[0];
+                        }
+                    }
+
+                    if (Args.colorset == ImageMapArguments.ColorSetType.Blend
+                        && Args.colors != null && Args.colors.Length >= 2
+                        && (Args.level1 - Args.level0) > 0.0001 )
+                    {
+                        // try eval double value
+                        var dbl = EvalAsDouble();
+                        if (dbl.HasValue)
+                        {
+                            // eval actual w.r.t levels
+                            var level = (dbl.Value - Args.level0) / (Args.level1 - Args.level0);
+
+                            // convert 2 colors
+                            var c0 = AnyUiColor.FromString(Args.colors[0]);
+                            var c1 = AnyUiColor.FromString(Args.colors[1]);
+
+                            // blend color
+                            var bc = AnyUiColor.Blend(c0, c1, level);
+                            work = bc.ToHtmlString(1);
+                        }
+                    }
+
+                    if (Args.colorset == ImageMapArguments.ColorSetType.Index
+                        && Args.colors != null && Args.colors.Length >= 1)
+                    {
+                        // try eval double value
+                        var dbl = EvalAsDouble();
+                        if (dbl.HasValue)
+                        {
+                            // eval index restricted to array limits
+                            var index = Math.Max(0, Math.Min(Args.colors.Length - 1,
+                                    Convert.ToInt32(dbl.Value)));
+
+                            // simply pick color
+                            work = Args.colors[index];
+                        }
+                    }
+                }
+
+                // finally try convert
+                var c = AnyUiColor.FromString(work);
+                return new AnyUiBrush(c);
+            }
+        }
+
+        private DataPointInfo EvalDataPoint(
+            AdminShell.SubmodelElementWrapperCollection smw,
+            AdminShell.Reference semId)
+        {
+            // access
+            if (smw == null || semId == null)
+                return null;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
+
+            DataPointInfo res = null;
+
+            // find a property?
+            AdminShell.SubmodelElement specSme = null;
+            foreach (var prop in smw.FindAllSemanticIdAs<AdminShell.Property>(semId, mm))
+            {
+                res = DataPointInfo.CreateFrom(prop);
+                if (res != null)
+                {
+                    specSme = prop;
+                    break;
+                }
+            }
+
+            foreach (var mlp in smw.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(semId, mm))
+            {
+                res = DataPointInfo.CreateFrom(mlp);
+                if (res != null)
+                {
+                    specSme = mlp;
+                    break;
+                }
+            }
+
+            foreach (var refe in smw.FindAllSemanticIdAs<AdminShell.ReferenceElement>(semId, mm))
+            {
+                // find reference target?
+                var targetSme = _package?.AasEnv?.FindReferableByReference(refe?.value) as AdminShell.SubmodelElement;
+                if (targetSme == null)
+                    continue;
+
+                // read
+                res = DataPointInfo.CreateFrom(targetSme);
+                if (res != null)
+                {
+                    specSme = refe;
+                    break;
+                }
+            }
+
+            // found?
+            if (res == null || specSme == null)
+                return null;
+
+            // find args?
+            var q = specSme.HasQualifierOfType("ImageMap.Args");
+            if (q != null)
+                res.Args = ImageMapArguments.Parse(q.value);
+
+            // OK
+            return res;
+        }
+
+        private void RenderVisuElems()
+        {
+            // access
+            if (_submodel?.submodelElements == null || _canvas == null)
+                return;
+            var defs = AasxPredefinedConcepts.ImageMap.Static;
+            var mm = AdminShell.Key.MatchMode.Relaxed;
+
+            // result
+            var res = new List<AnyUiUIElement>();
+
+            foreach (var smcVE in _submodel.submodelElements
+                .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    defs.CD_VisualElement.GetReference(), mm))
+            {
+                // access
+                if (smcVE?.value == null)
+                    continue;
+
+                // need a background shape (at least for the dimensions)
+                AnyUiShape backShape = null;
+
+                foreach (var prect in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                    defs.CD_RegionRect, mm))
+                {
+                    // access
+                    if (!(prect?.value.HasContent() == true))
+                        continue;
+                    var pts = ParseDoubles(prect.value);
+                    if (pts == null || pts.Length != 4)
+                        continue;
+                    if (pts[2] < pts[0] || pts[3] < pts[1])
+                        continue;
+
+                    // construct widget
+                    backShape = new AnyUiRectangle()
+                    {
+                        Tag = prect,
+                        X = pts[0],
+                        Y = pts[1],
+                        Width = pts[2] - pts[0],
+                        Height = pts[3] - pts[1],
+                    };
+
+                    // enough
+                    break;
+                }
+
+                foreach (var pcirc in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                    defs.CD_RegionCircle, mm))
+                {
+                    // access
+                    if (!(pcirc?.value.HasContent() == true))
+                        continue;
+                    var pts = ParseDoubles(pcirc.value);
+                    if (pts == null || pts.Length != 3)
+                        continue;
+                    if (pts[2] <= 0.0)
+                        continue;
+
+                    // construct widget
+                    backShape = new AnyUiEllipse()
+                    {
+                        Tag = pcirc,
+                        X = pts[0] - pts[2],
+                        Y = pts[1] - pts[2],
+                        Width = 2 * pts[2],
+                        Height = 2 * pts[2],
+                    };
+
+                    // enough
+                    break;
+                }
+
+                foreach (var ppoly in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                    defs.CD_RegionPolygon, mm))
+                {
+                    // access
+                    if (!(ppoly?.value.HasContent() == true))
+                        continue;
+                    var pts = ParseDoubles(ppoly.value);
+                    if (pts == null || pts.Length < 6 || pts.Length % 2 == 1)
+                        continue;
+
+                    // points
+                    var pc = new AnyUiPointCollection();
+                    for (int i = 0; (2 * i) < pts.Length; i++)
+                        pc.Add(new AnyUiPoint(pts[2 * i], pts[2 * i + 1]));
+
+                    // construct widget
+                    backShape = new AnyUiPolygon()
+                    {
+                        X = 0, Y = 0,
+                        Height = 2000, Width = 2000,
+                        Tag = ppoly,
+                        Points = pc
+                    };
+
+                    // enough
+                    break;
+                }
+
+                // need aback shape
+                if (backShape == null)
+                    return;
+
+                // find important information
+                var dpiText = EvalDataPoint(smcVE.value, defs.CD_TextDisplay.GetReference());
+                var dpiFg = EvalDataPoint(smcVE.value, defs.CD_Foreground.GetReference());
+                var dpiBg = EvalDataPoint(smcVE.value, defs.CD_Background.GetReference());
+
+                // apply minimum requirements
+                if (dpiText == null)
+                    continue;
+                var dispText = dpiText.EvalAsDisplayText();
+
+                var dispFg = (dpiFg == null) ? AnyUiBrushes.White : dpiFg.EvalAsBrush();
+                var dispBg = (dpiBg == null) ? AnyUiBrushes.Black : dpiBg.EvalAsBrush();
+
+                // apply to backShape, add
+                backShape.Fill = dispBg;
+                res.Add(backShape);
+
+                // construct label for foreground (with transparent fill)
+                var bb = backShape.FindBoundingBox();
+
+                var lab = new AnyUiLabel()
+                {
+                    Tag = smcVE,
+                    X = bb.X,
+                    Y = bb.Y,
+                    Width = bb.Width,
+                    Height = bb.Height,
+                    HorizontalAlignment = AnyUiHorizontalAlignment.Center,
+                    HorizontalContentAlignment = AnyUiHorizontalAlignment.Center,
+                    VerticalAlignment = AnyUiVerticalAlignment.Center,
+                    VerticalContentAlignment = AnyUiVerticalAlignment.Center,
+                    Foreground = dispFg,
+                    Background = null,
+                    FontSize = 1.0,
+                    Content = dispText
+                };
+
+                // some modifications to the label
+                if (dpiText.Args != null)
+                {
+                    if (dpiText.Args.horalign.HasValue)
+                    {
+                        if (dpiText.Args.horalign == ImageMapArguments.HorizontalAlign.Left)
+                        {
+                            lab.HorizontalAlignment = AnyUiHorizontalAlignment.Left;
+                            lab.HorizontalContentAlignment = AnyUiHorizontalAlignment.Left;
+                        }
+                        if (dpiText.Args.horalign == ImageMapArguments.HorizontalAlign.Right)
+                        {
+                            lab.HorizontalAlignment = AnyUiHorizontalAlignment.Right;
+                            lab.HorizontalContentAlignment = AnyUiHorizontalAlignment.Right;
+                        }
+                    }
+
+                    if (dpiText.Args.padding.HasValue)
+                        lab.Padding = new AnyUiThickness(dpiText.Args.padding.Value);
+
+                    if (dpiText.Args.fontsize.HasValue)
+                        lab.FontSize *= dpiText.Args.fontsize.Value;
+                }
+
+                // add
+                res.Add(lab);
+            }
+
+            // just add the result
+            _canvas.Children.AddRange(res);
         }
 
         #endregion
@@ -642,6 +1053,20 @@ namespace AasxPluginImageMap
 #region Callbacks
         //===============
 
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            // render
+            RenderImageEntities(forceTransparent: !_showRegions);
+            RenderVisuElems();
+
+            // let update
+            _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+            {
+                PluginName = null,
+                Mode = AnyUiRenderMode.StatusToUi,
+                UseInnerGrid = true
+            });
+        }
 
 #endregion
 

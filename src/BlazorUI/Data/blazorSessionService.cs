@@ -23,6 +23,8 @@ namespace BlazorUI.Data
     public class blazorSessionService : IDisposable
     {
         public AdminShellPackageEnv env = null;
+        public IndexOfSignificantAasElements significantElements = null;
+
         public string[] aasxFiles = new string[1];
         public string aasxFileSelected = "";
         public bool editMode = false;
