@@ -1,5 +1,6 @@
 ﻿@page "/testMultiCanvas"
 @using AnyUi
+@using AasxIntegrationBase
 @using BlazorUI.Shared
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas
@@ -65,7 +66,7 @@
 
     // book keeping
     // TODO: make it nice!!
-    Canvas.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context) { _component = this };
+    Canvas.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
 }
 
 @code {
@@ -144,6 +145,8 @@
 
         // create an API
         this._context = await this._canvasReference.CreateCanvas2DAsync();
+
+        await this._context.BeginBatchAsync();
 
         // draw background info?
         if (BackgroundImage != null)
@@ -229,7 +232,118 @@
                     if (poly.Fill != null)
                         await this._context.FillAsync();
                 }
+
+                if (ch is AnyUiLabel lab)
+                {
+                    // eval text
+                    var text = "" + lab.Content;
+
+                    // eval color
+                    string foregroundStyle = "#000000";
+                    if (lab.Foreground?.Color != null)
+                        foregroundStyle = lab.Foreground.Color.ToHtmlString(2);
+
+                    // eval font simply by fontsize
+                    string fontSpec = "";
+                    if (lab.FontWeight.HasValue && lab.FontWeight == AnyUiFontWeight.Bold)
+                        fontSpec += "bold ";
+                    if (lab.FontSize.HasValue)
+                        fontSpec += FormattableString.Invariant($"{8.0 * lab.FontSize:0}px ");
+                    fontSpec += "sans-serif";
+
+                    // get measures
+                    double tHeight = 0.0;
+
+#if __not_supported_by_browsers
+                    if (false)
+                    {
+                        if (fontSpec.HasContent())
+                            await this._context.SetFontAsync(fontSpec);
+                        var meas = await this._context.MeasureTextAsync(text);
+                        if (meas != null)
+                        {
+                            tHeight = meas.ActualBoundingBoxAscent + meas.ActualBoundingBoxDescent;
+                        }
+                    }
+#else
+                    {
+                        if (fontSpec.HasContent())
+                            await this._context.SetFontAsync(fontSpec);
+                        var meas = await this._context.MeasureTextAsync("M");
+                        if (meas != null)
+                        {
+                            tHeight = meas.Width;
+                        }
+                    }
+#endif
+
+                    // eval position and alinment
+                    var x = lab.X;
+                    var ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Left;
+                    if  (lab.HorizontalContentAlignment.HasValue)
+                    {
+                        if (lab.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Center)
+                        {
+                            ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Center;
+                            x = lab.X + lab.Width / 2;
+                        }
+                        if (lab.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Right)
+                        {
+                            ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Right;
+                            x = lab.X + lab.Width;
+                        }
+                    }
+
+                    // TODO: Obviusly not perfect
+                    var y = lab.Y + tHeight;
+                    if  (lab.VerticalContentAlignment.HasValue)
+                    {
+                        if (lab.VerticalContentAlignment.Value == AnyUiVerticalAlignment.Center)
+                        {
+                            y = lab.Y + lab.Height / 2 + tHeight / 2;
+                        }
+                        if (lab.VerticalContentAlignment.Value == AnyUiVerticalAlignment.Bottom)
+                        {
+                            y = lab.Y + lab.Height;
+                        }
+                    }
+
+                    // need a background fill?
+                    if (lab.Background?.Color != null)
+                    {
+                        // style
+                        string backgroundStyle = "#000000";
+                        backgroundStyle = lab.Background.Color.ToHtmlString(2);
+
+                        // commands
+                        await this._context.BeginPathAsync();
+                        await this._context.RectAsync(lab.X, lab.Y, lab.Width, lab.Height);
+                        await this._context.SetFillStyleAsync(backgroundStyle);
+                        await this._context.FillAsync();
+                    }
+
+                    // commands for the label
+                    await this._context.BeginPathAsync();
+                    await this._context.SetFillStyleAsync(foregroundStyle);
+                    await this._context.SetTextAlignAsync(ta);
+                    if (fontSpec.HasContent())
+                        await this._context.SetFontAsync(fontSpec);
+                    await this._context.FillTextAsync(text, x, y);
+                }
             }
+
+        await this._context.EndBatchAsync();
+
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        // simply draw over all shape childs
+        InvokeAsync(() => OnAfterRenderAsync(true));
     }
 
     //

@@ -124,7 +124,7 @@ namespace AasxPluginDocumentShelf
 
                 if (ImgContainerAnyUi != null)
                 {
-                    ImgContainerAnyUi.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                    ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                 }
 
                 return bi;

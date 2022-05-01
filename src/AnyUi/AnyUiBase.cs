@@ -192,6 +192,23 @@ namespace AnyUi
             // default just RGB
             return $"#{R:X2}{G:X2}{B:X2}";
         }
+
+        public static AnyUiColor Blend(AnyUiColor c0, AnyUiColor c1, double level)
+        {
+            // access
+            if (c0 == null || c1 == null)
+                return AnyUiColors.Transparent;
+
+            var level1 = Math.Max(0.0, Math.Min(1.0, level));
+            var level0 = 1.0 - level1;
+
+            return AnyUiColor.FromArgb(
+                Convert.ToByte(level0 * c0.A + level1 * c1.A),
+                Convert.ToByte(level0 * c0.R + level1 * c1.R),
+                Convert.ToByte(level0 * c0.G + level1 * c1.G),
+                Convert.ToByte(level0 * c0.B + level1 * c1.B)
+            );
+        }
     }
 
     public class AnyUiColors

@@ -267,6 +267,36 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo,
                     idShort: "NavigateTo", addSme: true);
 
+                var smcVE = sm.SmeForWrite.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_VisualElement,
+                    idShort: "VisuElem00", addSme: true);
+
+                smcVE.CreateSMEForCD<AdminShell.Property>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect,
+                    idShort: "RegionRect", addSme: true)?.Set("string", "[ 50, 10, 70, 30 ]");
+
+                smcVE.CreateSMEForCD<AdminShell.Property>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
+                    idShort: "TextDisplay01", addSme: true)?.Set("string", "Hallo");
+
+                smcVE.CreateSMEForCD<AdminShell.Property>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
+                    idShort: "TextDisplay02", addSme: true)?
+                        .Set("double", "3.1415")
+                        .Set(new AdminShell.Qualifier("ImageMap.Args", "{ fmt: \"F2\" }"));
+
+                smcVE.CreateSMEForCD<AdminShell.ReferenceElement>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
+                    idShort: "TextDisplay03", addSme: true);
+
+                smcVE.CreateSMEForCD<AdminShell.Property>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_Foreground,
+                    idShort: "Foreground", addSme: true)?.Set("string", "#ffffffff");
+
+                smcVE.CreateSMEForCD<AdminShell.Property>(
+                    AasxPredefinedConcepts.ImageMap.Static.CD_Background,
+                    idShort: "Background", addSme: true)?.Set("string", "#ff000040");
+
                 // make result
                 var res = new AasxPluginResultBaseObject();
                 res.strType = "OK";

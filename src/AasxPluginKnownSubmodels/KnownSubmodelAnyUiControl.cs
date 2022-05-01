@@ -226,7 +226,7 @@ namespace AasxPluginKnownSubmodels
 
                 // load
                 var bi = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
-                bitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(bi);
+                bitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
             }
             catch {; }
 

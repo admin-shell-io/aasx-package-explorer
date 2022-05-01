@@ -394,7 +394,7 @@
                     {
                         bi.helper.repo = null;
                     }
-                    var displayContext = new AnyUiDisplayContextHtml(bi);
+                    var displayContext = new AnyUiDisplayContextHtml(bi, JSRuntime);
                     var displayData = new AnyUiDisplayDataHtml(displayContext);
                     bi.helper.context = displayContext;
 
@@ -690,12 +690,26 @@
                 // re-create items
                 Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
 
+                // check if to re-index some elements
+                ReIndexSignificantElements();
+
                 // trigger redraw (but inhibit for plugin-redraw)
                 _inhibitSelectNodeForPanel += 1;
                 InvokeAsync(() => this.StateHasChanged());
                 // this.StateHasChanged();
+
             }
         }
+    }
+
+    protected void ReIndexSignificantElements()
+    {
+        // access
+        if (bi?.env == null)
+            return;
+
+        // index
+        bi.significantElements = new IndexOfSignificantAasElements(bi.env?.AasEnv);   
     }
 
     bool update = true;
@@ -1170,7 +1184,8 @@
         _timer = new System.Threading.Timer((e) =>
         {
             MainTimer_HandleApplicationEvents();
-        }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(1000));
+            MainTimer_HandleElementAnimation();
+        }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
     }
 
     public void Dispose()
@@ -1339,10 +1354,21 @@
             {
                 if (context != null)
                 {
+
                     if (update.Mode == AnyUiRenderMode.StatusToUi)
                     {
                         // only update some parameters
-                        context.UpdateRenderElements(bi.stack17, update.Mode);
+                        // Note: deprecated
+                        // context.UpdateRenderElements(bi.stack17, update.Mode);
+
+                        // pass on with data slightly modified data
+                        Program.signalNewData(2, bi.sessionNumber,
+                            new AnyUiLambdaActionPluginUpdateAnyUi()
+                            {
+                                PluginName = update.PluginName,
+                                UpdateMode = update.Mode,
+                                UseInnerGrid = update.UseInnerGrid
+                            });
                     }
                     else
                     if (update.Mode == AnyUiRenderMode.All)
@@ -1364,5 +1390,39 @@
             Log.Singleton.Error(
                 ex, $"While responding to a event; may be from plug-in {"" + pluginInstance?.name}");
         }
+    }
+
+    private AnimateDemoValues _mainTimer_AnimateDemoValues = new AnimateDemoValues();
+
+    private void MainTimer_HandleElementAnimation()
+    {
+        // access
+        if (_inTimer)
+            return;
+        if (bi?.significantElements == null)
+            return;
+
+        // dive in
+        _inTimer = true;
+
+        // find elements?
+        foreach (var rec in bi.significantElements.Retrieve(bi.env?.AasEnv, SignificantAasElement.QualifiedAnimation))
+        {
+            // valid?
+            if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                continue;
+
+            // which SME?
+            if (rec.LiveObject is AdminShell.Property prop)
+            {
+                _mainTimer_AnimateDemoValues.Animate(prop,
+                    emitEvent: (prop2, evi2) =>
+                    {
+                    });
+            }
+        }
+
+        // dive out
+        _inTimer = false;
     }
 }

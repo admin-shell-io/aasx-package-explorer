@@ -33,6 +33,7 @@ using AdminShellNS;
 using BlazorUI;
 using BlazorUI.Pages;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Newtonsoft.Json;
 
 namespace AnyUi
@@ -87,9 +88,16 @@ namespace AnyUi
 
         [JsonIgnore]
         public BlazorUI.Data.blazorSessionService _bi;
-        public AnyUiDisplayContextHtml(BlazorUI.Data.blazorSessionService bi)
+
+        [JsonIgnore]
+        protected IJSRuntime _jsRuntime;
+
+        public AnyUiDisplayContextHtml(
+            BlazorUI.Data.blazorSessionService bi,
+            IJSRuntime jsRuntime)
         {
             _bi = bi;
+            _jsRuntime = jsRuntime;
         }
 
         object htmlDotnetLock = new object();
@@ -366,6 +374,9 @@ namespace AnyUi
             return dialogueData.Result;
         }
 
+        /// <summary>
+        /// Think, this is deprecated!
+        /// </summary>
         public void UpdateRenderElements(AnyUiUIElement el, AnyUiRenderMode mode)
         {
             //
@@ -408,6 +419,11 @@ namespace AnyUi
         {
             // TODO
             // see: https://www.meziantou.net/copying-text-to-clipboard-in-a-blazor-application.htm
+            
+            if (_jsRuntime != null && cb != null)
+            {
+                _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);
+            }
         }
     }
 }

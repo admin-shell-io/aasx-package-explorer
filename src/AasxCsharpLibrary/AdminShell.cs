@@ -5318,6 +5318,12 @@ namespace AdminShellNS
                     this.valueId = new Reference(src.valueId);
             }
 
+            public Qualifier(string type, string value)
+            {
+                this.type = type;
+                this.value = value;
+            }
+
 #if !DoNotUseAasxCompatibilityModels
             public Qualifier(AasxCompatibilityModels.AdminShellV10.Qualifier src)
             {
@@ -5456,6 +5462,17 @@ namespace AdminShellNS
             // ReSharper enable RedundantArgumentDefaultValue
 
             // for convenience methods of Submodel, SubmodelElement
+
+            public static void AddQualifier(
+                ref QualifierCollection qualifiers,
+                Qualifier q)
+            {
+                if (q == null)
+                    return;
+                if (qualifiers == null)
+                    qualifiers = new QualifierCollection();
+                qualifiers.Add(q);
+            }
 
             public static void AddQualifier(
                 ref QualifierCollection qualifiers,
@@ -5642,6 +5659,13 @@ namespace AdminShellNS
                         this.semanticId = new SemanticId();
                     this.semanticId.Keys.Add(semanticIdKey);
                 }
+            }
+
+            public void AddQualifier(
+                Qualifier q)
+            {
+                QualifierCollection.AddQualifier(
+                    ref this.qualifiers, q);
             }
 
             public void AddQualifier(
@@ -6290,6 +6314,14 @@ namespace AdminShellNS
                         && smw.submodelElement.semanticId != null)
                         if (smw.submodelElement.semanticId.Matches(semId, matchMode))
                             yield return smw.submodelElement as T;
+            }
+
+            public IEnumerable<T> FindAllSemanticIdAs<T>(ConceptDescription cd,
+                Key.MatchMode matchMode = Key.MatchMode.Strict)
+                where T : SubmodelElement
+            {
+                foreach (var x in FindAllSemanticIdAs<T>(cd.GetReference(), matchMode))
+                    yield return x;
             }
 
             public SubmodelElementWrapper FindFirstSemanticId(
@@ -7370,6 +7402,13 @@ namespace AdminShellNS
             public Property Set(string type, bool local, string idType, string value)
             {
                 this.valueId = Reference.CreateNew(Key.CreateNew(type, local, idType, value));
+                return this;
+            }
+
+            public Property Set(Qualifier q)
+            {
+                if (q != null)
+                    this.AddQualifier(q);
                 return this;
             }
 

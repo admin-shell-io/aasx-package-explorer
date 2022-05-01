@@ -74,23 +74,24 @@ namespace AasxPluginDocumentShelf
             //}, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(1000));
 
             // see: https://stackoverflow.com/questions/5143599/detecting-whether-on-ui-thread-in-wpf-and-winforms
-            var dispatcher = System.Windows.Threading.Dispatcher.FromThread(System.Threading.Thread.CurrentThread);
-            if (dispatcher != null)
-            {
-                var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-                dispatcherTimer.Tick += DispatcherTimer_Tick;
-                dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
-                dispatcherTimer.Start();
-            }
-            else
-            {
-                // Note: this timer shall work for all sorts of applications?
-                // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
-                var _timer2 = new System.Timers.Timer(1000);
-                _timer2.Elapsed += DispatcherTimer_Tick;
-                _timer2.Enabled = true;
-                _timer2.Start();
-            }
+            //var dispatcher = System.Windows.Threading.Dispatcher.FromThread(System.Threading.Thread.CurrentThread);
+            //if (dispatcher != null)
+            //{
+            //    var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            //    dispatcherTimer.Tick += DispatcherTimer_Tick;
+            //    dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1000);
+            //    dispatcherTimer.Start();
+            //}
+            //else
+            //{
+            //    // Note: this timer shall work for all sorts of applications?
+            //    // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
+            //    var _timer2 = new System.Timers.Timer(1000);
+            //    _timer2.Elapsed += DispatcherTimer_Tick;
+            //    _timer2.Enabled = true;
+            //    _timer2.Start();
+            //}
+            AnyUiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
         }
 
         public void Start(
@@ -393,7 +394,7 @@ namespace AasxPluginDocumentShelf
                 if (referableHashToCachedBitmap != null &&
                     referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
                 {
-                    ent.ImgContainerAnyUi.BitmapInfo = AnyUiBitmapHelper.CreateAnyUiBitmapInfo(
+                    ent.ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(
                         referableHashToCachedBitmap[ent.ReferableHash]);
                 }
                 else
