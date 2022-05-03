@@ -219,7 +219,7 @@ namespace IO.Swagger.Api
         /// <param name="file"></param>
         /// <param name="fileName"></param>
         /// <returns>Task of PackageDescription</returns>
-        System.Threading.Tasks.Task<PackageDescription> PostAASXPackageAsync(List<string> aasIds, byte[] file, string fileName);
+        System.Threading.Tasks.Task<int> PostAASXPackageAsync(List<string> aasIds, FileParameter fileparamter, string fileName);
 
         /// <summary>
         /// Stores the AASX package at the server
@@ -232,7 +232,7 @@ namespace IO.Swagger.Api
         /// <param name="file"></param>
         /// <param name="fileName"></param>
         /// <returns>Task of ApiResponse (PackageDescription)</returns>
-        System.Threading.Tasks.Task<ApiResponse<PackageDescription>> PostAASXPackageAsyncWithHttpInfo(List<string> aasIds, byte[] file, string fileName);
+        System.Threading.Tasks.Task<ApiResponse<int>> PostAASXPackageAsyncWithHttpInfo(List<string> aasIds, FileParameter fileparamter, string fileName);
         /// <summary>
         /// Updates the AASX package at the server
         /// </summary>
@@ -920,9 +920,9 @@ namespace IO.Swagger.Api
         /// <param name="file"></param>
         /// <param name="fileName"></param>
         /// <returns>Task of PackageDescription</returns>
-        public async System.Threading.Tasks.Task<PackageDescription> PostAASXPackageAsync(List<string> aasIds, byte[] file, string fileName)
+        public async System.Threading.Tasks.Task<int> PostAASXPackageAsync(List<string> aasIds, FileParameter fileparamter, string fileName)
         {
-            ApiResponse<PackageDescription> localVarResponse = await PostAASXPackageAsyncWithHttpInfo(aasIds, file, fileName);
+            ApiResponse<int> localVarResponse = await PostAASXPackageAsyncWithHttpInfo(aasIds, fileparamter, fileName);
             return localVarResponse.Data;
 
         }
@@ -935,13 +935,13 @@ namespace IO.Swagger.Api
         /// <param name="file"></param>
         /// <param name="fileName"></param>
         /// <returns>Task of ApiResponse (PackageDescription)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<PackageDescription>> PostAASXPackageAsyncWithHttpInfo(List<string> aasIds, byte[] file, string fileName)
+        public async System.Threading.Tasks.Task<ApiResponse<int>> PostAASXPackageAsyncWithHttpInfo(List<string> aasIds, FileParameter fileparamter, string fileName)
         {
             // verify the required parameter 'aasIds' is set
             if (aasIds == null)
                 throw new ApiException(400, "Missing required parameter 'aasIds' when calling AASXFileServerInterfaceApi->PostAASXPackage");
             // verify the required parameter 'file' is set
-            if (file == null)
+            if (fileparamter == null)
                 throw new ApiException(400, "Missing required parameter 'file' when calling AASXFileServerInterfaceApi->PostAASXPackage");
             // verify the required parameter 'fileName' is set
             if (fileName == null)
@@ -970,7 +970,8 @@ namespace IO.Swagger.Api
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
             if (aasIds != null) localVarFormParams.Add("aasIds", this.Configuration.ApiClient.ParameterToString(aasIds)); // form parameter
-            if (file != null) localVarFileParams.Add("file", this.Configuration.ApiClient.ParameterToFile("file", file));
+            //if (file != null) localVarFileParams.Add("file", this.Configuration.ApiClient.ParameterToFile("file", file));
+            if (fileparamter != null) localVarFileParams.Add("file", fileparamter);
             if (fileName != null) localVarFormParams.Add("fileName", this.Configuration.ApiClient.ParameterToString(fileName)); // form parameter
 
             // make the HTTP request
@@ -986,9 +987,13 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<PackageDescription>(localVarStatusCode,
+            //return new ApiResponse<PackageDescription>(localVarStatusCode,
+            //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
+            //    (PackageDescription) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(PackageDescription)));
+
+            return new ApiResponse<int>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
-                (PackageDescription)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(PackageDescription)));
+                (int)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(int)));
         }
 
         /// <summary>

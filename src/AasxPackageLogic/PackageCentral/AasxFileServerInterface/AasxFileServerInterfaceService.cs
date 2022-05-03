@@ -106,11 +106,32 @@ namespace AasxPackageLogic.PackageCentral
             return output;
         }
 
-        internal int PostAasxFileOnServer(string fileName, byte[] fileContent)
+        internal int PostAasxFileOnServer(string fileName, byte[] fileContent)//going here SAVE AASX
         {
             var aasiIds = new List<string>();
 
             var response = _fileApiInstance.PostAASXPackageWithHttpInfo(aasiIds, fileContent, fileName);
+            if (response.StatusCode == 201)
+            {
+                return response.Data;
+            }
+            else
+            {
+                Log.Singleton.Error($"Uploading AASX File in file repository failed with error {response.StatusCode}");
+                return -1;
+            }
+
+        }
+
+
+        internal async Task<int> PostAasxFileOnServerAsync(string fileName, byte[] fileContent, PackCntRuntimeOptions runtimeOptions)
+        {
+            var aasiIds = new List<string>();
+
+            var uw = new UploadWriter(fileContent, runtimeOptions);
+            var fileparameter = FileParameter.Create("file", uw.Write, fileContent.Length, "no_file_name_provided");
+
+            var response = await _fileApiInstance.PostAASXPackageAsyncWithHttpInfo(aasiIds, fileparameter, fileName);
             if (response.StatusCode == 201)
             {
                 return response.Data;
@@ -237,6 +258,33 @@ namespace AasxPackageLogic.PackageCentral
                     this.FileName = fileName;
                 }
             }
+        }
+    }
+
+    internal class UploadWriter
+    {
+        private byte[] fileContent;
+        private PackCntRuntimeOptions runtimeOptions;
+        private int fileSize;
+
+        public UploadWriter(byte[] fileContent, PackCntRuntimeOptions runtimeOptions)
+        {
+            this.fileContent = fileContent;
+            this.runtimeOptions = runtimeOptions;
+            this.fileSize = fileContent.Length;
+        }
+
+        internal void Write(Stream writeStream)
+        {
+            long totalBytes = 0;
+            foreach (byte b in fileContent)
+            {
+                writeStream.WriteByte(b);
+                totalBytes++;
+                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                    fileSize, totalBytes);
+            }
+            runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
         }
     }
 }

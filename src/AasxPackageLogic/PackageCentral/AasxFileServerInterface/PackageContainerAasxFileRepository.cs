@@ -85,7 +85,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             base.DeletePackageFromServer(fi);
         }
 
-        public int AddPackageToServer(string fileName)
+        public async Task<int> AddPackageToServerAsync(string fileName, PackCntRuntimeOptions opt)
         {
             //Using copy of the file to upload
             string copyFileName = "";
@@ -100,7 +100,10 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
             }
 
             var fileContent = File.ReadAllBytes(copyFileName);
-            int packageId = _aasxFileService.PostAasxFileOnServer(Path.GetFileName(fileName), fileContent);
+
+            opt.Log.Info($"Start Uploading AASX {fileName}");
+            int packageId = await _aasxFileService.PostAasxFileOnServerAsync(Path.GetFileName(fileName), fileContent, opt);
+            opt.Log.Info($"Finished Uploading AASX {fileName}");
 
             //delete temp file
             File.Delete(copyFileName);

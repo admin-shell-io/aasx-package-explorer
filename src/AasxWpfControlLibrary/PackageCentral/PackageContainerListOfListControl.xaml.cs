@@ -98,7 +98,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
+        public async Task CommandBinding_FileRepoAllAsync(Control senderList, PackageContainerListBase fr, string cmd)
         {
             // access
             if (cmd == null || _flyout == null)
@@ -314,8 +314,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     if (fr is PackageContainerAasxFileRepository fileRepo)
                     {
+                        var opt = _packageCentral.CentralRuntimeOptions;
                         //Add the file to File Server
-                        int packageId = fileRepo.AddPackageToServer(inputDialog.FileNames[0]);
+                        int packageId = await fileRepo.AddPackageToServerAsync(inputDialog.FileNames[0], opt);
                         fileRepo.LoadAasxFile(_packageCentral, inputDialog.FileNames[0], packageId);
                     }
                 }
@@ -433,13 +434,13 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                 cm.Start(sender, (tag) =>
                 {
-                    CommandBinding_FileRepoAll(senderList, fr, tag);
+                    CommandBinding_FileRepoAllAsync(senderList, fr, tag);//start here SAVE
                 });
             }
 
             if (btn == PackageContainerListControl.CustomButton.Query)
             {
-                CommandBinding_FileRepoAll(senderList, fr, "FileRepoQuery");
+                CommandBinding_FileRepoAllAsync(senderList, fr, "FileRepoQuery");
             }
         }
 
