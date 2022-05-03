@@ -60,9 +60,9 @@
     //
 
     var dims = GetCanvasDimensions();
-    <span @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
+    <div @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
         <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
-    </span>
+    </div>
 
     // book keeping
     // TODO: make it nice!!
@@ -131,16 +131,21 @@
 
     protected async void HandleImageOnLoad()
     {
-        var ctx = await this._canvasReference.CreateCanvas2DAsync();
-        if (ctx != null && BackgroundImage != null)
+        try
         {
-            await ctx.DrawImageAsync(_imgReference, 0, 0);
+            var ctx = await this._canvasReference.CreateCanvas2DAsync();
+            if (ctx != null && BackgroundImage != null)
+            {
+                await ctx.DrawImageAsync(_imgReference, 0, 0);
+            }
         }
+        catch { }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (Canvas == null || _canvasReference == null
+            || (!firstRender && !Canvas.Touched))
             return;
 
         // create an API

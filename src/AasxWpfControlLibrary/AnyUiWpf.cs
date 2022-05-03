@@ -38,6 +38,9 @@ namespace AnyUi
         [JsonIgnore]
         public UIElement WpfElement;
 
+        [JsonIgnore]
+        public bool EventsAdded;
+
         public AnyUiDisplayDataWpf(AnyUiDisplayContextWpf Context)
         {
             this.Context = Context;
@@ -302,42 +305,64 @@ namespace AnyUi
                             wpf.MaxWidth = cntl.MaxWidth.Value;
                         wpf.Tag = cntl.Tag;
 
-                        if ( ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
-                            || ((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) )
+                        if (cntl.DisplayData is AnyUiDisplayDataWpf ddwpf
+                            && ddwpf.EventsAdded == false)
                         {
-                            wpf.MouseLeftButtonDown += (s5, e5) => {
-                                // get the current coordinates relative to the framework element
-                                // (onlythis could be sensible information to an any ui business logic)
-                                var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
-                                // send event and emit return
-                                EmitOutsideAction(
-                                    cntl.setValueLambda?.Invoke(
-                                        new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
-                            };
-                        }
+                            // add events only once!
+                            ddwpf.EventsAdded = true;
 
-                        if ((cntl.EmitEvent & AnyUiEventMask.DragStart) > 0)
-                        {
-                            wpf.MouseLeftButtonDown +=(s6, e6) =>
+                            if ( ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                                || ((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) )
                             {
-                                _dragStartPoint = e6.GetPosition(null);
-                            };
-
-                            wpf.PreviewMouseMove += (s7, e7) =>
-                            {
-                                if (e7.LeftButton == MouseButtonState.Pressed)
-                                {
-                                    Point position = e7.GetPosition(null);
-                                    if (Math.Abs(position.X - _dragStartPoint.X) 
-                                            > SystemParameters.MinimumHorizontalDragDistance 
-                                        || Math.Abs(position.Y - _dragStartPoint.Y) 
-                                            > SystemParameters.MinimumVerticalDragDistance)
+                                wpf.MouseLeftButtonDown += (s5, e5) => {
+                                    if (e5.LeftButton == MouseButtonState.Pressed)
                                     {
-                                        cntl.setValueLambda?.Invoke(
-                                            new AnyUiEventData(AnyUiEventMask.DragStart, cntl));
+                                        // get the current coordinates relative to the framework element
+                                        // (only this could be sensible information to an any ui business logic)
+                                        var p = GetAnyUiPoint(Mouse.GetPosition(wpf));                                        
+
+                                        // detect and send appropriate event and emit return
+                                        if ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                                        {
+                                            EmitOutsideAction(
+                                                cntl.setValueLambda?.Invoke(
+                                                    new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                        }
+                                        
+                                        if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
+                                            && e5.ClickCount == 2)
+                                        {
+                                            EmitOutsideAction(
+                                                cntl.setValueLambda?.Invoke(
+                                                    new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                        }
                                     }
-                                }
-                            };
+                                };
+                            }
+
+                            if ((cntl.EmitEvent & AnyUiEventMask.DragStart) > 0)
+                            {
+                                wpf.MouseLeftButtonDown +=(s6, e6) =>
+                                {
+                                    _dragStartPoint = e6.GetPosition(null);
+                                };
+
+                                wpf.PreviewMouseMove += (s7, e7) =>
+                                {
+                                    if (e7.LeftButton == MouseButtonState.Pressed)
+                                    {
+                                        Point position = e7.GetPosition(null);
+                                        if (Math.Abs(position.X - _dragStartPoint.X)
+                                                > SystemParameters.MinimumHorizontalDragDistance
+                                            || Math.Abs(position.Y - _dragStartPoint.Y)
+                                                > SystemParameters.MinimumVerticalDragDistance)
+                                        {
+                                            cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.DragStart, cntl));
+                                        }
+                                    }
+                                };
+                            }
                         }
                     }
                 }),
