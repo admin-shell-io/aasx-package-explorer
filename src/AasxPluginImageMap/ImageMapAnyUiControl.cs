@@ -44,7 +44,7 @@ namespace AasxPluginImageMap
 
         protected double _lastScrollPosition = 0.0;
 
-        protected bool _showRegions = false;
+        protected int _showRegions = 0;
 
         protected AnyUiImage _backgroundImage = null;
 
@@ -160,25 +160,25 @@ namespace AasxPluginImageMap
                 setBold: true,
                 content: $"Image Map");
 
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallCheckBoxTo(bluebar, 0, 1,
-                    verticalAlignment: AnyUiVerticalAlignment.Center,
+            AnyUiComboBox cbRegs = null;
+            cbRegs = AnyUiUIElement.RegisterControl(
+                uitk.AddSmallComboBoxTo(bluebar, 0, 1,       
+                    minWidth: 110,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center,
-                    margin: new AnyUiThickness(0, 0, 8, 0),
-                    content: "Show regions",
-                    isChecked: _showRegions),
+                    margin: new AnyUiThickness(2, 4, 8, 4),
+                    items: new[] { "Operational", "Show clicks", "Show regions"},
+                    selectedIndex: _showRegions),
                 (o)=>
                 {
-                    _showRegions = (bool) o;
-                    
-                    // will touch values for canvas
-                    RenderImageEntities(forceTransparent: !_showRegions);
+                    if (cbRegs?.SelectedIndex != null)
+                        _showRegions = cbRegs.SelectedIndex.Value;
 
-                    // therefore no complete redraw
+                    // trigger a complete redraw, as the regions might emit 
+                    // events or not, depending on this flag
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
-                        PluginName = null, // do NOT call plugin!
-                        UpdateMode = AnyUiRenderMode.StatusToUi,
+                        PluginName = AasxPlugin.PluginName,
+                        UpdateMode = AnyUiRenderMode.All,
                         UseInnerGrid = true
                     };
                 });
@@ -214,11 +214,12 @@ namespace AasxPluginImageMap
                     eventMask: AnyUiEventMask.LeftDouble),
                 (o) =>
                 {
-                    if (o is AnyUiEventData ev)
+                    if (o is AnyUiEventData ev && _showRegions == 1)
                     {
                         _clickedCoordinates.Add(ev.RelOrigin);
                         DisplayClickedCoordinates();
                     }
+                    
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
                         PluginName = null, // do NOT call plugin!
@@ -232,7 +233,10 @@ namespace AasxPluginImageMap
                 uitk.AddSmallFrameworkElementTo(innerGrid, 0, 0,
                     new AnyUiCanvas()
                     {
-                        EmitEvent = AnyUiEventMask.LeftDouble
+                        // These events could block the underlying image from sending events.
+                        // Therefore only send events, if not the design mode ("show region")
+                        // is being activated.
+                        EmitEvent = (_showRegions == 0) ? AnyUiEventMask.LeftDouble : 0
                     }),
                 (o) =>
                 {
@@ -284,9 +288,11 @@ namespace AasxPluginImageMap
 
             _labelInfo = uitk.AddSmallBasicLabelTo(footer, 0, 0, margin: new AnyUiThickness(8, 6, 0, 6),
                 foreground: AnyUiBrushes.DarkGray,
+                verticalAlignment: AnyUiVerticalAlignment.Center,
+                verticalContentAlignment: AnyUiVerticalAlignment.Center,
                 fontSize: 1.0,
                 setBold: false,
-                content: $"Ready ..");
+                content: $"Ready (waiting for double clicks) ..");
 
             AnyUiUIElement.RegisterControl(
                 uitk.AddSmallButtonTo(footer, 0, 1,
@@ -326,8 +332,9 @@ namespace AasxPluginImageMap
             // Business logic
             //
 
-            SetInfos();
-            RenderImageEntities(forceTransparent: !_showRegions);
+            SetBasicInfos();
+            if (_showRegions == 0 || _showRegions == 2)
+                RenderRegions(forceTransparent: (_showRegions == 0));
         }
 
 #endregion
@@ -335,7 +342,7 @@ namespace AasxPluginImageMap
 #region Business logic
         //=============
 
-        protected void SetInfos()
+        protected void SetBasicInfos()
         {
             // access
             if (_submodel == null || _package == null)
@@ -355,20 +362,27 @@ namespace AasxPluginImageMap
                 return;
 
             // set?
-            var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
-
-            //var stream = new MemoryStream(bitmapdata);
-            //var bi = new System.Windows.Media.Imaging.BitmapImage();
-
-            //bi.BeginInit();
-            //bi.StreamSource = stream;
-            //bi.EndInit();
-            bi.Freeze();
-
-            if (_backgroundImage != null && bi != null)
+            var sourceBi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
+            if (sourceBi != null)
             {
-                _backgroundImage.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
-                _backgroundSize = bi.Width + bi.Height;
+                // but adopt in any case to 96 dpi
+                // https://andydunkel.net/2020/09/10/wpf-bitmapimage-falsche-hoehe-breite-und-unscharfe-darstellung/
+                double dpi = 96;
+                int width = sourceBi.PixelWidth;
+                int height = sourceBi.PixelHeight;
+
+                int stride = width * sourceBi.Format.BitsPerPixel;
+                byte[] pixelData = new byte[stride * height];
+                sourceBi.CopyPixels(pixelData, stride, 0);
+                var destBi = BitmapSource.Create(width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
+                destBi.Freeze();
+
+                // put this in WPF and HTML rendering
+                if (_backgroundImage != null && destBi != null)
+                {
+                    _backgroundImage.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(destBi);
+                    _backgroundSize = sourceBi.Width + sourceBi.Height;
+                }
             }
         }
 
@@ -425,7 +439,7 @@ namespace AasxPluginImageMap
                 new AnyUiBrush(textColor));
         }
 
-        private void RenderImageEntities(bool forceTransparent)
+        private void RenderRegions(bool forceTransparent)
         {
             // access
             if (_submodel?.submodelElements == null || _canvas == null)
@@ -600,28 +614,6 @@ namespace AasxPluginImageMap
                         });
                     }
                 }
-            }
-
-            // TEST
-
-            if (false)
-            {
-                res.Add(new AnyUiLabel()
-                {
-                    Tag = "TEST",
-                    X = 300,
-                    Y = 5,
-                    Width = 400,
-                    Height = 40,
-                    HorizontalAlignment = AnyUiHorizontalAlignment.Center,
-                    HorizontalContentAlignment = AnyUiHorizontalAlignment.Center,
-                    VerticalAlignment = AnyUiVerticalAlignment.Center,
-                    VerticalContentAlignment = AnyUiVerticalAlignment.Center,
-                    Foreground = AnyUiBrushes.DarkBlue,
-                    Background = AnyUiBrushes.LightGray,
-                    FontSize = fontSize,
-                    Content = "TEST" + DateTime.UtcNow.ToString()
-                });
             }
 
             // try sort in order not to click on the (large, rectangular) labels, but on the 
@@ -851,13 +843,24 @@ namespace AasxPluginImageMap
             return res;
         }
 
-        private void RenderVisuElems()
+        /// <summary>
+        /// Rendering of visual elements (e.g. text fields)
+        /// </summary>
+        /// <returns>If visual update on screen if required</returns>
+        private bool RenderVisuElems()
         {
             // access
             if (_submodel?.submodelElements == null || _canvas == null)
-                return;
+                return false;
             var defs = AasxPredefinedConcepts.ImageMap.Static;
             var mm = AdminShell.Key.MatchMode.Relaxed;
+
+            // check, if required anyway
+            var anyElem = _submodel.submodelElements
+                .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    defs.CD_VisualElement.GetReference(), mm).FirstOrDefault();
+            if (anyElem == null)
+                return false;
 
             // result
             var res = new List<AnyUiUIElement>();
@@ -955,7 +958,7 @@ namespace AasxPluginImageMap
 
                 // need aback shape
                 if (backShape == null)
-                    return;
+                    continue;
 
                 // find important information
                 var dpiText = EvalDataPoint(smcVE.value, defs.CD_TextDisplay.GetReference());
@@ -1024,11 +1027,12 @@ namespace AasxPluginImageMap
 
             // just add the result
             _canvas.Children.AddRange(res);
+            return true;
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
         //=============
 
         public void Update(params object[] args)
@@ -1056,16 +1060,20 @@ namespace AasxPluginImageMap
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             // render
-            RenderImageEntities(forceTransparent: !_showRegions);
-            RenderVisuElems();
+            if (_showRegions == 0 || _showRegions == 2)
+                RenderRegions(forceTransparent: (_showRegions == 0));
+            var updateRequired = RenderVisuElems();
 
             // let update
-            _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+            if (updateRequired)
             {
-                PluginName = null,
-                Mode = AnyUiRenderMode.StatusToUi,
-                UseInnerGrid = true
-            });
+                _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+                {
+                    PluginName = null,
+                    Mode = AnyUiRenderMode.StatusToUi,
+                    UseInnerGrid = true
+                });
+            }
         }
 
 #endregion

@@ -1225,6 +1225,34 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
                 && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
             {
+                // make a work copy
+                var workReference = new AdminShell.Reference(evtNavTo.targetReference);
+
+                // plug-in? .. shorten reference
+                var srl = workReference.Last;
+                string pluginTag = null;
+                if (srl?.type == AdminShell.Key.FragmentReference && srl?.idType == AdminShell.Key.Custom
+                    && srl?.value?.StartsWith("Plugin:") == true)
+                {
+                    pluginTag = srl?.value.Substring("Plugin:".Length);
+                    workReference.Keys.Remove(srl);
+                }
+
+                // find Referable by reference in open package
+                var workRf = bi?.env?.AasEnv?.FindReferableByReference(workReference);
+
+                // find items
+                var targetItem = Items?.FindReferable(workRf, pluginTag);
+
+                // activate this
+                if (targetItem != null)
+                {
+                    _inhibitSelectNodeForPanel = 0;
+                    _onlyUpdatePluginUi = false;
+                    ListOfItems.AddToExpandNodesFor(ExpandedNodes, targetItem);
+                    SelectedNode = targetItem;
+                    InvokeAsync(() => this.StateHasChanged());
+                }
             }
 
             // Display Content Url

@@ -32,10 +32,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private AasxPluginImageMap.ImageMapAnyUiControl _anyUiControl = null;
 
+        public static string PluginName = "AasxPluginImageMap";
+
         public string GetPluginName()
         {
-            _log.Info("GetPluginName() = {0}", "ImageMap");
-            return "AasxPluginImageMap";
+            return PluginName;
         }
 
         public void InitPlugin(string[] args)
@@ -204,19 +205,19 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return res;
             }
 
-            if (action == "fill-panel-visual-extension" && this._viewerControl != null)
+            if (action == "fill-panel-visual-extension")
             {
                 // arguments
                 if (args?.Length < 3)
                     return null;
 
                 // call
-                var resobj = AasxPluginImageMap.ImageMapControl.FillWithWpfControls(_log, args?[0], args?[1],
+                _viewerControl = AasxPluginImageMap.ImageMapControl.FillWithWpfControls(_log, args?[0], args?[1],
                     this._options, this._eventStack, args?[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = resobj;
+                res.obj = _viewerControl;
                 return res;
             }
 

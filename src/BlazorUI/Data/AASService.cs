@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AasxPackageLogic;
 using AdminShellNS;
+using AasxIntegrationBase;
 using BlazorUI;
 using static AdminShellNS.AdminShellV20;
 
@@ -73,6 +74,33 @@ namespace BlazorUI.Data
             {
                 return it?.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid;
             }).FirstOrDefault();
+        }
+
+        public Item FindReferable(AdminShell.Referable rf, string pluginTag)
+        {
+            // access
+            if (rf == null)
+                return null;
+
+            // find item in general
+            var res = FindItems(this, (it) =>
+            {
+                return it?.Referable == rf;
+            }).FirstOrDefault();
+
+            // special case
+            if (res != null && rf is AdminShell.Submodel && pluginTag.HasContent()
+                && res.Childs != null)
+                foreach (var ch in res.Childs)
+                    if (ch != null
+                        && ch.Type == "Plugin"
+                        && ch.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                            Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
+                        && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower())
+                        return ch;
+           
+            // give back
+            return res;
         }
 
         public Item FindSubmodelPlugin(string smid, string pluginTag)
