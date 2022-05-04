@@ -375,8 +375,10 @@ namespace AnyUi
         }
 
         /// <summary>
-        /// Think, this is deprecated!
+        /// Think, this is deprecated
         /// </summary>
+        /// <param name="el"></param>
+        /// <param name="mode"></param>
         public void UpdateRenderElements(AnyUiUIElement el, AnyUiRenderMode mode)
         {
             //
