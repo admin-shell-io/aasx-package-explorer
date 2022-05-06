@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
+	<ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj" />
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
@@ -37,7 +38,8 @@
     <ProjectReference Include="..\AasxSignature\AasxSignature.csproj" />
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
-    <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+
+	  <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
   </ItemGroup>
 
   <!--
@@ -101,6 +103,8 @@
     <None Include="content-for-demo\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Remove="i4AASCS.xml" />
+    <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

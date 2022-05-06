@@ -28,4 +28,12 @@
     <Page Remove="OriginalResources\ListBars.xaml" />
     <Page Remove="OriginalResources\ListTiles.xaml" />
   </ItemGroup>
+  <ItemGroup>
+    <Page Update="AasForms\FormSubControlCapability.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+    <Page Update="AasForms\FormSubControlRelationshipElement.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
 </Project>

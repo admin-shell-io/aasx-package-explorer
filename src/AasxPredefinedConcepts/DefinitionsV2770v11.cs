@@ -27,6 +27,8 @@ namespace AasxPredefinedConcepts
     {
         public static VDI2770v11 Static = new VDI2770v11();
 
+        public const string Vdi2770Sys = "VDI2770:2020";
+
         public AdminShell.Submodel
             SM_ManufacturerDocumentation;
 

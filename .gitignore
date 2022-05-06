@@ -1,4 +1,5 @@
 .idea
+/.vs
 /src/.vs
 *~
 
@@ -16,6 +17,12 @@ artefacts/
 
 # Sample AASXs
 sample-aasx/
+/src/Check2.ps1
+/src/DownloadSamplesNew.ps1
+/src/BlazorUI/fileEdit.json
+/src/BlazorUI/Festo_163142_CPE18-M1H-5L-14_solenoid_valve.aasx
+/src/BlazorUI/12_Pepperl+Fuchs.aasx
+/src/BlazorUI/08_SchneiderElectric.aasx
+/src/BlazorUI/09_SchneiderElectric.aasx
+/.vs/aasx-package-explorer/v16/.suo
 /.vs/slnx.sqlite
-/.vs/aasx-package-explorer_fork/v16/.suo
-/.vs

@@ -67,7 +67,7 @@ namespace AasOpcUaServer
                             configuration.SecurityConfiguration.RejectedCertificateStore);
 
                         // set custom validator for user certificates.
-                        m_certificateValidator = certificateValidator.GetChannelValidator();
+                        m_certificateValidator = (X509CertificateValidator)certificateValidator.GetChannelValidator();
                     }
                 }
             }

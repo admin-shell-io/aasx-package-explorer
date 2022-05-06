@@ -1,0 +1,68 @@
+@prefix bamm: <urn:bamm:io.openmanufacturing:meta-model:1.0.0#> .
+@prefix bamm-c: <urn:bamm:io.openmanufacturing:characteristic:1.0.0#> .
+@prefix bamm-e: <urn:bamm:io.openmanufacturing:entity:1.0.0#> .
+@prefix unit: <urn:bamm:io.openmanufacturing:unit:1.0.0#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix : <urn:bamm:org.example:Battery:1.0.0#> .
+
+:Battery a bamm:Aspect;
+    bamm:name "Battery";
+    bamm:properties (:voltageLevel :batteryMode :batteryLevel :batteryTemperature :batteryType :warningLevel);
+    bamm:operations ();
+    bamm:preferredName "Battery"@en;
+    bamm:description "The Battery Aspect"@en.
+:voltageLevel a bamm:Property;
+    bamm:name "voltageLevel";
+    bamm:preferredName "Voltage Level"@en;
+    bamm:description "Maximum Voltage Level"@en;
+    bamm:characteristic :VoltageLevel;
+    bamm:exampleValue "12 V".
+:batteryMode a bamm:Property;
+    bamm:name "batteryMode";
+    bamm:preferredName "Battery Mode"@en;
+    bamm:description "The Mode of the Battery (ON/OFF)"@en;
+    bamm:characteristic bamm-c:Boolean;
+    bamm:exampleValue "0"^^xsd:boolean.
+:batteryLevel a bamm:Property;
+    bamm:name "batteryLevel";
+    bamm:preferredName "Battery level "@en;
+    bamm:description "The battery level property"@en;
+    bamm:characteristic :BatteryLevel;
+    bamm:exampleValue "42"^^xsd:nonNegativeInteger.
+:batteryTemperature a bamm:Property;
+    bamm:name "batteryTemperature";
+    bamm:preferredName "Battery Temperature"@en;
+    bamm:description "The temperature of the Battery (in celcius)"@en;
+    bamm:characteristic :BatteryTemperature;
+    bamm:exampleValue "40"^^xsd:int.
+:batteryType a bamm:Property;
+    bamm:name "batteryType";
+    bamm:preferredName "Battery Type"@en;
+    bamm:characteristic bamm-c:Text;
+    bamm:exampleValue "Lithium-Ion Battery".
+:BatteryLevel a bamm-c:Measurement;
+    bamm:name "BatteryLevel";
+    bamm:preferredName "Battery Level"@en;
+    bamm:description "Battery Level Characteristics"@en;
+    bamm:dataType xsd:nonNegativeInteger;
+    bamm-c:unit unit:percent.
+:BatteryTemperature a bamm-c:Measurement;
+    bamm:name "BatteryTemperature";
+    bamm:preferredName "Battery Temperature"@en;
+    bamm:dataType xsd:int;
+    bamm-c:unit unit:degreeCelsius.
+:VoltageLevel a bamm-c:Measurement;
+    bamm:name "VoltageLevel";
+    bamm-c:unit unit:volt.
+:warningLevel a bamm:Property;
+    bamm:name "warningLevel";
+    bamm:preferredName "Warning Level "@en;
+    bamm:description "Warning Level of the Battery"@en;
+    bamm:characteristic :WarningLevel;
+    bamm:exampleValue "LOW".
+:WarningLevel a bamm-c:Enumeration;
+    bamm:name "WarningLevel";
+    bamm:dataType xsd:string;
+    bamm-c:values ("LOW" "MEDIUM" "HIGH").

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace AasxIntegrationBase
 {
     /// <summary>
-    /// Implements a minimal stack for
+    /// Implements a minimal stack for plugin events
     /// </summary>
     public class PluginEventStack
     {

@@ -1003,6 +1003,8 @@ namespace AasxRestServerLibrary
                 // now, add the row
                 table.Add(row);
 
+                // recurse
+                return true;
             });
 
             // return as JSON

@@ -16,7 +16,7 @@ function Main
     Set-Location $PSScriptRoot
     Write-Host "Looking for the dead code in comments with dead-csharp ..."
 
-    dotnet dead-csharp --inputs "**/*.cs" --excludes "**/obj/**" "packages/**" "**/Properties/**"
+    dotnet dead-csharp --inputs "**/*.cs" --excludes "**/obj/**" "packages/**" "**/Properties/**" "AasxFileServerRestLibrary/**"
     if($LASTEXITCODE -ne 0)
     {
         throw (

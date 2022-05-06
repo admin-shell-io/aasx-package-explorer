@@ -18,6 +18,10 @@ namespace AasxPluginExportTable
 {
     public class ExportTableOptions : AasxIntegrationBase.AasxPluginOptionsBase
     {
+        public string TemplateIdConceptDescription = "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
+
+        public Uml.ExportUmlOptions UmlExport = null;
+
         public List<ExportTableRecord> Presets = new List<ExportTableRecord>();
 
         /// <summary>

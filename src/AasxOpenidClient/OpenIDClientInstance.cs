@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
@@ -22,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SSIExtension;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -71,6 +74,9 @@ namespace AasxOpenIdClient
         public string outputDir = ".";
 
         public string token = "";
+        public string ssiURL = "";
+        public string keycloak = "";
+        public string email = "";
         public async Task Run(string tag, string value, UiLambdaSet uiLambda = null)
         {
             ServicePointManager.ServerCertificateValidationCallback =
@@ -280,6 +286,81 @@ namespace AasxOpenIdClient
             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
             var client = new HttpClient(handler);
 
+            if (keycloak != "")
+            {
+                TokenResponse tr = null;
+                bool error = false;
+
+                string BASE_URL = keycloak;
+                string client_id = "devicegrant"; // create a client in your keycloak instance
+                string DEVICE_GRANT_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/auth/device";
+                string TOKEN_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/token";
+                string USERINFO_ENDPOINT = BASE_URL + "/auth/realms/test/protocol/openid-connect/userinfo";
+                string verification_uri_complete = "";
+                string device_code = "";
+
+                HttpContent httpContent = new StringContent("client_id=" + client_id);
+                httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                var r = await client.PostAsync(DEVICE_GRANT_ENDPOINT, httpContent);
+                error = !r.IsSuccessStatusCode;
+
+                if (!error)
+                {
+                    var result = r.Content.ReadAsStringAsync().Result;
+
+                    try
+                    {
+                        var parsed = JObject.Parse(result);
+
+                        verification_uri_complete = parsed.SelectToken("verification_uri_complete").Value<string>();
+                        device_code = parsed.SelectToken("device_code").Value<string>();
+
+                        Process.Start(verification_uri_complete);
+                    }
+                    catch (Exception)
+                    {
+
+                        error = true;
+                    }
+                }
+                if (!error)
+                {
+                    string parameter = "grant_type=urn:ietf:params:oauth:grant-type:device_code&" +
+                        "client_id=" + client_id + "&" +
+                        "device_code=" + device_code;
+                    string text = "Please login at " + verification_uri_complete + "\n" + parameter;
+
+                    UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", text,
+                        "Keycloak Authentication", AnyUiMessageBoxButton.OK);
+
+                    httpContent = new StringContent(parameter, Encoding.UTF8);
+                    httpContent.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+                    r = await client.PostAsync(TOKEN_ENDPOINT, httpContent);
+                    if (r.IsSuccessStatusCode)
+                    {
+                        var result = r.Content.ReadAsStringAsync().Result;
+
+                        try
+                        {
+                            var parsed = JObject.Parse(result);
+
+                            token = parsed.SelectToken("access_token").Value<string>();
+                            UiLambdaSet.MesssageBoxShow(uiLambda, "Press OK to continue", token,
+                                "Access Token", AnyUiMessageBoxButton.OK);
+                        }
+                        catch (Exception)
+                        {
+                            error = true;
+                        }
+                    }
+                }
+                if (error)
+                    keycloak = "";
+                return tr;
+            }
+
             var disco = await client.GetDiscoveryDocumentAsync(authServer);
             if (disco.IsError) throw new Exception(disco.Error);
 
@@ -304,7 +385,8 @@ namespace AasxOpenIdClient
             Console.ResetColor();
             Console.WriteLine(clientToken + "\n");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
+            if (ssiURL == "")
+                UiLambdaSet.MesssageBoxShow(uiLambda, clientToken, "", "Client Token", AnyUiMessageBoxButton.OK);
 
             var response = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
             {
@@ -378,7 +460,10 @@ namespace AasxOpenIdClient
 
             if (credential == null)
             {
-                var res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
+                AnyUiMessageBoxResult res = AnyUiMessageBoxResult.No;
+
+                if (ssiURL == "")
+                    res = UiLambdaSet.MesssageBoxShow(uiLambda, "",
                         "Select certificate chain from certificate store? \n" +
                         "(otherwise use file Andreas_Orzelski_Chain.pfx)",
                         "Select certificate chain", AnyUiMessageBoxButton.YesNo);
@@ -475,8 +560,9 @@ namespace AasxOpenIdClient
                 Convert.ToBase64String(certificate.RawData, Base64FormattingOptions.InsertLineBreaks));
             builder.AppendLine("-----END CERTIFICATE-----");
 
-            UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate",
-                AnyUiMessageBoxButton.OK);
+            if (ssiURL == "")
+                UiLambdaSet.MesssageBoxShow(uiLambda, builder.ToString(), "", "Client Certificate",
+                    AnyUiMessageBoxButton.OK);
 
             credential = new X509SigningCredentials(certificate);
             // oz end
@@ -501,10 +587,29 @@ namespace AasxOpenIdClient
             ;
 
             token.Header.Add("x5c", x5c);
-            // oz
+            if (ssiURL != "")
+            {
+                //// Prover prover = new Prover("http://192.168.178.33:5001"); //AASX Package Explorer
+                Prover prover = new Prover(ssiURL); //AASX Package Explorer
+
+                string invitation = prover.CreateInvitation();
+
+                token.Header.Add("ssiInvitation", invitation);
+
+                UiLambdaSet.MesssageBoxShow(uiLambda, "ssiURL = " + ssiURL, "", "SSI Info",
+                    AnyUiMessageBoxButton.OK);
+                UiLambdaSet.MesssageBoxShow(uiLambda,
+                    "credentialInfo = " + prover.cred_json_asstring, "", "VC for Presentation",
+                    AnyUiMessageBoxButton.OK);
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
+        }
+
+        private void Prover_CredentialPresented(object sender, string e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

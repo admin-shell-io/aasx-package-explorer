@@ -181,13 +181,14 @@ namespace AasxPackageLogic.PackageCentral
                 if (!Env.IsOpen || TempFn == null)
                 {
                     TempFn = CreateNewTempFn(Location, IsFormat);
-                    Env.SaveAs(TempFn);
+                    Env.SaveAs(TempFn, prefFmt: prefFmt);
                 }
 
                 // do a close, execute and re-open cycle
                 try
                 {
-                    Env.TemporarilySaveCloseAndReOpenPackage(() =>
+                    Env.TemporarilySaveCloseAndReOpenPackage(
+                        prefFmt: prefFmt, lambda: () =>
                     {
                         System.IO.File.Copy(Env.Filename, Location, overwrite: true);
                     });

@@ -272,7 +272,10 @@ namespace AasxPackageExplorer
         public void Refresh()
         {
             preventSelectedItemChanged = true;
+            // TODO (MIHO, 2021-11-09): check, if clearing selected items on refresh is required
+#if __old_version_of_code
             _selectedItems = new ListOfVisualElementBasic();
+#endif
             treeViewInner.Items.Refresh();
             treeViewInner.UpdateLayout();
             preventSelectedItemChanged = false;
@@ -388,7 +391,7 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
-        public bool TrySelectMainDataObject(object dataObject, bool wishExpanded)
+        public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?
             var ve = SearchVisualElementOnMainDataObject(dataObject);
@@ -410,7 +413,7 @@ namespace AasxPackageExplorer
                 FireSelectedItem();
         }
 
-        public bool TrySelectVisualElement(VisualElementGeneric ve, bool wishExpanded)
+        public bool TrySelectVisualElement(VisualElementGeneric ve, bool? wishExpanded)
         {
             // access?
             if (ve == null)
@@ -419,7 +422,7 @@ namespace AasxPackageExplorer
             // select (but no callback!)
             SelectSingleVisualElement(ve, preventFireItem: true);
 
-            if (wishExpanded)
+            if (wishExpanded == true)
             {
                 // go upward the tree in order to expand, as well
                 var sii = ve;
@@ -465,6 +468,11 @@ namespace AasxPackageExplorer
             }
             else
             {
+                // consider lazy loading
+                if (mem is VisualElementEnvironmentItem memei
+                    && memei.theItemType == VisualElementEnvironmentItem.ItemType.DummyNode)
+                    return false;
+
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();

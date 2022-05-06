@@ -41,7 +41,7 @@ https://admin-shell-io.com/screencasts/.
 
 For further information about the Asset Administration Shell, see the 
 publication [Details of the Asset Administration Shell](
-https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-Asset-Administration-Shell-Part1.html
+https://www.plattform-i40.de/IP/Redaktion/EN/Standardartikel/specification-administrationshell.html
 ) by Plattform Industrie 4.0.
 
 We provide a couple of sample admin shells (packaged as .aasx) for you to 
@@ -100,5 +100,5 @@ shells targeting tech-savvy and less technically-inclined users alike.
 The AASX Package Explorer also includes an internal REST server and OPC UA
 server for the loaded .AASX. Based on this a separate AASX Server is
 available (https://github.com/admin-shell-io/aasx-server) which can host
-several .AASX simultanously (see example https://admin-shell-io.com:5001/).
+several .AASX simultanously (see example https://admin-shell-io.com/5001/).
 

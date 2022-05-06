@@ -63,8 +63,10 @@ namespace AasxIntegrationBase.AasForms
             AdminShell.SubmodelElementWrapperCollection collection, AdminShell.SubmodelElement sme)
         {
             // access
-            if (collection == null || sme == null)
+            if (sme == null)
                 return;
+
+            collection = collection ?? new AdminShell.SubmodelElementWrapperCollection();
 
             // check, if to make idShort unique?
             if (sme.idShort.Contains("{0"))
@@ -788,24 +790,29 @@ namespace AasxIntegrationBase.AasForms
             // check, if a source is present
             this.sourceSme = source;
             var pSource = this.sourceSme as AdminShell.Property;
-            if (pSource != null)
+
+            // If the source element has a value, keep it. Otherwise, look for
+            // a default value and apply that.
+            if (!String.IsNullOrEmpty(pSource?.value))
             {
-                // take over
-                p.valueType = pSource.valueType;
                 p.value = pSource.value;
             }
-            else
+            else if (!String.IsNullOrWhiteSpace(parentDesc.presetValue))
             {
-                // some more preferences
-                if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.valueType = parentDesc.allowedValueTypes[0];
+                p.value = parentDesc.presetValue;
+                this.Touch();
+            }
 
-                if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
-                {
-                    p.value = parentDesc.presetValue;
-                    // immediately set touched in order to have this value saved
-                    this.Touch();
-                }
+            // If the source element has a valueType, keep it. Otherwise, look for
+            // a default valueType and apply that.
+            if (!String.IsNullOrWhiteSpace(pSource?.valueType))
+            {
+                p.valueType = pSource.valueType;
+            }
+            else if (parentDesc.allowedValueTypes.Length == 1)
+            {
+                p.valueType = parentDesc.allowedValueTypes[0];
+                this.Touch();
             }
 
             // create user control
@@ -996,6 +1003,7 @@ namespace AasxIntegrationBase.AasForms
 
                             // save
                             file.value = targetPath + targetFn;
+                            file.mimeType = AdminShellPackageEnv.GuessMimeType(targetFn);
 
                             if (addFilesToPackage)
                             {
@@ -1017,6 +1025,7 @@ namespace AasxIntegrationBase.AasForms
             if (file != null && Touched && fileSource != null && editSource)
             {
                 fileSource.value = file.value;
+                fileSource.mimeType = file.mimeType;
                 return false;
             }
             return true;
@@ -1064,11 +1073,118 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var mlp = this.sme as AdminShell.MultiLanguageProperty;
-            var mlpSource = this.sourceSme as AdminShell.MultiLanguageProperty;
-            if (mlp != null && Touched && mlpSource != null && editSource)
+            var re = this.sme as AdminShell.ReferenceElement;
+            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            if (re != null && Touched && reSource != null && editSource)
             {
-                mlpSource.value = new AdminShell.LangStringSet(mlp.value);
+                reSource.value = new AdminShell.Reference(re.value);
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    public class FormInstanceRelationshipElement : FormInstanceSubmodelElement
+    {
+        public FormInstanceRelationshipElement(
+            FormInstanceListOfSame parentInstance, FormDescRelationshipElement parentDesc,
+            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+        {
+            // way back to description
+            this.parentInstance = parentInstance;
+            this.desc = parentDesc;
+
+            // initialize Referable
+            var re = new AdminShell.RelationshipElement();
+            this.sme = re;
+            InitReferable(parentDesc, source);
+
+            // check, if a source is present
+            this.sourceSme = source;
+            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            if (reSource != null)
+            {
+                // take over
+                re.first = new AdminShell.Reference(reSource.first);
+                re.second = new AdminShell.Reference(reSource.second);
+            }
+
+            // create user control
+            this.subControl = new FormSubControlRelationshipElement();
+            this.subControl.DataContext = this;
+        }
+
+        /// <summary>
+        /// Before rendering the SME into a list of new elements, process the SME.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back
+        /// the new values instead of producing a new element. Returns True, if a new element shall be rendered.
+        /// </summary>
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        {
+            // refer to base (SME) function, but not caring about result
+            base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
+
+            var re = this.sme as AdminShell.RelationshipElement;
+            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            if (re != null && Touched && reSource != null && editSource)
+            {
+                reSource.first = new AdminShell.Reference(re.first);
+                reSource.second = new AdminShell.Reference(re.second);
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    public class FormInstanceCapability : FormInstanceSubmodelElement
+    {
+        public FormInstanceCapability(
+            FormInstanceListOfSame parentInstance, FormDescCapability parentDesc,
+            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+        {
+            // way back to description
+            this.parentInstance = parentInstance;
+            this.desc = parentDesc;
+
+            // initialize Referable
+            var re = new AdminShell.Capability();
+            this.sme = re;
+            InitReferable(parentDesc, source);
+
+            // check, if a source is present
+            this.sourceSme = source;
+            var reSource = this.sourceSme as AdminShell.Capability;
+            if (reSource != null)
+            {
+                // take over
+                // nothing here
+            }
+
+            // create user control
+            this.subControl = new FormSubControlCapability();
+            this.subControl.DataContext = this;
+        }
+
+        /// <summary>
+        /// Before rendering the SME into a list of new elements, process the SME.
+        /// If <c>Touched</c>, <c>sourceSme</c> and <c>editSource</c> is set, this function shall write back
+        /// the new values instead of producing a new element. Returns True, if a new element shall be rendered.
+        /// </summary>
+        public override bool ProcessSmeForRender(
+            AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false, bool editSource = false)
+        {
+            // refer to base (SME) function, but not caring about result
+            base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
+
+            var re = this.sme as AdminShell.RelationshipElement;
+            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            if (re != null && Touched && reSource != null && editSource)
+            {
+                reSource.first = new AdminShell.Reference(re.first);
+                reSource.second = new AdminShell.Reference(re.second);
                 return false;
             }
             return true;

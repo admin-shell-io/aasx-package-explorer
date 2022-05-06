@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using JetBrains.Annotations;
 
@@ -28,8 +29,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private PluginEventStack eventStack = new PluginEventStack();
         private AasxPluginPlotting.PlottingOptions options = new AasxPluginPlotting.PlottingOptions();
 
-        private AasxPluginPlotting.PlottingViewControl viewControl =
-            new AasxPluginPlotting.PlottingViewControl();
+        private AasxPluginPlotting.PlottingViewControl _viewControl;
 
         public string GetPluginName()
         {
@@ -74,6 +74,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 new AasxPluginActionDescriptionBase(
                     "call-check-visual-extension",
                     "When called with Referable, returns possibly visual extension for it."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "push-aas-event", "Pushes an AAS event to the plugin."));
             // rest follows
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -89,7 +92,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
+                    "When called, fill given WPF panel with control for plugin display."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "clear-panel-visual-extension",
+                    "Clear the panel information; might occur before fill-panel is called."));
             return res.ToArray();
         }
 
@@ -126,6 +133,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // ok
                 return cve;
+            }
+
+            if (action == "push-aas-event")
+            {
+                // arguments
+                if (args.Length < 1 || !(args[0] is AasEventMsgEnvelope ev))
+                    return null;
+
+                _viewControl?.PushEvent(ev);
             }
 
             // rest follows
@@ -173,6 +189,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
+            if (action == "clear-panel-visual-extension")
+            {
+                // simple delete reference to view control
+                // this shall also stop event notifications!
+                if (_viewControl != null)
+                    _viewControl.Stop();
+                _viewControl = null;
+            }
+
             if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)
             {
                 // access
@@ -186,13 +211,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 sm.SetAllParents();
 
                 // create TOP control
-                this.viewControl = new AasxPluginPlotting.PlottingViewControl();
-                this.viewControl.Start(package, sm, options, eventStack);
-                master.Children.Add(this.viewControl);
+                _viewControl = new AasxPluginPlotting.PlottingViewControl();
+                _viewControl.Start(package, sm, options, eventStack, Log);
+                master.Children.Add(_viewControl);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = this.viewControl;
+                res.obj = _viewControl;
                 return res;
             }
 

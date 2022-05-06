@@ -1,8 +1,8 @@
-Copyright (c) 2018-2020 Festo AG & Co. KG
+Copyright (c) 2018-2021 Festo AG & Co. KG
 <https://www.festo.com/net/de_de/Forms/web/contact_international>,
 author: Michael Hoffmeister
 
-Copyright (c) 2019-2020 PHOENIX CONTACT GmbH & Co. KG
+Copyright (c) 2019-2021 PHOENIX CONTACT GmbH & Co. KG
 <opensource@phoenixcontact.com>,
 author: Andreas Orzelski
 
@@ -15,6 +15,11 @@ Copyright (c) 2020 Schneider Electric Automation GmbH
 author: Marco Mendes
 
 Copyright (c) 2020 SICK AG <info@sick.de>
+
+Copyright (c) 2021 KEB Automation KG <https://www.keb.de/>
+
+Copyright (c) 2021 Lenze SE <https://www.lenze.com/en-de/>
+author: Jonas Grote, Denis Göllner, Sebastian Bischof
 
 The AASX Package Explorer is licensed under the Apache License 2.0
 (Apache-2.0, see below).
@@ -85,6 +90,7 @@ The MSAGL (Microsoft Automatic Graph Layout) is licensed under the MIT license
 
 Glob (https://www.nuget.org/packages/Glob/) is licensed under the MIT license
 (MIT, see below).
+
 -------------------------------------------------------------------------------
 
 
@@ -980,6 +986,7 @@ With resepect to OPC UA Example Code
  * The complete license agreement can be found here:
  * http://opcfoundation.org/License/MIT/1.00/
 
+
 With respect to OPC Foundation
 ==============================
 
@@ -1023,6 +1030,7 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 
 With respect to Glob (https://www.nuget.org/packages/Glob/)
 ===========================================================

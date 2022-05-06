@@ -6,6 +6,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Used to access the XML summary for Options.cs -->
+    <!-- <GenerateDocumentationFile>true</GenerateDocumentationFile> -->
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />
   </ItemGroup>
@@ -17,6 +21,7 @@
 
   <ItemGroup>
     <!-- Workaround for https://github.com/dotnet/wpf/issues/2648#issuecomment-635674683 -->
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Web" />
   </ItemGroup>
   
@@ -29,11 +34,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxFileServerRestLibrary\AasxFileServerRestLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\SSIExtension\SSIExtension.csproj" />
   </ItemGroup>
 
 </Project>

@@ -7,17 +7,21 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\ZveiContactInformationV10.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />
+    <None Remove="Resources\ZveiTimeSeriesDataV10.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\ZveiContactInformationV10.json" />
     <EmbeddedResource Include="Resources\ZveiDigitalTypeplate.json" />
     <EmbeddedResource Include="Resources\ZveiNameplateV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalData.json" />
     <EmbeddedResource Include="Resources\VDI2770v11.json" />
+    <EmbeddedResource Include="Resources\ZveiTimeSeriesDataV10.json" />
     <EmbeddedResource Include="Resources\ZveiTechnicalDataV11.json" />
     <EmbeddedResource Include="Resources\VDI2770.json" />
     <Content Include="README\Old_JSON_ConceptDescriptions.txt" />

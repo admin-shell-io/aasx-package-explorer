@@ -195,7 +195,7 @@ namespace AasxPackageLogic
 
                         if (this.context.ActualShiftState
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                "Delete selected entities? This operation can not be reverted!", "AASX",
+                                "Delete selected entities? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             DeleteElementsInList<T>(list, entities);
@@ -317,6 +317,65 @@ namespace AasxPackageLogic
             }
         }
 
+        /// <summary>
+        /// This is a special helper for multiple selected entities in a list of entoties of type <c>T</c>.
+        /// It is separate from <c>EntityListUpDownDeleteHelper</c> in order to minimize cross effecrs
+        /// </summary>
+        public void EntityListSupplementaryFileHelper(
+            AnyUiPanel stack, ModifyRepo repo,
+            ListOfVisualElementBasic entities,
+            object alternativeFocus = null, string label = "Entities:")
+        {
+            // access
+            if (entities == null)
+                return;
+
+            // ask
+            AddAction(
+                stack, label,
+                new[] { "Delete" },
+                actionTags: new[] { "aas-elem-delete" },
+                repo: repo,
+                action: (buttonNdx) =>
+                {
+                    if (buttonNdx == 0)
+
+                        if (this.context.ActualShiftState
+                            || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                "Delete selected entities? This operation can not be reverted and may directly " +
+                                "affect the loaded package!", "AAS-ENV",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                        {
+                            // single deletes
+                            int num = 0;
+                            foreach (var ent in entities)
+                                if (ent is VisualElementSupplementalFile vesf && vesf.theFile != null)
+                                {
+                                    try
+                                    {
+                                        packages.Main.DeleteSupplementaryFile(vesf.theFile);
+                                        num++;
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Singleton.Error(ex, "Deleting file in package");
+                                    }
+                                }
+
+                            // further infos
+                            Log.Singleton.Info(
+                                $"Added {num} items to pending package items to be deleted. " +
+                                "A save-operation might be required.");
+
+                            // finalize
+                            return new AnyUiLambdaActionRedrawAllElements(
+                                nextFocus: alternativeFocus, isExpanded: true);
+                        }
+
+                    return new AnyUiLambdaActionNone();
+                });
+        }
+
         public void DisplayOrEditAasEntityMultipleElements(
             PackageCentral.PackageCentral packages,
             ListOfVisualElementBasic entities,
@@ -368,27 +427,71 @@ namespace AasxPackageLogic
 
                 // which type?
                 var first = entities.First();
-                AdminShell.Referable parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
-                                                as AdminShell.Referable;
+                AdminShell.IAasElement parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
+                                                as AdminShell.IAasElement;
 
                 // TODO (MIHO, 2021-07-08): check for completeness
-                if (first is VisualElementSubmodel sm)
+                if (first is VisualElementSubmodel vesm)
                 {
-                    DispMultiElementCutCopyPasteHelper(stack, repo, sm.theEnv, parent, this.theCopyPaste, entities);
+                    // up down delete
+                    var bos = entities.GetListOfBusinessObjects<AdminShell.Submodel>();
+                    EntityListMultipleUpDownDeleteHelper(stack, repo,
+                        vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true);
+
+                    // cut copy
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, entities);
                 }
 
-                if (first is VisualElementSubmodelRef smr)
+                if (first is VisualElementSubmodelRef vesmr && parent is AdminShell.AdministrationShell aas
+                    && aas.submodelRefs != null)
                 {
-                    DispMultiElementCutCopyPasteHelper(stack, repo, smr.theEnv, parent, this.theCopyPaste, entities);
+                    // up down delete
+                    var bos = entities.GetListOfMapResults<AdminShell.SubmodelRef,
+                       VisualElementSubmodelRef>((ve) => ve?.theSubmodelRef);
+                    EntityListMultipleUpDownDeleteHelper(stack, repo,
+                        aas.submodelRefs, bos, indexInfo, reFocus: true);
+
+                    // cut copy
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, entities);
                 }
 
                 if (first is VisualElementSubmodelElement sme)
                 {
+                    // up down delete
+                    var bos = entities.GetListOfMapResults<AdminShell.SubmodelElementWrapper,
+                        VisualElementSubmodelElement>((ve) => ve?.theWrapper);
+
+                    if (bos.Count > 0 && parent is AdminShell.Submodel sm)
+                        EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
+                            sm.submodelElements, bos, indexInfo, reFocus: true);
+
+                    if (bos.Count > 0 && parent is AdminShell.SubmodelElementCollection smec)
+                        EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
+                            smec.value, bos, indexInfo, reFocus: true);
+
                     DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, entities);
                 }
 
-                if (first is VisualElementOperationVariable opv)
+                if (first is VisualElementOperationVariable opv && parent is AdminShell.Operation oppa)
                 {
+                    // sanity check: same dir?
+                    var sameDir = true;
+                    foreach (var ent in entities)
+                        if (ent is VisualElementOperationVariable entopv)
+                            if (entopv.theDir != opv.theDir)
+                                sameDir = false;
+
+                    // up down delete
+                    if (sameDir)
+                    {
+                        var bos = entities.GetListOfMapResults<AdminShell.OperationVariable,
+                           VisualElementOperationVariable>((ve) => ve?.theOpVar);
+                        EntityListMultipleUpDownDeleteHelper(stack, repo,
+                            oppa[opv.theDir], bos, indexInfo, reFocus: true,
+                            alternativeFocus: oppa);
+                    }
+
+                    // cut copy
                     DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, entities);
                 }
 
@@ -406,7 +509,7 @@ namespace AasxPackageLogic
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == vecd.theEnv)
                                                  .FirstOrDefault(),
                             ThisElem = vecd.theEnv?.ConceptDescriptions
-                        }); ;
+                        });
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions,
@@ -425,7 +528,7 @@ namespace AasxPackageLogic
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veass.theEnv)
                                                  .FirstOrDefault(),
                             ThisElem = veass.theEnv?.Assets
-                        }); ;
+                        });
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, veass.theEnv, veass.theEnv?.Assets,
@@ -451,27 +554,45 @@ namespace AasxPackageLogic
                         this.theCopyPaste, entities);
                 }
 
-                // change element attributes?
-                this.AddAction(stack, "Actions:", new[] { "Change attribute .." }, repo, (buttonNdx) =>
+                //
+                // Change element attributes?
+                //
                 {
-                    if (buttonNdx == 0)
+                    var bos = entities.GetListOfBusinessObjects<AdminShell.Referable>();
+                    if (bos.Count > 0 &&
+                        !(first is VisualElementSupplementalFile))
                     {
-                        var uc = new AnyUiDialogueDataChangeElementAttributes();
-                        if (this.context.StartFlyoverModal(uc))
+                        this.AddAction(stack, "Actions:", new[] { "Change attribute .." }, repo, (buttonNdx) =>
                         {
-                            var bos = entities.GetListOfBusinessObjects<AdminShell.Referable>();
-                            object nf = null;
-                            foreach (var bo in bos)
+                            if (buttonNdx == 0)
                             {
-                                ChangeElementAttributes(bo, uc);
-                                nf = bo;
+                                var uc = new AnyUiDialogueDataChangeElementAttributes();
+                                if (this.context.StartFlyoverModal(uc))
+                                {
+                                    object nf = null;
+                                    foreach (var bo in bos)
+                                    {
+                                        ChangeElementAttributes(bo, uc);
+                                        nf = bo;
+                                    }
+                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
+                                }
                             }
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
-                        }
+                            return new AnyUiLambdaActionNone();
+                        });
                     }
-                    return new AnyUiLambdaActionNone();
-                });
+                }
 
+                //
+                // Suppl files?
+                //
+                if (first is VisualElementSupplementalFile)
+                {
+                    // Delete
+                    EntityListSupplementaryFileHelper(stack, repo, entities,
+                        alternativeFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
+                                VisualElementEnvironmentItem.ItemType.SupplFiles));
+                }
             }
 
         }

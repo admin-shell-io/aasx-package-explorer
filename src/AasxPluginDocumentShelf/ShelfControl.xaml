@@ -20,10 +20,11 @@
     <!-- Solution: do everything in code behind -->
     <!-- xmlns:cf="clr-namespace:CountryFlag;assembly=CountryFlag" -->
     
-    <TabControl x:Name="OuterTabControl">
+    <TabControl x:Name="OuterTabControl" Margin="0,2,0,-2">
         <TabItem x:Name="TabPanelList" Visibility="Collapsed">
             <Grid Background="DarkGray" Loaded="Grid_Loaded">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -41,7 +42,11 @@
                     </WrapPanel>
                     <Label/>
                 </DockPanel>
-                <DockPanel Grid.Row="1" Grid.Column="0" Background="LightGray">
+                <DockPanel x:Name="PanelUsageInfo" Grid.Row="1" Grid.Column="0" Background="LightBlue" Visibility="Visible">
+                    <TextBlock x:Name="TextBlockUsageInfo" Foreground="DarkBlue" FontStyle="Italic" Margin="6,-8,6,6" TextWrapping="WrapWithOverflow"
+                               Text="Usage info" HorizontalAlignment="Left"  />
+                </DockPanel>
+                <DockPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
                     <ComboBox x:Name="ComboClassId" DockPanel.Dock="Left" SelectedIndex="{Binding Path=TheSelectedDocClass,Mode=TwoWay}" VerticalAlignment="Center" Margin="2,2,10,2" Width="160">
                         <ComboBoxItem>All classes</ComboBoxItem>
                         <ComboBoxItem>01-01 Identification</ComboBoxItem>
@@ -87,7 +92,7 @@
 
                     <Label/>
                 </DockPanel>
-                <DockPanel Grid.Row="2" Grid.Column="0" Background="LightGray">
+                <DockPanel Grid.Row="3" Grid.Column="0" Background="LightGray">
                     <WrapPanel DockPanel.Dock="Right" Orientation="Horizontal">
                         <WrapPanel.Resources>
                             <local:EnumBooleanConverter x:Key="enumBooleanConverter" />
@@ -110,11 +115,11 @@
                                 <Label Content="DE"/>
                             </WrapPanel>
                         </RadioButton>
-                        <RadioButton x:Name="RadioLangCN" VerticalContentAlignment="Center" Margin="3"
-                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=CN}">
+                        <RadioButton x:Name="RadioLangZH" VerticalContentAlignment="Center" Margin="3"
+                                 IsChecked="{Binding Path=TheSelectedLanguage, Converter={StaticResource enumBooleanConverter}, ConverterParameter=ZH}">
                             <WrapPanel Width="30">
                                 <!-- <cf:CountryFlag Code="CN" Width="30"/> -->
-                                <Label Content="CN"/>
+                                <Label Content="ZH"/>
                             </WrapPanel>
                         </RadioButton>
                         <RadioButton x:Name="RadioLangJP" VerticalContentAlignment="Center" Margin="3"
@@ -149,9 +154,9 @@
                 </DockPanel>
 
                 <!-- Width="{Binding ActualWidth, 
-               RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"-->
+                     RelativeSource={RelativeSource AncestorType={x:Type ScrollContentPresenter}}}"-->
 
-                <ListView x:Name="ScrollMainContent" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Margin="0,30,0,1" Grid.RowSpan="2">
+                <ListView x:Name="ScrollMainContent" Grid.Row="3" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" Margin="0,30,0,1" Grid.RowSpan="2">
                     <ListView.Resources>
                         <!-- ReSharper disable Xaml.RedundantResource -->
                         
