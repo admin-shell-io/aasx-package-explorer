@@ -81,7 +81,7 @@ namespace AdminShellNS.Tests
                 );
             }
         }
-   
+
         [Test]
         public void TestCanRead01FestoSampleAASXPackagefile()
         {
@@ -93,7 +93,8 @@ namespace AdminShellNS.Tests
             {
                 using var package = new AdminShellPackageEnv(tempFile);
                 Assert.IsNotNull(package);
-            } finally
+            }
+            finally
             {
                 File.Delete(tempFile);
             }
