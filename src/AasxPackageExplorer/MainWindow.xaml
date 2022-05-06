@@ -55,12 +55,15 @@
                     <RoutedUICommand x:Key="ImportSubmodel" Text="ImportSubmodel" />
                     <RoutedUICommand x:Key="ImportSubmodelElements" Text="ImportSubmodelElements" />
                     <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
+                    <RoutedUICommand x:Key="RDFRead" Text="RDFRead" />
                     <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />
                     <RoutedUICommand x:Key="SubmodelRead" Text="SubmodelRead" />
                     <RoutedUICommand x:Key="SubmodelGet" Text="SubmodelGet" />
                     <RoutedUICommand x:Key="SubmodelPut" Text="SubmodelPut" />
                     <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
                     <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
+                    <RoutedUICommand x:Key="TDImport" Text="TDImport" />
+                    <RoutedUICommand x:Key="SubmodelTDExport" Text="SubmodelTDExport" />
                     <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
                     <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
                     <RoutedUICommand x:Key="OPCUAi4aasExport" Text="OPCUAi4aasExport" />
@@ -70,6 +73,9 @@
                     <RoutedUICommand x:Key="ExportGenericForms" Text="ExportGenericForms" />
                     <RoutedUICommand x:Key="ExportPredefineConcepts" Text="ExportPredefineConcepts" />
                     <RoutedUICommand x:Key="ExportTable" Text="ExportTable" />
+                    <RoutedUICommand x:Key="ImportTable" Text="ImportTable" />
+                    <RoutedUICommand x:Key="ExportUml" Text="ExportUml" />
+                    <RoutedUICommand x:Key="ImportTimeSeries" Text="ImportTimeSeries" />
                     <RoutedUICommand x:Key="ServerRest" Text="ServerRest" />
                     <RoutedUICommand x:Key="MQTTPub" Text="MQTTPub" />
                     <RoutedUICommand x:Key="ServerPluginEmptySample" Text="ServerPluginEmptySample" />
@@ -83,6 +89,9 @@
                     <RoutedUICommand x:Key="HintsMenu" Text="HintsMenu" />
                     <RoutedUICommand x:Key="ShowIriMenu" Text="ShowIriMenu" />
                     <RoutedUICommand x:Key="VerboseConnect" Text="VerboseConnect" />
+                    <RoutedUICommand x:Key="AnimateElements" Text="AnimateElements" />
+                    <RoutedUICommand x:Key="ObserveEvents" Text="ObserveEvents" />
+                    <RoutedUICommand x:Key="CompressEvents" Text="CompressEvents" />
                     <RoutedUICommand x:Key="Test" Text="Test" />
                     <RoutedUICommand x:Key="BufferClear" Text="BufferClear" />
                     <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
@@ -97,6 +106,8 @@
                     <RoutedUICommand x:Key="About" Text="About" />
                     <RoutedUICommand x:Key="HelpGithub" Text="HelpGithub" />
                     <RoutedUICommand x:Key="FaqGithub" Text="FaqGithub" />
+                    <RoutedUICommand x:Key="HelpIssues" Text="HelpIssues" />
+                    <RoutedUICommand x:Key="HelpOptionsInfo" Text="HelpOptionsInfo" />
 
                     <RoutedUICommand x:Key="FileRepoNew" Text="FileRepoNew" />
                     <RoutedUICommand x:Key="FileRepoOpen" Text="FileRepoOpen" />
@@ -216,12 +227,15 @@
         <CommandBinding Command="{StaticResource ImportSubmodel}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportSubmodelElements}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCRead}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource RDFRead}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelWrite}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelRead}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelPut}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource SubmodelGet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BMEcatImport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource CSVImport}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource TDImport}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource SubmodelTDExport}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportAML}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OpcUaImportNodeSet}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource OPCUAi4aasImport}" Executed="CommandBinding_Executed"/>
@@ -231,6 +245,9 @@
         <CommandBinding Command="{StaticResource ExportGenericForms}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportPredefineConcepts}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportTable}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ImportTable}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ExportUml}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ImportTimeSeries}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ServerRest}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource MQTTPub}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ServerPluginEmptySample}" Executed="CommandBinding_Executed"/>
@@ -243,6 +260,9 @@
         <CommandBinding Command="{StaticResource ShowIriKey}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ShowIriMenu}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource VerboseConnect}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource AnimateElements}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ObserveEvents}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource CompressEvents}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Test}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource BufferClear}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
@@ -257,6 +277,8 @@
         <CommandBinding Command="{StaticResource About}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource HelpGithub}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FaqGithub}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpIssues}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource HelpOptionsInfo}" Executed="CommandBinding_Executed"/>
 
         <CommandBinding Command="{StaticResource FileRepoNew}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoOpen}" Executed="CommandBinding_Executed"/>
@@ -347,10 +369,15 @@
                             <MenuItem Header="Import Submodel from Dictionary .." Command="{StaticResource ImportSubmodel}"/>
                             <MenuItem Header="Import Submodel Elements from Dictionary .." Command="{StaticResource ImportSubmodelElements}"/>
                             <MenuItem Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
+                            <MenuItem Header="Import Thing Description JSON LD document into SubModel .." Command="{StaticResource TDImport}"/>
+                            
                             <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
                             <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
                             <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
                             <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
+                            <MenuItem Header="Import BAMM RDF into AASX .." Command="{StaticResource RDFRead}"/>
+                            <MenuItem Header="Read time series values into SubModel .." Command="{StaticResource ImportTimeSeries}"/>
+                            <MenuItem Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
                         </MenuItem>
                         <MenuItem Header="Export ..">
                             <MenuItem Header="Export AutomationML .." Command="{StaticResource ExportAML}"/>
@@ -361,9 +388,11 @@
                             <MenuItem Header="Copy selected element JSON to clipboard" InputGestureText="Shift+Ctrl+C" Command="{StaticResource CopyClipboardElementJson}"/>
                             <MenuItem Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
-                            <MenuItem Header="Export Submodel as table .." Command="{StaticResource ExportTable}"/>
+                            <MenuItem Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
-							<MenuItem Header="Export SMD .." Command="{StaticResource ExportSMD}"/>
+							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
+                            <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
+                            <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">
@@ -403,11 +432,16 @@
                         <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
                         <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
                         <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                        <MenuItem x:Name="MenuItemOptionsAnimateElems" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
+                        <MenuItem x:Name="MenuItemOptionsObserveEvents" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
+                        <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
                         <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
                         <MenuItem x:Name="MenuItemFaqGithub" Header="FAQ on Github .." Command="{StaticResource FaqGithub}"/>
+                        <MenuItem x:Name="MenuItemFaqIssues" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
+                        <MenuItem x:Name="MenuItemGenerateOptionInfo" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
                 </Menu>
 

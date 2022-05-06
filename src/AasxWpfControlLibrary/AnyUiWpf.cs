@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -197,6 +198,16 @@ namespace AnyUi
         [JsonIgnore]
         private ListOfRenderRec RenderRecs = new ListOfRenderRec();
 
+        private string FilterForBadText(string input)
+        {
+            var res = new StringBuilder();
+            foreach (var c in input)
+                if (c >= ' ')
+                    res.Append(c);
+            return res.ToString();
+
+        }
+
         private void InitRenderRecs()
         {
             RenderRecs.Clear();
@@ -358,7 +369,9 @@ namespace AnyUi
                                             tb2.Text = "" + files[0];
 
                                         // value changed
-                                        cntl.setValueLambda?.Invoke(files[0]);
+                                        var action = cntl.setValueLambda?.Invoke(files[0]);
+                                        if (action != null && !(action is AnyUiLambdaActionNone))
+                                            EmitOutsideAction(action);
 
                                         // contents changed
                                         WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
@@ -480,7 +493,7 @@ namespace AnyUi
                         // callbacks
                         cntl.originalValue = "" + cntl.Text;
                         wpf.TextChanged += (sender, e) => {
-                            cntl.setValueLambda?.Invoke(wpf.Text);
+                            cntl.setValueLambda?.Invoke(FilterForBadText(wpf.Text));
                             WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
                         };
                         wpf.KeyUp += (sender, e) =>
@@ -538,7 +551,10 @@ namespace AnyUi
                         // callbacks
                         cntl.originalValue = "" + cntl.Text;
                         System.Windows.Controls.TextChangedEventHandler tceh = (sender, e) => {
-                            cntl.setValueLambda?.Invoke(wpf.Text);
+                            // for AAS events: only invoke, if required
+                            if (cntl.Text != wpf.Text)
+                                cntl.setValueLambda?.Invoke(wpf.Text);
+                            cntl.Text = wpf.Text;
                         };
                         wpf.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent, tceh);
                         if (!wpf.IsEditable)
@@ -547,6 +563,7 @@ namespace AnyUi
                             wpf.SelectionChanged += (sender, e) => {
                                 cntl.SelectedIndex = wpf.SelectedIndex;
                                 cntl.setValueLambda((string) wpf.SelectedItem);
+                                cntl.Text = wpf.Text;
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 // Note for MIHO: this was the dangerous outside event loop!
                                 EmitOutsideAction(cntl.takeOverLambda);
@@ -734,6 +751,17 @@ namespace AnyUi
 
             // perform the render action (for this level of attributes, second)
             foundRR.InitLambda?.Invoke(el, dd.WpfElement);
+
+            // does the element need child elements?
+            // do a special case handling here, unless a more generic handling is required
+
+            {
+                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+                    && cntl.Child != null)
+                {
+                    wpf.Child = GetOrCreateWpfElement(cntl.Child);
+                }
+            }
 
             // call action
             if (topClass)

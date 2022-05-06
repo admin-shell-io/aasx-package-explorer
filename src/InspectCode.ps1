@@ -21,7 +21,6 @@ function Main
 
     # InspectCode passes over the properties to MSBuild,
     # see https://www.jetbrains.com/help/resharper/InspectCode.html#msbuild-related-parameters
-
     $pathToSolution = "AasxPackageExplorer.sln"
 
     Write-Host "Inspecting the code with inspectcode ..."
@@ -30,10 +29,13 @@ function Main
     Write-Host "* The working directory is: $(Get-Location)"
     Write-Host "* The path to solution is: $pathToSolution"
 
+    Write-Host "* Inspecting the code with dotnet jb inspectcode"
+
     & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
-        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json' `
+        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**' `
+        "--build" `
         "$pathToSolution"
 
     [xml]$inspection = Get-Content $codeInspectionPath

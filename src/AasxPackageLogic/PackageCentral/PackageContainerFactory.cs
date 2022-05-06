@@ -69,12 +69,17 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     // care for the aasx file
                     runtimeOptions?.Log?.Info($".. deciding for networked HHTP file ..");
+
+                    string aasId = match.Groups[2].ToString().Trim();
+                    var split = ll.Split('/');
+                    if (split.Length >= 3)
+                        aasId = split[split.Length - 1];
                     return new PackageContainerGuess()
                     {
                         Location = location,
                         GuessedType = typeof(PackageContainerNetworkHttpFile),
                         HeadOfPath = match.Groups[1].ToString().Trim(),
-                        AasId = match.Groups[2].ToString().Trim()
+                        AasId = aasId
                     };
                 }
 

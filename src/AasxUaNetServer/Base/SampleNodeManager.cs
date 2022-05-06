@@ -825,7 +825,8 @@ namespace Opc.Ua.Sample
                     // add reference to external target.
                     foreach (IReference reference in current.Value)
                     {
-                        source.AddReference(reference.ReferenceTypeId, reference.IsInverse, reference.TargetId);
+                        if (!source.ReferenceExists(reference.ReferenceTypeId, reference.IsInverse, reference.TargetId))
+                            source.AddReference(reference.ReferenceTypeId, reference.IsInverse, reference.TargetId);
                     }
                 }
             }

@@ -73,7 +73,7 @@ namespace AasxPredefinedConcepts.Convert
             // delete (old) CDs
             if (deleteOldCDs)
             {
-                smHSU.RecurseOnSubmodelElements(null, null, (state, parents, current) =>
+                sm.RecurseOnSubmodelElements(null, (state, parents, current) =>
                 {
                     var sme = current;
                     if (sme != null && sme.semanticId != null)
@@ -83,6 +83,8 @@ namespace AasxPredefinedConcepts.Convert
                             if (package.AasEnv.ConceptDescriptions.Contains(cd))
                                 package.AasEnv.ConceptDescriptions.Remove(cd);
                     }
+                    // recurse
+                    return true;
                 });
             }
 

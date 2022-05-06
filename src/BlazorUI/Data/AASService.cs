@@ -212,7 +212,7 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        public List<Submodel> GetSubmodels(blazorSessionService bi)
+        public ListOfSubmodels GetSubmodels(blazorSessionService bi)
         {
             return bi.env.AasEnv.Submodels;
         }

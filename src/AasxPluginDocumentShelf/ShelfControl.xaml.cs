@@ -45,7 +45,8 @@ namespace AasxPluginDocumentShelf
         private LogInstance Log = new LogInstance();
         private AdminShellPackageEnv thePackage = null;
         private AdminShell.Submodel theSubmodel = null;
-        private AasxPluginDocumentShelf.DocumentShelfOptions theOptions = null;
+        private DocumentShelfOptions theOptions = null;
+        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.CreateDefault();
         private PluginEventStack theEventStack = null;
 
         private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
@@ -155,7 +156,7 @@ namespace AasxPluginDocumentShelf
             // CountryFlag does not work in XAML (at least not in Release binary)
             ResetCountryRadioButton(RadioLangEN, CountryFlag.CountryCode.GB);
             ResetCountryRadioButton(RadioLangDE, CountryFlag.CountryCode.DE);
-            ResetCountryRadioButton(RadioLangCN, CountryFlag.CountryCode.CN);
+            ResetCountryRadioButton(RadioLangZH, CountryFlag.CountryCode.CN);
             ResetCountryRadioButton(RadioLangJP, CountryFlag.CountryCode.JP);
             ResetCountryRadioButton(RadioLangKR, CountryFlag.CountryCode.KR);
             ResetCountryRadioButton(RadioLangFR, CountryFlag.CountryCode.FR);
@@ -190,13 +191,13 @@ namespace AasxPluginDocumentShelf
                 try
                 {
                     // temp input
-                    var inputFn = ent?.DigitalFile;
+                    var inputFn = ent?.DigitalFile?.Path;
                     if (inputFn != null)
                     {
 
                         // from package?
                         if (CheckIfPackageFile(inputFn))
-                            inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.DigitalFile);
+                            inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
 
                         // temp output
                         string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
@@ -275,10 +276,7 @@ namespace AasxPluginDocumentShelf
                     try
                     {
                         // convert here, as the tick-Thread in STA / UI thread
-                        var bi = new BitmapImage(new Uri(tempFn, UriKind.RelativeOrAbsolute));
-                        var img = new Image();
-                        img.Source = bi;
-                        de.ImgContainer.Child = img;
+                        var bi = de.LoadImageFromPath(tempFn);
 
                         // now delete the associated files file!
                         if (de.DeleteFilesAfterLoading != null)
@@ -294,8 +292,9 @@ namespace AasxPluginDocumentShelf
                                 }
 
                         // remember in the cache
-                        if (referableHashToCachedBitmap != null &&
-                            !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
+                        if (bi != null
+                            && referableHashToCachedBitmap != null
+                            && !referableHashToCachedBitmap.ContainsKey(de.ReferableHash))
                             referableHashToCachedBitmap[de.ReferableHash] = bi;
                     }
                     catch (Exception ex)
@@ -363,14 +362,6 @@ namespace AasxPluginDocumentShelf
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
-            // automatically set V1.1??
-            if (this.theSubmodel?.semanticId?.Matches(
-                AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey(),
-                AdminShellV20.Key.MatchMode.Relaxed) == true)
-            {
-                this.CheckBoxLatestVersion.IsChecked = true;
-            }
-
             // user control was loaded, all options shall be set and outer grid is loaded fully ..
             ParseSubmodelToListItems(
                 this.theSubmodel, this.theOptions, theViewModel.TheSelectedDocClass,
@@ -429,19 +420,16 @@ namespace AasxPluginDocumentShelf
                 ScrollMainContent.ItemsSource = null;
 
                 // access
-                if (subModel == null || options == null)
+                if (subModel?.semanticId == null || options == null)
                     return;
 
                 // make sure for the right Submodel
-                var found = false;
-                if (options.AllowSubmodelSemanticIds != null)
-                    foreach (var x in options.AllowSubmodelSemanticIds)
-                        if (subModel.semanticId != null && subModel.semanticId.Matches(x))
-                        {
-                            found = true;
-                            break;
-                        }
-                if (!found)
+                DocumentShelfOptionsRecord foundRec = null;
+                foreach (var rec in options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
+                    subModel?.semanticId?.GetAsExactlyOneKey()))
+                    foundRec = rec;
+
+                if (foundRec == null)
                     return;
 
                 // right now: hardcoded check for mdoel version
@@ -449,6 +437,18 @@ namespace AasxPluginDocumentShelf
                 var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
                 if (subModel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
                     modelVersion = DocumentEntity.SubmodelVersion.V11;
+                if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
+                    modelVersion = DocumentEntity.SubmodelVersion.V10;
+                if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
+                    modelVersion = DocumentEntity.SubmodelVersion.V11;
+
+                // set checkbox
+                this.CheckBoxLatestVersion.IsChecked = modelVersion == DocumentEntity.SubmodelVersion.V11;
+
+                // set usage info
+                var useinf = foundRec.UsageInfo;
+                TextBlockUsageInfo.Text = useinf;
+                PanelUsageInfo.Visibility = useinf.HasContent() ? Visibility.Visible : Visibility.Collapsed;
 
                 // what defaultLanguage
                 string defaultLang = null;
@@ -472,6 +472,27 @@ namespace AasxPluginDocumentShelf
                     vb.Stretch = Stretch.Uniform;
                     ent.ImgContainer = vb;
 
+                    // if a preview file exists, try load directly, but not interfere
+                    // we delayed load logic, as these images might get more detailed
+                    if (ent.PreviewFile?.Path?.HasContent() == true)
+                    {
+                        try
+                        {
+                            var inputFn = ent.PreviewFile.Path;
+
+                            // from package?
+                            if (CheckIfPackageFile(inputFn))
+                                inputFn = thePackage.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+
+                            ent.LoadImageFromPath(inputFn);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log?.Error(ex, "when loading preview file for " + ent.Title);
+                        }
+                    }
+
+                    // delayed load logic
                     // can already put a generated image into the viewbox?
                     if (referableHashToCachedBitmap != null &&
                         referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
@@ -501,6 +522,7 @@ namespace AasxPluginDocumentShelf
                     // attach events and add
                     ent.DoubleClick += DocumentEntity_DoubleClick;
                     ent.MenuClick += DocumentEntity_MenuClick;
+                    ent.DragStart += DocumentEntity_DragStart;
                 }
 
                 // finally set
@@ -530,14 +552,12 @@ namespace AasxPluginDocumentShelf
                 formInUpdateMode = true;
                 updateSourceElements = e.SourceElementsDocument;
 
-                var desc = theOptions.FormVdi2770;
-                if (desc == null)
-                    desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
+                var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDesc(theOptions);
 
                 // latest version (from resources)
                 if (e.SmVersion == DocumentEntity.SubmodelVersion.V11)
                 {
-                    desc = DocumentShelfOptions.CreateVdi2770v11TemplateDesc();
+                    desc = DocuShelfSemanticConfig.CreateVdi2770v11TemplateDesc();
                 }
 
                 this.currentFormDescription = desc;
@@ -553,16 +573,6 @@ namespace AasxPluginDocumentShelf
                 elementsCntl.DataContext = this.currentFormInst;
                 ScrollViewerForm.Content = elementsCntl;
 
-#if not_yet
-                this.currentTemplateDescription = new AasTemplateDescListOfElement(desc);
-                this.currentTemplateDescription.ClearDynamicData();
-                this.currentTemplateDescription.PresetInstancesBasedOnSource(updateSourceElements);
-
-                // bring it to the panel
-                var elementsCntl = new AasTemplateListOfElementControl();
-                elementsCntl.DataContext = this.currentTemplateDescription;
-                ScrollViewerForm.Content = elementsCntl;
-#endif
                 // OK
                 return;
             }
@@ -573,14 +583,14 @@ namespace AasxPluginDocumentShelf
                 // the source elements need to match a Document
                 foreach (var smcDoc in
                     theSubmodel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        theOptions?.SemIdDocument))
+                        _semConfig.SemIdDocument))
                     if (smcDoc?.value == e.SourceElementsDocument)
                     {
                         // identify as well the DocumentVersion
                         // (convert to List() because of Count() below)
                         var allVers =
                             e.SourceElementsDocument.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                                theOptions?.SemIdDocumentVersion).ToList();
+                                _semConfig.SemIdDocumentVersion).ToList();
                         foreach (var smcVer in allVers)
                             if (smcVer?.value == e.SourceElementsDocumentVersion)
                             {
@@ -623,6 +633,42 @@ namespace AasxPluginDocumentShelf
                     }
             }
 
+            // save digital file
+            if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
+            {
+                // make a file available
+                var inputFn = e.DigitalFile.Path;
+
+                if (CheckIfPackageFile(inputFn))
+                    inputFn = thePackage.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path);
+
+                if (!inputFn.HasContent())
+                {
+                    Log.Error("Error making digital file available. Aborting!");
+                    return;
+                }
+
+                // ask for a file name
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.Title = "Save digital file as ..";
+                dlg.FileName = System.IO.Path.GetFileName(e.DigitalFile.Path);
+                dlg.DefaultExt = "*" + System.IO.Path.GetExtension(e.DigitalFile.Path);
+                dlg.Filter = "All files (*.*)|*.*";
+
+                if (true != dlg.ShowDialog())
+                    return;
+
+                // save
+                try
+                {
+                    File.Copy(inputFn, dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "while saveing digital file to user specified loacation");
+                }
+            }
+
             // check for a document reference
             if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
                 && reltup.Item2 != null && reltup.Item2.Count > 0)
@@ -636,13 +682,14 @@ namespace AasxPluginDocumentShelf
         private void DocumentEntity_DoubleClick(DocumentEntity e)
         {
             // first check
-            if (e == null || e.DigitalFile == null || e.DigitalFile.Trim().Length < 1 || this.theEventStack == null)
+            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1
+                || this.theEventStack == null)
                 return;
 
             try
             {
                 // temp input
-                var inputFn = e.DigitalFile;
+                var inputFn = e.DigitalFile.Path;
                 try
                 {
                     if (!inputFn.ToLower().Trim().StartsWith("http://")
@@ -657,13 +704,69 @@ namespace AasxPluginDocumentShelf
                 // give over to event stack
                 var evt = new AasxPluginResultEventDisplayContentFile();
                 evt.fn = inputFn;
-                evt.mimeType = e.MimeType;
+                evt.mimeType = e.DigitalFile.MimeType;
                 this.theEventStack.PushEvent(evt);
             }
             catch (Exception ex)
             {
                 Log.Error(ex, "when double-click");
             }
+        }
+
+        protected bool _inDragStart = false;
+
+        private void DocumentEntity_DragStart(DocumentEntity e)
+        {
+            // first check
+            if (e == null || e.DigitalFile?.Path == null || e.DigitalFile.Path.Trim().Length < 1 || _inDragStart)
+            {
+                _inDragStart = false;
+                return;
+            }
+
+            // lock
+            _inDragStart = true;
+
+            // hastily prepare data
+            try
+            {
+                // make a file available
+                var inputFn = e.DigitalFile.Path;
+
+                // check if it an address in the package only
+                if (!inputFn.Trim().StartsWith("/"))
+                {
+                    Log.Error("Can only drag package local files!");
+                    _inDragStart = false;
+                    return;
+                }
+
+                // now should make available
+                if (CheckIfPackageFile(inputFn))
+                    inputFn = thePackage.MakePackageFileAvailableAsTempFile(e.DigitalFile.Path, keepFilename: true);
+
+                if (!inputFn.HasContent())
+                {
+                    Log.Error("Error making digital file available. Aborting!");
+                    return;
+                }
+
+                // Package the data.
+                DataObject data = new DataObject();
+                data.SetFileDropList(new System.Collections.Specialized.StringCollection() { inputFn });
+
+                // Inititate the drag-and-drop operation.
+                DragDrop.DoDragDrop(this, data, DragDropEffects.Copy | DragDropEffects.Move);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "when initiate file dragging");
+                _inDragStart = false;
+                return;
+            }
+
+            // unlock
+            _inDragStart = false;
         }
 
         #endregion
@@ -686,14 +789,12 @@ namespace AasxPluginDocumentShelf
                 //// TODO (MIHO, 2020-09-29): if the V1.1 template works and is adopted, the old
                 //// V1.0 shall be removed completely (over complicated) */
                 //// make a template description for the content (remeber it)
-                var desc = theOptions.FormVdi2770;
-                if (desc == null)
-                    desc = DocumentShelfOptions.CreateVdi2770TemplateDesc(theOptions);
+                var desc = DocuShelfSemanticConfig.CreateVdi2770TemplateDesc(theOptions);
 
                 // latest version (from resources)
                 if (this.CheckBoxLatestVersion.IsChecked == true)
                 {
-                    desc = DocumentShelfOptions.CreateVdi2770v11TemplateDesc();
+                    desc = DocuShelfSemanticConfig.CreateVdi2770v11TemplateDesc();
                 }
 
                 this.currentFormDescription = desc;
@@ -717,7 +818,7 @@ namespace AasxPluginDocumentShelf
                 // add
                 if (this.currentFormInst != null && this.currentFormDescription != null
                     && thePackage != null
-                    && theOptions != null && theOptions.SemIdDocument != null
+                    && theOptions != null && _semConfig.SemIdDocument != null
                     && theSubmodel != null)
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
@@ -759,22 +860,6 @@ namespace AasxPluginDocumentShelf
                         // add the whole SMC
                         theSubmodel.Add(newSmc);
                     }
-
-#if __may_be_not__
-                    // save directly to ensure consistency
-                    try
-                    {
-                        if (thePackage.Filename != null)
-                            thePackage.SaveAs(thePackage.Filename);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (theLogger != null)
-                            theLogger.Log(
-                                $"Saving package {thePackage.Filename} failed for adding Document " +
-                                $"and gave: {ex.Message}");
-                    }
-#endif
                 }
                 else
                 {

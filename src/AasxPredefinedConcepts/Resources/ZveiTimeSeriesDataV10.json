@@ -1,0 +1,1040 @@
+﻿{
+  "SM_TimeSeriesData": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "GlobalReference",
+          "local": false,
+          "value": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/1/0",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeSeriesData",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Template",
+    "descriptions": [
+      {
+        "language": "de",
+        "text": "Enthält Zeitreihendaten und Referenzen auf Zeitreihendaten, um diese entlang des Asset Lebenszyklus aufzufinden und semantisch zu beschreiben."
+      },
+      {
+        "language": "en",
+        "text": "Contains time series data and references to time series data to discover and semantically describe them along the asset lifecycle."
+      }
+    ]
+  },
+  "CD_TimeSeries": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TimeSeries/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeSeries",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitreihe"
+            },
+            {
+              "language": "en",
+              "text": "Time series"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "de",
+              "text": "Zeitreihe"
+            },
+            {
+              "language": "en",
+              "text": "TimeSeries"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Abfolge von Datenpunkten in aufeinanderfolgender Reihenfolge über einen bestimmten Zeitraum."
+            },
+            {
+              "language": "en",
+              "text": "Sequence of data points in successive order over a specified period of time."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Name": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/Name/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "Name",
+    "category": "PARAMETER",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Name der Zeitreihe"
+            },
+            {
+              "language": "en",
+              "text": "Name of the time series"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "de",
+              "text": "Name"
+            },
+            {
+              "language": "en",
+              "text": "Name"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Aussagekräftiger Name zur Beschriftung."
+            },
+            {
+              "language": "en",
+              "text": "Meaningful name for labeling"
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Description": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/Description/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "Description",
+    "category": "PARAMETER",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Beschreibung der Zeitreihe"
+            },
+            {
+              "language": "en",
+              "text": "Description of the time series"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "de",
+              "text": "Beschreibung"
+            },
+            {
+              "language": "en",
+              "text": "Description"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING_TRANSLATABLE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Kurze Beschreibung der Zeitreihendaten."
+            },
+            {
+              "language": "en",
+              "text": "Short description of the time series."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TimeSeriesSegment": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TimeSeriesSegment/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeSeriesSegment",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitreihensegment"
+            },
+            {
+              "language": "en",
+              "text": "Time series segment"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "de",
+              "text": "Segment"
+            },
+            {
+              "language": "en",
+              "text": "Segment"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Abfolge von Datenpunkten in aufeinanderfolgender Reihenfolge über einen bestimmten Zeitraum."
+            },
+            {
+              "language": "en",
+              "text": "Sequence of data points in successive order over a specified period of time."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_RecordCount": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/RecordCount/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "RecordCount",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Anzahl der Datensätze"
+            },
+            {
+              "language": "en",
+              "text": "Record count"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "REAL_COUNT",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Gibt an, wie viele Datensätze in einem Segment vorhanden sind."
+            },
+            {
+              "language": "en",
+              "text": "Indicates how many records are present in a segment."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_StartTime": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/StartTime/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "StartTime",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Startzeit"
+            },
+            {
+              "language": "en",
+              "text": "Start time"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Enthält den ersten aufgezeichneten Zeitstempel des Zeitreihensegments und stellt somit den Anfang einer Zeitreihe dar. Zeitformat und -skala entspricht dem der Zeitreihe."
+            },
+            {
+              "language": "en",
+              "text": "Contains the first recorded timestamp of the time series segment and thus represents the beginning of a time series. Time format and scale corresponds to that of the time series."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_EndTime": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/EndTime/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "EndTime",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Endzeit"
+            },
+            {
+              "language": "en",
+              "text": "End time"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Enthält den letzten aufgezeichneten Zeitstempel des Zeitreihensegments und stellt somit das Ende einer Zeitreihe dar. Zeitformat und -skala entspricht dem der Zeitreihe."
+            },
+            {
+              "language": "en",
+              "text": "Contains the last recorded timestamp of the time series segment and thus represents the end of a time series. Time format and scale corresponds to that of the time series."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_SamplingInterval": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/SamplingInterval/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "SamplingInterval",
+    "category": "PARAMETER",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Abtastintervall"
+            },
+            {
+              "language": "en",
+              "text": "Sampling interval"
+            }
+          ],
+          "shortName": [],
+          "unit": "s",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": "t",
+          "dataType": "REAL_MEASURE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Der zeitliche Abstand zwischen zwei Datenpunkten (Länge eines Zyklus)."
+            },
+            {
+              "language": "en",
+              "text": "The time period between two time series records (Length of cycle)."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_SamplingRate": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/SamplingRate/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "SamplingRate",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Abtastrate"
+            },
+            {
+              "language": "en",
+              "text": "Sampling rate"
+            }
+          ],
+          "shortName": [],
+          "unit": "Hz",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "REAL_MEASURE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Definiert die Anzahl der Abtastungen pro Sekunde für eine regelmäßige Zeitreihe in Hz."
+            },
+            {
+              "language": "en",
+              "text": "Defines the number of samples per second for a regular time series in Hz."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TimeSeriesRecord": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TimeSeriesRecord/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeSeriesRecord",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitreihen-Datensatz"
+            },
+            {
+              "language": "en",
+              "text": "Time series record"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Ein Zeitreihen-Datensatz ist durch seine ID innerhalb der Zeitreihe eindeutig und beinhaltet die auf die ID referenzierten Zeitstempel und Variablenwerte. Vergleichbar mit einer Zeile in einer Tabelle."
+            },
+            {
+              "language": "en",
+              "text": "A time series record is unique by its ID within the time series and contains the timestamps and variable values referenced to the ID. Similar to a row in a table."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_RecordId": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/RecordId/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "RecordId",
+    "category": "PARAMETER",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "ID"
+            },
+            {
+              "language": "en",
+              "text": "ID"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "STRING",
+          "definition": [
+            {
+              "language": "en",
+              "text": "Labels the record within a time series with a unique ID."
+            },
+            {
+              "language": "de",
+              "text": "Kennzeichnet den Datensatz innerhalb einer Zeitreihe mit einer eindeutigen ID. "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_UtcTime": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/UtcTime/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "UtcTime",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitstempel UTC"
+            },
+            {
+              "language": "en",
+              "text": "timestamp UTC"
+            }
+          ],
+          "shortName": [
+            {
+              "language": "de",
+              "text": "Zeitstempel UTC"
+            },
+            {
+              "language": "en",
+              "text": "timestamp UTC"
+            }
+          ],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "TIMESTAMP",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Zeitstempel nach ISO 8601 auf der Zeitskala der koordinierten Weltzeit (UTC)."
+            },
+            {
+              "language": "en",
+              "text": "Timestamp according to ISO 8601 on the timescale ccordinated universal time (UTC)."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TaiTime": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TaiTime/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TaiTime",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitstempel TAI"
+            },
+            {
+              "language": "en",
+              "text": "timestamp TAI"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "TIMESTAMP",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Zeitstempel nach ISO 8601 auf der Zeitskala internationale Atomzeit (TAI)."
+            },
+            {
+              "language": "en",
+              "text": "Timestamp according to ISO 8601 on the timescale international atomic time (TAI)."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_Time": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/Time/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "Time",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitstempel"
+            },
+            {
+              "language": "en",
+              "text": "Timestamp"
+            }
+          ],
+          "shortName": [],
+          "unit": "s",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": "t",
+          "dataType": "REAL_MEASURE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Zeitpunktangabe in Sekunden. Zeitpunkte referenzieren auf die Startzeit des Zeitreihensegments."
+            },
+            {
+              "language": "en",
+              "text": "Point of Time in seconds. Time points refer to the start time of the time series segment."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TimeDuration": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TimeDuration/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeDuration",
+    "category": "VARIABLE",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitdauer"
+            },
+            {
+              "language": "en",
+              "text": "Timeduration"
+            }
+          ],
+          "shortName": [],
+          "unit": "s",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": "",
+          "dataType": "REAL_MEASURE",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Angabe der zeitlichen Dauer in Sekunden (Anzahl der Sekunden). Zeitdauern referenzieren auf den jeweils vorangegangenen Eintrag im Zeitreihensegment."
+            },
+            {
+              "language": "en",
+              "text": "Time duration specification in seconds. (number of seconds). Time durations refer to the previous entry in the time series segment."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_TimeSeriesVariable": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/TimeSeriesVariable/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "TimeSeriesVariable",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Zeitreihenvariable"
+            },
+            {
+              "language": "en",
+              "text": "Time series variable"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Eine Zeitreihenvariable bildet eine Wertereihe, bestehend aus RecordID und einer weiteren Dimension der Zeitreihe, als Array ab. Vergleichbar einer Spalte in einer Tabelle. Variablen können Zeitstempel oder Datenpunkte sein."
+            },
+            {
+              "language": "en",
+              "text": "A time series variable contains the sequence of values, consisting of RecordID and another dimension of the time series, as an array. Similar to a column in a table. Variables can be timestamps or data points."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ValueArray": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/ValueArray/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "ValueArray",
+    "category": "PARAMETER",
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Wertereihe"
+            },
+            {
+              "language": "en",
+              "text": "Value Array"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Wertereihe einer einer Zeitreihe. Die Reihenfolge der Dimensionen und deren semantische Beueutung ergibt sich aus den Definitionen innerhalb der Zeitreihenvariable.  "
+            },
+            {
+              "language": "en",
+              "text": "Values of a time series. The order of the dimensions and their semantic meaning results from the definitions within the time series variable.  "
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ExternalDataFile": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/sandbox/zvei/TimeSeriesData/ExternalDataFile/1/0"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "ExternalDataFile",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [
+      {
+        "dataSpecification": {
+          "keys": []
+        },
+        "dataSpecificationContent": {
+          "preferredName": [
+            {
+              "language": "de",
+              "text": "Externe Datendatei"
+            },
+            {
+              "language": "en",
+              "text": "External data file"
+            }
+          ],
+          "shortName": [],
+          "unit": "",
+          "unitId": null,
+          "valueFormat": null,
+          "sourceOfDefinition": null,
+          "symbol": null,
+          "dataType": "",
+          "definition": [
+            {
+              "language": "de",
+              "text": "Externe Datendatei, welche Zeitreihendaten in einem beliebigen Format beinhaltet."
+            },
+            {
+              "language": "en",
+              "text": "External data file containing time series data in any format."
+            }
+          ]
+        }
+      }
+    ],
+    "isCaseOf": [],
+    "descriptions": null
+  }
+}

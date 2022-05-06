@@ -40,6 +40,8 @@ namespace AasxPackageLogic.PackageCentral
         [JsonIgnore]
         public Uri Endpoint;
 
+        public bool IsAspNetConnection { get; set; }
+
         //
         // Constructor
         //
@@ -51,6 +53,8 @@ namespace AasxPackageLogic.PackageCentral
 
             // directly set endpoint
             _connector = new PackageConnectorHttpRest(null, Endpoint);
+
+
         }
 
         //
@@ -67,13 +71,10 @@ namespace AasxPackageLogic.PackageCentral
         /// <returns>If a successfull retrieval could be made</returns>
         public async Task<bool> SyncronizeFromServerAsync()
         {
-            // access
             if (true != _connector?.IsValid())
                 return false;
-
             // try get a list of items from the connector
             var items = await _connector.GenerateRepositoryFromEndpointAsync();
-
             // just re-set
             FileMap.Clear();
             foreach (var fi in items)

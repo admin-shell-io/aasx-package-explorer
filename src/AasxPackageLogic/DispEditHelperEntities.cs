@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -94,11 +95,11 @@ namespace AasxPackageLogic
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, asset.hasDataSpecification,
-                (ds) => { asset.hasDataSpecification = ds; });
+                (ds) => { asset.hasDataSpecification = ds; }, relatedReferable: asset);
 
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
-                stack, asset,
+            this.DisplayOrEditEntityIdentifiable<AdminShell.Asset>(
+                env, stack, asset,
                 Options.Curr.TemplateIdAsset,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Input", "Rename" },
@@ -112,9 +113,11 @@ namespace AasxPackageLogic
                         if (this.context.StartFlyoverModal(uc))
                         {
                             asset.identification.id = uc.Text;
+                            this.AddDiaryEntry(asset, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
                     }
+
                     if (i == 1 && env != null)
                     {
                         var uc = new AnyUiDialogueDataTextBox(
@@ -128,10 +131,23 @@ namespace AasxPackageLogic
 
                             try
                             {
-                                res = env.RenameIdentifiable<AdminShell.Asset>(
+                                // rename
+                                var lrf = env.RenameIdentifiable<AdminShell.Asset>(
                                     asset.identification,
                                     new AdminShell.Identification(
                                         asset.identification.idType, uc.Text));
+
+                                // use this information to emit events
+                                if (lrf != null)
+                                {
+                                    res = true;
+                                    foreach (var rf in lrf)
+                                    {
+                                        var rfi = rf.FindParentFirstIdentifiable();
+                                        if (rfi != null)
+                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                    }
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -145,6 +161,7 @@ namespace AasxPackageLogic
                                     "the AAS structure for any inconsistencies.",
                                     "Warning",
                                     AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+
                             return new AnyUiLambdaActionRedrawAllElements(asset);
                         }
                     }
@@ -155,7 +172,7 @@ namespace AasxPackageLogic
 
             // Kind
             this.DisplayOrEditEntityAssetKind(stack, asset.kind,
-                (k) => { asset.kind = k; });
+                (k) => { asset.kind = k; }, relatedReferable: asset);
 
             // special Submode references
             this.AddGroup(stack, "Submodel references with special meaning", this.levelColors.SubSection);
@@ -163,12 +180,12 @@ namespace AasxPackageLogic
             // AssetIdentificationModelRef
             this.DisplayOrEditEntitySubmodelRef(stack, asset.assetIdentificationModelRef,
                 (smr) => { asset.assetIdentificationModelRef = smr; },
-                "assetIdentificationModel");
+                "assetIdentificationModel", relatedReferable: asset);
 
             // BillOfMaterialRef
             this.DisplayOrEditEntitySubmodelRef(stack, asset.billOfMaterialRef,
                 (smr) => { asset.billOfMaterialRef = smr; },
-                "billOfMaterial");
+                "billOfMaterial", relatedReferable: asset);
 
         }
 
@@ -195,7 +212,7 @@ namespace AasxPackageLogic
             if (env.ConceptDescriptions == null)
                 env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
             if (env.Submodels == null)
-                env.Submodels = new List<AdminShell.Submodel>();
+                env.Submodels = new AdminShell.ListOfSubmodels();
 
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
@@ -244,21 +261,30 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var asset = new AdminShell.Asset();
+                            this.MakeNewIdentifiableUnique(asset);
                             env.Assets.Add(asset);
+                            this.AddDiaryEntry(asset, new DiaryEntryStructChange(
+                                StructuralChangeReason.Create));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                         }
 
                         if (buttonNdx == 1)
                         {
                             var aas = new AdminShell.AdministrationShell();
+                            this.MakeNewIdentifiableUnique(aas);
                             env.AdministrationShells.Add(aas);
+                            this.AddDiaryEntry(aas, new DiaryEntryStructChange(
+                                StructuralChangeReason.Create));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
                         }
 
                         if (buttonNdx == 2)
                         {
                             var cd = new AdminShell.ConceptDescription();
+                            this.MakeNewIdentifiableUnique(cd);
                             env.ConceptDescriptions.Add(cd);
+                            this.AddDiaryEntry(cd, new DiaryEntryStructChange(
+                                StructuralChangeReason.Create));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: cd);
                         }
 
@@ -313,9 +339,12 @@ namespace AasxPackageLogic
                                                 if (createNewIds)
                                                     destAsset.identification = new AdminShell.Identification(
                                                         AdminShell.Identification.IRI,
-                                                        Options.Curr.GenerateIdAccordingTemplate(
+                                                        AdminShellUtil.GenerateIdAccordingTemplate(
                                                             Options.Curr.TemplateIdAsset));
+
                                                 env.Assets.Add(destAsset);
+                                                this.AddDiaryEntry(destAsset, new DiaryEntryStructChange(
+                                                    StructuralChangeReason.Create));
                                             }
 
                                             // make a copy of the AAS itself
@@ -327,9 +356,12 @@ namespace AasxPackageLogic
                                             if (createNewIds)
                                                 destAAS.identification = new AdminShell.Identification(
                                                     AdminShell.Identification.IRI,
-                                                    Options.Curr.GenerateIdAccordingTemplate(
+                                                    AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas));
+
                                             env.AdministrationShells.Add(destAAS);
+                                            this.AddDiaryEntry(destAAS, new DiaryEntryStructChange(
+                                                StructuralChangeReason.Create));
 
                                             // clear, copy Submodels?
                                             destAAS.submodelRefs = new List<AdminShellV20.SubmodelRef>();
@@ -383,7 +415,7 @@ namespace AasxPackageLogic
                                                             srcSub, shallowCopy: false);
                                                         dstSub.identification = new AdminShell.Identification(
                                                             AdminShell.Identification.IRI,
-                                                            Options.Curr.GenerateIdAccordingTemplate(tid));
+                                                            AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                                         // make a new ref
                                                         var dstRef = AdminShell.SubmodelRef.CreateNew(
@@ -392,6 +424,9 @@ namespace AasxPackageLogic
                                                         // formally add this to active environment and AAS
                                                         env.Submodels.Add(dstSub);
                                                         destAAS.submodelRefs.Add(dstRef);
+
+                                                        this.AddDiaryEntry(dstSub, new DiaryEntryStructChange(
+                                                            StructuralChangeReason.Create));
                                                     }
                                                 }
                                             }
@@ -471,12 +506,18 @@ namespace AasxPackageLogic
                                     // new 
                                     var aas = new AdminShell.AdministrationShell(itaas);
                                     env.AdministrationShells.Add(aas);
+                                    this.AddDiaryEntry(aas, new DiaryEntryStructChange(
+                                        StructuralChangeReason.Create));
                                     res = aas;
 
                                     // delete
                                     if (del && cpiid.parentContainer is List<AdminShell.AdministrationShell> aasold
                                         && aasold.Contains(itaas))
+                                    {
                                         aasold.Remove(itaas);
+                                        this.AddDiaryEntry(itaas,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    }
                                 }
                                 else
                                 if (cpiid.entity is AdminShell.Asset itasset)
@@ -484,12 +525,18 @@ namespace AasxPackageLogic
                                     // new 
                                     var asset = new AdminShell.Asset(itasset);
                                     env.Assets.Add(asset);
+                                    this.AddDiaryEntry(asset, new DiaryEntryStructChange(
+                                        StructuralChangeReason.Create));
                                     res = asset;
 
                                     // delete
                                     if (del && cpiid.parentContainer is List<AdminShell.Asset> assetold
                                         && assetold.Contains(itasset))
+                                    {
                                         assetold.Remove(itasset);
+                                        this.AddDiaryEntry(itasset,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    }
                                 }
                                 else
                                 if (cpiid.entity is AdminShell.ConceptDescription itcd)
@@ -497,12 +544,18 @@ namespace AasxPackageLogic
                                     // new 
                                     var cd = new AdminShell.ConceptDescription(itcd);
                                     env.ConceptDescriptions.Add(cd);
+                                    this.AddDiaryEntry(cd, new DiaryEntryStructChange(
+                                        StructuralChangeReason.Create));
                                     res = cd;
 
                                     // delete
                                     if (del && cpiid.parentContainer is List<AdminShell.ConceptDescription> cdold
                                         && cdold.Contains(itcd))
+                                    {
                                         cdold.Remove(itcd);
+                                        this.AddDiaryEntry(itcd,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    }
                                 }
 
                                 // ok
@@ -522,12 +575,18 @@ namespace AasxPackageLogic
                                     // new 
                                     var asset = new AdminShell.Submodel(itsm);
                                     env.Submodels.Add(itsm);
+                                    this.AddDiaryEntry(itsm, new DiaryEntryStructChange(
+                                        StructuralChangeReason.Create));
                                     res = asset;
 
                                     // delete
                                     if (del && cpism.parentContainer is List<AdminShell.Submodel> smold
                                         && smold.Contains(itsm))
+                                    {
                                         smold.Remove(itsm);
+                                        this.AddDiaryEntry(itsm,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    }
                                 }
 
                                 // ok
@@ -573,7 +632,10 @@ namespace AasxPackageLogic
                                             mdo as AdminShell.ConceptDescription);
                                         if (env.ConceptDescriptions == null)
                                             env.ConceptDescriptions = new AdminShell.ListOfConceptDescriptions();
+                                        this.MakeNewIdentifiableUnique(clone);
                                         env.ConceptDescriptions.Add(clone);
+                                        this.AddDiaryEntry(clone,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Create));
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: clone);
                                     }
                                 }
@@ -817,7 +879,9 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntitySupplementaryFile(
-            PackageCentral.PackageCentral packages, AdminShellPackageSupplementaryFile psf, bool editMode,
+            PackageCentral.PackageCentral packages,
+            VisualElementSupplementalFile entity,
+            AdminShellPackageSupplementaryFile psf, bool editMode,
             AnyUiStackPanel stack)
         {
             //
@@ -831,9 +895,13 @@ namespace AasxPackageLogic
                 {
                     if (buttonNdx == 0)
                         if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                "Delete selected entity? This operation can not be reverted!", "AASX",
+                                "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
+                            // try remember where we are
+                            var sibling = entity.FindSibling()?.GetDereferencedMainDataObject();
+
+                            // delete
                             try
                             {
                                 packages.Main.DeleteSupplementaryFile(psf);
@@ -845,9 +913,21 @@ namespace AasxPackageLogic
                             {
                                 Log.Singleton.Error(ex, "Deleting file in package");
                             }
-                            return new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
-                                VisualElementEnvironmentItem.ItemType.Package));
+
+                            // try to re-focus to a sibling
+                            if (sibling != null)
+                            {
+                                // stay around
+                                return new AnyUiLambdaActionRedrawAllElements(
+                                    nextFocus: sibling);
+                            }
+                            else
+                            {
+                                // jump to root
+                                return new AnyUiLambdaActionRedrawAllElements(
+                                    nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
+                                        VisualElementEnvironmentItem.ItemType.Package));
+                            }
                         }
 
                     return new AnyUiLambdaActionNone();
@@ -906,7 +986,11 @@ namespace AasxPackageLogic
                         {
                             var smtest = env.FindSubmodel(newsmr);
                             if (smtest == null)
+                            {
                                 env.Submodels.Add(item.sm);
+                                this.AddDiaryEntry(item.sm,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Create));
+                            }
                         }
 
                         // delete
@@ -963,6 +1047,9 @@ namespace AasxPackageLogic
                                 smr.Keys.AddRange(ks);
                                 aas.submodelRefs.Add(smr);
 
+                                // event for AAS
+                                this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(
                                     nextFocus: smr, isExpanded: true);
@@ -973,18 +1060,21 @@ namespace AasxPackageLogic
                         {
                             // create new submodel
                             var submodel = new AdminShell.Submodel();
+                            this.MakeNewIdentifiableUnique(submodel);
+                            this.AddDiaryEntry(submodel,
+                                    new DiaryEntryStructChange(StructuralChangeReason.Create));
                             env.Submodels.Add(submodel);
 
                             // directly create identification, as we need it!
                             submodel.identification.idType = AdminShell.Identification.IRI;
                             if (buttonNdx == 1)
                             {
-                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelTemplate);
                                 submodel.kind = AdminShell.ModelingKind.CreateAsTemplate();
                             }
                             else
-                                submodel.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                                submodel.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
@@ -993,6 +1083,9 @@ namespace AasxPackageLogic
                                 new AdminShell.Key(
                                     "Submodel", true, submodel.identification.idType, submodel.identification.id));
                             aas.submodelRefs.Add(smr);
+
+                            // event for AAS
+                            this.AddDiaryEntry(aas, new DiaryEntryStructChange());
 
                             // redraw
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smr, isExpanded: true);
@@ -1038,6 +1131,7 @@ namespace AasxPackageLogic
                                         if (aas.submodelRefs == null)
                                             aas.submodelRefs = new List<AdminShell.SubmodelRef>();
                                         aas.submodelRefs.Add(clone);
+                                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                         return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: clone, isExpanded: true);
                                     }
@@ -1060,16 +1154,21 @@ namespace AasxPackageLogic
                                         var dstSub = new AdminShell.Submodel(srcSub, shallowCopy: false);
                                         dstSub.identification = new AdminShell.Identification(
                                             AdminShell.Identification.IRI,
-                                            Options.Curr.GenerateIdAccordingTemplate(tid));
+                                            AdminShellUtil.GenerateIdAccordingTemplate(tid));
 
                                         // make a new ref
                                         var dstRef = AdminShell.SubmodelRef.CreateNew(dstSub.GetReference());
 
-                                        // formally add this to active environment and AAS
+                                        // formally add this to active environment 
                                         env.Submodels.Add(dstSub);
+                                        this.AddDiaryEntry(dstSub,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Create));
+
+                                        // .. and AAS
                                         if (aas.submodelRefs == null)
                                             aas.submodelRefs = new List<AdminShell.SubmodelRef>();
                                         aas.submodelRefs.Add(dstRef);
+                                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                         return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: dstRef, isExpanded: true);
                                     }
@@ -1087,6 +1186,7 @@ namespace AasxPackageLogic
                     {
                         var view = new AdminShell.View();
                         aas.AddView(view);
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
                     }
 
@@ -1099,11 +1199,11 @@ namespace AasxPackageLogic
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.hasDataSpecification,
-                (ds) => { aas.hasDataSpecification = ds; });
+                (ds) => { aas.hasDataSpecification = ds; }, relatedReferable: aas);
 
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable(
-                stack, aas,
+            this.DisplayOrEditEntityIdentifiable<AdminShell.AdministrationShell>(
+                env, stack, aas,
                 Options.Curr.TemplateIdAas,
                 null,
                 checkForIri: true);
@@ -1112,7 +1212,6 @@ namespace AasxPackageLogic
             var asset = env.FindAsset(aas.assetRef);
 
             // derivedFrom
-
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () =>
@@ -1134,6 +1233,7 @@ namespace AasxPackageLogic
                 v =>
                 {
                     aas.derivedFrom = new AdminShell.AssetAdministrationShellRef();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
@@ -1148,7 +1248,7 @@ namespace AasxPackageLogic
                 this.AddKeyListKeys(
                     stack, "derivedFrom", aas.derivedFrom.Keys, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell",
-                    jumpLambda: lambda, noEditJumpLambda: lambda);
+                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
             }
 
             // assetRef
@@ -1166,6 +1266,7 @@ namespace AasxPackageLogic
                 v =>
                 {
                     aas.assetRef = new AdminShell.AssetRef();
+                    this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
@@ -1179,7 +1280,7 @@ namespace AasxPackageLogic
 
                 this.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
                     packages, PackageCentral.PackageCentral.Selector.Main, "Asset",
-                    jumpLambda: lambda, noEditJumpLambda: lambda);
+                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
             }
 
             //
@@ -1220,7 +1321,7 @@ namespace AasxPackageLogic
                     stack, "submodelRef", smref.Keys, repo,
                     packages, PackageCentral.PackageCentral.Selector.Main, "SubmodelRef Submodel ",
                     takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref),
-                    jumpLambda: lambda);
+                    jumpLambda: lambda, relatedReferable: aas);
             }
 
             // entities when under AAS (smref)
@@ -1237,7 +1338,8 @@ namespace AasxPackageLogic
                 };
 
                 this.EntityListUpDownDeleteHelper<AdminShell.SubmodelRef>(
-                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:", sendUpdateEvent: evTemplate);
+                    stack, repo, aas.submodelRefs, smref, aas, "SubmodelRef:", sendUpdateEvent: evTemplate,
+                    explicitParent: aas);
             }
 
             // entities other
@@ -1251,11 +1353,12 @@ namespace AasxPackageLogic
                 {
                     if (buttonNdx == 0)
                         if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                 "Delete selected Submodel? This operation can not be reverted!", "AASX",
+                                 "Delete selected Submodel? This operation can not be reverted!", "AAS-ENV",
                                  AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                         {
                             if (env.Submodels.Contains(submodel))
                                 env.Submodels.Remove(submodel);
+                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
                         }
 
@@ -1287,7 +1390,11 @@ namespace AasxPackageLogic
                             {
                                 var smtest = env.FindSubmodel(item.smref);
                                 if (smtest == null)
+                                {
                                     env.Submodels.Add(item.sm);
+                                    this.AddDiaryEntry(item.sm,
+                                        new DiaryEntryStructChange(StructuralChangeReason.Create));
+                                }
                             }
                         }
                     });
@@ -1348,6 +1455,9 @@ namespace AasxPackageLogic
                                     submodel.submodelElements = new AdminShellV20.SubmodelElementWrapperCollection();
                                 submodel.submodelElements.Add(smw);
 
+                                // emit event
+                                this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2, isExpanded: true);
                             }
@@ -1381,12 +1491,20 @@ namespace AasxPackageLogic
                                         rve.theEnv, mdo as AdminShell.SubmodelElement,
                                         copyCD: true, shallowCopy: buttonNdx == 0);
 
+                                    this.MakeNewReferableUnique(clone?.submodelElement);
+
                                     if (submodel.submodelElements == null)
                                         submodel.submodelElements =
                                             new AdminShellV20.SubmodelElementWrapperCollection();
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.submodelElements.Add(clone);
+
+                                    // emit events
+                                    // TODO (MIHO, 2021-08-17): create events for CDs are not emitted!
+                                    this.AddDiaryEntry(clone?.submodelElement,
+                                        new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                                     return new AnyUiLambdaActionRedrawAllElements(
                                         submodel, isExpanded: true);
                                 }
@@ -1451,10 +1569,16 @@ namespace AasxPackageLogic
 
                             submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                             {
+                                // set
                                 sme.kind = (buttonNdx == 0)
                                     ? AdminShell.ModelingKind.CreateAsTemplate()
                                     : AdminShell.ModelingKind.CreateAsInstance();
+                                // recurse
+                                return true;
                             });
+
+                            // emit event for Submodel and children
+                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
@@ -1473,9 +1597,15 @@ namespace AasxPackageLogic
 
                             submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                             {
+                                // clear
                                 if (sme.qualifiers != null)
                                     sme.qualifiers.Clear();
+                                // recurse
+                                return true;
                             });
+
+                            // emit event for Submodel and children
+                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
                         }
@@ -1495,8 +1625,8 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
                 // Identifiable
-                this.DisplayOrEditEntityIdentifiable(
-                    stack, submodel,
+                this.DisplayOrEditEntityIdentifiable<AdminShell.Submodel>(
+                    env, stack, submodel,
                     (submodel.kind.kind.Trim().ToLower() == "template")
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
@@ -1517,10 +1647,23 @@ namespace AasxPackageLogic
 
                                     try
                                     {
-                                        res = env.RenameIdentifiable<AdminShell.Submodel>(
+                                        // rename
+                                        var lrf = env.RenameIdentifiable<AdminShell.Submodel>(
                                             submodel.identification,
                                             new AdminShell.Identification(
                                                 submodel.identification.idType, uc.Text));
+
+                                        // use this information to emit events
+                                        if (lrf != null)
+                                        {
+                                            res = true;
+                                            foreach (var rf in lrf)
+                                            {
+                                                var rfi = rf.FindParentFirstIdentifiable();
+                                                if (rfi != null)
+                                                    this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                            }
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -1547,7 +1690,8 @@ namespace AasxPackageLogic
                     (k) => { submodel.kind = k; },
                     instanceExceptionStatement:
                         "Exception: if you want to declare a Submodel, which is been standardised " +
-                        "by you or a standardisation body.");
+                        "by you or a standardisation body.",
+                    relatedReferable: submodel);
 
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, submodel.semanticId,
@@ -1557,17 +1701,20 @@ namespace AasxPackageLogic
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).",
                     addExistingEntities: AdminShell.Key.SubmodelRef + " " + AdminShell.Key.Submodel + " " +
-                        AdminShell.Key.ConceptDescription);
+                        AdminShell.Key.ConceptDescription,
+                    relatedReferable: submodel);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, submodel.qualifiers,
-                    (q) => { submodel.qualifiers = q; });
+                    (q) => { submodel.qualifiers = q; },
+                    relatedReferable: submodel);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.hasDataSpecification,
-                (ds) => { submodel.hasDataSpecification = ds; });
+                    (ds) => { submodel.hasDataSpecification = ds; },
+                    relatedReferable: submodel);
 
             }
         }
@@ -1620,7 +1767,7 @@ namespace AasxPackageLogic
                     new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
                     (v) =>
                     {
-                        AnyUiLambdaActionBase la = new AnyUiLambdaActionBase();
+                        AnyUiLambdaActionBase la = new AnyUiLambdaActionNone();
                         if ((int)v != 0)
                             return la;
 
@@ -1628,6 +1775,7 @@ namespace AasxPackageLogic
                         if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
                         {
                             ds.shortName = new AdminShellV20.LangStringSetIEC61360("EN?", cd.idShort);
+                            this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
                         }
 
@@ -1637,6 +1785,7 @@ namespace AasxPackageLogic
                             if (sme.idShort == null || sme.idShort.Trim() == "")
                             {
                                 sme.idShort = cd.idShort;
+                                this.AddDiaryEntry(sme, new DiaryEntryStructChange());
                                 la = new AnyUiLambdaActionRedrawEntity();
                             }
                         }
@@ -1646,8 +1795,8 @@ namespace AasxPackageLogic
 
             // Identifiable
 
-            this.DisplayOrEditEntityIdentifiable(
-                stack, cd,
+            this.DisplayOrEditEntityIdentifiable<AdminShell.ConceptDescription>(
+                env, stack, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Rename" },
@@ -1666,9 +1815,22 @@ namespace AasxPackageLogic
 
                             try
                             {
-                                res = env.RenameIdentifiable<AdminShell.ConceptDescription>(
+                                // rename
+                                var lrf = env.RenameIdentifiable<AdminShell.ConceptDescription>(
                                     cd.identification,
                                     new AdminShell.Identification(cd.identification.idType, uc.Text));
+
+                                // use this information to emit events
+                                if (lrf != null)
+                                {
+                                    res = true;
+                                    foreach (var rf in lrf)
+                                    {
+                                        var rfi = rf.FindParentFirstIdentifiable();
+                                        if (rfi != null)
+                                            this.AddDiaryEntry(rfi, new DiaryEntryStructChange());
+                                    }
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -1692,7 +1854,7 @@ namespace AasxPackageLogic
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
                 (ico) => { cd.IsCaseOf = ico; },
-                "isCaseOf");
+                "isCaseOf", relatedReferable: cd);
 
             // joint header for data spec ref and content
             this.AddGroup(stack, "HasDataSpecification:", this.levelColors.SubSection);
@@ -1716,7 +1878,7 @@ namespace AasxPackageLogic
                 addPresetNames: new[] { "IEC61360" },
                 addPresetKeyLists: new[] {
                     AdminShell.KeyList.CreateNew( AdminShell.DataSpecificationIEC61360.GetKey() )},
-                dataSpecRefsAreUsual: true);
+                dataSpecRefsAreUsual: true, relatedReferable: cd);
 
             // the IEC61360 Content
 
@@ -1739,10 +1901,11 @@ namespace AasxPackageLogic
                     v =>
                     {
                         cd.IEC61360Content = new AdminShell.DataSpecificationIEC61360();
+                        this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.IEC61360Content);
+                this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.IEC61360Content, relatedReferable: cd);
             }
         }
 
@@ -1836,6 +1999,10 @@ namespace AasxPackageLogic
                                         smw.submodelElement = sme2;
                                         ov.value = smw;
 
+                                        // emit event (for parent container, e.g. Operation)
+                                        this.AddDiaryEntry(parentContainer,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                                         // redraw
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                                     }
@@ -1858,9 +2025,13 @@ namespace AasxPackageLogic
                                 if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                          "Delete value, which is the dataset of a SubmodelElement? " +
                                              "This cannot be reverted!",
-                                         "AASX", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                         "AAS-ENV", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 {
                                     ov.value = null;
+
+                                    // emit event (for parent container, e.g. Operation)
+                                    this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
+
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
                             return new AnyUiLambdaActionNone();
@@ -1893,6 +2064,9 @@ namespace AasxPackageLogic
                                                 copyCD: true,
                                                 shallowCopy: buttonNdx == 0);
 
+                                            // emit event (for parent container, e.g. Operation)
+                                            this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
+
                                             ov.value = clone;
                                             return new AnyUiLambdaActionRedrawEntity();
                                         }
@@ -1907,6 +2081,7 @@ namespace AasxPackageLogic
                     this.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", this.levelColors.SubSection);
                     var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.value != null && ov.value.submodelElement != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
@@ -1998,9 +2173,15 @@ namespace AasxPackageLogic
                                 // ok?
                                 if (refactorSme != null && parMgr != null)
                                 {
-                                    // open heart surgery: change in parent container
+                                    // open heart surgery: change in parent container accepted
                                     parMgr.Remove(sme);
                                     parMgr.Add(refactorSme);
+
+                                    // notify event
+                                    this.AddDiaryEntry(sme,
+                                        new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                    this.AddDiaryEntry(refactorSme,
+                                        new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                                     // redraw
                                     return new AnyUiLambdaActionRedrawAllElements(nextFocus: refactorSme);
@@ -2070,6 +2251,9 @@ namespace AasxPackageLogic
                                 // can set kind?
                                 if (parentKind != null && sme.kind == null)
                                     sme.kind = new AdminShell.ModelingKind(parentKind);
+
+                                // emit event
+                                this.AddDiaryEntry(sme, new DiaryEntryStructChange());
                             }
                             // redraw
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
@@ -2082,7 +2266,7 @@ namespace AasxPackageLogic
 
                             // make an ID, automatically
                             cd.identification.idType = AdminShell.Identification.IRI;
-                            cd.identification.id = Options.Curr.GenerateIdAccordingTemplate(
+                            cd.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
 
                             // store in AAS enviroment
@@ -2097,6 +2281,9 @@ namespace AasxPackageLogic
                             // can set kind?
                             if (parentKind != null && sme.kind == null)
                                 sme.kind = new AdminShell.ModelingKind(parentKind);
+
+                            // emit event
+                            this.AddDiaryEntry(sme, new DiaryEntryStructChange());
 
                             // redraw
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
@@ -2149,6 +2336,9 @@ namespace AasxPackageLogic
                                 // can set kind?
                                 if (parentKind != null && sme.kind == null)
                                     sme.kind = new AdminShell.ModelingKind(parentKind);
+
+                                // emit event
+                                this.AddDiaryEntry(sme, new DiaryEntryStructChange());
                             }
 
                             // redraw
@@ -2237,6 +2427,9 @@ namespace AasxPackageLogic
                                 if (sme is AdminShell.Entity smeent)
                                     smeent.Add(sme2);
 
+                                // notify event
+                                this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
+
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
                             }
@@ -2275,6 +2468,10 @@ namespace AasxPackageLogic
                                         smesmc.value.Add(clone);
                                     if (sme is AdminShell.Entity smeent)
                                         smeent.statements.Add(clone);
+
+                                    // emit event
+                                    this.AddDiaryEntry(sme, new DiaryEntryStructChange());
+
                                     return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: sme, isExpanded: true);
                                 }
@@ -2342,6 +2539,9 @@ namespace AasxPackageLogic
                                     smo[dir] = new List<AdminShell.OperationVariable>();
                                 smo[dir].Add(ov);
 
+                                // emit event
+                                this.AddDiaryEntry(smo, new DiaryEntryStructChange());
+
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                             }
@@ -2375,8 +2575,15 @@ namespace AasxPackageLogic
                                     if (!this.theCopyPaste.Duplicate)
                                     {
                                         this.DispDeleteCopyPasteItem(item);
+
+                                        // emit event
+                                        this.AddDiaryEntry(item.sme,
+                                            new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
+
+                                // emit event
+                                this.AddDiaryEntry(smo, new DiaryEntryStructChange());
 
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: businessObj);
@@ -2416,6 +2623,10 @@ namespace AasxPackageLogic
                                             smo[dir] = new List<AdminShell.OperationVariable>();
 
                                         smo[dir].Add(clone);
+
+                                        // emit event
+                                        this.AddDiaryEntry(smo, new DiaryEntryStructChange());
+
                                         return new AnyUiLambdaActionRedrawAllElements(
                                             nextFocus: smo, isExpanded: true);
                                     }
@@ -2476,6 +2687,9 @@ namespace AasxPackageLogic
 
                                 are.annotations.Add(sme2);
 
+                                // emit event
+                                this.AddDiaryEntry(are, new DiaryEntryStructChange(), allChildrenAffected: true);
+
                                 // redraw
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme2);
                             }
@@ -2515,6 +2729,9 @@ namespace AasxPackageLogic
                                     // ReSharper disable once PossibleNullReferenceException  -- ignore a false positive
                                     are.annotations.Add(clonesmw);
 
+                                    // emit event
+                                    this.AddDiaryEntry(are, new DiaryEntryStructChange(), allChildrenAffected: true);
+
                                     return new AnyUiLambdaActionRedrawAllElements(
                                         nextFocus: clonesmw.submodelElement, isExpanded: true);
                                 }
@@ -2527,7 +2744,6 @@ namespace AasxPackageLogic
             }
 
             {
-
                 this.AddGroup(
                     stack,
                     $"Submodel Element ({"" + sme?.GetElementName()})",
@@ -2581,7 +2797,8 @@ namespace AasxPackageLogic
 
                 // Kind
                 this.DisplayOrEditEntityModelingKind(stack, sme.kind,
-                    (k) => { sme.kind = k; });
+                    (k) => { sme.kind = k; },
+                    relatedReferable: sme);
 
                 // HasSemanticId
                 this.DisplayOrEditEntitySemanticId(stack, sme.semanticId,
@@ -2595,17 +2812,17 @@ namespace AasxPackageLogic
                     "a company / consortia repository.",
                     checkForCD: true,
                     addExistingEntities: AdminShell.Key.ConceptDescription,
-                    cpb: theCopyPaste);
+                    cpb: theCopyPaste, relatedReferable: sme);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
                 // That is: multiple x multiple keys!
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, sme.qualifiers,
-                    (q) => { sme.qualifiers = q; });
+                    (q) => { sme.qualifiers = q; }, relatedReferable: sme);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.hasDataSpecification,
-                (ds) => { sme.hasDataSpecification = ds; });
+                (ds) => { sme.hasDataSpecification = ds; }, relatedReferable: sme);
 
                 //
                 // ConceptDescription <- via semantic ID ?!
@@ -2650,7 +2867,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", p, ref p.valueType, null, repo,
-                    v => { p.valueType = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        p.valueType = v as string;
+                        this.AddDiaryEntry(p, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: editMode,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2673,7 +2895,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "value", p, ref p.value, null, repo,
-                    v => { p.value = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        p.value = v as string;
+                        this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -2686,6 +2913,7 @@ namespace AasxPackageLogic
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 p.value = uc.Text;
+                                this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
                                 return new AnyUiLambdaActionRedrawEntity();
                             }
                         }
@@ -2712,6 +2940,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             p.valueId = new AdminShell.Reference();
+                            this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -2719,7 +2948,9 @@ namespace AasxPackageLogic
                     this.AddKeyListKeys(
                         stack, "valueId", p.valueId.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        AdminShell.Key.GlobalReference);
+                        AdminShell.Key.GlobalReference,
+                        relatedReferable: p,
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
             else if (sme is AdminShell.MultiLanguageProperty)
@@ -2744,6 +2975,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             mlp.value = new AdminShell.LangStringSet();
+                            this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                     this.AddKeyListLangStr(stack, "value", mlp.value.langString, repo);
@@ -2753,6 +2985,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             mlp.valueId = new AdminShell.Reference();
+                            this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -2760,7 +2993,9 @@ namespace AasxPackageLogic
                     this.AddKeyListKeys(
                         stack, "valueId", mlp.valueId.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        AdminShell.Key.GlobalReference);
+                        AdminShell.Key.GlobalReference,
+                        relatedReferable: mlp,
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
             else if (sme is AdminShell.Range)
@@ -2779,7 +3014,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "valueType", rng, ref rng.valueType, null, repo,
-                    v => { rng.valueType = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        rng.valueType = v as string;
+                        this.AddDiaryEntry(rng, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.DataElement.ValueTypeItems);
 
@@ -2804,7 +3044,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "min", rng, ref rng.min, null, repo,
-                    v => { rng.min = v as string; return new AnyUiLambdaActionNone(); });
+                    v =>
+                    {
+                        rng.min = v as string;
+                        this.AddDiaryEntry(rng, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -2819,7 +3064,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "max", rng, ref rng.max, null, repo,
-                    v => { rng.max = v as string; return new AnyUiLambdaActionNone(); });
+                    v =>
+                    {
+                        rng.max = v as string;
+                        this.AddDiaryEntry(rng, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
             }
             else if (sme is AdminShell.File fl)
             {
@@ -2838,7 +3088,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", fl, ref fl.mimeType, null, repo,
-                    v => { fl.mimeType = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        fl.mimeType = v as string;
+                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
@@ -2858,7 +3113,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "value", fl, ref fl.value, null, repo,
-                    v => { fl.value = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        fl.value = v as string;
+                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "Choose supplementary file", },
                     auxButtonToolTips: new[] { "Select existing supplementary files" },
                     auxButtonLambda: (bi) =>
@@ -2874,6 +3134,7 @@ namespace AasxPackageLogic
                                 if (sf != null)
                                 {
                                     fl.value = sf.Uri.ToString();
+                                    this.AddDiaryEntry(fl, new DiaryEntryStructChange());
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
@@ -2893,7 +3154,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0 && fl.value.HasContent())
                             {
                                 if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                    "Delete selected entity? This operation can not be reverted!", "AASX",
+                                    "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 {
                                     try
@@ -2924,6 +3185,9 @@ namespace AasxPackageLogic
 
                                     // clear value
                                     fl.value = "";
+
+                                    // value event
+                                    this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
 
                                     // show empty
                                     return new AnyUiLambdaActionRedrawEntity();
@@ -2985,6 +3249,10 @@ namespace AasxPackageLogic
                                             $"A save-operation is required.");
                                         fl.mimeType = mimeType;
                                         fl.value = targetPath;
+
+                                        // value + struct event
+                                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
+                                        this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
                                     }
                                 }
                                 catch (Exception ex)
@@ -3049,6 +3317,9 @@ namespace AasxPackageLogic
                                             sw.Write(uc.Text);
                                         }
                                     }
+
+                                    // value event
+                                    this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
                                 }
                                 catch (Exception ex)
                                 {
@@ -3083,7 +3354,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             this.uploadAssistance.SourcePath = v as string;
-                            return new AnyUiLambdaActionNone();
+                            return new AnyUiLambdaActionRedrawEntity();
                         }, minHeight: 40);
 
                     this.AddAction(
@@ -3107,7 +3378,6 @@ namespace AasxPackageLogic
                             {
                                 try
                                 {
-
                                     var ptd = uploadAssistance.TargetPath.Trim();
                                     var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
                                     packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
@@ -3129,6 +3399,10 @@ namespace AasxPackageLogic
                                             $"Added {ptfn} to pending package items. A save-operation is required.");
                                         fl.mimeType = mimeType;
                                         fl.value = targetPath;
+
+                                        // value + struct event
+                                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
+                                        this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
                                     }
                                 }
                                 catch (Exception ex)
@@ -3162,13 +3436,23 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "mimeType", blb, ref blb.mimeType, null, repo,
-                    v => { blb.mimeType = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        blb.mimeType = v as string;
+                        this.AddDiaryEntry(blb, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShell.File.GetPopularMimeTypes());
 
                 this.AddKeyValueRef(
                     stack, "value", blb, ref blb.value, null, repo,
-                    v => { blb.value = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        blb.value = v as string;
+                        this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
+                        return new AnyUiLambdaActionNone();
+                    },
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -3182,6 +3466,7 @@ namespace AasxPackageLogic
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 blb.value = uc.Text;
+                                this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
                                 return new AnyUiLambdaActionRedrawEntity();
                             }
                         }
@@ -3212,6 +3497,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             rfe.value = new AdminShell.Reference();
+                            this.AddDiaryEntry(rfe, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3224,7 +3510,9 @@ namespace AasxPackageLogic
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: lambda, noEditJumpLambda: lambda);
+                        jumpLambda: lambda, noEditJumpLambda: lambda,
+                        relatedReferable: rfe,
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
             else
@@ -3260,6 +3548,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             rele.first = new AdminShell.Reference();
+                            this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3268,7 +3557,8 @@ namespace AasxPackageLogic
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: lambda, noEditJumpLambda: lambda);
+                        jumpLambda: lambda, noEditJumpLambda: lambda,
+                        relatedReferable: rele);
                 }
 
                 this.AddHintBubble(
@@ -3287,6 +3577,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             rele.second = new AdminShell.Reference();
+                            this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3295,7 +3586,8 @@ namespace AasxPackageLogic
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, AdminShell.Key.AllElements,
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
-                        jumpLambda: lambda, noEditJumpLambda: lambda);
+                        jumpLambda: lambda, noEditJumpLambda: lambda,
+                        relatedReferable: rele);
                 }
 
                 // specifically for annotated relationship?
@@ -3358,7 +3650,12 @@ namespace AasxPackageLogic
                     });
                 this.AddKeyValueRef(
                     stack, "entityType", ent, ref ent.entityType, null, repo,
-                    v => { ent.entityType = v as string; return new AnyUiLambdaActionNone(); },
+                    v =>
+                    {
+                        ent.entityType = v as string;
+                        this.AddDiaryEntry(ent, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
                     comboBoxItems: AdminShell.Entity.EntityTypeNames,
                     comboBoxIsEditable: true);
 
@@ -3379,6 +3676,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             ent.assetRef = new AdminShell.AssetRef();
+                            this.AddDiaryEntry(ent, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3395,7 +3693,8 @@ namespace AasxPackageLogic
                         PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         AdminShell.Key.AllElements,
                         jumpLambda: lambda,
-                        noEditJumpLambda: lambda);
+                        noEditJumpLambda: lambda,
+                        relatedReferable: ent);
                 }
 
             }
@@ -3424,6 +3723,7 @@ namespace AasxPackageLogic
                         v =>
                         {
                             bev.observed = new AdminShell.Reference();
+                            this.AddDiaryEntry(bev, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
@@ -3434,8 +3734,60 @@ namespace AasxPackageLogic
                         jumpLambda: (kl) =>
                         {
                             return new AnyUiLambdaActionNavigateTo(AdminShell.Reference.CreateNew(kl));
-                        });
+                        },
+                        relatedReferable: bev);
                 }
+
+                // group
+                this.AddGroup(stack, "Invocation of Events", this.levelColors.SubSection);
+
+                this.AddAction(
+                    stack, "Emit Event:", new[] { "Emit directly", "Emit with JSON payload" }, repo,
+                    addWoEdit: new[] { true, true },
+                    action: (buttonNdx) =>
+                    {
+                        string PayloadsRaw = null;
+
+                        if (buttonNdx == 1)
+                        {
+                            var uc = new AnyUiDialogueDataTextEditor(
+                                                caption: $"Edit raw Payload for '{"" + bev.idShort}'",
+                                                mimeType: "application/json",
+                                                text: "[]");
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                PayloadsRaw = uc.Text;
+                            }
+                        }
+
+                        if (buttonNdx == 0 || buttonNdx == 1)
+                        {
+                            // find the observable)
+                            var observable = env.FindReferableByReference(bev.observed);
+
+                            // send event
+                            var ev = new AasEventMsgEnvelope(
+                                DateTime.UtcNow,
+                                source: bev.GetReference(),
+                                sourceSemanticId: bev.semanticId,
+                                observableReference: bev.observed,
+                                observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
+
+                            // specific payload?
+                            if (PayloadsRaw != null)
+                            {
+                                ev.PayloadItems = null;
+                                ev.PayloadsRaw = PayloadsRaw;
+                            }
+
+                            // emit it to PackageCentral
+                            packages?.PushEvent(ev);
+
+                            return new AnyUiLambdaActionNone();
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
             }
             else
                 this.AddGroup(stack, "Submodel Element is unknown!", this.levelColors.MainSection);
@@ -3484,6 +3836,7 @@ namespace AasxPackageLogic
                                         packages, PackageCentral.PackageCentral.Selector.Main, "SubmodelElement");
                             if (ks != null)
                             {
+                                this.AddDiaryEntry(view, new DiaryEntryStructChange());
                                 view.AddContainedElement(ks);
                             }
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
@@ -3511,11 +3864,13 @@ namespace AasxPackageLogic
                 (sid) => { view.semanticId = sid; },
                 "Only by adding this, a computer can distinguish, for what the view is really meant for.",
                 checkForCD: false,
-                addExistingEntities: AdminShell.Key.ConceptDescription);
+                addExistingEntities: AdminShell.Key.ConceptDescription,
+                relatedReferable: view);
 
             // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, view.hasDataSpecification,
-                (ds) => { view.hasDataSpecification = ds; });
+                (ds) => { view.hasDataSpecification = ds; },
+                relatedReferable: view);
 
         }
 
@@ -3537,7 +3892,8 @@ namespace AasxPackageLogic
 
             // normal reference
             this.AddKeyListKeys(stack, "containedElement", reference.Keys, repo,
-                packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements);
+                packages, PackageCentral.PackageCentral.Selector.Main, AdminShell.Key.AllElements,
+                relatedReferable: view);
         }
     }
 }

@@ -559,15 +559,18 @@ namespace AdminShellNS
                             Formatting = Newtonsoft.Json.Formatting.Indented
                         };
 
-                        using (var sw = new StreamWriter(s))
+                        var sw = new StreamWriter(s);
+                        var writer = new JsonTextWriter(sw);
+
+                        serializer.Serialize(writer, _aasEnv);
+                        writer.Flush();
+                        sw.Flush();
+                        s.Flush();
+
+                        if (useMemoryStream == null)
                         {
-                            using (var writer = new JsonTextWriter(sw))
-                            {
-                                serializer.Serialize(writer, _aasEnv);
-                                writer.Flush();
-                                sw.Flush();
-                                s.Flush();
-                            }
+                            writer.Close();
+                            sw.Close();
                         }
                     }
                     finally
@@ -1334,7 +1337,6 @@ namespace AdminShellNS
             // get input stream
             using (var input = GetLocalStreamFromPackage(packageUri))
             {
-
                 // generate tempfile name
                 string tempext = System.IO.Path.GetExtension(packageUri);
                 string temppath = System.IO.Path.GetTempFileName().Replace(".tmp", tempext);
