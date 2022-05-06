@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using AasxPackageLogic;
+using JetBrains.Annotations;
+using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using File = System.IO.File;
 using InvalidOperationException = System.InvalidOperationException;
@@ -26,6 +28,8 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
+    // ReSharper disable UnusedType.Global
     public class TestParseArguments
     {
         [Test]
@@ -261,6 +265,8 @@ namespace AasxPackageExplorer.Tests
         }
     }
 
+    [TestFixture]
+    // ReSharper disable UnusedType.Global
     public class TestLoadPlugins
     {
         [Test]
@@ -296,7 +302,7 @@ namespace AasxPackageExplorer.Tests
                 var loadedPlugins = App.LoadAndActivatePlugins(optionsInformation.PluginDll);
 
                 // TODO (Marko Ristin, 2021-07-09): not clear, how this test could pass. As of today,
-                // it is failing and therefore disabled.
+                // it is failing and therefore disabled
                 //// Assert.AreEqual(new[] { "AasxPluginGenericForms" }, loadedPlugins.Keys.ToList());
 
                 // TODO (Marko Ristin, 2021-07-09): could not fix

@@ -47,7 +47,8 @@ function Main
             "WpfMtpControl\Resources\PNID_DIN_EN_ISO_10628.xaml" `
             "WpfMtpControl\Resources\PNID_Festo.xaml" `
             "WpfXamlTool\Resources\preset0.xaml" `
-            "WpfXamlTool\Resources\preset1.xaml"
+            "WpfXamlTool\Resources\preset1.xaml" `
+            "AasxFileServerRestLibrary\**" 
 
     if($LASTEXITCODE -ne 0)
     {

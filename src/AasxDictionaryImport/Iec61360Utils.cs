@@ -51,8 +51,8 @@ namespace AasxDictionaryImport
             var submodel = new AdminShellV20.Submodel()
             {
                 identification = new AdminShellV20.Identification(
-                    AdminShellV20.Identification.IRI,
-                    Options.Curr.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
+                    AdminShell.Identification.IRI,
+                    AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdSubmodelInstance)),
                 idShort = data.IdShort,
                 kind = AdminShellV20.ModelingKind.CreateAsInstance(),
             };
@@ -60,7 +60,7 @@ namespace AasxDictionaryImport
             AddDescriptions(submodel, data);
             AddDataSpecification(env, submodel, data);
 
-            adminShell.AddSubmodelRef(submodel.GetReference() as AdminShellV20.SubmodelRef);
+            adminShell.AddSubmodelRef(new AdminShell.SubmodelRef(submodel.GetReference()));
             env.Submodels.Add(submodel);
 
             return submodel;

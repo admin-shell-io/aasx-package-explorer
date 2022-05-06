@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AasxDictionaryImport.Model;
 using AdminShellNS;
 
 namespace AasxDictionaryImport.Cdd
@@ -42,7 +43,7 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        protected override Model.IDataSource OpenPath(string path, Model.DataSourceType type)
+        public override Model.IDataSource OpenPath(string path, Model.DataSourceType type = Model.DataSourceType.Custom)
         {
             string dir = File.Exists(path) ? Path.GetDirectoryName(path) : path;
             return new DataSource(this, dir, type);

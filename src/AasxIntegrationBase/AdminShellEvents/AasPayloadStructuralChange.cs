@@ -26,27 +26,27 @@ using Newtonsoft.Json;
 namespace AasxIntegrationBase.AdminShellEvents
 {
     /// <summary>
+    /// Enum telling the reason for a change. According to CRUD principle.
+    /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
+    /// </summary>
+    public enum StructuralChangeReason { Create, Modify, Delete }
+
+    /// <summary>
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
     {
-        /// <summary>
-        /// Enum telling the reason for a change. According to CRUD principle.
-        /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
-        /// </summary>
-        public enum ChangeReason { Create, Modify, Delete }
-
         /// <summary>
         /// Reason for the change. According to CRUD principle.
         /// (Retrieve make no sense, update = modify, in order to avoid mismatch with update value)
         /// </summary>
-        public ChangeReason Reason;
+        public StructuralChangeReason Reason;
 
         /// <summary>
         /// Timestamp of generated (sending) event in UTC time.
         /// </summary>
-        public string Timestamp { get; set; }
+        public DateTime Timestamp { get; set; }
 
         /// <summary>
         /// Path of the element which was structurally changed. Contains one or more Keys, relative to the 
@@ -56,7 +56,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AdminShell.KeyList Path { get; set; }
 
         /// <summary>
-        /// JSON-Serializatin of the Submodel, SMC, SME which was denoted by Observabale and Path.
+        /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
         /// </summary>
         public string Data { get; set; }
 
@@ -66,16 +66,29 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// </summary>
         public int CreateAtIndex = -1;
 
+        /// <summary>
+        /// Direct reference to Referable, when change item was successfully processed.
+        /// Note: only runtime value; not specified; not interoperable
+        /// </summary>
+        [JsonIgnore]
+        public AdminShell.Referable FoundReferable;
+
         //
         // Constructor
         //
 
         public AasPayloadStructuralChangeItem(
-            ChangeReason reason,
-            AdminShell.KeyList path = null)
+            DateTime timeStamp,
+            StructuralChangeReason reason,
+            AdminShell.KeyList path = null,
+            int createAtIndex = -1,
+            string data = null)
         {
+            Timestamp = timeStamp;
             Reason = reason;
             Path = path;
+            CreateAtIndex = createAtIndex;
+            Data = data;
         }
 
         //
@@ -102,10 +115,17 @@ namespace AasxIntegrationBase.AdminShellEvents
 
             var right = "";
             right += " -> " + Reason.ToString();
+            if (CreateAtIndex >= 0)
+                right += $" (CreateAtIndex = {CreateAtIndex})";
+            right += "  ";
+
+            var mmData = new MiniMarkupRun("");
+            if (Data != null && Data.Length > 0)
+                mmData = new MiniMarkupLink("[>>]", "http://127.0.0.1/" + Path?.ToString(), this);
 
             return new MiniMarkupLine(
                 new MiniMarkupRun(left, isMonospaced: true, padsize: 80),
-                new MiniMarkupRun(right));
+                new MiniMarkupRun(right), mmData);
         }
 #endif
 
@@ -117,6 +137,11 @@ namespace AasxIntegrationBase.AdminShellEvents
 
             // try deserialize
             return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
+        }
+
+        public string GetDetailsText()
+        {
+            return "" + Data;
         }
     }
 
@@ -149,6 +174,12 @@ namespace AasxIntegrationBase.AdminShellEvents
         {
             if (change != null)
                 Changes.Add(change);
+        }
+
+        public AasPayloadStructuralChange(AasPayloadStructuralChange other)
+        {
+            if (other.Changes != null)
+                Changes.AddRange(other.Changes);
         }
 
         //

@@ -22,6 +22,8 @@ using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
 using AdminShellNS;
 using IdentityModel.Client;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
 using Newtonsoft.Json;
 using SSIExtension;
 
@@ -213,8 +215,7 @@ namespace AasxPackageLogic.PackageCentral
             var reqSm = requestedElement as AdminShell.Submodel;
             var reqSme = requestedElement as AdminShell.SubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
-                || requestedElement == null || timestamp == null
-                || (reqSm == null && reqSme == null))
+                || requestedElement == null || (reqSm == null && reqSme == null))
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     "input arguments not valid!");
 
@@ -592,7 +593,7 @@ namespace AasxPackageLogic.PackageCentral
             if (change?.Path == null)
                 return;
 
-            // try determine tarket of "Observavle"/"path"
+            // try determine tarket of "Observable"/"path"
             var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (change.Path?.IsEmpty == false)
@@ -616,7 +617,7 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // create
-            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Create)
+            if (change.Reason == StructuralChangeReason.Create)
             {
                 // need parent (target will not exist)
                 if (parent == null)
@@ -646,6 +647,13 @@ namespace AasxPackageLogic.PackageCentral
                     return;
                 }
 
+                // need to care for parents inside
+                // TODO (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic
+                if (dataRef is AdminShell.Submodel drsm)
+                    drsm.SetAllParents();
+                if (dataRef is AdminShell.SubmodelElement drsme)
+                    AdminShell.Submodel.SetParentsForSME(parent, drsme);
+
                 // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
                 if (dataRef is AdminShell.SubmodelElement sme0
                     && true != targetKl?.Last()?.Matches(
@@ -665,6 +673,7 @@ namespace AasxPackageLogic.PackageCentral
                     && change.CreateAtIndex < 0)
                 {
                     parentMgr.Add(sme);
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme, parentRef: parent));
                 }
@@ -677,6 +686,7 @@ namespace AasxPackageLogic.PackageCentral
                     && change.CreateAtIndex < parentSmc.value.Count)
                 {
                     parentSmc.value.Insert(change.CreateAtIndex, sme2);
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex));
                 }
@@ -688,6 +698,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     Env.AasEnv.Submodels.Add(sm);
                     parentAas.AddSubmodelRef(sm?.GetSubmodelRef());
+                    change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sm, parentRef: parent));
                 }
@@ -701,7 +712,7 @@ namespace AasxPackageLogic.PackageCentral
             }
 
             // delete
-            if (change.Reason == AasPayloadStructuralChangeItem.ChangeReason.Delete)
+            if (change.Reason == StructuralChangeReason.Delete)
             {
                 // need target
                 if (target == null)
@@ -729,6 +740,7 @@ namespace AasxPackageLogic.PackageCentral
                     // Note: assumption is, that Remove() will not throw exception,
                     // if sme does not exist. Sadly, there is also no exception to 
                     // handler in this case
+                    change.FoundReferable = target;
                     parentMgr.Remove(sme);
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
                         thisRef: sme, parentRef: parent));
@@ -757,6 +769,8 @@ namespace AasxPackageLogic.PackageCentral
                         return;
                     }
 
+                    change.FoundReferable = target;
+
                     parentAas.submodelRefs.Remove(smrefFound);
                     Env.AasEnv.Submodels.Remove(sm);
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
@@ -769,6 +783,13 @@ namespace AasxPackageLogic.PackageCentral
                         "Exception deleting data within Observable/path! " + change.Path.ToString(1)));
                 }
             }
+
+            // modify
+            // TODO (MIHO, 2021-10-09): Modify missing!!
+            if (change.Reason == StructuralChangeReason.Modify)
+            {
+                throw new NotImplementedException("ExecuteEventAction() for Modify!!");
+            }
         }
 
         private void ExecuteEventAction(
@@ -780,7 +801,7 @@ namespace AasxPackageLogic.PackageCentral
             if (value?.Path == null)
                 return;
 
-            // try determine tarket of "Observavle"/"path"
+            // try determine tarket of "Observable"/"path"
             var targetKl = new AdminShell.KeyList();
             AdminShell.Referable target = null;
             if (value.Path?.IsEmpty == false)
@@ -803,13 +824,16 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
+            // remember (e.g. to be processed further by lugins or similar)
+            value.FoundReferable = target;
+
             // try to update
             if (target is AdminShell.AdministrationShell)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of AAS not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
@@ -818,7 +842,7 @@ namespace AasxPackageLogic.PackageCentral
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of Submodel not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
@@ -827,16 +851,15 @@ namespace AasxPackageLogic.PackageCentral
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
                     "Update of SubmodelElementCollection not implemented!"));
-                // TODO (MIHO, 2021-05-28): implmenent
+                // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
             if (target is AdminShell.SubmodelElement sme)
             {
-                // goal
-                sme.ValueFromText(value.Value);
-                if (sme is AdminShell.Property prop && value.ValueId != null)
-                    prop.valueId = value.ValueId;
+                // use differentiated functionality
+                PackageContainerBase.UpdateSmeFromEventPayloadItem(sme, value);
+
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.ValueUpdateSingle,
                         thisRef: sme));
                 return;
@@ -891,7 +914,7 @@ namespace AasxPackageLogic.PackageCentral
                 foreach (var env in envelopes)
                 {
                     // trivial
-                    if (env?.Payloads == null)
+                    if (env?.PayloadItems == null)
                         continue;
 
                     // header parsing
@@ -899,7 +922,7 @@ namespace AasxPackageLogic.PackageCentral
                         lastTS = env.Timestamp;
 
                     // payloads
-                    foreach (var pl in env.Payloads)
+                    foreach (var pl in env.PayloadItems)
                     {
                         // Structural
                         if (pl is AasPayloadStructuralChange chgStruct)

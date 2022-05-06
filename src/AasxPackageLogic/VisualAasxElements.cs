@@ -40,10 +40,10 @@ namespace AasxPackageLogic
     {
         // bi-directional tree
         public VisualElementGeneric Parent = null;
-        public ObservableCollection<VisualElementGeneric> Members { get; set; }
+        public ListOfVisualElement Members { get; set; }
 
         /// <summary>
-        /// Number of of memebers at the top of the list, whcih are virtual (e.g. by plug-ins)
+        /// Number of of members at the top of the list, whcih are virtual (e.g. by plug-ins)
         /// and not represented by the AAS-element's children.
         /// </summary>
         public int VirtualMembersAtTop = 0;
@@ -94,7 +94,7 @@ namespace AasxPackageLogic
 
         public VisualElementGeneric()
         {
-            this.Members = new ObservableCollection<VisualElementGeneric>();
+            this.Members = new ListOfVisualElement();
         }
 
         /// <summary>
@@ -306,6 +306,12 @@ namespace AasxPackageLogic
             return null;
         }
 
+        public VisualElementGeneric FindSibling(bool before = true, bool after = true)
+        {
+            // need parent -> members
+            return Parent?.Members?.FindSibling(this);
+        }
+
         public AdminShell.KeyList BuildKeyListToTop(
             bool includeAas = false)
         {
@@ -476,6 +482,21 @@ namespace AasxPackageLogic
             }
             return res;
         }
+
+        public List<T> GetListOfMapResults<T, S>(Func<S, T> lambda) where S : class
+        {
+            var res = new List<T>();
+            foreach (var x in this)
+            {
+                if (lambda == null || !(x is S))
+                    continue;
+                var r = lambda.Invoke(x as S);
+                if (r != null)
+                    res.Add(r);
+            }
+            return res;
+        }
+
     }
 
     public class VisualElementEnvironmentItem : VisualElementGeneric
@@ -709,7 +730,7 @@ namespace AasxPackageLogic
             else
             {
                 this.Caption = "Missing Submodel for Reference!";
-                this.Info = "->" + this.theSubmodelRef.ToString();
+                this.Info = "->" + ((this.theSubmodelRef == null) ? "<null>" : this.theSubmodelRef.ToString());
             }
         }
 
@@ -1321,6 +1342,25 @@ namespace AasxPackageLogic
                 }
         }
 
+        public VisualElementGeneric FindSibling(VisualElementGeneric item, bool before = true, bool after = true)
+        {
+            // find index of item
+            var i = this.IndexOf(item);
+            if (i < 0)
+                return null;
+
+            // before?
+            if (before && i > 0)
+                return this[i - 1];
+
+            // after
+            if (after && i < this.Count - 1)
+                return this[i + 1];
+
+            // no
+            return null;
+        }
+
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
             AdminShell.Submodel sm, VisualElementGeneric parent,
@@ -1473,7 +1513,15 @@ namespace AasxPackageLogic
                 {
                     var sm = env.FindSubmodel(smr);
                     if (sm == null)
+                    {
+                        // notify user
                         Log.Singleton.Error("Cannot find some submodel!");
+
+                        // make reference with NO submodel behind
+                        var tiNoSm = new VisualElementSubmodelRef(
+                            tiAas, cache, env, package, smr, sm: null);
+                        tiAas.Members.Add(tiNoSm);
+                    }
 
                     // generate
                     var tiSm = GenerateVisuElemForVisualElementSubmodelRef(
@@ -1600,7 +1648,26 @@ namespace AasxPackageLogic
             OptionExpandMode = expandMode;
             OptionLazyLoadingFirst = lazyLoadingFirst;
 
-            // many operations -> make it bulletproof
+            // quickly connect the Identifiables to the environment
+            {
+                foreach (var aas in env.AdministrationShells)
+                    if (aas != null)
+                        aas.parent = env;
+
+                foreach (var asset in env.Assets)
+                    if (asset != null)
+                        asset.parent = env;
+
+                foreach (var sm in env.Submodels)
+                    if (sm != null)
+                        sm.parent = env;
+
+                foreach (var cd in env.ConceptDescriptions)
+                    if (cd != null)
+                        cd.parent = env;
+            }
+
+            // many operations
             try
             {
                 if (editMode)
@@ -1683,7 +1750,8 @@ namespace AasxPackageLogic
                     // over all Submodels (not the refs)
                     //
                     var tiAllSubmodels = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels);
+                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels,
+                        mainDataObject: env.Submodels);
                     tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAllSubmodels);
 
@@ -1993,9 +2061,123 @@ namespace AasxPackageLogic
         }
 
         //
-        // Implementation of event queue
+        // Feedback of VE information back to hiearchy of AAS elements
         //
 
+        /// <summary>
+        /// This functions uses the VE hierarchy to safeguard a correct <c>parent</c> setting for
+        /// an edited AAS element. Is it called by the editor.
+        /// </summary>
+        /// <param name="entity"></param>
+        public static void SetParentsBasedOnChildHierarchy(VisualElementGeneric entity)
+        {
+            if (entity is VisualElementEnvironmentItem veei)
+            {
+            }
+            else if (entity is VisualElementAdminShell veaas && veaas.theAas != null)
+            {
+                // maintain parent. If in doubt, set null
+                veaas.theAas.parent = veaas.theEnv;
+            }
+            else if (entity is VisualElementAsset veas && veas.theAsset != null)
+            {
+                // maintain parent. If in doubt, set null
+                veas.theAsset.parent = veas.theEnv;
+            }
+            else if (entity is VisualElementSubmodelRef vesmref)
+            {
+                // no parent maintained
+            }
+            else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
+            {
+                // maintain parent. If in doubt, set null
+                vesm.theSubmodel.parent = vesm.theEnv;
+            }
+            else if (entity is VisualElementSubmodelElement vesme)
+            {
+                var parVe = entity.Parent;
+                var currRf = vesme.GetDereferencedMainDataObject() as AdminShell.Referable;
+                while (parVe != null && currRf != null)
+                {
+                    var parMdo = parVe?.GetDereferencedMainDataObject();
+                    if (parMdo is AdminShell.Referable parMdoRf)
+                    {
+                        // set parent
+                        currRf.parent = parMdoRf;
+
+                        // go next
+                        currRf = parMdoRf;
+                        parVe = parVe.Parent;
+                    }
+                    else
+                    {
+                        // simply stop
+                        break;
+                    }
+                }
+            }
+            else if (entity is VisualElementOperationVariable vepv)
+            {
+                // try access element itself
+                if (vepv.GetMainDataObject() is AdminShell.SubmodelElement sme)
+                {
+                    // be careful
+                    sme.parent = null;
+
+                    // try get parent data
+                    if (entity.Parent is VisualElementSubmodelElement parVe
+                        && parVe.GetMainDataObject() is AdminShell.Operation parVeOp)
+                    {
+                        // set parent
+                        sme.parent = parVeOp;
+
+                        // recurse?
+                        SetParentsBasedOnChildHierarchy(entity.Parent);
+                    }
+                }
+            }
+            else if (entity is VisualElementConceptDescription vecd && vecd.theCD != null)
+            {
+                // maintain parent. If in doubt, set null
+                vecd.theCD.parent = vecd.theEnv;
+            }
+            else if (entity is VisualElementView vevw && vevw.theView != null)
+            {
+                // be careful
+                vevw.theView.parent = null;
+
+                // try get parent data
+                if (entity.Parent is VisualElementAdminShell parVe
+                    && parVe.GetMainDataObject() is AdminShell.AdministrationShell parVeAas)
+                {
+                    // set parent
+                    vevw.theView.parent = parVeAas;
+
+                    // recurse?
+                    SetParentsBasedOnChildHierarchy(entity.Parent);
+                }
+            }
+            else if (entity is VisualElementReference verf)
+            {
+                // not applicable
+            }
+            else
+            if (entity is VisualElementSupplementalFile vesf)
+            {
+                // not applicable
+            }
+            else if (entity is VisualElementPluginExtension vepe)
+            {
+                // not applicable
+            }
+            else
+            {
+            }
+        }
+
+        //
+        // Implementation of event queue
+        //
 
 #if _relaize_in_DisplayVisualAasxElements
         private List<PackCntChangeEventData> _eventQueue = new List<PackCntChangeEventData>();
