@@ -92,6 +92,10 @@ implementations of asset administration shells (AAS):
   of the AAS concept by using JavaScript and Low-code development platform (LCDP)
   Node-Red.
 
+* **Java Dataformat Library** (https://github.com/admin-shell-io/java-serializer)
+  provides serializer and derserializer for various dataformats as well as the
+  creation and validation of AAS, written in Java.
+
 While these projects try to implement a wider scope of programatic features,
 AASX Package Explorer, in contrast, is a tool with graphical user interface 
 meant for experimenting and demonstrating the potential of asset administration
