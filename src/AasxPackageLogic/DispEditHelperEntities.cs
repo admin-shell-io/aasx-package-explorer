@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -3147,7 +3148,7 @@ namespace AasxPackageLogic
                 {
                     // More file actions
                     this.AddAction(
-                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
+                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file", "Download to AASX" },
                         repo,
                         (buttonNdx) =>
                         {
@@ -3329,6 +3330,81 @@ namespace AasxPackageLogic
 
                                 // reshow
                                 return new AnyUiLambdaActionRedrawEntity();
+                            }
+
+                            if (buttonNdx == 3 && fl.value.HasContent() && context != null)
+                            {
+                                var isHttpSchema = (fl.value.StartsWith("http://") 
+                                        || fl.value.StartsWith("https://"));
+                                if (!isHttpSchema)
+                                {
+                                    if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                        "File path does not start with http-scheme. Download anyway?", "AAS-ENV",
+                                        AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                        return new AnyUiLambdaActionNone();
+                                }
+
+                                // ask for a target path (in the package)
+                                var targetPath = "/aasx/files/" + System.IO.Path.GetFileName(fl.value);
+                                var uc = new AnyUiDialogueDataTextBox(
+                                    "Specify target path and filename in in AASX package.",
+                                    symbol: AnyUiMessageBoxImage.Question,
+                                    maxWidth: 1400,
+                                    text: targetPath);
+
+                                if (!this.context.StartFlyoverModal(uc))
+                                    return new AnyUiLambdaActionNone();
+                                targetPath = uc.Text;
+
+                                // execute
+                                try
+                                {
+                                    // try prepare download
+                                    var targetDir = System.IO.Path.GetDirectoryName(targetPath).Replace("\\", "/");
+                                    var targetFn = System.IO.Path.GetFileName(targetPath);
+                                    var tempExt = System.IO.Path.GetExtension(targetPath);
+                                    var tempPath = System.IO.Path.GetTempFileName().Replace(".tmp", tempExt);
+                                    Log.Singleton.Info($"Downloading file path {fl.value} to temp file {tempPath} ..");
+
+                                    // simple approach
+                                    using (var client = new WebClient())
+                                    {
+                                        client.DownloadFile(fl.value, tempPath);
+                                    }
+
+                                    // put into AASX
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(tempPath);                                    
+
+                                    var addedPath = packages.Main.AddSupplementaryFileToStore(
+                                        tempPath, targetDir, targetFn,
+                                        embedAsThumb: false, useMimeType: mimeType);
+
+                                    if (addedPath == null)
+                                    {
+                                        Log.Singleton.Error(
+                                            $"Error creating file {targetDir + targetFn} within package");
+                                    }
+                                    else
+                                    {
+                                        Log.Singleton.Info(
+                                            $"Added file {targetDir + targetFn} to pending package items. " +
+                                            $"A save-operation is required.");
+                                        fl.mimeType = mimeType;
+                                        fl.value = addedPath;
+
+                                        // value + struct event
+                                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
+                                        this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"Download file path {fl.value} in local file...");
+                                }
+
+                                // reshow this element
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
                             }
 
                             return new AnyUiLambdaActionNone();

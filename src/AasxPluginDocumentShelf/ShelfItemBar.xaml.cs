@@ -131,8 +131,8 @@ namespace AasxPluginDocumentShelf
                 return;
 
             // clear old items (very stupid)
-            while (cm.Items.Count > 4)
-                cm.Items.RemoveAt(4);
+            while (cm.Items.Count > 5)
+                cm.Items.RemoveAt(5);
 
             // add new items
             if (data.Relations != null && data.Relations.Count > 0)
