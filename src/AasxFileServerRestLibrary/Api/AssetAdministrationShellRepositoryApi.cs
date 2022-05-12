@@ -367,7 +367,7 @@ namespace IO.Swagger.Api
         /// <returns>AssetInformation</returns>
         //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //AssetInformation GetAssetInformation (string aasIdentifier);
-        AdminShellV20.Asset GetAssetInformation(string aasIdentifier);
+        AdminShellV30.AssetInformation GetAssetInformation(string aasIdentifier);
 
         /// <summary>
         /// Returns the Asset Information
@@ -380,7 +380,7 @@ namespace IO.Swagger.Api
         /// <returns>ApiResponse of AssetInformation</returns>
         //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //ApiResponse<AssetInformation> GetAssetInformationWithHttpInfo (string aasIdentifier);
-        ApiResponse<AdminShellV20.Asset> GetAssetInformationWithHttpInfo(string aasIdentifier);
+        ApiResponse<AdminShellV30.AssetInformation> GetAssetInformationWithHttpInfo(string aasIdentifier);
         /// <summary>
         /// Returns a specific Concept Description
         /// </summary>
@@ -4174,10 +4174,10 @@ namespace IO.Swagger.Api
         /// <returns>AssetInformation</returns>
         //TODO (jtikekar, 2022-04-04): Change to V3
         //public AssetInformation GetAssetInformation (string aasIdentifier)
-        public AdminShellV20.Asset GetAssetInformation(string aasIdentifier)
+        public AdminShellV30.AssetInformation GetAssetInformation(string aasIdentifier)
         {
             //ApiResponse<AssetInformation> localVarResponse = GetAssetInformationWithHttpInfo(aasIdentifier);
-            ApiResponse<AdminShellV20.Asset> localVarResponse = GetAssetInformationWithHttpInfo(aasIdentifier);
+            ApiResponse<AdminShellV30.AssetInformation> localVarResponse = GetAssetInformationWithHttpInfo(aasIdentifier);
             return localVarResponse.Data;
         }
 
@@ -4189,7 +4189,7 @@ namespace IO.Swagger.Api
         /// <returns>ApiResponse of AssetInformation</returns>
         //TODO (jtikekar, 2022-04-04): Change during v3 upgrade
         //public ApiResponse< AssetInformation > GetAssetInformationWithHttpInfo (string aasIdentifier)
-        public ApiResponse<AdminShellV20.Asset> GetAssetInformationWithHttpInfo(string aasIdentifier)
+        public ApiResponse<AdminShellV30.AssetInformation> GetAssetInformationWithHttpInfo(string aasIdentifier)
         {
             // verify the required parameter 'aasIdentifier' is set
             if (aasIdentifier == null)
@@ -4235,9 +4235,9 @@ namespace IO.Swagger.Api
             //    localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
             //    (AssetInformation) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetInformation)));
 
-            return new ApiResponse<AdminShellV20.Asset>(localVarStatusCode,
+            return new ApiResponse<AdminShellV30.AssetInformation>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
-                (AdminShellV20.Asset)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AdminShellV20.Asset)));
+                (AdminShellV30.AssetInformation)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AdminShellV30.AssetInformation)));
         }
 
         /// <summary>

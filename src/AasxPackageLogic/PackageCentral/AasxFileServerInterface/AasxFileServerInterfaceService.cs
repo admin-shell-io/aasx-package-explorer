@@ -76,12 +76,16 @@ namespace AasxPackageLogic.PackageCentral
                                         {
                                             ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                                             //Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,"server", "getaasx", aasi.Index),
-                                            Description = $"\"{"" + aas.idShort}\",\"{"" + asset.idShort}\"",
+                                            Description = $"\"{"" + aas.idShort}\",\"{"" + asset.fakeIdShort}\"",
                                             Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.idShort).SubstringMax(0, 3),
                                             PackageId = packageDescription.PackageId
                                         };
-                                        packageContainer.AasIds.Add("" + aas.identification?.id);
-                                        packageContainer.AssetIds.Add("" + asset.identification?.id);
+                                        packageContainer.AasIds.Add("" + aas.id?.value);
+                                        if(asset.globalAssetId != null)
+                                        {
+                                            packageContainer.AssetIds.Add("" + asset.globalAssetId?.GetAsIdentifier().value);
+                                        }
+                                        
                                         output.Add(packageContainer);
                                     }
                                 }

@@ -767,7 +767,7 @@ namespace AasxIntegrationBase.AasForms
             string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+            : base(formText, multiplicity, new AdminShellV30.Identifier(smeSemanticId.value), presetIdShort, formInfo, isReadOnly)
         {
             if (presetFilter != null)
                 this.presetFilter = presetFilter;
@@ -821,7 +821,7 @@ namespace AasxIntegrationBase.AasForms
             string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
-            : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
+            : base(formText, multiplicity, new AdminShellV30.Identifier(smeSemanticId.value), presetIdShort, formInfo, isReadOnly)
         {
             if (presetFilter != null)
                 this.presetFilter = presetFilter;

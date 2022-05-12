@@ -37,22 +37,22 @@ namespace AasxIntegrationBase.AasForms
         public class ViewModel : WpfViewModelBase
         {
             // data binded properties
-            private AdminShell.Reference storedFirst = null;
-            private AdminShell.Reference storedSecond = null;
+            private AdminShell.ModelReference storedFirst = null;
+            private AdminShell.ModelReference storedSecond = null;
 
-            public AdminShell.Reference StoredFirst
+            public AdminShell.ModelReference StoredFirst
             {
                 get { return storedFirst; }
                 set { storedFirst = value; OnPropertyChanged("InfoFirst"); }
             }
 
-            public AdminShell.Reference StoredSecond
+            public AdminShell.ModelReference StoredSecond
             {
                 get { return storedSecond; }
                 set { storedSecond = value; OnPropertyChanged("InfoSecond"); }
             }
 
-            public static string FormatReference(AdminShell.Reference rf)
+            public static string FormatReference(AdminShell.ModelReference rf)
             {
                 if (rf == null)
                     return "(no reference set)";
@@ -148,7 +148,7 @@ namespace AasxIntegrationBase.AasForms
                             if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                             {
                                 dc.instance.Touch();
-                                var newr = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                                var newr = AdminShell.ModelReference.CreateNew(rsel.resultKeys);
 
                                 if (storedII == 0)
                                 {

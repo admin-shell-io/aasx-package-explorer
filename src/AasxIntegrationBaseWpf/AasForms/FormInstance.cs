@@ -1075,11 +1075,11 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as AdminShell.ReferenceElement;
-            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            var re = this.sme as AdminShell.ModelReferenceElement;
+            var reSource = this.sourceSme as AdminShell.ModelReferenceElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.value = new AdminShell.Reference(re.value);
+                reSource.value = new AdminShell.ModelReference(re.value);
                 return false;
             }
             return true;
@@ -1108,8 +1108,8 @@ namespace AasxIntegrationBase.AasForms
             if (reSource != null)
             {
                 // take over
-                re.first = new AdminShell.Reference(reSource.first);
-                re.second = new AdminShell.Reference(reSource.second);
+                re.first = new AdminShell.ModelReference(reSource.first);
+                re.second = new AdminShell.ModelReference(reSource.second);
             }
 
             // create user control
@@ -1132,8 +1132,8 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as AdminShell.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.first = new AdminShell.Reference(re.first);
-                reSource.second = new AdminShell.Reference(re.second);
+                reSource.first = new AdminShell.ModelReference(re.first);
+                reSource.second = new AdminShell.ModelReference(re.second);
                 return false;
             }
             return true;
@@ -1185,8 +1185,8 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as AdminShell.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.first = new AdminShell.Reference(re.first);
-                reSource.second = new AdminShell.Reference(re.second);
+                reSource.first = new AdminShell.ModelReference(re.first);
+                reSource.second = new AdminShell.ModelReference(re.second);
                 return false;
             }
             return true;

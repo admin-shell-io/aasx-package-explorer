@@ -19,7 +19,7 @@ using AdminShellNS;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using VDS.RDF.Writing;
-using static AdminShellNS.AdminShellV20;
+using static AdminShellNS.AdminShellV30;
 
 namespace AasxBammRdfImExport
 
@@ -76,9 +76,9 @@ namespace AasxBammRdfImExport
                     obj_aspect.Name = (t.Subject.ToString().Substring(t.Subject.ToString().LastIndexOf("#") + 1));
                     sm.idShort = obj_aspect.Name;
 
-                    var msemanticID = AdminShell.Key.CreateNew("GlobalReference", false, "IRI", t.Subject.ToString());
-                    AdminShellNS.AdminShellV20.SemanticId smid =
-                        new AdminShellNS.AdminShellV20.SemanticId(msemanticID);
+                    var msemanticID = AdminShell.Key.CreateNew("GlobalReference", t.Subject.ToString());
+                    AdminShellNS.AdminShellV30.SemanticId smid =
+                        AdminShellNS.AdminShellV30.SemanticId.CreateFromKey(msemanticID);
                     sm.semanticId = smid;
                     thePackageEnv.AasEnv.Submodels.Add(sm);
                 }
@@ -228,9 +228,9 @@ namespace AasxBammRdfImExport
                             Console.WriteLine(property_Name);
                         }
                         AdminShell.Key msemanticID = AdminShell.Key.CreateNew(
-                            "GlobalReference", false, "IRI", semantic);
+                            "GlobalReference", semantic);
                         set_property = AdminShell.SubmodelElementCollection.CreateNew(
-                            property_Name, null, msemanticID);
+                            property_Name, null,new Identifier(msemanticID.value));
                         sm.Add(set_property);
 
                     }
@@ -255,9 +255,9 @@ namespace AasxBammRdfImExport
                             string entity_set_idshort =
                                 (t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1));
                             AdminShell.Key msemanticID = AdminShell.Key.CreateNew(
-                                "GlobalReference", false, "IRI", semantic);
+                                "GlobalReference", semantic);
                             entity_set = AdminShell.SubmodelElementCollection.CreateNew(
-                                entity_set_idshort, null, msemanticID);
+                                entity_set_idshort, null, new Identifier(msemanticID.value));
                             set_property.Add(entity_set);
                         }
 
@@ -380,7 +380,7 @@ namespace AasxBammRdfImExport
                 }
 
                 using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                    "" + property_Name, AdminShell.Identification.IRI, semantic))
+                                    "" + property_Name, AdminShell.Identifier.IRI, semantic))
                 {
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
@@ -388,15 +388,16 @@ namespace AasxBammRdfImExport
                         shortName: null,
 
                          unit: null,
-                         AdminShell.UnitId.CreateNew("GlobalReference", false, "IRI", unit_name),
+                         //AdminShell.UnitId.CreateNew("GlobalReference", false, "IRI", unit_name),
+                         (UnitId)AdminShell.UnitId.CreateNew(new Identifier(unit_name)),
                         valueFormat: null,
                           dataType: "BOOLEAN",
                         definition: new[] { "EN", property_Description }
 
                     );
 
-                    AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", true, "IRI", semantic);
-                    var mp = AdminShell.Property.CreateNew(property_Name, null, msemanticID);
+                    AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", semantic);
+                    var mp = AdminShell.Property.CreateNew(property_Name, null, new Identifier(msemanticID.value));
                     mp.valueType = "string";
                     mp.value = property_ExampleValue;
                     sm.Add(mp);
@@ -408,8 +409,8 @@ namespace AasxBammRdfImExport
             foreach (var charc_prop in entity_property_char)
 
             {
-                AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", true, "IRI", smc_semantic);
-                et = AdminShell.SubmodelElementCollection.CreateNew(charc_prop, null, msemanticID);
+                AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", smc_semantic);
+                et = AdminShell.SubmodelElementCollection.CreateNew(charc_prop, null, new Identifier(msemanticID.value));
                 sm.Add(et);
             }
 
@@ -456,7 +457,7 @@ namespace AasxBammRdfImExport
                 }
 
                 using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                        "" + name, AdminShell.Identification.IRI, semantic))
+                                        "" + name, AdminShell.Identifier.IRI, semantic))
                 {
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
@@ -464,15 +465,15 @@ namespace AasxBammRdfImExport
                         shortName: null,
 
                          unit: null,
-                         AdminShell.UnitId.CreateNew("GlobalReference", false, "IRI", unit_name),
+                         (UnitId)AdminShell.UnitId.CreateNew(new Identifier(unit_name)),
                         valueFormat: null,
                           dataType: "BOOLEAN",
                         definition: new[] { "EN", description }
 
                     );
 
-                    AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", true, "IRI", semantic);
-                    var mp = AdminShell.Property.CreateNew(name, null, msemanticID);
+                    AdminShell.Key msemanticID = AdminShell.Key.CreateNew("ConceptDescription", semantic);
+                    var mp = AdminShell.Property.CreateNew(name, null, new Identifier(msemanticID.value));
                     mp.valueType = "string";
                     mp.value = description;
                     et.Add(mp);

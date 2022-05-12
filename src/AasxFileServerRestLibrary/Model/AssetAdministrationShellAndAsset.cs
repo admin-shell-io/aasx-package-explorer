@@ -30,6 +30,6 @@ namespace IO.Swagger.Model
         /// Gets or sets Asset
         /// </summary>
         [DataMember(Name = "asset")]
-        public AdminShell.Asset asset;
+        public AdminShell.AssetInformation asset;
     }
 }
