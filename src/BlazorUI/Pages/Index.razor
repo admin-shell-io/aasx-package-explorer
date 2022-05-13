@@ -400,6 +400,9 @@
 
                     if (selectedNode.Tag is AdministrationShell)
                     {
+                        // will need no plugin
+                        bi?.DisposeLoadedPlugin();
+
                         bi.stack17 = new AnyUiStackPanel();
                         bi.stack17.Orientation = AnyUiOrientation.Vertical;
                         bi.helper.DisplayOrEditAasEntityAas(
@@ -416,6 +419,11 @@
                         var sm = callInfo.Item2;
                         var plugin = callInfo.Item3;
 
+                        // may dispose old (other plugin)
+                        if (bi.LoadedPluginInstance != plugin)
+                            bi?.DisposeLoadedPlugin();
+
+                        // create new/ update
                         if (env != null && sm != null && plugin != null)
                         {
                             try
@@ -426,13 +434,16 @@
                                 if (_onlyUpdatePluginUi)
                                 {
                                     plugin.InvokeAction("update-anyui-visual-extension", 
-                                        bi.stack17, displayContext);
+                                        bi.stack17, displayContext, bi.sessionNumber);
                                     // _onlyUpdatePluginUi = false;
                                 }
                                 else
                                 {
                                     plugin.InvokeAction("fill-anyui-visual-extension", env, sm, 
-                                        bi.stack17, displayContext);
+                                        bi.stack17, displayContext, bi.sessionNumber);
+
+                                    bi.LoadedPluginInstance = plugin;
+                                    bi.LoadedPluginSessionId = bi.sessionNumber;
                                 }
 
                                 if (bi.stack17.Children.Count != 0)
@@ -448,6 +459,9 @@
                     else
                     if (selectedNode.Tag is Submodel)
                     {
+                        // will need no plugin
+                        bi?.DisposeLoadedPlugin();
+
                         bi.stack17 = new AnyUiStackPanel();
                         bi.stack17.Orientation = AnyUiOrientation.Vertical;
                         bi.helper.DisplayOrEditAasEntitySubmodelOrRef(
@@ -459,6 +473,9 @@
                     else
                     if (selectedNode.Tag is SubmodelElement sme)
                     {
+                        // will need no plugin
+                        bi?.DisposeLoadedPlugin();
+
                         bi.stack17 = new AnyUiStackPanel();
                         bi.stack17.Orientation = AnyUiOrientation.Vertical;
                         bi.helper.DisplayOrEditAasEntitySubmodelElement(
@@ -471,18 +488,6 @@
 
                     if (view)
                     {
-                        // special handling
-
-                        //if (ch is AnyUiComboBox comb)
-                        //{
-                        //    if (prevCh is AnyUiButton)
-                        //    {
-                        //        newTab = true;
-                        //        prevCh = null;
-                        //        continue;
-                        //    }
-                        //}
-
                         <AnyUiRenderElem DisplayData="@displayData" 
                                             Session="@bi" 
                                             Element="@bi.stack17"

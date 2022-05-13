@@ -48,6 +48,9 @@ namespace BlazorUI.Data
         public ListOfItems items = null;
         public Thread htmlDotnetThread = null;
 
+        public Plugins.PluginInstance LoadedPluginInstance = null;
+        public object LoadedPluginSessionId = null;
+
         public blazorSessionService()
         {
             sessionNumber = ++sessionCounter;
@@ -78,12 +81,38 @@ namespace BlazorUI.Data
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
         }
+        
         public void Dispose()
         {
             AnyUiDisplayContextHtml.deleteSession(sessionNumber);
             sessionTotal--;
             if (env != null)
                 env.Close();
+        }
+
+        public void DisposeLoadedPlugin()
+        {
+            // access
+            if (LoadedPluginInstance == null || LoadedPluginSessionId == null)
+            {
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+                return;
+            }
+
+            // try release
+            try
+            {
+                LoadedPluginInstance.InvokeAction("dispose-anyui-visual-extension",
+                    LoadedPluginSessionId);
+
+                LoadedPluginInstance = null;
+                LoadedPluginSessionId = null;
+            }
+            catch (Exception ex)
+            {
+                LogInternally.That.CompletelyIgnoredError(ex);
+            }
         }
     }
 }
