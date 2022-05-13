@@ -219,4 +219,78 @@ namespace AasxIntegrationBase
         /// <returns>Any result to be derived from AasxPluginResultBase</returns>
         AasxPluginResultBase ActivateAction(string action, params object[] args);
     }
+
+    /// <summary>
+    /// Base class for plugin session data (HTML/ Blazor might host multiple sessions at the same time)
+    /// </summary>
+    public class PluginSessionBase
+    { 
+    }
+
+    /// <summary>
+    /// Services to maintain session sefficiently
+    /// </summary>
+    public class PluginSessionCollection : Dictionary<object, PluginSessionBase>
+    {
+        public T CreateNewSession<T>(object sessionId)
+            where T : PluginSessionBase, new()
+        {
+            if (this.ContainsKey(sessionId))
+                this.Remove(sessionId);
+            var res = new T();
+            this.Add(sessionId, res);
+            return res;
+        }
+
+        public T FindSession<T>(object sessionId)
+            where T : PluginSessionBase, new()
+        {
+            if (this.ContainsKey(sessionId))
+                return this[sessionId] as T;
+            return null;
+        }
+
+        public bool AccessSession<T>(object sessionId, out T session)
+            where T : PluginSessionBase, new()
+        {
+            session = null;
+            if (this.ContainsKey(sessionId))
+                session = this[sessionId] as T;
+            return session != null;
+        }
+    }
+
+    public class AasxPluginBase : IAasxPluginInterface
+    {
+        protected LogInstance _log = new LogInstance();
+        protected PluginEventStack _eventStack = new PluginEventStack();
+        protected PluginSessionCollection _sessions = new PluginSessionCollection();
+
+        public static string PluginName = "(not initialized)";
+
+        public string GetPluginName()
+        {
+            return PluginName;
+        }
+
+        public void InitPlugin(string[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object CheckForLogMessage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public AasxPluginActionDescriptionBase[] ListActions()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

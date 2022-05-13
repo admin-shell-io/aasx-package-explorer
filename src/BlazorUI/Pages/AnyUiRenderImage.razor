@@ -29,9 +29,7 @@
 
     // book keeping
     // TODO: make it nice!!
-    var dd = new AnyUiDisplayDataHtml(DisplayData._context);
-    dd._component = this;
-    _image.DisplayData = dd;
+    _image.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
 }
 
 @code {
@@ -54,8 +52,6 @@
         {
             // hold image data
             _image = value;
-            if (_image == null)
-                return;
         }
     }
 
@@ -65,5 +61,14 @@
     public void Redraw()
     {
         InvokeAsync(StateHasChanged);
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        Redraw();
     }
 }
