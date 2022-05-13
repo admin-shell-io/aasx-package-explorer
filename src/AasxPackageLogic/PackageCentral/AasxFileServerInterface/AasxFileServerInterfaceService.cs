@@ -281,8 +281,11 @@ namespace AasxPackageLogic.PackageCentral
             {
                 writeStream.WriteByte(b);
                 totalBytes++;
-                runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
-                    fileSize, totalBytes);
+                if (totalBytes % 1024 == 0)
+                {
+                    runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
+                        fileSize, totalBytes);
+                }
             }
             runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
         }
