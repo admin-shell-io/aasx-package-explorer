@@ -398,7 +398,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             FileDoubleClick?.Invoke(senderList, fr, fi);
         }
 
-        private async Task PackageContainerListControl_ButtonClickAsync(
+        private async void PackageContainerListControl_ButtonClick(
             Control senderList,
             PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
