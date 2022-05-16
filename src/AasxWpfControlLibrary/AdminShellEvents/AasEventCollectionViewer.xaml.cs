@@ -228,7 +228,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
 
                 cm.Start(sender as Button, async (tag) =>
                 {
-                    await Task.Run(()=>CommandBinding_ContextMenu(tag));
+                    await Task.Run(() => CommandBinding_ContextMenu(tag));
                 });
             }
         }
