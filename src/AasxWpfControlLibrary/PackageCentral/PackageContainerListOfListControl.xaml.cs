@@ -279,7 +279,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                     // generate appropriate container
-                    var cnt = PackageContainerFactory.GuessAndCreateFor(
+                    var cnt = await PackageContainerFactory.GuessAndCreateForAsync(
                         null, veEnv.thePackageSourceFn, veEnv.thePackageSourceFn,
                         overrideLoadResident: false,
                         containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
@@ -398,7 +398,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             FileDoubleClick?.Invoke(senderList, fr, fi);
         }
 
-        private void PackageContainerListControl_ButtonClick(
+        private async Task PackageContainerListControl_ButtonClickAsync(
             Control senderList,
             PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
@@ -432,15 +432,15 @@ namespace AasxWpfControlLibrary.PackageCentral
                     cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
                 }
 
-                cm.Start(sender, (tag) =>
+                cm.Start(sender, async (tag) =>
                 {
-                    CommandBinding_FileRepoAllAsync(senderList, fr, tag);//start here SAVE
+                    await CommandBinding_FileRepoAllAsync(senderList, fr, tag);
                 });
             }
 
             if (btn == PackageContainerListControl.CustomButton.Query)
             {
-                CommandBinding_FileRepoAllAsync(senderList, fr, "FileRepoQuery");
+                await CommandBinding_FileRepoAllAsync(senderList, fr, "FileRepoQuery");
             }
         }
 
