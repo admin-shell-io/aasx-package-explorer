@@ -76,7 +76,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
 
         internal async Task UpdateFileOnServerAsync(string copyFileName, string packageId, PackCntRuntimeOptions runtimeOptions)
         {
-            await _aasxFileService.PutAasxFileOnServerAsync(copyFileName, packageId);
+            await _aasxFileService.PutAasxFileOnServerAsync(copyFileName, packageId, runtimeOptions);
         }
 
         public override void DeletePackageFromServer(PackageContainerRepoItem fi)

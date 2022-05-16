@@ -160,14 +160,17 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        internal Task PutAasxFileOnServerAsync(string copyFileName, string packageId)
+        internal Task PutAasxFileOnServerAsync(string copyFileName, string packageId, PackCntRuntimeOptions runtimeOptions)
         {
             try
             {
                 //TODO (jtikekar, 2022-04-04): aasIds?
                 var aasIds = new List<string>();
                 var fileContent = File.ReadAllBytes(copyFileName);
-                var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileContent, copyFileName, Base64UrlEncoder.Encode(packageId));
+                var uw = new UploadWriter(fileContent, runtimeOptions);
+                var fileparameter = FileParameter.Create("file", uw.Write, fileContent.Length, "no_file_name_provided");
+
+                var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileparameter, copyFileName, Base64UrlEncoder.Encode(packageId));
                 if (response.StatusCode != 204)
                 {
                     Log.Singleton.Error($"Update AASX file in file repository failed with error {response.StatusCode}");
@@ -263,31 +266,37 @@ namespace AasxPackageLogic.PackageCentral
 
     internal class UploadWriter
     {
-        private byte[] fileContent;
-        private PackCntRuntimeOptions runtimeOptions;
-        private int fileSize;
+        private const int _defaultBufferSize = 4096;
+        private byte[] _content;
+        private PackCntRuntimeOptions _runtimeOptions;
 
         public UploadWriter(byte[] fileContent, PackCntRuntimeOptions runtimeOptions)
         {
-            this.fileContent = fileContent;
-            this.runtimeOptions = runtimeOptions;
-            this.fileSize = fileContent.Length;
+            _content = fileContent;
+            _runtimeOptions = runtimeOptions;
         }
 
         internal void Write(Stream writeStream)
         {
-            long totalBytes = 0;
-            foreach (byte b in fileContent)
+            var buffer = new byte[_defaultBufferSize];
+            long uploaded = 0;
+
+            using (var _instream = new MemoryStream(_content))
             {
-                writeStream.WriteByte(b);
-                totalBytes++;
-                if (totalBytes % 1024 == 0)
+                while (true)
                 {
-                    runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Ongoing,
-                        fileSize, totalBytes);
+                    var length = _instream.Read(buffer, 0, buffer.Length);
+                    if (length <= 0)
+                        break;
+
+                    uploaded += length;
+
+                    writeStream.Write(buffer, 0, length);
+                    _runtimeOptions?.ProgressChanged(PackCntRuntimeOptions.Progress.Ongoing, _content.Length, uploaded);
                 }
             }
-            runtimeOptions?.ProgressChanged?.Invoke(PackCntRuntimeOptions.Progress.Final, fileSize, totalBytes);
+            _runtimeOptions?.ProgressChanged( PackCntRuntimeOptions.Progress.Final, _content.Length, uploaded);
+
         }
     }
 }

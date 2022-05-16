@@ -128,7 +128,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns></returns>
-        void PutAASXByPackageId(List<string> aasIds, byte[] file, string fileName, string packageId);
+        void PutAASXByPackageId(List<string> aasIds, FileParameter file, string fileName, string packageId);
 
         /// <summary>
         /// Updates the AASX package at the server
@@ -142,7 +142,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        ApiResponse<Object> PutAASXByPackageIdWithHttpInfo(List<string> aasIds, byte[] file, string fileName, string packageId);
+        ApiResponse<Object> PutAASXByPackageIdWithHttpInfo(List<string> aasIds, FileParameter file, string fileName, string packageId);
         #endregion Synchronous Operations
         #region Asynchronous Operations
         /// <summary>
@@ -245,7 +245,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>Task of void</returns>
-        System.Threading.Tasks.Task PutAASXByPackageIdAsync(List<string> aasIds, byte[] file, string fileName, string packageId);
+        System.Threading.Tasks.Task PutAASXByPackageIdAsync(List<string> aasIds, FileParameter file, string fileName, string packageId);
 
         /// <summary>
         /// Updates the AASX package at the server
@@ -259,7 +259,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>Task of ApiResponse</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> PutAASXByPackageIdAsyncWithHttpInfo(List<string> aasIds, byte[] file, string fileName, string packageId);
+        System.Threading.Tasks.Task<ApiResponse<Object>> PutAASXByPackageIdAsyncWithHttpInfo(List<string> aasIds, FileParameter file, string fileName, string packageId);
         #endregion Asynchronous Operations
     }
 
@@ -1005,7 +1005,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns></returns>
-        public void PutAASXByPackageId(List<string> aasIds, byte[] file, string fileName, string packageId)
+        public void PutAASXByPackageId(List<string> aasIds, FileParameter file, string fileName, string packageId)
         {
             PutAASXByPackageIdWithHttpInfo(aasIds, file, fileName, packageId);
         }
@@ -1019,7 +1019,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>ApiResponse of Object(void)</returns>
-        public ApiResponse<Object> PutAASXByPackageIdWithHttpInfo(List<string> aasIds, byte[] file, string fileName, string packageId)
+        public ApiResponse<Object> PutAASXByPackageIdWithHttpInfo(List<string> aasIds, FileParameter file, string fileName, string packageId)
         {
             // verify the required parameter 'aasIds' is set
             if (aasIds == null)
@@ -1057,7 +1057,7 @@ namespace IO.Swagger.Api
 
             if (packageId != null) localVarPathParams.Add("packageId", this.Configuration.ApiClient.ParameterToString(packageId)); // path parameter
             if (aasIds != null) localVarFormParams.Add("aasIds", this.Configuration.ApiClient.ParameterToString(aasIds)); // form parameter
-            if (file != null) localVarFileParams.Add("file", this.Configuration.ApiClient.ParameterToFile("file", file));
+            if (file != null) localVarFileParams.Add("file", file);
             if (fileName != null) localVarFormParams.Add("fileName", this.Configuration.ApiClient.ParameterToString(fileName)); // form parameter
 
             // make the HTTP request
@@ -1087,7 +1087,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>Task of void</returns>
-        public async System.Threading.Tasks.Task PutAASXByPackageIdAsync(List<string> aasIds, byte[] file, string fileName, string packageId)
+        public async System.Threading.Tasks.Task PutAASXByPackageIdAsync(List<string> aasIds, FileParameter file, string fileName, string packageId)
         {
             await PutAASXByPackageIdAsyncWithHttpInfo(aasIds, file, fileName, packageId);
 
@@ -1102,7 +1102,7 @@ namespace IO.Swagger.Api
         /// <param name="fileName"></param>
         /// <param name="packageId">The Package Id (BASE64-URL-encoded)</param>
         /// <returns>Task of ApiResponse</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<Object>> PutAASXByPackageIdAsyncWithHttpInfo(List<string> aasIds, byte[] file, string fileName, string packageId)
+        public async System.Threading.Tasks.Task<ApiResponse<Object>> PutAASXByPackageIdAsyncWithHttpInfo(List<string> aasIds, FileParameter file, string fileName, string packageId)
         {
             // verify the required parameter 'aasIds' is set
             if (aasIds == null)
@@ -1140,7 +1140,7 @@ namespace IO.Swagger.Api
 
             if (packageId != null) localVarPathParams.Add("packageId", this.Configuration.ApiClient.ParameterToString(packageId)); // path parameter
             if (aasIds != null) localVarFormParams.Add("aasIds", this.Configuration.ApiClient.ParameterToString(aasIds)); // form parameter
-            if (file != null) localVarFileParams.Add("file", this.Configuration.ApiClient.ParameterToFile("file", file));
+            if (file != null) localVarFileParams.Add("file", file);
             if (fileName != null) localVarFormParams.Add("fileName", this.Configuration.ApiClient.ParameterToString(fileName)); // form parameter
 
             // make the HTTP request
