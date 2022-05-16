@@ -295,7 +295,7 @@ namespace AasxPackageLogic.PackageCentral
                     _runtimeOptions?.ProgressChanged(PackCntRuntimeOptions.Progress.Ongoing, _content.Length, uploaded);
                 }
             }
-            _runtimeOptions?.ProgressChanged( PackCntRuntimeOptions.Progress.Final, _content.Length, uploaded);
+            _runtimeOptions?.ProgressChanged(PackCntRuntimeOptions.Progress.Final, _content.Length, uploaded);
 
         }
     }
