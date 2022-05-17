@@ -285,7 +285,7 @@ namespace AasxIntegrationBase
 
         public object CheckForLogMessage()
         {
-            throw new NotImplementedException();
+            return _log?.PopLastShortTermPrint();
         }
 
         public AasxPluginActionDescriptionBase[] ListActions()

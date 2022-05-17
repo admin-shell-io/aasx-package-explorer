@@ -839,7 +839,7 @@ namespace AasxIntegrationBase.AasForms
             }
 
             uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
-                setWrap: true,
+                textWrapping: AnyUiTextWrapping.Wrap,
                 content: $"{desc?.FormInfo}");
 
             return g;
@@ -918,7 +918,7 @@ namespace AasxIntegrationBase.AasForms
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center,
                         horizontalAlignment: AnyUiHorizontalAlignment.Right,
-                        setWrap: true, margin: new AnyUiThickness(0,0,4,0),
+                        textWrapping: AnyUiTextWrapping.Wrap, margin: new AnyUiThickness(0,0,4,0),
                         content: "('+' to add language set)");
 
                 // "Plus" in first row
@@ -1672,7 +1672,7 @@ namespace AasxIntegrationBase.AasForms
             {
                 uitk.AddSmallBasicLabelTo(g, 0, 2, 
                     foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
-                    setWrap: true, margin: new AnyUiThickness(2.0, 4.0, 0.0, 0.0),
+                    textWrapping: AnyUiTextWrapping.Wrap, margin: new AnyUiThickness(2.0, 4.0, 0.0, 0.0),
                     content: "(add at least one language)");
                 return;
             }

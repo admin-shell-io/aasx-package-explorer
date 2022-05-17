@@ -444,6 +444,7 @@ namespace AasxPluginTechnicalData
                         uitk.AddSmallBasicLabelTo(clrgi, 0, 1, margin: new AnyUiThickness(1),
                             horizontalAlignment: AnyUiHorizontalAlignment.Right,
                             horizontalContentAlignment: AnyUiHorizontalAlignment.Right,
+                            textWrapping: AnyUiTextWrapping.NoWrap,
                             fontSize: 1.1f,
                             setBold: false,
                             content: clr[i].Version);
@@ -709,6 +710,7 @@ namespace AasxPluginTechnicalData
 
             // fill
             uitk.AddSmallBasicLabelTo(outer, 0, 1,
+                textWrapping: AnyUiTextWrapping.NoWrap,
                 fontSize: 1.0f,
                 content: validDate);
 

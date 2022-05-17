@@ -16,30 +16,29 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 using Newtonsoft.Json;
+using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
+    [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    // ReSharper disable UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
-    // ReSharper enable UnusedType.Global
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance _log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
         private AasxPluginImageMap.ImageMapOptions _options = new AasxPluginImageMap.ImageMapOptions();
 
         private AasxPluginImageMap.ImageMapControl _viewerControl = null;
 
-        private AasxPluginImageMap.ImageMapAnyUiControl _anyUiControl = null;
-
-        public static string PluginName = "AasxPluginImageMap";
-
-        public string GetPluginName()
+        public class Session : PluginSessionBase
         {
-            return PluginName;
+            public AasxPluginImageMap.ImageMapAnyUiControl AnyUiControl = null;
         }
 
-        public void InitPlugin(string[] args)
+        static AasxPlugin()
+        {
+            PluginName = "AasxPluginImageMap";
+        }
+
+        public new void InitPlugin(string[] args)
         {
             // start ..
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
@@ -62,12 +61,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
         }
 
-        public object CheckForLogMessage()
-        {
-            return _log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
             _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
@@ -95,11 +89,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(new AasxPluginActionDescriptionBase(
                 "update-anyui-visual-extension",
                 "When called, updated already presented AnyUI panel with some arguments."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "dispose-anyui-visual-extension",
+                "When called, will dispose the plugin data associated with given session id."));
 
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -175,34 +172,55 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             if (action == "fill-anyui-visual-extension")
             {
-                // arguments
-                if (args == null || args.Length < 3)
+                // arguments (package, submodel, panel, display-context, session-id)
+                if (args == null || args.Length < 5)
                     return null;
 
-                // call
-                _anyUiControl = AasxPluginImageMap.ImageMapAnyUiControl.FillWithAnyUiControls(
+                // create session and call
+                var session = _sessions.CreateNewSession<Session>(args[4]);
+                session.AnyUiControl = AasxPluginImageMap.ImageMapAnyUiControl.FillWithAnyUiControls(
                     _log, args[0], args[1], _options, _eventStack, args[2], args[3]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = _anyUiControl;
+                res.obj = session.AnyUiControl;
                 return res;
             }
 
             if (action == "update-anyui-visual-extension"
-                && _anyUiControl != null)
+                && _sessions != null)
             {
-                // arguments
-                if (args == null || args.Length < 2)
+                // arguments (panel, display-context, session-id)
+                if (args == null || args.Length < 3)
                     return null;
 
-                // call
-                _anyUiControl.Update(args);
+                if (_sessions.AccessSession(args[2], out Session session))
+                {
+                    // call
+                    session.AnyUiControl.Update(args);
 
-                // give object back
-                var res = new AasxPluginResultBaseObject();
-                res.obj = 42;
-                return res;
+                    // give object back
+                    var res = new AasxPluginResultBaseObject();
+                    res.obj = 42;
+                    return res;
+                }
+            }
+
+            if (action == "dispose-anyui-visual-extension"
+                && _sessions != null)
+            {
+                // arguments (session-id)
+                if (args == null || args.Length < 1)
+                    return null;
+
+                if (_sessions.AccessSession(args[0], out Session session))
+                {
+                    // dispose all ressources
+                    ;
+
+                    // remove
+                    _sessions.Remove(args[0]);
+                }
             }
 
             if (action == "fill-panel-visual-extension")

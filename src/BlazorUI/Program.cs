@@ -198,7 +198,7 @@ namespace BlazorUI
             loadAasx(bi, contentFn);
         }
 
-        public static void loadOptionsAndPlugins()
+        public static void loadOptionsAndPlugins(string[] args)
         {
             // basically copied from AASX Package Explorer
             var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
@@ -207,6 +207,34 @@ namespace BlazorUI
                 System.IO.Path.GetDirectoryName(exePath),
                 System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
 
+            var pathToDefaultRepo = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".repo.json");
+
+            // do a mini argument parsing
+
+            if (args != null)
+            {
+                for (int index = 0; index < args.Length; index++)
+                {
+                    var arg = args[index].Trim().ToLower();
+                    var morearg = (args.Length - 1) - index;
+
+                    // commands with 1 argument
+                    if (arg == "-aasxrepo" && morearg > 0)
+                    {
+                        // parse
+                        pathToDefaultRepo = System.IO.Path.Combine(
+                            System.IO.Path.GetDirectoryName(exePath), args[index + 1]);
+
+                        // next arg
+                        index++;
+                        continue;
+                    }
+                }
+            }
+
+            // use these findings
             Console.WriteLine("Reading options from: {0} ..", pathToDefaultOptions);
 
             var optionsInformation = new OptionsInformation();
@@ -246,19 +274,17 @@ namespace BlazorUI
 
             Plugins.LoadedPlugins = Plugins.TryActivatePlugins(Options.Curr.PluginDll);
 
-            // load repot
-            var pathToDefaultRepo = System.IO.Path.Combine(
-                System.IO.Path.GetDirectoryName(exePath),
-                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".repo.json");
+            // load repo
             if (File.Exists(pathToDefaultRepo))
             {
+                Console.WriteLine("Reading repository from: {0} ..", pathToDefaultRepo);
                 Repo = PackageContainerListFactory.GuessAndCreateNew(pathToDefaultRepo);
             }
         }
 
         public static void Main(string[] args)
         {
-            loadOptionsAndPlugins();
+            loadOptionsAndPlugins(args);
             CreateHostBuilder(args).Build().Run();
         }
 

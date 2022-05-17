@@ -449,7 +449,7 @@ namespace AasxPackageExplorer
                         {
                             var uires = vepe.thePlugin.InvokeAction(
                                 "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable, 
-                                stack, _displayContext);
+                                stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf);
                         }
                         catch (Exception ex)
                         {

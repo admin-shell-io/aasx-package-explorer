@@ -410,7 +410,8 @@ namespace AnyUi
         public AnyUiTextBlock AddSmallBasicLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false,
-            double? fontSize = null, int? colSpan = null, bool setWrap = false, bool setHyperLink = false,
+            double? fontSize = null, int? colSpan = null, 
+            AnyUiTextWrapping? textWrapping = null, bool setHyperLink = false,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
             AnyUiHorizontalAlignment? horizontalAlignment = null,
@@ -438,8 +439,8 @@ namespace AnyUi
                 lab.FontWeight = AnyUiFontWeight.Bold;
             if (fontSize != null)
                 lab.FontSize = fontSize;
-            if (setWrap)
-                lab.TextWrapping = AnyUiTextWrapping.Wrap;
+            if (textWrapping.HasValue)
+                lab.TextWrapping = textWrapping.Value;
             if (verticalAlignment.HasValue)
                 lab.VerticalAlignment = verticalAlignment.Value;
             if (verticalContentAlignment.HasValue)

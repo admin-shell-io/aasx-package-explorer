@@ -604,9 +604,17 @@
             {
                 // try to load files?
                 Program.loadAasxFiles(bi, load: false);
+                string newLoad = null;
 
+                if (Program.Repo?.FileMap?.Count > 0
+                    && aasIndex >= 0 && aasIndex < Program.Repo.FileMap.Count)
+                {
+                    var repoFile = Program.Repo.FileMap[aasIndex];
+                    newLoad = Program.Repo.GetFullItemLocation(repoFile.Location);
+                }
+                else
                 if (bi.repository?.FileMap?.Count > 0
-                    && aasIndex >= 0 && aasIndex < bi.repository.FileMap?.Count)
+                    && aasIndex >= 0 && aasIndex < bi.repository.FileMap.Count)
                 {
                     var repoFile = bi.repository.FileMap[aasIndex];
                     bi.container = PackageContainerFactory.GuessAndCreateFor(bi._packageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
@@ -620,22 +628,28 @@
                 if (bi.aasxFiles?.Length > 0
                     && aasIndex >= 0 && aasIndex < bi.aasxFiles.Length)
                 {
+                    newLoad = bi.aasxFiles[aasIndex];
+                }
+
+                if (newLoad != null && System.IO.File.Exists(newLoad))
+                {
                     InvokeAsync(() =>
                     {
-                        Program.loadAasx(bi, bi.aasxFiles[aasIndex]);
+                        Program.loadAasx(bi, newLoad);
                         Program.signalNewData(3, bi.sessionNumber);
-                    // StateHasChanged();
 
-                    // dísable features in MainLayout?
-                    if (Layout != null && header >= 0 && header <= 2)
-                            Layout.ShowHeader = header;
+                        // disable features in MainLayout?
+                        if (Layout != null && header >= 0 && header <= 2)
+                                Layout.ShowHeader = header;
 
-                    // only here, we can changed to SM / plugin
-                    Item itsm = null;
+                        // only here, we can changed to SM / plugin
+                        Item itsm = null;
+
                         if (smId != null && pluginTag != null)
                             itsm = Items?.FindSubmodelPlugin(smId, pluginTag);
                         else
                             itsm = Items?.FindSubmodel(smId);
+
                         if (itsm != null)
                         {
                             ListOfItems.AddToExpandNodesFor(ExpandedNodes, itsm);
