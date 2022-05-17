@@ -136,7 +136,7 @@ namespace AasxPluginImageMap
             RenderPanelOutside(view, uitk, foundRecs, package, sm);
         }
 
-        protected void RenderPanelOutside (
+        protected void RenderPanelOutside(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<ImageMapOptionsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
@@ -162,13 +162,13 @@ namespace AasxPluginImageMap
 
             AnyUiComboBox cbRegs = null;
             cbRegs = AnyUiUIElement.RegisterControl(
-                uitk.AddSmallComboBoxTo(bluebar, 0, 1,       
+                uitk.AddSmallComboBoxTo(bluebar, 0, 1,
                     minWidth: 110,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center,
                     margin: new AnyUiThickness(2, 4, 8, 4),
-                    items: new[] { "Operational", "Show clicks", "Show regions"},
+                    items: new[] { "Operational", "Show clicks", "Show regions" },
                     selectedIndex: _showRegions),
-                (o)=>
+                (o) =>
                 {
                     if (cbRegs?.SelectedIndex != null)
                         _showRegions = cbRegs.SelectedIndex.Value;
@@ -189,7 +189,7 @@ namespace AasxPluginImageMap
 
             // small spacer
             outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            uitk.AddSmallBasicLabelTo(outer, 1, 0, 
+            uitk.AddSmallBasicLabelTo(outer, 1, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -201,16 +201,16 @@ namespace AasxPluginImageMap
 
             // inside viewbox: a grid
             var innerGrid = uitk.Set(
-                    uitk.AddSmallGrid(rows: 1, cols: 1, colWidths: new [] {"*"}),
+                    uitk.AddSmallGrid(rows: 1, cols: 1, colWidths: new[] { "*" }),
                     colSpan: 5);
             _viewbox.Child = innerGrid;
 
             // add an image
             innerGrid.RowDefinitions[0].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-            _backgroundImage = (AnyUiImage) AnyUiUIElement.RegisterControl(
+            _backgroundImage = (AnyUiImage)AnyUiUIElement.RegisterControl(
                 uitk.Set(
                     uitk.AddSmallImageTo(innerGrid, 0, 0,
-                        stretch: AnyUiStretch.Uniform), 
+                        stretch: AnyUiStretch.Uniform),
                     eventMask: AnyUiEventMask.LeftDouble),
                 (o) =>
                 {
@@ -219,7 +219,7 @@ namespace AasxPluginImageMap
                         _clickedCoordinates.Add(ev.RelOrigin);
                         DisplayClickedCoordinates();
                     }
-                    
+
                     return new AnyUiLambdaActionPluginUpdateAnyUi()
                     {
                         PluginName = null, // do NOT call plugin!
@@ -337,9 +337,9 @@ namespace AasxPluginImageMap
                 RenderRegions(forceTransparent: (_showRegions == 0));
         }
 
-#endregion
+        #endregion
 
-#region Business logic
+        #region Business logic
         //=============
 
         protected void SetBasicInfos()
@@ -487,7 +487,8 @@ namespace AasxPluginImageMap
                     res.Add(new AnyUiRectangle()
                     {
                         Tag = prect,
-                        X = pts[0], Y = pts[1],
+                        X = pts[0],
+                        Y = pts[1],
                         Width = pts[2] - pts[0],
                         Height = pts[3] - pts[1],
                         Fill = cols.Item1,
@@ -584,8 +585,10 @@ namespace AasxPluginImageMap
                     // construct widget
                     res.Add(new AnyUiPolygon()
                     {
-                        X = 0, Y = 0,
-                        Height = 2000, Width = 2000,
+                        X = 0,
+                        Y = 0,
+                        Height = 2000,
+                        Width = 2000,
                         Tag = ppoly,
                         Points = pc,
                         Fill = cols.Item1,
@@ -618,7 +621,7 @@ namespace AasxPluginImageMap
 
             // try sort in order not to click on the (large, rectangular) labels, but on the 
             // 'real' shapes
-            res  = res.OrderBy((o) => (o is AnyUiLabel) ? 0 : 1).ToList();
+            res = res.OrderBy((o) => (o is AnyUiLabel) ? 0 : 1).ToList();
 
             // set
             _canvas.Children = res;
@@ -706,7 +709,7 @@ namespace AasxPluginImageMap
 
                 // work on and conditionally substitute value
                 var work = "" + Value;
-                
+
                 if (Args?.colorset != null)
                 {
                     if (Args.colorset == ImageMapArguments.ColorSetType.Bool
@@ -739,7 +742,7 @@ namespace AasxPluginImageMap
 
                     if (Args.colorset == ImageMapArguments.ColorSetType.Blend
                         && Args.colors != null && Args.colors.Length >= 2
-                        && (Args.level1 - Args.level0) > 0.0001 )
+                        && (Args.level1 - Args.level0) > 0.0001)
                     {
                         // try eval double value
                         var dbl = EvalAsDouble();
@@ -946,8 +949,10 @@ namespace AasxPluginImageMap
                     // construct widget
                     backShape = new AnyUiPolygon()
                     {
-                        X = 0, Y = 0,
-                        Height = 2000, Width = 2000,
+                        X = 0,
+                        Y = 0,
+                        Height = 2000,
+                        Width = 2000,
                         Tag = ppoly,
                         Points = pc
                     };
@@ -1030,9 +1035,9 @@ namespace AasxPluginImageMap
             return true;
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -1052,9 +1057,9 @@ namespace AasxPluginImageMap
             RenderFullView(_panel, _uitk, _package, _submodel);
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
@@ -1076,12 +1081,12 @@ namespace AasxPluginImageMap
             }
         }
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
 
-#endregion
+        #endregion
     }
 }

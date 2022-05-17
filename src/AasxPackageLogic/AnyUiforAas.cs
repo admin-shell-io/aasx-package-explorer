@@ -45,7 +45,7 @@ namespace AasxPackageLogic
     }
 
     // public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
-    
+
     public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionRedrawAllElementsBase
     {
         public DispEditHighlight.HighlightFieldInfo HighlightField = null;
@@ -98,7 +98,7 @@ namespace AasxPackageLogic
         public AdminShell.Reference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
-    }   
+    }
 
     //
     // Dialogues (Flyovers) involving specific AAS entities

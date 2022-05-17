@@ -45,7 +45,7 @@ namespace BlazorUI
             public AnyUiLambdaActionBase signalNewLambdaAction;
             public bool onlyUpdateAasxPanel;
 
-            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0, 
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0,
                 AnyUiLambdaActionBase newLambdaAction = null,
                 bool onlyUpdatePanel = false)
             {
@@ -125,7 +125,7 @@ namespace BlazorUI
         {
             signalNewDataMode = mode;
             NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(
-                mode, sessionNumber, 
+                mode, sessionNumber,
                 newLambdaAction, onlyUpdatePanel: onlyUpdateAasxPanel));
         }
 

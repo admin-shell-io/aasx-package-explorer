@@ -81,7 +81,7 @@ namespace BlazorUI.Data
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
         }
-        
+
         public void Dispose()
         {
             AnyUiDisplayContextHtml.deleteSession(sessionNumber);

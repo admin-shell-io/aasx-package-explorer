@@ -177,7 +177,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (_shelfControl != null)
                     _shelfControl.HandleEventReturn(erb);
 
-                if (args.Length >= 2 
+                if (args.Length >= 2
                     && _sessions.AccessSession(args[1], out Session session)
                     && session.AnyUiControl != null)
                 {

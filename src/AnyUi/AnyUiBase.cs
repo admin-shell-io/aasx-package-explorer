@@ -31,7 +31,7 @@ namespace AnyUi
     /// AnyUI can be rendered to different platforms
     /// </summary>
     public enum AnyUiTargetPlatform { None = 0, Wpf = 1, Browser = 2 }
-        
+
     public enum AnyUiGridUnitType { Auto = 0, Pixel = 1, Star = 2 }
 
     public enum AnyUiHorizontalAlignment { Left = 0, Center = 1, Right = 2, Stretch = 3 }
@@ -344,9 +344,9 @@ namespace AnyUi
 
         public AnyUiRect(AnyUiRect other)
         {
-            X = other.X; 
-            Y = other.Y; 
-            Width = other.Width; 
+            X = other.X;
+            Y = other.Y;
+            Width = other.Width;
             Height = other.Height;
         }
 
@@ -397,7 +397,7 @@ namespace AnyUi
                 X = double.MaxValue,
                 Y = double.MaxValue
             };
-            
+
             foreach (var p in this)
             {
                 if (p.X < res.X)
@@ -560,7 +560,7 @@ namespace AnyUi
         /// <summary>
         /// Serves as alpha-numeric name to later bind specific implementations to it
         /// </summary>
-        public string Name = null;        
+        public string Name = null;
 
         /// <summary>
         /// If true, can be skipped when rendered into a browser
@@ -718,8 +718,11 @@ namespace AnyUi
         }
     }
 
-    public enum AnyUiEventMask { None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4,
-        MouseAll = LeftDown + LeftDouble }
+    public enum AnyUiEventMask
+    {
+        None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4,
+        MouseAll = LeftDown + LeftDouble
+    }
 
     public class AnyUiEventData
     {
@@ -730,7 +733,7 @@ namespace AnyUi
 
         public AnyUiEventData() { }
 
-        public AnyUiEventData(AnyUiEventMask mask, object source, int clickCount = 1, 
+        public AnyUiEventData(AnyUiEventMask mask, object source, int clickCount = 1,
             AnyUiPoint? relOrigin = null)
         {
             Mask = mask;
@@ -754,7 +757,7 @@ namespace AnyUi
 
         public object Tag = null;
 
-        public AnyUiEventMask EmitEvent;        
+        public AnyUiEventMask EmitEvent;
     }
 
     /// <summary>
@@ -773,8 +776,8 @@ namespace AnyUi
 
     public class AnyUiRectangle : AnyUiShape
     {
-        public override AnyUiRect FindBoundingBox() => 
-            new AnyUiRect(X, Y, Width, Height );
+        public override AnyUiRect FindBoundingBox() =>
+            new AnyUiRect(X, Y, Width, Height);
 
         public override bool IsHit(AnyUiPoint pt) =>
             (pt.X >= this.X) && (pt.X <= this.X + this.Width)
@@ -907,12 +910,13 @@ namespace AnyUi
     public class AnyUiPanel : AnyUiFrameworkElement, IEnumerateChildren, IGetBackground
     {
         public AnyUiBrush Background;
-        
+
         private List<AnyUiUIElement> _children = new List<AnyUiUIElement>();
-        public List<AnyUiUIElement> Children { 
-            get { return _children; } 
-            set { _children = value; Touch(); } 
-        } 
+        public List<AnyUiUIElement> Children
+        {
+            get { return _children; }
+            set { _children = value; Touch(); }
+        }
 
         public T Add<T>(T elem) where T : AnyUiUIElement
         {
@@ -951,7 +955,7 @@ namespace AnyUi
             foreach (var ch in Children)
                 if (ch.GridRow.HasValue && ch.GridRow.Value == row
                     && ch.GridColumn.HasValue && ch.GridColumn.Value == col)
-                    yield return ch;         
+                    yield return ch;
         }
 
         public AnyUiUIElement IsCoveredBySpanCell(
@@ -985,7 +989,7 @@ namespace AnyUi
                 {
                     // at least in ..
                     // .. but first check for root ..
-                    if (returnOnRootCell 
+                    if (returnOnRootCell
                         && ch.GridRow.Value == row && ch.GridColumn.Value == col)
                         return ch;
 
@@ -1091,8 +1095,8 @@ namespace AnyUi
     public class AnyUiLabel : AnyUiContentControl
     {
         public AnyUiThickness Padding;
-        public AnyUiFontWeight? FontWeight;
-        public string Content = null;
+        public new AnyUiFontWeight? FontWeight;
+        public new string Content = null;
     }
 
     public class AnyUiTextBlock : AnyUiControl
@@ -1156,7 +1160,7 @@ namespace AnyUi
     {
         public AnyUiThickness Padding;
 
-        public string Content = null;
+        public new string Content = null;
 
         public bool? IsChecked;
     }
@@ -1165,7 +1169,7 @@ namespace AnyUi
     {
         public AnyUiThickness Padding;
 
-        public string Content = null;
+        public new string Content = null;
         public string ToolTip = null;
 
         public AnyUiSpecialActionBase SpecialAction;

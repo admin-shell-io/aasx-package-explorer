@@ -98,7 +98,7 @@ namespace BlazorUI.Data
                             Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
                         && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower())
                         return ch;
-           
+
             // give back
             return res;
         }
@@ -111,13 +111,13 @@ namespace BlazorUI.Data
 
             return FindItems(this, (it) =>
             {
-            if (it?.parent == null || !(it.parent is Item parit))
-                return false;
-            return parit.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid
-                && it.Type == "Plugin"
-                && it.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
-                        Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
-                && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower();
+                if (it?.parent == null || !(it.parent is Item parit))
+                    return false;
+                return parit.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid
+                    && it.Type == "Plugin"
+                    && it.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                            Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
+                    && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower();
             }).FirstOrDefault();
         }
 
@@ -162,6 +162,7 @@ namespace BlazorUI.Data
                 }
             }
         }
+
         public void buildTree(blazorSessionService bi)
         {
             // interested plug-ins
@@ -188,98 +189,115 @@ namespace BlazorUI.Data
             bi.items = new ListOfItems();
             for (int i = 0; i < 1; i++)
             {
-                Item root = new Item();
-                root.envIndex = i;
                 if (bi.env != null)
                 {
-                    root.Text = bi.env.AasEnv.AdministrationShells[0].idShort;
-                    root.Tag = bi.env.AasEnv.AdministrationShells[0];
-                    if (true)
+                    // NEW (2022-05-17): iterate correctly over AAS, used Submodels
+                    foreach (var aas in bi.env.AasEnv.AdministrationShells)
                     {
+                        // access
+                        if (aas?.submodelRefs == null)
+                            continue;
+
+                        //
+                        // make a new AAS root
+                        //
+
+                        Item root = new Item();
+                        root.envIndex = i;
+                        root.Text = aas.idShort;
+                        root.Tag = aas;
                         List<Item> childs = new List<Item>();
-                        foreach (var sm in bi.env.AasEnv.Submodels)
+
+                        // find Submodels
+                        foreach (var smref in aas.submodelRefs)
                         {
-                            if (sm?.idShort != null)
+                            // access
+                            var sm = bi.env.AasEnv.FindSubmodel(smref);
+                            if (sm?.idShort == null)
+                                continue;
+
+                            // Submodel with parents
+                            sm.SetAllParents();
+
+                            // add Submodel
+                            var smItem = new Item()
                             {
-                                // Submodel with parents
-                                sm.SetAllParents();
+                                Referable = sm,
+                                envIndex = i,
+                                Text = sm.idShort,
+                                Tag = sm
+                            };
+                            childs.Add(smItem);
+                            List<Item> smChilds = new List<Item>();
 
-                                // add Submodel
-                                var smItem = new Item()
+                            // add some plugins?
+                            // check for visual extensions
+                            if (_pluginsToCheck != null)
+                                foreach (var lpi in _pluginsToCheck)
                                 {
-                                    Referable = sm,
-                                    envIndex = i,
-                                    Text = sm.idShort,
-                                    Tag = sm
-                                };
-                                childs.Add(smItem);
-                                List<Item> smChilds = new List<Item>();
-
-                                // add some plugins?
-                                // check for visual extensions
-                                if (_pluginsToCheck != null)
-                                    foreach (var lpi in _pluginsToCheck)
+                                    try
                                     {
-                                        try
+                                        var ext = lpi.InvokeAction(
+                                            "call-check-visual-extension", sm)
+                                            as AasxIntegrationBase.AasxPluginResultVisualExtension;
+                                        if (ext != null)
                                         {
-                                            var ext = lpi.InvokeAction(
-                                                "call-check-visual-extension", sm)
-                                                as AasxIntegrationBase.AasxPluginResultVisualExtension;
-                                            if (ext != null)
+                                            var piItem = new Item()
                                             {
-                                                var piItem = new Item()
-                                                {
-                                                    Referable = sm,
-                                                    envIndex = i,
-                                                    Text = "PLUGIN",
-                                                    Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance, 
-                                                                AasxIntegrationBase.AasxPluginResultVisualExtension>(bi.env, sm, lpi, ext),
-                                                    Type = "Plugin"
-                                                };
-                                                smChilds.Add(piItem);
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                                                Referable = sm,
+                                                envIndex = i,
+                                                Text = "PLUGIN",
+                                                Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance,
+                                                            AasxIntegrationBase.AasxPluginResultVisualExtension>(bi.env, sm, lpi, ext),
+                                                Type = "Plugin"
+                                            };
+                                            smChilds.Add(piItem);
                                         }
                                     }
-
-                                // add SMEs
-                                if (sm.submodelElements != null)
-                                    foreach (var sme in sm.submodelElements)
+                                    catch (Exception ex)
                                     {
-                                        var smeItem = new Item()
-                                        {
-                                            Referable = sme?.submodelElement,
-                                            envIndex = i,
-                                            Text = sme.submodelElement.idShort,
-                                            Tag = sme.submodelElement,
-                                            ParentContainer = sm,
-                                            Wrapper = sme
-                                        };
-                                        smChilds.Add(smeItem);
-                                        if (sme.submodelElement is SubmodelElementCollection)
-                                        {
-                                            var smec = sme.submodelElement as SubmodelElementCollection;
-                                            createSMECItems(smeItem, smec, i);
-                                        }
-                                        if (sme.submodelElement is Operation)
-                                        {
-                                            var o = sme.submodelElement as Operation;
-                                            createOperationItems(smeItem, o, i);
-                                        }
-                                        if (sme.submodelElement is Entity)
-                                        {
-                                            var e = sme.submodelElement as Entity;
-                                            createEntityItems(smeItem, e, i);
-                                        }
+                                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                                     }
-                                smItem.Childs = smChilds;
-                                foreach (var c in smChilds)
-                                    c.parent = smItem;
-                            }
+                                }
+
+                            // add SMEs
+                            if (sm.submodelElements != null)
+                                foreach (var sme in sm.submodelElements)
+                                {
+                                    var smeItem = new Item()
+                                    {
+                                        Referable = sme?.submodelElement,
+                                        envIndex = i,
+                                        Text = sme.submodelElement.idShort,
+                                        Tag = sme.submodelElement,
+                                        ParentContainer = sm,
+                                        Wrapper = sme
+                                    };
+                                    smChilds.Add(smeItem);
+                                    if (sme.submodelElement is SubmodelElementCollection)
+                                    {
+                                        var smec = sme.submodelElement as SubmodelElementCollection;
+                                        createSMECItems(smeItem, smec, i);
+                                    }
+                                    if (sme.submodelElement is Operation)
+                                    {
+                                        var o = sme.submodelElement as Operation;
+                                        createOperationItems(smeItem, o, i);
+                                    }
+                                    if (sme.submodelElement is Entity)
+                                    {
+                                        var e = sme.submodelElement as Entity;
+                                        createEntityItems(smeItem, e, i);
+                                    }
+                                }
+
+                            smItem.Childs = smChilds;
+                            foreach (var c in smChilds)
+                                c.parent = smItem;
                         }
+
+                        // post process for AAS root
+
                         root.Childs = childs;
                         foreach (var c in childs)
                             c.parent = root;

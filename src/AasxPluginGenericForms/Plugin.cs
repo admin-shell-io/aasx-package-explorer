@@ -25,7 +25,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     public class AasxPlugin : AasxPluginBase
     {
         private AasxPluginGenericForms.GenericFormOptions _options = new AasxPluginGenericForms.GenericFormOptions();
-        
+
         private AasxPluginGenericForms.GenericFormsControl _formsControl = null;
 
         public class Session : PluginSessionBase

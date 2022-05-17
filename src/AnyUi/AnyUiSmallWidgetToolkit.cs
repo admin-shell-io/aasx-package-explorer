@@ -7,8 +7,8 @@ using System.Text.RegularExpressions;
 namespace AnyUi
 {
     public class AnyUiSmallWidgetToolkit
-    {       
-        public AnyUiGrid AddSmallGrid(int rows, int cols, 
+    {
+        public AnyUiGrid AddSmallGrid(int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,
             AnyUiThickness margin = null, AnyUiBrush background = null)
         {
@@ -50,7 +50,7 @@ namespace AnyUi
         }
 
         public T AddSmallFrameworkElementTo<T>(
-            AnyUiGrid g, int row, int col, 
+            AnyUiGrid g, int row, int col,
             T fe,
             AnyUiThickness margin = null,
             int? colSpan = null, int? rowSpan = null)
@@ -162,7 +162,7 @@ namespace AnyUi
 
         public AnyUiGrid AddSmallGridTo(
             AnyUiGrid g, int row, int col,
-            int rows, int cols, 
+            int rows, int cols,
             string[] colWidths = null, string[] rowHeights = null,
             AnyUiThickness margin = null, AnyUiBrush background = null)
         {
@@ -275,7 +275,7 @@ namespace AnyUi
         public AnyUiComboBox AddSmallComboBoxTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string text = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
-            int minWidth = -1, int maxWidth = -1, 
+            int minWidth = -1, int maxWidth = -1,
             string[] items = null, int? selectedIndex = null,
             bool isEditable = false,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
@@ -397,7 +397,7 @@ namespace AnyUi
                 cb.Background = background;
             cb.Content = content;
             cb.IsChecked = isChecked;
-            if (verticalAlignment!= null)
+            if (verticalAlignment != null)
                 cb.VerticalAlignment = verticalAlignment.Value;
             if (verticalContentAlignment != null)
                 cb.VerticalContentAlignment = verticalContentAlignment.Value;
@@ -410,7 +410,7 @@ namespace AnyUi
         public AnyUiTextBlock AddSmallBasicLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
             string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, bool setBold = false,
-            double? fontSize = null, int? colSpan = null, 
+            double? fontSize = null, int? colSpan = null,
             AnyUiTextWrapping? textWrapping = null, bool setHyperLink = false,
             AnyUiVerticalAlignment? verticalAlignment = null,
             AnyUiVerticalAlignment? verticalContentAlignment = null,
@@ -462,7 +462,7 @@ namespace AnyUi
         public T Set<T>(T fe,
             int? row = null, int? col = null,
             int? colSpan = null, int? rowSpan = null,
-            AnyUiThickness margin = null, 
+            AnyUiThickness margin = null,
             AnyUiBrush foreground = null,
             AnyUiBrush background = null,
             int? minWidth = null, int? maxWidth = null,

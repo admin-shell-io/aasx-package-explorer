@@ -246,7 +246,7 @@ namespace AasxIntegrationBase.AasForms
                 return;
 
             // adapt?
-            if (topBase.OuterPluginName != null  
+            if (topBase.OuterPluginName != null
                 && evt is AasxPluginEventReturnUpdateAnyUi update)
             {
                 update.PluginName = topBase.OuterPluginName;
@@ -645,7 +645,7 @@ namespace AasxIntegrationBase.AasForms
                         var ni = desc.CreateInstance(this);
                         if (ni != null)
                         {
-                            SubInstances.Add(ni);                            
+                            SubInstances.Add(ni);
                             return FormInstanceBase.NewLambdaUpdateUi(this);
                         }
                     }
@@ -654,7 +654,7 @@ namespace AasxIntegrationBase.AasForms
                 };
 
             var g = FormInstanceAnyUiHelper.RenderAnyUiHead(
-                view, uitk, desc, null, 
+                view, uitk, desc, null,
                 extraRows: SubInstances.Count,
                 plusButtonLambda: lambda);
 
@@ -708,7 +708,7 @@ namespace AasxIntegrationBase.AasForms
                 uitk.AddSmallBasicLabelTo(
                     g, row, 1, foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
                     margin: new AnyUiThickness(0.0, 4.0, 0.0, 0.0),
-                    content: $"#{1+si?.Index}");
+                    content: $"#{1 + si?.Index}");
 
                 // button
                 if (showButtonsMinus)
@@ -734,7 +734,7 @@ namespace AasxIntegrationBase.AasForms
                 // Note: make the panel as wide as possible (if multiplicity allows)
                 var outer = uitk.AddSmallStackPanelTo(
                     g, row, 2, colSpan: 2 + ((!showButtonsMinus && !showButtonPlus) ? 1 : 0));
-                
+
                 // need to make a visual separation, if multiple instances are possible
                 if (maxRows > 1)
                     outer.Background = AnyUiBrushes.LightGray;
@@ -742,7 +742,7 @@ namespace AasxIntegrationBase.AasForms
                 // inner panel
                 var inner = outer.Add(new AnyUi.AnyUiStackPanel());
                 inner.Background = AnyUiBrushes.White;
-                inner.Margin = new AnyUiThickness(4,4,4,0);
+                inner.Margin = new AnyUiThickness(4, 4, 4, 0);
 
                 // idShort
                 if (si.desc is FormDescSubmodelElement descsme
@@ -773,7 +773,7 @@ namespace AasxIntegrationBase.AasForms
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             FormDescReferable desc,
             AdminShell.Referable rf,
-            int ?extraRows = null,
+            int? extraRows = null,
             Func<object, AnyUiLambdaActionBase> plusButtonLambda = null,
             Func<object, AnyUiLambdaActionBase> expandButtonLambda = null)
         {
@@ -784,7 +784,7 @@ namespace AasxIntegrationBase.AasForms
             // create frame
             var g = view.Add(
                 uitk.AddSmallGrid(
-                    rows: 2 + (extraRows.HasValue ? extraRows.Value : 0), 
+                    rows: 2 + (extraRows.HasValue ? extraRows.Value : 0),
                     cols: 6,
                     colWidths: new[] { "2:", "20:", "*", "22:", "22:", "2:" }));
 
@@ -867,7 +867,7 @@ namespace AasxIntegrationBase.AasForms
             // create frame
             var g = view.Add(
                 uitk.AddSmallGrid(
-                    rows: 2 
+                    rows: 2
                         + (editIdShort ? 1 : 0)
                         + (editDesc ? 1 : 0)
                         + (editDesc && rf.description?.langString != null ? rf.description.langString.Count : 0),
@@ -879,7 +879,7 @@ namespace AasxIntegrationBase.AasForms
             // idShort
             if (editIdShort)
             {
-                uitk.AddSmallBasicLabelTo(g, row, 1, 
+                uitk.AddSmallBasicLabelTo(g, row, 1,
                     foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
                     verticalAlignment: AnyUiVerticalAlignment.Center,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center,
@@ -918,12 +918,12 @@ namespace AasxIntegrationBase.AasForms
                         verticalAlignment: AnyUiVerticalAlignment.Center,
                         verticalContentAlignment: AnyUiVerticalAlignment.Center,
                         horizontalAlignment: AnyUiHorizontalAlignment.Right,
-                        textWrapping: AnyUiTextWrapping.Wrap, margin: new AnyUiThickness(0,0,4,0),
+                        textWrapping: AnyUiTextWrapping.Wrap, margin: new AnyUiThickness(0, 0, 4, 0),
                         content: "('+' to add language set)");
 
                 // "Plus" in first row
                 AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row, 4, 
+                    uitk.AddSmallButtonTo(g, row, 4,
                         setHeight: 23.0, margin: new AnyUiThickness(1.0),
                         content: "\u2795"),
                         (o) =>
@@ -1487,7 +1487,7 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override 
+        public override
             void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
             // access
@@ -1509,8 +1509,8 @@ namespace AasxIntegrationBase.AasForms
             {
                 var editableMode = (pDesc.valueFromComboBoxIndex == null ||
                     pDesc.valueFromComboBoxIndex.Length < 1);
-                
-                MainControl = (AnyUiComboBox) AnyUiUIElement.RegisterControl(
+
+                MainControl = (AnyUiComboBox)AnyUiUIElement.RegisterControl(
                     uitk.AddSmallComboBoxTo(g, 0, 1,
                         margin: new AnyUiThickness(0, 2, 0, 2),
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
@@ -1520,7 +1520,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             if (!(MainControl is AnyUiComboBox mcb) || mcb.SelectedIndex == null)
                                 return new AnyUiLambdaActionNone();
-                   
+
                             var idx = mcb.SelectedIndex.Value;
                             var items = pDesc.valueFromComboBoxIndex;
                             if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
@@ -1670,7 +1670,7 @@ namespace AasxIntegrationBase.AasForms
             // no content? .. info on 1st row
             if (mlp.value?.langString == null || mlp.value.Count < 1)
             {
-                uitk.AddSmallBasicLabelTo(g, 0, 2, 
+                uitk.AddSmallBasicLabelTo(g, 0, 2,
                     foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
                     textWrapping: AnyUiTextWrapping.Wrap, margin: new AnyUiThickness(2.0, 4.0, 0.0, 0.0),
                     content: "(add at least one language)");
@@ -1893,7 +1893,7 @@ namespace AasxIntegrationBase.AasForms
                             new AasxIntegrationBase.AasxPluginResultEventSelectFile(),
                             (revt) =>
                             {
-                                if (revt is AasxPluginEventReturnSelectFile rsel 
+                                if (revt is AasxPluginEventReturnSelectFile rsel
                                     && rsel.FileNames != null && rsel.FileNames.Length > 0)
                                 {
                                     // do it
@@ -1904,7 +1904,7 @@ namespace AasxIntegrationBase.AasForms
                                     tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                 }
                             });
-                        
+
                         return new AnyUiLambdaActionNone();
                     });
         }
@@ -2033,7 +2033,7 @@ namespace AasxIntegrationBase.AasForms
                                     // send event to re-render
                                     tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                 }
-                            });                        
+                            });
 
                         return new AnyUiLambdaActionNone();
                     });
@@ -2179,14 +2179,14 @@ namespace AasxIntegrationBase.AasForms
                                 {
                                     if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                                     {
-                                    // do it
-                                    valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
-                                    Touch();
+                                        // do it
+                                        valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
+                                        Touch();
 
-                                    // send event to re-render
-                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
+                                        // send event to re-render
+                                        tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
                                     }
-                                });                            
+                                });
 
                             return new AnyUiLambdaActionNone();
                         });

@@ -59,10 +59,10 @@ namespace AasxIntegrationBase.AasForms
                     padding: new AnyUiThickness(2, 0, 2, 0),
                     content: "Fix missing CDs .."),
                 lambdaFixCds);
-                //(o) =>
-                //{
-                //    return ButtonTabPanels_Click("ButtonFixCDs");
-                //});
+            //(o) =>
+            //{
+            //    return ButtonTabPanels_Click("ButtonFixCDs");
+            //});
 
             uitk.AddSmallBasicLabelTo(header, 0, 2,
                 foreground: AnyUiBrushes.DarkBlue,
@@ -88,10 +88,10 @@ namespace AasxIntegrationBase.AasForms
                     padding: new AnyUiThickness(2, 0, 2, 0),
                     content: "Update to AAS"),
                 lambdaOK);
-                //(o) =>
-                //{
-                //    return ButtonTabPanels_Click("ButtonUpdate");
-                //});
+            //(o) =>
+            //{
+            //    return ButtonTabPanels_Click("ButtonUpdate");
+            //});
 
             // small spacer
             var space = uitk.AddSmallBasicLabelTo(outer, 1, 0,
@@ -107,7 +107,7 @@ namespace AasxIntegrationBase.AasForms
                 uitk.AddSmallScrollViewerTo(outer, 2, 0,
                     horizontalScrollBarVisibility: AnyUiScrollBarVisibility.Disabled,
                     verticalScrollBarVisibility: AnyUiScrollBarVisibility.Visible,
-                    flattenForTarget: AnyUiTargetPlatform.Browser, 
+                    flattenForTarget: AnyUiTargetPlatform.Browser,
                     initialScrollPosition: isc),
                 (o) =>
                 {

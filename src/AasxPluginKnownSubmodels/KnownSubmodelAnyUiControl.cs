@@ -119,7 +119,7 @@ namespace AasxPluginKnownSubmodels
             RenderPanelOutside(view, uitk, foundRecs, package, sm);
         }
 
-        protected void RenderPanelOutside (
+        protected void RenderPanelOutside(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<KnownSubmodelsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
@@ -149,7 +149,7 @@ namespace AasxPluginKnownSubmodels
 
             // small spacer
             outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            uitk.AddSmallBasicLabelTo(outer, 1, 0, 
+            uitk.AddSmallBasicLabelTo(outer, 1, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -172,7 +172,8 @@ namespace AasxPluginKnownSubmodels
 
             // content of the scroll viewer
             // need a stack panel to add inside
-            var inner = new AnyUiStackPanel() { 
+            var inner = new AnyUiStackPanel()
+            {
                 Orientation = AnyUiOrientation.Vertical,
                 Margin = new AnyUiThickness(2)
             };
@@ -209,7 +210,7 @@ namespace AasxPluginKnownSubmodels
 
             // make an grid with two columns, first a bit wider 
             var outer = brd.SetChild(uitk.AddSmallGrid(rows: 4, cols: 2,
-                            colWidths: new[] { "#", "*" }, 
+                            colWidths: new[] { "#", "*" },
                             rowHeights: new[] { "#", "#", "#", "#" },
                             background: AnyUiBrushes.White));
 
@@ -244,7 +245,7 @@ namespace AasxPluginKnownSubmodels
 
             // labels
             uitk.AddSmallBasicLabelTo(outer, 0, 1,
-                margin:new AnyUiThickness(8, 2, 0, 0),
+                margin: new AnyUiThickness(8, 2, 0, 0),
                 fontSize: 1.2f,
                 setBold: true,
                 content: "" + rec.Header);
@@ -271,7 +272,7 @@ namespace AasxPluginKnownSubmodels
                             preferInternalDisplay = true
                         };
                     return new AnyUiLambdaActionNone();
-                });            
+                });
 
         }
 

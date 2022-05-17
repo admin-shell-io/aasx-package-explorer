@@ -110,11 +110,11 @@ namespace BlazorUI
         {
             if (doNotSetIfNull && value == null)
                 return;
-            
+
             this.Add(new StyleElem(key, value));
         }
 
-        public void Set(string key, string value, 
+        public void Set(string key, string value,
             bool add = false,
             bool doNotSetIfNull = false)
         {
@@ -152,7 +152,7 @@ namespace BlazorUI
             return string.Join("; ", this.Select((se) => $"{se.Key}:{se.Value}"));
         }
 
-        public static StylePile operator + (StylePile sp, StyleElem elem)
+        public static StylePile operator +(StylePile sp, StyleElem elem)
         {
             sp.Add(elem);
             return sp;
@@ -226,7 +226,7 @@ namespace BlazorUI
                 if (padding.AllEqual)
                     Set("padding", $"{padding.Left}px", add: true);
                 else
-                    Set("padding", $"{padding.Top}px {padding.Right}px {padding.Bottom}px {padding.Left}px ", 
+                    Set("padding", $"{padding.Top}px {padding.Right}px {padding.Bottom}px {padding.Left}px ",
                         add: true);
             }
 
@@ -237,7 +237,7 @@ namespace BlazorUI
                 if (borderThickness.AllEqual)
                     Set("border-width", $"{borderThickness.Left}px", add: true);
                 else
-                    Set("border-width", 
+                    Set("border-width",
                         FormattableString.Invariant($"{borderThickness.Top}px {borderThickness.Right}px ") +
                         FormattableString.Invariant($"{borderThickness.Bottom}px {borderThickness.Left}px "),
                         add: true);
@@ -249,7 +249,7 @@ namespace BlazorUI
             if (cornerRadius.HasValue)
                 // in order to work properly, the table requieres: "border-collapse: separate;"
                 // note: radius itself needs to be much larger compared to WPF
-                Set("border-radius", FormattableString.Invariant($"{4.0*cornerRadius}px"), add: true);
+                Set("border-radius", FormattableString.Invariant($"{4.0 * cornerRadius}px"), add: true);
 
             if (textWrapping.HasValue && textWrapping.Value != AnyUiTextWrapping.NoWrap)
             {
@@ -335,7 +335,7 @@ namespace BlazorUI
 
             if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Left)
             {
-}
+            }
             else
             if (fe.HorizontalAlignment.HasValue && fe.HorizontalAlignment.Value == AnyUiHorizontalAlignment.Right)
             {

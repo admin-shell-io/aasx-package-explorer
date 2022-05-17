@@ -52,6 +52,20 @@ namespace AasxPluginKnownSubmodels
 
             opt.Records.Add(new KnownSubmodelsOptionsRecord()
             {
+                Header = "ZVEI Digital Nameplate (Version 1.0)",
+                Content = "This Submodel template aims at interoperable provision of information describing the " +
+                    "nameplate of the asset of the respective Asset Administration Shell. The intended use-case " +
+                    "is the provision of a standardized property structure within a digital nameplate, which " +
+                    "enables the interoperability of digital nameplates from different manufacturers.",
+                ImageLink = "AasxPluginKnownSubmodels.media\\SMT_ZveiDigitalNameplate10.png",
+                FurtherUrl = "https://github.com/admin-shell-io/id",
+                AllowSubmodelSemanticId = (new[] {
+                    AasxPredefinedConcepts.ZveiNameplateV10.Static.SM_Nameplate.GetSemanticKey()
+                }.ToList())
+            });
+
+            opt.Records.Add(new KnownSubmodelsOptionsRecord()
+            {
                 Header = "VDMA Article of trade information (Version 0.8)",
                 Content = "This Submodel template aims at an interoperable provision of information on articles of " +
                     "trade. These articles of trade are typically provided by manufacturers and suppliers, " +
@@ -60,7 +74,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaArticleOfTradeInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRI, 
+                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
                         "https://admin-shell.io/sandbox/vdma/article-information/0/8")
                 }.ToList())
             });

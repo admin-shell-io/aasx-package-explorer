@@ -448,12 +448,12 @@ namespace AasxPackageExplorer
                         try
                         {
                             var uires = vepe.thePlugin.InvokeAction(
-                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable, 
+                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
                                 stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf);
                         }
                         catch (Exception ex)
                         {
-                            Log.Singleton.Error(ex, 
+                            Log.Singleton.Error(ex,
                                 $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
                         }
 
@@ -478,7 +478,7 @@ namespace AasxPackageExplorer
                                 theMasterPanel.Children.Clear();
                                 if (vepe.thePlugin != null)
                                     result = vepe.thePlugin.InvokeAction(
-                                        "fill-panel-visual-extension", 
+                                        "fill-panel-visual-extension",
                                         vepe.thePackage, vepe.theReferable, theMasterPanel);
                             }
                             catch (Exception ex)
@@ -491,11 +491,11 @@ namespace AasxPackageExplorer
                         if (result == null)
                         {
                             // re-init display!
-    #if MONOUI
+#if MONOUI
                         stack = ClearDisplayDefautlStack();
-    #else
+#else
                             stack = new AnyUiStackPanel();
-    #endif
+#endif
 
                             // helping message
                             _helper.AddGroup(
@@ -598,7 +598,7 @@ namespace AasxPackageExplorer
                     DockPanel.SetDock(spwpf, Dock.Top);
                 }
                 _helper.ShowLastHighlights();
-                
+
                 theMasterPanel.Children.Add(spwpf);
 
                 // register key shortcuts
@@ -663,8 +663,8 @@ namespace AasxPackageExplorer
         }
 
         public void RedisplayRenderedRoot(
-            AnyUiUIElement root, 
-            AnyUiRenderMode mode, 
+            AnyUiUIElement root,
+            AnyUiRenderMode mode,
             bool useInnerGrid = false)
         {
             // safe

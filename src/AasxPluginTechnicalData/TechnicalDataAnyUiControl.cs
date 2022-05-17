@@ -125,7 +125,7 @@ namespace AasxPluginTechnicalData
             RenderPanelOutside(view, uitk, theDefs, package, sm, defaultLang);
         }
 
-        protected void RenderPanelOutside (
+        protected void RenderPanelOutside(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
             AdminShellPackageEnv package,
@@ -165,7 +165,7 @@ namespace AasxPluginTechnicalData
                         margin: new AnyUiThickness(2), minWidth: 120,
                         padding: new AnyUiThickness(2, 0, 2, 0),
                         items: langs.ToArray(),
-                        selectedIndex : _selectedLangIndex),
+                        selectedIndex: _selectedLangIndex),
                     maxHeight: 21),
                 (o) =>
                 {
@@ -201,7 +201,7 @@ namespace AasxPluginTechnicalData
 
             // small spacer
             outer.RowDefinitions[3] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            uitk.AddSmallBasicLabelTo(outer, 3, 0, 
+            uitk.AddSmallBasicLabelTo(outer, 3, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -224,7 +224,8 @@ namespace AasxPluginTechnicalData
 
             // content of the scroll viewer
             // need a stack panel to add inside
-            var inner = new AnyUiStackPanel() { 
+            var inner = new AnyUiStackPanel()
+            {
                 Orientation = AnyUiOrientation.Vertical,
                 Margin = new AnyUiThickness(2)
             };
@@ -293,7 +294,7 @@ namespace AasxPluginTechnicalData
                 var prodCode = "" +
                     smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
                         theDefs.CD_ManufacturerOrderCode.GetSingleKey())?.value;
-                
+
                 var partNumber = "" +
                     smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
                         theDefs.CD_ManufacturerPartNumber.GetSingleKey())?.value;
@@ -371,7 +372,7 @@ namespace AasxPluginTechnicalData
                     // make an outer grid, very simple grid of two rows: header & body
                     var pilGrid = uitk.AddSmallGridTo(outer, 3, 0, rows: 1, cols: pil.Count /* , colWidths: new[] { "*" } */);
 
-                    for (int i=0; i<pil.Count; i++)
+                    for (int i = 0; i < pil.Count; i++)
                     {
                         uitk.Set(
                             uitk.AddSmallImageTo(pilGrid, 0, 0 + i,
@@ -422,7 +423,7 @@ namespace AasxPluginTechnicalData
                 if (clr.Count > 0)
                 {
                     // make an outer grid, very simple grid of two rows: header & body
-                    var clrGrid = uitk.AddSmallGridTo(outer, 3, 1, rows: clr.Count, cols: 1, colWidths: new[] { "*" } );
+                    var clrGrid = uitk.AddSmallGridTo(outer, 3, 1, rows: clr.Count, cols: 1, colWidths: new[] { "*" });
 
                     for (int i = 0; i < clr.Count; i++)
                     {
@@ -453,7 +454,7 @@ namespace AasxPluginTechnicalData
                             horizontalAlignment: AnyUiHorizontalAlignment.Center,
                             horizontalContentAlignment: AnyUiHorizontalAlignment.Center,
                             fontSize: 1.4f,
-                            setBold: true, 
+                            setBold: true,
                             colSpan: 2,
                             content: clr[i].ClassTxt);
                     }
@@ -486,7 +487,7 @@ namespace AasxPluginTechnicalData
 
             // ok
             var grid = view.Add(uitk.AddSmallGrid(rows: rows.Length, cols: 3, colWidths: new[] { "*", "*", "*" }));
-            for (int ri=0; ri < rows.Length; ri++)
+            for (int ri = 0; ri < rows.Length; ri++)
             {
                 // access
                 var row = rows[ri];
@@ -509,7 +510,7 @@ namespace AasxPluginTechnicalData
                 {
                     // normal row, 3 bordered cells
                     var cols = new[] { row.Name, row.Semantics, row.Value };
-                    for (int ci=0; ci<3; ci++)
+                    for (int ci = 0; ci < 3; ci++)
                     {
                         var brd = uitk.AddSmallBorderTo(grid, ri, ci,
                             margin: (ci == 0) ? new AnyUiThickness(0, -1, 0, 0) : new AnyUiThickness(-1, -1, 0, 0),
@@ -594,10 +595,10 @@ namespace AasxPluginTechnicalData
                     rows.Add(new TripleRowData()
                     {
                         Heading = "" + dispName,
-                        HeadMargin= new AnyUiThickness(-2 + 4*depth, 6, 0, 4),
+                        HeadMargin = new AnyUiThickness(-2 + 4 * depth, 6, 0, 4),
                         FontSize = 1.4f,
                         FontWeight = AnyUiFontWeight.Bold
-                    }); 
+                    });
 
                     // recurse into that (again, new group)
                     TableAddPropertyRows_Recurse(
@@ -612,7 +613,7 @@ namespace AasxPluginTechnicalData
                     rows.Add(new TripleRowData()
                     {
                         Heading = "" + dispName,
-                        HeadMargin = new AnyUiThickness(-2 + 4*depth, 4, 0, 2),
+                        HeadMargin = new AnyUiThickness(-2 + 4 * depth, 4, 0, 2),
                         FontSize = 1.2f,
                         FontWeight = AnyUiFontWeight.Bold
                     });
@@ -704,7 +705,7 @@ namespace AasxPluginTechnicalData
             }
 
             // make an grid with two columns, first a bit wider 
-            var outer = view.Add(uitk.AddSmallGrid(rows: 4, cols: 2, 
+            var outer = view.Add(uitk.AddSmallGrid(rows: 4, cols: 2,
                             colWidths: new[] { "*", "#" }, background: AnyUiBrushes.White));
             outer.ColumnDefinitions[1].MaxWidth = 200;
 
@@ -714,7 +715,7 @@ namespace AasxPluginTechnicalData
                 fontSize: 1.0f,
                 content: validDate);
 
-            for (int i=0; i<tsl.Count; i++)
+            for (int i = 0; i < tsl.Count; i++)
                 uitk.AddSmallBasicLabelTo(outer, 0 + i, 0,
                 fontSize: 1.0f,
                 content: tsl[i]);
