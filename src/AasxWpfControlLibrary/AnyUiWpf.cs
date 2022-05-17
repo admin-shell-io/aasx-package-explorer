@@ -49,7 +49,7 @@ namespace AnyUi
         /// <summary>
         /// Initiates a drop operation with one ore more files given by filenames.
         /// </summary>
-        public override void DoDragDropFiles(AnyUiUIElement elem, string[] files) 
+        public override void DoDragDropFiles(AnyUiUIElement elem, string[] files)
         {
             // access 
             if (files == null || files.Length < 1)
@@ -288,7 +288,7 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiFrameworkElement), typeof(FrameworkElement), (a, b, mode) =>
                 {
-                    if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf 
+                    if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf
                         && mode == AnyUiRenderMode.All)
                     {
                         if (cntl.Margin != null)
@@ -330,7 +330,7 @@ namespace AnyUi
                                                 cntl.setValueLambda?.Invoke(
                                                     new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
                                         }
-                                        
+
                                         if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
                                             && e5.ClickCount == 2)
                                         {
@@ -722,7 +722,7 @@ namespace AnyUi
                 new RenderRec(typeof(AnyUiSelectableTextBlock), typeof(SelectableTextBlock), (a, b, mode) =>
                 {
                    if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf
-                       && 
+                       &&
                        (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi))
                    {
                         if (cntl.TextAsHyperlink)
@@ -826,7 +826,7 @@ namespace AnyUi
                             };
                         }
 
-                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi) 
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
                         {
                             wpf.Text = cntl.Text;
                         }
@@ -1085,7 +1085,7 @@ namespace AnyUi
                 // recurse into
                 if (el is AnyUi.IEnumerateChildren ien)
                     foreach (var elch in ien.GetChildren())
-                        GetOrCreateWpfElement(elch, allowCreate: false, allowReUse: true, 
+                        GetOrCreateWpfElement(elch, allowCreate: false, allowReUse: true,
                             mode: AnyUiRenderMode.StatusToUi);
 
                 // return (effectively TOP element)
@@ -1116,7 +1116,8 @@ namespace AnyUi
             // do a special case handling here, unless a more generic handling is required
 
             // TODO: Delete, as already fulfilled by render recs!
-            if (false) {
+            if (false)
+            {
                 if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
                     && cntl.Child != null)
                 {

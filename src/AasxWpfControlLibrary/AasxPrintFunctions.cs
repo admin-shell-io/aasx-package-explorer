@@ -93,7 +93,7 @@ namespace AasxPackageExplorer
 
             // grid
             var numcol = 4;
-            var numrow = 1 + ((codeSheetItems.Length - 1)/ 4);
+            var numrow = 1 + ((codeSheetItems.Length - 1) / 4);
             var overSize = new System.Windows.Size(12000, 12000);
 
             var g = new Grid();

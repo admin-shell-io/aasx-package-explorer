@@ -304,7 +304,7 @@ namespace AasxPackageLogic
 
         public AnyUiSelectableTextBlock AddSmallLabelTo(
             AnyUiGrid g, int row, int col, AnyUiThickness margin = null, AnyUiThickness padding = null,
-            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null, 
+            string content = "", AnyUiBrush foreground = null, AnyUiBrush background = null,
             bool setBold = false, bool setNoWrap = false)
         {
             var lab = new AnyUiSelectableTextBlock();
@@ -455,7 +455,7 @@ namespace AasxPackageLogic
                 }
 
             // Label for key
-            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), 
+            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0),
                 setNoWrap: true,
                 content: "" + key + ":");
 
@@ -721,7 +721,7 @@ namespace AasxPackageLogic
             g.RowDefinitions.Add(gr);
 
             // key label
-            var x = AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+            var x = AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0),
                 setNoWrap: true,
                 content: "" + key);
             x.VerticalAlignment = AnyUiVerticalAlignment.Center;
@@ -813,7 +813,7 @@ namespace AasxPackageLogic
             }
 
             // populate key
-            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
+            AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0),
                 setNoWrap: true,
                 content: "" + key + ":");
 

@@ -71,11 +71,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return _log.PopLastShortTermPrint();
         }
 
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
             _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
-            
+
             // for speed reasons, have the most often used at top!
             res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension",
                 "When called with Referable, returns possibly visual extension for it."));

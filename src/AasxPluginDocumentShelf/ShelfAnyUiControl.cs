@@ -173,7 +173,7 @@ namespace AasxPluginDocumentShelf
                 _renderedVersion = DocumentEntity.SubmodelVersion.V10;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V11)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
-            _selectedVersion =  _renderedVersion;
+            _selectedVersion = _renderedVersion;
 
             // set usage info
             var useinf = foundRec.UsageInfo;
@@ -187,10 +187,10 @@ namespace AasxPluginDocumentShelf
             _renderedEntities = new List<DocumentEntity>();
             if (_renderedVersion != DocumentEntity.SubmodelVersion.V11)
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV10(
-                    _package, _submodel, _options, defaultLang, (int) _selectedDocClass, _selectedLang); 
+                    _package, _submodel, _options, defaultLang, (int)_selectedDocClass, _selectedLang);
             else
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV11(
-                    _package, _submodel, defs11, defaultLang, (int) _selectedDocClass, _selectedLang); 
+                    _package, _submodel, defs11, defaultLang, (int)_selectedDocClass, _selectedLang);
 
             // bring it to the panel            
             RenderPanelOutside(view, uitk, _renderedVersion, useinf, defaultLang, _renderedEntities);
@@ -198,20 +198,20 @@ namespace AasxPluginDocumentShelf
 
         protected double _lastScrollPosition = 0.0;
 
-        protected void RenderPanelOutside (
+        protected void RenderPanelOutside(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             DocumentEntity.SubmodelVersion modelVersion,
             string usageInfo,
             string defaultLanguage,
             List<DocumentEntity> its,
-            double ?initialScrollPos = null)
+            double? initialScrollPos = null)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 4, cols: 1, colWidths: new[] { "*" }));
             outer.RowDefinitions[2].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
 
             // at top, make buttons for the general form
-            var header = uitk.AddSmallGridTo(outer, 0, 0, rows: 2, cols: 5, 
+            var header = uitk.AddSmallGridTo(outer, 0, 0, rows: 2, cols: 5,
                     colWidths: new[] { "*", "#", "#", "#", "#" });
 
             header.Margin = new AnyUiThickness(0);
@@ -277,22 +277,23 @@ namespace AasxPluginDocumentShelf
             foreach (var dc in (AasxLanguageHelper.LangEnum[])Enum.GetValues(
                                     typeof(AasxLanguageHelper.LangEnum)))
                 langs.Add((object)
-                    ("Lang - " + AasxLanguageHelper.LangEnumToISO639String[(int) dc]));
+                    ("Lang - " + AasxLanguageHelper.LangEnumToISO639String[(int)dc]));
 
             // controls
-            var controls = uitk.AddSmallWrapPanelTo(outer, 1, 0, 
+            var controls = uitk.AddSmallWrapPanelTo(outer, 1, 0,
                 background: AnyUiBrushes.MiddleGray, margin: new AnyUiThickness(0, 0, 0, 2));
 
-            AnyUiComboBox cbClasses= null, cbLangs = null;
+            AnyUiComboBox cbClasses = null, cbLangs = null;
 
-            cbClasses = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox() {
+            cbClasses = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 140,
                 Items = classes,
-                SelectedIndex = (int) _selectedDocClass
+                SelectedIndex = (int)_selectedDocClass
             }), (o) =>
             {
-                _selectedDocClass = (DefinitionsVDI2770.Vdi2770DocClass) cbClasses.SelectedIndex;
+                _selectedDocClass = (DefinitionsVDI2770.Vdi2770DocClass)cbClasses.SelectedIndex;
                 PushUpdateEvent();
                 return new AnyUiLambdaActionNone();
             });
@@ -302,7 +303,7 @@ namespace AasxPluginDocumentShelf
                 Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 120,
                 Items = langs,
-                SelectedIndex = (int) _selectedLang
+                SelectedIndex = (int)_selectedLang
             }), (o) =>
             {
                 _selectedLang = (AasxLanguageHelper.LangEnum)cbLangs.SelectedIndex;
@@ -329,7 +330,7 @@ namespace AasxPluginDocumentShelf
 
             // small spacer
             outer.RowDefinitions[2] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            var space = uitk.AddSmallBasicLabelTo(outer, 2, 0, 
+            var space = uitk.AddSmallBasicLabelTo(outer, 2, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -383,7 +384,8 @@ namespace AasxPluginDocumentShelf
                         // inputFn = @"C:\MIHO\Develop\Aasx\repo\sample.png";
 
                         ent.LoadImageFromPath(inputFn);
-                    } catch (Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         _log?.Error(ex, $"when loading preview image {inputFn}");
                     }
@@ -422,7 +424,7 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-        public AnyUiFrameworkElement RenderAnyUiDocumentEntity (
+        public AnyUiFrameworkElement RenderAnyUiDocumentEntity(
             AnyUiSmallWidgetToolkit uitk, DocumentEntity de)
         {
             // access
@@ -445,7 +447,7 @@ namespace AasxPluginDocumentShelf
                     skipForTarget: AnyUiTargetPlatform.Browser);
 
             // make the border, which will get content
-            var border = uitk.AddSmallBorderTo(outerG, 0, 0, 
+            var border = uitk.AddSmallBorderTo(outerG, 0, 0,
                 margin: new AnyUiThickness(3, 3, 3 + 4, 3 + 4),
                 background: AnyUiBrushes.White,
                 borderBrush: AnyUiBrushes.Black,
@@ -465,9 +467,9 @@ namespace AasxPluginDocumentShelf
             };
 
             // make a grid
-            var g = uitk.AddSmallGrid(3, 3, 
+            var g = uitk.AddSmallGrid(3, 3,
                 colWidths: new[] { "60:", "*", "24:" },
-                rowHeights: new[] { "14:", "40:", "24:"},
+                rowHeights: new[] { "14:", "40:", "24:" },
                 margin: new AnyUiThickness(1),
                 background: AnyUiBrushes.White);
             border.Child = g;
@@ -476,20 +478,25 @@ namespace AasxPluginDocumentShelf
             var sp1 = uitk.AddSmallStackPanelTo(g, 0, 1,
                 setHorizontal: true);
 
-            var wpCountries = sp1.Add(new AnyUiWrapPanel() { 
+            var wpCountries = sp1.Add(new AnyUiWrapPanel()
+            {
                 HorizontalAlignment = AnyUiHorizontalAlignment.Left,
-                Orientation = AnyUiOrientation.Horizontal });
+                Orientation = AnyUiOrientation.Horizontal
+            });
 
             foreach (var code in de.CountryCodes)
                 wpCountries.Add(new AnyUiCountryFlag()
                 {
                     HorizontalAlignment = AnyUiHorizontalAlignment.Left,
                     ISO3166Code = code,
-                    Margin = new AnyUiThickness(0,0, 3, 0),
-                    MinHeight = 14, MaxHeight = 14, MaxWidth = 20
-                }); 
+                    Margin = new AnyUiThickness(0, 0, 3, 0),
+                    MinHeight = 14,
+                    MaxHeight = 14,
+                    MaxWidth = 20
+                });
 
-            var orga = sp1.Add(new AnyUiTextBlock() { 
+            var orga = sp1.Add(new AnyUiTextBlock()
+            {
                 HorizontalAlignment = AnyUiHorizontalAlignment.Left,
                 HorizontalContentAlignment = AnyUiHorizontalAlignment.Left,
                 Text = $"{de.Organization}",
@@ -518,7 +525,7 @@ namespace AasxPluginDocumentShelf
             // Image
             de.ImgContainerAnyUi =
                 uitk.Set(
-                    uitk.AddSmallImageTo(g, 0, 0,  
+                    uitk.AddSmallImageTo(g, 0, 0,
                         margin: new AnyUiThickness(2),
                         stretch: AnyUiStretch.Uniform),
                     rowSpan: 3,
@@ -538,7 +545,7 @@ namespace AasxPluginDocumentShelf
             };
 
             // context menu
-            uitk.AddSmallContextMenuItemTo(g, 2, 2, 
+            uitk.AddSmallContextMenuItemTo(g, 2, 2,
                     "\u22ee",
                     new[] {
                                     "\u270e", "Edit",
@@ -628,19 +635,19 @@ namespace AasxPluginDocumentShelf
                 // Grid with entries
                 //
 
-                var body = uitk.AddSmallGridTo(outer, 2, 0, rows: 1, cols: 2, 
+                var body = uitk.AddSmallGridTo(outer, 2, 0, rows: 1, cols: 2,
                     colWidths: new[] { "#", "*" },
-                    background:AnyUiBrushes.LightGray);
+                    background: AnyUiBrushes.LightGray);
 
                 uitk.AddSmallBasicLabelTo(body, 0, 0,
                     verticalAlignment: AnyUiVerticalAlignment.Center,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center,
-                    margin: new AnyUiThickness(0,0,4,0),
+                    margin: new AnyUiThickness(0, 0, 4, 0),
                     content: "idShort:");
 
-                tbIdShort = (AnyUiTextBox) AnyUiUIElement.RegisterControl(
+                tbIdShort = (AnyUiTextBox)AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(body, 0, 1,
-                        margin: new AnyUiThickness(2,10,2,10),
+                        margin: new AnyUiThickness(2, 10, 2, 10),
                         text: "" + IdShort),
                     (o) =>
                     {
@@ -652,7 +659,7 @@ namespace AasxPluginDocumentShelf
 
         }
 
-#endregion
+        #endregion
 
         #region Event handling
         //=============
@@ -714,7 +721,7 @@ namespace AasxPluginDocumentShelf
         {
             // check args
             if (args == null || args.Length < 1
-                || !(args[0] is AnyUiStackPanel newPanel)) 
+                || !(args[0] is AnyUiStackPanel newPanel))
                 return;
 
             // ok, re-assign panel and re-display
@@ -798,8 +805,8 @@ namespace AasxPluginDocumentShelf
                 return;
             }
 
-            if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null 
-                && e.SourceElementsDocumentVersion != null && _submodel?.submodelElements != null 
+            if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null
+                && e.SourceElementsDocumentVersion != null && _submodel?.submodelElements != null
                 && _options != null)
             {
                 // the source elements need to match a Document
@@ -1059,7 +1066,7 @@ namespace AasxPluginDocumentShelf
 
                     // the InstSubmodel, which started the process, should have a "fresh" SMEC available
                     // make it unique in the Documentens Submodel
-                    var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme 
+                    var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme
                             as AdminShell.SubmodelElementCollection;
 
                     // if not update, put them into the Document's Submodel
@@ -1363,7 +1370,8 @@ namespace AasxPluginDocumentShelf
             }
 
             if (_eventStack != null && updateDisplay)
-                _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi() { 
+                _eventStack.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
+                {
                     PluginName = null, // do NOT call the plugin before rendering
                     Mode = AnyUiRenderMode.StatusToUi,
                     UseInnerGrid = true

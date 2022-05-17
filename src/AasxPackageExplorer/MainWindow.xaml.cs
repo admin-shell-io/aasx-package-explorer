@@ -712,7 +712,7 @@ namespace AasxPackageExplorer
             System.Windows.Threading.DispatcherTimer MainTimer = new System.Windows.Threading.DispatcherTimer();
             MainTimer.Tick += async (s, a) =>
             {
-                 await MainTimer_Tick(s, a);
+                await MainTimer_Tick(s, a);
             };
             MainTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             MainTimer.Start();
@@ -1159,7 +1159,7 @@ namespace AasxPackageExplorer
                         try
                         {
                             var uires = plugin.InvokeAction(
-                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1, 
+                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1,
                                 AnyUiDisplayContextWpf.SessionSingletonWpf);
                         }
                         catch (Exception ex)
@@ -1171,10 +1171,10 @@ namespace AasxPackageExplorer
 
                     // 2nd step: redisplay                                                          
                     DispEditEntityPanel.RedisplayRenderedRoot(
-                        renderedPanel,                         
+                        renderedPanel,
                         update.UpdateMode,
                         useInnerGrid: update.UseInnerGrid);
-                } 
+                }
                 else
                 {
                     // hard re-display
@@ -1285,7 +1285,7 @@ namespace AasxPackageExplorer
             // Can get this information?
             var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
-            if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> 
+            if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>
                 && renderedInfo.Item2 is AnyUiPanel renderedPanel
                 && renderedPanel.Children != null
                 && renderedPanel.Children.Count > 0)
@@ -1310,8 +1310,8 @@ namespace AasxPackageExplorer
 
                 // 2nd step: redisplay
                 DispEditEntityPanel.RedisplayRenderedRoot(
-                    renderedPanel, 
-                    mode: mode, 
+                    renderedPanel,
+                    mode: mode,
                     useInnerGrid: useInnerGrid);
             }
             else
@@ -1537,12 +1537,12 @@ namespace AasxPackageExplorer
                 if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox)
                 {
                     // modal
-                    var uc = new MessageBoxFlyout(evMsgBox.Message, evMsgBox.Caption, 
+                    var uc = new MessageBoxFlyout(evMsgBox.Message, evMsgBox.Caption,
                                     evMsgBox.Buttons, evMsgBox.Image);
                     this.StartFlyoverModal(uc);
 
                     // fire back
-                    pluginInstance?.InvokeAction("event-return", 
+                    pluginInstance?.InvokeAction("event-return",
                         new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = uc.Result });
                 }
 
@@ -1553,7 +1553,7 @@ namespace AasxPackageExplorer
                 {
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
-               
+
                 #endregion
             }
             catch (Exception ex)

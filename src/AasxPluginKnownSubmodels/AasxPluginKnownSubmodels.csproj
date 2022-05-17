@@ -31,6 +31,9 @@
     <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaProductChangeNotification.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_ZveiDigitalNameplate10.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AasxPluginKnownSubmodels.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

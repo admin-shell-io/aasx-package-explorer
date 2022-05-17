@@ -55,7 +55,7 @@ namespace AnyUi
     }
 
     public enum AnyUiHtmlFillMode { None, FillWidth }
-    
+
     public class AnyUiDisplayDataHtml : AnyUiDisplayDataBase
     {
         [JsonIgnore]
@@ -80,7 +80,7 @@ namespace AnyUi
 
         public static bool DebugFrames;
     }
-    
+
     public class AnyUiDisplayContextHtml : AnyUiContextBase
     {
         [JsonIgnore]
@@ -160,14 +160,11 @@ namespace AnyUi
                     var s = sessions[i];
                     if (s.htmlDotnetEventIn)
                     {
-                        bool found = false;
-
                         switch (s.htmlDotnetEventType)
                         {
                             case "setValueLambda":
                                 if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
                                 {
-                                    found = true;
                                     el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
                                     object o = s.htmlDotnetEventInputs[1];
                                     s.htmlDotnetEventIn = false;
@@ -188,7 +185,6 @@ namespace AnyUi
                             case "contextMenu":
                                 if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
                                 {
-                                    found = true;
                                     el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
                                     AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
                                         s.htmlDotnetEventInputs[1];
@@ -214,7 +210,7 @@ namespace AnyUi
                                     //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
                                 }
                                 break;
-                        }                                               
+                        }
                     }
                     i++;
                 }
@@ -234,7 +230,7 @@ namespace AnyUi
                 {
                     lock (dc.htmlDotnetLock)
                     {
-                        while (found.htmlDotnetEventIn) Task.Delay(1) ;
+                        while (found.htmlDotnetEventIn) Task.Delay(1);
                         found.htmlEventInputs.Clear();
                         found.htmlDotnetEventType = "setValueLambda";
                         found.htmlDotnetEventInputs.Add(el);
@@ -302,7 +298,7 @@ namespace AnyUi
                 found.htmlEventIn = true;
                 Program.signalNewData(2, found.sessionNumber); // build new tree
 
-                while (!found.htmlEventOut) Task.Delay(1) ;
+                while (!found.htmlEventOut) Task.Delay(1);
                 if (found.htmlEventOutputs.Count == 1)
                     r = (AnyUiMessageBoxResult)found.htmlEventOutputs[0];
 
@@ -401,17 +397,19 @@ namespace AnyUi
             // differentiate
             //
 
-            if (el is AnyUiImage elimg)
-            {
-                if (elimg.Touched
-                    && elimg.BitmapInfo?.ImageSource is System.Windows.Media.Imaging.BitmapImage bi
-                    && elimg.DisplayData is AnyUiDisplayDataHtml eldd
-                    && eldd._component is AnyUiRenderImage elri)
-                {
-                    elri.Redraw();
-                    el.Touched = false;
-                }
-            }
+            // LINUX
+
+            //if (el is AnyUiImage elimg)
+            //{
+            //    if (elimg.Touched
+            //        && elimg.BitmapInfo?.ImageSource is System.Windows.Media.Imaging.BitmapImage bi
+            //        && elimg.DisplayData is AnyUiDisplayDataHtml eldd
+            //        && eldd._component is AnyUiRenderImage elri)
+            //    {
+            //        elri.Redraw();
+            //        el.Touched = false;
+            //    }
+            //}
 
             //
             // recurse
@@ -431,7 +429,7 @@ namespace AnyUi
         {
             // TODO
             // see: https://www.meziantou.net/copying-text-to-clipboard-in-a-blazor-application.htm
-            
+
             if (_jsRuntime != null && cb != null)
             {
                 _jsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", cb.Text);

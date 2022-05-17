@@ -310,6 +310,7 @@
                                     <input size="@ww" value="@searchId"
                                            @onchange="@((ChangeEventArgs __e) => SearchIdInput(__e.Value.ToString()))" />
                                     <select width="10" maxwidth="10" style="height:30px"
+                                            value="@selectId"
                                             @onchange="@((ChangeEventArgs __e) => RepoItemSelected(__e.Value.ToString()))">
                                         <option value="">--select--</option>
                                         @if(Program.Repo?.FileMap != null)
@@ -321,6 +322,7 @@
                                 }
                                 @code {
                                     string searchId = "";
+                                    string selectId = "--select--";
 
                                     private async Task SearchIdInput(string value)
                                     {
@@ -340,17 +342,21 @@
                                         }
                                         catch { }
 
-                                        // try clear field
+                                        // try clear text edit field
                                         // see: https://stackoverflow.com/questions/61454672/reset-input-text-after-onchange
-                                        searchId  = null;
+                                        searchId = null;
+                                        selectId = null;
                                         await Task.Delay(1); //Magic!  
                                         StateHasChanged();
                                         searchId = "";
+                                        selectId = "--select--";
                                         this.StateHasChanged();
+
                                     }
 
                                     private async Task RepoItemSelected(string location)
                                     {
+                                        selectId = location;
                                         // access
                                         try
                                         {

@@ -3,15 +3,15 @@ using System.Reflection;
 
 namespace UIComponents.Flags
 {
-	public enum FlagSize
-	{
-		Normal = 0,
-		Small = 1,
-		Large = 2,
-	}
+    public enum FlagSize
+    {
+        Normal = 0,
+        Small = 1,
+        Large = 2,
+    }
 
-   	public enum Country
-	{
+    public enum Country
+    {
         [Description("Afghanistan")] AF = 1,
         [Description("Åland Islands")] AX = 2,
         [Description("Albania")] AL = 3,
@@ -272,5 +272,5 @@ namespace UIComponents.Flags
         [Description("Kosovo")] XK = 254,
         [Description("Scotland")] GB_SCT = 255,
         [Description("United Nations")] UN = 256,
-	}    
+    }
 }

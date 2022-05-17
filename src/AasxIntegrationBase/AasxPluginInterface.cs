@@ -224,7 +224,7 @@ namespace AasxIntegrationBase
     /// Base class for plugin session data (HTML/ Blazor might host multiple sessions at the same time)
     /// </summary>
     public class PluginSessionBase
-    { 
+    {
     }
 
     /// <summary>
