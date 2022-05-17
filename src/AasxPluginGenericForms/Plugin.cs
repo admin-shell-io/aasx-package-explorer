@@ -22,27 +22,29 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        public LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginGenericForms.GenericFormOptions options = new AasxPluginGenericForms.GenericFormOptions();
+        private AasxPluginGenericForms.GenericFormOptions _options = new AasxPluginGenericForms.GenericFormOptions();
         
         private AasxPluginGenericForms.GenericFormsControl _formsControl = null;
-        private AasxPluginGenericForms.GenericFormsAnyUiControl _anyUiControl = null;
 
-        public string GetPluginName()
+        public class Session : PluginSessionBase
         {
-            return "AasxPluginGenericForms";
+            public AasxPluginGenericForms.GenericFormsAnyUiControl AnyUiControl = null;
         }
 
-        public void InitPlugin(string[] args)
+        static AasxPlugin()
+        {
+            PluginName = "AasxPluginGenericForms";
+        }
+
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginGenericForms.GenericFormOptions.CreateDefault();
+            _options = AasxPluginGenericForms.GenericFormOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -56,70 +58,64 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
 
                 // try find additional options
-                this.options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, this.Log);
+                this._options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
+                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, _log);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new object CheckForLogMessage()
         {
-            return Log.PopLastShortTermPrint();
+            return _log.PopLastShortTermPrint();
         }
 
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "call-check-visual-extension",
-                    "When called with Referable, returns possibly visual extension for it."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "call-check-visual-extension",
+                "When called with Referable, returns possibly visual extension for it."));
             // rest follows
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "set-json-options", "Sets plugin-options according to provided JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase(
-                    "event-return", "Called to return a result evaluated by the host for a certain event."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-anyui-visual-extension",
-                    "When called, fill given AnyUI panel with control for graph display."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "update-anyui-visual-extension",
-                    "When called, updated already presented AnyUI panel with some arguments."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-list-new-submodel",
-                    "Returns a list of speaking names of Submodels, which could be generated by the plugin."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "generate-submodel",
-                    "Returns a generated default Submodel based on the name provided as string argument."));
+                "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "event-return", "Called to return a result evaluated by the host for a certain event."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-panel-visual-extension",
+                "When called, fill given WPF panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-anyui-visual-extension",
+                "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "update-anyui-visual-extension",
+                "When called, updated already presented AnyUI panel with some arguments."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "dispose-anyui-visual-extension",
+                "When called, will dispose the plugin data associated with given session id."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-list-new-submodel",
+                "Returns a list of speaking names of Submodels, which could be generated by the plugin."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "generate-submodel",
+                "Returns a generated default Submodel based on the name provided as string argument."));
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             try
             {
@@ -136,7 +132,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         return null;
 
                     // check for a record in options, that matches Submodel
-                    var found = this.options?.MatchRecordsForSemanticId(sm.semanticId);
+                    var found = this._options?.MatchRecordsForSemanticId(sm.semanticId);
                     if (found == null)
                         return null;
 
@@ -160,7 +156,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginGenericForms.GenericFormOptions>(
                             (args[0] as string), settings);
                     if (newOpt != null)
-                        this.options = newOpt;
+                        this._options = newOpt;
                 }
 
                 if (action == "get-json-options")
@@ -170,7 +166,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                             typeof(AasxPluginGenericForms.GenericFormOptions),
                             typeof(AasForms.FormDescBase) });
                     var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                        this.options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
+                        this._options, typeof(AasxPluginGenericForms.GenericFormOptions), settings);
                     return new AasxPluginResultBaseObject("OK", json);
                 }
 
@@ -186,19 +182,26 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return lic;
                 }
 
-                if (action == "get-events" && this.eventStack != null)
+                if (action == "get-events" && _eventStack != null)
                 {
                     // try access
-                    return this.eventStack.PopEvent();
+                    return _eventStack.PopEvent();
                 }
 
                 if (action == "event-return" && args != null
-                    && args.Length >= 1 && args[0] is AasxPluginEventReturnBase evret)
+                    && args.Length >= 1 && args[0] is AasxPluginEventReturnBase erb)
                 {
-                    if (this._formsControl != null)
-                        this._formsControl.HandleEventReturn(evret);
-                    if (_anyUiControl != null)
-                        this._anyUiControl.HandleEventReturn(evret);
+                    // arguments (event return, session-id)
+
+                    if (_formsControl != null)
+                        _formsControl.HandleEventReturn(erb);
+
+                    if (args.Length >= 2
+                        && _sessions.AccessSession(args[1], out Session session)
+                        && session.AnyUiControl != null)
+                    {
+                        session.AnyUiControl.HandleEventReturn(erb);
+                    }
                 }
 
                 if (action == "get-check-visual-extension")
@@ -211,34 +214,55 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 if (action == "fill-anyui-visual-extension")
                 {
-                    // arguments
-                    if (args == null || args.Length < 3)
+                    // arguments (package, submodel, panel, display-context, session-id)
+                    if (args == null || args.Length < 5)
                         return null;
 
-                    // call
-                    _anyUiControl = AasxPluginGenericForms.GenericFormsAnyUiControl.FillWithAnyUiControls(
-                        Log, args[0], args[1], this.options, this.eventStack, args[2]);
+                    // create session and call
+                    var session = _sessions.CreateNewSession<Session>(args[4]);
+                    session.AnyUiControl = AasxPluginGenericForms.GenericFormsAnyUiControl.FillWithAnyUiControls(
+                        _log, args[0], args[1], _options, _eventStack, args[2]);
 
                     // give object back
                     var res = new AasxPluginResultBaseObject();
-                    res.obj = _anyUiControl;
+                    res.obj = session.AnyUiControl;
                     return res;
                 }
 
-                if (action == "update-anyui-visual-extension" 
-                    && _anyUiControl != null)
+                if (action == "update-anyui-visual-extension"
+                    && _sessions != null)
                 {
-                    // arguments
-                    if (args == null || args.Length < 0)
+                    // arguments (panel, display-context, session-id)
+                    if (args == null || args.Length < 3)
                         return null;
 
-                    // call
-                    _anyUiControl.Update(args);
+                    if (_sessions.AccessSession(args[2], out Session session))
+                    {
+                        // call
+                        session.AnyUiControl.Update(args);
 
-                    // give object back
-                    var res = new AasxPluginResultBaseObject();
-                    res.obj = 42;
-                    return res;
+                        // give object back
+                        var res = new AasxPluginResultBaseObject();
+                        res.obj = 42;
+                        return res;
+                    }
+                }
+
+                if (action == "dispose-anyui-visual-extension"
+                    && _sessions != null)
+                {
+                    // arguments (session-id)
+                    if (args == null || args.Length < 1)
+                        return null;
+
+                    if (_sessions.AccessSession(args[0], out Session session))
+                    {
+                        // dispose all ressources
+                        ;
+
+                        // remove
+                        _sessions.Remove(args[0]);
+                    }
                 }
 
                 if (action == "fill-panel-visual-extension")
@@ -249,7 +273,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // call
                     this._formsControl = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
-                        Log, args[0], args[1], this.options, this.eventStack, args[2]);
+                        _log, args[0], args[1], this._options, _eventStack, args[2]);
 
                     // give object back
                     var res = new AasxPluginResultBaseObject();
@@ -263,8 +287,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     var list = new List<string>();
 
                     // check
-                    if (options != null && options.Records != null)
-                        foreach (var rec in options.Records)
+                    if (_options != null && _options.Records != null)
+                        foreach (var rec in _options.Records)
                             if (rec.FormTitle != null)
                                 list.Add("" + rec.FormTitle);
 
@@ -284,8 +308,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // identify record
                     AasxPluginGenericForms.GenericFormsOptionsRecord foundRec = null;
-                    if (options != null && options.Records != null)
-                        foreach (var rec in options.Records)
+                    if (_options != null && _options.Records != null)
+                        foreach (var rec in _options.Records)
                             if (rec.FormTitle != null && rec.FormTitle == smName)
                                 foundRec = rec;
                     if (foundRec == null || foundRec.FormSubmodel == null)
@@ -303,7 +327,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "");
+                _log.Error(ex, "");
             }
 
             // default

@@ -19,6 +19,18 @@
     <Resource Include="LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaArticleOfTradeInformation.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaHandoverEngSystems.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaParameterInformation.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AasxPluginKnownSubmodels.media\SMT_VdmaProductChangeNotification.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AasxPluginKnownSubmodels.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

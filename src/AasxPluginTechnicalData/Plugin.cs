@@ -22,25 +22,24 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance _log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
         private AasxPluginTechnicalData.TechnicalDataOptions _options =
             new AasxPluginTechnicalData.TechnicalDataOptions();
 
         private AasxPluginTechnicalData.TechnicalDataViewControl _viewControl = null;
 
-        private AasxPluginTechnicalData.TechnicalDataAnyUiControl _anyUiControl = null;
-
-        public static string PluginName = "AasxPluginTechnicalData";
-
-        public string GetPluginName()
+        public class Session : PluginSessionBase
         {
-            return PluginName;
+            public AasxPluginTechnicalData.TechnicalDataAnyUiControl AnyUiControl = null;
         }
 
-        public void InitPlugin(string[] args)
+        static AasxPlugin()
+        {
+            PluginName = "AasxPluginTechnicalData";
+        }
+
+        public new void InitPlugin(string[] args)
         {
             // start ..
             _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
@@ -67,48 +66,39 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             _options.IndexListOfRecords(_options.Records);
         }
 
-        public object CheckForLogMessage()
-        {
-            return _log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
             _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "call-check-visual-extension",
-                    "When called with Referable, returns possibly visual extension for it."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "call-check-visual-extension",
+                "When called with Referable, returns possibly visual extension for it."));
             // rest follows
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "set-json-options", "Sets plugin-options according to provided JSON string."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "set-json-options", "Sets plugin-options according to provided JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-events", "Pops and returns the earliest event from the event stack."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-panel-visual-extension",
-                    "When called, fill given WPF panel with control for graph display."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "fill-anyui-visual-extension",
-                    "When called, fill given AnyUI panel with control for graph display."));
-            res.Add(
-                new AasxPluginActionDescriptionBase(
-                    "update-anyui-visual-extension",
-                    "When called, updated already presented AnyUI panel with some arguments."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-panel-visual-extension",
+                "When called, fill given WPF panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "fill-anyui-visual-extension",
+                "When called, fill given AnyUI panel with control for graph display."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "update-anyui-visual-extension",
+                "When called, updated already presented AnyUI panel with some arguments."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "dispose-anyui-visual-extension",
+                "When called, will dispose the plugin data associated with given session id."));
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -190,34 +180,55 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             if (action == "fill-anyui-visual-extension")
             {
-                // arguments
-                if (args == null || args.Length < 3)
+                // arguments (package, submodel, panel, display-context, session-id)
+                if (args == null || args.Length < 5)
                     return null;
 
-                // call
-                _anyUiControl = AasxPluginTechnicalData.TechnicalDataAnyUiControl.FillWithAnyUiControls(
+                // create session and call
+                var session = _sessions.CreateNewSession<Session>(args[4]);
+                session.AnyUiControl = AasxPluginTechnicalData.TechnicalDataAnyUiControl.FillWithAnyUiControls(
                     _log, args[0], args[1], _options, _eventStack, args[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();
-                res.obj = _anyUiControl;
+                res.obj = session.AnyUiControl;
                 return res;
             }
 
             if (action == "update-anyui-visual-extension"
-                && _anyUiControl != null)
+                && _sessions != null)
             {
-                // arguments
-                if (args == null || args.Length < 0)
+                // arguments (panel, display-context, session-id)
+                if (args == null || args.Length < 3)
                     return null;
 
-                // call
-                _anyUiControl.Update(args);
+                if (_sessions.AccessSession(args[2], out Session session))
+                {
+                    // call
+                    session.AnyUiControl.Update(args);
 
-                // give object back
-                var res = new AasxPluginResultBaseObject();
-                res.obj = 42;
-                return res;
+                    // give object back
+                    var res = new AasxPluginResultBaseObject();
+                    res.obj = 42;
+                    return res;
+                }
+            }
+
+            if (action == "dispose-anyui-visual-extension"
+                && _sessions != null)
+            {
+                // arguments (session-id)
+                if (args == null || args.Length < 1)
+                    return null;
+
+                if (_sessions.AccessSession(args[0], out Session session))
+                {
+                    // dispose all ressources
+                    ;
+
+                    // remove
+                    _sessions.Remove(args[0]);
+                }
             }
 
             if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)

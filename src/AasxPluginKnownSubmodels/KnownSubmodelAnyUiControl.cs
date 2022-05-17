@@ -252,14 +252,14 @@ namespace AasxPluginKnownSubmodels
             uitk.AddSmallBasicLabelTo(outer, 1, 1,
                 margin: new AnyUiThickness(8, 2, 0, 0),
                 fontSize: 1.0f,
-                setWrap: true,
+                textWrapping: AnyUiTextWrapping.Wrap,
                 content: "" + rec.Content);
 
             AnyUiUIElement.RegisterControl(
                 uitk.AddSmallBasicLabelTo(outer, 2, 1,
                     margin: new AnyUiThickness(8, 2, 0, 0),
                     fontSize: 1.0f,
-                    setWrap: true,
+                    textWrapping: AnyUiTextWrapping.Wrap,
                     setHyperLink: true,
                     content: "" + rec.FurtherUrl),
                 (o) =>

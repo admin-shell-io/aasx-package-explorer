@@ -1159,7 +1159,8 @@ namespace AasxPackageExplorer
                         try
                         {
                             var uires = plugin.InvokeAction(
-                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1);
+                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1, 
+                                AnyUiDisplayContextWpf.SessionSingletonWpf);
                         }
                         catch (Exception ex)
                         {
@@ -1297,7 +1298,8 @@ namespace AasxPackageExplorer
                     try
                     {
                         var uires = plugin.InvokeAction(
-                            "update-anyui-visual-extension", renderedPanel);
+                            "update-anyui-visual-extension", renderedPanel, null,
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
                     catch (Exception ex)
                     {

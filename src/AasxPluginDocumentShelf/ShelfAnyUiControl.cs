@@ -258,7 +258,7 @@ namespace AasxPluginDocumentShelf
                 uitk.AddSmallBasicLabelTo(header, 1, 0, colSpan: 5,
                     margin: new AnyUiThickness(8, 2, 2, 2),
                     foreground: AnyUiBrushes.DarkBlue,
-                    fontSize: 0.8f, setWrap: true,
+                    fontSize: 0.8f, textWrapping: AnyUiTextWrapping.Wrap,
                     content: usageInfo);
 
             //

@@ -328,14 +328,15 @@
                                         {
 
                                             // lookup
-                                            var ri = Program.Repo?.FindByAssetId(value);
-                                            if (ri == null)
-                                                ri = Program.Repo?.FindByAasId(value);
-                                            if (ri == null)
+                                            var rif = Program.Repo?.FindByAssetId(value);
+                                            if (rif == null)
+                                                rif = Program.Repo?.FindByAasId(value);
+                                            if (rif == null)
                                                 return;
 
                                             // load
-                                            await RepoFnLoadReleative(ri.Location);
+                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
+                                            await RepoFnLoadReleative(loc);
                                         }
                                         catch { }
 
@@ -353,7 +354,19 @@
                                         // access
                                         try
                                         {
-                                            await RepoFnLoadReleative(location);
+                                            // as we're from the internet, make sure the repo and location
+                                            PackageContainerRepoItem rif = null;
+                                            if (Program.Repo?.FileMap != null)
+                                                foreach (var ri in Program.Repo.FileMap)
+                                                    if (ri.Location == location)
+                                                        rif = ri;
+
+                                            if (rif == null)
+                                                return;
+
+                                            // make it full path
+                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
+                                            await RepoFnLoadReleative(loc);
                                         }
                                         catch { }
                                         this.StateHasChanged();

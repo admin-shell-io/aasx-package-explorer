@@ -77,6 +77,8 @@ namespace AnyUi
         [JsonIgnore]
         public PackageCentral Packages;
 
+        public static string SessionSingletonWpf = "session-wpf";
+
         public AnyUiDisplayContextWpf(
             IFlyoutProvider flyoutProvider, PackageCentral packages)
         {

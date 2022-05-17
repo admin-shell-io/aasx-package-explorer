@@ -160,51 +160,61 @@ namespace AnyUi
                     var s = sessions[i];
                     if (s.htmlDotnetEventIn)
                     {
-                        AnyUiLambdaActionBase ret = null;
+                        bool found = false;
 
                         switch (s.htmlDotnetEventType)
                         {
                             case "setValueLambda":
-                                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                object o = s.htmlDotnetEventInputs[1];
-                                s.htmlDotnetEventIn = false;
-                                s.htmlDotnetEventInputs.Clear();
-                                ret = el?.setValueLambda?.Invoke(o);
-                                break;
-                            case "contextMenu":
-                                el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
-                                AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
-                                    s.htmlDotnetEventInputs[1];
-                                s.htmlEventType = "contextMenu";
-                                s.htmlEventInputs.Add(el);
-                                s.htmlEventInputs.Add(cntlcm);
-                                s.htmlDotnetEventIn = false;
-                                s.htmlDotnetEventInputs.Clear();
-                                s.htmlEventIn = true;
-                                Program.signalNewData(1, s.sessionNumber, 
-                                    onlyUpdateAasxPanel: true); // same tree, but structure may change
-
-                                while (!s.htmlEventOut) Task.Delay(1) ;
-                                int bufferedI = 0;
-                                if (s.htmlEventOutputs.Count == 1)
+                                if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
                                 {
-                                    bufferedI = (int)s.htmlEventOutputs[0];
-                                    var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
-                                }
-                                s.htmlEventOutputs.Clear();
-                                s.htmlEventType = "";
-                                s.htmlEventOut = false;
-                                //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
-                                break;
-                        }
-                        while (s.htmlDotnetEventOut) Task.Delay(1) ;
+                                    found = true;
+                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                    object o = s.htmlDotnetEventInputs[1];
+                                    s.htmlDotnetEventIn = false;
+                                    s.htmlDotnetEventInputs.Clear();
+                                    var ret = el?.setValueLambda?.Invoke(o);
 
-                        // determine, which (visual) update has to be done
-                        int ndm = 2;
-                        if (ret is AnyUiLambdaActionNone)
-                            ndm = 0;
-                        Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret,
-                            onlyUpdateAasxPanel : true) ; // build new tree
+                                    while (s.htmlDotnetEventOut) Task.Delay(1);
+
+                                    // determine, which (visual) update has to be done
+                                    int ndm = 2;
+                                    if (ret is AnyUiLambdaActionNone)
+                                        ndm = 0;
+                                    Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret,
+                                        onlyUpdateAasxPanel: true); // build new tree
+                                }
+                                break;
+
+                            case "contextMenu":
+                                if (s.htmlDotnetEventInputs != null && s.htmlDotnetEventInputs.Count > 0)
+                                {
+                                    found = true;
+                                    el = (AnyUiUIElement)s.htmlDotnetEventInputs[0];
+                                    AnyUiSpecialActionContextMenu cntlcm = (AnyUiSpecialActionContextMenu)
+                                        s.htmlDotnetEventInputs[1];
+                                    s.htmlEventType = "contextMenu";
+                                    s.htmlEventInputs.Add(el);
+                                    s.htmlEventInputs.Add(cntlcm);
+                                    s.htmlDotnetEventIn = false;
+                                    s.htmlDotnetEventInputs.Clear();
+                                    s.htmlEventIn = true;
+                                    Program.signalNewData(1, s.sessionNumber,
+                                        onlyUpdateAasxPanel: true); // same tree, but structure may change
+
+                                    while (!s.htmlEventOut) Task.Delay(1);
+                                    int bufferedI = 0;
+                                    if (s.htmlEventOutputs.Count == 1)
+                                    {
+                                        bufferedI = (int)s.htmlEventOutputs[0];
+                                        var action2 = cntlcm.MenuItemLambda?.Invoke(bufferedI);
+                                    }
+                                    s.htmlEventOutputs.Clear();
+                                    s.htmlEventType = "";
+                                    s.htmlEventOut = false;
+                                    //// AnyUiLambdaActionBase ret = el.setValueLambda?.Invoke(o);
+                                }
+                                break;
+                        }                                               
                     }
                     i++;
                 }
