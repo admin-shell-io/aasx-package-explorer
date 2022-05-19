@@ -160,7 +160,7 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        internal Task PutAasxFileOnServerAsync(string copyFileName, string packageId, PackCntRuntimeOptions runtimeOptions)
+        internal async Task PutAasxFileOnServerAsync(string copyFileName, string packageId, PackCntRuntimeOptions runtimeOptions)
         {
             try
             {
@@ -170,7 +170,7 @@ namespace AasxPackageLogic.PackageCentral
                 var uw = new UploadWriter(fileContent, runtimeOptions);
                 var fileparameter = FileParameter.Create("file", uw.Write, fileContent.Length, "no_file_name_provided");
 
-                var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileparameter, copyFileName, Base64UrlEncoder.Encode(packageId));
+                var response = await _fileApiInstance.PutAASXByPackageIdAsyncWithHttpInfo(aasIds, fileparameter, copyFileName, Base64UrlEncoder.Encode(packageId));
                 if (response.StatusCode != 204)
                 {
                     Log.Singleton.Error($"Update AASX file in file repository failed with error {response.StatusCode}");
@@ -180,8 +180,6 @@ namespace AasxPackageLogic.PackageCentral
             {
                 Log.Singleton.Error(e.Message);
             }
-
-            return Task.CompletedTask;
         }
 
         internal async Task<string> LoadAasxPackageAsync(string packageId, PackCntRuntimeOptions runtimeOptions)
