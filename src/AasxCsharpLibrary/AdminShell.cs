@@ -4845,7 +4845,7 @@ namespace AdminShellNS
                     return null;
 
                 // 1st result pretty easy (calling function will add this to the appropriate Submodel)
-                var res = new SubmodelElementWrapper(srcElem);
+                var res = new SubmodelElementWrapper(srcElem, shallowCopy: shallowCopy);
 
                 // copy the CDs..
                 if (copyCD)

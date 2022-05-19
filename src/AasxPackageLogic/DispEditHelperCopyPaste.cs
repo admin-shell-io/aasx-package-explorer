@@ -541,8 +541,7 @@ namespace AasxPackageLogic
                             var createAtIndex = -1;
 
                             // make this unique (e.g. for event following)
-                            if (cpb.Duplicate || cpb.ExternalSource)
-                                this.MakeNewReferableUnique(smw2.submodelElement);
+                            var checkForUniqueness = cpb.Duplicate || cpb.ExternalSource;
 
                             // insertation depends on parent container
                             if (buttonNdx == 2)
@@ -551,23 +550,23 @@ namespace AasxPackageLogic
                                 smw2.submodelElement.parent = parentContainer;
 
                                 if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementBefore<AdminShell.SubmodelElement>(
+                                        pcsm.submodelElements, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementBefore<AdminShell.SubmodelElement>(
+                                        pcsmc.value, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.Entity pcent &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementBefore<AdminShell.SubmodelElement>(
+                                        pcent.statements, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementBefore<AdminShell.DataElement>(
+                                        pcarel.annotations, smw2, wrapper, checkForUniqueness);
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
@@ -578,6 +577,8 @@ namespace AasxPackageLogic
                                     {
                                         var op = new AdminShell.OperationVariable();
                                         op.value = smw2;
+                                        if (checkForUniqueness)
+                                            this.MakeNewReferableUnique(op.value.submodelElement);
                                         createAtIndex = this.AddElementInListBefore<AdminShell.OperationVariable>(
                                             pcop[place.Direction], op, place.OperationVariable);
                                         nextBusObj = op;
@@ -591,22 +592,22 @@ namespace AasxPackageLogic
                                 smw2.submodelElement.parent = parentContainer;
 
                                 if (parentContainer is AdminShell.Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsm.submodelElements, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementAfter<AdminShell.SubmodelElement>(
+                                        pcsm.submodelElements, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcsmc.value, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementAfter<AdminShell.SubmodelElement>(
+                                        pcsmc.value, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.Entity pcent && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcent.statements, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementAfter<AdminShell.SubmodelElement>(
+                                        pcent.statements, smw2, wrapper, checkForUniqueness);
 
                                 if (parentContainer is AdminShell.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<AdminShell.SubmodelElementWrapper>(
-                                        pcarel.annotations, smw2, wrapper);
+                                    createAtIndex = this.AddUnqiueElementAfter<AdminShell.DataElement>(
+                                        pcarel.annotations, smw2, wrapper, checkForUniqueness);
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is AdminShell.Operation pcop && wrapper?.submodelElement != null)
@@ -617,6 +618,8 @@ namespace AasxPackageLogic
                                     {
                                         var op = new AdminShell.OperationVariable();
                                         op.value = smw2;
+                                        if (checkForUniqueness)
+                                            this.MakeNewReferableUnique(op.value.submodelElement);
                                         createAtIndex = this.AddElementInListAfter<AdminShell.OperationVariable>(
                                             pcop[place.Direction], op, place.OperationVariable);
                                         nextBusObj = op;
@@ -626,10 +629,13 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 4)
                             {
-                                // aprent set automatically
+                                // parent set automatically
                                 // TODO (MIHO, 2021-08-18): createAtIndex missing here
                                 if (sme is AdminShell.IEnumerateChildren smeec)
+                                {
+                                    this.CheckIfMakeElementUnique(smw2?.submodelElement, smeec);
                                     smeec.AddChild(smw2, item.Placement);
+                                }
                             }
 
                             // emit event

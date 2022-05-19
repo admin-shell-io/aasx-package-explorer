@@ -42,12 +42,10 @@ namespace AasxPluginExportTable
             var cells = _table.Elements<TableRow>()?.ElementAt(row);
             if (cells == null)
                 return null;
-            if (col < 0 || col >= cells.Count())
+            if (col < 0 || col >= cells.Elements<TableCell>()?.Count())
                 return null;
 
-            var cell = _table
-                        .Elements<TableRow>()?.ElementAt(row)?
-                        .Elements<TableCell>()?.ElementAt(col);
+            var cell = cells.Elements<TableCell>()?.ElementAt(col);
 
             if (cell == null)
                 return null;

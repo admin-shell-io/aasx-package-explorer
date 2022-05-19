@@ -669,6 +669,18 @@ namespace AasxPluginDocumentShelf
                 }
             }
 
+            if (tag == null && menuItemHeader == "Mark" && e.SourceElementsDocument != null &&
+                e.SourceElementsDocumentVersion != null && theSubmodel?.submodelElements != null)
+            {
+                foreach (var docsmw in theSubmodel.submodelElements)
+                    if (docsmw?.submodelElement is AdminShell.SubmodelElementCollection docsmc
+                        && docsmc.value == e.SourceElementsDocument)
+                    {
+                        Log?.Info("Marked " + docsmc.idShort);
+                        docsmc.idShort += "_MARK";
+                    }
+            }
+
             // check for a document reference
             if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
                 && reltup.Item2 != null && reltup.Item2.Count > 0)

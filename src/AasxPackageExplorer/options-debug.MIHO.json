@@ -35,7 +35,7 @@
   "SplashTime": 1000,
   "InternalBrowser": false,
   "EclassTwoPass": true,
-  "BackupDir": ".\\backup",
+  "BackupDir": "C:\\MIHO\\Develop\\Aasx-bin\\backup",
   "BackupFiles": 10,
   "RestServerHost": "localhost",
   "RestServerPort": "1111",
