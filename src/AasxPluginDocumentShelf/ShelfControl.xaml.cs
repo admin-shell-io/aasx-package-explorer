@@ -670,7 +670,7 @@ namespace AasxPluginDocumentShelf
             }
 
             if (tag == null && menuItemHeader == "Mark" && e.SourceElementsDocument != null &&
-                e.SourceElementsDocumentVersion != null && theSubmodel.submodelElements != null)
+                e.SourceElementsDocumentVersion != null && theSubmodel?.submodelElements != null)
             {
                 foreach (var docsmw in theSubmodel.submodelElements)
                     if (docsmw?.submodelElement is AdminShell.SubmodelElementCollection docsmc

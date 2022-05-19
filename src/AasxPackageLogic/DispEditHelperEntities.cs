@@ -3148,7 +3148,8 @@ namespace AasxPackageLogic
                 {
                     // More file actions
                     this.AddAction(
-                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file", "Download to AASX" },
+                        stack, "Action", new[] { "Remove existing file", "Create text file",
+                            "Edit text file", "Download to AASX" },
                         repo,
                         (buttonNdx) =>
                         {
@@ -3334,7 +3335,7 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 3 && fl.value.HasContent() && context != null)
                             {
-                                var isHttpSchema = (fl.value.StartsWith("http://") 
+                                var isHttpSchema = (fl.value.StartsWith("http://")
                                         || fl.value.StartsWith("https://"));
                                 if (!isHttpSchema)
                                 {
@@ -3354,13 +3355,14 @@ namespace AasxPackageLogic
 
                                 if (!this.context.StartFlyoverModal(uc))
                                     return new AnyUiLambdaActionNone();
-                                targetPath = uc.Text;
+                                targetPath = "" + uc.Text;
 
                                 // execute
                                 try
                                 {
                                     // try prepare download
-                                    var targetDir = System.IO.Path.GetDirectoryName(targetPath).Replace("\\", "/");
+                                    var targetDir = ("" + System.IO.Path.GetDirectoryName(targetPath))
+                                            .Replace("\\", "/");
                                     var targetFn = System.IO.Path.GetFileName(targetPath);
                                     var tempExt = System.IO.Path.GetExtension(targetPath);
                                     var tempPath = System.IO.Path.GetTempFileName().Replace(".tmp", tempExt);
@@ -3373,7 +3375,7 @@ namespace AasxPackageLogic
                                     }
 
                                     // put into AASX
-                                    var mimeType = AdminShellPackageEnv.GuessMimeType(tempPath);                                    
+                                    var mimeType = AdminShellPackageEnv.GuessMimeType(tempPath);
 
                                     var addedPath = packages.Main.AddSupplementaryFileToStore(
                                         tempPath, targetDir, targetFn,
