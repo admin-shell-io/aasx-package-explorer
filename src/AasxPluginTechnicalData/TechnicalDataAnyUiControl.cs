@@ -6,10 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AasxIntegrationBaseWpf;
+using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -306,12 +305,19 @@ namespace AasxPluginTechnicalData
                 AnyUiBitmapInfo imageManuLogo = null;
                 if (package != null)
                 {
+#if USE_WPF
                     var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(
                         package,
                         smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
                             theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
                         );
                     imageManuLogo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
+#else
+                    imageManuLogo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(package,
+                        smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
+                            theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
+                        );
+#endif
                 }
 
                 // render information
@@ -359,10 +365,16 @@ namespace AasxPluginTechnicalData
                             smcGeneral.value.FindAllSemanticIdAs<AdminShell.File>(
                                 theDefs.CD_ProductImage.GetSingleKey()))
                 {
+#if USE_WPF
                     var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
                     var imgInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                     if (imgInfo != null)
                         pil.Add(imgInfo);
+#else
+                    var imgInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(package, pi.value);
+                    if (imgInfo != null)
+                        pil.Add(imgInfo);
+#endif
                 }
 
                 // ok, render?
@@ -463,9 +475,9 @@ namespace AasxPluginTechnicalData
             }
         }
 
-        #endregion
+#endregion
 
-        #region Inner
+#region Inner
         //=============
 
         protected class TripleRowData
@@ -670,9 +682,9 @@ namespace AasxPluginTechnicalData
             RenderTripleRowData(view, uitk, rows.ToArray());
         }
 
-        #endregion
+#endregion
 
-        #region Footer
+#region Footer
         //=============
 
         protected void RenderPanelFooter(
@@ -721,9 +733,9 @@ namespace AasxPluginTechnicalData
                 content: tsl[i]);
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
         //=============
 
         public void Update(params object[] args)
@@ -741,18 +753,18 @@ namespace AasxPluginTechnicalData
             RenderFullView(_panel, _uitk, _package, _submodel, defaultLang: null);
         }
 
-        #endregion
+#endregion
 
-        #region Callbacks
+#region Callbacks
         //===============
 
 
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
         //===============
 
 
-        #endregion
+#endregion
     }
 }

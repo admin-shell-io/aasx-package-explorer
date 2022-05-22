@@ -17,6 +17,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -37,21 +38,26 @@ namespace BlazorUI
 
         public static PackageContainerListBase Repo;
 
+        public static bool DisableEdit = false;
+
         public class NewDataAvailableArgs : EventArgs
         {
             // resharper disable once MemberHidesStaticFromOuterClass
             public int signalNewDataMode;
             public int signalSessionNumber;
             public AnyUiLambdaActionBase signalNewLambdaAction;
+            public AasxPluginResultEventBase signalNewPluginResultEvent;
             public bool onlyUpdateAasxPanel;
 
             public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0,
                 AnyUiLambdaActionBase newLambdaAction = null,
+                AasxPluginResultEventBase newPluginResultEvent = null,
                 bool onlyUpdatePanel = false)
             {
                 signalNewDataMode = mode;
                 signalSessionNumber = sessionNumber;
                 signalNewLambdaAction = newLambdaAction;
+                signalNewPluginResultEvent = newPluginResultEvent;
                 onlyUpdateAasxPanel = onlyUpdatePanel;
             }
         }
@@ -121,12 +127,15 @@ namespace BlazorUI
         public static int signalNewDataMode = 2;
         public static void signalNewData(int mode, int sessionNumber = 0,
             AnyUiLambdaActionBase newLambdaAction = null,
+            AasxPluginResultEventBase newPluginResultEvent = null,
             bool onlyUpdateAasxPanel = false)
         {
             signalNewDataMode = mode;
             NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(
                 mode, sessionNumber,
-                newLambdaAction, onlyUpdatePanel: onlyUpdateAasxPanel));
+                newLambdaAction, 
+                newPluginResultEvent,
+                onlyUpdatePanel: onlyUpdateAasxPanel));
         }
 
         public static void EvalSetValueLambdaAndHandleReturn(
@@ -219,6 +228,13 @@ namespace BlazorUI
                 {
                     var arg = args[index].Trim().ToLower();
                     var morearg = (args.Length - 1) - index;
+
+                    // switches
+                    if (arg == "-noedit")
+                    {
+                        Program.DisableEdit = true;
+                        continue;
+                    }
 
                     // commands with 1 argument
                     if (arg == "-aasxrepo" && morearg > 0)

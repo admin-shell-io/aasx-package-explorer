@@ -74,6 +74,7 @@ namespace BlazorUI.Utils
                 var file = System.IO.File.ReadAllBytes(fn);
                 var fileName = System.IO.Path.GetFileName(fn);
                 // Send the data to JS to actually download the file
+                
                 if (display)
                     await runtime.InvokeVoidAsync("BlazorDisplayFile", fileName, mimeType, file);
                 else

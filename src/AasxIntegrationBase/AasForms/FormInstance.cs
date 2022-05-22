@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
@@ -97,7 +96,7 @@ namespace AasxIntegrationBase.AasForms
 
     public interface IFormRenderAnyUi
     {
-        void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk);
+        void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx);
     }
 
     public class FormInstanceBase : IFormInstanceParent, IFormRenderAnyUi
@@ -122,6 +121,11 @@ namespace AasxIntegrationBase.AasForms
         public string OuterPluginName = null;
 
         /// <summary>
+        /// Session for plugin event return
+        /// </summary>
+        public PluginSessionBase OuterPluginSession = null;
+
+        /// <summary>
         /// For the TOPMOST instance, receive the next incoming event ..
         /// </summary>
         public Action<AasxPluginEventReturnBase> subscribeForNextEventReturn = null;
@@ -142,10 +146,12 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public static bool createSubControls = true;
 
+#if USE_WPF
         /// <summary>
         /// The WPF (sub) control, to which this instance is attached to
         /// </summary>
         public UserControl subControl = null;
+#endif
 
         /// <summary>
         /// Set by RenderAnyUito hold the main element of an instance, e.g. to 
@@ -199,7 +205,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk) { }
+        public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+            PluginOperationContextBase opctx) { }
 
         public static AnyUiLambdaActionPluginUpdateAnyUi NewLambdaUpdateUi(IFormInstanceParent current)
         {
@@ -248,11 +255,13 @@ namespace AasxIntegrationBase.AasForms
                 return;
 
             // adapt?
+            evt.Session = topBase.OuterPluginSession;
             if (topBase.OuterPluginName != null
                 && evt is AasxPluginEventReturnUpdateAnyUi update)
             {
                 update.PluginName = topBase.OuterPluginName;
             }
+
 
             // push if possible
             topBase.outerEventStack?.PushEvent(evt);
@@ -343,7 +352,10 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceBase parentForm = null;
         public FormDescBase workingDesc = null;
+
+#if USE_WPF
         public UserControl subControl = null;
+#endif
 
         public IFormInstanceParent GetInstanceParent() { return parentForm; }
 
@@ -574,7 +586,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // need some preparation
             int maxRowsBound = 9999;
@@ -614,6 +627,12 @@ namespace AasxIntegrationBase.AasForms
                 maxRows = maxRowsBound;
                 showButtonsMinus = true;
                 showButtonPlus = true;
+            }
+
+            if (opctx?.IsDisplayModeEditOrAdd != true)
+            {
+                showButtonPlus = false;
+                showButtonsMinus = false;
             }
 
             // reserve instances
@@ -656,7 +675,7 @@ namespace AasxIntegrationBase.AasForms
                 };
 
             var g = FormInstanceAnyUiHelper.RenderAnyUiHead(
-                view, uitk, desc, null,
+                view, uitk, opctx, desc, null,
                 extraRows: SubInstances.Count,
                 plusButtonLambda: lambda);
 
@@ -752,14 +771,14 @@ namespace AasxIntegrationBase.AasForms
                     && (descsme.FormEditIdShort || descsme.FormEditDescription))
                 {
                     FormInstanceAnyUiHelper.RenderAnyUiRefAttribs(
-                        inner, uitk, descsme, sisme.sme, current: this,
+                        inner, uitk, opctx, descsme, sisme.sme, current: this,
                         touch: sisme.Touch,
                         editIdShort: descsme.FormEditIdShort,
                         editDesc: descsme.FormEditDescription);
                 }
 
                 // SME specifics itself
-                si.RenderAnyUi(inner, uitk);
+                si.RenderAnyUi(inner, uitk, opctx);
             }
 
         }
@@ -772,7 +791,7 @@ namespace AasxIntegrationBase.AasForms
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
         public static AnyUiGrid RenderAnyUiHead(
-            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
             AdminShell.Referable rf,
             int? extraRows = null,
@@ -819,14 +838,7 @@ namespace AasxIntegrationBase.AasForms
                         preferInternalDisplay = true
                     });
 
-            //uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 3,
-            //    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
-            //    content: $"{descsm?.FormTitle} {sm?.idShort}");
-
-            //uitk.AddSmallButtonTo(g, 0, 3, setHeight: 18.0, margin: new AnyUiThickness(2.0),
-            //    content: "\u21a6");
-
-            if (plusButtonLambda != null)
+            if (plusButtonLambda != null && opctx?.IsDisplayModeEditOrAdd == true)
             {
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallButtonTo(g, 0, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
@@ -851,7 +863,7 @@ namespace AasxIntegrationBase.AasForms
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
         public static AnyUiGrid RenderAnyUiRefAttribs(
-            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
             AdminShell.Referable rf,
             IFormInstanceParent current,
@@ -924,16 +936,17 @@ namespace AasxIntegrationBase.AasForms
                         content: "('+' to add language set)");
 
                 // "Plus" in first row
-                AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row, 4,
-                        setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                        content: "\u2795"),
-                        (o) =>
-                        {
-                            rf.AddDescription("", "");
-                            touch?.Invoke();
-                            return FormInstanceBase.NewLambdaUpdateUi(current);
-                        });
+                if (opctx?.IsDisplayModeEditOrAdd == true)
+                    AnyUiUIElement.RegisterControl(
+                        uitk.AddSmallButtonTo(g, row, 4,
+                            setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                            content: "\u2795"),
+                            (o) =>
+                            {
+                                rf.AddDescription("", "");
+                                touch?.Invoke();
+                                return FormInstanceBase.NewLambdaUpdateUi(current);
+                            });
 
                 // finally
                 row++;
@@ -969,17 +982,20 @@ namespace AasxIntegrationBase.AasForms
                             });
 
                         // button
-                        var storedLs = ls;
-                        AnyUiUIElement.RegisterControl(
-                            uitk.AddSmallButtonTo(g, row, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                                content: "\u2796"),
-                            (o) =>
-                            {
-                                if (rf.description.langString.Contains(storedLs))
-                                    rf.description.langString.Remove(storedLs);
-                                touch?.Invoke();
-                                return FormInstanceBase.NewLambdaUpdateUi(current);
-                            });
+                        if (opctx?.IsDisplayModeEditOrAdd == true)
+                        {
+                            var storedLs = ls;
+                            AnyUiUIElement.RegisterControl(
+                                uitk.AddSmallButtonTo(g, row, 4, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                                    content: "\u2796"),
+                                (o) =>
+                                {
+                                    if (rf.description.langString.Contains(storedLs))
+                                        rf.description.langString.Remove(storedLs);
+                                    touch?.Invoke();
+                                    return FormInstanceBase.NewLambdaUpdateUi(current);
+                                });
+                        }
 
                         // row by row
                         row++;
@@ -1092,8 +1108,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override
-            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+                PluginOperationContextBase opctx)
         {
             // Intended layout
             // Grid
@@ -1128,14 +1144,14 @@ namespace AasxIntegrationBase.AasForms
 
             if (true)
             {
-                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, descsm, sm);
+                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, opctx, descsm, sm);
             }
 
             // idShort / Description
 
             foreach (var pair in this.PairInstances)
             {
-                pair.instances.RenderAnyUi(view, uitk);
+                pair.instances.RenderAnyUi(view, uitk, opctx);
             }
         }
     }
@@ -1270,11 +1286,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlSMEC();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -1331,8 +1349,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(
-            AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // Intended layout
             // Grid
@@ -1352,7 +1370,7 @@ namespace AasxIntegrationBase.AasForms
 
             if (false)
             {
-                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, descsm, sme);
+                FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, opctx, descsm, sme);
             }
 
             // idShort / Description
@@ -1368,7 +1386,7 @@ namespace AasxIntegrationBase.AasForms
                 inner.Background = AnyUiBrushes.White;
                 inner.Margin = new AnyUiThickness(4, 4, 4, 0);
 
-                pair.instances.RenderAnyUi(inner, uitk);
+                pair.instances.RenderAnyUi(inner, uitk, opctx);
             }
         }
     }
@@ -1417,11 +1435,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlProperty();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>
@@ -1475,9 +1495,10 @@ namespace AasxIntegrationBase.AasForms
             this.Touch();
 
             // refresh
+#if USE_WPF
             if (this.subControl != null && this.subControl is FormSubControlProperty scp)
                 scp.UpdateDisplay();
-
+#endif
             if (MainControl is AnyUiTextBox mtb)
             {
                 mtb.Text = pThis.value;
@@ -1494,8 +1515,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override
-            void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+            PluginOperationContextBase opctx)
         {
             // access
             var prop = sme as AdminShell.Property;
@@ -1605,11 +1626,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlMultiLangProp();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>
@@ -1636,7 +1659,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // access
             var mlp = sme as AdminShell.MultiLanguageProperty;
@@ -1662,17 +1686,18 @@ namespace AasxIntegrationBase.AasForms
                 content: "Value:");
 
             // "Plus" button in 1st row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                    content: "\u2795"),
-                    (o) =>
-                    {
-                        if (mlp.value?.langString == null)
-                            mlp.value = new AdminShell.LangStringSet();
-                        mlp.value.langString.Add(new AdminShell.LangStr());
-                        Touch();
-                        return NewLambdaUpdateUi(this);
-                    });
+            if (opctx?.IsDisplayModeEditOrAdd == true)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                        content: "\u2795"),
+                        (o) =>
+                        {
+                            if (mlp.value?.langString == null)
+                                mlp.value = new AdminShell.LangStringSet();
+                            mlp.value.langString.Add(new AdminShell.LangStr());
+                            Touch();
+                            return NewLambdaUpdateUi(this);
+                        });
 
             // no content? .. info on 1st row
             if (mlp.value?.langString == null || mlp.value.Count < 1)
@@ -1719,17 +1744,20 @@ namespace AasxIntegrationBase.AasForms
                     });
 
                 // button
-                var storedLs = ls;
-                AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-                        content: "\u2796"),
-                    (o) =>
-                    {
-                        if (mlp.value.langString.Contains(storedLs))
-                            mlp.value.langString.Remove(storedLs);
-                        Touch();
-                        return NewLambdaUpdateUi(this);
-                    });
+                if (opctx?.IsDisplayModeEditOrAdd == true)
+                {
+                    var storedLs = ls;
+                    AnyUiUIElement.RegisterControl(
+                        uitk.AddSmallButtonTo(g, row, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
+                            content: "\u2796"),
+                        (o) =>
+                        {
+                            if (mlp.value.langString.Contains(storedLs))
+                                mlp.value.langString.Remove(storedLs);
+                            Touch();
+                            return NewLambdaUpdateUi(this);
+                        });
+                }
             }
         }
     }
@@ -1764,11 +1792,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlFile();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>
@@ -1842,7 +1872,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // access
             var file = sme as AdminShell.File;
@@ -1879,43 +1910,45 @@ namespace AasxIntegrationBase.AasForms
                 });
 
             // "Clear" button in 1st row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
-                    content: "Clear"),
-                    (o) =>
-                    {
-                        file.value = "";
-                        FileToLoad = null;
-                        Touch();
-                        return NewLambdaUpdateUi(this);
-                    });
+            if (opctx?.IsDisplayModeEditOrAdd == true)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
+                        content: "Clear"),
+                        (o) =>
+                        {
+                            file.value = "";
+                            FileToLoad = null;
+                            Touch();
+                            return NewLambdaUpdateUi(this);
+                        });
 
             // "Select" button in 2nd row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
-                    content: "Select"),
-                    (o) =>
-                    {
-                        // kick off dialogue in main application
-                        var tempI = this;
-                        tempI.PushAndAdaptEventFromTop(
-                            new AasxIntegrationBase.AasxPluginResultEventSelectFile(),
-                            (revt) =>
-                            {
-                                if (revt is AasxPluginEventReturnSelectFile rsel
-                                    && rsel.FileNames != null && rsel.FileNames.Length > 0)
+            if (opctx?.IsDisplayModeEditOrAdd == true)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
+                        content: "Select"),
+                        (o) =>
+                        {
+                            // kick off dialogue in main application
+                            var tempI = this;
+                            tempI.PushAndAdaptEventFromTop(
+                                new AasxIntegrationBase.AasxPluginResultEventSelectFile(),
+                                (revt) =>
                                 {
-                                    // do it
-                                    FileToLoad = rsel.FileNames[0];
-                                    Touch();
+                                    if (revt is AasxPluginEventReturnSelectFile rsel
+                                        && rsel.FileNames != null && rsel.FileNames.Length > 0)
+                                    {
+                                        // do it
+                                        FileToLoad = rsel.FileNames[0];
+                                        Touch();
 
-                                    // send event to re-render
-                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
-                                }
-                            });
+                                        // send event to re-render
+                                        tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
+                                    }
+                                });
 
-                        return new AnyUiLambdaActionNone();
-                    });
+                            return new AnyUiLambdaActionNone();
+                        });
         }
     }
 
@@ -1944,11 +1977,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlReferenceElement();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>
@@ -1975,7 +2010,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // access
             var refe = sme as AdminShell.ReferenceElement;
@@ -2006,46 +2042,48 @@ namespace AasxIntegrationBase.AasForms
                 text: info);
 
             // "Clear" button in 1st row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
-                    content: "Clear"),
-                    (o) =>
-                    {
-                        refe.value = null;
-                        Touch();
-                        return NewLambdaUpdateUi(this);
-                    });
+            if (opctx?.IsDisplayModeEditOrAdd == true)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 0, 2, margin: new AnyUiThickness(1.0),
+                        content: "Clear"),
+                        (o) =>
+                        {
+                            refe.value = null;
+                            Touch();
+                            return NewLambdaUpdateUi(this);
+                        });
 
             // "Select" button in 2nd row
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
-                    content: "Select"),
-                    (o) =>
-                    {
-                        // kick off dialogue in main application
-                        var tempI = this;
-                        tempI.PushAndAdaptEventFromTop(
-                            new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
-                            {
-                                filterEntities = AdminShell.Key.AllElements,
-                                showAuxPackage = true,
-                                showRepoFiles = true
-                            },
-                            (revt) =>
-                            {
-                                if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+            if (opctx?.IsDisplayModeEditOrAdd == true)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(g, 1, 2, margin: new AnyUiThickness(1.0),
+                        content: "Select"),
+                        (o) =>
+                        {
+                            // kick off dialogue in main application
+                            var tempI = this;
+                            tempI.PushAndAdaptEventFromTop(
+                                new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                 {
-                                    // do it
-                                    refe.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
-                                    Touch();
+                                    filterEntities = AdminShell.Key.AllElements,
+                                    showAuxPackage = true,
+                                    showRepoFiles = true
+                                },
+                                (revt) =>
+                                {
+                                    if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                                    {
+                                        // do it
+                                        refe.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                                        Touch();
 
-                                    // send event to re-render
-                                    tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
-                                }
-                            });
+                                        // send event to re-render
+                                        tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
+                                    }
+                                });
 
-                        return new AnyUiLambdaActionNone();
-                    });
+                            return new AnyUiLambdaActionNone();
+                        });
         }
     }
 
@@ -2075,11 +2113,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlRelationshipElement();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>
@@ -2107,7 +2147,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
         {
             // access
             var rele = sme as AdminShell.RelationshipElement;
@@ -2159,46 +2200,48 @@ namespace AasxIntegrationBase.AasForms
                     text: info);
 
                 // "Clear" button in 1st row
-                AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row + 1, 2, margin: new AnyUiThickness(1.0),
-                        content: "Clear"),
-                        (o) =>
-                        {
-                            valSet(null);
-                            Touch();
-                            return NewLambdaUpdateUi(this);
-                        });
+                if (opctx?.IsDisplayModeEditOrAdd == true)
+                    AnyUiUIElement.RegisterControl(
+                        uitk.AddSmallButtonTo(g, row + 1, 2, margin: new AnyUiThickness(1.0),
+                            content: "Clear"),
+                            (o) =>
+                            {
+                                valSet(null);
+                                Touch();
+                                return NewLambdaUpdateUi(this);
+                            });
 
                 // "Select" button in 2nd row
-                AnyUiUIElement.RegisterControl(
-                    uitk.AddSmallButtonTo(g, row + 2, 2, margin: new AnyUiThickness(1.0),
-                        content: "Select"),
-                        (o) =>
-                        {
-                            // kick off dialogue in main application
-                            var tempI = this;
-                            tempI.PushAndAdaptEventFromTop(
-                                new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
-                                {
-                                    filterEntities = AdminShell.Key.AllElements,
-                                    showAuxPackage = true,
-                                    showRepoFiles = true
-                                },
-                                (revt) =>
-                                {
-                                    if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                if (opctx?.IsDisplayModeEditOrAdd == true)
+                    AnyUiUIElement.RegisterControl(
+                        uitk.AddSmallButtonTo(g, row + 2, 2, margin: new AnyUiThickness(1.0),
+                            content: "Select"),
+                            (o) =>
+                            {
+                                // kick off dialogue in main application
+                                var tempI = this;
+                                tempI.PushAndAdaptEventFromTop(
+                                    new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                     {
-                                        // do it
-                                        valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
-                                        Touch();
+                                        filterEntities = AdminShell.Key.AllElements,
+                                        showAuxPackage = true,
+                                        showRepoFiles = true
+                                    },
+                                    (revt) =>
+                                    {
+                                        if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                                        {
+                                            // do it
+                                            valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
+                                            Touch();
 
-                                        // send event to re-render
-                                        tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
-                                    }
-                                });
+                                            // send event to re-render
+                                            tempI.PushAndAdaptEventFromTop(NewResultEventUpdateUi());
+                                        }
+                                    });
 
-                            return new AnyUiLambdaActionNone();
-                        });
+                                return new AnyUiLambdaActionNone();
+                            });
             }
         }
 
@@ -2229,11 +2272,13 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // create user control
+#if USE_WPF
             if (createSubControls)
             {
                 this.subControl = new FormSubControlCapability();
                 this.subControl.DataContext = this;
             }
+#endif
         }
 
         /// <summary>

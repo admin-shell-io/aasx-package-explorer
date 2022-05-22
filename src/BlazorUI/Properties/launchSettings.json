@@ -17,7 +17,7 @@
     },
     "BlazorUI": {
       "commandName": "Project",
-      "commandLineArgs": "-aasxrepo .\\repo\\vdma-fluid-aasx-repo.json",
+      "commandLineArgs": "-aasxrepo .\\repo\\vdma-fluid-aasx-repo.json -noedit",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

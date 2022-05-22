@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -771,6 +772,22 @@ namespace AnyUi
                         {
                             if (cntl.BitmapInfo?.ImageSource is BitmapSource bs)
                                 wpf.Source = bs;
+                            else if (cntl.BitmapInfo?.PngData != null)
+                            {
+                                using (MemoryStream memory = new MemoryStream())
+                                {
+                                    memory.Write(cntl.BitmapInfo.PngData, 0, cntl.BitmapInfo.PngData.Length);
+                                    memory.Position = 0;
+                                    
+                                    BitmapImage bi = new BitmapImage();
+                                    bi.BeginInit();
+                                    bi.StreamSource = memory;
+                                    bi.CacheOption = BitmapCacheOption.OnLoad;
+                                    bi.EndInit();
+
+                                    wpf.Source = bi;
+                                }
+                            }
 
                             wpf.Stretch = (Stretch)(int) cntl.Stretch;
                         }

@@ -111,24 +111,27 @@
                             <td nowrap>
                             </td>
                             <td nowrap>
-                                <button @onclick="toggleEditMode">
-                                    @{
-                                        if (bi.editMode)
-                                        {
-                                            <span>EditMode is ON</span>
+                                @if (!Program.DisableEdit)
+                                {
+                                    <button @onclick="toggleEditMode">
+                                        @{
+                                            if (bi.editMode)
+                                            {
+                                                <span>EditMode is ON</span>
+                                            }
+                                            else
+                                            {
+                                                <span>EditMode is OFF</span>
+                                            }
                                         }
-                                        else
+                                    </button>
+                                    @code {
+                                        private void toggleEditMode()
                                         {
-                                            <span>EditMode is OFF</span>
+                                            bi.editMode = !bi.editMode;
+                                            this.StateHasChanged();
+                                            Program.signalNewData(0, bi.sessionNumber);
                                         }
-                                    }
-                                </button>
-                                @code {
-                                    private void toggleEditMode()
-                                    {
-                                        bi.editMode = !bi.editMode;
-                                        this.StateHasChanged();
-                                        Program.signalNewData(0, bi.sessionNumber);
                                     }
                                 }
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
@@ -229,16 +232,21 @@
                                 }
                             </td>
                             <td nowrap>
-                                <button @onclick="onSave">Save</button>
+                                @if (!Program.DisableEdit)
+                                {
+                                    <button @onclick="onSave">Save</button>
+                                }
                                 @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
                                 @{
                                     bool isDisabled2 = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
                                     <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
                                 }
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
-                                        @code {
-                                        private async void onSave()
+                                @code {
+                                    private async void onSave()
                                     {
+                                        if (Program.DisableEdit)
+                                            return;
                                         try
                                         {
                                             if (bi.repository?.FileMap?.Count > 0)
@@ -261,6 +269,7 @@
                                         }
                                         this.StateHasChanged();
                                     }
+                                    
                                     async Task DownloadBinary()
                                     {
                                         // Generate a file

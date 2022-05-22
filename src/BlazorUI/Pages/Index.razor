@@ -384,6 +384,9 @@
             @{
                 if (selectedNode != null && selectedNode.Tag != null)
                 {
+                    // brutally remember some data
+                    bi.renderJsRuntime = JSRuntime;
+
                     bool view = false;
                     bi.helper.editMode = bi.editMode;
                     if (bi.editMode)
@@ -439,8 +442,15 @@
                                 }
                                 else
                                 {
+                                    var opContext = new PluginOperationContextBase()
+                                    {
+                                        DisplayMode = (bi.editMode) 
+                                            ? PluginOperationDisplayMode.MayAddEdit
+                                            : PluginOperationDisplayMode.JustDisplay
+                                    };
+
                                     plugin.InvokeAction("fill-anyui-visual-extension", env, sm, 
-                                        bi.stack17, displayContext, bi.sessionNumber);
+                                        bi.stack17, displayContext, bi.sessionNumber, opContext);
 
                                     bi.LoadedPluginInstance = plugin;
                                     bi.LoadedPluginSessionId = bi.sessionNumber;
@@ -503,6 +513,10 @@
         </div>
     </div>
 </div>
+
+@{
+
+}
 
 @code {
 
@@ -638,12 +652,12 @@
                         Program.loadAasx(bi, newLoad);
                         Program.signalNewData(3, bi.sessionNumber);
 
-                        // disable features in MainLayout?
-                        if (Layout != null && header >= 0 && header <= 2)
-                                Layout.ShowHeader = header;
+                    // disable features in MainLayout?
+                    if (Layout != null && header >= 0 && header <= 2)
+                            Layout.ShowHeader = header;
 
-                        // only here, we can changed to SM / plugin
-                        Item itsm = null;
+                    // only here, we can changed to SM / plugin
+                    Item itsm = null;
 
                         if (smId != null && pluginTag != null)
                             itsm = Items?.FindSubmodelPlugin(smId, pluginTag);
@@ -705,6 +719,17 @@
                 if (ndm.signalNewLambdaAction is AnyUiLambdaActionRedrawEntity)
                     // force the sticky update mode to false, because of redraw of entity
                     _onlyUpdatePluginUi = false;
+
+                if (ndm.signalNewPluginResultEvent is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                    && bi.renderJsRuntime != null
+                    && evtDispCont.fn != null)
+                {
+                    InvokeAsync(async () => {
+                        await BlazorUtils.DisplayOrDownloadFile(bi.renderJsRuntime, evtDispCont.fn, evtDispCont.mimeType);
+                        this.StateHasChanged();
+                    });
+                    return;
+                }
 
                 // re-create items
                 Items = SubmodelService.GetTree(bi, selectedNode, ExpandedNodes);
@@ -1280,12 +1305,17 @@
             //====================
 
             if (evt is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                && evtDispCont.Session?.SessionId is int evSessionNr
                 && evtDispCont.fn != null)
             {
-                InvokeAsync(async () => {
-                    await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
-                    this.StateHasChanged();
-                });
+#if TEST
+            InvokeAsync(async () => {
+                await BlazorUtils.DisplayOrDownloadFile(JSRuntime, evtDispCont.fn, evtDispCont.mimeType);
+                this.StateHasChanged();
+            });
+#else
+                Program.signalNewData(0, evSessionNr, newPluginResultEvent: evtDispCont);
+#endif
             }
 
             // Redraw All
@@ -1301,8 +1331,8 @@
             // Select AAS entity
             //=======================
 
-            var evSelectEntity = evt as AasxIntegrationBase.AasxPluginResultEventSelectAasEntity;
-            if (evSelectEntity != null)
+            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectAasEntity evSelectEntity
+                && evSelectEntity.Session?.SessionId is int sessionId)
             {
                 ;
                 var found = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
@@ -1310,8 +1340,10 @@
                 {
                     // select function
                     found.htmlEventInputs.Clear();
+                    found.htmlEventOutputs.Clear();
                     found.htmlEventType = "ModalSelectEntity";
                     found.htmlEventIn = true;
+                    found.htmlEventOut = false;
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
@@ -1329,8 +1361,10 @@
                         pluginInstance?.InvokeAction("event-return",
                            new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
                            {
+                               sourceEvent = evSelectEntity,
                                resultKeys = kl
-                           });
+                           },
+                           sessionId);
                     }
 
                     // clean
@@ -1345,15 +1379,18 @@
             // Select File
             //============
 
-            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel)
+            if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel
+                && fileSel.Session?.SessionId is int sessionId3)
             {
-                var found = AnyUiDisplayContextHtml.findSession(bi.sessionNumber);
+                var found = AnyUiDisplayContextHtml.findSession(sessionId3 /* bi.sessionNumber */);
                 if (found != null)
                 {
                     // select function
                     found.htmlEventInputs.Clear();
+                    found.htmlEventOutputs.Clear();
                     found.htmlEventType = "ModalSelectFile";
                     found.htmlEventIn = true;
+                    found.htmlEventOut = false;
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
@@ -1369,8 +1406,10 @@
                         pluginInstance?.InvokeAction("event-return",
                             new AasxIntegrationBase.AasxPluginEventReturnSelectFile()
                             {
+                                sourceEvent = fileSel,
                                 FileNames = new [] { fn }
-                            });
+                            },
+                            sessionId3);
                     }
 
                     // clean
@@ -1386,6 +1425,7 @@
             //============
 
             if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox
+                && evMsgBox.Session?.SessionId is int sessionId2
                 && context != null)
             {
                 var res = context.MessageBoxFlyoutShow(
@@ -1393,7 +1433,11 @@
 
                 // fire back
                 pluginInstance?.InvokeAction("event-return",
-                    new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = res });
+                    new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { 
+                        sourceEvent = evt,
+                        Result = res 
+                    },
+                    sessionId2);
             }
 
             // Re-render Any UI Panels

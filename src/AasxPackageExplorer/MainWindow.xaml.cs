@@ -1488,7 +1488,8 @@ namespace AasxPackageExplorer
                         retev.resultKeys = uc.DiaData.ResultKeys;
 
                         // fire back
-                        pluginInstance?.InvokeAction("event-return", retev);
+                        pluginInstance?.InvokeAction("event-return", retev, 
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
                 }
 
@@ -1527,7 +1528,8 @@ namespace AasxPackageExplorer
                         retev.FileNames = dlg.FileNames;
 
                         // fire back
-                        pluginInstance?.InvokeAction("event-return", retev);
+                        pluginInstance?.InvokeAction("event-return", retev,
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
                 }
 
@@ -1543,7 +1545,11 @@ namespace AasxPackageExplorer
 
                     // fire back
                     pluginInstance?.InvokeAction("event-return",
-                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { Result = uc.Result });
+                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { 
+                            sourceEvent = evt,
+                            Result = uc.Result 
+                        },
+                        AnyUiDisplayContextWpf.SessionSingletonWpf);
                 }
 
                 // Re-render Any UI Panels

@@ -17,6 +17,7 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Microsoft.JSInterop;
 
 namespace BlazorUI.Data
 {
@@ -42,6 +43,8 @@ namespace BlazorUI.Data
 
         public string thumbNail = null;
 
+        public IJSRuntime renderJsRuntime = null;
+        
         public static int sessionCounter = 0;
         public int sessionNumber = 0;
         public static int sessionTotal = 0;

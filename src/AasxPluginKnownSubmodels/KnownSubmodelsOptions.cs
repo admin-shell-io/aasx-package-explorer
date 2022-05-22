@@ -39,7 +39,7 @@ namespace AasxPluginKnownSubmodels
             opt.Records.Add(new KnownSubmodelsOptionsRecord()
             {
                 Header = "ZVEI Contact Information (Version 1.0)",
-                Content = "This submodel template aims at interoperable provision of contact information in regard " +
+                Content = "This Submodel template aims at interoperable provision of contact information in regard " +
                     "to the asset of the respective Asset Administration Shell. " +
                     "The intended use-case is the provision of a standardized property structure for contact " +
                     "information, which can effectively accelerate the preperation for asset maintenance.",

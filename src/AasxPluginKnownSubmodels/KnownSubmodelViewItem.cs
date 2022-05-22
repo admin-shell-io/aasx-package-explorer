@@ -8,13 +8,8 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 
 namespace AasxPluginKnownSubmodels
 {
@@ -26,12 +21,14 @@ namespace AasxPluginKnownSubmodels
 
         public string ImagePath = "";
 
+#if USE_WPF
         private BitmapImage _imageData = null;
         public BitmapImage DisplayImageData
         {
             get { TryLoadImageData(); return _imageData; }
             set { _imageData = value; }
         }
+#endif
 
         public KnownSubmodelViewItem() { }
 
@@ -48,6 +45,7 @@ namespace AasxPluginKnownSubmodels
 
         public void TryLoadImageData()
         {
+#if USE_WPF
             // only once
             if (_imageData != null)
                 return;
@@ -57,6 +55,7 @@ namespace AasxPluginKnownSubmodels
                 _imageData = new BitmapImage(new Uri(ImagePath, UriKind.RelativeOrAbsolute));
             }
             catch {; }
+#endif
         }
     }
 

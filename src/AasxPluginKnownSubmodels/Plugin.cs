@@ -27,7 +27,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options
             = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
 
+#if USE_WPF
         private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl = null;
+#endif
 
         public class Session : PluginSessionBase
         {
@@ -88,8 +90,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension",
                 "Returns true, if plug-ins checks for visual extension."));
+#if USE_WPF
             res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension",
                 "When called, fill given WPF panel with control for graph display."));
+#endif
             res.Add(new AasxPluginActionDescriptionBase(
                 "fill-anyui-visual-extension",
                 "When called, fill given AnyUI panel with control for graph display."));
@@ -132,7 +136,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                                 }
 #else
                 bool found = _options?.ContainsIndexKey(sm?.semanticId?.GetAsExactlyOneKey()) ?? false;
-#endif               
+#endif
                 if (!found)
                     return null;
 
@@ -236,6 +240,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
             }
 
+#if USE_WPF
             if (action == "fill-panel-visual-extension" && _viewerControl != null)
             {
                 // arguments
@@ -252,6 +257,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 res.obj = resobj;
                 return res;
             }
+#endif
 
             // default
             return null;
