@@ -22,6 +22,7 @@ namespace AasxPluginGenericForms
         private AasxPluginGenericForms.GenericFormOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
+        private PluginOperationContextBase _opContext = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
 
@@ -40,7 +41,8 @@ namespace AasxPluginGenericForms
             AdminShell.Submodel theSubmodel,
             AasxPluginGenericForms.GenericFormOptions theOptions,
             PluginEventStack eventStack,
-            AnyUiStackPanel panel)
+            AnyUiStackPanel panel,
+            PluginOperationContextBase opContext)
         {
             _log = log;
             _package = thePackage;
@@ -48,6 +50,7 @@ namespace AasxPluginGenericForms
             _options = theOptions;
             _eventStack = eventStack;
             _panel = panel;
+            _opContext = opContext;
 
             // fill given panel
             DisplaySubmodel(_panel, _uitk);
@@ -58,7 +61,8 @@ namespace AasxPluginGenericForms
             object opackage, object osm,
             AasxPluginGenericForms.GenericFormOptions options,
             PluginEventStack eventStack,
-            object opanel)
+            object opanel,
+            PluginOperationContextBase opContext)
         {
             // access
             var package = opackage as AdminShellPackageEnv;
@@ -75,7 +79,7 @@ namespace AasxPluginGenericForms
 
             // factory this object
             var shelfCntl = new GenericFormsAnyUiControl();
-            shelfCntl.Start(log, package, sm, options, eventStack, panel);
+            shelfCntl.Start(log, package, sm, options, eventStack, panel, opContext);
 
             // return shelf
             return shelfCntl;
@@ -110,18 +114,27 @@ namespace AasxPluginGenericForms
 
             // initialize form
             _form = new AnyUiRenderForm(
-                fi,
+                fi, 
                 updateMode: true);
 
-            // bring it to the panel            
-            _form.RenderFormInst(view, uitk,
-                lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
-                lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
-                lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
+            // bring it to the panel
+            if (_opContext?.IsDisplayModeEditOrAdd == true)
+            {
+                _form.RenderFormInst(view, uitk, _opContext,
+                    lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
+                    lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
+                    lambdaOK: (o) => ButtonTabPanels_Click("ButtonUpdate"));
+            }
+            else
+            {
+                // display only
+                _form.RenderFormInst(view, uitk, _opContext,
+                    lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"));
+            }
         }
 
 
-
+      
         #endregion
 
         #region Event handling
@@ -141,14 +154,14 @@ namespace AasxPluginGenericForms
         {
             // check args
             if (args == null || args.Length < 1
-                || !(args[0] is AnyUiStackPanel newPanel))
+                || !(args[0] is AnyUiStackPanel newPanel)) 
                 return;
 
             // ok, re-assign panel and re-display
             _panel = newPanel;
             _panel.Children.Clear();
 
-            _form?.RenderFormInst(_panel, _uitk,
+            _form?.RenderFormInst(_panel, _uitk, _opContext,
                 setLastScrollPos: true,
                 lambdaFixCds: (o) => ButtonTabPanels_Click("ButtonFixCDs"),
                 lambdaCancel: (o) => ButtonTabPanels_Click("ButtonCancel"),
@@ -272,13 +285,13 @@ namespace AasxPluginGenericForms
                 _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
 
                 // re-display (tree & panel)
-                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };
+                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel } ;
             }
 
             // no?
             return new AnyUiLambdaActionNone();
         }
 
-        #endregion
+#endregion
     }
 }

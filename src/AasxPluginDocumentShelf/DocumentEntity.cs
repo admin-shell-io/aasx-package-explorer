@@ -10,18 +10,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
+using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AdminShellNS;
 using AnyUi;
-using AasxIntegrationBaseWpf;
 
 namespace AasxPluginDocumentShelf
 {
@@ -47,7 +40,10 @@ namespace AasxPluginDocumentShelf
         public string FurtherInfo = "";
         public string[] CountryCodes;
         public FileInfo DigitalFile, PreviewFile;
+
+#if USE_WPF
         public System.Windows.Controls.Viewbox ImgContainerWpf = null;
+#endif
         public AnyUiImage ImgContainerAnyUi = null;
         public string ReferableHash = null;
 
@@ -104,7 +100,7 @@ namespace AasxPluginDocumentShelf
         /// <summary>
         /// This function needs to be called as part of tick-Thread in STA / UI thread
         /// </summary>
-        public BitmapImage LoadImageFromPath(string fn)
+        public AnyUiBitmapInfo LoadImageFromPath(string fn)
         {
             // be a bit suspicous ..
             if (!File.Exists(fn))
@@ -113,6 +109,7 @@ namespace AasxPluginDocumentShelf
             // convert here, as the tick-Thread in STA / UI thread
             try
             {
+#if USE_WPF
                 var bi = new BitmapImage(new Uri(fn, UriKind.RelativeOrAbsolute));
 
                 if (ImgContainerWpf != null)
@@ -126,8 +123,10 @@ namespace AasxPluginDocumentShelf
                 {
                     ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
                 }
-
                 return bi;
+#else
+                ImgContainerAnyUi.BitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapInfo(fn);
+#endif
             }
             catch (Exception ex)
             {

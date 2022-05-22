@@ -63,6 +63,7 @@
             const data = base64DecToArr(content);
 
             // Create the URL
+
             const file = new File([data], filename, { type: contentType });
             const exportUrl = URL.createObjectURL(file);
 
@@ -71,7 +72,8 @@
             document.body.appendChild(a);
             a.href = exportUrl;
             a.download = filename;
-            a.target = "_self";
+            a.target = "_blank";
+            // a.target = "_self";
             a.click();
 
             // We don't need to keep the url, let's release the memory
@@ -83,6 +85,18 @@
             // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
             const data = base64DecToArr(content);
 
+            // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
+            // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..
+
+            var sBrowser, sUsrAg = navigator.userAgent;
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                contentType = "application/octet-stream";
+            }
+
+            console.log("sBrowser=" + sBrowser);
+            console.log("sUsrAg=" + sUsrAg);
+            console.log("contentType=" + contentType);
+
             // Create the URL
             const file = new File([data], filename, { type: contentType });
             const exportUrl = URL.createObjectURL(file);
@@ -91,6 +105,11 @@
             const a = document.createElement("a");
             document.body.appendChild(a);
             a.href = exportUrl;
+
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                a.download = filename;
+            }
+
             a.target = "_blank";
             a.click();
 

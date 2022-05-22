@@ -447,9 +447,17 @@ namespace AasxPackageExplorer
 
                         try
                         {
+                            var opContext = new PluginOperationContextBase()
+                            {
+                                DisplayMode = (editMode)
+                                            ? PluginOperationDisplayMode.MayAddEdit
+                                            : PluginOperationDisplayMode.JustDisplay
+                            };
+
                             var uires = vepe.thePlugin.InvokeAction(
                                 "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                                stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf);
+                                stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
+                                opContext);
                         }
                         catch (Exception ex)
                         {

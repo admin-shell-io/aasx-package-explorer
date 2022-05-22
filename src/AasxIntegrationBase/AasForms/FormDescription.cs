@@ -9,13 +9,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
 

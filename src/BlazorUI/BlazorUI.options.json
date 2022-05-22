@@ -2,7 +2,6 @@
   "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
   "PluginPrefer": "ANYUI",
   "PluginDll": [
-/*
     {
       "Path": "..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net472\\AasxPluginGenericForms.dll",
       "Args": []
@@ -14,7 +13,7 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
       "Args": []
-    }, */
+    },
     {
       "Path": "..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
       "Args": []

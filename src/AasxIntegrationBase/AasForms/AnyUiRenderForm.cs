@@ -32,6 +32,7 @@ namespace AasxIntegrationBase.AasForms
 
         public void RenderFormInst(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx,
             bool setLastScrollPos = false,
             Func<object, AnyUiLambdaActionBase> lambdaFixCds = null,
             Func<object, AnyUiLambdaActionBase> lambdaCancel = null,
@@ -53,45 +54,38 @@ namespace AasxIntegrationBase.AasForms
                 setBold: true,
                 content: $"Edit");
 
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 1,
-                    margin: new AnyUiThickness(2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Fix missing CDs .."),
-                lambdaFixCds);
-            //(o) =>
-            //{
-            //    return ButtonTabPanels_Click("ButtonFixCDs");
-            //});
+            if (lambdaFixCds != null)
+            {
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(header, 0, 1,
+                        margin: new AnyUiThickness(2), setHeight: 21,
+                        padding: new AnyUiThickness(2, 0, 2, 0),
+                        content: "Fix missing CDs .."),
+                    lambdaFixCds);
 
-            uitk.AddSmallBasicLabelTo(header, 0, 2,
-                foreground: AnyUiBrushes.DarkBlue,
-                margin: new AnyUiThickness(4, 0, 4, 0),
-                verticalAlignment: AnyUiVerticalAlignment.Center,
-                verticalContentAlignment: AnyUiVerticalAlignment.Center,
-                content: "|");
+                uitk.AddSmallBasicLabelTo(header, 0, 2,
+                    foreground: AnyUiBrushes.DarkBlue,
+                    margin: new AnyUiThickness(4, 0, 4, 0),
+                    verticalAlignment: AnyUiVerticalAlignment.Center,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center,
+                    content: "|");
+            }
 
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 3,
-                    margin: new AnyUiThickness(2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Cancel"),
-                lambdaCancel);
-            //(o) =>
-            //{
-            //    // return ButtonTabPanels_Click("ButtonCancel");
-            //});
+            if (lambdaCancel != null)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(header, 0, 3,
+                        margin: new AnyUiThickness(2), setHeight: 21,
+                        padding: new AnyUiThickness(2, 0, 2, 0),
+                        content: "Cancel"),
+                    lambdaCancel);
 
-            AnyUiUIElement.RegisterControl(
-                uitk.AddSmallButtonTo(header, 0, 4,
-                    margin: new AnyUiThickness(2, 2, 4, 2), setHeight: 21,
-                    padding: new AnyUiThickness(2, 0, 2, 0),
-                    content: "Update to AAS"),
-                lambdaOK);
-            //(o) =>
-            //{
-            //    return ButtonTabPanels_Click("ButtonUpdate");
-            //});
+            if (lambdaOK != null)
+                AnyUiUIElement.RegisterControl(
+                    uitk.AddSmallButtonTo(header, 0, 4,
+                        margin: new AnyUiThickness(2, 2, 4, 2), setHeight: 21,
+                        padding: new AnyUiThickness(2, 0, 2, 0),
+                        content: "Update to AAS"),
+                    lambdaOK);
 
             // small spacer
             var space = uitk.AddSmallBasicLabelTo(outer, 1, 0,
@@ -125,7 +119,7 @@ namespace AasxIntegrationBase.AasForms
 
             // render the innerts of the scroll viewer
             inner.Background = AnyUiBrushes.LightGray;
-            _currentFormInst.RenderAnyUi(inner, uitk);
+            _currentFormInst.RenderAnyUi(inner, uitk, opctx);
         }
 
         public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)

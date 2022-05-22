@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
-using AasxIntegrationBase.AasForms;
-using AasxIntegrationBaseWpf;
-using AasxPredefinedConcepts;
-using AasxPredefinedConcepts.ConceptModel;
+using AasxIntegrationBaseGdi;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
@@ -223,11 +215,17 @@ namespace AasxPluginKnownSubmodels
                     Assembly.GetExecutingAssembly()?.Location);
 
                 // path of image to load
-                var imagePath = Path.Combine(basePath, rec.ImageLink);
+                var il = rec.ImageLink.Replace("\\", "/");
+                var imagePath = Path.Combine(basePath, il);
 
                 // load
+#if USE_WPF
                 var bi = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
                 bitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
+#else
+                // Console.WriteLine($"1|Try access package file {imagePath}");
+                bitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapInfo(imagePath);
+#endif
             }
             catch {; }
 
@@ -276,9 +274,9 @@ namespace AasxPluginKnownSubmodels
 
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
         //=============
 
         public void Update(params object[] args)
@@ -296,18 +294,18 @@ namespace AasxPluginKnownSubmodels
             RenderFullView(_panel, _uitk, _package, _submodel);
         }
 
-        #endregion
+#endregion
 
-        #region Callbacks
+#region Callbacks
         //===============
 
 
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
         //===============
 
 
-        #endregion
+#endregion
     }
 }
