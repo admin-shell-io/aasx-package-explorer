@@ -49,7 +49,8 @@ namespace Org.Webpki.Es6NumberSerialization
             internal short binaryExponent;
             internal short decimalExponent;
 
-            internal CachedPower(ulong significand, short binaryExponent, short decimalExponent) {
+            internal CachedPower(ulong significand, short binaryExponent, short decimalExponent)
+            {
                 this.significand = (long)significand;
                 this.binaryExponent = binaryExponent;
                 this.decimalExponent = decimalExponent;
@@ -60,12 +61,12 @@ namespace Org.Webpki.Es6NumberSerialization
         {
             int kQ = NumberDiyFp.kSignificandSize;
             double k = Math.Ceiling((alpha - e + kQ - 1) * kD_1_LOG2_10);
-            int index = (GRISU_CACHE_OFFSET + (int) k - 1) / CACHED_POWERS_SPACING + 1;
+            int index = (GRISU_CACHE_OFFSET + (int)k - 1) / CACHED_POWERS_SPACING + 1;
             CachedPower cachedPower = CACHED_POWERS[index];
 
             c_mk.SetF(cachedPower.significand);
             c_mk.SetE(cachedPower.binaryExponent);
-            Debug.Assert ((alpha <= c_mk.E() + e) && (c_mk.E() + e <= gamma));
+            Debug.Assert((alpha <= c_mk.E() + e) && (c_mk.E() + e <= gamma));
             return cachedPower.decimalExponent;
         }
 
@@ -76,7 +77,7 @@ namespace Org.Webpki.Es6NumberSerialization
         // interval between entries  of the powers cache below
         const int CACHED_POWERS_SPACING = 8;
 
-        static readonly CachedPower[] CACHED_POWERS = 
+        static readonly CachedPower[] CACHED_POWERS =
         {
             new CachedPower(0xe61acf033d1a45dfL,  -1087, -308),
             new CachedPower(0xab70fe17c79ac6caL,  -1060, -300),

@@ -211,7 +211,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = kTen8;
                         exponent = 8;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 26;
                 case 26:
@@ -222,7 +222,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = kTen7;
                         exponent = 7;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 23;
                 case 23:
@@ -234,7 +234,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = kTen6;
                         exponent = 6;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 19;
                 case 19:
@@ -245,7 +245,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = kTen5;
                         exponent = 5;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 16;
                 case 16:
@@ -267,7 +267,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = 1000;
                         exponent = 3;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 9;
                 case 9:
@@ -278,7 +278,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = 100;
                         exponent = 2;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 6;
                 case 6:
@@ -289,7 +289,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = 10;
                         exponent = 1;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 3;
                 case 3:
@@ -300,7 +300,7 @@ namespace Org.Webpki.Es6NumberSerialization
                         power = 1;
                         exponent = 0;
                         break;
-                    }  
+                    }
                     // else fallthrough
                     goto case 0;
                 case 0:
@@ -549,7 +549,8 @@ namespace Org.Webpki.Es6NumberSerialization
         public static bool NumberToString(double v, NumberFastDToABuilder buffer)
         {
             buffer.Reset();
-            if (v < 0) {
+            if (v < 0)
+            {
                 buffer.Append('-');
                 v = -v;
             }

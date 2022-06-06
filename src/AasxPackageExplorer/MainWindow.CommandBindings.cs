@@ -341,7 +341,7 @@ namespace AasxPackageExplorer
                     {
                         if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
                                 sme.submodelElement.idShort == "signature")
-                                    smec = sme.submodelElement as AdminShell.SubmodelElementCollection;
+                            smec = sme.submodelElement as AdminShell.SubmodelElementCollection;
                     }
                     if (smec != null)
                         sm.Remove(smec);

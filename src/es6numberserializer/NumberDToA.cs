@@ -22,8 +22,8 @@
 // Ported to C# from the Mozilla "Rhino" project by Anders Rundgren.
 
 using System;
-using System.Numerics;
 using System.Diagnostics;
+using System.Numerics;
 using System.Text;
 
 /// <summary>
@@ -32,7 +32,8 @@ using System.Text;
 
 namespace Org.Webpki.Es6NumberSerialization
 {
-    class NumberDToA {
+    class NumberDToA
+    {
 
         public const int
                 DTOSTR_STANDARD = 0,              /* Either fixed or exponential format; round-trip */
@@ -69,7 +70,7 @@ namespace Org.Webpki.Es6NumberSerialization
         private const int n_bigtens = 5;
 
 
-        private static double[] tens = 
+        private static double[] tens =
         {
             1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9,
             1e10, 1e11, 1e12, 1e13, 1e14, 1e15, 1e16, 1e17, 1e18, 1e19,
@@ -433,7 +434,8 @@ namespace Org.Webpki.Es6NumberSerialization
             if (ds < 0.0 && ds != k)
                 k--;    /* want k = floor(ds) */
             k_check = true;
-            if (k >= 0 && k <= Ten_pmax) {
+            if (k >= 0 && k <= Ten_pmax)
+            {
                 if (d < tens[k])
                     k--;
                 k_check = false;
@@ -510,7 +512,8 @@ namespace Org.Webpki.Es6NumberSerialization
                when it turns out that k was computed too high by one. */
 
             bool fast_failed = false;
-            if (ilim >= 0 && ilim <= Quick_max && try_quick) {
+            if (ilim >= 0 && ilim <= Quick_max && try_quick)
+            {
 
                 /* Try to get by with floating-point arithmetic. */
 
@@ -519,7 +522,7 @@ namespace Org.Webpki.Es6NumberSerialization
                 k0 = k;
                 ilim0 = ilim;
                 ieps = 2; /* conservative */
-                          /* Divide d by 10^k, keeping track of the roundoff error and avoiding overflows. */
+                /* Divide d by 10^k, keeping track of the roundoff error and avoiding overflows. */
                 if (k > 0)
                 {
                     ds = tens[k & 0xf];
@@ -532,7 +535,8 @@ namespace Org.Webpki.Es6NumberSerialization
                         ieps++;
                     }
                     for (; (j != 0); j >>= 1, i++)
-                        if ((j & 1) != 0) {
+                        if ((j & 1) != 0)
+                        {
                             ieps++;
                             ds *= bigtens[i];
                         }
@@ -568,7 +572,7 @@ namespace Org.Webpki.Es6NumberSerialization
                 eps = SetWord0(eps, Word0(eps) - (P - 1) * Exp_msk1);
                 if (ilim == 0)
                 {
-// Java                    S = mhi = null;
+                    // Java                    S = mhi = null;
                     d -= 5.0;
                     if (d > eps)
                     {
@@ -593,7 +597,8 @@ namespace Org.Webpki.Es6NumberSerialization
                          * generating digits needed.
                          */
                         eps = 0.5 / tens[ilim - 1] - eps;
-                        for (i = 0; ;) {
+                        for (i = 0; ;)
+                        {
                             L = (long)d;
                             d -= L;
                             buf.Append((char)('0' + L));
@@ -630,16 +635,19 @@ namespace Org.Webpki.Es6NumberSerialization
                     {
                         /* Generate ilim digits, then fix them up. */
                         eps *= tens[ilim - 1];
-                        for (i = 1; ; i++, d *= 10.0) {
+                        for (i = 1; ; i++, d *= 10.0)
+                        {
                             L = (long)d;
                             d -= L;
                             buf.Append((char)('0' + L));
-                            if (i == ilim) {
+                            if (i == ilim)
+                            {
                                 if (d > 0.5 + eps)
                                 {
                                     //                                goto bump_up;
                                     char lastCh;
-                                    while (true) {
+                                    while (true)
+                                    {
                                         lastCh = buf[buf.Length - 1];
                                         buf.Length = buf.Length - 1;
                                         if (lastCh != '9') break;
@@ -863,7 +871,8 @@ namespace Org.Webpki.Es6NumberSerialization
                (mhi * 2^m2) / S = maximum acceptable error, divided by 10^k. */
             if (k_check)
             {
-                if (b.CompareTo(S) < 0) {
+                if (b.CompareTo(S) < 0)
+                {
                     k--;
                     b *= 10;  /* we botched the k estimate */
                     if (leftright)
@@ -879,7 +888,8 @@ namespace Org.Webpki.Es6NumberSerialization
                    Output either zero or the minimum nonzero output depending on which is closer to d. */
                 if ((ilim < 0)
                         || ((i = b.CompareTo(S *= 5)) < 0)
-                        || ((i == 0 && !biasUp))) {
+                        || ((i == 0 && !biasUp)))
+                {
                     /* Always emit at least one digit.  If the number appears to be zero
                        using the current mode, then emit one '0' digit and set decpt to 1. */
                     /*no_digits:
@@ -976,9 +986,9 @@ namespace Org.Webpki.Es6NumberSerialization
                     {
                         if (dig == '9')
                         {  /* possible if i == 1 */
-                                          //                    round_9_up:
-                                          //                        *s++ = '9';
-                                          //                        goto roundoff;
+                            //                    round_9_up:
+                            //                        *s++ = '9';
+                            //                        goto roundoff;
                             buf.Append('9');
                             if (RoundOff(buf))
                             {

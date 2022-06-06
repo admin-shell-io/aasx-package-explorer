@@ -16,12 +16,11 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Globalization;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-
 using Org.Webpki.Es6NumberSerialization;
 
 // JSON canonicalizer for .NET Core
@@ -173,16 +172,16 @@ namespace Org.Webpki.JsonCanonicalizer
 
     class JsonDecoder
     {
-        const char LEFT_CURLY_BRACKET  = '{';
+        const char LEFT_CURLY_BRACKET = '{';
         const char RIGHT_CURLY_BRACKET = '}';
-        const char DOUBLE_QUOTE        = '"';
-        const char COLON_CHARACTER     = ':';
-        const char LEFT_BRACKET        = '[';
-        const char RIGHT_BRACKET       = ']';
-        const char COMMA_CHARACTER     = ',';
-        const char BACK_SLASH          = '\\';
+        const char DOUBLE_QUOTE = '"';
+        const char COLON_CHARACTER = ':';
+        const char LEFT_BRACKET = '[';
+        const char RIGHT_BRACKET = ']';
+        const char COMMA_CHARACTER = ',';
+        const char BACK_SLASH = '\\';
 
-        static Regex NUMBER_PATTERN  = new Regex("^-?[0-9]+(\\.[0-9]+)?([eE][-+]?[0-9]+)?$");
+        static Regex NUMBER_PATTERN = new Regex("^-?[0-9]+(\\.[0-9]+)?([eE][-+]?[0-9]+)?$");
         static Regex BOOLEAN_PATTERN = new Regex("^true|false$");
 
         int index;

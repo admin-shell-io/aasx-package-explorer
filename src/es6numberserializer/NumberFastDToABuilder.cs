@@ -48,7 +48,8 @@ namespace Org.Webpki.Es6NumberSerialization
                 if (decPoint < -5 || decPoint > 21)
                 {
                     ToExponentialFormat(firstDigit, decPoint);
-                } else
+                }
+                else
                 {
                     ToFixedFormat(firstDigit, decPoint);
                 }
@@ -124,7 +125,7 @@ namespace Org.Webpki.Es6NumberSerialization
             end = charPos + 1;
 
             // code below is needed because Integer.getChars() is not internal
-            for (;;)
+            for (; ; )
             {
                 int r = exp % 10;
                 chars[charPos--] = digits[r];
@@ -133,7 +134,7 @@ namespace Org.Webpki.Es6NumberSerialization
             }
         }
 
-        readonly static char[] digits = 
+        readonly static char[] digits =
         {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'
         };
