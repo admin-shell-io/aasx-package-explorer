@@ -1197,6 +1197,12 @@ namespace AnyUi
         /// Bitmap as data bytes in PNG-format.
         /// </summary>
         public byte[] PngData;
+
+        /// <summary>
+        /// In WPF, bitmaps are expected to be of 96 dpi. If not, Width <=> PxielWidth,
+        /// which can cause problems.
+        /// </summary>
+        public bool ConvertTo96dpi = false;
     }
 
     public class AnyUiImage : AnyUiFrameworkElement

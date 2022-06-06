@@ -17,11 +17,10 @@
     {
       "Path": "..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
       "Args": []
-    } /*,
+    },
     {
       "Path": "..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
       "Args": []
     } 
-  */
   ]
 }
