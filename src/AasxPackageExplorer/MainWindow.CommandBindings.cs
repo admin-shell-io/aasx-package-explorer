@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -38,6 +39,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Org.Webpki.JsonCanonicalizer;
 
 namespace AasxPackageExplorer
 {
@@ -324,8 +326,216 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && _packageCentral?.Main != null)
+            if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
+                VisualElementSubmodelRef el = null;
+
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                    el = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                if (cmd == "sign" && el != null && el.theSubmodel != null && el.theEnv != null)
+                {
+                    var sm = el.theSubmodel;
+                    AdminShell.SubmodelElementCollection smec = null;
+                    foreach (var sme in sm.submodelElements)
+                    {
+                        if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                sme.submodelElement.idShort == "signature")
+                                    smec = sme.submodelElement as AdminShell.SubmodelElementCollection;
+                    }
+                    if (smec != null)
+                        sm.Remove(smec);
+                    smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
+                    AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
+                    AdminShell.Property canonical = AdminShellV20.Property.CreateNew("submodelJsonCanonical");
+                    AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
+                    AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
+                    AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
+                    // AdminShell.Property hash = AdminShellV20.Property.CreateNew("hash");
+                    AdminShell.Property digest = AdminShellV20.Property.CreateNew("digest");
+                    smec.Add(json);
+                    smec.Add(canonical);
+                    smec.Add(subject);
+                    smec.Add(x5c);
+                    smec.Add(algorithm);
+                    // smec.Add(hash);
+                    smec.Add(digest);
+                    var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                    json.value = s;
+                    JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                    string result = jsonCanonicalizer.GetEncodedString();
+                    canonical.value = result;
+                    sm.Add(smec);
+
+                    X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+                    X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
+                    X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
+                        X509FindType.FindByTimeValid, DateTime.Now, false);
+
+                    X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                        "Test Certificate Select",
+                        "Select a certificate from the following list to get information on that certificate",
+                        X509SelectionFlag.SingleSelection);
+                    if (scollection.Count != 0)
+                    {
+                        var certificate = scollection[0];
+                        subject.value = certificate.Subject;
+
+                        X509Chain ch = new X509Chain();
+                        ch.Build(certificate);
+
+                        string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                        int j = 1;
+                        foreach (X509ChainElement element in ch.ChainElements)
+                        {
+                            AdminShell.Property c = AdminShellV20.Property.CreateNew("certificate_" + j++);
+                            c.value = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                            x5c.Add(c);
+                        }
+
+                        try
+                        {
+                            using (RSA rsa = certificate.GetRSAPrivateKey())
+                            {
+                                algorithm.value = "RS256";
+                                byte[] data = Encoding.UTF8.GetBytes(result);
+                                byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                                digest.value = Convert.ToBase64String(signed);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            string text = e.Message;
+                        }
+                    }
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                    return;
+                }
+
+                if (cmd == "validatecertificate" && el != null && el.theSubmodel != null && el.theEnv != null)
+                {
+                    var sm = el.theSubmodel;
+                    AdminShell.SubmodelElementCollection x5c = null;
+                    AdminShell.Property algorithm = null;
+                    AdminShell.SubmodelElementCollection smec = null;
+                    AdminShell.Property digest = null;
+                    foreach (var sme in sm.submodelElements)
+                    {
+                        var smee = sme.submodelElement;
+                        switch (smee.idShort)
+                        {
+                            case "signature":
+                                if (smee is AdminShell.SubmodelElementCollection)
+                                    smec = smee as AdminShell.SubmodelElementCollection;
+                                break;
+                        }
+                    }
+                    if (smec != null)
+                    {
+                        foreach (var sme in smec.value)
+                        {
+                            var smee = sme.submodelElement;
+                            switch (smee.idShort)
+                            {
+                                case "x5c":
+                                    if (smee is AdminShell.SubmodelElementCollection)
+                                        x5c = smee as AdminShell.SubmodelElementCollection;
+                                    break;
+                                case "algorithm":
+                                    algorithm = smee as AdminShell.Property;
+                                    break;
+                                case "digest":
+                                    digest = smee as AdminShell.Property;
+                                    break;
+                            }
+                        }
+                    }
+                    if (smec != null && x5c != null && algorithm != null && digest != null)
+                    {
+                        sm.Remove(smec);
+                        var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                        JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                        string result = jsonCanonicalizer.GetEncodedString();
+                        sm.Add(smec);
+
+                        X509Store storeCA = new X509Store("CA", StoreLocation.CurrentUser);
+                        storeCA.Open(OpenFlags.ReadWrite);
+                        X509Certificate2Collection xcc = new X509Certificate2Collection();
+                        X509Certificate2 x509 = null;
+                        bool valid = false;
+
+                        for (int i = 0; i < x5c.value.Count; i++)
+                        {
+                            var p = x5c.value[i].submodelElement as AdminShell.Property;
+                            var cert = new X509Certificate2(Convert.FromBase64String(p.value));
+                            if (i == 0)
+                            {
+                                x509 = cert;
+                            }
+                            if (cert.Subject != cert.Issuer)
+                            {
+                                xcc.Add(cert);
+                                storeCA.Add(cert);
+                            }
+                        }
+
+                        if (x509 != null)
+                        {
+                            X509Chain c = new X509Chain();
+                            c.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+                            valid = c.Build(x509);
+                        }
+
+                        // storeCA.RemoveRange(xcc);
+
+                        if (!valid)
+                        {
+                            System.Windows.MessageBox.Show(
+                                this, "Certificate Chain not valid", "Check x5c certificate chain",
+                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
+                        valid = false;
+
+                        if (algorithm.value == "RS256")
+                        {
+                            try
+                            {
+                                using (RSA rsa = x509.GetRSAPublicKey())
+                                {
+                                    byte[] data = Encoding.UTF8.GetBytes(result);
+                                    byte[] h = Convert.FromBase64String(digest.value);
+                                    valid = rsa.VerifyData(data, h, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                string text = e.Message;
+                            }
+                            if (!valid)
+                            {
+                                System.Windows.MessageBox.Show(
+                                    this, "Invalid signature", "Check signature",
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                return;
+                            }
+                            if (valid)
+                            {
+                                System.Windows.MessageBox.Show(
+                                    this, "Signature is valid", "Check signature",
+                                    MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                return;
+                            }
+                        }
+                    }
+                    return;
+                }
+
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
