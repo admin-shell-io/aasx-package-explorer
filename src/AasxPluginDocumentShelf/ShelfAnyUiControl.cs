@@ -1267,11 +1267,16 @@ namespace AasxPluginDocumentShelf
         private int numDocEntitiesInPreview = 0;
         private const int maxDocEntitiesInPreview = 3;
 
+        private bool _inDispatcherTimer = false;
+
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
             // access
-            if (_renderedEntities == null || theDocEntitiesToPreview == null)
+            if (_renderedEntities == null || theDocEntitiesToPreview == null || _inDispatcherTimer)
                 return;
+
+            _inDispatcherTimer = true;
+            var updateDisplay = false;
 
             // each tick check for one image, if a preview shall be done
             if (theDocEntitiesToPreview != null && theDocEntitiesToPreview.Count > 0 &&
@@ -1291,64 +1296,85 @@ namespace AasxPluginDocumentShelf
                     var inputFn = ent?.DigitalFile?.Path;
                     if (inputFn != null)
                     {
-                        // makes only sense under Windows
-                        if (OperatingSystemHelper.IsWindows())
+                        // try check if Magick.NET library is available
+                        var thumbBI = AnyUiGdiHelper.MakePreviewFromPackageOrUrl(_package, inputFn);
+                        if (thumbBI != null)
                         {
-                            // from package?
-                            if (CheckIfPackageFile(inputFn))
-                                inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
-
-                            // temp output
-                            string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
-
-                            // remember these for later deletion
-                            ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
-
-                            // start process
-                            string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
-                            string exeFn = System.IO.Path.Combine(
-                                System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
-
-                            var startInfo = new ProcessStartInfo(exeFn, arguments)
+                            // directly add this
+                            if (referableHashToCachedBitmap != null
+                                && !referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
                             {
-                                WindowStyle = ProcessWindowStyle.Hidden
-                            };
+                                if (ent.ImgContainerAnyUi != null)
+                                    ent.ImgContainerAnyUi.BitmapInfo = thumbBI;
+                                referableHashToCachedBitmap[ent.ReferableHash] = thumbBI;
+                                updateDisplay = true;
+                            }
+                        }
+                        else
+                        {
+                            //
+                            // OLD way: use external program to convert
+                            //
 
-                            var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
-
-                            DocumentEntity lambdaEntity = ent;
-                            string outputFnBuffer = outputFn;
-                            process.Exited += (sender2, args) =>
+                            // makes only sense under Windows
+                            if (OperatingSystemHelper.IsWindows())
                             {
-                            // release number of parallel processes
-                            lock (mutexDocEntitiesInPreview)
+                                // from package?
+                                if (CheckIfPackageFile(inputFn))
+                                    inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.DigitalFile.Path);
+
+                                // temp output
+                                string outputFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".png");
+
+                                // remember these for later deletion
+                                ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
+
+                                // start process
+                                string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
+                                string exeFn = System.IO.Path.Combine(
+                                    System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
+
+                                var startInfo = new ProcessStartInfo(exeFn, arguments)
                                 {
-                                    numDocEntitiesInPreview--;
+                                    WindowStyle = ProcessWindowStyle.Hidden
+                                };
+
+                                var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+
+                                DocumentEntity lambdaEntity = ent;
+                                string outputFnBuffer = outputFn;
+                                process.Exited += (sender2, args) =>
+                                {
+                                    // release number of parallel processes
+                                    lock (mutexDocEntitiesInPreview)
+                                    {
+                                        numDocEntitiesInPreview--;
+                                    }
+
+                                    // take over data?
+                                    if (lambdaEntity.ImgContainerAnyUi != null)
+                                    {
+                                        // trigger display image
+                                        lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
+                                    }
+                                };
+
+                                try
+                                {
+                                    process.Start();
+                                }
+                                catch (Exception ex)
+                                {
+                                    AdminShellNS.LogInternally.That.Error(
+                                        ex, $"Failed to start the process: {startInfo.FileName} " +
+                                            $"with arguments {string.Join(" ", startInfo.Arguments)}");
                                 }
 
-                            // take over data?
-                            if (lambdaEntity.ImgContainerAnyUi != null)
+                                // limit the number of parallel executions
+                                lock (mutexDocEntitiesInPreview)
                                 {
-                                // trigger display image
-                                lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
+                                    numDocEntitiesInPreview++;
                                 }
-                            };
-
-                            try
-                            {
-                                process.Start();
-                            }
-                            catch (Exception ex)
-                            {
-                                AdminShellNS.LogInternally.That.Error(
-                                    ex, $"Failed to start the process: {startInfo.FileName} " +
-                                        $"with arguments {string.Join(" ", startInfo.Arguments)}");
-                            }
-
-                            // limit the number of parallel executions
-                            lock (mutexDocEntitiesInPreview)
-                            {
-                                numDocEntitiesInPreview++;
                             }
                         }
                     }
@@ -1360,7 +1386,6 @@ namespace AasxPluginDocumentShelf
             }
 
             // over all items in order to check, if a prepared image shall be displayed
-            var updateDisplay = false;
             foreach (var de in _renderedEntities)
             {
                 if (de == null)
@@ -1413,6 +1438,8 @@ namespace AasxPluginDocumentShelf
                     Mode = AnyUiRenderMode.StatusToUi,
                     UseInnerGrid = true
                 });
+
+            _inDispatcherTimer = false;
         }
 
 #endregion

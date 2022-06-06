@@ -1025,7 +1025,7 @@ namespace AdminShellNS
         {
             // access
             if (_openPackage == null)
-                throw (new Exception(string.Format($"AASX Package {_fn} not opened. Aborting!")));
+                return false;
             if (uriString == null || uriString == "" || !uriString.StartsWith("/"))
                 return false;
 
