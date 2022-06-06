@@ -60,7 +60,7 @@ namespace AasxPluginImageMap
         public ImageMapAnyUiControl()
         {
             // start a timer
-            AnyUiGdiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
+            AnyUiTimerHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
         }
 
         public void Start(
