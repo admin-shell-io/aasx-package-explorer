@@ -51,6 +51,8 @@ namespace BlazorUI.Data
         public ListOfItems items = null;
         public Thread htmlDotnetThread = null;
 
+        public static int totalIndexTimer = 0;
+
         public Plugins.PluginInstance LoadedPluginInstance = null;
         public object LoadedPluginSessionId = null;
 

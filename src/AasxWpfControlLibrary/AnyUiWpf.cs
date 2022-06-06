@@ -403,7 +403,7 @@ namespace AnyUi
                         && mode == AnyUiRenderMode.All)
                     {
                         // child
-                        wpf.Child = GetOrCreateWpfElement(cntl.Child);
+                        wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: false);
                     }
                 }),
 
@@ -434,7 +434,9 @@ namespace AnyUi
                             wpf.Children.Clear();
                             if (cntl.Children != null)
                                 foreach (var ce in cntl.Children)
-                                    wpf.Children.Add(GetOrCreateWpfElement(ce));
+                                {
+                                    wpf.Children.Add(GetOrCreateWpfElement(ce, allowReUse: false));
+                                }
                         }
                    }
                 }),
@@ -770,8 +772,9 @@ namespace AnyUi
                    {
                         if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
                         {
+                            BitmapSource sourceBi = null;
                             if (cntl.BitmapInfo?.ImageSource is BitmapSource bs)
-                                wpf.Source = bs;
+                               sourceBi = bs;
                             else if (cntl.BitmapInfo?.PngData != null)
                             {
                                 using (MemoryStream memory = new MemoryStream())
@@ -785,8 +788,34 @@ namespace AnyUi
                                     bi.CacheOption = BitmapCacheOption.OnLoad;
                                     bi.EndInit();
 
-                                    wpf.Source = bi;
+                                    sourceBi = bi;
                                 }
+                            }
+
+                            // found something?
+                            if (sourceBi != null)
+                            {
+                                // additionally convert?
+                                if (cntl.BitmapInfo?.ConvertTo96dpi == true)
+                                {
+                                    // prepare
+                                    double dpi = 96;
+                                    int width = sourceBi.PixelWidth;
+                                    int height = sourceBi.PixelHeight;
+
+                                    // execute
+                                    int stride = width * sourceBi.Format.BitsPerPixel;
+                                    byte[] pixelData = new byte[stride * height];
+                                    sourceBi.CopyPixels(pixelData, stride, 0);
+                                    var destBi = BitmapSource.Create(width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
+                                    destBi.Freeze();
+
+                                    // remember
+                                    sourceBi = destBi;
+                                }
+
+                                // finally set
+                                wpf.Source = sourceBi;
                             }
 
                             wpf.Stretch = (Stretch)(int) cntl.Stretch;

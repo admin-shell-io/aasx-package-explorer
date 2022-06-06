@@ -1230,6 +1230,7 @@
             MainTimer_HandleApplicationEvents();
             MainTimer_HandleElementAnimation();
         }, null, TimeSpan.FromMilliseconds(2000), TimeSpan.FromMilliseconds(100));
+        blazorSessionService.totalIndexTimer++;
     }
 
     public void Dispose()
@@ -1238,6 +1239,7 @@
 
         _timer?.Dispose();
         SubmodelService.NewDataAvailable -= NewData;
+        blazorSessionService.totalIndexTimer--;
     }
 
     private bool _inTimer = false;

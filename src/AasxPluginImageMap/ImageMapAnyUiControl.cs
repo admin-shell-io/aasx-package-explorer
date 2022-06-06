@@ -7,11 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AasxIntegrationBaseWpf;
+using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
@@ -62,7 +60,7 @@ namespace AasxPluginImageMap
         public ImageMapAnyUiControl()
         {
             // start a timer
-            AnyUiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
+            AnyUiGdiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
         }
 
         public void Start(
@@ -353,9 +351,10 @@ namespace AasxPluginImageMap
             var fe = _submodel.submodelElements.FindFirstSemanticIdAs<AdminShell.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile.GetReference(),
                 AdminShellV20.Key.MatchMode.Relaxed);
-            if (fe == null)
+            if (fe?.value == null)
                 return;
 
+#if USE_WPF
             // bitmap data
             var bitmapdata = _package.GetByteArrayFromUriOrLocalPackage(fe.value);
             if (bitmapdata == null)
@@ -384,6 +383,15 @@ namespace AasxPluginImageMap
                     _backgroundSize = sourceBi.Width + sourceBi.Height;
                 }
             }
+#else
+            var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.value);
+            if (bi != null && _backgroundImage != null)
+            {
+                bi.ConvertTo96dpi = true;
+                _backgroundImage.BitmapInfo = bi;
+                _backgroundSize = bi.PixelWidth + bi.PixelHeight;
+            }
+#endif
         }
 
         private string ClickedCoordinatesToString()
@@ -1035,9 +1043,9 @@ namespace AasxPluginImageMap
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Update
+#region Update
         //=============
 
         public void Update(params object[] args)
@@ -1057,9 +1065,9 @@ namespace AasxPluginImageMap
             RenderFullView(_panel, _uitk, _package, _submodel);
         }
 
-        #endregion
+#endregion
 
-        #region Callbacks
+#region Callbacks
         //===============
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
@@ -1081,12 +1089,12 @@ namespace AasxPluginImageMap
             }
         }
 
-        #endregion
+#endregion
 
-        #region Utilities
+#region Utilities
         //===============
 
 
-        #endregion
+#endregion
     }
 }

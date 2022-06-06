@@ -72,5 +72,27 @@ namespace AasxIntegrationBaseGdi
 
             return null;
         }
+
+        public static object CreatePluginTimer(int intervalMs, EventHandler eventHandler)
+        {
+            if (true)
+            {
+                var dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+                dispatcherTimer.Tick += eventHandler;
+                dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, intervalMs);
+                dispatcherTimer.Start();
+                return dispatcherTimer;
+            }
+            else
+            {
+                // Note: this timer shall work for all sorts of applications?
+                // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
+                var _timer2 = new System.Timers.Timer(intervalMs);
+                _timer2.Elapsed += (s, e) => eventHandler?.Invoke(s, e);
+                _timer2.Enabled = true;
+                _timer2.Start();
+                return _timer2;
+            }
+        }
     }
 }
