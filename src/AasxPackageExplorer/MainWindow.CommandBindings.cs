@@ -504,7 +504,34 @@ namespace AasxPackageExplorer
                                     X509Chain c = new X509Chain();
                                     c.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
 
+                                    X509Store root = new X509Store("Root", StoreLocation.CurrentUser);
+                                    root.Open(OpenFlags.ReadWrite);
+
+                                    System.IO.DirectoryInfo ParentDirectory = new System.IO.DirectoryInfo(".");
+
+                                    // Add additional trusted root certificates temporarilly
+                                    if (Directory.Exists("./root"))
+                                    {
+                                        foreach (System.IO.FileInfo f in ParentDirectory.GetFiles("./root/*.cer"))
+                                        {
+                                            X509Certificate2 cert = new X509Certificate2("./root/" + f.Name);
+
+                                            root.Add(cert);
+                                        }
+                                    }
+
                                     valid = c.Build(x509);
+
+                                    // Delete additional trusted root certificates immediately
+                                    if (Directory.Exists("./root"))
+                                    {
+                                        foreach (System.IO.FileInfo f in ParentDirectory.GetFiles("./root/*.cer"))
+                                        {
+                                            X509Certificate2 cert = new X509Certificate2("./root/" + f.Name);
+
+                                            root.Remove(cert);
+                                        }
+                                    }
                                 }
 
                                 // storeCA.RemoveRange(xcc);
