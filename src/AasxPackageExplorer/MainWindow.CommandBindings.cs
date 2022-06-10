@@ -357,13 +357,13 @@ namespace AasxPackageExplorer
                     AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
                     AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
                     AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
-                    AdminShell.Property digest = AdminShellV20.Property.CreateNew("digest");
+                    AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
                     smec.Add(json);
                     smec.Add(canonical);
                     smec.Add(subject);
                     smec.Add(x5c);
                     smec.Add(algorithm);
-                    smec.Add(digest);
+                    smec.Add(signature);
                     var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
                     json.value = s;
                     JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
@@ -411,7 +411,7 @@ namespace AasxPackageExplorer
                                 algorithm.value = "RS256";
                                 byte[] data = Encoding.UTF8.GetBytes(result);
                                 byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                                digest.value = Convert.ToBase64String(signed);
+                                signature.value = Convert.ToBase64String(signed);
                             }
                         }
                         catch (Exception e)
@@ -430,7 +430,8 @@ namespace AasxPackageExplorer
                     AdminShell.SubmodelElementCollection x5c = null;
                     AdminShell.Property subject = null;
                     AdminShell.Property algorithm = null;
-                    AdminShell.Property digest = null;
+                    AdminShell.Property digest = null; // legacy
+                    AdminShell.Property signature = null;
                     List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
                     foreach (var sme in sm.submodelElements)
                     {
@@ -468,6 +469,12 @@ namespace AasxPackageExplorer
                         }
                         foreach (var smec in existing)
                         {
+                            x5c = null;
+                            subject = null;
+                            algorithm = null;
+                            digest = null;
+                            signature = null;
+
                             foreach (var sme in smec.value)
                             {
                                 var smee = sme.submodelElement;
@@ -486,9 +493,13 @@ namespace AasxPackageExplorer
                                     case "digest":
                                         digest = smee as AdminShell.Property;
                                         break;
+                                    case "signature":
+                                        signature = smee as AdminShell.Property;
+                                        break;
                                 }
                             }
-                            if (smec != null && x5c != null && subject != null && algorithm != null && digest != null)
+                            if (smec != null && x5c != null && subject != null && algorithm != null &&
+                                (signature != null || digest != null))
                             {
                                 var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
                                 JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
@@ -500,30 +511,38 @@ namespace AasxPackageExplorer
                                 X509Certificate2 x509 = null;
                                 bool valid = false;
 
-                                for (int i = 0; i < x5c.value.Count; i++)
+                                try
                                 {
-                                    var p = x5c.value[i].submodelElement as AdminShell.Property;
-                                    var cert = new X509Certificate2(Convert.FromBase64String(p.value));
-                                    if (i == 0)
+                                    for (int i = 0; i < x5c.value.Count; i++)
                                     {
-                                        x509 = cert;
+                                        var p = x5c.value[i].submodelElement as AdminShell.Property;
+                                        var cert = new X509Certificate2(Convert.FromBase64String(p.value));
+                                        if (i == 0)
+                                        {
+                                            x509 = cert;
+                                        }
+                                        if (cert.Subject != cert.Issuer)
+                                        {
+                                            xcc.Add(cert);
+                                            storeCA.Add(cert);
+                                        }
                                     }
-                                    if (cert.Subject != cert.Issuer)
-                                    {
-                                        xcc.Add(cert);
-                                        storeCA.Add(cert);
-                                    }
-                                }
 
-                                if (x509 != null)
+                                    if (x509 != null)
+                                    {
+                                        X509Chain c = new X509Chain();
+                                        c.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+                                        valid = c.Build(x509);
+                                    }
+
+                                    // storeCA.RemoveRange(xcc);
+                                }
+                                catch
                                 {
-                                    X509Chain c = new X509Chain();
-                                    c.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-
-                                    valid = c.Build(x509);
+                                    x509 = null;
+                                    valid = false;
                                 }
-
-                                // storeCA.RemoveRange(xcc);
 
                                 if (!valid)
                                 {
@@ -541,14 +560,20 @@ namespace AasxPackageExplorer
                                         {
                                             using (RSA rsa = x509.GetRSAPublicKey())
                                             {
+                                                string value = null;
+                                                if (signature != null)
+                                                    value = signature.value;
+                                                if (digest != null)
+                                                    value = digest.value;
                                                 byte[] data = Encoding.UTF8.GetBytes(result);
-                                                byte[] h = Convert.FromBase64String(digest.value);
+                                                byte[] h = Convert.FromBase64String(value);
                                                 valid = rsa.VerifyData(data, h, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                                             }
                                         }
                                         catch (Exception e)
                                         {
                                             string text = e.Message;
+                                            valid = false;
                                         }
                                         if (!valid)
                                         {
