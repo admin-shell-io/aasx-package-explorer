@@ -1154,6 +1154,52 @@ namespace AasxRestServerLibrary
             packageStream.Close();
         }
 
+        public void EvalGetSubmodelElementFragment(IHttpContext context, string aasid, string smid, string[] elemids, string fragmentType, string fragment)
+        {
+            // access AAS and Submodel
+            var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
+            var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
+            if (sm == null)
+            {
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No AAS '{aasid}' or no Submodel with idShort '{smid}' found.");
+                return;
+            }
+
+            // find the right SubmodelElement
+            var fse = this.FindSubmodelElement(sm, sm.submodelElements, elemids);
+            var smef = fse?.elem as AdminShell.File;
+            if (smef == null || smef.value == null || smef.value == "")
+            {
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No matching File element in Submodel found.");
+                return;
+            }
+
+            // access
+            var packageStream = this.Package.GetLocalStreamFromPackage(smef.value);
+            if (packageStream == null)
+            {
+                context.Response.SendResponse(
+                    Grapevine.Shared.HttpStatusCode.NotFound,
+                    $"No file contents available in package.");
+                return;
+            }
+
+            switch (fragmentType)
+            {
+                default:
+                    context.Response.SendResponse(
+                        Grapevine.Shared.HttpStatusCode.NotFound,
+                        $"Unsupported fragment format. Fragment type '" + fragmentType + "' is not supported.");
+                    break;
+            }
+
+            packageStream.Close();
+        }
+
         public void EvalPutSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids)
         {
             // first check
