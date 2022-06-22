@@ -17,10 +17,10 @@ namespace AasxIntegrationBase
 {
     public static class AasxLanguageHelper
     {
-        public enum LangEnum { Any = 0, EN, DE, ZH, JP, KR, FR, ES };
+        public enum LangEnum { Any = 0, EN, DE, ZH, JA, KO, FR, ES };
 
         public static string[] LangEnumToISO639String = {
-                "All", "en", "de", "zh", "jp", "kr", "fr", "es" }; // ISO 639 -> List of languages
+                "All", "en", "de", "zh", "ja", "ko", "fr", "es" }; // ISO 639 -> List of languages
 
         public static string[] LangEnumToISO3166String = {
                 "All", "GB", "DE", "CN", "JP", "KR", "FR", "ES" }; // ISO 3166 -> List of countries

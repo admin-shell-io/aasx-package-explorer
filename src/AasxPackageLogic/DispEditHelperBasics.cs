@@ -127,7 +127,7 @@ namespace AasxPackageLogic
         // Members
         //
 
-        private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "zh", "kr", "jp" };
+        private string[] defaultLanguages = new[] { "en", "de", "fr", "es", "it", "zh", "ko", "ja" };
 
         public PackageCentral.PackageCentral packages = null;
         public IPushApplicationEvent appEventsProvider = null;
