@@ -157,8 +157,8 @@ namespace AasxPluginDocumentShelf
             ResetCountryRadioButton(RadioLangEN, CountryFlag.CountryCode.GB);
             ResetCountryRadioButton(RadioLangDE, CountryFlag.CountryCode.DE);
             ResetCountryRadioButton(RadioLangZH, CountryFlag.CountryCode.CN);
-            ResetCountryRadioButton(RadioLangJP, CountryFlag.CountryCode.JP);
-            ResetCountryRadioButton(RadioLangKR, CountryFlag.CountryCode.KR);
+            ResetCountryRadioButton(RadioLangJA, CountryFlag.CountryCode.JP);
+            ResetCountryRadioButton(RadioLangKO, CountryFlag.CountryCode.KR);
             ResetCountryRadioButton(RadioLangFR, CountryFlag.CountryCode.FR);
             ResetCountryRadioButton(RadioLangES, CountryFlag.CountryCode.ES);
 #endif

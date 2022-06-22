@@ -17,6 +17,6 @@ namespace AasxPredefinedConcepts
 {
     public static class DefinitionsLanguages
     {
-        public static string[] DefaultLanguages = new string[] { "en", "de", "fr", "es", "it", "zh", "kr", "jp" };
+        public static string[] DefaultLanguages = new string[] { "en", "de", "fr", "es", "it", "zh", "ko", "ja" };
     }
 }
