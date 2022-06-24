@@ -493,7 +493,7 @@ namespace AasxPackageExplorer
                         List<X509Certificate2> rootList = new List<X509Certificate2>();
 
                         System.IO.DirectoryInfo ParentDirectory = new System.IO.DirectoryInfo(".");
-                        
+
                         // Add additional trusted root certificates temporarilly
                         if (Directory.Exists("./root"))
                         {
