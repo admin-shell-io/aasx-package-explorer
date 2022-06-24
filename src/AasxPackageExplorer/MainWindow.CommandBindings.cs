@@ -329,9 +329,13 @@ namespace AasxPackageExplorer
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
                 VisualElementSubmodelRef el = null;
+                VisualElementSubmodelElement els = null;
 
                 if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
                     el = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelElement)
+                    els = DisplayElements.SelectedItem as VisualElementSubmodelElement;
 
                 if (cmd == "sign" && el != null && el.theSubmodel != null && el.theEnv != null)
                 {
@@ -357,12 +361,14 @@ namespace AasxPackageExplorer
                     AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
                     AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
                     AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
+                    AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
                     AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
                     smec.Add(json);
                     smec.Add(canonical);
                     smec.Add(subject);
                     smec.Add(x5c);
                     smec.Add(algorithm);
+                    smec.Add(sigT);
                     smec.Add(signature);
                     var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
                     json.value = s;
@@ -412,6 +418,7 @@ namespace AasxPackageExplorer
                                 byte[] data = Encoding.UTF8.GetBytes(result);
                                 byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                                 signature.value = Convert.ToBase64String(signed);
+                                sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                             }
                         }
                         catch (Exception e)
@@ -424,31 +431,66 @@ namespace AasxPackageExplorer
                     return;
                 }
 
-                if (cmd == "validatecertificate" && el != null && el.theSubmodel != null && el.theEnv != null)
+                if (cmd == "validatecertificate"
+                    && ((el != null && el.theEnv != null && el.theSubmodel != null)
+                            || (els != null && els.theEnv != null && els.theWrapper != null)))
                 {
-                    var sm = el.theSubmodel;
                     AdminShell.SubmodelElementCollection x5c = null;
                     AdminShell.Property subject = null;
                     AdminShell.Property algorithm = null;
                     AdminShell.Property digest = null; // legacy
                     AdminShell.Property signature = null;
                     List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
-                    foreach (var sme in sm.submodelElements)
+                    List<AdminShell.SubmodelElementCollection> validate = new List<AdminShellV20.SubmodelElementCollection>();
+                    AdminShell.Submodel sm = null;
+                    AdminShell.SubmodelElementCollection smc = null;
+                    if (el != null)
                     {
-                        var smee = sme.submodelElement;
+                        sm = el.theSubmodel;
+                    }
+                    if (els != null)
+                    {
+                        var smee = els.theWrapper.submodelElement;
                         var len = "signature".Length;
                         var idShort = smee.idShort;
                         if (smee is AdminShell.SubmodelElementCollection &&
                                 idShort.Length >= len &&
                                 idShort.Substring(0, len).ToLower() == "signature")
                         {
-                            existing.Add(smee as AdminShell.SubmodelElementCollection);
+                            smc = smee as AdminShell.SubmodelElementCollection;
+                            var p = smee.parent;
+                            if (p is AdminShell.Submodel)
+                                sm = p as AdminShell.Submodel;
                         }
                     }
-                    if (existing.Count != 0)
+                    if (sm != null)
+                    {
+                        foreach (var sme in sm.submodelElements)
+                        {
+                            var smee = sme.submodelElement;
+                            var len = "signature".Length;
+                            var idShort = smee.idShort;
+                            if (smee is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(smee as AdminShell.SubmodelElementCollection);
+                            }
+                        }
+                    }
+                    if (smc == null)
+                    {
+                        validate = existing;
+                    }
+                    else
+                    {
+                        validate.Add(smc);
+                    }
+                    if (sm != null && validate.Count != 0)
                     {
                         X509Store root = new X509Store("Root", StoreLocation.CurrentUser);
                         root.Open(OpenFlags.ReadWrite);
+                        List<X509Certificate2> rootList = new List<X509Certificate2>();
 
                         System.IO.DirectoryInfo ParentDirectory = new System.IO.DirectoryInfo(".");
                         
@@ -459,7 +501,15 @@ namespace AasxPackageExplorer
                             {
                                 X509Certificate2 cert = new X509Certificate2("./root/" + f.Name);
 
-                                root.Add(cert);
+                                try
+                                {
+                                    if (!root.Certificates.Contains(cert))
+                                    {
+                                        root.Add(cert);
+                                        rootList.Add(cert);
+                                    }
+                                }
+                                catch { }
                             }
                         }
 
@@ -467,7 +517,7 @@ namespace AasxPackageExplorer
                         {
                             sm.Remove(e);
                         }
-                        foreach (var smec in existing)
+                        foreach (var smec in validate)
                         {
                             x5c = null;
                             subject = null;
@@ -525,6 +575,18 @@ namespace AasxPackageExplorer
                                         {
                                             xcc.Add(cert);
                                             storeCA.Add(cert);
+                                        }
+                                        if (cert.Subject == cert.Issuer)
+                                        {
+                                            try
+                                            {
+                                                if (!root.Certificates.Contains(cert))
+                                                {
+                                                    root.Add(cert);
+                                                    rootList.Add(cert);
+                                                }
+                                            }
+                                            catch { }
                                         }
                                     }
 
@@ -597,14 +659,13 @@ namespace AasxPackageExplorer
                         }
 
                         // Delete additional trusted root certificates immediately
-                        if (Directory.Exists("./root"))
+                        foreach (var cert in rootList)
                         {
-                            foreach (System.IO.FileInfo f in ParentDirectory.GetFiles("./root/*.cer"))
+                            try
                             {
-                                X509Certificate2 cert = new X509Certificate2("./root/" + f.Name);
-
                                 root.Remove(cert);
                             }
+                            catch { }
                         }
                     }
                     return;
