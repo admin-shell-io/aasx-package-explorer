@@ -75,13 +75,13 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public void ContentFocus()
         {
+#if USE_WPF
             // access
             var inst = this.DataContext as FormInstanceListOfSame;
             if (inst == null || inst.SubInstances == null || inst.SubInstances.Count < 1)
                 return;
 
             // pass on
-#if USE_WPF
             var sc = inst.SubInstances[0].subControl;
             if (sc != null && sc is IFormListControl)
                 (sc as IFormListControl).ContentFocus();
@@ -316,9 +316,9 @@ namespace AasxIntegrationBase.AasForms
                 Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
                 {
                     // show newly created item
+#if USE_WPF
                     foreach (var i in inst.SubInstances)
                     {
-#if USE_WPF
                         var flc = i.subControl as IFormListControl;
                         if (flc != null && i != ni)
                             flc.ShowContentItems(false);
@@ -327,8 +327,8 @@ namespace AasxIntegrationBase.AasForms
                             flc.ShowContentItems(true);
                             flc.ContentFocus();
                         }
-#endif
                     }
+#endif
                 }));
             }
         }

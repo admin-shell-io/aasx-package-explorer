@@ -45,7 +45,7 @@ namespace AasxPluginKnownSubmodels
 {
     public partial class KnownSubmodelsControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance _log = new LogInstance();
@@ -55,9 +55,9 @@ namespace AasxPluginKnownSubmodels
         private PluginEventStack _eventStack = null;
         private KnownSubmodelViewModel _viewModel = new KnownSubmodelViewModel();
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -66,8 +66,8 @@ namespace AasxPluginKnownSubmodels
         {
         }
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public KnownSubmodelsControl()
@@ -127,15 +127,15 @@ namespace AasxPluginKnownSubmodels
             return knownSmCntl;
         }
 
-        #endregion
+#endregion
 
-        #region Business Logic
+#region Business Logic
         //====================
 
 
-        #endregion
+#endregion
 
-        #region WPF handling
+#region WPF handling
         //==================
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
@@ -185,7 +185,7 @@ namespace AasxPluginKnownSubmodels
             }
         }
 
-        #endregion
+#endregion
 
         private void CanvasContent_SizeChanged(object sender, SizeChangedEventArgs e)
         {

@@ -10,15 +10,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using System;
+using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using Microsoft.JSInterop;
-using System;
-using System.Threading.Tasks;
 
 namespace BlazorUI.Utils
 {
-    public class BlazorUtils
+    public static class BlazorUtils
     {
         public static async Task DisplayOrDownloadFile(IJSRuntime runtime, string fn, string mimeType = null)
         {
@@ -33,7 +33,6 @@ namespace BlazorUI.Utils
                 // extension of fn?
                 var ext = System.IO.Path.GetExtension(fn).ToLower().Trim();
 
-                // private string browserHandlesFiles = ".html .htm .jpeg .jpg .png .bmp .pdf .xml .txt .md *";
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
                 var browserHandles = new[]
                 {
@@ -71,10 +70,10 @@ namespace BlazorUI.Utils
                 }
 
                 // prepare file
-                var file = System.IO.File.ReadAllBytes(fn);
+                var file = await System.IO.File.ReadAllBytesAsync(fn);
                 var fileName = System.IO.Path.GetFileName(fn);
                 // Send the data to JS to actually download the file
-                
+
                 if (display)
                     await runtime.InvokeVoidAsync("BlazorDisplayFile", fileName, mimeType, file);
                 else

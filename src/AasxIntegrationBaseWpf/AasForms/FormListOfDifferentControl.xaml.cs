@@ -143,12 +143,12 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public void ContentFocus()
         {
+#if USE_WPF
             // need data context of the UC coming from Submodel, SMEC or at least listOfElements
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
             if (dc == null || StackPanelElements == null)
                 return;
 
-#if USE_WPF
             FormInstanceListOfDifferent lod = null;
             if (dc.smInst != null)
                 lod = dc.smInst.PairInstances;

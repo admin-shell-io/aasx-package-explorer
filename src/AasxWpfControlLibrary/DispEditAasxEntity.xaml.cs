@@ -454,7 +454,7 @@ namespace AasxPackageExplorer
                                             : PluginOperationDisplayMode.JustDisplay
                             };
 
-                            var uires = vepe.thePlugin.InvokeAction(
+                            vepe.thePlugin?.InvokeAction(
                                 "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
                                 stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
                                 opContext);

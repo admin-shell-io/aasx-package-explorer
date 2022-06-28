@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,6 +20,9 @@ using AasxPredefinedConcepts;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+
+// ReSharper disable InconsistentlySynchronizedField
+// ReSharper disable AccessToModifiedClosure
 
 namespace AasxPluginDocumentShelf
 {
@@ -29,8 +41,6 @@ namespace AasxPluginDocumentShelf
         private PluginOperationContextBase _opContext = null;
 
         protected AnyUiSmallWidgetToolkit _uitk = new AnyUiSmallWidgetToolkit();
-
-        // private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
 
         private DocumentEntity.SubmodelVersion _renderedVersion = DocumentEntity.SubmodelVersion.Default;
         private DocumentEntity.SubmodelVersion _selectedVersion = DocumentEntity.SubmodelVersion.Default;
@@ -65,6 +75,7 @@ namespace AasxPluginDocumentShelf
 
         public ShelfAnyUiControl()
         {
+#if JUST_FOR_INFO
             // Timer for loading
             //System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             //dispatcherTimer.Tick += DispatcherTimer_Tick;
@@ -94,15 +105,16 @@ namespace AasxPluginDocumentShelf
             //    _timer2.Enabled = true;
             //    _timer2.Start();
             //}
+#endif
 #if USE_WPF
             AnyUiHelper.CreatePluginTimer(1000, DispatcherTimer_Tick);
 #else
             // Note: this timer shall work for all sorts of applications?
             // see: https://stackoverflow.com/questions/21041299/c-sharp-dispatchertimer-in-dll-application-never-triggered
             var _timer2 = new System.Timers.Timer(1000);
-                _timer2.Elapsed += DispatcherTimer_Tick;
-                _timer2.Enabled = true;
-                _timer2.Start();
+            _timer2.Elapsed += DispatcherTimer_Tick;
+            _timer2.Enabled = true;
+            _timer2.Start();
 #endif
         }
 
@@ -162,9 +174,9 @@ namespace AasxPluginDocumentShelf
             return shelfCntl;
         }
 
-#endregion
+        #endregion
 
-#region Display Submodel
+        #region Display Submodel
         //=============
 
         private void RenderFullShelf(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
@@ -198,17 +210,17 @@ namespace AasxPluginDocumentShelf
 
             // what defaultLanguage
             string defaultLang = null;
-            //if (theViewModel != null && theViewModel.TheSelectedLanguage > AasxLanguageHelper.LangEnum.Any)
-            //    defaultLang = AasxLanguageHelper.LangEnumToISO639String[(int)theViewModel.TheSelectedLanguage];
 
             // make new list box items
             _renderedEntities = new List<DocumentEntity>();
+            // ReSharper disable ExpressionIsAlwaysNull
             if (_renderedVersion != DocumentEntity.SubmodelVersion.V11)
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV10(
                     _package, _submodel, _options, defaultLang, (int)_selectedDocClass, _selectedLang);
             else
                 _renderedEntities = ListOfDocumentEntity.ParseSubmodelForV11(
                     _package, _submodel, defs11, defaultLang, (int)_selectedDocClass, _selectedLang);
+            // ReSharper enable ExpressionIsAlwaysNull
 
             // bring it to the panel            
             RenderPanelOutside(view, uitk, _renderedVersion, useinf, defaultLang, _renderedEntities);
@@ -296,8 +308,7 @@ namespace AasxPluginDocumentShelf
             var langs = new List<object>();
             foreach (var dc in (AasxLanguageHelper.LangEnum[])Enum.GetValues(
                                     typeof(AasxLanguageHelper.LangEnum)))
-                langs.Add((object)
-                    ("Lang - " + AasxLanguageHelper.LangEnumToISO639String[(int)dc]));
+                langs.Add("Lang - " + AasxLanguageHelper.LangEnumToISO639String[(int)dc]);
 
             // controls
             var controls = uitk.AddSmallWrapPanelTo(outer, 1, 0,
@@ -305,7 +316,7 @@ namespace AasxPluginDocumentShelf
 
             AnyUiComboBox cbClasses = null, cbLangs = null;
 
-            cbClasses = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            cbClasses = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 140,
@@ -313,12 +324,15 @@ namespace AasxPluginDocumentShelf
                 SelectedIndex = (int)_selectedDocClass
             }), (o) =>
             {
-                _selectedDocClass = (DefinitionsVDI2770.Vdi2770DocClass)cbClasses.SelectedIndex;
+                // ReSharper disable PossibleInvalidOperationException
+                if (cbClasses != null)
+                    _selectedDocClass = (DefinitionsVDI2770.Vdi2770DocClass)cbClasses.SelectedIndex;
+                // ReSharper enable PossibleInvalidOperationException
                 PushUpdateEvent();
                 return new AnyUiLambdaActionNone();
             });
 
-            cbLangs = (AnyUiComboBox)AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            cbLangs = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 120,
@@ -326,16 +340,19 @@ namespace AasxPluginDocumentShelf
                 SelectedIndex = (int)_selectedLang
             }), (o) =>
             {
-                _selectedLang = (AasxLanguageHelper.LangEnum)cbLangs.SelectedIndex;
+                // ReSharper disable PossibleInvalidOperationException
+                if (cbLangs != null)
+                    _selectedLang = (AasxLanguageHelper.LangEnum)cbLangs.SelectedIndex;
+                // ReSharper enable PossibleInvalidOperationException
                 PushUpdateEvent();
                 return new AnyUiLambdaActionNone();
             });
 
-            var cbVersion = AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
+            AnyUiUIElement.RegisterControl(controls.Add(new AnyUiComboBox()
             {
                 Margin = new AnyUiThickness(6, 4, 4, 4),
                 MinWidth = 60,
-                Items = (new string[] { "V1.0", "V1.1" }).ToList<object>(),
+                Items = (new[] { "V1.0", "V1.1" }).ToList<object>(),
                 SelectedIndex = _renderedVersion == DocumentEntity.SubmodelVersion.V11 ? 1 : 0,
             }), (o) =>
             {
@@ -350,7 +367,7 @@ namespace AasxPluginDocumentShelf
 
             // small spacer
             outer.RowDefinitions[2] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-            var space = uitk.AddSmallBasicLabelTo(outer, 2, 0,
+            uitk.AddSmallBasicLabelTo(outer, 2, 0,
                 fontSize: 0.3f,
                 verticalAlignment: AnyUiVerticalAlignment.Top,
                 content: "", background: AnyUiBrushes.White);
@@ -369,7 +386,7 @@ namespace AasxPluginDocumentShelf
                         _lastScrollPosition = positions.Item2;
                     }
                     return new AnyUiLambdaActionNone();
-                }) as AnyUiScrollViewer;
+                });
 
             // need a stack panel to add inside
             var inner = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
@@ -387,64 +404,64 @@ namespace AasxPluginDocumentShelf
                 }
 
             // post process
-            foreach (var ent in its)
-            {
-                // if a preview file exists, try load directly, but not interfere
-                // we delayed load logic, as these images might get more detailed
-                if (ent.PreviewFile?.Path?.HasContent() == true)
+            if (its != null)
+                foreach (var ent in its)
                 {
-                    var inputFn = ent.PreviewFile.Path;
-
-                    try
+                    // if a preview file exists, try load directly, but not interfere
+                    // we delayed load logic, as these images might get more detailed
+                    if (ent.PreviewFile?.Path?.HasContent() == true)
                     {
-                        // from package?
-                        if (CheckIfPackageFile(inputFn))
-                            inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+                        var inputFn = ent.PreviewFile.Path;
 
-                        // inputFn = @"C:\MIHO\Develop\Aasx\repo\sample.png";
-                        ent.LoadImageFromPath(inputFn);
+                        try
+                        {
+                            // from package?
+                            if (CheckIfPackageFile(inputFn))
+                                inputFn = _package?.MakePackageFileAvailableAsTempFile(ent.PreviewFile.Path);
+
+                            ent.LoadImageFromPath(inputFn);
+                        }
+                        catch (Exception ex)
+                        {
+                            _log?.Error(ex, $"when loading preview image {inputFn}");
+                        }
                     }
-                    catch (Exception ex)
+
+                    // delayed load logic
+                    // can already put a generated image into the viewbox?
+                    if (referableHashToCachedBitmap != null &&
+                        referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
                     {
-                        _log?.Error(ex, $"when loading preview image {inputFn}");
-                    }
-                }
-
-                // delayed load logic
-                // can already put a generated image into the viewbox?
-                if (referableHashToCachedBitmap != null &&
-                    referableHashToCachedBitmap.ContainsKey(ent.ReferableHash))
-                {
 #if USE_WPF
-                    ent.ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(
-                        referableHashToCachedBitmap[ent.ReferableHash]);
+                        ent.ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(
+                            referableHashToCachedBitmap[ent.ReferableHash]);
 #else
-                    ent.ImgContainerAnyUi.BitmapInfo = referableHashToCachedBitmap[ent.ReferableHash];
+                        ent.ImgContainerAnyUi.BitmapInfo = referableHashToCachedBitmap[ent.ReferableHash];
 #endif
-                }
-                else
-                {
-                    // trigger generation of image
-
-                    // check if already in list
-                    DocumentEntity foundDe = null;
-                    foreach (var de in theDocEntitiesToPreview)
-                        if (ent.ReferableHash == de.ReferableHash)
-                            foundDe = de;
-
-                    lock (theDocEntitiesToPreview)
-                    {
-                        if (foundDe != null)
-                            theDocEntitiesToPreview.Remove(foundDe);
-                        theDocEntitiesToPreview.Add(ent);
                     }
-                }
+                    else
+                    {
+                        // trigger generation of image
 
-                // attach events and add
-                ent.DoubleClick += DocumentEntity_DoubleClick;
-                ent.MenuClick += DocumentEntity_MenuClick;
-                ent.DragStart += DocumentEntity_DragStart;
-            }
+                        // check if already in list
+                        DocumentEntity foundDe = null;
+                        foreach (var de in theDocEntitiesToPreview)
+                            if (ent.ReferableHash == de.ReferableHash)
+                                foundDe = de;
+
+                        lock (theDocEntitiesToPreview)
+                        {
+                            if (foundDe != null)
+                                theDocEntitiesToPreview.Remove(foundDe);
+                            theDocEntitiesToPreview.Add(ent);
+                        }
+                    }
+
+                    // attach events and add
+                    ent.DoubleClick += DocumentEntity_DoubleClick;
+                    ent.MenuClick += DocumentEntity_MenuClick;
+                    ent.DragStart += DocumentEntity_DragStart;
+                }
         }
 
         public AnyUiFrameworkElement RenderAnyUiDocumentEntity(
@@ -518,7 +535,7 @@ namespace AasxPluginDocumentShelf
                     MaxWidth = 20
                 });
 
-            var orga = sp1.Add(new AnyUiTextBlock()
+            sp1.Add(new AnyUiTextBlock()
             {
                 HorizontalAlignment = AnyUiHorizontalAlignment.Left,
                 HorizontalContentAlignment = AnyUiHorizontalAlignment.Left,
@@ -588,7 +605,7 @@ namespace AasxPluginDocumentShelf
                     {
                         if (o is int ti)
                             // awkyard, but for compatibility to WPF version
-                            de?.RaiseMenuClick((new string[] { "Edit", "Delete", "Save file .." })[ti], null);
+                            de?.RaiseMenuClick((new[] { "Edit", "Delete", "Save file .." })[ti], null);
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -596,9 +613,9 @@ namespace AasxPluginDocumentShelf
             return outerG;
         }
 
-#endregion
+        #endregion
 
-#region Create entity
+        #region Create entity
         //=====================
 
         protected AnyUiPanelEntity _formEntity = null;
@@ -612,10 +629,6 @@ namespace AasxPluginDocumentShelf
                 Func<object, AnyUiLambdaActionBase> lambdaCancel = null,
                 Func<object, AnyUiLambdaActionBase> lambdaAdd = null)
             {
-                // will have (in future) a text box
-
-                AnyUiTextBox tbIdShort = null;
-
                 //
                 // make an outer grid, very simple grid of rows: header, spacer, body
                 //
@@ -655,7 +668,7 @@ namespace AasxPluginDocumentShelf
 
                 // small spacer
                 outer.RowDefinitions[1] = new AnyUiRowDefinition(2.0, AnyUiGridUnitType.Pixel);
-                var space = uitk.AddSmallBasicLabelTo(outer, 1, 0,
+                uitk.AddSmallBasicLabelTo(outer, 1, 0,
                     fontSize: 0.3f,
                     verticalAlignment: AnyUiVerticalAlignment.Top,
                     content: "", background: AnyUiBrushes.White);
@@ -675,7 +688,7 @@ namespace AasxPluginDocumentShelf
                     textWrapping: AnyUiTextWrapping.NoWrap,
                     content: "idShort:");
 
-                tbIdShort = (AnyUiTextBox)AnyUiUIElement.RegisterControl(
+                AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(body, 0, 1,
                         margin: new AnyUiThickness(2, 10, 2, 10),
                         text: "" + IdShort),
@@ -689,9 +702,9 @@ namespace AasxPluginDocumentShelf
 
         }
 
-#endregion
+        #endregion
 
-#region Event handling
+        #region Event handling
         //=============
 
         private Action<AasxPluginEventReturnBase> _menuSubscribeForNextEventReturn = null;
@@ -729,23 +742,12 @@ namespace AasxPluginDocumentShelf
             if (_formDoc != null)
             {
                 _formDoc.HandleEventReturn(evtReturn);
-                return;
             }
-
-            //if (this.currentFormInst?.subscribeForNextEventReturn != null)
-            //{
-            //    // delete first
-            //    var tempLambda = this.currentFormInst.subscribeForNextEventReturn;
-            //    this.currentFormInst.subscribeForNextEventReturn = null;
-
-            //    // execute
-            //    tempLambda(evtReturn);
-            //}
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -791,9 +793,9 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
         private AdminShell.SubmodelElementWrapperCollection _updateSourceElements = null;
@@ -805,8 +807,8 @@ namespace AasxPluginDocumentShelf
                 return;
 
             // what to do?
-            if (tag == null 
-                && (menuItemHeader == "Edit" || menuItemHeader == "Display") 
+            if (tag == null
+                && (menuItemHeader == "Edit" || menuItemHeader == "Display")
                 && e.SourceElementsDocument != null && e.SourceElementsDocumentVersion != null)
             {
                 // prepare form instance, take over existing data
@@ -952,15 +954,6 @@ namespace AasxPluginDocumentShelf
                     }
                 };
             }
-
-            //// check for a document reference
-            //if (tag != null && tag is Tuple<DocumentEntity.DocRelationType, AdminShell.Reference> reltup
-            //    && reltup.Item2 != null && reltup.Item2.Count > 0)
-            //{
-            //    var evt = new AasxPluginResultEventNavigateToReference();
-            //    evt.targetReference = new AdminShell.Reference(reltup.Item2);
-            //    this.theEventStack.PushEvent(evt);
-            //}
         }
 
         private void DocumentEntity_DoubleClick(DocumentEntity e)
@@ -1258,9 +1251,9 @@ namespace AasxPluginDocumentShelf
             return new AnyUiLambdaActionNone();
         }
 
-#endregion
+        #endregion
 
-#region Timer
+        #region Timer
         //===========
 
         private object mutexDocEntitiesInPreview = new object();
@@ -1330,9 +1323,11 @@ namespace AasxPluginDocumentShelf
                                 ent.DeleteFilesAfterLoading = new[] { inputFn, outputFn };
 
                                 // start process
-                                string arguments = string.Format("-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
+                                string arguments = string.Format(
+                                    "-flatten -density 75 \"{0}\"[0] \"{1}\"", inputFn, outputFn);
                                 string exeFn = System.IO.Path.Combine(
-                                    System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "convert.exe");
+                                    System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                                    "convert.exe");
 
                                 var startInfo = new ProcessStartInfo(exeFn, arguments)
                                 {
@@ -1442,9 +1437,9 @@ namespace AasxPluginDocumentShelf
             _inDispatcherTimer = false;
         }
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
         private bool CheckIfPackageFile(string fn)
@@ -1452,6 +1447,6 @@ namespace AasxPluginDocumentShelf
             return fn.StartsWith(@"/");
         }
 
-#endregion
+        #endregion
     }
 }

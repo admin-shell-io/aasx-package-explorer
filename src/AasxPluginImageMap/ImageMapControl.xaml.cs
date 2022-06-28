@@ -45,7 +45,7 @@ namespace AasxPluginImageMap
 {
     public partial class ImageMapControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance Log = new LogInstance();
@@ -56,9 +56,9 @@ namespace AasxPluginImageMap
 
         public List<double> clickedCoordinates = new List<double>();
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -67,8 +67,8 @@ namespace AasxPluginImageMap
         {
         }
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public ImageMapControl()
@@ -128,9 +128,9 @@ namespace AasxPluginImageMap
             return imgMapCntl;
         }
 
-        #endregion
+#endregion
 
-        #region Business Logic
+#region Business Logic
         //====================
 
         private void FindFileAndDisplay()
@@ -395,9 +395,9 @@ namespace AasxPluginImageMap
             }
         }
 
-        #endregion
+#endregion
 
-        #region WPF handling
+#region WPF handling
         //==================
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
@@ -415,7 +415,7 @@ namespace AasxPluginImageMap
             FindRegionsAndDisplay(!(this.CheckBoxShowRegions.IsChecked == true));
         }
 
-        #endregion
+#endregion
 
         private void CanvasContent_SizeChanged(object sender, SizeChangedEventArgs e)
         {

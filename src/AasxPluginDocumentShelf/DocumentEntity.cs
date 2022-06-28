@@ -193,12 +193,14 @@ namespace AasxPluginDocumentShelf
                         var orga =
                             "" +
                             smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                _semConfigV10.SemIdOrganizationOfficialName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                _semConfigV10.SemIdOrganizationOfficialName, AdminShellV20.Key.MatchMode.Relaxed)?
+                                .value;
                         if (orga.Trim().Length < 1)
                             orga =
                                 "" +
                                 smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    _semConfigV10.SemIdOrganizationName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    _semConfigV10.SemIdOrganizationName, AdminShellV20.Key.MatchMode.Relaxed)?
+                                    .value;
 
                         // class infos
                         var classId =

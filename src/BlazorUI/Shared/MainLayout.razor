@@ -324,11 +324,13 @@
                                             value="@selectId"
                                             @onchange="@((ChangeEventArgs __e) => RepoItemSelected(__e.Value.ToString()))">
                                         <option value="">--select--</option>
-                                        @if(Program.Repo?.FileMap != null)
-                                            foreach (var item in Program.Repo.FileMap)
-                                            {
+                                        @{
+                                            if(Program.Repo?.FileMap != null)
+                                                foreach (var item in Program.Repo.FileMap)
+                                                {
                                                 <option value="@item.Location">@item.Description</option>
                                             }
+                                        }
                                     </select>
                                 }
                                 @code {

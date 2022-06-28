@@ -1,8 +1,19 @@
-﻿using AnyUi;
-using Microsoft.AspNetCore.Mvc;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using AnyUi;
+using Microsoft.AspNetCore.Mvc;
+
+// ReSharper disable MergeIntoPattern
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,15 +27,8 @@ namespace BlazorUI.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new[] { "value1", "value2" };
         }
-
-        // GET api/<ImageController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
 
         // GET api/<ImageController>/5
         [HttpGet("{id}")]
@@ -38,30 +42,17 @@ namespace BlazorUI.Controllers
                 {
                     return base.File(img.BitmapInfo.PngData, "image/png");
                 }
-
-                // LINUX
-
-                //if (img?.BitmapInfo?.ImageSource is BitmapSource bitmap)
-                //{
-                //    BitmapEncoder encoder = new PngBitmapEncoder();
-                //    var bmp = new WriteableBitmap(bitmap);
-                //    encoder.Frames.Add(BitmapFrame.Create(bmp));
-
-                //    using (var memStream = new System.IO.MemoryStream())
-                //    {
-                //        encoder.Save(memStream);
-                //        var ba = memStream.ToArray();
-                //        return base.File(ba, "image/png");
-                //    }
-                //}
             }
 
             // default case
-            // var bb = System.IO.File.ReadAllBytes(@"C:\MIHO\Develop\Aasx\repo\sample.png");
+            // ReSharper disable ConvertToUsingDeclaration
             using (var stream = Assembly
                     .GetExecutingAssembly()
                     .GetManifestResourceStream("BlazorUI.Resources.sample.png"))
             {
+                if (stream == null)
+                    return NotFound();
+
                 using (MemoryStream ms = new MemoryStream())
                 {
                     stream.CopyTo(ms);
@@ -69,14 +60,8 @@ namespace BlazorUI.Controllers
                     return base.File(bb, "image/png");
                 }
             }
+            // ReSharper enable ConvertToUsingDeclaration
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetUserImageFile()
-        //{
-        //    return new Microsoft.AspNetCore.Mvc.FileContentResult(new byte[] { 1, 2, 3 }, "image.png");
-        //}
-
 
         // POST api/<ImageController>
         [HttpPost]

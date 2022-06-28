@@ -676,7 +676,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         },
                         takeOverLambda: new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: env?.ConceptDescriptions)) as AnyUiComboBox;
+                            nextFocus: env?.ConceptDescriptions));
 
                     // set currently selected value
                     if (cb1 != null)

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -15,6 +24,9 @@ using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+
+// ReSharper disable NegativeEqualityExpression
+// ReSharper disable AccessToModifiedClosure
 
 namespace AasxPluginImageMap
 {
@@ -205,7 +217,7 @@ namespace AasxPluginImageMap
 
             // add an image
             innerGrid.RowDefinitions[0].Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-            _backgroundImage = (AnyUiImage)AnyUiUIElement.RegisterControl(
+            _backgroundImage = AnyUiUIElement.RegisterControl(
                 uitk.Set(
                     uitk.AddSmallImageTo(innerGrid, 0, 0,
                         stretch: AnyUiStretch.Uniform),
@@ -703,7 +715,8 @@ namespace AasxPluginImageMap
 
                 // some manipulations?
                 res = AdminShellUtil.ReplacePercentPlaceholder(res, "%utc%",
-                    () => DateTime.UtcNow.ToString(), StringComparison.InvariantCultureIgnoreCase);
+                    () => DateTime.UtcNow.ToString(CultureInfo.InvariantCulture),
+                    StringComparison.InvariantCultureIgnoreCase);
 
                 // ok
                 return res;
@@ -1043,9 +1056,9 @@ namespace AasxPluginImageMap
             return true;
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -1065,9 +1078,9 @@ namespace AasxPluginImageMap
             RenderFullView(_panel, _uitk, _package, _submodel);
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
@@ -1089,12 +1102,12 @@ namespace AasxPluginImageMap
             }
         }
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
 
-#endregion
+        #endregion
     }
 }

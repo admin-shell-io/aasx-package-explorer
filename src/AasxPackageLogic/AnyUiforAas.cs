@@ -44,8 +44,6 @@ namespace AasxPackageLogic
         }
     }
 
-    // public class AnyUiLambdaActionRedrawEntity : AnyUiLambdaActionBase { }
-
     public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionRedrawAllElementsBase
     {
         public DispEditHighlight.HighlightFieldInfo HighlightField = null;

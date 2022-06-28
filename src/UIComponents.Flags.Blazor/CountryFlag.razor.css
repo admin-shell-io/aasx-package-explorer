@@ -1,4 +1,8 @@
-﻿.small-flag {
+﻿/* ReSharper disable RedundantUnits */
+/* ReSharper disable CssBrowserCompatibility */
+/* ReSharper disable CssPropertyDoesNotOverrideVendorProperty */
+
+.small-flag {
     margin: 0px -20px;
     transform: scale(0.25);
     -ms-transform: scale(0.25); 
@@ -32,21 +36,21 @@
     box-shadow: 0 0 8px #333;
   }
   .normal-flag.shadow {
+    box-shadow: 0 0 6px #333;
     -webkit-box-shadow: 0 0 6px #333;
     -moz-box-shadow: 0 0 6px #333;
-    box-shadow: 0 0 6px #333;
   }
   .big-flag.shadow {
+    box-shadow: 0 0 3px #333;
     -webkit-box-shadow: 0 0 3px #333;
     -moz-box-shadow: 0 0 3px #333;
-    box-shadow: 0 0 3px #333;
   }
-.flag {
-  width: 52px;
-  height: 39px;
-  display: inline-block;
-  background-repeat: no-repeat;
-}
+  .flag {
+    width: 52px;
+    height: 39px;
+    display: inline-block;
+    background-repeat: no-repeat;
+  }
 .f-and,
 .f-ad {
   background-position: 0 -42px;

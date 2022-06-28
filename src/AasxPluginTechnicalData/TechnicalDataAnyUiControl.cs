@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,6 +23,9 @@ using AasxPredefinedConcepts.ConceptModel;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+
+// ReSharper disable AccessToModifiedClosure
+// ReSharper disable NegativeEqualityExpression
 
 namespace AasxPluginTechnicalData
 {
@@ -46,9 +58,11 @@ namespace AasxPluginTechnicalData
         #region Constructors, as for WPF control
         //=============
 
+        // ReSharper disable EmptyConstructor
         public TechnicalDataAnyUiControl()
         {
         }
+        // ReSharper enable EmptyConstructor
 
         public void Start(
             LogInstance log,
@@ -168,7 +182,7 @@ namespace AasxPluginTechnicalData
                     maxHeight: 21),
                 (o) =>
                 {
-                    if (!cbLang.SelectedIndex.HasValue)
+                    if (!(cbLang?.SelectedIndex.HasValue == true))
                         return new AnyUiLambdaActionNone();
                     _selectedLangIndex = cbLang.SelectedIndex.Value;
                     _selectedLangStr = AasxLanguageHelper.LangEnumToISO639String[_selectedLangIndex];
@@ -177,7 +191,7 @@ namespace AasxPluginTechnicalData
                         PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
                         UseInnerGrid = true
                     };
-                }) as AnyUiComboBox;
+                });
 
             //
             // Header area
@@ -219,7 +233,7 @@ namespace AasxPluginTechnicalData
                         _lastScrollPosition = positions.Item2;
                     }
                     return new AnyUiLambdaActionNone();
-                }) as AnyUiScrollViewer;
+                });
 
             // content of the scroll viewer
             // need a stack panel to add inside
@@ -382,7 +396,7 @@ namespace AasxPluginTechnicalData
                 if (pil.Count > 0)
                 {
                     // make an outer grid, very simple grid of two rows: header & body
-                    var pilGrid = uitk.AddSmallGridTo(outer, 3, 0, rows: 1, cols: pil.Count /* , colWidths: new[] { "*" } */);
+                    var pilGrid = uitk.AddSmallGridTo(outer, 3, 0, rows: 1, cols: pil.Count);
 
                     for (int i = 0; i < pil.Count; i++)
                     {
@@ -440,7 +454,6 @@ namespace AasxPluginTechnicalData
                     for (int i = 0; i < clr.Count; i++)
                     {
                         // instances are again a grid inside a border
-                        var clri = clr[i];
                         var clrbrd = uitk.AddSmallBorderTo(clrGrid, 0 + i, 0,
                                         borderThickness: new AnyUiThickness(1.5), borderBrush: AnyUiBrushes.DarkBlue,
                                         margin: new AnyUiThickness(2),
@@ -475,9 +488,9 @@ namespace AasxPluginTechnicalData
             }
         }
 
-#endregion
+        #endregion
 
-#region Inner
+        #region Inner
         //=============
 
         protected class TripleRowData
@@ -505,9 +518,6 @@ namespace AasxPluginTechnicalData
                 var row = rows[ri];
                 if (row == null)
                     continue;
-
-                if (row.Value.Contains("IP67"))
-                    ;
 
                 if (row.Heading.HasContent())
                 {
@@ -682,9 +692,9 @@ namespace AasxPluginTechnicalData
             RenderTripleRowData(view, uitk, rows.ToArray());
         }
 
-#endregion
+        #endregion
 
-#region Footer
+        #region Footer
         //=============
 
         protected void RenderPanelFooter(
@@ -733,9 +743,9 @@ namespace AasxPluginTechnicalData
                 content: tsl[i]);
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -753,18 +763,18 @@ namespace AasxPluginTechnicalData
             RenderFullView(_panel, _uitk, _package, _submodel, defaultLang: null);
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
 
-#endregion
+        #endregion
     }
 }

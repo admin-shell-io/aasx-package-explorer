@@ -137,8 +137,6 @@
                                     var tdStyle = GetCellStyle(ri, ci);
                                     if (ch is AnyUiFrameworkElement chfe)
                                     {
-                                        if (ch is AnyUiCheckBox cb && cb.Content == "local")
-                                            ;
                                         if (chfe.VerticalAlignment == null
                                             || (chfe.VerticalAlignment.HasValue && chfe.VerticalAlignment.Value == AnyUiVerticalAlignment.Top))
                                             tdStyle.Set("vertical-align", "top", add: true);

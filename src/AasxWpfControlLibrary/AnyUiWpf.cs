@@ -183,37 +183,6 @@ namespace AnyUi
             return new AnyUiPoint(p.X, p.Y);
         }
 
-        //public Shape RenderWpfShapeTo(Canvas canvas, AnyUiShape uis)
-        //{
-        //    if (canvas == null)
-        //        return null;
-
-        //    Action<Shape, AnyUiShape> setShape = (shp, uishp) =>
-        //    {
-        //        if (uishp.Fill != null)
-        //            shp.Fill = GetWpfBrush(uishp.Fill);
-        //        if (uishp.Stroke != null)
-        //            shp.Stroke = GetWpfBrush(uishp.Stroke);
-        //        if (uishp.StrokeThickness.HasValue)
-        //            shp.StrokeThickness = uishp.StrokeThickness.Value;
-        //        shp.Width = uishp.Width;
-        //        shp.Height = uishp.Height;
-        //        shp.Tag = uishp.Tag;
-        //        Canvas.SetLeft(shp, uishp.X);
-        //        Canvas.SetTop(shp, uishp.Y);
-        //    };
-
-        //    if (uis is AnyUiRectangle uirect)
-        //    {
-        //        var x = new Rectangle();
-        //        setShape(x, uis);
-        //        canvas.Children.Add(x);
-        //        return x;
-        //    }
-
-        //    return null;
-        //}
-
         //
         // Handling of outside actions
         //
@@ -281,10 +250,12 @@ namespace AnyUi
             {
                 new RenderRec(typeof(AnyUiUIElement), typeof(UIElement), (a, b, mode) =>
                 {
-                   if (a is AnyUiUIElement cntl && b is UIElement wpf
-                       && mode == AnyUiRenderMode.All)
-                   {
-                   }
+                    // ReSharper disable UnusedVariable
+                    if (a is AnyUiUIElement cntl && b is UIElement wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                    }
+                    // ReSharper enable UnusedVariable
                 }),
 
                 new RenderRec(typeof(AnyUiFrameworkElement), typeof(FrameworkElement), (a, b, mode) =>
@@ -322,22 +293,20 @@ namespace AnyUi
                                     {
                                         // get the current coordinates relative to the framework element
                                         // (only this could be sensible information to an any ui business logic)
-                                        var p = GetAnyUiPoint(Mouse.GetPosition(wpf));                                        
+                                        var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
 
                                         // detect and send appropriate event and emit return
                                         if ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
                                         {
-                                            EmitOutsideAction(
-                                                cntl.setValueLambda?.Invoke(
-                                                    new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                            EmitOutsideAction(cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
                                         }
 
                                         if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
                                             && e5.ClickCount == 2)
                                         {
-                                            EmitOutsideAction(
-                                                cntl.setValueLambda?.Invoke(
-                                                    new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                            EmitOutsideAction(cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
                                         }
                                     }
                                 };
@@ -510,18 +479,22 @@ namespace AnyUi
 
                 new RenderRec(typeof(AnyUiRectangle), typeof(Rectangle), (a, b, mode) =>
                 {
+                    // ReSharper disable UnusedVariable
                     if (a is AnyUiRectangle cntl && b is Rectangle wpf
                         && mode == AnyUiRenderMode.All)
                     {
                     }
+                    // ReSharper enable UnusedVariable
                 }),
 
                 new RenderRec(typeof(AnyUiEllipse), typeof(Ellipse), (a, b, mode) =>
                 {
+                    // ReSharper disable UnusedVariable
                     if (a is AnyUiEllipse cntl && b is Ellipse wpf
                         && mode == AnyUiRenderMode.All)
                     {
                     }
+                    // ReSharper enable UnusedVariable
                 }),
 
                 new RenderRec(typeof(AnyUiPolygon), typeof(Polygon), (a, b, mode) =>
@@ -579,8 +552,8 @@ namespace AnyUi
                                     if (e.ChangedButton == MouseButton.Left)
                                     {
                                         EmitOutsideAction(
-                                            cntl.setValueLambda?.Invoke(
-                                                new AnyUiEventData(AnyUiEventMask.LeftDown, auiSource, e.ClickCount, p)));
+                                            cntl.setValueLambda?.Invoke(new AnyUiEventData(
+                                                    AnyUiEventMask.LeftDown, auiSource, e.ClickCount, p)));
                                     }
                                 };
                             }
@@ -781,7 +754,7 @@ namespace AnyUi
                                 {
                                     memory.Write(cntl.BitmapInfo.PngData, 0, cntl.BitmapInfo.PngData.Length);
                                     memory.Position = 0;
-                                    
+
                                     BitmapImage bi = new BitmapImage();
                                     bi.BeginInit();
                                     bi.StreamSource = memory;
@@ -807,7 +780,8 @@ namespace AnyUi
                                     int stride = width * sourceBi.Format.BitsPerPixel;
                                     byte[] pixelData = new byte[stride * height];
                                     sourceBi.CopyPixels(pixelData, stride, 0);
-                                    var destBi = BitmapSource.Create(width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
+                                    var destBi = BitmapSource.Create(
+                                        width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
                                     destBi.Freeze();
 
                                     // remember
@@ -849,7 +823,8 @@ namespace AnyUi
                             if (cntl.Padding != null)
                                 wpf.Padding = GetWpfTickness(cntl.Padding);
 
-                            wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
+                            wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)
+                                ((int) cntl.VerticalScrollBarVisibility);
                             wpf.AcceptsReturn = cntl.AcceptsReturn;
                             if (cntl.MaxLines != null)
                                 wpf.MaxLines = cntl.MaxLines.Value;
@@ -1145,7 +1120,8 @@ namespace AnyUi
                 return null;
 
             // create wpfElement accordingly?
-            if (/* dd.WpfElement == null && */ topClass)
+            //// Note: excluded from condition: dd.WpfElement == null
+            if (topClass)
                 dd.WpfElement = (UIElement)Activator.CreateInstance(foundRR.WpfType);
             if (dd.WpfElement == null)
                 return null;
@@ -1160,16 +1136,6 @@ namespace AnyUi
 
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
-
-            // TODO: Delete, as already fulfilled by render recs!
-            if (false)
-            {
-                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
-                    && cntl.Child != null)
-                {
-                    wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: allowReUse);
-                }
-            }
 
             {
                 if (el is AnyUiScrollViewer cntl && dd.WpfElement is ScrollViewer wpf

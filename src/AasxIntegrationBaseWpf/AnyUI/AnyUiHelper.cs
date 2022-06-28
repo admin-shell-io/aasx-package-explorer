@@ -13,13 +13,15 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
-using AnyUi;
 using System.Windows.Media.Imaging;
+using AnyUi;
+using Newtonsoft.Json;
+
+// ReSharper disable UnusedType.Global
 
 namespace AasxIntegrationBaseWpf
 {
-    public class AnyUiHelper
+    public static class AnyUiHelper
     {
         public static AnyUiBitmapInfo CreateAnyUiBitmapInfo(BitmapSource source, bool doFreeze = true)
         {

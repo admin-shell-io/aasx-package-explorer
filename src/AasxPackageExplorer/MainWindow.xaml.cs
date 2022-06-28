@@ -1062,11 +1062,11 @@ namespace AasxPackageExplorer
                     RedrawAllAasxElements();
 
                 // the selection will be shifted ..
-                if (wish.NextFocus != null)
+                if (wish.NextFocus != null && DisplayElements != null)
                 {
                     // for later search in visual elements, expand them all in order to be absolutely 
                     // sure to find business object
-                    this.DisplayElements.ExpandAllItems();
+                    DisplayElements.ExpandAllItems();
 
                     // now: search
                     DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
@@ -1147,7 +1147,7 @@ namespace AasxPackageExplorer
                 // Can get this information?
                 var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
-                if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>
+                if (renderedInfo != null
                     && renderedInfo.Item2 is AnyUiPanel renderedPanel
                     && renderedPanel.Children != null
                     && renderedPanel.Children.Count > 0)
@@ -1158,7 +1158,7 @@ namespace AasxPackageExplorer
                     {
                         try
                         {
-                            var uires = plugin.InvokeAction(
+                            plugin.InvokeAction(
                                 "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1,
                                 AnyUiDisplayContextWpf.SessionSingletonWpf);
                         }
@@ -1285,7 +1285,7 @@ namespace AasxPackageExplorer
             // Can get this information?
             var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
 
-            if (renderedInfo is Tuple<AnyUiDisplayContextWpf, AnyUiUIElement>
+            if (renderedInfo != null
                 && renderedInfo.Item2 is AnyUiPanel renderedPanel
                 && renderedPanel.Children != null
                 && renderedPanel.Children.Count > 0)
@@ -1297,7 +1297,7 @@ namespace AasxPackageExplorer
                 {
                     try
                     {
-                        var uires = plugin.InvokeAction(
+                        plugin.InvokeAction(
                             "update-anyui-visual-extension", renderedPanel, null,
                             AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
@@ -1488,7 +1488,7 @@ namespace AasxPackageExplorer
                         retev.resultKeys = uc.DiaData.ResultKeys;
 
                         // fire back
-                        pluginInstance?.InvokeAction("event-return", retev, 
+                        pluginInstance?.InvokeAction("event-return", retev,
                             AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
                 }
@@ -1545,9 +1545,10 @@ namespace AasxPackageExplorer
 
                     // fire back
                     pluginInstance?.InvokeAction("event-return",
-                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox() { 
+                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox()
+                        {
                             sourceEvent = evt,
-                            Result = uc.Result 
+                            Result = uc.Result
                         },
                         AnyUiDisplayContextWpf.SessionSingletonWpf);
                 }

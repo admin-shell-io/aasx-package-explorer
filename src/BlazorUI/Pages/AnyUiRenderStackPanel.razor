@@ -47,15 +47,17 @@
             <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiRenderStackPanel.razor HOR">
                 <tr>
                     <td>
-                        @if (_panel?.Children != null)
-                            foreach (var ch in _panel.Children)
-                            {
+                        @{
+                            if (_panel?.Children != null)
+                                foreach (var ch in _panel.Children)
+                                {
                                 <AnyUiRenderElem DisplayData="@DisplayData"
                                                  Session="@Session"
                                                  Parent="@Element"
                                                  Element="@ch"
                                                  FillMode="@AnyUiHtmlFillMode.None" />
-                            }
+                                }
+                        }
                     </td>
                 </tr>
             </table>
@@ -116,11 +118,6 @@
             _panel = value;
             if (_panel == null)
                 return;
-
-            if ((_panel.DebugTag as string) == "CIDSP1")
-                ;
-            if ((_panel.DebugTag as string) == "CIDSP2")
-                ;
         }
     }
 
