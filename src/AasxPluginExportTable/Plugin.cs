@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using AasxPluginExportTable;
+using AasxPluginExportTable.TimeSeries;
 using AasxPluginExportTable.Uml;
 using AdminShellNS;
 using AnyUi;
@@ -71,7 +72,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "set-json-options", "Sets plugin-options according to provided JSON string."));
-            res.Add(new AasxPluginActionDescriptionBase("get-json-options", "Gets plugin-options as a JSON string."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "get-json-options", "Gets plugin-options as a JSON string."));
             res.Add(new AasxPluginActionDescriptionBase("get-licenses", "Reports about used licenses."));
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -79,6 +81,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
+            res.Add(new AasxPluginActionDescriptionBase(
+                "import-time-series", "Import time series data from a table file."));
             return res.ToArray();
         }
 
@@ -250,6 +254,73 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                     }
 
+            }
+
+            if (action == "import-time-series"
+                && args != null && args.Length >= 3
+                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv
+                && args[2] is AdminShell.Submodel)
+            {
+                var fn = (args.Length >= 4) ? args[3] as string : null;
+
+                // flyout provider (will be required in the future)
+                var fop = args[0] as IFlyoutProvider;
+
+                // which Submodel
+                var env = args[1] as AdminShell.AdministrationShellEnv;
+                var sm = args[2] as AdminShell.Submodel;
+                if (env == null || sm == null)
+                    return null;
+
+                // the Submodel elements need to have parents
+                sm.SetAllParents();
+
+                // prep options
+                var imop = new ImportTimeSeriesOptions();
+                imop.StartTime = ImportTimeSeries.ConvertToIso8601(DateTime.UtcNow);
+
+                // dialogue for user options
+                var uc = new ImportTimeSeriesFlyout();
+                uc.Result = imop;
+                fop?.StartFlyoverModal(uc);
+                fop?.CloseFlyover();
+                if (uc.Result == null)
+                    return null;
+
+                // ask for filename
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                try
+                {
+                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                        System.AppDomain.CurrentDomain.BaseDirectory);
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+                dlg.Title = "Select file for time series import ..";
+
+                if (uc.Result.Format == ImportTimeSeriesOptions.FormatEnum.Excel)
+                {
+                    dlg.DefaultExt = "*.xlsx";
+                    dlg.Filter = "Excel tables (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                }
+                else
+                {
+                    dlg.DefaultExt = "*.*";
+                    dlg.Filter = "All files (*.*)|*.*";
+                }
+
+                fop?.StartFlyover(new EmptyFlyout());
+                var fnres = dlg.ShowDialog(fop?.GetWin32Window());
+                fop?.CloseFlyover();
+                if (fnres != true)
+                    return null;
+                fn = dlg.FileName;
+
+                // use functionality
+                Log.Info($"Importing time series from file: {fn} ..");
+                ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, uc.Result, fn, Log);
             }
 
             // default

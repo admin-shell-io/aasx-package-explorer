@@ -417,7 +417,7 @@ namespace AasxPackageExplorer
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {
-                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf.theFile, editMode, stack);
+                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack);
                 }
                 else if (entity is VisualElementPluginExtension vepe)
                 {

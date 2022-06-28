@@ -22,6 +22,8 @@ using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
 using AdminShellNS;
 using IdentityModel.Client;
+using IO.Swagger.Api;
+using IO.Swagger.Client;
 using Newtonsoft.Json;
 using SSIExtension;
 
@@ -213,8 +215,7 @@ namespace AasxPackageLogic.PackageCentral
             var reqSm = requestedElement as AdminShell.Submodel;
             var reqSme = requestedElement as AdminShell.SubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
-                || requestedElement == null || timestamp == null
-                || (reqSm == null && reqSme == null))
+                || requestedElement == null || (reqSm == null && reqSme == null))
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
                     "input arguments not valid!");
 

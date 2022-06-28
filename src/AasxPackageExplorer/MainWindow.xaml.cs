@@ -25,6 +25,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
+using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
@@ -135,8 +136,11 @@ namespace AasxPackageExplorer
             theContentBrowser.GoToContentBrowserAddress(Options.Curr.ContentHome);
         }
 
-        public void RedrawAllAasxElements()
+        public void RedrawAllAasxElements(bool keepFocus = false)
         {
+            // focus info
+            var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
+
             var t = "AASX Package Explorer";
             if (_packageCentral.MainAvailable)
                 t += " - " + _packageCentral.MainItem.ToString();
@@ -156,6 +160,22 @@ namespace AasxPackageExplorer
             DisplayElements.RebuildAasxElements(
                 _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
                 lazyLoadingFirst: true);
+
+            // ok .. try re-focus!!
+            if (keepFocus)
+            {
+                // make sure that Submodel is expanded
+                this.DisplayElements.ExpandAllItems();
+
+                // still proceed?
+                var veFound = this.DisplayElements.SearchVisualElementOnMainDataObject(focusMdo,
+                        alsoDereferenceObjects: true);
+
+                if (veFound != null)
+                    DisplayElements.TrySelectVisualElement(veFound, wishExpanded: true);
+            }
+
+            // display again
             DisplayElements.Refresh();
 
 #if _log_times
@@ -195,6 +215,8 @@ namespace AasxPackageExplorer
             else
                 return new AdminShellPackageEnv(fn, Options.Curr.IndirectLoadSave);
         }
+
+
 
         private PackCntRuntimeOptions UiBuildRuntimeOptionsForMainAppLoad()
         {
@@ -743,10 +765,6 @@ namespace AasxPackageExplorer
                 if (repo == null || fi == null)
                     return;
 
-                var location = repo.GetFullItemLocation(fi.Location);
-                if (location == null)
-                    return;
-
                 // safety?
                 if (!MenuItemOptionsLoadWoPrompt.IsChecked)
                 {
@@ -767,36 +785,62 @@ namespace AasxPackageExplorer
                     copts = fi.ContainerOptions;
 
                 // try load ..
-                try
+                if (repo is PackageContainerAasxFileRepository restRepository)
                 {
+                    if (restRepository.IsAspNetConnection)
+                    {
+                        var container = await restRepository.LoadAasxFileFromServer(fi.PackageId, _packageCentral.CentralRuntimeOptions);
+                        if (container != null)
+                        {
+                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                            takeOverContainer: container, onlyAuxiliary: false,
+                            storeFnToLRU: fi.PackageId);
+                        }
+
+                        Log.Singleton.Info($"Successfully loaded AASX Package with PackageId {fi.PackageId}");
+
+                        if (senderList is PackageContainerListControl pclc)
+                            pclc.RedrawStatus();
+                    }
+                }
+                else
+                {
+                    var location = repo.GetFullItemLocation(fi.Location);
+                    if (location == null)
+                        return;
                     Log.Singleton.Info($"Auto-load file from repository {location} into container");
 
-                    var container = await PackageContainerFactory.GuessAndCreateForAsync(
-                        _packageCentral,
-                        location,
-                        location,
-                        overrideLoadResident: true,
-                        takeOver: fi,
-                        fi.ContainerList,
-                        containerOptions: copts,
-                        runtimeOptions: _packageCentral.CentralRuntimeOptions);
+                    try
+                    {
+                        var container = await PackageContainerFactory.GuessAndCreateForAsync(
+                            _packageCentral,
+                            location,
+                            location,
+                            overrideLoadResident: true,
+                            takeOver: fi,
+                            fi.ContainerList,
+                            containerOptions: copts,
+                            runtimeOptions: _packageCentral.CentralRuntimeOptions);
 
-                    if (container == null)
-                        Log.Singleton.Error($"Failed to load AASX from {location}");
-                    else
-                        UiLoadPackageWithNew(_packageCentral.MainItem,
-                            takeOverContainer: container, onlyAuxiliary: false,
-                            storeFnToLRU: location);
+                        if (container == null)
+                            Log.Singleton.Error($"Failed to load AASX from {location}");
+                        else
+                            UiLoadPackageWithNew(_packageCentral.MainItem,
+                                takeOverContainer: container, onlyAuxiliary: false,
+                                storeFnToLRU: location);
 
-                    Log.Singleton.Info($"Successfully loaded AASX {location}");
+                        Log.Singleton.Info($"Successfully loaded AASX {location}");
 
-                    if (senderList is PackageContainerListControl pclc)
-                        pclc.RedrawStatus();
+                        if (senderList is PackageContainerListControl pclc)
+                            pclc.RedrawStatus();
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, $"When auto-loading {location}");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, $"When auto-loading {location}");
-                }
+
+
             };
 
             // what happens on a file drop -> dispatch

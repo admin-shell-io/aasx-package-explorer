@@ -21,6 +21,9 @@ Copyright (c) 2021 KEB Automation KG <https://www.keb.de/>
 Copyright (c) 2021 Lenze SE <https://www.lenze.com/en-de/>
 author: Jonas Grote, Denis Göllner, Sebastian Bischof
 
+Copyright (c) 2021 Robert Bosch Manufacturing Solutions GmbH
+author: Monisha Macharla Vasu
+
 The AASX Package Explorer is licensed under the Apache License 2.0
 (Apache-2.0, see below).
 

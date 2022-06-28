@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -239,6 +240,16 @@ namespace AnyUi
 
         [JsonIgnore]
         private ListOfRenderRec RenderRecs = new ListOfRenderRec();
+
+        private string FilterForBadText(string input)
+        {
+            var res = new StringBuilder();
+            foreach (var c in input)
+                if (c >= ' ')
+                    res.Append(c);
+            return res.ToString();
+
+        }
 
         [JsonIgnore]
         private Point _dragStartPoint = new Point(0, 0);
@@ -635,7 +646,9 @@ namespace AnyUi
                                             tb2.Text = "" + files[0];
 
                                         // value changed
-                                        cntl.setValueLambda?.Invoke(files[0]);
+                                        var action = cntl.setValueLambda?.Invoke(files[0]);
+                                        if (action != null && !(action is AnyUiLambdaActionNone))
+                                            EmitOutsideAction(action);
 
                                         // contents changed
                                         WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
@@ -1142,6 +1155,17 @@ namespace AnyUi
                     && cntl.Content != null)
                 {
                     wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
+                }
+            }
+
+            // does the element need child elements?
+            // do a special case handling here, unless a more generic handling is required
+
+            {
+                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+                    && cntl.Child != null)
+                {
+                    wpf.Child = GetOrCreateWpfElement(cntl.Child);
                 }
             }
 

@@ -32,6 +32,23 @@ using Newtonsoft.Json;
 
 namespace BlazorUI
 {
+    public class ItemXXX
+    {
+        public string Text { get; set; }
+        public IEnumerable<Item>
+        Childs
+        { get; set; }
+        public object parent { get; set; }
+        public string Type { get; set; }
+        public object Tag { get; set; }
+        public AdminShellV20.Referable ParentContainer { get; set; }
+        public AdminShellV20.SubmodelElementWrapper Wrapper { get; set; }
+        public int envIndex { get; set; }
+
+        public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
+        {
+        }
+    }
     public class Program
     {
         public static event EventHandler NewDataAvailable;

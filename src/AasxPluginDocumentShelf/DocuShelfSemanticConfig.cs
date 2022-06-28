@@ -232,7 +232,7 @@ namespace AasxPluginDocumentShelf
             // DocumentVersion
 
             var descDocVer = new FormDescSubmodelElementCollection(
-                "DocumentVersion", FormMultiplicity.OneToMany, semConfig.SemIdDocumentVersion, "DocumentVersion",
+                "DocumentVersion", FormMultiplicity.OneToMany, semConfig.SemIdDocumentVersion, "DocumentVersion{0:00}",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 
@@ -323,7 +323,7 @@ namespace AasxPluginDocumentShelf
                 "Identification of the Domain, e.g. the providing organisation."));
 
             descDocIdDom.Add(new FormDescProperty(
-                "DocumentId", FormMultiplicity.One, defs.CD_DocumentId?.GetSingleKey(),
+                "DocumentId", FormMultiplicity.One, defs.CD_DocumentIdValue?.GetSingleKey(),
                 "DocumentId",
                 "Identification of the Document within a given domain, e.g. the providing organisation."));
 
@@ -396,7 +396,7 @@ namespace AasxPluginDocumentShelf
 
             var descDocVer = new FormDescSubmodelElementCollection(
                 "DocumentVersion", FormMultiplicity.OneToMany, defs.CD_DocumentVersion?.GetSingleKey(),
-                "DocumentVersion",
+                "DocumentVersion{0:00}",
                 "VDI2770 allows for multiple DocumentVersions for a document to be delivered.");
             descDoc.Add(descDocVer);
 

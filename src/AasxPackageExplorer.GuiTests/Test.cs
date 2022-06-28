@@ -286,7 +286,7 @@ namespace AasxPackageExplorer.GuiTests
                 Assert.IsNotNull(documentationItem,
                     $"Could not find the item in the tree containing the text block '{documentationLabel}'");
 
-                var expander = documentationItem!
+                var expander = documentationItem
                     .FindFirstChild(cf => cf.ByAutomationId("Expander"))
                     .AsToggleButton();
 
@@ -353,7 +353,7 @@ namespace AasxPackageExplorer.GuiTests
                     $"Could not find the item in the tree containing the text block '{technicalDataZveiLabel}'");
 
 
-                var expander = technicalDataZvei!
+                var expander = technicalDataZvei
                     .FindFirstChild(cf => cf.ByAutomationId("Expander"))
                     .AsToggleButton();
 

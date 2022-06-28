@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+DotAAS Part 2 | HTTP/REST | Entire Interface Collection
+
+The entire interface collection as part of Details of the Asset Administration Shell Part 2
+
+OpenAPI spec version: Final-Draft
+
+-->
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6AFCA9D9-2F72-42BF-861B-F87D782C95C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IO.Swagger</RootNamespace>
+    <AssemblyName>IO.Swagger</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=107.3.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RestSharp.107.3.0\lib\netstandard2.0\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Text.Encodings.Web.5.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="JsonSubTypes">
+      <HintPath Condition="Exists('$(SolutionDir)\packages')">$(SolutionDir)\packages\JsonSubTypes.1.2.0\lib\net45\JsonSubTypes.dll</HintPath>
+      <HintPath Condition="Exists('..\packages')">..\packages\JsonSubTypes.1.2.0\lib\net45\JsonSubTypes.dll</HintPath>
+      <HintPath Condition="Exists('..\..\packages')">..\..\packages\JsonSubTypes.1.2.0\lib\net45\JsonSubTypes.dll</HintPath>
+      <HintPath Condition="Exists('..\..\vendor')">..\..\vendor\JsonSubTypes.1.2.0\lib\net45\JsonSubTypes.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\AASXFileServerInterfaceApi.cs" />
+    <Compile Include="Api\AssetAdministrationShellInterfaceApi.cs" />
+    <Compile Include="Api\AssetAdministrationShellRepositoryApi.cs" />
+    <Compile Include="Client\ApiClient.cs" />
+    <Compile Include="Client\ApiException.cs" />
+    <Compile Include="Client\ApiResponse.cs" />
+    <Compile Include="Client\Configuration.cs" />
+    <Compile Include="Client\ExceptionFactory.cs" />
+    <Compile Include="Client\GlobalConfiguration.cs" />
+    <Compile Include="Client\IApiAccessor.cs" />
+    <Compile Include="Client\IReadableConfiguration.cs" />
+    <Compile Include="Client\SwaggerDateConverter.cs" />
+    <Compile Include="Model\AccessControl.cs" />
+    <Compile Include="Model\AccessControlPolicyPoints.cs" />
+    <Compile Include="Model\AccessPermissionRule.cs" />
+    <Compile Include="Model\AdministrativeInformation.cs" />
+    <Compile Include="Model\AnnotatedRelationshipElement.cs" />
+    <Compile Include="Model\AssetAdministrationShell.cs" />
+    <Compile Include="Model\AssetAdministrationShellDescriptor.cs" />
+    <Compile Include="Model\AssetAdministrationShellEnvironment.cs" />
+    <Compile Include="Model\AssetInformation.cs" />
+    <Compile Include="Model\AssetKind.cs" />
+    <Compile Include="Model\BasicEvent.cs" />
+    <Compile Include="Model\Blob.cs" />
+    <Compile Include="Model\BlobCertificate.cs" />
+    <Compile Include="Model\Capability.cs" />
+    <Compile Include="Model\Certificate.cs" />
+    <Compile Include="Model\ConceptDescription.cs" />
+    <Compile Include="Model\Constraint.cs" />
+    <Compile Include="Model\DataElement.cs" />
+    <Compile Include="Model\DataSpecificationContent.cs" />
+    <Compile Include="Model\DataSpecificationIEC61360Content.cs" />
+    <Compile Include="Model\DataSpecificationPhysicalUnitContent.cs" />
+    <Compile Include="Model\Descriptor.cs" />
+    <Compile Include="Model\EmbeddedDataSpecification.cs" />
+    <Compile Include="Model\Endpoint.cs" />
+    <Compile Include="Model\Entity.cs" />
+    <Compile Include="Model\EntityType.cs" />
+    <Compile Include="Model\Extension.cs" />
+    <Compile Include="Model\File.cs" />
+    <Compile Include="Model\Formula.cs" />
+    <Compile Include="Model\GlobalReference.cs" />
+    <Compile Include="Model\HasDataSpecification.cs" />
+    <Compile Include="Model\HasExtensions.cs" />
+    <Compile Include="Model\HasSemantics.cs" />
+    <Compile Include="Model\Identifiable.cs" />
+    <Compile Include="Model\IdentifierKeyValuePair.cs" />
+    <Compile Include="Model\Key.cs" />
+    <Compile Include="Model\KeyElements.cs" />
+    <Compile Include="Model\LangString.cs" />
+    <Compile Include="Model\LevelType.cs" />
+    <Compile Include="Model\Message.cs" />
+    <Compile Include="Model\ModelEvent.cs" />
+    <Compile Include="Model\ModelingKind.cs" />
+    <Compile Include="Model\ModelReference.cs" />
+    <Compile Include="Model\ModelType.cs" />
+    <Compile Include="Model\ModelTypes.cs" />
+    <Compile Include="Model\MultiLanguageProperty.cs" />
+    <Compile Include="Model\ObjectAttributes.cs" />
+    <Compile Include="Model\OneOfCapability.cs" />
+    <Compile Include="Model\OneOfConstraint.cs" />
+    <Compile Include="Model\OneOfDataElement.cs" />
+    <Compile Include="Model\OneOfDataSpecificationContent.cs" />
+    <Compile Include="Model\OneOfOperationVariableValue.cs" />
+    <Compile Include="Model\OneOfReference.cs" />
+    <Compile Include="Model\OneOfSubmodelElement.cs" />
+    <Compile Include="Model\Operation.cs" />
+    <Compile Include="Model\OperationRequest.cs" />
+    <Compile Include="Model\OperationResult.cs" />
+    <Compile Include="Model\OperationVariable.cs" />
+    <Compile Include="Model\PackageDescription.cs" />
+    <Compile Include="Model\PackagesBody.cs" />
+    <Compile Include="Model\PackagesPackageIdBody.cs" />
+    <Compile Include="Model\Permission.cs" />
+    <Compile Include="Model\PermissionsPerObject.cs" />
+    <Compile Include="Model\PolicyAdministrationPoint.cs" />
+    <Compile Include="Model\PolicyDecisionPoint.cs" />
+    <Compile Include="Model\PolicyEnforcementPoint.cs" />
+    <Compile Include="Model\PolicyInformationPoints.cs" />
+    <Compile Include="Model\Property.cs" />
+    <Compile Include="Model\ProtocolInformation.cs" />
+    <Compile Include="Model\Qualifiable.cs" />
+    <Compile Include="Model\Qualifier.cs" />
+    <Compile Include="Model\Range.cs" />
+    <Compile Include="Model\Referable.cs" />
+    <Compile Include="Model\Reference.cs" />
+    <Compile Include="Model\ReferenceElement.cs" />
+    <Compile Include="Model\RelationshipElement.cs" />
+    <Compile Include="Model\Result.cs" />
+    <Compile Include="Model\Security.cs" />
+    <Compile Include="Model\SubjectAttributes.cs" />
+    <Compile Include="Model\Submodel.cs" />
+    <Compile Include="Model\SubmodelDescriptor.cs" />
+    <Compile Include="Model\SubmodelElement.cs" />
+    <Compile Include="Model\SubmodelElementList.cs" />
+    <Compile Include="Model\SubmodelElementStruct.cs" />
+    <Compile Include="Model\ValueList.cs" />
+    <Compile Include="Model\ValueObject.cs" />
+    <Compile Include="Model\ValueReferencePairType.cs" />
+    <Compile Include="Model\ValueTypeEnum.cs" />
+    <Compile Include="Model\View.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
+      <Project>{9863799B-4E44-4DA2-9120-C85C7985BC6D}</Project>
+      <Name>AasxCsharpLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MsBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
