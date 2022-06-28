@@ -1,4 +1,19 @@
-﻿using System.ComponentModel;
+﻿/*
+Copyright (c) 2018-2022 see: Blazor.CountryFlag
+Author: see: Blazor.CountryFlag
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+/*
+* Code from: https://github.com/MikeCodesDotNET/BlazorFlags
+* License: MIT
+* Changed to framwork: core3.1
+*/
+
+using System.ComponentModel;
 using System.Reflection;
 
 namespace UIComponents.Flags

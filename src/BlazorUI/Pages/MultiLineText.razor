@@ -1,18 +1,20 @@
 ﻿@page "/test55"
 
 @{
-    // resharper disable all
+// resharper disable all
 }
 
-@if (lines != null)
-    for (int i = 0; i < lines.Length; i++)
-    {
-        @lines[i];
-        @if (i < lines.Length - 1)
+@{
+    if (lines != null)
+        for (int i = 0; i < lines.Length; i++)
         {
-            <br />
+            @lines[i];
+            if (i < lines.Length - 1)
+            {
+                <br />
+            }
         }
-    }
+}
 
 @code {
     string[] lines;

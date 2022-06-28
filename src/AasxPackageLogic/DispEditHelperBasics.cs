@@ -521,7 +521,7 @@ namespace AasxPackageLogic
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             padding: new AnyUiThickness(5, 0, 5, 0),
                             content: intButtonTitles[i]),
-                        lmb) as AnyUiButton;
+                        lmb);
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
                 }
@@ -1348,7 +1348,7 @@ namespace AasxPackageLogic
                                 emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             },
-                            takeOverLambda: takeOverLambdaAction) as AnyUiComboBox;
+                            takeOverLambda: takeOverLambdaAction);
                         SmallComboBoxSelectNearestItem(cbType, cbType.Text);
 
                         // check here, if to hightlight

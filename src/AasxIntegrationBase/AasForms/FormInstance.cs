@@ -203,8 +203,9 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
-            PluginOperationContextBase opctx) { }
+        public virtual void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
+            PluginOperationContextBase opctx)
+        { }
 
         public static AnyUiLambdaActionPluginUpdateAnyUi NewLambdaUpdateUi(IFormInstanceParent current)
         {
@@ -216,7 +217,7 @@ namespace AasxIntegrationBase.AasForms
 
             var la = new AnyUiLambdaActionPluginUpdateAnyUi()
             {
-                // TODO: improve, this is not always the case
+                // TODO (MIHO, 2022-06-27): improve, this is not always the case
                 PluginName = pn,
                 UseInnerGrid = true
             };
@@ -227,7 +228,7 @@ namespace AasxIntegrationBase.AasForms
         {
             var la = new AasxPluginEventReturnUpdateAnyUi()
             {
-                // TODO: improve, this is not always the case
+                // TODO (MIHO, 2022-06-27): improve, this is not always the case
                 PluginName = "AasxPluginGenericForms",
                 UseInnerGrid = true
             };
@@ -680,46 +681,14 @@ namespace AasxIntegrationBase.AasForms
             g.Background = AnyUiBrushes.White;
             g.Margin = new AnyUiThickness(4.0);
 
-            //var g = view.Add(
-            //    uitk.AddSmallGrid(rows: 2 + SubInstances.Count, cols: 5, 
-            //        colWidths: new[] { "2:", "20:", "*", "23:", "2:" }));
-
-
-            //uitk.AddSmallBasicLabelTo(g, 0, 1, colSpan: 2,
-            //    foreground: AnyUiBrushes.DarkBlue, fontSize: 1.3f,
-            //    content: $"{desc?.FormTitle}");
-
-            //if (showButtonPlus)
-            //    AnyUiUIElement.RegisterControl(
-            //        uitk.AddSmallButtonTo(g, 0, 3, setHeight: 23.0, margin: new AnyUiThickness(1.0),
-            //            content: "\u2795"),
-            //        (o) =>
-            //        {
-            //            if (SubInstances.Count < maxRows)
-            //            {
-            //                // add a instance
-            //                var ni = desc.CreateInstance(this);
-            //                if (ni != null)
-            //                {
-            //                    SubInstances.Add(ni);
-            //                    return FormInstanceBase.NewLambdaUpdateUi();
-            //                }
-            //            }
-            //            // else
-            //            return new AnyUiLambdaActionNone();
-            //        });
-
-
-            //uitk.AddSmallBasicLabelTo(g, 1, 2, foreground: AnyUiBrushes.DarkBlue, fontSize: 0.8f,
-            //    setWrap: true, verticalContentAlignment: AnyUiVerticalAlignment.Center,
-            //    content: $"{desc?.FormInfo}");
-
             // simply render the instances
 
             int row = 1;
             foreach (var si in SubInstances)
             {
                 // row by row
+                if (si == null)
+                    continue;
                 var storedSI = si;
                 row++;
 
@@ -751,8 +720,10 @@ namespace AasxIntegrationBase.AasForms
                 // SME specific panel with contents
                 // outer panel
                 // Note: make the panel as wide as possible (if multiplicity allows)
+                // ReSharper disable ConditionIsAlwaysTrueOrFalse
                 var outer = uitk.AddSmallStackPanelTo(
                     g, row, 2, colSpan: 2 + ((!showButtonsMinus && !showButtonPlus) ? 1 : 0));
+                // ReSharper enable ConditionIsAlwaysTrueOrFalse
 
                 // need to make a visual separation, if multiple instances are possible
                 if (maxRows > 1)
@@ -783,7 +754,7 @@ namespace AasxIntegrationBase.AasForms
 
     }
 
-    public class FormInstanceAnyUiHelper
+    public static class FormInstanceAnyUiHelper
     {
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
@@ -1106,7 +1077,7 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
                 PluginOperationContextBase opctx)
         {
             // Intended layout
@@ -1361,15 +1332,15 @@ namespace AasxIntegrationBase.AasForms
             //    SME 0
             //    SME 1
 
-            var sp = view.Add(
-                new AnyUi.AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical });
+            view.Add(new AnyUi.AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical });
 
-            var descsm = desc as FormDescSubmodelElement;
-
+#if NOT_REQUIRED
             if (false)
             {
+                var descsm = desc as FormDescSubmodelElement;
                 FormInstanceAnyUiHelper.RenderAnyUiHead(sp, uitk, opctx, descsm, sme);
             }
+#endif
 
             // idShort / Description
 
@@ -1508,7 +1479,7 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the AnyUI representation of the current instance data structure
         /// </summary>
-        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, 
+        public override void RenderAnyUi(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             PluginOperationContextBase opctx)
         {
             // access
@@ -1531,7 +1502,7 @@ namespace AasxIntegrationBase.AasForms
                 var editableMode = (pDesc.valueFromComboBoxIndex == null ||
                     pDesc.valueFromComboBoxIndex.Length < 1);
 
-                MainControl = (AnyUiComboBox)AnyUiUIElement.RegisterControl(
+                MainControl = AnyUiUIElement.RegisterControl(
                     uitk.AddSmallComboBoxTo(g, 0, 1,
                         margin: new AnyUiThickness(0, 2, 0, 2),
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
@@ -1562,19 +1533,22 @@ namespace AasxIntegrationBase.AasForms
 
                 // may select a specific item given by a dedicated value range?
                 var mcb2 = MainControl as AnyUiComboBox;
-                if (pDesc.valueFromComboBoxIndex != null && pDesc.valueFromComboBoxIndex.Length >= 1)
+                if (mcb2 != null)
                 {
-                    for (int i = 0; i < pDesc.valueFromComboBoxIndex.Length; i++)
-                        if (pDesc.valueFromComboBoxIndex[i].Trim() == prop.value)
-                        {
-                            mcb2.SelectedIndex = i;
-                            break;
-                        }
-                }
-                else
-                {
-                    // editable combo box, initialize normal
-                    mcb2.Text = "" + prop.value;
+                    if (pDesc.valueFromComboBoxIndex != null && pDesc.valueFromComboBoxIndex.Length >= 1)
+                    {
+                        for (int i = 0; i < pDesc.valueFromComboBoxIndex.Length; i++)
+                            if (pDesc.valueFromComboBoxIndex[i].Trim() == prop.value)
+                            {
+                                mcb2.SelectedIndex = i;
+                                break;
+                            }
+                    }
+                    else
+                    {
+                        // editable combo box, initialize normal
+                        mcb2.Text = "" + prop.value;
+                    }
                 }
             }
             else
@@ -1589,7 +1563,7 @@ namespace AasxIntegrationBase.AasForms
                             prop.value = os;
                         Touch();
                         return new AnyUiLambdaActionNone();
-                    }) as AnyUiControl;
+                    });
             }
         }
     }
@@ -1662,7 +1636,7 @@ namespace AasxIntegrationBase.AasForms
 
             // Intended layout:
             // Grid
-            //                     [+]
+            //   EMPTY             [+]
             //   LANG0 VAL0        [-]
             //   LANG1 VAL1        [-]
             //   LANG2 VAL2        [-]
@@ -1868,6 +1842,8 @@ namespace AasxIntegrationBase.AasForms
         {
             // access
             var file = sme as AdminShell.File;
+            if (file == null)
+                return;
 
             // Intended layout:
             // Grid
@@ -2022,7 +1998,7 @@ namespace AasxIntegrationBase.AasForms
             var info = "(no reference set)";
             if (refe.value != null)
                 info = "(no Keys)";
-            if (refe.value.Keys.Count > 0)
+            if (refe.value?.Keys != null && refe.value.Keys.Count > 0)
                 info = refe.value.ToString(format: 1, delimiter: Environment.NewLine);
 
             // Use a drop box as info; but now allow drop
@@ -2180,7 +2156,7 @@ namespace AasxIntegrationBase.AasForms
                 var info = "(no reference set)";
                 if (valGet != null)
                     info = "(no Keys)";
-                if (valGet.Keys.Count > 0)
+                if (valGet?.Keys != null && valGet.Keys.Count > 0)
                     info = valGet.ToString(format: 1, delimiter: Environment.NewLine);
 
                 // Use a drop box as info; but now allow drop
@@ -2220,7 +2196,8 @@ namespace AasxIntegrationBase.AasForms
                                     },
                                     (revt) =>
                                     {
-                                        if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
+                                        if (revt is AasxPluginEventReturnSelectAasEntity rsel
+                                            && rsel.resultKeys != null)
                                         {
                                             // do it
                                             valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));

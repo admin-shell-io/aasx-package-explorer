@@ -14,6 +14,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ReSharper disable EventNeverSubscribedTo.Global
+
 namespace AasxIntegrationBase
 {
     public class WpfViewModelBase : INotifyPropertyChanged

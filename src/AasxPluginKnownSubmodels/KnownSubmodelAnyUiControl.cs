@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -39,9 +48,11 @@ namespace AasxPluginKnownSubmodels
         #region Constructors, as for WPF control
         //=============
 
+        // ReSharper disable EmptyConstructor
         public KnownSubmodelAnyUiControl()
         {
         }
+        // ReSharper enable EmptyConstructor
 
         public void Start(
             LogInstance log,
@@ -160,7 +171,7 @@ namespace AasxPluginKnownSubmodels
                         _lastScrollPosition = positions.Item2;
                     }
                     return new AnyUiLambdaActionNone();
-                }) as AnyUiScrollViewer;
+                });
 
             // content of the scroll viewer
             // need a stack panel to add inside
@@ -219,13 +230,7 @@ namespace AasxPluginKnownSubmodels
                 var imagePath = Path.Combine(basePath, il);
 
                 // load
-#if USE_WPF
-                var bi = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
-                bitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
-#else
-                // Console.WriteLine($"1|Try access package file {imagePath}");
                 bitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapInfo(imagePath);
-#endif
             }
             catch {; }
 
@@ -274,9 +279,9 @@ namespace AasxPluginKnownSubmodels
 
         }
 
-#endregion
+        #endregion
 
-#region Update
+        #region Update
         //=============
 
         public void Update(params object[] args)
@@ -294,18 +299,18 @@ namespace AasxPluginKnownSubmodels
             RenderFullView(_panel, _uitk, _package, _submodel);
         }
 
-#endregion
+        #endregion
 
-#region Callbacks
+        #region Callbacks
         //===============
 
 
-#endregion
+        #endregion
 
-#region Utilities
+        #region Utilities
         //===============
 
 
-#endregion
+        #endregion
     }
 }

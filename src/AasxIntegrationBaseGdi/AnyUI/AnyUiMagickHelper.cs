@@ -25,7 +25,7 @@ namespace AasxIntegrationBaseGdi
     /// Only one #define shall be given.
     /// This class understands the term GDI to be "graphics dependent inteface" ;-)
     /// </summary>
-    public class AnyUiGdiHelper
+    public static class AnyUiGdiHelper
     {
         public static AnyUiBitmapInfo CreateAnyUiBitmapInfo(MagickImage source, bool doFreeze = true)
         {
@@ -124,7 +124,7 @@ namespace AasxIntegrationBaseGdi
                         res = CreateAnyUiBitmapInfo(img);
                     }
                 }
-                
+
                 thumbStream.Close();
             }
             catch (Exception ex)

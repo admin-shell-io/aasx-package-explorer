@@ -41,7 +41,7 @@ namespace AasxPluginDocumentShelf
 {
     public partial class ShelfControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance Log = new LogInstance();
@@ -55,9 +55,9 @@ namespace AasxPluginDocumentShelf
 
         private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -103,15 +103,15 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-        #endregion
-        #region Cache for already generated Images
+#endregion
+#region Cache for already generated Images
         //========================================
 
         private static Dictionary<string, BitmapImage> referableHashToCachedBitmap =
             new Dictionary<string, BitmapImage>();
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public void ResetCountryRadioButton(RadioButton radio, CountryFlag.CountryCode code)
@@ -371,9 +371,9 @@ namespace AasxPluginDocumentShelf
         }
 
 
-        #endregion
+#endregion
 
-        #region REDRAW of contents
+#region REDRAW of contents
 
         private void TheViewModel_ViewModelChanged(AasxIntegrationBase.WpfViewModelBase obj)
         {
@@ -764,7 +764,7 @@ namespace AasxPluginDocumentShelf
             _inDragStart = false;
         }
 
-        #endregion
+#endregion
 
         protected FormDescSubmodelElementCollection currentFormDescription = null;
         protected FormInstanceSubmodelElementCollection currentFormInst = null;

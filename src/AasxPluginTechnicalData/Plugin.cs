@@ -224,6 +224,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args == null || args.Length < 1)
                     return null;
 
+                // ReSharper disable UnusedVariable
                 if (_sessions.AccessSession(args[0], out Session session))
                 {
                     // dispose all ressources
@@ -232,6 +233,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     // remove
                     _sessions.Remove(args[0]);
                 }
+                // ReSharper enable UnusedVariable
             }
 
 #if USE_WPF

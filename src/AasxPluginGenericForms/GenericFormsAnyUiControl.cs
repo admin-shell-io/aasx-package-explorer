@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+Copyright (c) 2018-2022 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Michael Hoffmeister
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -114,7 +123,7 @@ namespace AasxPluginGenericForms
 
             // initialize form
             _form = new AnyUiRenderForm(
-                fi, 
+                fi,
                 updateMode: true);
 
             // bring it to the panel
@@ -134,7 +143,7 @@ namespace AasxPluginGenericForms
         }
 
 
-      
+
         #endregion
 
         #region Event handling
@@ -154,7 +163,7 @@ namespace AasxPluginGenericForms
         {
             // check args
             if (args == null || args.Length < 1
-                || !(args[0] is AnyUiStackPanel newPanel)) 
+                || !(args[0] is AnyUiStackPanel newPanel))
                 return;
 
             // ok, re-assign panel and re-display
@@ -285,13 +294,13 @@ namespace AasxPluginGenericForms
                 _log?.Info("In total, {0} ConceptDescriptions were added to the AAS environment.", nr);
 
                 // re-display (tree & panel)
-                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel } ;
+                return new AnyUiLambdaActionRedrawAllElementsBase() { NextFocus = _submodel };
             }
 
             // no?
             return new AnyUiLambdaActionNone();
         }
 
-#endregion
+        #endregion
     }
 }

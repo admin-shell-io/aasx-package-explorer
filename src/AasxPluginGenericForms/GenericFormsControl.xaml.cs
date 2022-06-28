@@ -37,7 +37,7 @@ namespace AasxPluginGenericForms
 {
     public partial class GenericFormsControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance Log = new LogInstance();
@@ -46,9 +46,9 @@ namespace AasxPluginGenericForms
         private AasxPluginGenericForms.GenericFormOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -57,8 +57,8 @@ namespace AasxPluginGenericForms
         {
         }
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public GenericFormsControl()
@@ -143,15 +143,15 @@ namespace AasxPluginGenericForms
         }
 
 
-        #endregion
-        #region REDRAW of contents
+#endregion
+#region REDRAW of contents
         //========================
 
         private void TheViewModel_ViewModelChanged(AasxIntegrationBase.WpfViewModelBase obj)
         {
         }
 
-        #endregion
+#endregion
 
         protected bool formInUpdateMode = false;
         protected AdminShell.SubmodelElementWrapperCollection updateSourceElements = null;

@@ -15,8 +15,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
-using Newtonsoft.Json;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -217,6 +217,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args == null || args.Length < 1)
                     return null;
 
+                // ReSharper disable UnusedVariable
                 if (_sessions.AccessSession(args[0], out Session session))
                 {
                     // dispose all ressources
@@ -225,6 +226,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     // remove
                     _sessions.Remove(args[0]);
                 }
+                // ReSharper enable UnusedVariable
             }
 
 #if USE_WPF

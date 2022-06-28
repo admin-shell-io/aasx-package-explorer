@@ -16,9 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
-using AasxIntegrationBase;
 using BlazorUI;
 using static AdminShellNS.AdminShellV20;
 
@@ -247,8 +247,9 @@ namespace BlazorUI.Data
                                                 Referable = sm,
                                                 envIndex = i,
                                                 Text = "PLUGIN",
-                                                Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel, Plugins.PluginInstance,
-                                                            AasxIntegrationBase.AasxPluginResultVisualExtension>(bi.env, sm, lpi, ext),
+                                                Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                                                    Plugins.PluginInstance, AasxPluginResultVisualExtension>
+                                                        (bi.env, sm, lpi, ext),
                                                 Type = "Plugin"
                                             };
                                             smChilds.Add(piItem);

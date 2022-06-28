@@ -21,7 +21,7 @@
 
     Element.DisplayData = DisplayData;
 
-    // skipForTarget skips the element, with some special cases, 
+    // skipForTarget skips the element, with some special cases,
     // which are handled particularily
 
     if ((Element.SkipForTarget & AnyUiTargetPlatform.Browser) > 0)
@@ -57,7 +57,7 @@
                                 Session="@Session"
                                 Parent="@Parent"
                                 Canvas="@t1cvs"
-                                BackgroundImage="@t1img"                                
+                                BackgroundImage="@t1img"
                                 FillMode="@FillMode" />
     }
 
@@ -67,10 +67,6 @@
 
     if (Element is AnyUiGrid grid)
     {
-        if (grid.Children.Count > 0 && grid.Children[0] is AnyUiSelectableTextBlock stb2
-            && stb2.Text == "kind:")
-            ;
-
         <AnyUiRenderGrid DisplayData="@DisplayData"
                          Session="@Session"
                          Parent="@Parent"
@@ -101,7 +97,7 @@
     if (Element is AnyUiScrollViewer scroll)
     {
         @*<span>sp</span>*@
-        
+
         if (scroll.Content != null)
         {
             style.SetSpecifics(
@@ -122,7 +118,7 @@
                                  Session="@Session"
                                  Parent="@Element"
                                  Element="@scroll.Content"
-                                 FillMode="@FillMode"/>
+                                 FillMode="@FillMode" />
             </div>
         }
     }
@@ -134,16 +130,13 @@
         if (border.Child != null
                     && !(border.SkipForTarget == AnyUiTargetPlatform.Browser))
         {
-            if (border.BorderThickness != null)
-                ;
-
             style.SetSpecifics(
                 margin: border.Margin,
                 padding: border.Padding,
                 borderBrush: border.BorderBrush,
                 borderThickness: border.BorderThickness);
 
-            // Note: the following does not work; the <div> is NOT spanning the height; 
+            // Note: the following does not work; the <div> is NOT spanning the height;
             // therefore, vertical centering does not work!
 
             style.SetFillWidth(Element, FillMode, border.Margin, setMinMaxWidth: true, setInlineBlock: true);
@@ -157,23 +150,23 @@
             //    <AnyUiRenderElem DisplayData="@DisplayData"
             //                     Session="@Session"
             //                     Parent="@Element"
-            //                     Element="@border.Child" 
+            //                     Element="@border.Child"
             //                     FillMode="@FillMode" />
             //</div>
 
             <AnyUiDecorateEmit Element="border"
                                GrandParent="Parent"
-                                FillMode="@FillMode">
+                               FillMode="@FillMode">
                 <AnyUiRenderElem DisplayData="@DisplayData"
                                  Session="@Session"
                                  Parent="@Element"
-                                 Element="@border.Child" 
+                                 Element="@border.Child"
                                  FillMode="@FillMode" />
             </AnyUiDecorateEmit>
         }
     }
     else
-    // Further elements referring to another razor component   
+    // Further elements referring to another razor component
     // (because they may have further code)
     if (Element is AnyUiImage img)
     {
@@ -181,7 +174,7 @@
         <AnyUiRenderImage DisplayData="@DisplayData"
                           Session="@Session"
                           Parent="@Parent"
-                          Element="@img" 
+                          Element="@img"
                           FillMode="@FillMode" />
     }
 
@@ -219,9 +212,6 @@
     else
     if (Element is AnyUiSelectableTextBlock stb)
     {
-        if (stb.Text.Contains("IP67"))
-            ;        
-
         style.SetSpecifics(
             margin: stb.Margin,
             padding: stb.Padding,
@@ -237,9 +227,9 @@
             <a href="@stb.Text" style="@style">
                 <!-- <MultiLineText InputString="@stb.Text"/> -->
                 <AnyUiRenderMultiText DisplayData="@DisplayData"
-                          Session="@Session"
-                          Parent="@Parent"
-                          Element="@Element" />
+                                      Session="@Session"
+                                      Parent="@Parent"
+                                      Element="@Element" />
             </a>
         }
         else
@@ -247,9 +237,9 @@
             <span style="@style">
                 <!-- <MultiLineText InputString="@stb.Text" /> -->
                 <AnyUiRenderMultiText DisplayData="@DisplayData"
-                          Session="@Session"
-                          Parent="@Parent"
-                          Element="@Element" />
+                                      Session="@Session"
+                                      Parent="@Parent"
+                                      Element="@Element" />
             </span>
         }
     }
@@ -309,9 +299,6 @@
 
     @if (Element is AnyUiButton chbt)
     {
-        if (chbt.Content.Length == 1)
-            ;
-
         style.SetSpecifics(
             margin: chbt.Margin,
             padding: chbt.Padding,
@@ -384,7 +371,7 @@
             }
         }
 
-        if (comb.SelectedIndex.HasValue 
+        if (comb.SelectedIndex.HasValue
             && comb.Items != null
             && comb.SelectedIndex.Value >= 0 && comb.SelectedIndex.Value < comb.Items.Count)
         {
@@ -419,7 +406,9 @@
         var country = Country.DE;
         var size = FlagSize.Small;
 
+        <!--
         <CountryFlag Country="@country" Size="@size" Class="mx-3"></CountryFlag>
+        -->
     }
 
 }

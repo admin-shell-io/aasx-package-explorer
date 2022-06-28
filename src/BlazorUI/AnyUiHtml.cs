@@ -78,7 +78,7 @@ namespace AnyUi
 
         public double GetScale() => 1.4;
 
-        public static bool DebugFrames;
+        public static bool DebugFrames = false;
     }
 
     public class AnyUiDisplayContextHtml : AnyUiContextBase
@@ -394,24 +394,6 @@ namespace AnyUi
                 return;
 
             //
-            // differentiate
-            //
-
-            // LINUX
-
-            //if (el is AnyUiImage elimg)
-            //{
-            //    if (elimg.Touched
-            //        && elimg.BitmapInfo?.ImageSource is System.Windows.Media.Imaging.BitmapImage bi
-            //        && elimg.DisplayData is AnyUiDisplayDataHtml eldd
-            //        && eldd._component is AnyUiRenderImage elri)
-            //    {
-            //        elri.Redraw();
-            //        el.Touched = false;
-            //    }
-            //}
-
-            //
             // recurse
             //
 
@@ -427,7 +409,6 @@ namespace AnyUi
         /// </summary>
         public override void ClipboardSet(AnyUiClipboardData cb)
         {
-            // TODO
             // see: https://www.meziantou.net/copying-text-to-clipboard-in-a-blazor-application.htm
 
             if (_jsRuntime != null && cb != null)

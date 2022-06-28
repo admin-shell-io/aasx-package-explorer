@@ -114,7 +114,9 @@ namespace AnyUi
 
         public AnyUiRowDefinition() { }
 
-        public AnyUiRowDefinition(double value, AnyUiGridUnitType type = AnyUiGridUnitType.Auto, double? minHeight = null)
+        public AnyUiRowDefinition(
+            double value, AnyUiGridUnitType type = AnyUiGridUnitType.Auto,
+            double? minHeight = null)
         {
             Height = new AnyUiGridLength(value, type);
             MinHeight = minHeight;
@@ -299,10 +301,12 @@ namespace AnyUi
             Bottom = bottom;
         }
 
+        // ReSharper disable CompareOfFloatsByEqualityOperator
         public bool AllEqual =>
             Left == Top
             && Left == Right
             && Left == Bottom;
+        // ReSharper enable CompareOfFloatsByEqualityOperator
 
         public bool AllZero => AllEqual && Left == 0.0;
 
@@ -613,38 +617,6 @@ namespace AnyUi
         /// </summary>
         public virtual void Touch() { Touched = true; }
 
-        //public class TouchProperty<T>
-        //{
-        //    protected T _value;
-        //    protected Action _touched;
-        //    public T Value { 
-        //        get { 
-        //            return _value; 
-        //        } 
-        //        set
-        //        {
-        //            _value = value;
-        //            _touched?.Invoke();
-        //        }
-        //    }
-
-        //    public TouchProperty(Action touched)
-        //    {
-        //        _touched = touched;
-        //    }
-
-        //    public TouchProperty(Action touched, T inital)
-        //    {
-        //        _value = inital;
-        //        _touched = touched;
-        //    }
-        //}
-
-        /// <summary>
-        /// Can be set by the rendering of the element to perform status updates, if touched.
-        /// </summary>
-        // public Action<AnyUiRenderMode> TouchLambda = null;
-
         /// <summary>
         /// This function attaches the above lambdas accordingly to a given user control.
         /// It is to be used, when an abstract AnyUi... is being created and the according WPF element
@@ -718,6 +690,7 @@ namespace AnyUi
         }
     }
 
+    [Flags]
     public enum AnyUiEventMask
     {
         None = 0, LeftDown = 1, LeftDouble = 2, DragStart = 4,
@@ -827,12 +800,15 @@ namespace AnyUi
         private static bool IsPointInPolygon4(AnyUiPoint[] polygon, AnyUiPoint testPoint)
         {
             bool result = false;
-            int j = polygon.Count() - 1;
-            for (int i = 0; i < polygon.Count(); i++)
+            int j = polygon.Length - 1;
+            for (int i = 0; i < polygon.Length; i++)
             {
-                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y
+                    && polygon[i].Y >= testPoint.Y)
                 {
-                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y)
+                           * (polygon[j].X - polygon[i].X)
+                        < testPoint.X)
                     {
                         result = !result;
                     }
@@ -1101,13 +1077,8 @@ namespace AnyUi
 
     public class AnyUiTextBlock : AnyUiControl
     {
-        //public AnyUiBrush Background;
-        //public AnyUiBrush Foreground;
         public AnyUiThickness Padding;
         public AnyUiTextWrapping? TextWrapping;
-        // public AnyUiFontWeight? FontWeight;
-        // public double? FontSize;
-
         public string Text { get { return _text; } set { _text = value; Touch(); } }
         private string _text = null;
     }
@@ -1199,7 +1170,7 @@ namespace AnyUi
         public byte[] PngData;
 
         /// <summary>
-        /// In WPF, bitmaps are expected to be of 96 dpi. If not, Width <=> PxielWidth,
+        /// In WPF, bitmaps are expected to be of 96 dpi. If not, Width != PxielWidth,
         /// which can cause problems.
         /// </summary>
         public bool ConvertTo96dpi = false;
@@ -1218,7 +1189,11 @@ namespace AnyUi
         /// Probably a ImageSource
         /// Setting touches to update
         /// </summary>
-        public AnyUiBitmapInfo BitmapInfo { get { return _bitmapInfo; } set { _bitmapInfo = value; ReGuid(); Touch(); } }
+        public AnyUiBitmapInfo BitmapInfo
+        {
+            get { return _bitmapInfo; }
+            set { _bitmapInfo = value; ReGuid(); Touch(); }
+        }
         private AnyUiBitmapInfo _bitmapInfo = null;
 
         /// <summary>

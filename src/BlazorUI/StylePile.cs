@@ -12,13 +12,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using System.Linq;
+using System.Threading.Tasks;
 using AasxPackageLogic;
 using AdminShellNS;
 using AnyUi;
@@ -29,7 +30,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Globalization;
+
+// ReSharper disable MergeIntoPattern
 
 namespace BlazorUI
 {
@@ -353,6 +355,7 @@ namespace BlazorUI
             }
 
             // vertical as well (in general, should be set by the table)?
+            // ReSharper disable PossibleInvalidOperationException
             if (setVertical)
             {
                 if (fe.HorizontalAlignment.HasValue && fe.VerticalAlignment.Value == AnyUiVerticalAlignment.Center)
@@ -360,6 +363,7 @@ namespace BlazorUI
                     Set("vertical-align", "center", add: true);
                 }
             }
+            // ReSharper enable PossibleInvalidOperationException
         }
     }
 }

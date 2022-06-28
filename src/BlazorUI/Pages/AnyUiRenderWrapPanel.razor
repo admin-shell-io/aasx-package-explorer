@@ -43,9 +43,10 @@
         <table @attributes="@PanelAttributes" style="@panelStyle" data-source="AnyUiWrapPanel.razor">
             <tr>
                 <td>
-                    @if (_panel?.Children != null)
-                        foreach (var ch in _panel.Children)
-                        {
+                    @{ 
+                        if (_panel?.Children != null)
+                            foreach (var ch in _panel.Children)
+                            {
                             @* Note: the wrap panel does NOT pass the FillMode! *@
 
                             <AnyUiRenderElem DisplayData="@DisplayData"
@@ -53,7 +54,8 @@
                                              Parent="@Element"
                                              Element="@ch"
                                              FillMode="@AnyUiHtmlFillMode.None" />
-                        }
+                                }
+                    }
                 </td>
             </tr>
         </table>

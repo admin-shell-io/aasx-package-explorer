@@ -528,7 +528,7 @@ namespace AdminShellNS
             while (true)
             {
                 // any occurence
-                var p = input.IndexOf(searchFor);
+                var p = input.IndexOf(searchFor, comparisonType);
                 if (p < 0)
                     break;
 

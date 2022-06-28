@@ -68,6 +68,7 @@ namespace BlazorUI
             public int iChild;
         }
 
+        // ReSharper disable once UnusedType.Global
         public class AnyUiPanelEntryStack
         {
             AnyUiPanelEntry[] recursionStack = new AnyUiPanelEntry[10];
@@ -94,7 +95,7 @@ namespace BlazorUI
             }
         }
 
-        // resharper disable once UnusedType.Global
+        // ReSharper disable once UnusedType.Global
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
             public Action<object> MyLambda;
@@ -133,7 +134,7 @@ namespace BlazorUI
             signalNewDataMode = mode;
             NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(
                 mode, sessionNumber,
-                newLambdaAction, 
+                newLambdaAction,
                 newPluginResultEvent,
                 onlyUpdatePanel: onlyUpdateAasxPanel));
         }
@@ -245,7 +246,6 @@ namespace BlazorUI
 
                         // next arg
                         index++;
-                        continue;
                     }
                 }
             }

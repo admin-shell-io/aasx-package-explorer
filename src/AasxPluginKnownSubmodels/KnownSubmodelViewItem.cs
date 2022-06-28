@@ -11,8 +11,11 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 
+// ReSharper disable EmptyNamespace
+
 namespace AasxPluginKnownSubmodels
 {
+#if USE_WPF
     public class KnownSubmodelViewItem
     {
         public string DisplayHeader { get; set; } = "";
@@ -45,7 +48,6 @@ namespace AasxPluginKnownSubmodels
 
         public void TryLoadImageData()
         {
-#if USE_WPF
             // only once
             if (_imageData != null)
                 return;
@@ -55,7 +57,6 @@ namespace AasxPluginKnownSubmodels
                 _imageData = new BitmapImage(new Uri(ImagePath, UriKind.RelativeOrAbsolute));
             }
             catch {; }
-#endif
         }
     }
 
@@ -63,4 +64,6 @@ namespace AasxPluginKnownSubmodels
     {
 
     }
+#endif
+
 }
