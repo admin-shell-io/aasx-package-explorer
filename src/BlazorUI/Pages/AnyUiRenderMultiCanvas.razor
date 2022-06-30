@@ -12,55 +12,7 @@
 @inject IJSRuntime jsRuntime
 
 @{
-// resharper disable all
-}
-
-@{
-    // access
-    if (Canvas == null)
-        return;
-
-    //
-    // style
-    //
-
-    var canvStyle = new StylePile();
-
-    canvStyle.SetSpecifics(margin: Canvas.Margin);
-    canvStyle.SetFillWidth(Canvas, FillMode, Canvas.Margin, setMinMaxWidth: true, setMinMaxHeight: true);
-
-    //
-    // Add image?
-    //
-
-    if (BackgroundImage != null)
-    {
-        var path = "/api/image/" + BackgroundImage.ImageGuid;
-
-        <div style="display:none; ">
-            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference" @onload="HandleImageOnLoad"/>
-        </div>
-
-        // book keeping
-        // TODO: make it nice!!
-        var dd = new AnyUiDisplayDataHtml(DisplayData._context);
-        dd._component = this;
-        BackgroundImage.DisplayData = dd;
-    }
-
-    //
-    // Canvas
-    // see:https://github.com/BlazorExtensions/Canvas
-    //
-
-    var dims = GetCanvasDimensions();
-    <div @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
-        <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
-    </div>
-
-    // book keeping
-    // TODO: make it nice!!
-    Canvas.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
+    // resharper disable all
 }
 
 @code {
@@ -391,4 +343,53 @@
             }
         }
     }
+}
+
+
+@{
+    // access
+    if (Canvas == null)
+        return;
+
+    //
+    // style
+    //
+
+    var canvStyle = new StylePile();
+
+    canvStyle.SetSpecifics(margin: Canvas.Margin);
+    canvStyle.SetFillWidth(Canvas, FillMode, Canvas.Margin, setMinMaxWidth: true, setMinMaxHeight: true);
+
+    //
+    // Add image?
+    //
+
+    if (BackgroundImage != null)
+    {
+        var path = "/api/image/" + BackgroundImage.ImageGuid;
+
+        <div style="display:none; ">
+            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference" @onload="HandleImageOnLoad"/>
+        </div>
+
+        // book keeping
+        // TODO: make it nice!!
+        var dd = new AnyUiDisplayDataHtml(DisplayData._context);
+        dd._component = this;
+        BackgroundImage.DisplayData = dd;
+    }
+
+    //
+    // Canvas
+    // see:https://github.com/BlazorExtensions/Canvas
+    //
+
+    var dims = GetCanvasDimensions();
+    <div @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
+        <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
+    </div>
+
+    // book keeping
+    // TODO: make it nice!!
+    Canvas.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
 }
