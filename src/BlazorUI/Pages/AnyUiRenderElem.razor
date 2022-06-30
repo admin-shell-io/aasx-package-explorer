@@ -12,6 +12,33 @@
     // resharper disable all
 }
 
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Element { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void EventTest(MouseEventArgs e)
+    {
+        ;
+    }
+
+    public void EventSenderTest(MouseEventArgs e, object sender)
+    {
+        ;
+    }
+}
+
 @{
     // access
     if (Element == null || DisplayData == null)
@@ -413,32 +440,6 @@
 
 }
 
-@code {
-    [Parameter]
-    public AnyUiDisplayDataHtml DisplayData { get; set; }
-
-    [Parameter]
-    public Data.blazorSessionService Session { get; set; }
-
-    [Parameter]
-    public AnyUiUIElement Parent { get; set; }
-
-    [Parameter]
-    public AnyUiUIElement Element { get; set; }
-
-    [Parameter]
-    public AnyUiHtmlFillMode FillMode { get; set; }
-
-    public void EventTest(MouseEventArgs e)
-    {
-        ;
-    }
-
-    public void EventSenderTest(MouseEventArgs e, object sender)
-    {
-        ;
-    }
-}
 
 <style>
     .hintbox {
