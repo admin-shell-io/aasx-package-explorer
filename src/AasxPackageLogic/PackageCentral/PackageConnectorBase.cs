@@ -73,6 +73,10 @@ namespace AasxPackageLogic.PackageCentral
             _container = container;
         }
 
+        public PackageConnectorBase()
+        {
+        }
+
         //
         // Event handling
         //
