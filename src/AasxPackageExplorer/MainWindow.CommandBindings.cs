@@ -337,22 +337,66 @@ namespace AasxPackageExplorer
                 if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelElement)
                     els = DisplayElements.SelectedItem as VisualElementSubmodelElement;
 
-                if (cmd == "sign" && el != null && el.theSubmodel != null && el.theEnv != null)
+                if (cmd == "sign"
+                    && ((el != null && el.theEnv != null && el.theSubmodel != null)
+                            || (els != null && els.theEnv != null && els.theWrapper != null)))
                 {
-                    var sm = el.theSubmodel;
-                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
-                    for (int i = 0; i < sm.submodelElements.Count; i++)
+                    AdminShell.Submodel sm = null;
+                    AdminShell.SubmodelElementCollection smc = null;
+                    AdminShell.SubmodelElementCollection smcp = null;
+                    if (el != null)
                     {
-                        var sme = sm.submodelElements[i];
-                        var len = "signature".Length;
-                        var idShort = sme.submodelElement.idShort;
-                        if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
-                                idShort.Length >= len &&
-                                idShort.Substring(0, len).ToLower() == "signature")
+                        sm = el.theSubmodel;
+                    }
+                    if (els != null)
+                    {
+                        var smee = els.theWrapper.submodelElement;
+                        if (smee is AdminShell.SubmodelElementCollection)
                         {
-                            existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
-                            sm.Remove(sme.submodelElement);
-                            i--; // check next
+                            smc = smee as AdminShell.SubmodelElementCollection;
+                            var p = smee.parent;
+                            if (p is AdminShell.Submodel)
+                                sm = p as AdminShell.Submodel;
+                            if (p is AdminShell.SubmodelElementCollection)
+                                smcp = p as AdminShell.SubmodelElementCollection;
+                        }
+                    }
+                    if (sm == null && smcp == null)
+                        return;
+
+                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
+                    if (smc == null)
+                    {
+                        for (int i = 0; i < sm.submodelElements.Count; i++)
+                        {
+                            var sme = sm.submodelElements[i];
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                                sm.Remove(sme.submodelElement);
+                                i--; // check next
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < smc.value.Count; i++)
+                        {
+                            var sme = smc.value[i];
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                                smc.Remove(sme.submodelElement);
+                                i--; // check next
+                            }
                         }
                     }
                     AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
@@ -370,16 +414,35 @@ namespace AasxPackageExplorer
                     smec.Add(algorithm);
                     smec.Add(sigT);
                     smec.Add(signature);
-                    var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                    string s = null;
+                    if (smc == null)
+                    {
+                        s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                    }
+                    else
+                    {
+                        s = JsonConvert.SerializeObject(smc, Formatting.Indented);
+                    }
                     json.value = s;
                     JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
                     string result = jsonCanonicalizer.GetEncodedString();
                     canonical.value = result;
-                    foreach (var e in existing)
+                    if (smc == null)
                     {
-                        sm.Add(e);
+                        foreach (var e in existing)
+                        {
+                            sm.Add(e);
+                        }
+                        sm.Add(smec);
                     }
-                    sm.Add(smec);
+                    else
+                    {
+                        foreach (var e in existing)
+                        {
+                            smc.Add(e);
+                        }
+                        smc.Add(smec);
+                    }
 
                     X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
                     store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
@@ -444,6 +507,8 @@ namespace AasxPackageExplorer
                     List<AdminShell.SubmodelElementCollection> validate = new List<AdminShellV20.SubmodelElementCollection>();
                     AdminShell.Submodel sm = null;
                     AdminShell.SubmodelElementCollection smc = null;
+                    AdminShell.SubmodelElementCollection smcp = null;
+                    bool smcIsSignature = false;
                     if (el != null)
                     {
                         sm = el.theSubmodel;
@@ -451,18 +516,29 @@ namespace AasxPackageExplorer
                     if (els != null)
                     {
                         var smee = els.theWrapper.submodelElement;
-                        var len = "signature".Length;
-                        var idShort = smee.idShort;
-                        if (smee is AdminShell.SubmodelElementCollection &&
-                                idShort.Length >= len &&
-                                idShort.Substring(0, len).ToLower() == "signature")
+                        if (smee is AdminShell.SubmodelElementCollection)
                         {
                             smc = smee as AdminShell.SubmodelElementCollection;
-                            var p = smee.parent;
-                            if (p is AdminShell.Submodel)
+                            var len = "signature".Length;
+                            var idShort = smc.idShort;
+                            if (smc is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                smcIsSignature = true;
+                            }
+                            var p = smc.parent;
+                            if (smcIsSignature && p is AdminShell.Submodel)
                                 sm = p as AdminShell.Submodel;
+                            if (smcIsSignature && p is AdminShell.SubmodelElementCollection)
+                                smcp = p as AdminShell.SubmodelElementCollection;
+                            if (!smcIsSignature)
+                                smcp = smc;
                         }
                     }
+                    if (sm == null && smcp == null)
+                        return;
+
                     if (sm != null)
                     {
                         foreach (var sme in sm.submodelElements)
@@ -478,15 +554,32 @@ namespace AasxPackageExplorer
                             }
                         }
                     }
-                    if (smc == null)
+                    if (smcp != null)
                     {
-                        validate = existing;
+                        for (int i = 0; i < smcp.value.Count; i++)
+                        {
+                            var sme = smcp.value[i];
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                            }
+                        }
                     }
-                    else
+
+                    if (smcIsSignature)
                     {
                         validate.Add(smc);
                     }
-                    if (sm != null && validate.Count != 0)
+                    else
+                    {
+                        validate = existing;
+                    }
+
+                    if (validate.Count != 0)
                     {
                         X509Store root = new X509Store("Root", StoreLocation.CurrentUser);
                         root.Open(OpenFlags.ReadWrite);
@@ -513,9 +606,19 @@ namespace AasxPackageExplorer
                             }
                         }
 
-                        foreach (var e in existing)
+                        if (smcp == null)
                         {
-                            sm.Remove(e);
+                            foreach (var e in existing)
+                            {
+                                sm.Remove(e);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var e in existing)
+                            {
+                                smcp.Remove(e);
+                            }
                         }
                         foreach (var smec in validate)
                         {
@@ -551,7 +654,15 @@ namespace AasxPackageExplorer
                             if (smec != null && x5c != null && subject != null && algorithm != null &&
                                 (signature != null || digest != null))
                             {
-                                var s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                                string s = null;
+                                if (smcp == null)
+                                {
+                                    s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                                }
+                                else
+                                {
+                                    s = JsonConvert.SerializeObject(smcp, Formatting.Indented);
+                                }
                                 JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
                                 string result = jsonCanonicalizer.GetEncodedString();
 
@@ -653,9 +764,19 @@ namespace AasxPackageExplorer
                                 }
                             }
                         }
-                        foreach (var e in existing)
+                        if (smcp == null)
                         {
-                            sm.Add(e);
+                            foreach (var e in existing)
+                            {
+                                sm.Add(e);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var e in existing)
+                            {
+                                smcp.Add(e);
+                            }
                         }
 
                         // Delete additional trusted root certificates immediately
