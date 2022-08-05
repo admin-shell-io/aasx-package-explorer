@@ -48,7 +48,9 @@ function Main
             "WpfMtpControl\Resources\PNID_Festo.xaml" `
             "WpfXamlTool\Resources\preset0.xaml" `
             "WpfXamlTool\Resources\preset1.xaml" `
-            "AasxFileServerRestLibrary\**" 
+            "AasxFileServerRestLibrary\**" `
+            "es6numberserializer\**" `
+            "jsoncanonicalizer\**" 
 
     if($LASTEXITCODE -ne 0)
     {

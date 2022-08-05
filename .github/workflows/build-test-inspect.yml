@@ -85,3 +85,10 @@ jobs:
       - name: Inspect code with Build
         working-directory: src
         run: powershell .\InspectCode.ps1
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: resharper-code-inspection.xml
+          path: ./artefacts/resharper-code-inspection.xml
