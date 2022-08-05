@@ -745,7 +745,7 @@ namespace AasxPackageExplorer
                                                 valid = rsa.VerifyData(data, h, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                                             }
                                         }
-                                        catch (Exception e)
+                                        catch
                                         {
                                             valid = false;
                                         }
