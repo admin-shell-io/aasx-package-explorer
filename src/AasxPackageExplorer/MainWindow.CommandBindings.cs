@@ -484,7 +484,7 @@ namespace AasxPackageExplorer
                                 sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                             }
                         }
-                        catch (Exception e)
+                        catch
                         {
                             //// string text = e.Message;
                         }
@@ -516,8 +516,7 @@ namespace AasxPackageExplorer
                             smc = smee as AdminShell.SubmodelElementCollection;
                             var len = "signature".Length;
                             var idShort = smc.idShort;
-                            if (smc is AdminShell.SubmodelElementCollection &&
-                                    idShort.Length >= len &&
+                            if (idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
                                 smcIsSignature = true;
@@ -551,9 +550,8 @@ namespace AasxPackageExplorer
                     }
                     if (smcp != null)
                     {
-                        for (int i = 0; i < smcp.value.Count; i++)
+                        foreach (var sme in smcp.value)
                         {
-                            var sme = smcp.value[i];
                             var len = "signature".Length;
                             var idShort = sme.submodelElement.idShort;
                             if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
@@ -597,7 +595,9 @@ namespace AasxPackageExplorer
                                         rootList.Add(cert);
                                     }
                                 }
-                                catch { }
+                                catch
+                                {
+                                }
                             }
                         }
 
@@ -692,7 +692,9 @@ namespace AasxPackageExplorer
                                                     rootList.Add(cert);
                                                 }
                                             }
-                                            catch { }
+                                            catch
+                                            {
+                                            }
                                         }
                                     }
 
@@ -704,7 +706,7 @@ namespace AasxPackageExplorer
                                         valid = c.Build(x509);
                                     }
 
-                                    // storeCA.RemoveRange(xcc);
+                                    //// storeCA.RemoveRange(xcc);
                                 }
                                 catch
                                 {
@@ -740,7 +742,6 @@ namespace AasxPackageExplorer
                                         }
                                         catch (Exception e)
                                         {
-                                            string text = e.Message;
                                             valid = false;
                                         }
                                         if (!valid)
@@ -781,7 +782,9 @@ namespace AasxPackageExplorer
                             {
                                 root.Remove(cert);
                             }
-                            catch { }
+                            catch
+                            {
+                            }
                         }
                     }
                     return;
