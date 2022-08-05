@@ -484,10 +484,11 @@ namespace AasxPackageExplorer
                                 sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                             }
                         }
+                        // ReSharper disable EmptyGeneralCatchClause
                         catch
                         {
-                            //// string text = e.Message;
                         }
+                        // ReSharper enable EmptyGeneralCatchClause
                     }
                     RedrawAllAasxElements();
                     RedrawElementView();
@@ -595,9 +596,11 @@ namespace AasxPackageExplorer
                                         rootList.Add(cert);
                                     }
                                 }
+                                // ReSharper disable EmptyGeneralCatchClause
                                 catch
                                 {
                                 }
+                                // ReSharper enable EmptyGeneralCatchClause
                             }
                         }
 
@@ -692,9 +695,11 @@ namespace AasxPackageExplorer
                                                     rootList.Add(cert);
                                                 }
                                             }
+                                            // ReSharper disable EmptyGeneralCatchClause
                                             catch
                                             {
                                             }
+                                            // ReSharper enable EmptyGeneralCatchClause
                                         }
                                     }
 
@@ -782,9 +787,11 @@ namespace AasxPackageExplorer
                             {
                                 root.Remove(cert);
                             }
+                            // ReSharper disable EmptyGeneralCatchClause
                             catch
                             {
                             }
+                            // ReSharper enable EmptyGeneralCatchClause
                         }
                     }
                     return;
