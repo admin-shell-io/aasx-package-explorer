@@ -447,8 +447,8 @@ namespace AasxPackageExplorer
                     X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
                     store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
 
-                    X509Certificate2Collection collection = (X509Certificate2Collection)store.Certificates;
-                    X509Certificate2Collection fcollection = (X509Certificate2Collection)collection.Find(
+                    X509Certificate2Collection collection = store.Certificates;
+                    X509Certificate2Collection fcollection = collection.Find(
                         X509FindType.FindByTimeValid, DateTime.Now, false);
 
                     X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
@@ -463,7 +463,7 @@ namespace AasxPackageExplorer
                         X509Chain ch = new X509Chain();
                         ch.Build(certificate);
 
-                        string[] X509Base64 = new string[ch.ChainElements.Count];
+                        //// string[] X509Base64 = new string[ch.ChainElements.Count];
 
                         int j = 1;
                         foreach (X509ChainElement element in ch.ChainElements)
@@ -486,7 +486,7 @@ namespace AasxPackageExplorer
                         }
                         catch (Exception e)
                         {
-                            string text = e.Message;
+                            //// string text = e.Message;
                         }
                     }
                     RedrawAllAasxElements();
@@ -498,11 +498,6 @@ namespace AasxPackageExplorer
                     && ((el != null && el.theEnv != null && el.theSubmodel != null)
                             || (els != null && els.theEnv != null && els.theWrapper != null)))
                 {
-                    AdminShell.SubmodelElementCollection x5c = null;
-                    AdminShell.Property subject = null;
-                    AdminShell.Property algorithm = null;
-                    AdminShell.Property digest = null; // legacy
-                    AdminShell.Property signature = null;
                     List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
                     List<AdminShell.SubmodelElementCollection> validate = new List<AdminShellV20.SubmodelElementCollection>();
                     AdminShell.Submodel sm = null;
@@ -622,11 +617,11 @@ namespace AasxPackageExplorer
                         }
                         foreach (var smec in validate)
                         {
-                            x5c = null;
-                            subject = null;
-                            algorithm = null;
-                            digest = null;
-                            signature = null;
+                            AdminShell.SubmodelElementCollection x5c = null;
+                            AdminShell.Property subject = null;
+                            AdminShell.Property algorithm = null;
+                            AdminShell.Property digest = null; // legacy
+                            AdminShell.Property signature = null;
 
                             foreach (var sme in smec.value)
                             {
