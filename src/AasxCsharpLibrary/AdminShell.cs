@@ -8167,7 +8167,11 @@ namespace AdminShellNS
                 this.value = new SubmodelElementWrapperCollection();
                 if (!shallowCopy)
                     foreach (var smw in src.value)
+                    {
+                        if (value == null)
+                            value = new SubmodelElementWrapperCollection();
                         value.Add(new SubmodelElementWrapper(smw.submodelElement));
+                    }
             }
 #endif
 

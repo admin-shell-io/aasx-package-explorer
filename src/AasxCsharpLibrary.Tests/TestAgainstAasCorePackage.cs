@@ -81,5 +81,23 @@ namespace AdminShellNS.Tests
                 );
             }
         }
+
+        [Test]
+        public void TestCanRead01FestoSampleAASXPackagefile()
+        {
+            string tempFile = $"{Path.GetTempPath()}01_Festo.aasx";
+            var wc = new System.Net.WebClient();
+            wc.DownloadFile("http://www.admin-shell-io.com/samples/aasx/01_Festo.aasx", tempFile);
+
+            try
+            {
+                using var package = new AdminShellPackageEnv(tempFile);
+                Assert.IsNotNull(package);
+            }
+            finally
+            {
+                File.Delete(tempFile);
+            }
+        }
     }
 }
