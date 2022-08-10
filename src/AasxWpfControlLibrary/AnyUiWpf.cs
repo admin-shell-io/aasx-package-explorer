@@ -243,9 +243,6 @@ namespace AnyUi
         [JsonIgnore]
         private Point _dragStartPoint = new Point(0, 0);
 
-        [JsonIgnore]
-        private Point _dragStartPoint = new Point(0, 0);
-
         private void InitRenderRecs()
         {
             RenderRecs.Clear();
@@ -1151,13 +1148,15 @@ namespace AnyUi
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
-            {
-                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
-                    && cntl.Child != null)
-                {
-                    wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
-                }
-            }
+            /* MIHO+OZ
+            //// {
+            ////    if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+            ////        && cntl.Child != null)
+            ////    {
+            ////        wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
+            ////    }
+            //// }
+            */
 
             // call action
             if (topClass)
