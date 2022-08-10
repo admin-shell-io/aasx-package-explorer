@@ -1148,15 +1148,15 @@ namespace AnyUi
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
-            /* MIHO+OZ
-            //// {
+            // MIHO+OZ
+            //// 
             ////    if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
             ////        && cntl.Child != null)
-            ////    {
-            ////        wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
-            ////    }
-            //// }
-            */
+            ////    
+            ////        wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse)
+            ////    
+            //// 
+            //
 
             // call action
             if (topClass)
