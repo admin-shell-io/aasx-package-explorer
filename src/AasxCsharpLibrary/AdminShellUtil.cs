@@ -511,6 +511,62 @@ namespace AdminShellNS
         }
 
         //
+        // String manipulations
+        //
+
+        public static string ReplacePercentPlaceholder(
+            string input,
+            string searchFor,
+            Func<string> substLamda,
+            StringComparison comparisonType = StringComparison.InvariantCulture)
+        {
+            // access
+            if (input == null || searchFor == null || searchFor == "")
+                return input;
+
+            // find
+            while (true)
+            {
+                // any occurence
+                var p = input.IndexOf(searchFor, comparisonType);
+                if (p < 0)
+                    break;
+
+                // split
+                var left = input.Substring(0, p);
+                var right = "";
+                var rp = p + searchFor.Length;
+                if (rp < input.Length)
+                    right = input.Substring(rp);
+
+                // lambda
+                var repl = "" + substLamda?.Invoke();
+
+                // build new
+                input = left + repl + right;
+            }
+
+            // ok
+            return input;
+        }
+
+        //
+        // Base 64
+        //
+
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
+        //
         // Generation of Ids
         //
 

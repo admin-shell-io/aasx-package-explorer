@@ -100,6 +100,7 @@ namespace AasxIntegrationBase.AasForms
                 TextBlockHeaderFormInfo.Visibility = (bool)value ? Visibility.Visible : Visibility.Collapsed;
 
             // pass on
+#if USE_WPF
             FormInstanceListOfDifferent lod = null;
             if (dc.smInst != null)
                 lod = dc.smInst.PairInstances;
@@ -110,6 +111,7 @@ namespace AasxIntegrationBase.AasForms
                     if (ld.instances != null && ld.instances.subControl != null &&
                         ld.instances.subControl is FormListOfSameControl flsc)
                         flsc.SetProperty(property, value);
+#endif
         }
 
         /// <summary>
@@ -141,6 +143,7 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public void ContentFocus()
         {
+#if USE_WPF
             // need data context of the UC coming from Submodel, SMEC or at least listOfElements
             var dc = IndividualDataContext.CreateDataContext(this.DataContext);
             if (dc == null || StackPanelElements == null)
@@ -158,6 +161,7 @@ namespace AasxIntegrationBase.AasForms
                 if (sc00 != null && sc00 is IFormListControl)
                     (sc00 as IFormListControl).ContentFocus();
             }
+#endif
         }
 
         // Display functionality
@@ -197,7 +201,9 @@ namespace AasxIntegrationBase.AasForms
                 foreach (var pair in dc.smInst.PairInstances)
                 {
                     var cntl = new FormListOfSameControl();
+#if USE_WPF
                     pair.instances.subControl = cntl;
+#endif
                     cntl.DataContext = pair.instances;
                     StackPanelElements.Children.Add(cntl);
                 }
@@ -226,7 +232,9 @@ namespace AasxIntegrationBase.AasForms
                 foreach (var pair in dc.smecInst.PairInstances)
                 {
                     var cntl = new FormListOfSameControl();
+#if USE_WPF
                     pair.instances.subControl = cntl;
+#endif
                     cntl.DataContext = pair.instances;
                     StackPanelElements.Children.Add(cntl);
                 }

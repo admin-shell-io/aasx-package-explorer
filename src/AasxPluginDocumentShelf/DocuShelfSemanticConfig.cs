@@ -55,12 +55,12 @@ namespace AasxPluginDocumentShelf
 
         public FormDescSubmodelElementCollection FormVdi2770 = null;
 
-        public static DocuShelfSemanticConfig Singleton = CreateDefault();
+        public static DocuShelfSemanticConfig Singleton = CreateDefaultV10();
 
         /// <summary>
-        /// Create a set of minimal options
+        /// Create a set of minimal options; based on the options approach for V10
         /// </summary>
-        public static DocuShelfSemanticConfig CreateDefault()
+        public static DocuShelfSemanticConfig CreateDefaultV10()
         {
             var opt = new DocuShelfSemanticConfig();
 
@@ -103,16 +103,70 @@ namespace AasxPluginDocumentShelf
         }
 
         /// <summary>
+        /// Create a set of minimal options suitable for V11
+        /// </summary>
+        public static DocuShelfSemanticConfig CreateDefaultV11()
+        {
+            var opt = new DocuShelfSemanticConfig();
+
+            // use pre-definitions
+            var preDefs = AasxPredefinedConcepts.VDI2770v11.Static;
+
+            opt.SemIdDocumentation = preDefs.SM_ManufacturerDocumentation.GetSemanticKey();
+            opt.SemIdDocument = preDefs.CD_Document?.GetSingleKey();
+            opt.SemIdDocumentIdValue = preDefs.CD_DocumentIdValue?.GetSingleKey();
+            opt.SemIdDocumentClassId = preDefs.CD_ClassId?.GetSingleKey();
+            opt.SemIdDocumentClassName = preDefs.CD_ClassName?.GetSingleKey();
+            opt.SemIdDocumentClassificationSystem = preDefs.CD_ClassificationSystem?.GetSingleKey();
+            opt.SemIdOrganizationName = preDefs.CD_OrganizationName?.GetSingleKey();
+            opt.SemIdOrganizationOfficialName = preDefs.CD_OrganizationOfficialName?.GetSingleKey();
+            opt.SemIdDocumentVersion = preDefs.CD_DocumentVersion?.GetSingleKey();
+            opt.SemIdLanguage = preDefs.CD_Language?.GetSingleKey();
+            opt.SemIdTitle = preDefs.CD_Title?.GetSingleKey();
+            opt.SemIdDate = preDefs.CD_SetDate?.GetSingleKey();
+            opt.SemIdDocumentVersionIdValue = preDefs.CD_DocumentVersionId?.GetSingleKey();
+            opt.SemIdDigitalFile = preDefs.CD_DigitalFile?.GetSingleKey();
+            opt.SemIdDocumentId = preDefs.CD_DocumentId?.GetSingleKey();
+            opt.SemIdIsPrimaryDocumentId = preDefs.CD_IsPrimary?.GetSingleKey();
+            opt.SemIdDocumentVersionId = preDefs.CD_DocumentVersionId?.GetSingleKey();
+            opt.SemIdSummary = preDefs.CD_Summary?.GetSingleKey();
+            opt.SemIdKeywords = preDefs.CD_KeyWords?.GetSingleKey();
+            opt.SemIdStatusValue = preDefs.CD_StatusValue?.GetSingleKey();
+            opt.SemIdDomainId = preDefs.CD_DocumentDomainId?.GetSingleKey();
+
+            return opt;
+        }
+
+        /// <summary>
+        /// Create a set of minimal options suitable for given version
+        /// </summary>
+        public static DocuShelfSemanticConfig CreateDefaultFor(DocumentEntity.SubmodelVersion ver)
+        {
+            if (ver == DocumentEntity.SubmodelVersion.V11)
+                return CreateDefaultV11();
+            return CreateDefaultV10();
+        }
+
+        /// <summary>
         /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
         /// </summary>
-        /// <param name="opt"></param>
-        /// <returns></returns>
+        public static FormDescSubmodelElementCollection CreateVdi2770TemplateDescFor(
+            DocumentEntity.SubmodelVersion ver, DocumentShelfOptions opt)
+        {
+            if (ver == DocumentEntity.SubmodelVersion.V11)
+                return CreateVdi2770v11TemplateDesc();
+            return CreateVdi2770TemplateDesc(opt);
+        }
+
+        /// <summary>
+        /// Create a default template description for VDI2770 based on the SemanticIds from the <c>options</c>
+        /// </summary>
         public static FormDescSubmodelElementCollection CreateVdi2770TemplateDesc(DocumentShelfOptions opt)
         {
             if (opt == null)
                 return null;
 
-            var semConfig = DocuShelfSemanticConfig.CreateDefault();
+            var semConfig = DocuShelfSemanticConfig.CreateDefaultV10();
 
             // DocumentItem
 

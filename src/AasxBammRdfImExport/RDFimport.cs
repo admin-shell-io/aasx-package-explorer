@@ -22,7 +22,6 @@ using VDS.RDF.Writing;
 using static AdminShellNS.AdminShellV20;
 
 namespace AasxBammRdfImExport
-
 {
     public static class BAMMRDFimport
     {

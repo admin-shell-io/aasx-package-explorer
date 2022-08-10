@@ -3,7 +3,7 @@
     <TargetFramework>net472</TargetFramework>
     <OutputType>library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWPF>true</UseWPF>
+    <UseWPF>false</UseWPF>
   </PropertyGroup>
   <ItemGroup>
     <None Update="AasxPluginGenericForms.plugin">
@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
-    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>

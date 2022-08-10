@@ -14,7 +14,7 @@
 
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
-
+   
     <TabControl x:Name="OuterTabControl">
         <TabItem x:Name="TabPanelEdit" Visibility="Collapsed">
             <Grid Background="#e8e8e8" Loaded="Grid_Loaded">

@@ -676,7 +676,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionNone();
                         },
                         takeOverLambda: new AnyUiLambdaActionRedrawAllElements(
-                            nextFocus: env?.ConceptDescriptions)) as AnyUiComboBox;
+                            nextFocus: env?.ConceptDescriptions));
 
                     // set currently selected value
                     if (cb1 != null)
@@ -2483,8 +2483,8 @@ namespace AasxPackageLogic
             }
 
             AdminShell.ConceptDescription jumpToCD = null;
-            if (sme.semanticId != null && sme.semanticId.Count > 0)
-                jumpToCD = env.FindConceptDescription(sme.semanticId.Keys);
+            if (sme?.semanticId != null && sme.semanticId.Count > 0)
+                jumpToCD = env?.FindConceptDescription(sme.semanticId.Keys);
 
             if (jumpToCD != null && editMode)
             {

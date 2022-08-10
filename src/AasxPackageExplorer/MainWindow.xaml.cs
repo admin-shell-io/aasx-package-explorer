@@ -30,6 +30,7 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
@@ -1045,23 +1046,36 @@ namespace AasxPackageExplorer
                     await MainTimer_HandleLambdaAction(ac);
 
             // what to do?
-            if (lab is AnyUiLambdaActionRedrawAllElements wish)
+            if (lab is AnyUiLambdaActionRedrawAllElementsBase wish)
             {
+                // 2022-02-28: Try to kee focus
+                if (wish.RedrawCurrentEntity && wish.NextFocus == null)
+                {
+                    // figure out the current business object
+                    if (DisplayElements != null && DisplayElements.SelectedItem != null &&
+                        DisplayElements.SelectedItem != null)
+                        wish.NextFocus = DisplayElements.SelectedItem.GetMainDataObject();
+                }
+
                 // edit mode affects the total element view
                 if (!wish.OnlyReFocus)
                     RedrawAllAasxElements();
+
                 // the selection will be shifted ..
-                if (wish.NextFocus != null)
+                if (wish.NextFocus != null && DisplayElements != null)
                 {
                     // for later search in visual elements, expand them all in order to be absolutely 
                     // sure to find business object
-                    this.DisplayElements.ExpandAllItems();
+                    DisplayElements.ExpandAllItems();
 
                     // now: search
                     DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
                 }
                 // fake selection
-                RedrawElementView(hightlightField: wish.HighlightField);
+                DispEditHighlight.HighlightFieldInfo hfi = null;
+                if (lab is AnyUiLambdaActionRedrawAllElements wishhl)
+                    hfi = wishhl.HighlightField;
+                RedrawElementView(hightlightField: hfi);
                 DisplayElements.Refresh();
                 ContentTakeOver.IsEnabled = false;
             }
@@ -1125,6 +1139,47 @@ namespace AasxPackageExplorer
                 || lab is AnyUiLambdaActionSelectMainObjects)
             {
                 DisplayElements.PushEvent(lab);
+            }
+
+            if (lab is AnyUiLambdaActionPluginUpdateAnyUi update)
+            {
+                // A plugin asks to re-render an exisiting panel.
+                // Can get this information?
+                var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
+
+                if (renderedInfo != null
+                    && renderedInfo.Item2 is AnyUiPanel renderedPanel
+                    && renderedPanel.Children != null
+                    && renderedPanel.Children.Count > 0)
+                {
+                    // first step: invoke plugin?
+                    var plugin = Plugins.FindPluginInstance(update.PluginName);
+                    if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
+                    {
+                        try
+                        {
+                            plugin.InvokeAction(
+                                "update-anyui-visual-extension", renderedPanel, renderedInfo.Item1,
+                                AnyUiDisplayContextWpf.SessionSingletonWpf);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex,
+                                $"update AnyUI based visual extension for plugin {update.PluginName}");
+                        }
+                    }
+
+                    // 2nd step: redisplay                                                          
+                    DispEditEntityPanel.RedisplayRenderedRoot(
+                        renderedPanel,
+                        update.UpdateMode,
+                        useInnerGrid: update.UseInnerGrid);
+                }
+                else
+                {
+                    // hard re-display
+                    throw new NotImplementedException();
+                }
             }
         }
 
@@ -1221,6 +1276,49 @@ namespace AasxPackageExplorer
             }
 
             return null;
+        }
+
+        private void UiHandleReRenderAnyUiInEntityPanel(
+            string pluginName, AnyUiRenderMode mode, bool useInnerGrid = false)
+        {
+            // A plugin asks to re-render an exisiting panel.
+            // Can get this information?
+            var renderedInfo = DispEditEntityPanel.GetLastRenderedRoot();
+
+            if (renderedInfo != null
+                && renderedInfo.Item2 is AnyUiPanel renderedPanel
+                && renderedPanel.Children != null
+                && renderedPanel.Children.Count > 0)
+            {
+                // first step: invoke plugin?
+                // Note: is OK to have plugin name to null in order to disable calling plugin
+                var plugin = Plugins.FindPluginInstance(pluginName);
+                if (plugin != null && plugin.HasAction("update-anyui-visual-extension"))
+                {
+                    try
+                    {
+                        plugin.InvokeAction(
+                            "update-anyui-visual-extension", renderedPanel, null,
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex,
+                            $"update AnyUI based visual extension for plugin {pluginName}");
+                    }
+                }
+
+                // 2nd step: redisplay
+                DispEditEntityPanel.RedisplayRenderedRoot(
+                    renderedPanel,
+                    mode: mode,
+                    useInnerGrid: useInnerGrid);
+            }
+            else
+            {
+                // hard re-display
+                throw new NotImplementedException();
+            }
         }
 
         private async Task UiHandleNavigateTo(
@@ -1390,8 +1488,77 @@ namespace AasxPackageExplorer
                         retev.resultKeys = uc.DiaData.ResultKeys;
 
                         // fire back
-                        pluginInstance?.InvokeAction("event-return", retev);
+                        pluginInstance?.InvokeAction("event-return", retev,
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
                     }
+                }
+
+                // Select File
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventSelectFile fileSel)
+                {
+                    // ask
+                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                    FileDialog dlg = null;
+                    if (fileSel.SaveDialogue)
+                        dlg = new Microsoft.Win32.SaveFileDialog();
+                    else
+                        dlg = new Microsoft.Win32.OpenFileDialog();
+                    dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+                    if (fileSel.Title != null)
+                        dlg.Title = fileSel.Title;
+                    if (fileSel.FileName != null)
+                        dlg.FileName = fileSel.FileName;
+                    if (fileSel.DefaultExt != null)
+                        dlg.DefaultExt = fileSel.DefaultExt;
+                    if (fileSel.Filter != null)
+                        dlg.Filter = fileSel.Filter;
+                    if (dlg is Microsoft.Win32.OpenFileDialog ofd)
+                        ofd.Multiselect = fileSel.MultiSelect;
+                    var res = dlg.ShowDialog();
+                    if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+                    // act
+                    if (res == true)
+                    {
+                        // formulate return event
+                        var retev = new AasxIntegrationBase.AasxPluginEventReturnSelectFile();
+                        retev.sourceEvent = evt;
+                        retev.FileNames = dlg.FileNames;
+
+                        // fire back
+                        pluginInstance?.InvokeAction("event-return", retev,
+                            AnyUiDisplayContextWpf.SessionSingletonWpf);
+                    }
+                }
+
+                // Message Box
+                //============
+
+                if (evt is AasxIntegrationBase.AasxPluginResultEventMessageBox evMsgBox)
+                {
+                    // modal
+                    var uc = new MessageBoxFlyout(evMsgBox.Message, evMsgBox.Caption,
+                                    evMsgBox.Buttons, evMsgBox.Image);
+                    this.StartFlyoverModal(uc);
+
+                    // fire back
+                    pluginInstance?.InvokeAction("event-return",
+                        new AasxIntegrationBase.AasxPluginEventReturnMessageBox()
+                        {
+                            sourceEvent = evt,
+                            Result = uc.Result
+                        },
+                        AnyUiDisplayContextWpf.SessionSingletonWpf);
+                }
+
+                // Re-render Any UI Panels
+                //========================
+
+                if (evt is AasxIntegrationBase.AasxPluginEventReturnUpdateAnyUi update)
+                {
+                    UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
 
                 #endregion
@@ -1419,7 +1586,8 @@ namespace AasxPackageExplorer
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
                 var evt = lpi.InvokeAction("get-events") as AasxIntegrationBase.AasxPluginResultEventBase;
-                await HandleApplicationEvent(evt, lpi);
+                if (evt != null)
+                    await HandleApplicationEvent(evt, lpi);
             }
 
             // check for application events from main app
@@ -2192,7 +2360,7 @@ namespace AasxPackageExplorer
                 if (MainSpaceGrid != null && MainSpaceGrid.ColumnDefinitions.Count >= 3)
                 {
                     MainSpaceGrid.ColumnDefinitions[0].Width = new GridLength(this.ActualWidth / 5);
-                    MainSpaceGrid.ColumnDefinitions[4].Width = new GridLength(this.ActualWidth / 3);
+                    MainSpaceGrid.ColumnDefinitions[4].Width = new GridLength(this.ActualWidth / 2.5);
                 }
             }
         }

@@ -50,5 +50,27 @@ namespace AasxIntegrationBase
             // return if found or not ..
             return evt;
         }
+
+#if __for_future_use_prepared_but_not_required_yet
+        /// <summary>
+        /// This feature allows any function to subscribe for the next return event.
+        /// Precondition: the plugins needs to manually call <c>HandleEventReturn</c>.
+        /// This action is removed automatically, after being called.
+        /// </summary>
+        public Action<AasxPluginEventReturnBase> SubscribeForNextEventReturn = null;
+
+        public void HandleEventReturn(AasxPluginEventReturnBase evtReturn)
+        {
+            if (SubscribeForNextEventReturn != null)
+            {
+                // delete first
+                var tempLambda = SubscribeForNextEventReturn;
+                SubscribeForNextEventReturn = null;
+
+                // execute
+                tempLambda(evtReturn);
+            }
+        }
+#endif
     }
 }

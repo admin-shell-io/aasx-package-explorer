@@ -53,6 +53,13 @@ namespace AdminShellNS
                 ((ex.InnerException != null) ? ex.InnerException.Message : ""),
                 ex.StackTrace);
         }
+
+        /// <summary>
+        /// Does no logging at all. Allows to have non-empty catch clauses.
+        /// </summary>
+        public void CompletelyIgnoredError(Exception ex)
+        {
+        }
     }
 
     /// <summary>

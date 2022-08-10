@@ -12,16 +12,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AdminShellNS;
 
 namespace AasxPluginImageMap
 {
-    public class ImageMapOptionsOptionsRecord
+    public class ImageMapOptionsOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
     }
 
-    public class ImageMapOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class ImageMapOptions : AasxPluginLookupOptionsBase
     {
         public List<ImageMapOptionsOptionsRecord> Records = new List<ImageMapOptionsOptionsRecord>();
 

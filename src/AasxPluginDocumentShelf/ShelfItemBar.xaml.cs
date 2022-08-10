@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+#if USE_WPF
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,12 +78,12 @@ namespace AasxPluginDocumentShelf
             TextBlockFurther.Text = "" + data.FurtherInfo;
 
             // Image to be (later) shown
-            if (data.ImgContainer != null)
+            if (data.ImgContainerWpf != null)
             {
                 BorderPlaceholder.Background = Brushes.White;
                 BorderPlaceholder.BorderThickness = new Thickness(1);
                 BorderPlaceholder.BorderBrush = Brushes.DarkGray;
-                BorderPlaceholder.Child = data.ImgContainer;
+                BorderPlaceholder.Child = data.ImgContainerWpf;
             }
         }
 
@@ -162,3 +164,5 @@ namespace AasxPluginDocumentShelf
 
     }
 }
+
+#endif

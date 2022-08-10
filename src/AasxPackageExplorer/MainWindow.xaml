@@ -507,7 +507,7 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="250" />
+                    <ColumnDefinition Width="270" />
                 </Grid.ColumnDefinitions>
 
                 <GridSplitter HorizontalAlignment="Right"

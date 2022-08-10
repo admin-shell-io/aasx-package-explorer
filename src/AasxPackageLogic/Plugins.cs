@@ -115,7 +115,7 @@ namespace AasxPackageLogic
 
         public static PluginInstance FindPluginInstance(string pname)
         {
-            if (LoadedPlugins == null || !LoadedPlugins.ContainsKey(pname))
+            if (LoadedPlugins == null || !pname.HasContent() || !LoadedPlugins.ContainsKey(pname))
                 return null;
             return LoadedPlugins[pname];
         }
@@ -158,6 +158,7 @@ namespace AasxPackageLogic
                 try
                 {
                     Log.Singleton.Info("Trying to load a DLL: {0}", pluginDll[index].Path);
+                    Console.WriteLine("Trying to load a DLL: {0}", pluginDll[index].Path);
 
                     // make full path
                     var fullfn = System.IO.Path.GetFullPath(pluginDll[index].Path);
@@ -205,6 +206,7 @@ namespace AasxPackageLogic
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, $"Trying to activate the plugin at index {index}");
+                    Console.WriteLine($"Trying to activate the plugin at index {index} gave {ex.Message}");
                 }
             }
 

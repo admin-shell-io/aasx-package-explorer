@@ -144,6 +144,10 @@ namespace AasxPackageExplorer
 
         public bool CanHandleFileNameExtension(string fn, string mimeType)
         {
+            // access
+            if (!fn.HasContent())
+                return false;
+
             // check mime type with priority 1
             if (mimeType.HasContent())
             {

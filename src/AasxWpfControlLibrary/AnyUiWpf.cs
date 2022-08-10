@@ -11,14 +11,16 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic;
@@ -37,10 +39,36 @@ namespace AnyUi
         [JsonIgnore]
         public UIElement WpfElement;
 
+        [JsonIgnore]
+        public bool EventsAdded;
+
         public AnyUiDisplayDataWpf(AnyUiDisplayContextWpf Context)
         {
             this.Context = Context;
         }
+
+        /// <summary>
+        /// Initiates a drop operation with one ore more files given by filenames.
+        /// </summary>
+        public override void DoDragDropFiles(AnyUiUIElement elem, string[] files)
+        {
+            // access 
+            if (files == null || files.Length < 1)
+                return;
+            var sc = new System.Collections.Specialized.StringCollection();
+            sc.AddRange(files);
+
+            // WPF element
+            var dd = elem?.DisplayData as AnyUiDisplayDataWpf;
+
+            // start
+            DataObject data = new DataObject();
+            data.SetFileDropList(sc);
+
+            // Inititate the drag-and-drop operation.
+            DragDrop.DoDragDrop(dd?.WpfElement, data, DragDropEffects.Copy | DragDropEffects.Move);
+        }
+
     }
 
     public class AnyUiDisplayContextWpf : AnyUiContextBase
@@ -49,6 +77,8 @@ namespace AnyUi
         public IFlyoutProvider FlyoutProvider;
         [JsonIgnore]
         public PackageCentral Packages;
+
+        public static string SessionSingletonWpf = "session-wpf";
 
         public AnyUiDisplayContextWpf(
             IFlyoutProvider flyoutProvider, PackageCentral packages)
@@ -113,6 +143,8 @@ namespace AnyUi
                 res.Width = GetWpfGridLength(cd.Width);
             if (cd?.MinWidth.HasValue == true)
                 res.MinWidth = cd.MinWidth.Value;
+            if (cd?.MaxWidth.HasValue == true)
+                res.MaxWidth = cd.MaxWidth.Value;
             return res;
         }
 
@@ -139,6 +171,16 @@ namespace AnyUi
             if (wt == AnyUiFontWeight.Bold)
                 res = FontWeights.Bold;
             return res;
+        }
+
+        public Point GetWpfPoint(AnyUiPoint p)
+        {
+            return new Point(p.X, p.Y);
+        }
+
+        public AnyUiPoint GetAnyUiPoint(Point p)
+        {
+            return new AnyUiPoint(p.X, p.Y);
         }
 
         //
@@ -169,12 +211,12 @@ namespace AnyUi
             public Type CntlType;
             public Type WpfType;
             [JsonIgnore]
-            public Action<AnyUiUIElement, UIElement> InitLambda;
+            public Action<AnyUiUIElement, UIElement, AnyUiRenderMode> InitLambda;
             [JsonIgnore]
             public Action<AnyUiUIElement, UIElement, bool> HighlightLambda;
 
             public RenderRec(Type cntlType, Type wpfType,
-                Action<AnyUiUIElement, UIElement> initLambda = null,
+                Action<AnyUiUIElement, UIElement, AnyUiRenderMode> initLambda = null,
                 Action<AnyUiUIElement, UIElement, bool> highlightLambda = null)
             {
                 CntlType = cntlType;
@@ -198,24 +240,28 @@ namespace AnyUi
         [JsonIgnore]
         private ListOfRenderRec RenderRecs = new ListOfRenderRec();
 
-        private string FilterForBadText(string input)
-        {
-            var res = new StringBuilder();
-            foreach (var c in input)
-                if (c >= ' ')
-                    res.Append(c);
-            return res.ToString();
-
-        }
+        [JsonIgnore]
+        private Point _dragStartPoint = new Point(0, 0);
 
         private void InitRenderRecs()
         {
             RenderRecs.Clear();
             RenderRecs.AddRange(new[]
             {
-                new RenderRec(typeof(AnyUiFrameworkElement), typeof(FrameworkElement), (a, b) =>
+                new RenderRec(typeof(AnyUiUIElement), typeof(UIElement), (a, b, mode) =>
                 {
-                    if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf)
+                    // ReSharper disable UnusedVariable
+                    if (a is AnyUiUIElement cntl && b is UIElement wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                    }
+                    // ReSharper enable UnusedVariable
+                }),
+
+                new RenderRec(typeof(AnyUiFrameworkElement), typeof(FrameworkElement), (a, b, mode) =>
+                {
+                    if (a is AnyUiFrameworkElement cntl && b is FrameworkElement wpf
+                        && mode == AnyUiRenderMode.All)
                     {
                         if (cntl.Margin != null)
                             wpf.Margin = GetWpfTickness(cntl.Margin);
@@ -232,12 +278,71 @@ namespace AnyUi
                         if (cntl.MaxWidth.HasValue)
                             wpf.MaxWidth = cntl.MaxWidth.Value;
                         wpf.Tag = cntl.Tag;
+
+                        if (cntl.DisplayData is AnyUiDisplayDataWpf ddwpf
+                            && ddwpf.EventsAdded == false)
+                        {
+                            // add events only once!
+                            ddwpf.EventsAdded = true;
+
+                            if ( ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                                || ((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) )
+                            {
+                                wpf.MouseLeftButtonDown += (s5, e5) => {
+                                    if (e5.LeftButton == MouseButtonState.Pressed)
+                                    {
+                                        // get the current coordinates relative to the framework element
+                                        // (only this could be sensible information to an any ui business logic)
+                                        var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
+
+                                        // detect and send appropriate event and emit return
+                                        if ((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0)
+                                        {
+                                            EmitOutsideAction(cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                        }
+
+                                        if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0)
+                                            && e5.ClickCount == 2)
+                                        {
+                                            EmitOutsideAction(cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.LeftDown, cntl, e5.ClickCount, p)));
+                                        }
+                                    }
+                                };
+                            }
+
+                            if ((cntl.EmitEvent & AnyUiEventMask.DragStart) > 0)
+                            {
+                                wpf.MouseLeftButtonDown +=(s6, e6) =>
+                                {
+                                    _dragStartPoint = e6.GetPosition(null);
+                                };
+
+                                wpf.PreviewMouseMove += (s7, e7) =>
+                                {
+                                    if (e7.LeftButton == MouseButtonState.Pressed)
+                                    {
+                                        Point position = e7.GetPosition(null);
+                                        if (Math.Abs(position.X - _dragStartPoint.X)
+                                                > SystemParameters.MinimumHorizontalDragDistance
+                                            || Math.Abs(position.Y - _dragStartPoint.Y)
+                                                > SystemParameters.MinimumVerticalDragDistance)
+                                        {
+                                            cntl.setValueLambda?.Invoke(
+                                                new AnyUiEventData(AnyUiEventMask.DragStart, cntl));
+                                        }
+                                    }
+                                };
+                            }
+                        }
                     }
                 }),
 
-                new RenderRec(typeof(AnyUiControl), typeof(Control), (a, b) =>
+                new RenderRec(typeof(AnyUiControl), typeof(Control), (a, b, mode) =>
                 {
-                   if (a is AnyUiControl cntl && b is Control wpf)
+                   if (a is AnyUiControl cntl && b is Control wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.VerticalContentAlignment.HasValue)
                            wpf.VerticalContentAlignment =
@@ -245,42 +350,70 @@ namespace AnyUi
                        if (cntl.HorizontalContentAlignment.HasValue)
                            wpf.HorizontalContentAlignment =
                             (HorizontalAlignment)((int) cntl.HorizontalContentAlignment.Value);
+
+                       if (cntl.FontSize.HasValue)
+                            wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
+                       if (cntl.FontWeight.HasValue)
+                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiContentControl), typeof(ContentControl), (a, b) =>
+                new RenderRec(typeof(AnyUiContentControl), typeof(ContentControl), (a, b, mode) =>
                 {
-                   if (a is AnyUiContentControl && b is ContentControl)
+                   if (a is AnyUiContentControl && b is ContentControl
+                       && mode == AnyUiRenderMode.All)
                    {
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiDecorator), typeof(Decorator), (a, b) =>
+                new RenderRec(typeof(AnyUiDecorator), typeof(Decorator), (a, b, mode) =>
                 {
-                   if (a is AnyUiDecorator && b is Decorator)
+                    if (a is AnyUiDecorator cntl && b is Decorator wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                        // child
+                        wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: false);
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiViewbox), typeof(Viewbox), (a, b, mode) =>
+                {
+                   if (a is AnyUiViewbox cntl && b is Viewbox wpf
+                       && mode == AnyUiRenderMode.All)
                    {
+                        wpf.Stretch = (Stretch)(int) cntl.Stretch;
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiPanel), typeof(Panel), (a, b) =>
+                new RenderRec(typeof(AnyUiPanel), typeof(Panel), (a, b, mode) =>
                 {
                    if (a is AnyUiPanel cntl && b is Panel wpf)
                    {
-                       // normal members
-                       if (cntl.Background != null)
-                           wpf.Background = GetWpfBrush(cntl.Background);
+                        // figure out, when to redraw
+                        var redraw = (mode == AnyUiRenderMode.All)
+                            || (mode == AnyUiRenderMode.StatusToUi && a is AnyUiCanvas);
 
-                       // children
-                       wpf.Children.Clear();
-                       if (cntl.Children != null)
-                           foreach (var ce in cntl.Children)
-                               wpf.Children.Add(GetOrCreateWpfElement(ce));
+                        if (redraw)
+                        {
+                            // normal members
+                            if (cntl.Background != null)
+                                wpf.Background = GetWpfBrush(cntl.Background);
+
+                            // children
+                            wpf.Children.Clear();
+                            if (cntl.Children != null)
+                                foreach (var ce in cntl.Children)
+                                {
+                                    wpf.Children.Add(GetOrCreateWpfElement(ce, allowReUse: false));
+                                }
+                        }
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiGrid), typeof(Grid), (a, b) =>
+                new RenderRec(typeof(AnyUiGrid), typeof(Grid), (a, b, mode) =>
                 {
-                   if (a is AnyUiGrid cntl && b is Grid wpf)
+                   if (a is AnyUiGrid cntl && b is Grid wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.RowDefinitions != null)
                            foreach (var rd in cntl.RowDefinitions)
@@ -309,27 +442,157 @@ namespace AnyUi
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiStackPanel), typeof(StackPanel), (a, b) =>
+                new RenderRec(typeof(AnyUiStackPanel), typeof(StackPanel), (a, b, mode) =>
                 {
-                   if (a is AnyUiStackPanel cntl && b is StackPanel wpf)
+                   if (a is AnyUiStackPanel cntl && b is StackPanel wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.Orientation.HasValue)
                            wpf.Orientation = (Orientation)((int) cntl.Orientation.Value);
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiWrapPanel), typeof(WrapPanel), (a, b) =>
+                new RenderRec(typeof(AnyUiWrapPanel), typeof(WrapPanel), (a, b, mode) =>
                 {
-                   if (a is AnyUiWrapPanel cntl && b is WrapPanel wpf)
+                   if (a is AnyUiWrapPanel cntl && b is WrapPanel wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.Orientation.HasValue)
                            wpf.Orientation = (Orientation)((int) cntl.Orientation.Value);
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b) =>
+                new RenderRec(typeof(AnyUiShape), typeof(Shape), (a, b, mode) =>
                 {
-                    if (a is AnyUiBorder cntl && b is Border wpf)
+                    if (a is AnyUiShape cntl && b is Shape wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                        if (cntl.Fill != null)
+                            wpf.Fill = GetWpfBrush(cntl.Fill);
+                        if (cntl.Stroke != null)
+                            wpf.Stroke = GetWpfBrush(cntl.Stroke);
+                        if (cntl.StrokeThickness.HasValue)
+                            wpf.StrokeThickness = cntl.StrokeThickness.Value;
+                        wpf.Tag = cntl.Tag;
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiRectangle), typeof(Rectangle), (a, b, mode) =>
+                {
+                    // ReSharper disable UnusedVariable
+                    if (a is AnyUiRectangle cntl && b is Rectangle wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                    }
+                    // ReSharper enable UnusedVariable
+                }),
+
+                new RenderRec(typeof(AnyUiEllipse), typeof(Ellipse), (a, b, mode) =>
+                {
+                    // ReSharper disable UnusedVariable
+                    if (a is AnyUiEllipse cntl && b is Ellipse wpf
+                        && mode == AnyUiRenderMode.All)
+                    {
+                    }
+                    // ReSharper enable UnusedVariable
+                }),
+
+                new RenderRec(typeof(AnyUiPolygon), typeof(Polygon), (a, b, mode) =>
+                {
+                    if (a is AnyUiPolygon cntl && b is Polygon wpf
+                        && (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi))
+                    {
+                        // points
+                        if (cntl.Points != null)
+                            foreach (var p in cntl.Points)
+                                wpf.Points.Add(GetWpfPoint(p));
+                    }
+                }),
+
+                new RenderRec(typeof(AnyUiCanvas), typeof(Canvas), (a, b, mode) =>
+                {
+                   if (a is AnyUiCanvas cntl && b is Canvas wpf)
+                   {
+                        // Children are added but deserve some post processing
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+                            if (cntl.Children.Count == wpf.Children.Count)
+                                for (int i=0; i < cntl.Children.Count; i++)
+                                {
+                                    var cc = cntl.Children[i] as AnyUiFrameworkElement;
+                                    var cw = wpf.Children[i] as FrameworkElement;
+                                    if (cc != null && cw != null)
+                                    {
+                                        cw.Width = cc.Width;
+                                        cw.Height = cc.Height;
+                                        Canvas.SetLeft(cw, cc.X);
+                                        Canvas.SetTop(cw, cc.Y);
+                                    }
+                                }
+                        }
+
+                        // need to subscribe for events?
+                        if (mode == AnyUiRenderMode.All)
+                        {
+                            if ((cntl.EmitEvent & AnyUiEventMask.MouseAll) > 0)
+                            {
+                                wpf.MouseDown += (s,e) =>
+                                {
+                                    // get the current coordinates relative to the framework element
+                                    // (onlythis could be sensible information to an any ui business logic)
+                                    var p = GetAnyUiPoint(Mouse.GetPosition(wpf));
+
+                                    // try to find AnyUI element emitting the event
+                                    object auiSource = null;
+                                    foreach (var ch in cntl.Children)
+                                        if ((ch?.DisplayData as AnyUiDisplayDataWpf)?.WpfElement == e.Source)
+                                            auiSource = ch;
+                                
+                                    // send event and emit return
+                                    if (e.ChangedButton == MouseButton.Left)
+                                    {
+                                        EmitOutsideAction(
+                                            cntl.setValueLambda?.Invoke(new AnyUiEventData(
+                                                    AnyUiEventMask.LeftDown, auiSource, e.ClickCount, p)));
+                                    }
+                                };
+                            }
+                        }
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiScrollViewer), typeof(ScrollViewer), (a, b, mode) =>
+                {
+                   if (a is AnyUiScrollViewer cntl && b is ScrollViewer wpf
+                       && mode == AnyUiRenderMode.All)
+                   {
+                        // attributes
+                        if (cntl.HorizontalScrollBarVisibility.HasValue)
+                            wpf.HorizontalScrollBarVisibility =
+                                (ScrollBarVisibility)((int) cntl.HorizontalScrollBarVisibility.Value);
+                        if (cntl.VerticalScrollBarVisibility.HasValue)
+                            wpf.VerticalScrollBarVisibility =
+                                (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility.Value);
+
+                        // initial position (before attaching callback)
+                        if (cntl.InitialScrollPosition.HasValue)
+                        {
+                            wpf.ScrollToVerticalOffset(cntl.InitialScrollPosition.Value);
+                        }
+
+                        // callbacks
+                        wpf.ScrollChanged += (object sender, ScrollChangedEventArgs e) =>
+                        {
+                            cntl.setValueLambda?.Invoke(
+                                new Tuple<double, double>(e.HorizontalOffset, e.VerticalOffset));
+                        };
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiBorder), typeof(Border), (a, b, mode) =>
+                {
+                    if (a is AnyUiBorder cntl && b is Border wpf
+                        && mode == AnyUiRenderMode.All)
                     {
                         // members
                         if (cntl.Background != null)
@@ -340,6 +603,9 @@ namespace AnyUi
                             wpf.BorderBrush = GetWpfBrush(cntl.BorderBrush);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
+                        if (cntl.CornerRadius != null)
+                            wpf.CornerRadius  = new CornerRadius(cntl.CornerRadius.Value);
+                        
                         // callbacks
                         if (cntl.IsDropBox)
                         {
@@ -369,9 +635,7 @@ namespace AnyUi
                                             tb2.Text = "" + files[0];
 
                                         // value changed
-                                        var action = cntl.setValueLambda?.Invoke(files[0]);
-                                        if (action != null && !(action is AnyUiLambdaActionNone))
-                                            EmitOutsideAction(action);
+                                        cntl.setValueLambda?.Invoke(files[0]);
 
                                         // contents changed
                                         WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
@@ -384,9 +648,10 @@ namespace AnyUi
                     }
                 }),
 
-                new RenderRec(typeof(AnyUiLabel), typeof(Label), (a, b) =>
+                new RenderRec(typeof(AnyUiLabel), typeof(Label), (a, b, mode) =>
                 {
-                   if (a is AnyUiLabel cntl && b is Label wpf)
+                   if (a is AnyUiLabel cntl && b is Label wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.Background != null)
                            wpf.Background = GetWpfBrush(cntl.Background);
@@ -400,43 +665,42 @@ namespace AnyUi
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiTextBlock), typeof(TextBlock), (a, b) =>
+                new RenderRec(typeof(AnyUiTextBlock), typeof(TextBlock), (a, b, mode) =>
                 {
                    if (a is AnyUiTextBlock cntl && b is TextBlock wpf)
                    {
-                        if (cntl.Background != null)
-                            wpf.Background = GetWpfBrush(cntl.Background);
-                        if (cntl.Foreground != null)
-                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                        if (cntl.Padding != null)
-                            wpf.Padding = GetWpfTickness(cntl.Padding);
-                        if (cntl.TextWrapping.HasValue)
-                            wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                        wpf.Text = cntl.Text;
+                        if (mode == AnyUiRenderMode.All)
+                        {
+                            if (cntl.Background != null)
+                                wpf.Background = GetWpfBrush(cntl.Background);
+                            if (cntl.Foreground != null)
+                                wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                            if (cntl.FontWeight.HasValue)
+                                wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                            if (cntl.Padding != null)
+                                wpf.Padding = GetWpfTickness(cntl.Padding);
+                            if (cntl.TextWrapping.HasValue)
+                                wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
+
+                            if (cntl.FontSize.HasValue)
+                                wpf.FontSize = SystemFonts.MessageFontSize * cntl.FontSize.Value;
+                            if (cntl.FontWeight.HasValue)
+                                wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
+                        }
+
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+                            wpf.Text = cntl.Text;
+                        }
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiSelectableTextBlock), typeof(SelectableTextBlock), (a, b) =>
+                new RenderRec(typeof(AnyUiSelectableTextBlock), typeof(SelectableTextBlock), (a, b, mode) =>
                 {
-                   if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf)
+                   if (a is AnyUiSelectableTextBlock cntl && b is SelectableTextBlock wpf
+                       &&
+                       (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi))
                    {
-                        if (cntl.Background != null)
-                            wpf.Background = GetWpfBrush(cntl.Background);
-                        if (cntl.Foreground != null)
-                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-                        if (cntl.Padding != null)
-                            wpf.Padding = GetWpfTickness(cntl.Padding);
-                        if (cntl.TextWrapping.HasValue)
-                            wpf.TextWrapping = (TextWrapping)((int) cntl.TextWrapping.Value);
-                        if (cntl.FontWeight.HasValue)
-                            wpf.FontWeight = GetFontWeight(cntl.FontWeight.Value);
-
                         if (cntl.TextAsHyperlink)
                         {
                             var hl = new System.Windows.Documents.Hyperlink()
@@ -460,9 +724,10 @@ namespace AnyUi
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiHintBubble), typeof(HintBubble), (a, b) =>
+                new RenderRec(typeof(AnyUiHintBubble), typeof(HintBubble), (a, b, mode) =>
                 {
-                   if (a is AnyUiHintBubble cntl && b is HintBubble wpf)
+                   if (a is AnyUiHintBubble cntl && b is HintBubble wpf
+                       && mode == AnyUiRenderMode.All)
                    {
                        if (cntl.Background != null)
                            wpf.Background = GetWpfBrush(cntl.Background);
@@ -474,37 +739,118 @@ namespace AnyUi
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiTextBox), typeof(TextBox), (a, b) =>
+                new RenderRec(typeof(AnyUiImage), typeof(Image), (a, b, mode) =>
+                {
+                   if (a is AnyUiImage cntl && b is Image wpf)
+                   {
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+                            BitmapSource sourceBi = null;
+                            if (cntl.BitmapInfo?.ImageSource is BitmapSource bs)
+                               sourceBi = bs;
+                            else if (cntl.BitmapInfo?.PngData != null)
+                            {
+                                using (MemoryStream memory = new MemoryStream())
+                                {
+                                    memory.Write(cntl.BitmapInfo.PngData, 0, cntl.BitmapInfo.PngData.Length);
+                                    memory.Position = 0;
+
+                                    BitmapImage bi = new BitmapImage();
+                                    bi.BeginInit();
+                                    bi.StreamSource = memory;
+                                    bi.CacheOption = BitmapCacheOption.OnLoad;
+                                    bi.EndInit();
+
+                                    sourceBi = bi;
+                                }
+                            }
+
+                            // found something?
+                            if (sourceBi != null)
+                            {
+                                // additionally convert?
+                                if (cntl.BitmapInfo?.ConvertTo96dpi == true)
+                                {
+                                    // prepare
+                                    double dpi = 96;
+                                    int width = sourceBi.PixelWidth;
+                                    int height = sourceBi.PixelHeight;
+
+                                    // execute
+                                    int stride = width * sourceBi.Format.BitsPerPixel;
+                                    byte[] pixelData = new byte[stride * height];
+                                    sourceBi.CopyPixels(pixelData, stride, 0);
+                                    var destBi = BitmapSource.Create(
+                                        width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
+                                    destBi.Freeze();
+
+                                    // remember
+                                    sourceBi = destBi;
+                                }
+
+                                // finally set
+                                wpf.Source = sourceBi;
+                            }
+
+                            wpf.Stretch = (Stretch)(int) cntl.Stretch;
+                        }
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiCountryFlag), typeof(CountryFlag.CountryFlag), (a, b, mode) =>
+                {
+                   if (a is AnyUiCountryFlag cntl && b is CountryFlag.CountryFlag wpf
+                       && mode == AnyUiRenderMode.All)
+                   {
+                        // need to translate two enums
+                        foreach (var ev in (CountryFlag.CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
+                            if (Enum.GetName(typeof(CountryFlag.CountryCode), ev)?.Trim().ToUpper() == cntl.ISO3166Code)
+                                wpf.Code = ev;
+                   }
+                }),
+
+                new RenderRec(typeof(AnyUiTextBox), typeof(TextBox), (a, b, mode) =>
                 {
                     if (a is AnyUiTextBox cntl && b is TextBox wpf)
                     {
-                        // members
-                        if (cntl.Background != null)
-                            wpf.Background = GetWpfBrush(cntl.Background);
-                        if (cntl.Foreground != null)
-                            wpf.Foreground = GetWpfBrush(cntl.Foreground);
-                        if (cntl.Padding != null)
-                            wpf.Padding = GetWpfTickness(cntl.Padding);
-                        wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)((int) cntl.VerticalScrollBarVisibility);
-                        wpf.AcceptsReturn = cntl.AcceptsReturn;
-                        if (cntl.MaxLines != null)
-                            wpf.MaxLines = cntl.MaxLines.Value;
-                        wpf.Text = cntl.Text;
-                        // callbacks
-                        cntl.originalValue = "" + cntl.Text;
-                        wpf.TextChanged += (sender, e) => {
-                            cntl.setValueLambda?.Invoke(FilterForBadText(wpf.Text));
-                            WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
-                        };
-                        wpf.KeyUp += (sender, e) =>
+                        if (mode == AnyUiRenderMode.All)
                         {
-                            if (e.Key == Key.Enter)
+                            // members  
+                            if (cntl.Background != null)
+                                wpf.Background = GetWpfBrush(cntl.Background);
+                            if (cntl.Foreground != null)
+                                wpf.Foreground = GetWpfBrush(cntl.Foreground);
+                            if (cntl.Padding != null)
+                                wpf.Padding = GetWpfTickness(cntl.Padding);
+
+                            wpf.VerticalScrollBarVisibility = (ScrollBarVisibility)
+                                ((int) cntl.VerticalScrollBarVisibility);
+                            wpf.AcceptsReturn = cntl.AcceptsReturn;
+                            if (cntl.MaxLines != null)
+                                wpf.MaxLines = cntl.MaxLines.Value;
+                            wpf.Text = cntl.Text;
+                        
+                            // callbacks
+                            cntl.originalValue = "" + cntl.Text;
+                            wpf.TextChanged += (sender, e) => {
+                                cntl.setValueLambda?.Invoke(wpf.Text);
+                                WishForOutsideAction.Add(new AnyUiLambdaActionContentsChanged());
+                            };
+                            wpf.KeyUp += (sender, e) =>
                             {
-                                e.Handled = true;
-                                EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
-                                EmitOutsideAction(cntl.takeOverLambda);
-                            }
-                        };
+                                if (e.Key == Key.Enter)
+                                {
+                                    e.Handled = true;
+                                    EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
+                                    EmitOutsideAction(cntl.takeOverLambda);
+                                }
+                            };
+                        }
+
+                        if (mode == AnyUiRenderMode.All || mode == AnyUiRenderMode.StatusToUi)
+                        {
+                            wpf.Text = cntl.Text;
+                        }
                     }
                 }, highlightLambda: (a,b,highlighted) => {
                     if (a is AnyUiTextBox && b is TextBox tb)
@@ -524,10 +870,11 @@ namespace AnyUi
                     }
                 }),
 
-                new RenderRec(typeof(AnyUiComboBox), typeof(ComboBox), (a, b) =>
+                new RenderRec(typeof(AnyUiComboBox), typeof(ComboBox), (a, b, mode) =>
                 {
                     // members
-                    if (a is AnyUiComboBox cntl && b is ComboBox wpf)
+                    if (a is AnyUiComboBox cntl && b is ComboBox wpf
+                        && mode == AnyUiRenderMode.All)
                     {
                         if (cntl.Background != null)
                             wpf.Background = GetWpfBrush(cntl.Background);
@@ -562,8 +909,8 @@ namespace AnyUi
                             // we need this event
                             wpf.SelectionChanged += (sender, e) => {
                                 cntl.SelectedIndex = wpf.SelectedIndex;
-                                cntl.setValueLambda((string) wpf.SelectedItem);
                                 cntl.Text = wpf.Text;
+                                EmitOutsideAction(cntl.setValueLambda?.Invoke((string) wpf.SelectedItem));
                                 EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                                 // Note for MIHO: this was the dangerous outside event loop!
                                 EmitOutsideAction(cntl.takeOverLambda);
@@ -628,9 +975,10 @@ namespace AnyUi
                     }
                 }),
 
-                new RenderRec(typeof(AnyUiCheckBox), typeof(CheckBox), (a, b) =>
+                new RenderRec(typeof(AnyUiCheckBox), typeof(CheckBox), (a, b, mode) =>
                 {
-                    if (a is AnyUiCheckBox cntl && b is CheckBox wpf)
+                    if (a is AnyUiCheckBox cntl && b is CheckBox wpf
+                        && mode == AnyUiRenderMode.All)
                     {
                         // members
                         if (cntl.Background != null)
@@ -646,7 +994,7 @@ namespace AnyUi
                         cntl.originalValue = cntl.IsChecked;
                         RoutedEventHandler ceh = (sender, e) =>
                         {
-                            cntl.setValueLambda?.Invoke(wpf.IsChecked == true);
+                            EmitOutsideAction(cntl.setValueLambda?.Invoke(wpf.IsChecked == true));
                             EmitOutsideAction(new AnyUiLambdaActionContentsTakeOver());
                             EmitOutsideAction(cntl.takeOverLambda);
                         };
@@ -655,9 +1003,10 @@ namespace AnyUi
                     }
                 }),
 
-                new RenderRec(typeof(AnyUiButton), typeof(Button), (a, b) =>
+                new RenderRec(typeof(AnyUiButton), typeof(Button), (a, b, mode) =>
                 {
-                    if (a is AnyUiButton cntl && b is Button wpf)
+                    if (a is AnyUiButton cntl && b is Button wpf
+                        && mode == AnyUiRenderMode.All)
                     {
                         // members
                         if (cntl.Background != null)
@@ -666,6 +1015,7 @@ namespace AnyUi
                             wpf.Foreground = GetWpfBrush(cntl.Foreground);
                         if (cntl.Padding != null)
                             wpf.Padding = GetWpfTickness(cntl.Padding);
+
                         wpf.Content = cntl.Content;
                         wpf.ToolTip = cntl.ToolTip;
                         // callbacks
@@ -710,7 +1060,9 @@ namespace AnyUi
         public UIElement GetOrCreateWpfElement(
             AnyUiUIElement el,
             Type superType = null,
-            bool allowCreate = true)
+            bool allowCreate = true,
+            bool allowReUse = true,
+            AnyUiRenderMode mode = AnyUiRenderMode.All)
         {
             // access
             if (el == null)
@@ -726,42 +1078,85 @@ namespace AnyUi
             // most specialized class or in recursion/ creation of base classes?
             var topClass = superType == null;
 
-            // return, if already created and not (still) in recursion/ creation of base classes
-            if (dd.WpfElement != null && topClass)
-                return dd.WpfElement;
-            if (!allowCreate)
-                return null;
-
             // identify render rec
             var searchType = (superType != null) ? superType : el.GetType();
             var foundRR = RenderRecs.FindAnyUiCntl(searchType);
             if (foundRR == null || foundRR.WpfType == null)
                 return null;
 
+            // special case: update status only
+            if (mode == AnyUiRenderMode.StatusToUi
+                && dd.WpfElement != null && allowReUse && topClass)
+            {
+                // itself
+                if (el.Touched)
+                {
+                    // perform a "minimal" render action
+                    // recurse (first) in the base types ..
+                    var bt2 = searchType.BaseType;
+                    if (bt2 != null)
+                        GetOrCreateWpfElement(el, superType: bt2, allowReUse: true,
+                            mode: AnyUiRenderMode.StatusToUi);
+
+                    foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.StatusToUi);
+
+                }
+                el.Touched = false;
+
+                // recurse into
+                if (el is AnyUi.IEnumerateChildren ien)
+                    foreach (var elch in ien.GetChildren())
+                        GetOrCreateWpfElement(elch, allowCreate: false, allowReUse: true,
+                            mode: AnyUiRenderMode.StatusToUi);
+
+                // return (effectively TOP element)
+                return dd.WpfElement;
+            }
+
+            // special case: return, if already created and not (still) in recursion/ creation of base classes
+            if (dd.WpfElement != null && allowReUse && topClass)
+                return dd.WpfElement;
+            if (!allowCreate)
+                return null;
+
             // create wpfElement accordingly?
-            if (dd.WpfElement == null && topClass)
+            //// Note: excluded from condition: dd.WpfElement == null
+            if (topClass)
                 dd.WpfElement = (UIElement)Activator.CreateInstance(foundRR.WpfType);
             if (dd.WpfElement == null)
                 return null;
 
-            // recurse (first)
+            // recurse (first) in the base types ..
             var bt = searchType.BaseType;
             if (bt != null)
-                GetOrCreateWpfElement(el, superType: bt);
+                GetOrCreateWpfElement(el, superType: bt, allowReUse: allowReUse);
 
             // perform the render action (for this level of attributes, second)
-            foundRR.InitLambda?.Invoke(el, dd.WpfElement);
+            foundRR.InitLambda?.Invoke(el, dd.WpfElement, AnyUiRenderMode.All);
 
             // does the element need child elements?
             // do a special case handling here, unless a more generic handling is required
 
             {
-                if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
-                    && cntl.Child != null)
+                if (el is AnyUiScrollViewer cntl && dd.WpfElement is ScrollViewer wpf
+                    && cntl.Content != null)
                 {
-                    wpf.Child = GetOrCreateWpfElement(cntl.Child);
+                    wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse);
                 }
             }
+
+            // does the element need child elements?
+            // do a special case handling here, unless a more generic handling is required
+
+            // MIHO+OZ
+            //// 
+            ////    if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
+            ////        && cntl.Child != null)
+            ////    
+            ////        wpf.Content = GetOrCreateWpfElement(cntl.Content, allowReUse: allowReUse)
+            ////    
+            //// 
+            //
 
             // call action
             if (topClass)
