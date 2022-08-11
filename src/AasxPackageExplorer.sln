@@ -136,6 +136,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Setup", "Setup", "{5BA4D327-1907-4F5A-BC90-5EA939497BFC}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "AasxPackageExplorerSetup", "AASXPackageExplorerSetup\AasxPackageExplorerSetup.wixproj", "{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AB60370B-DC87-414D-8A6C-7B095F940A1B} = {AB60370B-DC87-414D-8A6C-7B095F940A1B}
+		{A713E962-38FB-4FD0-9687-30F530E95E91} = {A713E962-38FB-4FD0-9687-30F530E95E91}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1432,6 +1436,7 @@ Global
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.DebugWithoutCEF|x86.ActiveCfg = Debug|x86
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.DebugWithoutCEF|x86.Build.0 = Debug|x86
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.Release|Any CPU.ActiveCfg = Release|x86
+		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.Release|Any CPU.Build.0 = Release|x86
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.Release|x64.ActiveCfg = Release|x86
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.Release|x86.ActiveCfg = Release|x86
 		{8E42C60A-2576-47C2-B0EE-B40BBDDA0F34}.Release|x86.Build.0 = Release|x86

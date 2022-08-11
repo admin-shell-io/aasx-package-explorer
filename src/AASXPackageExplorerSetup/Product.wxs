@@ -335,7 +335,10 @@
 			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)AML.Engine.dll" KeyPath="yes" Checksum="yes"/></Component>
 			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)AML.Engine.Services.dll" KeyPath="yes" Checksum="yes"/></Component>
 
-			<Component Guid="{72BCD1BC-CB76-4259-BE20-17D40CD7E67B}">
+      <Component><File Source="$(var.AasxPackageExplorer.TargetDir)jsoncanonicalizer.dll" KeyPath="yes" Checksum="yes"/></Component>
+      <Component><File Source="$(var.AasxPackageExplorer.TargetDir)es6numberserializer.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+      <Component Guid="{72BCD1BC-CB76-4259-BE20-17D40CD7E67B}">
 				<File Source="$(var.AasxPackageExplorer.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/>
 				<File Source="$(var.AasxPackageExplorer.TargetDir)IdentityModel.dll" KeyPath="no" Checksum="yes"/>
 				<File Id="JetBrains.Annotations.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)JetBrains.Annotations.dll" KeyPath="no" Checksum="yes"/>
