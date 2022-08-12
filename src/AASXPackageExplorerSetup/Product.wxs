@@ -188,7 +188,7 @@
 				<Shortcut Id="ApplicationStartMenuShortcut"
 						Name="AASX Package Explorer (AppName)"
 						Description="AASX Package Explorer (Description)"
-            Target="[#AasxPackageExplorerEXE]"
+						Target="[!AasxPackageExplorerEXE]"
 						WorkingDirectory="INSTALLFOLDER"/>
 				<RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
 				<RegistryValue Root="HKCU" Key="Software\AASX\AASXPackageExplorer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
@@ -197,6 +197,41 @@
 
 	</Fragment>
 		
+	<!-- File association
+	<Component ....>
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationDescription" Value="ACME Foobar XYZ Editor" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationIcon" Value="[APPLICATIONFOLDER]AcmeFoobar.exe,0" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationName" Value="ACME Foobar" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\DefaultIcon" Value="[APPLICATIONFOLDER]AcmeFoobar.exe,1" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\FileAssociations" Name=".xyz" Value="AcmeFoobar.Document" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\MIMEAssociations" Name="application/xyz" Value="AcmeFoobar.Document" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\shell\Open\command" Value="&quot;[APPLICATIONFOLDER]AcmeFoobar.exe&quot; &quot;%1&quot;" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="Acme Foobar" Value="SOFTWARE\AcmeFoobar\Capabilities" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz" Name="Content Type" Value="application/xyz" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\AcmeFoobar.Document\ShellNew" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\OpenWithList\AcmeFoobar.exe" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\OpenWithProgids" Name="AcmeFoobar.Document" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\AcmeFoobar.exe\SupportedTypes" Name=".xyz" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\AcmeFoobar.exe\shell\open" Name="FriendlyAppName" Value="ACME Foobar" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AcmeFoobar.exe" Value="[!AcmeFoobar.exe]" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AcmeFoobar.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\SystemFileAssociations\.xyz\shell\edit.AcmeFoobar.exe" Value="Edit with ACME Foobar" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\SystemFileAssociations\.xyz\shell\edit.AcmeFoobar.exe\command" Value="&quot;[APPLICATIONFOLDER]AcmeFoobar.exe&quot; &quot;%1&quot;" Type="string" />
+	</Component>
+
+	<Component ....>
+		<ProgId Id="AcmeFoobar.Document" Description="ACME XYZ Document">
+				<Extension Id="pdf" ContentType="application/xyz">
+						<Verb Id="open" Command="Open" TargetFile="[APPLICATIONFOLDER]AcmeFoobar.exe" Argument="%1" />
+				</Extension>
+		</ProgId>
+
+		<Condition><![CDATA[DEFAULTVIEWER=1]]></Condition>
+	</Component>-->
 		
 	<Fragment>
 		<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
