@@ -1,0 +1,1374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This is a WiX v3 setup script -->
+	
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+	<Product Id="*" 
+		Version="1.0.0.0" 
+		UpgradeCode="6a020eba-0566-4cb4-97c2-a874831860e1"
+		Name="AASXPackageExplorer" 
+		Language="1033" 
+		Manufacturer="FESTO|Phoenix|Fraunhofer|Schneider Electric|SICK">
+		
+		<Package Id='*' Keywords='Installer' Description="AASX Explorer Installer"         
+			InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<Icon Id="aasx.ico" SourceFile="$(var.AasxPackageExplorer.ProjectDir)icon-set\aasx.ico"/>
+		<Property Id="ARPPRODUCTICON" Value="aasx.ico" />
+		
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+		<MediaTemplate EmbedCab="yes"></MediaTemplate>
+
+		<WixVariable Id="WixUILicenseRtf" Value="license.rtf"/>
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER"/> 
+		<UIRef Id="WixUI_InstallDir" />
+	
+		<Feature Id="ProductFeature" Title="AASXPackageExplorerSetup" Level="1">
+			<!--<ComponentGroupRef Id="BackupFolderFiles" />-->
+			<ComponentGroupRef Id="DemoFolderFiles" />
+			<ComponentGroupRef Id="DataFolderFiles" />
+
+			<ComponentGroupRef Id="ProductBaseCode" />
+
+			<ComponentGroupRef Id="resources" />
+			<ComponentGroupRef Id="schemaV201files_resources" />
+
+			<ComponentGroupRef Id="schemaV10files" />
+			<ComponentGroupRef Id="schemaV20files" />
+			<ComponentGroupRef Id="schemaV201files" />
+
+			<ComponentGroupRef Id="RootLevelAuxFiles" />
+			
+			<ComponentGroupRef Id="PluginDirFiles" />
+			
+			<ComponentGroupRef Id="PluginAdvancedTextEditor" />
+			<ComponentGroupRef Id="Schemas_PluginAdvancedTextEditor" />
+			
+			<ComponentGroupRef Id="PluginBomStructure" />
+			<ComponentGroupRef Id="Schemas_PluginBomStructure" />      
+			<ComponentGroupRef Id="Resources_PluginBomStructure" />      
+			
+			<ComponentGroupRef Id="PluginDocumentShelf" />
+			<ComponentGroupRef Id="Schemas_PluginDocumentShelf" />            
+			
+			<ComponentGroupRef Id="PluginExportTable" />
+			<ComponentGroupRef Id="Schemas_PluginExportTable" />            
+			
+			<ComponentGroupRef Id="PluginGenericForms" />
+			<ComponentGroupRef Id="Schemas_PluginGenericForms" />            
+			<ComponentGroupRef Id="Resources_PluginGenericForms" />            
+			
+			<ComponentGroupRef Id="PluginImageMap" />
+			<ComponentGroupRef Id="Schemas_PluginImageMap" />            
+			
+			<ComponentGroupRef Id="PluginMtpViewer" />
+			<ComponentGroupRef Id="Schemas_PluginMtpViewer" />            
+			
+			<ComponentGroupRef Id="PluginPlotting" />
+			<ComponentGroupRef Id="Schemas_PluginPlotting" />            
+			
+			<ComponentGroupRef Id="PluginSmdExporter" />
+			<ComponentGroupRef Id="Schemas_PluginSmdExporter" />            
+			<ComponentGroupRef Id="Resources_PluginSmdExporter" />
+			
+			<ComponentGroupRef Id="PluginTechnicalData" />
+			<ComponentGroupRef Id="Schemas_PluginTechnicalData" />            
+			
+			<ComponentGroupRef Id="PluginUaNetClient" />
+			<ComponentGroupRef Id="Schemas_PluginUaNetClient" />            
+			
+			<ComponentGroupRef Id="PluginUaNetServer" />
+			<ComponentGroupRef Id="Schemas_PluginUaNetServer" />            
+			
+			<ComponentGroupRef Id="PluginWebBrowser" />
+			<ComponentGroupRef Id="PluginWebBrowserLocales" />
+			<ComponentGroupRef Id="PluginWebBrowserSchemas" />
+
+			<!-- WiX to install the app shortcut -->
+			<ComponentRef Id="ApplicationShortcut" />   
+		</Feature>
+	</Product>
+		
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramMenuFolder">
+				<!-- <Directory Id="ApplicationProgramsFolder" Name="AASX Package Explorer (Folder)"/> -->
+			</Directory>
+
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="XTXAASXPackageExplorerXTX">
+					<Directory Id="BACKUP" Name="backup"></Directory>
+					<Directory Id="CONTENT_FOR_DEMO" Name="content-for-demo"></Directory>
+					<Directory Id="DATA" Name="data"></Directory>
+					<Directory Id="PLUGINS" Name="plugins">
+						<Directory Id="ADVANCEDTEXTEDITOR" Name="AasxPluginAdvancedTextEditor">
+							<Directory Id="ADVANCEDTEXTEDITORRESOURCES" Name="Resources">
+								<Directory Id="ADVANCEDTEXTEDITORSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="BOMSTRUCTURE" Name="AasxPluginBomStructure">
+							<Directory Id="BOMSTRUCTURERESOURCES" Name="Resources">
+								<Directory Id="BOMSTRUCTURESCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+
+						<Directory Id="DOCUMENTSHELF" Name="AasxPluginDocumentShelf">
+							<Directory Id="DOCUMENTSHELFRESOURCES" Name="Resources">
+								<Directory Id="DOCUMENTSHELFSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="EXPORTTABLE" Name="AasxPluginExportTable">
+							<Directory Id="EXPORTTABLERESOURCES" Name="Resources">
+								<Directory Id="EXPORTTABLESCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="GENERICFORMS" Name="AasxPluginGenericForms">
+							<Directory Id="GENERICFORMSRESOURCES" Name="Resources">
+								<Directory Id="GENERICFORMSSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="IMAGEMAP" Name="AasxPluginImageMap">
+							<Directory Id="IMAGEMAPRESOURCES" Name="Resources">
+								<Directory Id="IMAGEMAPSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="MTPVIEWER" Name="AasxPluginMtpViewer">
+							<Directory Id="MTPVIEWERRESOURCES" Name="Resources">
+								<Directory Id="MTPVIEWERSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="PLOTTING" Name="AasxPluginPlotting">
+							<Directory Id="PLOTTINGRESOURCES" Name="Resources">
+								<Directory Id="PLOTTINGSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="SMDEXPORTER" Name="AasxPluginSmdExporter">
+							<Directory Id="SMDEXPORTERRESOURCES" Name="Resources">
+								<Directory Id="SMDEXPORTERSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="TECHNICALDATA" Name="AasxPluginTechnicalData">
+							<Directory Id="TECHNICALDATARESOURCES" Name="Resources">
+								<Directory Id="TECHNICALDATASCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="UANETCLIENT" Name="AasxPluginUaNetClient">
+							<Directory Id="UANETCLIENTRESOURCES" Name="Resources">
+								<Directory Id="UANETCLIENTSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="UANETSERVER" Name="AasxPluginUaNetServer">
+							<Directory Id="UANETSERVERRESOURCES" Name="Resources">
+								<Directory Id="UANETSERVERSCHEMAS" Name="schemaV201" />
+							</Directory>
+						</Directory>
+						<Directory Id="WEBBROWSER" Name="AasxPluginWebBrowser">
+							<Directory Id="WEBBROWSERLOCALES" Name="Locales"/>
+							<Directory Id="WEBBROWSERRESOURCES" Name="Resources">
+								<Directory Id="WEBBROWSERSCHEMAS" Name="schemaV201"/>
+							</Directory>
+							<Directory Id="WEBBROWSERSWIFTSHADERS" Name="swiftshader"/>
+						</Directory>
+					</Directory>
+					<Directory Id="RESOURCES" Name="Resources">
+						<Directory Id="SCHEMAV201RESOURCES" Name="schemaV201" />
+					</Directory>
+					<Directory Id="SCHEMAV10" Name="schemaV10" />
+					<Directory Id="SCHEMAV20" Name="schemaV20" />
+					<Directory Id="SCHEMAV201" Name="schemaV201" />
+				</Directory> <!-- INSTALLFOLDER -->
+			</Directory> <!-- ProgrammFilesFolder -->
+		</Directory>
+
+		<!-- App shortcut -->
+		<!-- <DirectoryRef Id="ApplicationProgramsFolder"> --> <!-- to subfolder in startmenu  -->
+		<DirectoryRef Id="ProgramMenuFolder"> <!-- flat in startmenu -->
+			<Component Id="ApplicationShortcut" Guid="{70122651-4C0B-40ED-BD8C-39D7B489E072}">
+				<Shortcut Id="ApplicationStartMenuShortcut"
+						Name="AASX Package Explorer (AppName)"
+						Description="AASX Package Explorer (Description)"
+						Target="[#AasxPackageExplorer.exe]"
+						WorkingDirectory="INSTALLFOLDER"/>
+				<!-- <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+				<RegistryValue Root="HKCU" Key="Software\AASX\AASXPackageExplorer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+			</Component>
+		</DirectoryRef>
+
+	</Fragment>
+		
+	<!-- File association
+	<Component ....>
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationDescription" Value="ACME Foobar XYZ Editor" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationIcon" Value="[APPLICATIONFOLDER]AcmeFoobar.exe,0" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities" Name="ApplicationName" Value="ACME Foobar" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\DefaultIcon" Value="[APPLICATIONFOLDER]AcmeFoobar.exe,1" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\FileAssociations" Name=".xyz" Value="AcmeFoobar.Document" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\MIMEAssociations" Name="application/xyz" Value="AcmeFoobar.Document" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\AcmeFoobar\Capabilities\shell\Open\command" Value="&quot;[APPLICATIONFOLDER]AcmeFoobar.exe&quot; &quot;%1&quot;" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="Acme Foobar" Value="SOFTWARE\AcmeFoobar\Capabilities" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz" Name="Content Type" Value="application/xyz" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\AcmeFoobar.Document\ShellNew" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\OpenWithList\AcmeFoobar.exe" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xyz\OpenWithProgids" Name="AcmeFoobar.Document" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\AcmeFoobar.exe\SupportedTypes" Name=".xyz" Value="" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\AcmeFoobar.exe\shell\open" Name="FriendlyAppName" Value="ACME Foobar" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AcmeFoobar.exe" Value="[!AcmeFoobar.exe]" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AcmeFoobar.exe" Name="Path" Value="[APPLICATIONFOLDER]" Type="string" />
+
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\SystemFileAssociations\.xyz\shell\edit.AcmeFoobar.exe" Value="Edit with ACME Foobar" Type="string" />
+		<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\SystemFileAssociations\.xyz\shell\edit.AcmeFoobar.exe\command" Value="&quot;[APPLICATIONFOLDER]AcmeFoobar.exe&quot; &quot;%1&quot;" Type="string" />
+	</Component>
+
+	<Component ....>
+		<ProgId Id="AcmeFoobar.Document" Description="ACME XYZ Document">
+				<Extension Id="pdf" ContentType="application/xyz">
+						<Verb Id="open" Command="Open" TargetFile="[APPLICATIONFOLDER]AcmeFoobar.exe" Argument="%1" />
+				</Extension>
+		</ProgId>
+
+		<Condition><![CDATA[DEFAULTVIEWER=1]]></Condition>
+	</Component>-->
+		
+	<Fragment>
+		<!-- TODO: Remove the comments around this Component element and the ComponentRef below in order to add resources to this installer. -->
+		<!-- <Component Id="ProductComponent"> -->
+			<!-- TODO: Insert files, registry keys, and other resources here. -->
+		<!-- </Component> -->
+
+		<!-- BackupFolder Component Group -->
+		<!--<ComponentGroup Id="BackupFolderFiles" Directory="BACKUP"></ComponentGroup>-->
+
+		<!-- DemoFolder Component Group -->
+		<ComponentGroup Id="DemoFolderFiles" Directory="CONTENT_FOR_DEMO">
+			<Component><File Source="$(var.AasxPackageExplorer.ProjectDir)content-for-demo\Example_AAS_ServoDCMotor_21.aasx" KeyPath="yes" /></Component>
+		</ComponentGroup>
+
+		<!-- DataFolder Component Group -->
+		<ComponentGroup Id="DataFolderFiles" Directory="DATA">
+			<Component><File Id="README.md_DataFolder" Source="$(var.AasxToolkit.TargetDir)data\README.md" /></Component>
+			<Component><File Source="$(var.AasxToolkit.TargetDir)data\CopyExternalData.bat" /></Component>
+		</ComponentGroup>
+
+		<!-- BaseCode Component Group -->      
+		<ComponentGroup Id="ProductBaseCode" Directory="INSTALLFOLDER">
+
+			<!-- ProgsUserInterface Component Group -->  
+			<Component Id="AasxPackageExplorer.exe">
+				<File Source="$(var.AasxPackageExplorer.TargetDir)AasxPackageExplorer.exe" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPackageExplorer.TargetDir)AasxPackageExplorer.exe.config" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)AasxPackageExplorer.options.json" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)qualifier-presets.json" />
+			</Component>
+	 
+			<Component><File Id="AasxCsharpLibrary.dll_BaseCode" Source="$(var.AasxCsharpLibrary.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxCsharpLibrary.dll.config_BaseCode" Source="$(var.AasxCsharpLibrary.TargetDir)AasxCsharpLibrary.dll.config"></File></Component>      
+			<Component><File Id="AasxIntegrationBase.dll_BaseCode" Source="$(var.AasxIntegrationBase.TargetDir)AasxIntegrationBase.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll_BaseCode" Source="$(var.AasxIntegrationBaseWpf.TargetDir)AasxIntegrationBaseWpf.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll.config_BaseCode" Source="$(var.AasxIntegrationBaseWpf.TargetDir)AasxIntegrationBaseWpf.dll.config" /></Component>
+			<Component><File Id="AnyUi.dll_BaseCode" Source="$(var.AnyUi.TargetDir)AnyUi.dll" /></Component> 
+
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll" Source="$(var.AasxPredefinedConcepts.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config" Source="$(var.AasxPredefinedConcepts.TargetDir)AasxPredefinedConcepts.dll.config" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxAmlImExport.TargetDir)AasxAmlImExport.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxAmlImExport.TargetDir)AasxAmlImExport.dll.config"/>
+			</Component>
+			<Component>
+				<File Source="$(var.AasxDictionaryImport.TargetDir)AasxDictionaryImport.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxDictionaryImport.TargetDir)AasxDictionaryImport.dll.config"/>
+			</Component>
+			<Component><File Source="$(var.AasxFormatCst.TargetDir)AasxFormatCst.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component>
+				<File Source="$(var.AasxMqtt.TargetDir)AasxMqttServer.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxMqtt.TargetDir)AasxMqttServer.dll.config" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxMqttClient.TargetDir)AasxMqttClient.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxMqttClient.TargetDir)AasxMqttClient.dll.config" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxOpenidClient.TargetDir)AasxOpenidClient.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxOpenidClient.dll.config_FunctionalLibs" Source="$(var.AasxOpenidClient.TargetDir)AasxOpenidClient.dll.config" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxRestServerLibrary.TargetDir)AasxRestServerLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxRestServerLibrary.TargetDir)AasxRestServerLibrary.dll.config" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxSignature.TargetDir)AasxSignature.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxSignature.TargetDir)AasxSignature.dll.config" />
+			</Component>
+			<Component> 
+				<File Source="$(var.AasxUANodesetImExport.TargetDir)AasxUANodesetImExport.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxUANodesetImExport.TargetDir)AasxUANodesetImExport.dll.config" /> 
+			</Component>
+			<Component>
+				<File Source="$(var.AasxToolkit.TargetDir)AasxToolkit.exe" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxToolkit.TargetDir)AasxToolkit.exe.config" />
+				<File Source="$(var.AasxToolkit.TargetDir)ValidateSampleAAS.ps1" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxWpfControlLibrary.TargetDir)AasxWpfControlLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxWpfControlLibrary.dll_ProgsUserInterface" Source="$(var.AasxWpfControlLibrary.TargetDir)AasxWpfControlLibrary.dll.config" />
+			</Component>      
+
+			<Component><File Source="$(var.AasxPackageLogic.TargetDir)AasxPackageLogic.dll" KeyPath="yes" Checksum="yes"/></Component>
+	 
+			<Component><File Id="jose_jwt.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)jose-jwt.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ExhaustiveMatching.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Grapevine.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="MQTTnet.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)MQTTnet.dll" KeyPath="yes" Checksum="yes"/></Component>        
+			<Component><File Id="QRCoder.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)QRCoder.dll" KeyPath="yes" Checksum="yes"/></Component>        
+			<Component><File Id="ExcelDataReader.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)ExcelDataReader.dll" KeyPath="yes" Checksum="yes"/></Component>        
+			<Component><File Id="ICSharpCode.SharpZipLib.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)ICSharpCode.SharpZipLib.dll" KeyPath="yes" Checksum="yes"/></Component>        
+
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)NPOI.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)NPOI.OOXML.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)NPOI.OpenXml4Net.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)NPOI.OpenXmlFormats.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)AML.Engine.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)AML.Engine.Services.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+      <Component><File Source="$(var.AasxPackageExplorer.TargetDir)jsoncanonicalizer.dll" KeyPath="yes" Checksum="yes"/></Component>
+      <Component><File Source="$(var.AasxPackageExplorer.TargetDir)es6numberserializer.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+      <Component Guid="{72BCD1BC-CB76-4259-BE20-17D40CD7E67B}">
+				<File Source="$(var.AasxPackageExplorer.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPackageExplorer.TargetDir)IdentityModel.dll" KeyPath="no" Checksum="yes"/>
+				<File Id="JetBrains.Annotations.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)JetBrains.Annotations.dll" KeyPath="no" Checksum="yes"/>
+				<File Id="Namotion.Reflection.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)Namotion.Reflection.dll" KeyPath="no" Checksum="yes"/>
+				<File Id="NJsonSchema.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)NJsonSchema.dll" KeyPath="no" Checksum="yes"/>
+				<File Source="$(var.AasxPackageExplorer.TargetDir)openid1.dat" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)openid2.dat" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)openid3.dat" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)options.pref" />
+				<File Source="$(var.AasxPackageExplorer.TargetDir)SpecPI40_t.png" />
+			</Component>
+			
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Microsoft.IdentityModel.JsonWebTokens.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Microsoft.IdentityModel.Logging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Microsoft.IdentityModel.Tokens.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)Microsoft.Web.Infrastructure.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="System.Buffers.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Buffers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Drawing.Common.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Drawing.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IdentityModel.Tokens.Jwt.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.IdentityModel.Tokens.Jwt.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Memory.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Memory.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Numerics.Vectors.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Runtime.CompilerServices.Unsafe.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Encodings.Web.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Json.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Text.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Threading.Tasks.Extensions.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.ValueTuple.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.ValueTuple.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.Helpers.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Web.Helpers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.Razor.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Web.Razor.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Web.WebPages.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.Deployment.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Web.WebPages.Deployment.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.Razor.dll_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)System.Web.WebPages.Razor.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<!-- ZXing Bar Code Scanner Component Group -->
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)zxing.dll" KeyPath="yes" Checksum="yes"/></Component>    
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)zxing.presentation.dll" KeyPath="yes" Checksum="yes"/></Component>        
+
+
+			<Component><File Source="$(var.SSIExtension.TargetDir)SSIExtension.dll" KeyPath="yes" Checksum="yes"/></Component>
+		</ComponentGroup>
+
+		<!-- Resources folder-->    
+		<ComponentGroup Id="resources" Directory="RESOURCES">
+			<Component><File Id="LICENSE.txt_Resources_BaseCode" Source="$(var.AasxPackageExplorer.TargetDir)Resources\LICENSE.txt" /></Component>
+		</ComponentGroup>
+		
+		<ComponentGroup Id="schemaV201files_resources" Directory="SCHEMAV201RESOURCES"   >
+			<Component><File Id="AAS.xsd_V201_schemaV201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_V201_schemaV201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_V201_schemaV201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>
+		
+		<!-- schemaV10 folder -->
+		<ComponentGroup Id="schemaV10files" Directory="SCHEMAV10">
+			<Component><File Id="AAS.xsd_V10" Source="$(var.AasxToolkit.ProjectDir)schemaV10\AAS.xsd" /></Component>
+			<Component><File Id="AAS_Example_v1.4.json" Source="$(var.AasxToolkit.ProjectDir)schemaV10\AAS_Example_v1.4.json" /></Component>
+			<Component><File Id="AASEnv_Final_v1.4.json" Source="$(var.AasxToolkit.ProjectDir)schemaV10\AASEnv_Final_v1.4.json" /></Component>
+			<Component><File Id="IEC61360.xsd_V10" Source="$(var.AasxToolkit.ProjectDir)schemaV10\IEC61360.xsd" /></Component>
+			<Component><File Id="validate_samle_json.bat_V10" Source="$(var.AasxToolkit.ProjectDir)schemaV10\validate_samle_json.bat" /></Component>
+			<Component><File Id="validate_samle_xml.bat_V10" Source="$(var.AasxToolkit.ProjectDir)schemaV10\validate_samle_xml.bat" /></Component>
+		</ComponentGroup>
+		
+		<!-- schemaV20 folder -->
+		<ComponentGroup Id="schemaV20files" Directory="SCHEMAV20">
+			<Component><File Id="AAS.xsd_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="Example_AAS_ServoDCMotor_Simplified_V2.0.xml" Source="$(var.AasxToolkit.ProjectDir)schemaV20\Example_AAS_ServoDCMotor - Simplified V2.0.xml" /></Component>
+			<Component><File Id="IEC61360.xsd_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\IEC61360.xsd" /></Component>
+			<Component><File Id="minimum.xml_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\minimum.xml" /></Component>
+			<Component><File Id="SimpleDrehzahl.xml_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\SimpleDrehzahl.xml" /></Component>
+			<Component><File Id="validate_samle_xml.bat_V20" Source="$(var.AasxToolkit.ProjectDir)schemaV20\validate_samle_xml.bat" />
+			</Component>
+		</ComponentGroup>
+		
+		<!-- schemaV201 folder -->
+		<ComponentGroup Id="schemaV201files" Directory="SCHEMAV201">
+			<Component><File Id="AAS.xsd_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="Example_AAS_ServoDCMotor_Simplified_V2.0.xml_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\Example_AAS_ServoDCMotor - Simplified V2.0.xml" /></Component>
+			<Component><File Id="IEC61360.xsd_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\IEC61360.xsd" /></Component>
+			<Component><File Id="minimum.xml_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\minimum.xml" /></Component>
+			<!--<Component><File Id="Notes_MIHO_Post_V201.txt_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\Notes_MIHO_Post_V201.txt" KeyPath="yes" /></Component>-->
+			<Component><File Id="SimpleDrehzahl.xml_V201" Source="$(var.AasxToolkit.ProjectDir)schemaV201\SimpleDrehzahl.xml" /></Component>
+			<Component><File Id="validate_samle_xml.bat" Source="$(var.AasxToolkit.ProjectDir)schemaV201\validate_samle_xml.bat" /></Component>
+		</ComponentGroup>
+
+		<!-- Root Level files -->
+		<ComponentGroup Id="RootLevelAuxFiles" Directory="INSTALLFOLDER">
+			<Component><File Source="$(var.SolutionDir)README-packages.md"/></Component>
+			<Component><File Id="LICENSE.txt_RootLevel" Source="$(var.SolutionDir)LICENSE.txt"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.ProjectDir)options-debug.MIHO.json"/></Component>
+			<Component><File Source="$(var.AasxOpenidClient.ProjectDir)Andreas_Orzelski_Chain.pfx"/></Component>
+			<Component><File Source="$(var.AasxPackageExplorer.ProjectDir)Opc.Ua.SampleClient.Config.xml"/></Component>
+		</ComponentGroup>
+							
+		<!-- ********************** Plugins ******************************************************************* -->  
+				
+		<!--Plugin Folder Level files-->
+		<ComponentGroup Id="PluginDirFiles" Directory="PLUGINS">
+			<Component><File Source="$(var.AasxPackageExplorer.TargetDir)plugins\README.md"/></Component>
+		</ComponentGroup>
+		
+		<!-- PluginAdvancedTextEditor Component Group -->  
+		<ComponentGroup Id="PluginAdvancedTextEditor" Directory="ADVANCEDTEXTEDITOR">
+			<Component>
+				<File Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxPluginAdvancedTextEditor.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxPluginAdvancedTextEditor.plugin"/>
+				<File Id="LICENSE.txt_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)LICENSE.txt"/>
+			</Component>
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxCsharpLibrary.dll.config_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxCsharpLibrary.dll.config"/>
+			</Component>
+			<Component><File Id="AasxIntegrationBase.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AasxIntegrationBaseWpf.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ICSharpCode.AvalonEdit.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)ICSharpCode.AvalonEdit.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+		</ComponentGroup>
+		
+		<ComponentGroup Id="Schemas_PluginAdvancedTextEditor" Directory="ADVANCEDTEXTEDITORSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginAdvancedTextEditor" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginAdvancedTextEditorIEC61360.xsd" Source="$(var.AasxPluginAdvancedTextEditor.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>
+		
+		<!-- PluginBomStructure Component Group -->  
+	
+		<ComponentGroup Id="PluginBomStructure" Directory="BOMSTRUCTURE">
+			<Component>
+				<File Source="$(var.AasxPluginBomStructure.TargetDir)AasxPluginBomStructure.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginBomStructure.TargetDir)AasxPluginBomStructure.dll.config" />
+				<File Source="$(var.AasxPluginBomStructure.TargetDir)AasxPluginBomStructure.plugin" />
+				<File Id="LICENSE.txt_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)LICENSE.txt" />
+			</Component>
+			
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxCsharpLibrary.dll.config_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)AasxCsharpLibrary.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxPluginBomStructure.Options.json_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)AasxPluginBomStructure.Options.json" />
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="MSAGL.netstandard.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)MSAGL.netstandard.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="MsaglWpfControl.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)MsaglWpfControl.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="Resources_PluginBomStructure" Directory="BOMSTRUCTURERESOURCES">
+			<Component><File Id="LICENSE.TXT_Resources_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Resources\LICENSE.txt" /></Component>
+		</ComponentGroup>
+			
+		<ComponentGroup Id="Schemas_PluginBomStructure" Directory="BOMSTRUCTURESCHEMAS">
+			<Component><File Id="AAS.xsd_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginBomStructure" Source="$(var.AasxPluginBomStructure.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>
+		
+
+	</Fragment>	
+	<Fragment>
+		<!-- PluginDocumentShelf Component Group -->      
+		<ComponentGroup Id="PluginDocumentShelf" Directory="DOCUMENTSHELF">
+			<Component>
+				<File Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPluginDocumentShelf.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPluginDocumentShelf.dll.config"/>
+				<File Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPluginDocumentShelf.options.json"/>
+				<File Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPluginDocumentShelf.plugin"/>
+			</Component>
+			<Component>
+				<File Id="LICENSE.txt_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)LICENSE.txt"/>
+			</Component>
+
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxCsharpLibrary.dll.config_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxCsharpLibrary.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxIntegrationBaseWpf.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AasxPredefinedConcepts.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="CountryFlag.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)CountryFlag.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginDocumentShelf" Directory="DOCUMENTSHELFSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginDocumentShelf" Source="$(var.AasxPluginDocumentShelf.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+			
+	</Fragment>	
+	<Fragment>
+		<!-- PluginExportTable Component Group -->
+		<ComponentGroup Id="PluginExportTable" Directory="EXPORTTABLE">
+			<Component>
+				<File Source="$(var.AasxPluginExportTable.TargetDir)AasxPluginExportTable.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginExportTable.TargetDir)AasxPluginExportTable.dll.config"/>
+				<File Source="$(var.AasxPluginExportTable.TargetDir)AasxPluginExportTable.plugin"/>
+				<File Source="$(var.AasxPluginExportTable.TargetDir)AasxPluginExportTable.options.json"/>
+				<File Id="LICENSE.txt_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)LICENSE.txt"/>
+			</Component>
+
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxCsharpLibrary.dll.config_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AasxCsharpLibrary.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AasxIntegrationBaseWpf.dll.config"/>
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ClosedXML.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)ClosedXML.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="DocumentFormat.OpenXml.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)DocumentFormat.OpenXml.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExcelNumberFormat.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)ExcelNumberFormat.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="FastMember.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)FastMember.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+		</ComponentGroup>
+		
+		<ComponentGroup Id="Schemas_PluginExportTable" Directory="EXPORTTABLESCHEMAS">
+			<Component><File Id="AAS.xsd_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginExportTable" Source="$(var.AasxPluginExportTable.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+		
+	</Fragment>	
+	<Fragment>
+		<!-- PluginGenericForms Component Group -->  
+		<ComponentGroup Id="PluginGenericForms" Directory="GENERICFORMS">
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms.dll.config"/>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms.options.json"/>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms.plugin"/>
+				<File Id="LICENSE.txt_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)LICENSE.txt"/>
+			</Component>
+
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxCsharpLibrary.dll.config_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AasxCsharpLibrary.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AasxIntegrationBaseWpf.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_Festo_ElectricAndFluidPlan.add-options.json" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_HSU_Identification.add-options.json" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_HSU_Nameplate.add-options.json" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_SG2_TechnicalData.add-options.json" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_SG2_TechnicalData_v11.add-options.json" />
+			</Component>
+			<Component>
+				<File Source="$(var.AasxPluginGenericForms.TargetDir)AasxPluginGenericForms_ZVEI_DigitalNameplate.add-options.json" />
+			</Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="Resources_PluginGenericForms" Directory="GENERICFORMSRESOURCES">
+			<Component><File Id="LICENSE.TXT_Resources_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Resources\LICENSE.txt" /></Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginGenericForms" Directory="GENERICFORMSSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginGenericForms" Source="$(var.AasxPluginGenericForms.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+		
+	</Fragment>	
+	<Fragment>
+		<!-- PluginImageMap Component Group -->
+		<ComponentGroup Id="PluginImageMap" Directory="IMAGEMAP">
+			<Component>
+				<File Source="$(var.AasxPluginImageMap.TargetDir)AasxPluginImageMap.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginImageMap.TargetDir)AasxPluginImageMap.dll.config" />
+				<File Source="$(var.AasxPluginImageMap.TargetDir)AasxPluginImageMap.plugin" />
+				<File Id="LICENSE.txt_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)LICENSE.txt" />
+			</Component>
+
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxPredefinedConcepts.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxCsharpLibrary.dll.config_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxCsharpLibrary.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AasxIntegrationBaseWpf.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="NJsonSchema.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="System.IO.Packaging.dll_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+		</ComponentGroup>
+		
+		<ComponentGroup Id="Schemas_PluginImageMap" Directory="IMAGEMAPSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginImageMap" Source="$(var.AasxPluginImageMap.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+			
+	</Fragment>	
+
+	<!--PluginMtpViewer--> 
+	<Fragment>
+		<!-- PluginMtpViewer Component Group -->        
+		<ComponentGroup Id="PluginMtpViewer" Directory="MTPVIEWER">
+			<Component>
+				<File Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPluginMtpViewer.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPluginMtpViewer.dll.config" /></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPluginMtpViewer.options.json" /></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPluginMtpViewer.plugin" /></Component>
+			<Component><File Id="LICENSE.txt_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)LICENSE.txt" /></Component>
+			
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxPredefinedConcepts.dll.config" />
+			</Component>
+
+			<Component><File Id="AML.Engine.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AML.Engine.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AML.Engine.Services.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AML.Engine.Services.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="BouncyCastle.Crypto.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ExhaustiveMatching.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="JetBrains.Annotations.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+			
+			<Component><File Id="AasxCsharpLibrary.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxCsharpLibrary.dll.config_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxCsharpLibrary.dll.config"></File></Component>      
+			<Component><File Id="AasxIntegrationBase.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxIntegrationBase.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxIntegrationBaseWpf.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll.config_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AasxIntegrationBaseWpf.dll.config" /></Component>
+			<Component><File Id="AnyUi.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)AnyUi.dll" /></Component> 
+			<Component><File Id="Namotion.Reflection.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NJsonSchema.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Client.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Core.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Gds.Client.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Gds.Server.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.SampleClient.Config.xml_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.SampleClient.Config.xml"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Opc.Ua.Server.dll" KeyPath="yes" Checksum="yes"/></Component>
+			
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Hosting.dll"  KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Hosting.Abstractions.dll"  KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Http.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Http.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Http.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Http.Features.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Server.Kestrel.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.Server.Kestrel.Https.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.AspNetCore.WebUtilities.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Configuration.EnvironmentVariables.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.DependencyInjection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.FileProviders.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.FileProviders.Physical.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.FileSystemGlobbing.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Logging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.ObjectPool.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Options.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.PlatformAbstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Extensions.Primitives.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)Microsoft.Net.Http.Headers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			
+			<Component><File Id="System.Buffers.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Buffers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Collections.Immutable.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Diagnostics.DiagnosticSource.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Numerics.Vectors.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Reflection.Metadata.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Runtime.CompilerServices.Unsafe.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Encodings.Web.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Threading.Tasks.Extensions.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)treelib.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="WpfMtpControl.dll_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)WpfMtpControl.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginMtpViewer.TargetDir)WpfMtpControl.dll.config"/></Component>
+
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginMtpViewer" Directory="MTPVIEWERSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginMtpViewer" Source="$(var.AasxPluginMtpViewer.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+		
+	</Fragment>	
+	
+	<!--PluginPlotting-->
+	<Fragment>
+		<!-- PluginPlotting Component Group -->        
+		<ComponentGroup Id="PluginPlotting" Directory="PLOTTING">
+			<Component>
+				<File Source="$(var.AasxPluginPlotting.TargetDir)AasxPluginPlotting.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginPlotting.TargetDir)AasxPluginPlotting.options.json" />
+				<File Source="$(var.AasxPluginPlotting.TargetDir)AasxPluginPlotting.plugin" />
+				<File Id="LICENSE.txt_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)LICENSE.txt" />
+			</Component>
+
+			<Component><File Id="AasxCsharpLibrary.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxCsharpLibrary.dll.config_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxCsharpLibrary.dll.config"></File></Component>      
+			<Component><File Id="AasxIntegrationBase.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxIntegrationBase.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxIntegrationBaseWpf.dll" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll.config_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxIntegrationBaseWpf.dll.config" /></Component>
+
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AasxPredefinedConcepts.dll.config" />
+			</Component>
+
+			<Component><File Id="AnyUi.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)AnyUi.dll" /></Component>       
+			<Component>
+				<File Id="ExhaustiveMatching.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="JetBrains.Annotations.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Namotion.Reflection.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="Newtonsoft.Json.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+			</Component>
+			<Component><File Id="NJsonSchema.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+ 
+			<Component><File Id="ScottPlot.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)ScottPlot.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ScottPlot.WPF.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)ScottPlot.WPF.dll" KeyPath="yes" Checksum="yes"/></Component>
+		
+			<Component><File Id="System.Drawing.Common.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)System.Drawing.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.ValueTuple.dll_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)System.ValueTuple.dll" KeyPath="yes" Checksum="yes"/></Component>
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginPlotting" Directory="PLOTTINGSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginPlotting" Source="$(var.AasxPluginPlotting.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+			
+	</Fragment>	
+	
+	<!--PluginSmdExporter-->
+	<Fragment>
+		<!-- PluginSmdExporter Component Group -->
+		<ComponentGroup Id="PluginSmdExporter" Directory="SMDEXPORTER">
+			<Component>
+				<File Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPluginSmdExporter.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPluginSmdExporter.dll.config" />
+				<File Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPluginSmdExporter.plugin" />
+				<File Id="LICENSE.txt_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)LICENSE.txt" />
+			</Component>
+
+			<Component>
+				<File Id="pfx_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Andreas_Orzelski_Chain.pfx" />
+			</Component>
+			<Component>
+				<File Id="openid1.dat_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)openid1.dat" />
+			</Component>
+			<Component>
+				<File Id="openid2.dat_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)openid2.dat" />
+			</Component>
+			<Component>
+				<File Id="openid3.dat_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)openid3.dat" />
+			</Component>
+			
+			<Component><File Id="AasxPackageLogic.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPackageLogic.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component>
+				<File Id="AasxCsharpLibrary.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxCsharpLibrary.dll.config_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxCsharpLibrary.dll.config"></File>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBase.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxIntegrationBase.dll" Checksum="yes"/>
+			</Component>
+			<Component>
+				<File Id="AasxIntegrationBaseWpf.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxIntegrationBaseWpf.dll" Checksum="yes"/>
+				<File Id="AasxIntegrationBaseWpf.dll.config_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxIntegrationBaseWpf.dll.config" />
+			</Component>
+			<Component>
+				<File Id="AnyUi.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AnyUi.dll" />
+			</Component>
+
+			<Component>
+				<File Id="AasxOpenidClient.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxOpenidClient.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginSmdExporter.TargetDir)AasxOpenidClient.dll.config" />
+			</Component>
+
+			<Component>
+				<File Id="AasxPredefinedConcepts.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxPredefinedConcepts.dll.config_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxPredefinedConcepts.dll.config" />
+			</Component>
+
+			<Component>
+				<File Id="AasxWpfControlLibrary.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxWpfControlLibrary.dll" KeyPath="yes" Checksum="yes"/>
+				<File Id="AasxWpfControlLibrary.dll.config_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)AasxWpfControlLibrary.dll.config" />
+			</Component>
+
+			<Component><File Id="BouncyCastle.Crypto.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ExhaustiveMatching.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="JetBrains.Annotations.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Source="$(var.AasxPluginSmdExporter.TargetDir)CsvHelper.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ICSharpCode.SharpZipLib.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)ICSharpCode.SharpZipLib.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="IdentityModel.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)IdentityModel.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="jose_jwt.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)jose-jwt.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="Namotion.Reflection.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NJsonSchema.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="NPOI.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)NPOI.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NPOI.OOXML.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)NPOI.OOXML.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NPOI.OpenXml4Net.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)NPOI.OpenXml4Net.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NPOI.OpenXmlFormats.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)NPOI.OpenXmlFormats.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="QRCoder.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)QRCoder.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="SSIExtension.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)SSIExtension.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="Microsoft.Bcl.AsyncInterfaces.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.Bcl.AsyncInterfaces.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Microsoft.Bcl.HashCode.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.Bcl.HashCode.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Microsoft.IdentityModel.JsonWebTokens.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.IdentityModel.JsonWebTokens.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Microsoft.IdentityModel.Logging.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.IdentityModel.Logging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Microsoft.IdentityModel.Tokens.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.IdentityModel.Tokens.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Microsoft.Web.Infrastructure.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Microsoft.Web.Infrastructure.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="System.Buffers.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Buffers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Drawing.Common.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Drawing.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IdentityModel.Tokens.Jwt.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.IdentityModel.Tokens.Jwt.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Memory.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Memory.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Numerics.Vectors.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Runtime.CompilerServices.Unsafe.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Encodings.Web.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Json.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Text.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Threading.Tasks.Extensions.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.ValueTuple.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.ValueTuple.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.Helpers.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Web.Helpers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.Razor.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Web.Razor.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Web.WebPages.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.Deployment.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Web.WebPages.Deployment.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Web.WebPages.Razor.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)System.Web.WebPages.Razor.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="zxing.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)zxing.dll" KeyPath="yes" Checksum="yes"/></Component>    
+			<Component><File Id="zxing.presentation.dll_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)zxing.presentation.dll" KeyPath="yes" Checksum="yes"/></Component>        
+		</ComponentGroup>
+
+		<ComponentGroup Id="Resources_PluginSmdExporter" Directory="SMDEXPORTERRESOURCES">
+			<Component><File Id="LICENSE.TXT_Resources_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Resources\LICENSE.txt" /></Component>
+		</ComponentGroup>
+	
+		<ComponentGroup Id="Schemas_PluginSmdExporter" Directory="SMDEXPORTERSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginSmdExporter" Source="$(var.AasxPluginSmdExporter.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+				
+	</Fragment>	
+
+	<!--PluginTechnicalData-->
+	<Fragment>
+		<!-- PluginTechnicalData Component Group -->            
+		<ComponentGroup Id="PluginTechnicalData" Directory="TECHNICALDATA">
+			<Component>
+				<File Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPluginTechnicalData.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPluginTechnicalData.dll.config" />
+				<File Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPluginTechnicalData.options.json" />
+				<File Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPluginTechnicalData.plugin" />
+				<File Id="LICENSE.txt_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)LICENSE.txt" />
+			</Component>
+
+			<Component><File Id="AasxCsharpLibrary.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxCsharpLibrary.dll.config_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxCsharpLibrary.dll.config" /></Component>
+			<Component><File Id="AasxIntegrationBase.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBaseWpf.dll.config_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxIntegrationBaseWpf.dll.config" /></Component>
+			<Component><File Id="AasxPredefinedConcepts.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPredefinedConcepts.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxPredefinedConcepts.dll.config_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AasxPredefinedConcepts.dll.config" /></Component>
+			<Component><File Id="AnyUi.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="ExhaustiveMatching.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="JetBrains.Annotations.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Namotion.Reflection.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NJsonSchema.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+		
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginTechnicalData" Directory="TECHNICALDATASCHEMAS">
+			<Component><File Id="AAS.xsd_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginTechnicalData" Source="$(var.AasxPluginTechnicalData.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>    
+
+	</Fragment>	
+
+	<!--PluginUaNetClient--> 
+	<Fragment>
+		<!-- PluginUaNetClient Component Group -->        
+		<ComponentGroup Id="PluginUaNetClient" Directory="UANETCLIENT">
+			<Component><File Id="AasxPluginUaNetClient.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxPluginUaNetClient.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxPluginUaNetClient.plugin_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxPluginUaNetClient.plugin" /></Component>
+			<Component><File Id="AasxPluginUaNetClient.dll.config_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxPluginUaNetClient.dll.config" /></Component>
+			<Component><File Id="LICENSE.txt_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)LICENSE.txt" /></Component>
+			
+			<Component><File Id="AasxCsharpLibrary.dll.config_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxCsharpLibrary.dll.config" /></Component>
+			<Component><File Id="AasxCsharpLibrary.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxIntegrationBase.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="BouncyCastle.Crypto.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="JetBrains.Annotations.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Hosting.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Hosting.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Hosting.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Hosting.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Hosting.Server.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Http.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Http.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Extensions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Http.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Features.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Http.Features.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Server.Kestrel.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Server.Kestrel.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Server.Kestrel.Https.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.Server.Kestrel.Https.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.WebUtilities.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.AspNetCore.WebUtilities.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.EnvironmentVariables.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Configuration.EnvironmentVariables.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.DependencyInjection.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.DependencyInjection.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.DependencyInjection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileProviders.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.FileProviders.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileProviders.Physical.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.FileProviders.Physical.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileSystemGlobbing.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.FileSystemGlobbing.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Logging.Abstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Logging.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Logging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.ObjectPool.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.ObjectPool.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Options.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Options.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.PlatformAbstractions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.PlatformAbstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Primitives.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Extensions.Primitives.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Net.Http.Headers.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Microsoft.Net.Http.Headers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Namotion.Reflection.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NJsonSchema.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Client.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Client.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Configuration.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Core.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Core.dll" KeyPath="yes" Checksum="yes"/></Component>      
+			<Component><File Id="Opc.Ua.Gds.Client.Common.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Gds.Client.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Gds.Server.Common.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Gds.Server.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Server.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Opc.Ua.Server.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Buffers.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Buffers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Collections.Immutable.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Diagnostics.DiagnosticSource.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Numerics.Vectors.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Reflection.Metadata.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Runtime.CompilerServices.Unsafe.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Encodings.Web.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Threading.Tasks.Extensions.dll_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			
+		</ComponentGroup>
+		
+		<ComponentGroup Id="Schemas_PluginUaNetClient" Directory="UANETCLIENTSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginUaNetClient" Source="$(var.AasxPluginUaNetClient.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>
+	</Fragment>      
+
+	<!--PluginUaNetServer-->
+	<Fragment> 
+	<!-- PluginUaNetServer Component Group -->        
+		<ComponentGroup Id="PluginUaNetServer" Directory="UANETSERVER">
+			<Component>
+				<File Source="$(var.AasxPluginUaNetServer.TargetDir)AasxPluginUaNetServer.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginUaNetServer.TargetDir)AasxPluginUaNetServer.dll.config" />
+				<File Source="$(var.AasxPluginUaNetServer.TargetDir)AasxPluginUaNetServer.plugin" />
+				<File Source="$(var.AasxPluginUaNetServer.TargetDir)AasxPluginUaNetServer.options.json" />
+				<File Id="LICENSE.txt_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)LICENSE.txt" />
+			</Component>
+
+			<Component><File Id="AasxCsharpLibrary.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxCsharpLibrary.dll.config_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)AasxCsharpLibrary.dll.config" /></Component>
+			<Component><File Id="AasxIntegrationBase.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AasxUaNetServer.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)AasxUaNetServer.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="BouncyCastle.Crypto.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)BouncyCastle.Crypto.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="JetBrains.Annotations.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+
+			<Component><File Id="AspNetCore.Hosting.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Hosting.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Hosting.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Hosting.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Hosting.Server.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Hosting.Server.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Http.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Http.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Extensions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Http.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Http.Features.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Http.Features.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Server.Kestrel.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Server.Kestrel.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.Server.Kestrel.Https.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.Server.Kestrel.Https.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="AspNetCore.WebUtilities.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.AspNetCore.WebUtilities.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Configuration.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Configuration.EnvironmentVariables.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Configuration.EnvironmentVariables.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.DependencyInjection.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.DependencyInjection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.DependencyInjection.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileProviders.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.FileProviders.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileProviders.Physical.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.FileProviders.Physical.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.FileSystemGlobbing.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.FileSystemGlobbing.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Logging.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Logging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Logging.Abstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.ObjectPool.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.ObjectPool.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Options.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Options.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.PlatformAbstractions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.PlatformAbstractions.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Extensions.Primitives.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Extensions.Primitives.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Net.Http.Headers.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Microsoft.Net.Http.Headers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Namotion.Reflection.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Net46AasxServerPlugin.Config.xml_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Net46AasxServerPlugin.Config.xml" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Newtonsoft.Json.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="NJsonSchema.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Client.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Client.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Configuration.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Configuration.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Core.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Core.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Gds.Client.Common.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Gds.Client.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Gds.Server.Common.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Gds.Server.Common.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="Opc.Ua.Server.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Opc.Ua.Server.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Buffers.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Buffers.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Collections.Immutable.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Collections.Immutable.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Diagnostics.DiagnosticSource.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Diagnostics.DiagnosticSource.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.IO.Packaging.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Numerics.Vectors.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Reflection.Metadata.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Reflection.Metadata.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Runtime.CompilerServices.Unsafe.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Text.Encodings.Web.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Text.Encodings.Web.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Id="System.Threading.Tasks.Extensions.dll_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)System.Threading.Tasks.Extensions.dll" KeyPath="yes" Checksum="yes"/></Component>
+		
+		</ComponentGroup>
+
+		<ComponentGroup Id="Schemas_PluginUaNetServer" Directory="UANETSERVERSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginUaNetServer" Source="$(var.AasxPluginUaNetServer.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>        
+	</Fragment>
+
+	<!--PluginWebBrowser-->
+	<Fragment>
+		<!-- PluginWebBrowser Component Group -->            
+		<ComponentGroup Id="PluginWebBrowser" Directory="WEBBROWSER">
+			<Component>
+				<File Id="AasxPluginWebBrowser.dll_PluginWebBrowser" Source="$(var.AasxPluginWebBrowser.TargetDir)AasxPluginWebBrowser.dll" KeyPath="yes" Checksum="yes"/>
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxPluginWebBrowser.plugin" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxPluginWebBrowser.dll.config" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxPluginWebBrowser.options.json" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)LICENSE.txt" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)README.txt" />
+			</Component>
+		 
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.Core.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.Wpf.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)chrome_elf.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)devtools_resources.pak" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)libcef.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)d3dcompiler_47.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)icudtl.dat" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)libEGL.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)libGLESv2.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)cef.pak" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)cef_100_percent.pak" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)cef_200_percent.pak" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)cef_extensions.pak" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)snapshot_blob.bin" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)v8_context_snapshot.bin" KeyPath="yes" Checksum="yes"/></Component>
+			 
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxCsharpLibrary.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxCsharpLibrary.dll.config" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxIntegrationBase.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxIntegrationBaseWpf.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AasxIntegrationBaseWpf.dll.config" /></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)AnyUi.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.XML" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.BrowserSubprocess.exe" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.BrowserSubprocess.Core.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.Core.xml" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)CefSharp.Wpf.XML" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)ExhaustiveMatching.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)JetBrains.Annotations.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)Namotion.Reflection.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)NJsonSchema.dll" KeyPath="yes" Checksum="yes"/></Component>
+			
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)System.CodeDom.dll" KeyPath="yes" Checksum="yes"/></Component>
+			<Component><File Source="$(var.AasxPluginWebBrowser.TargetDir)System.IO.Packaging.dll" KeyPath="yes" Checksum="yes"/></Component>
+				
+		</ComponentGroup>
+		
+		<!-- Web Browser Locales Component Group -->
+		<ComponentGroup Id="PluginWebBrowserLocales" Directory="WEBBROWSERLOCALES">
+			<Component Id="locales" Guid="{064524D4-55B9-4534-BC7D-52CFC56EF699}">
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\am.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ar.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\bg.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\bn.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ca.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\cs.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\da.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\de.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\el.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\en-GB.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\en-US.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\es-419.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\es.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\et.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\fa.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\fi.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\fil.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\fr.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\gu.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\he.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\hi.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\hr.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\hu.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\id.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\it.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ja.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\kn.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ko.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\lt.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\lv.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ml.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\mr.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ms.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\nb.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\nl.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\pl.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\pt-BR.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\pt-PT.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ro.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ru.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\sk.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\sl.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\sr.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\sv.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\sw.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\ta.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\te.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\th.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\tr.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\uk.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\vi.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\zh-CN.pak" />
+				<File Source="$(var.AasxPluginWebBrowser.TargetDir)locales\zh-TW.pak" />
+			</Component>
+		</ComponentGroup>
+	
+		<!-- Web Browser Schemas Component Group -->
+		<ComponentGroup Id="PluginWebBrowserSchemas" Directory="WEBBROWSERSCHEMAS">
+			<Component><File Id="AAS.xsd_PluginWebBrowserSchemas" Source="$(var.AasxPluginWebBrowser.TargetDir)Resources\schemaV201\AAS.xsd" /></Component>
+			<Component><File Id="AAS_ABAC.xsd_PluginWebBrowserSchemas" Source="$(var.AasxPluginWebBrowser.TargetDir)Resources\schemaV201\AAS_ABAC.xsd" /></Component>
+			<Component><File Id="IEC61360.xsd_PluginWebBrowserSchemas" Source="$(var.AasxPluginWebBrowser.TargetDir)Resources\schemaV201\IEC61360.xsd" /></Component>
+		</ComponentGroup>
+		
+	</Fragment>  
+		
+</Wix>
