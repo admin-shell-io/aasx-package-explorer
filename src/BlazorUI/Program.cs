@@ -17,7 +17,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
 using BlazorUI.Data;
@@ -30,37 +32,33 @@ using Newtonsoft.Json;
 
 namespace BlazorUI
 {
-    public class Item
-    {
-        public string Text { get; set; }
-        public IEnumerable<Item>
-        Childs
-        { get; set; }
-        public object parent { get; set; }
-        public string Type { get; set; }
-        public object Tag { get; set; }
-        public AdminShellV20.Referable ParentContainer { get; set; }
-        public AdminShellV20.SubmodelElementWrapper Wrapper { get; set; }
-        public int envIndex { get; set; }
-
-        public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
-        {
-        }
-    }
     public class Program
     {
         public static event EventHandler NewDataAvailable;
+
+        public static PackageContainerListBase Repo;
+
+        public static bool DisableEdit = false;
 
         public class NewDataAvailableArgs : EventArgs
         {
             // resharper disable once MemberHidesStaticFromOuterClass
             public int signalNewDataMode;
             public int signalSessionNumber;
+            public AnyUiLambdaActionBase signalNewLambdaAction;
+            public AasxPluginResultEventBase signalNewPluginResultEvent;
+            public bool onlyUpdateAasxPanel;
 
-            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0)
+            public NewDataAvailableArgs(int mode = 2, int sessionNumber = 0,
+                AnyUiLambdaActionBase newLambdaAction = null,
+                AasxPluginResultEventBase newPluginResultEvent = null,
+                bool onlyUpdatePanel = false)
             {
                 signalNewDataMode = mode;
                 signalSessionNumber = sessionNumber;
+                signalNewLambdaAction = newLambdaAction;
+                signalNewPluginResultEvent = newPluginResultEvent;
+                onlyUpdateAasxPanel = onlyUpdatePanel;
             }
         }
 
@@ -70,6 +68,7 @@ namespace BlazorUI
             public int iChild;
         }
 
+        // ReSharper disable once UnusedType.Global
         public class AnyUiPanelEntryStack
         {
             AnyUiPanelEntry[] recursionStack = new AnyUiPanelEntry[10];
@@ -96,7 +95,7 @@ namespace BlazorUI
             }
         }
 
-        // resharper disable once UnusedType.Global
+        // ReSharper disable once UnusedType.Global
         public class BlazorDisplayData : AnyUiDisplayDataBase
         {
             public Action<object> MyLambda;
@@ -115,22 +114,45 @@ namespace BlazorUI
             bi.container = null;
             if (bi.env != null)
                 bi.env.Dispose();
-            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected);
+            bi.env = new AdminShellPackageEnv(bi.aasxFileSelected, indirectLoadSave: true);
             bi.editMode = false;
             bi.thumbNail = null;
             signalNewData(3, bi.sessionNumber); // build new tree, all nodes closed
         }
+
 
         // 0 == same tree, only values changed
         // 1 == same tree, structure may change
         // 2 == build new tree, keep open nodes
         // 3 == build new tree, all nodes closed
         public static int signalNewDataMode = 2;
-        public static void signalNewData(int mode, int sessionNumber = 0)
+        public static void signalNewData(int mode, int sessionNumber = 0,
+            AnyUiLambdaActionBase newLambdaAction = null,
+            AasxPluginResultEventBase newPluginResultEvent = null,
+            bool onlyUpdateAasxPanel = false)
         {
             signalNewDataMode = mode;
-            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(mode, sessionNumber));
+            NewDataAvailable?.Invoke(null, new NewDataAvailableArgs(
+                mode, sessionNumber,
+                newLambdaAction,
+                newPluginResultEvent,
+                onlyUpdatePanel: onlyUpdateAasxPanel));
         }
+
+        public static void EvalSetValueLambdaAndHandleReturn(
+            int sessionNumber, AnyUiUIElement elem, object value = null)
+        {
+            // access
+            if (elem == null)
+                return;
+
+            // evaluate & action
+            var la = elem.setValueLambda?.Invoke(value);
+            if (la is AnyUiLambdaActionNone)
+                return;
+            signalNewData(0, sessionNumber, la); // same tree, only values changed
+        }
+
         public static int getSignalNewDataMode()
         {
             int mode = signalNewDataMode;
@@ -186,8 +208,99 @@ namespace BlazorUI
             loadAasx(bi, contentFn);
         }
 
+        public static void loadOptionsAndPlugins(string[] args)
+        {
+            // basically copied from AASX Package Explorer
+            var exePath = System.Reflection.Assembly.GetEntryAssembly()?.Location;
+
+            var pathToDefaultOptions = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".options.json");
+
+            var pathToDefaultRepo = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(exePath),
+                System.IO.Path.GetFileNameWithoutExtension(exePath) + ".repo.json");
+
+            // do a mini argument parsing
+
+            if (args != null)
+            {
+                for (int index = 0; index < args.Length; index++)
+                {
+                    var arg = args[index].Trim().ToLower();
+                    var morearg = (args.Length - 1) - index;
+
+                    // switches
+                    if (arg == "-noedit")
+                    {
+                        Program.DisableEdit = true;
+                        continue;
+                    }
+
+                    // commands with 1 argument
+                    if (arg == "-aasxrepo" && morearg > 0)
+                    {
+                        // parse
+                        pathToDefaultRepo = System.IO.Path.Combine(
+                            System.IO.Path.GetDirectoryName(exePath), args[index + 1]);
+
+                        // next arg
+                        index++;
+                    }
+                }
+            }
+
+            // use these findings
+            Console.WriteLine("Reading options from: {0} ..", pathToDefaultOptions);
+
+            var optionsInformation = new OptionsInformation();
+            OptionsInformation.ReadJson(pathToDefaultOptions, optionsInformation);
+            Options.ReplaceCurr(optionsInformation);
+
+            Console.WriteLine("Options loaded.");
+
+            // adopt pathes of manually given plugins
+            foreach (var pd in Options.Curr.PluginDll)
+            {
+                if (!System.IO.Path.IsPathRooted(pd.Path))
+                    pd.Path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(exePath), pd.Path);
+            }
+
+            // now try to automatically load plugins from the plugin dir
+            if (Options.Curr.PluginDir != null)
+            {
+                var searchDir = System.IO.Path.Combine(
+                    System.IO.Path.GetDirectoryName(exePath),
+                    Options.Curr.PluginDir);
+
+                Console.WriteLine(
+                    "Searching for the plugins in the plugin directory: {0}", searchDir);
+
+                var pluginDllInfos = Plugins.TrySearchPlugins(searchDir);
+
+                Console.WriteLine(
+                    $"Found {pluginDllInfos.Count} plugin(s) in the plugin directory: {searchDir}");
+
+                Options.Curr.PluginDll.AddRange(pluginDllInfos);
+            }
+
+            // load these and all of those which were specified manually
+            Console.WriteLine(
+                $"Loading and activating {Options.Curr.PluginDll.Count} plugin(s)...");
+
+            Plugins.LoadedPlugins = Plugins.TryActivatePlugins(Options.Curr.PluginDll);
+
+            // load repo
+            if (File.Exists(pathToDefaultRepo))
+            {
+                Console.WriteLine("Reading repository from: {0} ..", pathToDefaultRepo);
+                Repo = PackageContainerListFactory.GuessAndCreateNew(pathToDefaultRepo);
+            }
+        }
+
         public static void Main(string[] args)
         {
+            loadOptionsAndPlugins(args);
             CreateHostBuilder(args).Build().Run();
         }
 

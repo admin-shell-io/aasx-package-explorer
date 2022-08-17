@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
+using AnyUi;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -65,6 +66,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventBase : AasxPluginResultBase
     {
+        public PluginSessionBase Session;
         public string info = null;
     }
 
@@ -91,6 +93,24 @@ namespace AasxIntegrationBase
         public bool showRepoFiles = false;
     }
 
+    public class AasxPluginResultEventSelectFile : AasxPluginResultEventBase
+    {
+        public bool SaveDialogue = false;
+        public string Title = null;
+        public string FileName = null;
+        public string DefaultExt = null;
+        public string Filter = null;
+        public bool MultiSelect = false;
+    }
+
+    public class AasxPluginResultEventMessageBox : AasxPluginResultEventBase
+    {
+        public string Caption = "Question";
+        public string Message = "";
+        public AnyUiMessageBoxButton Buttons = AnyUiMessageBoxButton.YesNoCancel;
+        public AnyUiMessageBoxImage Image = AnyUiMessageBoxImage.None;
+    }
+
     public class AasxPluginEventReturnBase
     {
         public AasxPluginResultEventBase sourceEvent = null;
@@ -99,6 +119,23 @@ namespace AasxIntegrationBase
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
         public AdminShell.KeyList resultKeys = null;
+    }
+
+    public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase
+    {
+        public string[] FileNames;
+    }
+
+    public class AasxPluginEventReturnMessageBox : AasxPluginEventReturnBase
+    {
+        public AnyUiMessageBoxResult Result = AnyUiMessageBoxResult.None;
+    }
+
+    public class AasxPluginEventReturnUpdateAnyUi : AasxPluginResultEventBase
+    {
+        public string PluginName = "";
+        public AnyUiRenderMode Mode = AnyUiRenderMode.All;
+        public bool UseInnerGrid = false;
     }
 
     public class AasxPluginResultLicense : AasxPluginResultBase
@@ -182,5 +219,95 @@ namespace AasxIntegrationBase
         /// <param name="args">Array of arguments. Will be checked and type-casted by the plugin</param>
         /// <returns>Any result to be derived from AasxPluginResultBase</returns>
         AasxPluginResultBase ActivateAction(string action, params object[] args);
+    }
+
+    /// <summary>
+    /// Base class for plugin session data (HTML/ Blazor might host multiple sessions at the same time)
+    /// </summary>
+    public class PluginSessionBase
+    {
+        public object SessionId;
+    }
+
+    /// <summary>
+    /// Services to maintain session sefficiently
+    /// </summary>
+    public class PluginSessionCollection : Dictionary<object, PluginSessionBase>
+    {
+        public T CreateNewSession<T>(object sessionId)
+            where T : PluginSessionBase, new()
+        {
+            if (this.ContainsKey(sessionId))
+                this.Remove(sessionId);
+            var res = new T() { SessionId = sessionId };
+            this.Add(sessionId, res);
+            return res;
+        }
+
+        public T FindSession<T>(object sessionId)
+            where T : PluginSessionBase, new()
+        {
+            if (this.ContainsKey(sessionId))
+                return this[sessionId] as T;
+            return null;
+        }
+
+        public bool AccessSession<T>(object sessionId, out T session)
+            where T : PluginSessionBase, new()
+        {
+            session = null;
+            if (this.ContainsKey(sessionId))
+                session = this[sessionId] as T;
+            return session != null;
+        }
+    }
+
+    public class AasxPluginBase : IAasxPluginInterface
+    {
+        protected LogInstance _log = new LogInstance();
+        protected PluginEventStack _eventStack = new PluginEventStack();
+        protected PluginSessionCollection _sessions = new PluginSessionCollection();
+
+        public static string PluginName = "(not initialized)";
+
+        public string GetPluginName()
+        {
+            return PluginName;
+        }
+
+        public void InitPlugin(string[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object CheckForLogMessage()
+        {
+            return _log?.PopLastShortTermPrint();
+        }
+
+        public AasxPluginActionDescriptionBase[] ListActions()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public enum PluginOperationDisplayMode { NoDisplay, JustDisplay, MayEdit, MayAddEdit }
+
+    /// <summary>
+    /// Provides some context for the operatioln of the plugin. What kind of overall
+    /// behaviour is expected? Editing allowed? Display options?
+    /// </summary>
+    public class PluginOperationContextBase
+    {
+        public PluginOperationDisplayMode DisplayMode;
+
+        public bool IsDisplayModeEditOrAdd =>
+            DisplayMode == PluginOperationDisplayMode.MayEdit
+            || DisplayMode == PluginOperationDisplayMode.MayAddEdit;
     }
 }

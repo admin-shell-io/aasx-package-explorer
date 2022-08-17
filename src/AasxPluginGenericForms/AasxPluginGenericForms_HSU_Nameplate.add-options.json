@@ -6,8 +6,8 @@
       "FormTitle": "Nameplate Submodel of the HSU",
       "FormSubmodel": {
         "$type": "FormSubmodel",
-        "FormTitle": "Submodel",
-        "FormInfo": "",
+        "FormTitle": "Nameplate Submodel",
+        "FormInfo": "This Submodel comprises digital namplate information required by widely accepted regulatory requirements.",
         "PresetIdShort": "Nameplate",
         "PresetCategory": "CONSTANT",
         "KeySemanticId": {
@@ -33,7 +33,7 @@
               "index": 0,
               "idType": "IRDI"
             },
-            "Multiplicity": "One",
+            "Multiplicity": "OneToMany",
             "IsReadOnly": false,
             "allowedValueTypes": [
               "string"

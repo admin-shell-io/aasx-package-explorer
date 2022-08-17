@@ -34,7 +34,7 @@ function Main
     & dotnet.exe jb inspectcode `
         "-o=$codeInspectionPath" `
         "--caches-home=$cachesHome" `
-        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**' `
+        '--exclude=*\obj\*;packages\*;*\bin\*;*\*.json;AasxFileServerRestLibrary\**;es6numberserializer\**;jsoncanonicalizer\**' `
         "--build" `
         "$pathToSolution"
 

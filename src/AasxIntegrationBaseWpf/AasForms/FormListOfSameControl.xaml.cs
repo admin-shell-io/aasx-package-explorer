@@ -75,6 +75,7 @@ namespace AasxIntegrationBase.AasForms
         /// </summary>
         public void ContentFocus()
         {
+#if USE_WPF
             // access
             var inst = this.DataContext as FormInstanceListOfSame;
             if (inst == null || inst.SubInstances == null || inst.SubInstances.Count < 1)
@@ -84,6 +85,7 @@ namespace AasxIntegrationBase.AasForms
             var sc = inst.SubInstances[0].subControl;
             if (sc != null && sc is IFormListControl)
                 (sc as IFormListControl).ContentFocus();
+#endif
         }
 
         // own functionalities
@@ -145,6 +147,7 @@ namespace AasxIntegrationBase.AasForms
             }
 
             // (re-) create rows
+#if USE_WPF
             GridInner.Children.Clear();
             GridInner.RowDefinitions.Clear();
             int ri = 0;
@@ -218,7 +221,7 @@ namespace AasxIntegrationBase.AasForms
                     // next row
                     ri++;
                 }
-
+#endif
         }
 
         private void ButtonFormUrl_Click(object sender, RoutedEventArgs e)
@@ -313,6 +316,7 @@ namespace AasxIntegrationBase.AasForms
                 Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
                 {
                     // show newly created item
+#if USE_WPF
                     foreach (var i in inst.SubInstances)
                     {
                         var flc = i.subControl as IFormListControl;
@@ -324,6 +328,7 @@ namespace AasxIntegrationBase.AasForms
                             flc.ContentFocus();
                         }
                     }
+#endif
                 }));
             }
         }

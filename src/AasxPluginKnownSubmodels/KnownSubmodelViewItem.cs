@@ -8,16 +8,14 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+
+// ReSharper disable EmptyNamespace
 
 namespace AasxPluginKnownSubmodels
 {
+#if USE_WPF
     public class KnownSubmodelViewItem
     {
         public string DisplayHeader { get; set; } = "";
@@ -26,12 +24,14 @@ namespace AasxPluginKnownSubmodels
 
         public string ImagePath = "";
 
+#if USE_WPF
         private BitmapImage _imageData = null;
         public BitmapImage DisplayImageData
         {
             get { TryLoadImageData(); return _imageData; }
             set { _imageData = value; }
         }
+#endif
 
         public KnownSubmodelViewItem() { }
 
@@ -64,4 +64,6 @@ namespace AasxPluginKnownSubmodels
     {
 
     }
+#endif
+
 }

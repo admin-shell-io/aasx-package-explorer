@@ -10,16 +10,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Markup;
-using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
+using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AdminShellNS;
+using AnyUi;
 
 namespace AasxPluginDocumentShelf
 {
@@ -36,7 +31,7 @@ namespace AasxPluginDocumentShelf
 
         public event DocumentEntityEvent DragStart = null;
 
-        public enum SubmodelVersion { Default, V10, V11 }
+        public enum SubmodelVersion { Default = 0, V10 = 1, V11 = 2 }
 
         public SubmodelVersion SmVersion = SubmodelVersion.Default;
 
@@ -45,7 +40,11 @@ namespace AasxPluginDocumentShelf
         public string FurtherInfo = "";
         public string[] CountryCodes;
         public FileInfo DigitalFile, PreviewFile;
-        public System.Windows.Controls.Viewbox ImgContainer = null;
+
+#if USE_WPF
+        public System.Windows.Controls.Viewbox ImgContainerWpf = null;
+#endif
+        public AnyUiImage ImgContainerAnyUi = null;
         public string ReferableHash = null;
 
         public AdminShell.SubmodelElementWrapperCollection SourceElementsDocument = null;
@@ -99,9 +98,9 @@ namespace AasxPluginDocumentShelf
         }
 
         /// <summary>
-        /// This function needs to be called a part of tick-Thread in STA / UI thread
+        /// This function needs to be called as part of tick-Thread in STA / UI thread
         /// </summary>
-        public BitmapImage LoadImageFromPath(string fn)
+        public AnyUiBitmapInfo LoadImageFromPath(string fn)
         {
             // be a bit suspicous ..
             if (!File.Exists(fn))
@@ -110,11 +109,24 @@ namespace AasxPluginDocumentShelf
             // convert here, as the tick-Thread in STA / UI thread
             try
             {
+#if USE_WPF
                 var bi = new BitmapImage(new Uri(fn, UriKind.RelativeOrAbsolute));
-                var img = new Image();
-                img.Source = bi;
-                ImgContainer.Child = img;
+
+                if (ImgContainerWpf != null)
+                {
+                    var img = new Image();
+                    img.Source = bi;
+                    ImgContainerWpf.Child = img;
+                }
+
+                if (ImgContainerAnyUi != null)
+                {
+                    ImgContainerAnyUi.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
+                }
                 return bi;
+#else
+                ImgContainerAnyUi.BitmapInfo = AnyUiGdiHelper.CreateAnyUiBitmapInfo(fn);
+#endif
             }
             catch (Exception ex)
             {
@@ -126,7 +138,7 @@ namespace AasxPluginDocumentShelf
 
     public class ListOfDocumentEntity : List<DocumentEntity>
     {
-        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.Singleton;
+        private static DocuShelfSemanticConfig _semConfigV10 = DocuShelfSemanticConfig.Singleton;
 
         //
         // Default
@@ -145,7 +157,7 @@ namespace AasxPluginDocumentShelf
             if (subModel?.submodelElements != null)
                 foreach (var smcDoc in
                     subModel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        _semConfig.SemIdDocument, AdminShellV20.Key.MatchMode.Relaxed))
+                        _semConfigV10.SemIdDocument, AdminShellV20.Key.MatchMode.Relaxed))
                 {
                     // access
                     if (smcDoc == null || smcDoc.value == null)
@@ -154,7 +166,7 @@ namespace AasxPluginDocumentShelf
                     // look immediately for DocumentVersion, as only with this there is a valid List item
                     foreach (var smcVer in
                         smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            _semConfig.SemIdDocumentVersion, AdminShellV20.Key.MatchMode.Relaxed))
+                            _semConfigV10.SemIdDocumentVersion, AdminShellV20.Key.MatchMode.Relaxed))
                     {
                         // access
                         if (smcVer == null || smcVer.value == null)
@@ -167,13 +179,13 @@ namespace AasxPluginDocumentShelf
                         // take the 1st title
                         var title =
                             "" +
-                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(_semConfig.SemIdTitle,
+                            smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(_semConfigV10.SemIdTitle,
                             AdminShellV20.Key.MatchMode.Relaxed)?.value;
 
                         // could be also a multi-language title
                         foreach (var mlp in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(
-                                _semConfig.SemIdTitle, AdminShellV20.Key.MatchMode.Relaxed))
+                                _semConfigV10.SemIdTitle, AdminShellV20.Key.MatchMode.Relaxed))
                             if (mlp.value != null)
                                 title = mlp.value.GetDefaultStr(defaultLang);
 
@@ -181,24 +193,26 @@ namespace AasxPluginDocumentShelf
                         var orga =
                             "" +
                             smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                _semConfig.SemIdOrganizationOfficialName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                _semConfigV10.SemIdOrganizationOfficialName, AdminShellV20.Key.MatchMode.Relaxed)?
+                                .value;
                         if (orga.Trim().Length < 1)
                             orga =
                                 "" +
                                 smcVer.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    _semConfig.SemIdOrganizationName, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                    _semConfigV10.SemIdOrganizationName, AdminShellV20.Key.MatchMode.Relaxed)?
+                                    .value;
 
                         // class infos
                         var classId =
                             "" +
                             smcDoc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                _semConfig.SemIdDocumentClassId, AdminShellV20.Key.MatchMode.Relaxed)?.value;
+                                _semConfigV10.SemIdDocumentClassId, AdminShellV20.Key.MatchMode.Relaxed)?.value;
 
                         // collect country codes
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdLanguage,
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfigV10.SemIdLanguage,
                             AdminShellV20.Key.MatchMode.Relaxed))
                         {
                             // language code
@@ -237,10 +251,10 @@ namespace AasxPluginDocumentShelf
                         var further = "";
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
-                                _semConfig.SemIdDocumentVersionIdValue))
+                                _semConfigV10.SemIdDocumentVersionIdValue))
                             further += "\u00b7 version: " + fi.value;
                         foreach (var fi in
-                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfig.SemIdDate,
+                            smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(_semConfigV10.SemIdDate,
                             AdminShellV20.Key.MatchMode.Relaxed))
                             further += "\u00b7 date: " + fi.value;
                         if (further.Length > 0)
@@ -257,7 +271,7 @@ namespace AasxPluginDocumentShelf
 
                         // filename
                         var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            _semConfig.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);
+                            _semConfigV10.SemIdDigitalFile, AdminShellV20.Key.MatchMode.Relaxed);
 
                         ent.DigitalFile = new DocumentEntity.FileInfo(fl);
 
@@ -403,7 +417,7 @@ namespace AasxPluginDocumentShelf
                             if (classSys.ToLower().Trim() != VDI2770v11.Vdi2770Sys.ToLower())
                                 continue;
 
-                            // class infos
+                            // class id
                             var classId = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
                                     defs11.CD_ClassId?.GetReference(),
                                     AdminShellV20.Key.MatchMode.Relaxed)?.value;
@@ -427,15 +441,15 @@ namespace AasxPluginDocumentShelf
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
                                 defs11.CD_DocumentVersionId?.GetReference()))
-                            further += "\u00b7 version: " + fi.value;
+                            further += " \u00b7 version: " + fi.value;
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(
                                 defs11.CD_DocumentIdValue?.GetReference()))
-                            further += "\u00b7 id: " + fi.value;
+                            further += " \u00b7 id: " + fi.value;
                         foreach (var fi in
                             smcVer.value.FindAllSemanticIdAs<AdminShell.Property>(defs11.CD_SetDate?.GetReference(),
                             AdminShellV20.Key.MatchMode.Relaxed))
-                            further += "\u00b7 date: " + fi.value;
+                            further += " \u00b7 date: " + fi.value;
                         if (further.Length > 0)
                             further = further.Substring(2);
 

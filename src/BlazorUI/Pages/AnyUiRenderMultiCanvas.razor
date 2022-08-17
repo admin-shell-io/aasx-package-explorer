@@ -1,0 +1,395 @@
+﻿@page "/testMultiCanvas"
+@using AnyUi
+@using AasxIntegrationBase
+@using BlazorUI.Shared
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@inject BlazorUI.Data.AASService SubmodelService
+@inject BlazorUI.Data.blazorSessionService bi
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq 
+@inject IJSRuntime jsRuntime
+
+@{
+    // resharper disable all
+}
+
+@code {
+    [Parameter]
+    public AnyUiDisplayDataHtml DisplayData { get; set; }
+
+    [Parameter]
+    public Data.blazorSessionService Session { get; set; }
+
+    [Parameter]
+    public AnyUiUIElement Parent { get; set; }
+
+    [Parameter]
+    public AnyUiCanvas Canvas { get; set; }
+
+    [Parameter]
+    public AnyUiImage BackgroundImage { get; set; }
+
+    [Parameter]
+    public AnyUiHtmlFillMode FillMode { get; set; }
+
+    public void Redraw()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    //
+    // Dimensioning
+    //
+
+    protected Tuple<int, int> GetCanvasDimensions()
+    {
+        // if background image, then its leading
+        if (BackgroundImage?.BitmapInfo != null)
+        {
+            return new Tuple<int, int>(
+                Convert.ToInt32(BackgroundImage.BitmapInfo.PixelWidth), 
+                Convert.ToInt32(BackgroundImage.BitmapInfo.PixelHeight));
+        }
+
+        // canvas .. look into contents
+        var res = new AnyUiRect(0, 0, 404, 404);
+        if (Canvas?.Children != null)
+            foreach (var ch in Canvas?.Children)
+                if (ch is AnyUiShape shp)
+                    res = AnyUiRect.Max(res, shp.FindBoundingBox());
+
+        // return
+        return new Tuple<int, int>(Convert.ToInt32(res.Width), Convert.ToInt32(res.Height));
+    }
+
+    //
+    // Canvas handling
+    //
+
+    private Canvas2DContext _context;
+
+    protected BECanvasComponent _canvasReference;
+
+    protected ElementReference _divCanvas;
+    protected ElementReference _imgReference;
+
+    protected async void HandleImageOnLoad()
+    {
+        try
+        {
+            var ctx = await this._canvasReference.CreateCanvas2DAsync();
+            if (ctx != null && BackgroundImage != null)
+            {
+                await ctx.DrawImageAsync(_imgReference, 0, 0);
+            }
+        }
+        catch { }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Canvas == null || _canvasReference == null
+            || (!firstRender && !Canvas.Touched))
+            return;
+
+        // create an API
+        this._context = await this._canvasReference.CreateCanvas2DAsync();
+
+        await this._context.BeginBatchAsync();
+
+        // draw background info?
+        if (BackgroundImage != null)
+        {
+            await this._context.DrawImageAsync(_imgReference, 0, 0);
+        }
+
+        // iterate over shapes ..
+        if (Canvas?.Children != null)
+            foreach (var ch in Canvas.Children)
+            {
+                string fillStyle = "#000000", strokeStyle = "#000000";
+                var lineWidth = 0.0f; 
+                if (ch is AnyUiShape shape)
+                {
+                    if (shape.Fill?.Color != null)
+                        fillStyle = shape.Fill.Color.ToHtmlString(2);
+
+                    if (shape.Stroke?.Color != null)
+                        strokeStyle = shape.Stroke.Color.ToHtmlString(2);
+
+                    if (shape.StrokeThickness.HasValue)
+                        lineWidth = (float) shape.StrokeThickness.Value;
+                }
+
+                if (ch is AnyUiRectangle rect)
+                {
+                    // await this._context.FillRectAsync(rect.X, rect.Y, rect.Width, rect.Height);
+
+                    await this._context.BeginPathAsync();
+                    await this._context.RectAsync(rect.X, rect.Y, rect.Width, rect.Height);
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (rect.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (rect.Fill != null)
+                        await this._context.FillAsync();
+                }
+
+                if (ch is AnyUiEllipse ell)
+                {
+                    // await this._context.el
+
+                    await this._context.BeginPathAsync();
+                    await this._context.ArcAsync(
+                        ell.X + ell.Width / 2, 
+                        ell.Y + ell.Height / 2, 
+                        (ell.Width + ell.Height) / 4.0, // radius as mix between X/Y radius
+                        0, 2 * Math.PI);
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (ell.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (ell.Fill != null)
+                        await this._context.FillAsync();
+                }
+
+                if (ch is AnyUiPolygon poly)
+                {
+                    // await this._context.el
+
+                    await this._context.BeginPathAsync();
+
+                    if (poly.Points != null && poly.Points.Count >= 2)
+                    {
+                        // start point
+                        await this._context.MoveToAsync(poly.Points[0].X, poly.Points[0].Y);
+
+                        // next points
+                        for (int i=1; i<poly.Points.Count; i++)
+                            await this._context.LineToAsync(poly.Points[i].X, poly.Points[i].Y);
+                    }
+
+                    await this._context.ClosePathAsync();
+
+                    await this._context.SetFillStyleAsync(fillStyle);
+                    await this._context.SetStrokeStyleAsync(strokeStyle);
+                    await this._context.SetLineWidthAsync(lineWidth);
+                    if (poly.Stroke != null)
+                        await this._context.StrokeAsync();
+                    if (poly.Fill != null)
+                        await this._context.FillAsync();
+                }
+
+                if (ch is AnyUiLabel lab)
+                {
+                    // eval text
+                    var text = "" + lab.Content;
+
+                    // eval color
+                    string foregroundStyle = "#000000";
+                    if (lab.Foreground?.Color != null)
+                        foregroundStyle = lab.Foreground.Color.ToHtmlString(2);
+
+                    // eval font simply by fontsize
+                    string fontSpec = "";
+                    if (lab.FontWeight.HasValue && lab.FontWeight == AnyUiFontWeight.Bold)
+                        fontSpec += "bold ";
+                    if (lab.FontSize.HasValue)
+                        fontSpec += FormattableString.Invariant($"{8.0 * lab.FontSize:0}px ");
+                    fontSpec += "sans-serif";
+
+                    // get measures
+                    double tHeight = 0.0;
+
+#if __not_supported_by_browsers
+                    if (false)
+                    {
+                        if (fontSpec.HasContent())
+                            await this._context.SetFontAsync(fontSpec);
+                        var meas = await this._context.MeasureTextAsync(text);
+                        if (meas != null)
+                        {
+                            tHeight = meas.ActualBoundingBoxAscent + meas.ActualBoundingBoxDescent;
+                        }
+                    }
+#else
+                    {
+                        if (fontSpec.HasContent())
+                            await this._context.SetFontAsync(fontSpec);
+                        var meas = await this._context.MeasureTextAsync("M");
+                        if (meas != null)
+                        {
+                            tHeight = meas.Width;
+                        }
+                    }
+#endif
+
+                    // eval position and alinment
+                    var x = lab.X;
+                    var ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Left;
+                    if  (lab.HorizontalContentAlignment.HasValue)
+                    {
+                        if (lab.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Center)
+                        {
+                            ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Center;
+                            x = lab.X + lab.Width / 2;
+                        }
+                        if (lab.HorizontalContentAlignment.Value == AnyUiHorizontalAlignment.Right)
+                        {
+                            ta = Blazor.Extensions.Canvas.Canvas2D.TextAlign.Right;
+                            x = lab.X + lab.Width;
+                        }
+                    }
+
+                    // TODO: Obviusly not perfect
+                    var y = lab.Y + tHeight;
+                    if  (lab.VerticalContentAlignment.HasValue)
+                    {
+                        if (lab.VerticalContentAlignment.Value == AnyUiVerticalAlignment.Center)
+                        {
+                            y = lab.Y + lab.Height / 2 + tHeight / 2;
+                        }
+                        if (lab.VerticalContentAlignment.Value == AnyUiVerticalAlignment.Bottom)
+                        {
+                            y = lab.Y + lab.Height;
+                        }
+                    }
+
+                    // need a background fill?
+                    if (lab.Background?.Color != null)
+                    {
+                        // style
+                        string backgroundStyle = "#000000";
+                        backgroundStyle = lab.Background.Color.ToHtmlString(2);
+
+                        // commands
+                        await this._context.BeginPathAsync();
+                        await this._context.RectAsync(lab.X, lab.Y, lab.Width, lab.Height);
+                        await this._context.SetFillStyleAsync(backgroundStyle);
+                        await this._context.FillAsync();
+                    }
+
+                    // commands for the label
+                    await this._context.BeginPathAsync();
+                    await this._context.SetFillStyleAsync(foregroundStyle);
+                    await this._context.SetTextAlignAsync(ta);
+                    if (fontSpec.HasContent())
+                        await this._context.SetFontAsync(fontSpec);
+                    await this._context.FillTextAsync(text, x, y);
+                }
+            }
+
+        await this._context.EndBatchAsync();
+
+    }
+
+    //
+    // Touch
+    //
+
+    protected void TouchAction(AnyUiUIElement tel)
+    {
+        // simply draw over all shape childs
+        InvokeAsync(() => OnAfterRenderAsync(true));
+    }
+
+    //
+    // Events
+    // see: https://www.codeproject.com/Articles/5269947/Drawing-with-the-HTML-Canvas-Element-in-Blazor-Ser
+    //
+
+    protected async void CanvasDoubleClick(MouseEventArgs eventArgs)
+    {
+        // need to translate kind of absolute args relatively to the canvas/ div
+        if (_divCanvas.Id?.Length > 0)
+        {
+            // get local coordinates
+            string data = await jsRuntime.InvokeAsync<string>("getDivCanvasOffsets",
+                new object[] { _divCanvas });
+            JObject offsets = (JObject)JsonConvert.DeserializeObject(data);
+            var mousePt = new AnyUiPoint(
+                eventArgs.ClientX - offsets.Value<double>("offsetLeft"),
+                eventArgs.ClientY - offsets.Value<double>("offsetTop"));
+
+            // find a hit
+            AnyUiShape found = null;
+            // iterate over shapes ..
+            if (Canvas?.Children != null)
+                foreach (var ch in Canvas.Children)
+                {
+                    if (ch is AnyUiShape shp
+                        && shp.IsHit(mousePt))
+                    {
+                        found = shp;
+                        break;
+                    }
+                }
+
+            if (found != null)
+            {
+                // found a canvas element
+                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(Canvas, 
+                    new AnyUiEventData(AnyUiEventMask.LeftDouble, found, 2, mousePt));
+            }
+            else
+            {
+                // found only the image 
+                AnyUi.AnyUiDisplayContextHtml.setValueLambdaHtml(BackgroundImage, 
+                    new AnyUiEventData(AnyUiEventMask.LeftDouble, BackgroundImage, 2, mousePt));
+            }
+        }
+    }
+}
+
+
+@{
+    // access
+    if (Canvas == null)
+        return;
+
+    //
+    // style
+    //
+
+    var canvStyle = new StylePile();
+
+    canvStyle.SetSpecifics(margin: Canvas.Margin);
+    canvStyle.SetFillWidth(Canvas, FillMode, Canvas.Margin, setMinMaxWidth: true, setMinMaxHeight: true);
+
+    //
+    // Add image?
+    //
+
+    if (BackgroundImage != null)
+    {
+        var path = "/api/image/" + BackgroundImage.ImageGuid;
+
+        <div style="display:none; ">
+            <img id="@BackgroundImage.ImageGuid" src="@path" @ref="_imgReference" @onload="HandleImageOnLoad"/>
+        </div>
+
+        // book keeping
+        // TODO: make it nice!!
+        var dd = new AnyUiDisplayDataHtml(DisplayData._context);
+        dd._component = this;
+        BackgroundImage.DisplayData = dd;
+    }
+
+    //
+    // Canvas
+    // see:https://github.com/BlazorExtensions/Canvas
+    //
+
+    var dims = GetCanvasDimensions();
+    <div @ref="_divCanvas" @ondblclick="CanvasDoubleClick" style="background-color: transparent">
+        <BECanvas Width="@dims.Item1" Height="@dims.Item2" @ref="_canvasReference"></BECanvas>
+    </div>
+
+    // book keeping
+    // TODO: make it nice!!
+    Canvas.DisplayData = new AnyUiDisplayDataHtml(DisplayData._context, touchLambda: TouchAction) { _component = this };
+}

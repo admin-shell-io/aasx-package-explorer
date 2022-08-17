@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+#if USE_WPF
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -35,7 +37,7 @@ namespace AasxPluginGenericForms
 {
     public partial class GenericFormsControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance Log = new LogInstance();
@@ -44,9 +46,9 @@ namespace AasxPluginGenericForms
         private AasxPluginGenericForms.GenericFormOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -55,8 +57,8 @@ namespace AasxPluginGenericForms
         {
         }
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public GenericFormsControl()
@@ -109,6 +111,9 @@ namespace AasxPluginGenericForms
             // the Submodel elements need to have parents
             sm.SetAllParents();
 
+            // do INDEED create WPF controls
+            FormInstanceBase.createSubControls = true;
+
             // create TOP control
             var shelfCntl = new GenericFormsControl();
             shelfCntl.Start(log, package, sm, options, eventStack);
@@ -138,15 +143,15 @@ namespace AasxPluginGenericForms
         }
 
 
-        #endregion
-        #region REDRAW of contents
+#endregion
+#region REDRAW of contents
         //========================
 
         private void TheViewModel_ViewModelChanged(AasxIntegrationBase.WpfViewModelBase obj)
         {
         }
 
-        #endregion
+#endregion
 
         protected bool formInUpdateMode = false;
         protected AdminShell.SubmodelElementWrapperCollection updateSourceElements = null;
@@ -303,3 +308,5 @@ namespace AasxPluginGenericForms
 
     }
 }
+
+#endif

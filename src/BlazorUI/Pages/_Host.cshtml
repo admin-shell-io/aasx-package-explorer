@@ -36,13 +36,66 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <!-- blazor boiler plate -->
     <script src="~/js/blazor-modal.js"></script>
     <script src="_framework/blazor.server.js"></script>
+    
+    <!-- used for HTML5 canvas drawing / translating click events-->
+    <!-- see: https://www.codeproject.com/Articles/5269947/Drawing-with-the-HTML-Canvas-Element-in-Blazor-Ser -->
+    <!-- see also: https://stackoverflow.com/questions/5598743/finding-elements-position-relative-to-the-document -->
+    <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+    <script>
+    function getDivCanvasOffsets(el) {
+        var obj = {};
+        // obj.offsetLeft = el.offsetLeft;
+        obj.offsetLeft = el.getBoundingClientRect().left; // + document.documentElement.scrollLeft
+        // obj.offsetTop = el.offsetTop;
+        obj.offsetTop = el.getBoundingClientRect().top; // + document.documentElement.scrollTop
+        return JSON.stringify(obj);
+    }
+    </script>
+
+    <!-- File input dialogue -->
     <script src="_content/BlazorInputFile/inputfile.js"></script>
     <script>
         function BlazorDownloadFile(filename, contentType, content) {
             // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
             const data = base64DecToArr(content);
+
+            // Create the URL
+
+            const file = new File([data], filename, { type: contentType });
+            const exportUrl = URL.createObjectURL(file);
+
+            // Create the <a> element and click on it
+            const a = document.createElement("a");
+            document.body.appendChild(a);
+            a.href = exportUrl;
+            a.download = filename;
+            a.target = "_blank";
+            // a.target = "_self";
+            a.click();
+
+            // We don't need to keep the url, let's release the memory
+            // On Safari it seems you need to comment this line... (please let me know if you know why)
+            URL.revokeObjectURL(exportUrl);
+        }
+
+        function BlazorDisplayFile(filename, contentType, content) {
+            // Blazor marshall byte[] to a base64 string, so we first need to convert the string (content) to a Uint8Array to create the File
+            const data = base64DecToArr(content);
+
+            // Browser switch: Mozilla blocks display of PDF "block:... denied for scipt", therefore
+            // switch to "octet-stream", then, funny enough, Mozilla will also DISPLAY PDF ..
+
+            var sBrowser, sUsrAg = navigator.userAgent;
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                contentType = "application/octet-stream";
+            }
+
+            console.log("sBrowser=" + sBrowser);
+            console.log("sUsrAg=" + sUsrAg);
+            console.log("contentType=" + contentType);
 
             // Create the URL
             const file = new File([data], filename, { type: contentType });
@@ -52,8 +105,12 @@
             const a = document.createElement("a");
             document.body.appendChild(a);
             a.href = exportUrl;
-            a.download = filename;
-            a.target = "_self";
+
+            if (sUsrAg.indexOf("Firefox") > -1) {
+                a.download = filename;
+            }
+
+            a.target = "_blank";
             a.click();
 
             // We don't need to keep the url, let's release the memory

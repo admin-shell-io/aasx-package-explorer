@@ -1,0 +1,105 @@
+{
+  "Header": "Unnamed repository",
+  "filemaps": [
+    {
+      "$type": "LocalFile",
+      "code": "",
+      "Options": {
+        "LoadResident": false,
+        "StayConnected": true,
+        "UpdatePeriod": 1000
+      },
+      "AssetIds": [
+        "http://smart.festo.com/asset/99920211117093744000025740"
+      ],
+      "AasIds": [
+        "http://smart.festo.com/aas/99920211117093744000010570"
+      ],
+      "SubmodelIds": [
+        "http://smart.festo.com/id/instance/99920211117093744000035212",
+        "http://smart.festo.com/id/instance/99920211117093745000011053",
+        "http://smart.festo.com/id/instance/99920211117093745000028644",
+        "http://smart.festo.com/id/instance/99920211117093746000017232",
+        "http://smart.festo.com/id/instance/99920211117093746000022136",
+        "http://smart.festo.com/id/instance/99920211117093746000030548"
+      ],
+      "description": "Festo SPAU pressure sensor",
+      "tag": "FPS",
+      "Location": "..\\..\\..\\01_Festo_SPAU_VR3.aasx"
+    },
+    {
+      "$type": "LocalFile",
+      "code": "",
+      "Options": {
+        "LoadResident": false,
+        "StayConnected": true,
+        "UpdatePeriod": 1000
+      },
+      "AssetIds": [
+        "http://dc-qr.com?m=0608842005&s=917004878"
+      ],
+      "AasIds": [
+        "http://boschrexroth.com/shells/0608842005/917004878"
+      ],
+      "SubmodelIds": [
+        "http://boschrexroth.com/shells/0608842005/917004878/submodels/nameplate",
+        "http://boschrexroth.com/shells/0608842005/917004878/submodels/document",
+        "http://boschrexroth.com/shells/0608842005/917004878/submodels/service",
+        "http://boschrexroth.com/shells/0608842005/917004878/submodels/identification"
+      ],
+      "description": "Bosch Nexo screwer",
+      "tag": "NEX",
+      "Location": "..\\..\\..\\02_Bosch.aasx"
+    },
+    {
+      "$type": "LocalFile",
+      "code": "",
+      "Options": {
+        "LoadResident": false,
+        "StayConnected": true,
+        "UpdatePeriod": 1000
+      },
+      "AssetIds": [
+        "www.company.com/ids/asset/8220_6010_8091_3593"
+      ],
+      "AasIds": [
+        "www.company.com/ids/aas/2520_6010_8091_1277"
+      ],
+      "SubmodelIds": [
+        "www.company.com/ids/sm/4343_5072_7091_3242",
+        "www.company.com/ids/sm/2543_5072_7091_2660",
+        "www.company.com/ids/sm/6053_5072_7091_5102",
+        "www.company.com/ids/sm/6563_5072_7091_4267"
+      ],
+      "description": "Phoenix Contact Power Supply",
+      "tag": "PxC",
+      "Location": "..\\..\\..\\07_PhoenixContact.aasx"
+    },
+    {
+      "$type": "LocalFile",
+      "code": "",
+      "Options": {
+        "LoadResident": false,
+        "StayConnected": true,
+        "UpdatePeriod": 1000
+      },
+      "AssetIds": [
+        "http://smart.festo.com/asset/99920211117093744000025740"
+      ],
+      "AasIds": [
+        "http://smart.festo.com/aas/99920211117093744000010570"
+      ],
+      "SubmodelIds": [
+        "http://smart.festo.com/id/instance/99920211117093744000035212",
+        "http://smart.festo.com/id/instance/99920211117093745000011053",
+        "http://smart.festo.com/id/instance/99920211117093745000028644",
+        "http://smart.festo.com/id/instance/99920211117093746000017232",
+        "http://smart.festo.com/id/instance/99920211117093746000022136",
+        "http://smart.festo.com/id/instance/99920211117093746000030548"
+      ],
+      "description": "Festo SPAU pressure sensor",
+      "tag": "FPS",
+      "Location": "..\\..\\..\\09_Festo_SPAU_VR3.aasx"
+    }
+  ]
+}

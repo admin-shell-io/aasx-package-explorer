@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" InitialTargets="EnsureWixToolsetInstalled" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>8e42c60a-2576-47c2-b0ee-b40bbdda0f34</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+    <OutputName>AASXPackageExplorerSetup</OutputName>
+    <OutputType>Package</OutputType>
+    <Name>AasxPackageExplorerSetup</Name>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <DefineConstants>Debug</DefineConstants>
+    <VerboseOutput>True</VerboseOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Product.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj">
+      <Name>AasxAmlImExport</Name>
+      <Project>{6d1a03b2-eba7-4ce2-9237-df9ad7128947}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj">
+      <Name>AasxBammRdfImExport</Name>
+      <Project>{00f5ea49-f66d-4104-a621-af668dd58c05}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxCsharpLibrary.Tests\AasxCsharpLibrary.Tests.csproj">
+      <Name>AasxCsharpLibrary.Tests</Name>
+      <Project>{2f21feff-f0ef-40b5-ba05-09fc9f499ae9}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
+      <Name>AasxCsharpLibrary</Name>
+      <Project>{9863799b-4e44-4da2-9120-c85c7985bc6d}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxDictionaryImport.Tests\AasxDictionaryImport.Tests.csproj">
+      <Name>AasxDictionaryImport.Tests</Name>
+      <Project>{b540ebf4-c026-45a4-9721-909af0cc14c1}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj">
+      <Name>AasxDictionaryImport</Name>
+      <Project>{dec389bc-59bc-48e5-b163-6e44ce782c4a}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxFormatCst\AasxFormatCst.csproj">
+      <Name>AasxFormatCst</Name>
+      <Project>{cdfb6ffc-7d23-4168-b691-a8a56147f310}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj">
+      <Name>AasxIntegrationBaseGdi</Name>
+      <Project>{4b7bb0fd-0025-4b9f-ae2e-da3467dbb40a}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj">
+      <Name>AasxIntegrationBaseWpf</Name>
+      <Project>{e3ab36ea-e98a-4cc2-bc18-1d0e40eeae1a}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj">
+      <Name>AasxIntegrationBase</Name>
+      <Project>{5a05df78-216b-4a0b-9e30-7b2557c7e867}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxIntegrationEmptySample\AasxIntegrationEmptySample.csproj">
+      <Name>AasxIntegrationEmptySample</Name>
+      <Project>{7b8f763f-39fe-4947-b0e6-b9d97a3b6f8b}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj">
+      <Name>AasxMqttClient</Name>
+      <Project>{7dfe2ecb-37c5-4697-8d8c-050ecafcf553}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxMqtt\AasxMqtt.csproj">
+      <Name>AasxMqtt</Name>
+      <Project>{042305d7-db68-4d02-b08f-ed47bbcd705e}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj">
+      <Name>AasxOpenidClient</Name>
+      <Project>{7788ac2b-7f97-4755-b343-c4196fa90198}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPackageExplorer.GuiTests\AasxPackageExplorer.GuiTests.csproj">
+      <Name>AasxPackageExplorer.GuiTests</Name>
+      <Project>{24e4b82e-36ac-478e-935c-90de74121750}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPackageExplorer.Tests\AasxPackageExplorer.Tests.csproj">
+      <Name>AasxPackageExplorer.Tests</Name>
+      <Project>{f0f08513-dea5-456e-b03b-d8df08a5c9e7}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPackageExplorer\AasxPackageExplorer.csproj">
+      <Name>AasxPackageExplorer</Name>
+      <Project>{569b369e-9393-4f57-994e-6b84398fd7cc}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj">
+      <Name>AasxPackageLogic</Name>
+      <Project>{45c60157-657f-4213-b5b0-185132cea861}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginAdvancedTextEditor\AasxPluginAdvancedTextEditor.csproj">
+      <Name>AasxPluginAdvancedTextEditor</Name>
+      <Project>{1e49eb1c-890c-41ba-8446-b04359067833}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginBomStructure\AasxPluginBomStructure.csproj">
+      <Name>AasxPluginBomStructure</Name>
+      <Project>{9e14c360-2dbc-46ae-90a5-6171aba9cfdb}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginDocumentShelf\AasxPluginDocumentShelf.csproj">
+      <Name>AasxPluginDocumentShelf</Name>
+      <Project>{00cde8b2-ebf3-4ecc-b533-d2270693828f}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginExportTable\AasxPluginExportTable.csproj">
+      <Name>AasxPluginExportTable</Name>
+      <Project>{fb0acc7f-3115-44bf-9931-1bb317cc2f02}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginGenericForms\AasxPluginGenericForms.csproj">
+      <Name>AasxPluginGenericForms</Name>
+      <Project>{b9a11210-b5f8-40bc-9464-04d69c3c512b}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginImageMap\AasxPluginImageMap.csproj">
+      <Name>AasxPluginImageMap</Name>
+      <Project>{8d09d103-1b97-4d54-baa9-841b2f93ff36}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginKnownSubmodels\AasxPluginKnownSubmodels.csproj">
+      <Name>AasxPluginKnownSubmodels</Name>
+      <Project>{49046502-71ce-4f6a-97c5-324f88fa6f75}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginMtpViewer\AasxPluginMtpViewer.csproj">
+      <Name>AasxPluginMtpViewer</Name>
+      <Project>{7a612803-bae2-4fed-bbce-56079edb8594}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginPlotting\AasxPluginPlotting.csproj">
+      <Name>AasxPluginPlotting</Name>
+      <Project>{85f1baf6-ab96-47b6-a039-8f00182390b4}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>
+      </DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content</RefProjectOutputGroups>
+      <RefTargetDir>PLOTTING</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginSmdExporter\AasxPluginSmdExporter.csproj">
+      <Name>AasxPluginSmdExporter</Name>
+      <Project>{02c78dbd-7c1e-4e61-9a30-e44a5736339a}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginTechnicalData\AasxPluginTechnicalData.csproj">
+      <Name>AasxPluginTechnicalData</Name>
+      <Project>{b074e5e8-a2d4-4dfb-81c6-4dd5f0abb8b4}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginUaNetClient\AasxPluginUaNetClient.csproj">
+      <Name>AasxPluginUaNetClient</Name>
+      <Project>{9eb71e8b-ec41-4054-bab4-f419b4d13a36}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginUaNetServer\AasxPluginUaNetServer.csproj">
+      <Name>AasxPluginUaNetServer</Name>
+      <Project>{32eede14-8622-42e6-81ae-33941b7a6efc}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPluginWebBrowser\AasxPluginWebBrowser.csproj">
+      <Name>AasxPluginWebBrowser</Name>
+      <Project>{aa2a09a7-1e92-4572-9411-249c392ed6a6}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj">
+      <Name>AasxPredefinedConcepts</Name>
+      <Project>{a8583f61-e5d8-44a0-98e3-a795578be3f0}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxRestConsoleServer\AasxRestConsoleServer.csproj">
+      <Name>AasxRestConsoleServer</Name>
+      <Project>{6c45112d-b7f0-4463-be6d-a8a2b5a547bf}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxRestServerLibrary\AasxRestServerLibrary.csproj">
+      <Name>AasxRestServerLibrary</Name>
+      <Project>{967e60e3-d668-42a3-aa0b-1a031c20d871}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxSignature\AasxSignature.csproj">
+      <Name>AasxSignature</Name>
+      <Project>{69824ef3-30f8-4c8a-874e-9b1f5873d25e}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxToolkit.Tests\AasxToolkit.Tests.csproj">
+      <Name>AasxToolkit.Tests</Name>
+      <Project>{b649731d-c961-4a0e-9a20-3df20d941e83}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj">
+      <Name>AasxToolkit</Name>
+      <Project>{294fc59a-5645-412f-8216-702fb66528c1}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxUaNetConsoleServer\AasxUaNetConsoleServer.csproj">
+      <Name>AasxUaNetConsoleServer</Name>
+      <Project>{232852c2-358b-4577-9d29-1e48ed75c342}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxUaNetServer\AasxUaNetServer.csproj">
+      <Name>AasxUaNetServer</Name>
+      <Project>{c1e3f0d9-2bea-4668-aff4-454fdf527a58}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj">
+      <Name>AasxUANodesetImExport</Name>
+      <Project>{65783100-86da-4cf6-8066-1292b902b216}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj">
+      <Name>AasxWpfControlLibrary</Name>
+      <Project>{ebae658a-3ece-4c98-89bc-f79809ab4a5e}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\AnyUi\AnyUi.csproj">
+      <Name>AnyUi</Name>
+      <Project>{e9ac7b0f-58fc-4bd8-a1c9-97bbb34a4e99}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\BlazorUI\BlazorUI.csproj">
+      <Name>BlazorUI</Name>
+      <Project>{bce9b9f3-35cd-4cea-8c88-68b0fd48dfd5}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\MsaglWpfControl\MsaglWpfControl.csproj">
+      <Name>MsaglWpfControl</Name>
+      <Project>{57bb1d65-1ef9-4eae-a1de-9ea749431fa1}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\SSIExtension\SSIExtension.csproj">
+      <Name>SSIExtension</Name>
+      <Project>{03255e23-87a8-417f-a229-b9a626ea94fd}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfMtpControl\WpfMtpControl.csproj">
+      <Name>WpfMtpControl</Name>
+      <Project>{f6cf3948-c67a-40fc-812a-3733f673ea21}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfMtpVisuViewer\WpfMtpVisuViewer.csproj">
+      <Name>WpfMtpVisuViewer</Name>
+      <Project>{1e2e9a75-3c8c-4cd9-be11-32190fd4313c}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+    <ProjectReference Include="..\WpfXamlTool\WpfXamlTool.csproj">
+      <Name>WpfXamlTool</Name>
+      <Project>{96fbcf5f-bbf3-4076-8db6-bf9d8420f3dc}</Project>
+      <Private>True</Private>
+      <DoNotHarvest>True</DoNotHarvest>
+      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WixExtension Include="WixUIExtension">
+      <HintPath>$(WixExtDir)\WixUIExtension.dll</HintPath>
+      <Name>WixUIExtension</Name>
+    </WixExtension>
+  </ItemGroup>
+  <Import Project="$(WixTargetsPath)" Condition=" '$(WixTargetsPath)' != '' " />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets" Condition=" '$(WixTargetsPath)' == '' AND Exists('$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets') " />
+  <Target Name="EnsureWixToolsetInstalled" Condition=" '$(WixTargetsImported)' != 'true' ">
+    <Error Text="The WiX Toolset v3.11 (or newer) build tools must be installed to build this project. To download the WiX Toolset, see http://wixtoolset.org/releases/" />
+  </Target>
+  <!--
+	To modify your build process, add your task inside one of the targets below and uncomment it.
+	Other similar extension points exist, see Wix.targets.
+
+  <Target Name="BeforeBuild">
+    <HeatDirectory OutputFile="$(ProjectDir)\ProductInstallFiles.wxs" 
+		Directory="..\AasxPluginPlotting" 
+		ComponentGroupName="PluginPlotting" 
+		DirectoryRefId="INSTALLFOLDER" 
+		AutogenerateGuids="true" 
+		SuppressRegistry="true" 
+		SuppressRootDirectory="true" 
+		ToolPath="$(WixToolPath)" NoLogo="false" />
+  </Target>
+
+	<Target Name="AfterBuild">
+	</Target>
+	-->
+</Project>

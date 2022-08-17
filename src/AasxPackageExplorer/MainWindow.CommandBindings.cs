@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -38,6 +39,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Org.Webpki.JsonCanonicalizer;
 
 namespace AasxPackageExplorer
 {
@@ -324,8 +326,477 @@ namespace AasxPackageExplorer
                     }
             }
 
-            if ((cmd == "sign" || cmd == "validate" || cmd == "encrypt") && _packageCentral?.Main != null)
+            if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
+                VisualElementSubmodelRef el = null;
+                VisualElementSubmodelElement els = null;
+
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                    el = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelElement)
+                    els = DisplayElements.SelectedItem as VisualElementSubmodelElement;
+
+                if (cmd == "sign"
+                    && ((el != null && el.theEnv != null && el.theSubmodel != null)
+                            || (els != null && els.theEnv != null && els.theWrapper != null)))
+                {
+                    AdminShell.Submodel sm = null;
+                    AdminShell.SubmodelElementCollection smc = null;
+                    AdminShell.SubmodelElementCollection smcp = null;
+                    if (el != null)
+                    {
+                        sm = el.theSubmodel;
+                    }
+                    if (els != null)
+                    {
+                        var smee = els.theWrapper.submodelElement;
+                        if (smee is AdminShell.SubmodelElementCollection)
+                        {
+                            smc = smee as AdminShell.SubmodelElementCollection;
+                            var p = smee.parent;
+                            if (p is AdminShell.Submodel)
+                                sm = p as AdminShell.Submodel;
+                            if (p is AdminShell.SubmodelElementCollection)
+                                smcp = p as AdminShell.SubmodelElementCollection;
+                        }
+                    }
+                    if (sm == null && smcp == null)
+                        return;
+
+                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
+                    if (smc == null)
+                    {
+                        for (int i = 0; i < sm.submodelElements.Count; i++)
+                        {
+                            var sme = sm.submodelElements[i];
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                                sm.Remove(sme.submodelElement);
+                                i--; // check next
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < smc.value.Count; i++)
+                        {
+                            var sme = smc.value[i];
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                                smc.Remove(sme.submodelElement);
+                                i--; // check next
+                            }
+                        }
+                    }
+                    AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
+                    AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
+                    AdminShell.Property canonical = AdminShellV20.Property.CreateNew("submodelJsonCanonical");
+                    AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
+                    AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
+                    AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
+                    AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
+                    AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
+                    smec.Add(json);
+                    smec.Add(canonical);
+                    smec.Add(subject);
+                    smec.Add(x5c);
+                    smec.Add(algorithm);
+                    smec.Add(sigT);
+                    smec.Add(signature);
+                    string s = null;
+                    if (smc == null)
+                    {
+                        s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                    }
+                    else
+                    {
+                        s = JsonConvert.SerializeObject(smc, Formatting.Indented);
+                    }
+                    json.value = s;
+                    JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                    string result = jsonCanonicalizer.GetEncodedString();
+                    canonical.value = result;
+                    if (smc == null)
+                    {
+                        foreach (var e in existing)
+                        {
+                            sm.Add(e);
+                        }
+                        sm.Add(smec);
+                    }
+                    else
+                    {
+                        foreach (var e in existing)
+                        {
+                            smc.Add(e);
+                        }
+                        smc.Add(smec);
+                    }
+
+                    X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+                    X509Certificate2Collection collection = store.Certificates;
+                    X509Certificate2Collection fcollection = collection.Find(
+                        X509FindType.FindByTimeValid, DateTime.Now, false);
+
+                    X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                        "Test Certificate Select",
+                        "Select a certificate from the following list to get information on that certificate",
+                        X509SelectionFlag.SingleSelection);
+                    if (scollection.Count != 0)
+                    {
+                        var certificate = scollection[0];
+                        subject.value = certificate.Subject;
+
+                        X509Chain ch = new X509Chain();
+                        ch.Build(certificate);
+
+                        //// string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                        int j = 1;
+                        foreach (X509ChainElement element in ch.ChainElements)
+                        {
+                            AdminShell.Property c = AdminShellV20.Property.CreateNew("certificate_" + j++);
+                            c.value = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                            x5c.Add(c);
+                        }
+
+                        try
+                        {
+                            using (RSA rsa = certificate.GetRSAPrivateKey())
+                            {
+                                algorithm.value = "RS256";
+                                byte[] data = Encoding.UTF8.GetBytes(result);
+                                byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                                signature.value = Convert.ToBase64String(signed);
+                                sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                            }
+                        }
+                        // ReSharper disable EmptyGeneralCatchClause
+                        catch
+                        {
+                        }
+                        // ReSharper enable EmptyGeneralCatchClause
+                    }
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                    return;
+                }
+
+                if (cmd == "validatecertificate"
+                    && ((el != null && el.theEnv != null && el.theSubmodel != null)
+                            || (els != null && els.theEnv != null && els.theWrapper != null)))
+                {
+                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
+                    List<AdminShell.SubmodelElementCollection> validate = new List<AdminShellV20.SubmodelElementCollection>();
+                    AdminShell.Submodel sm = null;
+                    AdminShell.SubmodelElementCollection smc = null;
+                    AdminShell.SubmodelElementCollection smcp = null;
+                    bool smcIsSignature = false;
+                    if (el != null)
+                    {
+                        sm = el.theSubmodel;
+                    }
+                    if (els != null)
+                    {
+                        var smee = els.theWrapper.submodelElement;
+                        if (smee is AdminShell.SubmodelElementCollection)
+                        {
+                            smc = smee as AdminShell.SubmodelElementCollection;
+                            var len = "signature".Length;
+                            var idShort = smc.idShort;
+                            if (idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                smcIsSignature = true;
+                            }
+                            var p = smc.parent;
+                            if (smcIsSignature && p is AdminShell.Submodel)
+                                sm = p as AdminShell.Submodel;
+                            if (smcIsSignature && p is AdminShell.SubmodelElementCollection)
+                                smcp = p as AdminShell.SubmodelElementCollection;
+                            if (!smcIsSignature)
+                                smcp = smc;
+                        }
+                    }
+                    if (sm == null && smcp == null)
+                        return;
+
+                    if (sm != null)
+                    {
+                        foreach (var sme in sm.submodelElements)
+                        {
+                            var smee = sme.submodelElement;
+                            var len = "signature".Length;
+                            var idShort = smee.idShort;
+                            if (smee is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(smee as AdminShell.SubmodelElementCollection);
+                            }
+                        }
+                    }
+                    if (smcp != null)
+                    {
+                        foreach (var sme in smcp.value)
+                        {
+                            var len = "signature".Length;
+                            var idShort = sme.submodelElement.idShort;
+                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                                    idShort.Length >= len &&
+                                    idShort.Substring(0, len).ToLower() == "signature")
+                            {
+                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                            }
+                        }
+                    }
+
+                    if (smcIsSignature)
+                    {
+                        validate.Add(smc);
+                    }
+                    else
+                    {
+                        validate = existing;
+                    }
+
+                    if (validate.Count != 0)
+                    {
+                        X509Store root = new X509Store("Root", StoreLocation.CurrentUser);
+                        root.Open(OpenFlags.ReadWrite);
+                        List<X509Certificate2> rootList = new List<X509Certificate2>();
+
+                        System.IO.DirectoryInfo ParentDirectory = new System.IO.DirectoryInfo(".");
+
+                        // Add additional trusted root certificates temporarilly
+                        if (Directory.Exists("./root"))
+                        {
+                            foreach (System.IO.FileInfo f in ParentDirectory.GetFiles("./root/*.cer"))
+                            {
+                                X509Certificate2 cert = new X509Certificate2("./root/" + f.Name);
+
+                                try
+                                {
+                                    if (!root.Certificates.Contains(cert))
+                                    {
+                                        root.Add(cert);
+                                        rootList.Add(cert);
+                                    }
+                                }
+                                // ReSharper disable EmptyGeneralCatchClause
+                                catch
+                                {
+                                }
+                                // ReSharper enable EmptyGeneralCatchClause
+                            }
+                        }
+
+                        if (smcp == null)
+                        {
+                            foreach (var e in existing)
+                            {
+                                sm.Remove(e);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var e in existing)
+                            {
+                                smcp.Remove(e);
+                            }
+                        }
+                        foreach (var smec in validate)
+                        {
+                            AdminShell.SubmodelElementCollection x5c = null;
+                            AdminShell.Property subject = null;
+                            AdminShell.Property algorithm = null;
+                            AdminShell.Property digest = null; // legacy
+                            AdminShell.Property signature = null;
+
+                            foreach (var sme in smec.value)
+                            {
+                                var smee = sme.submodelElement;
+                                switch (smee.idShort)
+                                {
+                                    case "x5c":
+                                        if (smee is AdminShell.SubmodelElementCollection)
+                                            x5c = smee as AdminShell.SubmodelElementCollection;
+                                        break;
+                                    case "subject":
+                                        subject = smee as AdminShell.Property;
+                                        break;
+                                    case "algorithm":
+                                        algorithm = smee as AdminShell.Property;
+                                        break;
+                                    case "digest":
+                                        digest = smee as AdminShell.Property;
+                                        break;
+                                    case "signature":
+                                        signature = smee as AdminShell.Property;
+                                        break;
+                                }
+                            }
+                            if (smec != null && x5c != null && subject != null && algorithm != null &&
+                                (signature != null || digest != null))
+                            {
+                                string s = null;
+                                if (smcp == null)
+                                {
+                                    s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                                }
+                                else
+                                {
+                                    s = JsonConvert.SerializeObject(smcp, Formatting.Indented);
+                                }
+                                JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                                string result = jsonCanonicalizer.GetEncodedString();
+
+                                X509Store storeCA = new X509Store("CA", StoreLocation.CurrentUser);
+                                storeCA.Open(OpenFlags.ReadWrite);
+                                X509Certificate2Collection xcc = new X509Certificate2Collection();
+                                X509Certificate2 x509 = null;
+                                bool valid = false;
+
+                                try
+                                {
+                                    for (int i = 0; i < x5c.value.Count; i++)
+                                    {
+                                        var p = x5c.value[i].submodelElement as AdminShell.Property;
+                                        var cert = new X509Certificate2(Convert.FromBase64String(p.value));
+                                        if (i == 0)
+                                        {
+                                            x509 = cert;
+                                        }
+                                        if (cert.Subject != cert.Issuer)
+                                        {
+                                            xcc.Add(cert);
+                                            storeCA.Add(cert);
+                                        }
+                                        if (cert.Subject == cert.Issuer)
+                                        {
+                                            try
+                                            {
+                                                if (!root.Certificates.Contains(cert))
+                                                {
+                                                    root.Add(cert);
+                                                    rootList.Add(cert);
+                                                }
+                                            }
+                                            // ReSharper disable EmptyGeneralCatchClause
+                                            catch
+                                            {
+                                            }
+                                            // ReSharper enable EmptyGeneralCatchClause
+                                        }
+                                    }
+
+                                    if (x509 != null)
+                                    {
+                                        X509Chain c = new X509Chain();
+                                        c.ChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+                                        valid = c.Build(x509);
+                                    }
+
+                                    //// storeCA.RemoveRange(xcc);
+                                }
+                                catch
+                                {
+                                    x509 = null;
+                                    valid = false;
+                                }
+
+                                if (!valid)
+                                {
+                                    System.Windows.MessageBox.Show(
+                                        this, "Invalid certificate chain: " + subject.value, "Check " + smec.idShort,
+                                        MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                }
+                                if (valid)
+                                {
+                                    valid = false;
+
+                                    if (algorithm.value == "RS256")
+                                    {
+                                        try
+                                        {
+                                            using (RSA rsa = x509.GetRSAPublicKey())
+                                            {
+                                                string value = null;
+                                                if (signature != null)
+                                                    value = signature.value;
+                                                if (digest != null)
+                                                    value = digest.value;
+                                                byte[] data = Encoding.UTF8.GetBytes(result);
+                                                byte[] h = Convert.FromBase64String(value);
+                                                valid = rsa.VerifyData(data, h, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            valid = false;
+                                        }
+                                        if (!valid)
+                                        {
+                                            System.Windows.MessageBox.Show(
+                                                this, "Invalid signature: " + subject.value, "Check " + smec.idShort,
+                                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                        }
+                                        if (valid)
+                                        {
+                                            System.Windows.MessageBox.Show(
+                                                this, "Signature is valid: " + subject.value, "Check " + smec.idShort,
+                                                MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (smcp == null)
+                        {
+                            foreach (var e in existing)
+                            {
+                                sm.Add(e);
+                            }
+                        }
+                        else
+                        {
+                            foreach (var e in existing)
+                            {
+                                smcp.Add(e);
+                            }
+                        }
+
+                        // Delete additional trusted root certificates immediately
+                        foreach (var cert in rootList)
+                        {
+                            try
+                            {
+                                root.Remove(cert);
+                            }
+                            // ReSharper disable EmptyGeneralCatchClause
+                            catch
+                            {
+                            }
+                            // ReSharper enable EmptyGeneralCatchClause
+                        }
+                    }
+                    return;
+                }
+
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.Filter = "AASX package files (*.aasx)|*.aasx";
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());

@@ -38,8 +38,9 @@
     <ProjectReference Include="..\AasxSignature\AasxSignature.csproj" />
     <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
-
 	  <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\jsoncanonicalizer\jsoncanonicalizer.csproj" />
+    <ProjectReference Include="..\es6numberserializer\es6numberserializer.csproj" />
   </ItemGroup>
 
   <!--

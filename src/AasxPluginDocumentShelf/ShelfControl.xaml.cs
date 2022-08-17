@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+#if USE_WPF
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -39,23 +41,23 @@ namespace AasxPluginDocumentShelf
 {
     public partial class ShelfControl : UserControl
     {
-        #region Members
+#region Members
         //=============
 
         private LogInstance Log = new LogInstance();
         private AdminShellPackageEnv thePackage = null;
         private AdminShell.Submodel theSubmodel = null;
         private DocumentShelfOptions theOptions = null;
-        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.CreateDefault();
+        private static DocuShelfSemanticConfig _semConfig = DocuShelfSemanticConfig.CreateDefaultV10();
         private PluginEventStack theEventStack = null;
 
         private string convertableFiles = ".pdf .jpeg .jpg .png .bmp .pdf .xml .txt *";
 
         private List<DocumentEntity> theDocEntitiesToPreview = new List<DocumentEntity>();
 
-        #endregion
+#endregion
 
-        #region View Model
+#region View Model
         //================
 
         private ViewModel theViewModel = new ViewModel();
@@ -101,15 +103,15 @@ namespace AasxPluginDocumentShelf
             }
         }
 
-        #endregion
-        #region Cache for already generated Images
+#endregion
+#region Cache for already generated Images
         //========================================
 
         private static Dictionary<string, BitmapImage> referableHashToCachedBitmap =
             new Dictionary<string, BitmapImage>();
 
-        #endregion
-        #region Init of component
+#endregion
+#region Init of component
         //=======================
 
         public void ResetCountryRadioButton(RadioButton radio, CountryFlag.CountryCode code)
@@ -228,7 +230,7 @@ namespace AasxPluginDocumentShelf
                             }
 
                             // take over data?
-                            if (lambdaEntity.ImgContainer != null)
+                            if (lambdaEntity.ImgContainerWpf != null)
                             {
                                 // trigger display image
                                 lambdaEntity.ImageReadyToBeLoaded = outputFnBuffer;
@@ -369,9 +371,9 @@ namespace AasxPluginDocumentShelf
         }
 
 
-        #endregion
+#endregion
 
-        #region REDRAW of contents
+#region REDRAW of contents
 
         private void TheViewModel_ViewModelChanged(AasxIntegrationBase.WpfViewModelBase obj)
         {
@@ -470,7 +472,7 @@ namespace AasxPluginDocumentShelf
                     // make viewbox to host __later__ created image!
                     var vb = new Viewbox();
                     vb.Stretch = Stretch.Uniform;
-                    ent.ImgContainer = vb;
+                    ent.ImgContainerWpf = vb;
 
                     // if a preview file exists, try load directly, but not interfere
                     // we delayed load logic, as these images might get more detailed
@@ -499,7 +501,7 @@ namespace AasxPluginDocumentShelf
                     {
                         var img = new Image();
                         img.Source = referableHashToCachedBitmap[ent.ReferableHash];
-                        ent.ImgContainer.Child = img;
+                        ent.ImgContainerWpf.Child = img;
                     }
                     else
                     {
@@ -769,7 +771,7 @@ namespace AasxPluginDocumentShelf
             _inDragStart = false;
         }
 
-        #endregion
+#endregion
 
         protected FormDescSubmodelElementCollection currentFormDescription = null;
         protected FormInstanceSubmodelElementCollection currentFormInst = null;
@@ -975,3 +977,5 @@ namespace AasxPluginDocumentShelf
         }
     }
 }
+
+#endif
