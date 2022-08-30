@@ -19,8 +19,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AdminShellNS;
-using Aml.Engine.CAEX;
-using Aml.Engine.CAEX.Extensions;
 using Grapevine.Interfaces.Server;
 using Grapevine.Server;
 using Grapevine.Server.Attributes;
@@ -1192,8 +1190,8 @@ namespace AasxRestServerLibrary
 
             switch (fragmentType)
             {
-                case "CAEX":
-                    this.EvalGetCAEXFragment(context, packageStream, fragment);
+                case "aml20":
+                    this.EvalGetAML20Fragment(context, packageStream, fragment);
                     break;
                 // possibility to add support for more fragment types in the future
                 default:
@@ -1204,142 +1202,6 @@ namespace AasxRestServerLibrary
             }
 
             packageStream.Close();
-        }
-
-        public void EvalGetCAEXFragment(IHttpContext context, Stream caexFileStream, string caexFragment)
-        {
-
-            CAEXDocument caexDocument;
-            try
-            {
-                caexDocument = CAEXDocument.LoadFromStream(caexFileStream);
-            }
-            catch (Exception e)
-            {
-                context.Response.SendResponse(
-                    Grapevine.Shared.HttpStatusCode.NotFound,
-                    $"Unable to load CAEX file from stream.");
-                return;
-            }
-
-            Regex separateFragmentExtensionRegEx = new Regex(@"^([^@]+)(@(\w+))?(/|)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection separateFragmentExtensionMatches = separateFragmentExtensionRegEx.Matches(caexFragment);
-
-            if (separateFragmentExtensionMatches.Count == 0)
-            {
-                context.Response.SendResponse(
-                    Grapevine.Shared.HttpStatusCode.NotFound,
-                    $"Invalid CAEX fragment.");
-                return;
-            }
-
-            string baseFragment = separateFragmentExtensionMatches[0].Groups[1].ToString();
-            string fragmentExtension = separateFragmentExtensionMatches[0].Groups[3].ToString();
-
-            Regex fragmentIsGuidRegex = new Regex("ID=\'([a-f\\d]{4}(?:[a-f\\d]{4}-){4}[a-f\\d]{12})\'", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            MatchCollection fragmentIsGuidMatches = fragmentIsGuidRegex.Matches(baseFragment);
-
-            CAEXObject fragmentObject;
-            if (fragmentIsGuidMatches.Count == 0)
-            {
-                fragmentObject = caexDocument.FindByPath(baseFragment);
-
-                if (fragmentObject == null)
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to locate element with path '" + baseFragment + "' within CAEX file.");
-                    return;
-                }
-            }
-            else
-            {
-                string elementID = fragmentIsGuidMatches[0].Groups[1].ToString();
-                fragmentObject = caexDocument.FindByID(elementID);
-
-                if (fragmentObject == null)
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to locate element with ID '" + elementID + "' within CAEX file.");
-                    return;
-                }
-            }
-
-            bool isValue = fragmentExtension == "Value";
-            bool isID = fragmentExtension == "ID";
-            bool isElements = fragmentExtension == "Elements";
-            bool isInterfaces = fragmentExtension == "Interfaces";
-            bool isAttributes = fragmentExtension == "Attributes";
-            bool isUnknown = fragmentExtension != null && fragmentExtension.Length > 0 && !isValue && !isID && !isElements && !isInterfaces && !isAttributes;
-
-            if (isValue)
-            {
-                // return attribute value
-                if (!(fragmentObject is AttributeType))
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to return value. " + fragmentObject.Name + " is not an Attribute.");
-                    return;
-                }
-                SendTextResponse(context, (fragmentObject as AttributeType).Value);
-            }
-            else if (isID)
-            {
-                SendTextResponse(context, fragmentObject.ID != null ? fragmentObject.ID : "");
-            }
-            else if (isElements)
-            {
-                // return the list of child InternalElements
-                if (!(fragmentObject is IInternalElementContainer))
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to return elements. " + fragmentObject.Name + " is not an InternalElementcontainer.");
-                    return;
-                }
-                List<string> childIENames = (fragmentObject as IInternalElementContainer).InternalElement.Select(ie => ie.Name).ToList();
-                SendJsonResponse(context, childIENames);
-            }
-            else if (isAttributes)
-            {
-                // return the list of child Attributes
-                if (!(fragmentObject is IObjectWithAttributes))
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to return attributes. " + fragmentObject.Name + " is not an ObjectWithAttributes.");
-                    return;
-                }
-                List<string> childAttNames = (fragmentObject as IObjectWithAttributes).Attribute.Select(ie => ie.Name).ToList();
-                SendJsonResponse(context, childAttNames);
-            }
-            else if (isInterfaces)
-            {
-                // return the list of child ExternalInterfaces
-                if (!(fragmentObject is IObjectWithExternalInterface))
-                {
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unable to return interfaces. " + fragmentObject.Name + " is not an ObjectWithExternalInterface.");
-                    return;
-                }
-                List<string> childEINames = (fragmentObject as IObjectWithExternalInterface).ExternalInterface.Select(ie => ie.Name).ToList();
-                SendJsonResponse(context, childEINames);
-            }
-            else if (isUnknown)
-            {
-                context.Response.SendResponse(
-                    Grapevine.Shared.HttpStatusCode.NotFound,
-                    $"Unknown fragment extension @" + fragmentExtension + ".");
-                return;
-            }
-            else
-            {
-                // return as XML text
-                SendTextResponse(context, fragmentObject.Node.ToString());
-            }
         }
 
         public void EvalPutSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids)
