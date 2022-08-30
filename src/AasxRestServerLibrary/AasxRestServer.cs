@@ -201,7 +201,7 @@ namespace AasxRestServerLibrary
 
             [RestRoute(
                 HttpMethod = HttpMethod.GET,
-                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/((?!fragment)[^/]+)){1,99}?" +
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/((?!fragments)[^/]+)){1,99}?" +
                     "(|/core|/complete|/deep|/file|/blob|/events|/property)(/|)$")]
             public IHttpContext GetSubmodelElementsContents(IHttpContext context)
             {
@@ -318,8 +318,8 @@ namespace AasxRestServerLibrary
 
             [RestRoute(
                 HttpMethod = HttpMethod.GET,
-                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?/fragment/([a-zA-Z0-9]+)@(.+)$")]
-            public IHttpContext GetSubmodelElementFragmentContents(IHttpContext context)
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?/fragments/([a-zA-Z0-9]+)/(.*)$")]
+            public IHttpContext GetSubmodelElementFragmentsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
                 if (m.Success && m.Groups.Count >= 7 && m.Groups[5].Captures.Count >= 1)
