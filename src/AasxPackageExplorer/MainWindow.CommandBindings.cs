@@ -491,7 +491,7 @@ namespace AasxPackageExplorer
                     if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
                         "Use X509 (yes) or Verifiable Credential (No)?",
                         "X509 or VerifiableCredential", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
-                            useX509 = false;
+                        useX509 = false;
 
                     List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
                     if (smc == null)
