@@ -13,6 +13,7 @@ using System.Web;
 using Aml.Engine.CAEX.Extensions;
 using Newtonsoft.Json.Linq;
 using System.Xml.Linq;
+using System.Collections.Generic;
 
 namespace AasxRestServerLibrary
 {
@@ -184,9 +185,49 @@ namespace AasxRestServerLibrary
             {
                 RemoveDeeplements(basicObject);
             }
+
+            if (Content == "normal")
+            {
+                JObject o = JObject.FromObject(basicObject.Node);
+                o.WriteTo(writer);
+                return;
+            } else if (Content == "path")
+            {
+                List<string> paths = CollectCaexPaths(basicObject);
+
+                JArray o = JArray.FromObject(paths);
+                o.WriteTo(writer);
+                return;
+            } else if (Content == "value")
+            {
+
+            }
             
-            JObject o = JObject.FromObject(basicObject.Node);
-            o.WriteTo(writer);
+        }
+
+        private List<string> CollectCaexPaths(CAEXBasicObject caexBasicObject)
+        {
+            var paths = new List<string>();
+
+            if (caexBasicObject is CAEXObject)
+            {
+                paths.Add((caexBasicObject as CAEXObject).GetFullNodePath());
+            }
+
+            paths.AddRange(ChildPaths<InternalElementType>(caexBasicObject));
+            paths.AddRange(ChildPaths<SystemUnitFamilyType>(caexBasicObject));
+            paths.AddRange(ChildPaths<RoleClassType>(caexBasicObject));
+            paths.AddRange(ChildPaths<InterfaceClassType>(caexBasicObject));
+            paths.AddRange(ChildPaths<AttributeTypeType>(caexBasicObject));
+
+            return paths;
+        }
+
+        private IEnumerable<string> ChildPaths<T>(CAEXBasicObject basicObject) where T : CAEXObject
+        {
+            IEnumerable<T> children = basicObject.Descendants<T>();
+            
+            return children.Select(c => c.GetFullNodePath());
         }
 
         private void RemoveDeeplements(CAEXBasicObject value)
