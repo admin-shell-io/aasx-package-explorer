@@ -31,34 +31,34 @@ namespace AasxRestServerLibrary
                 CAEXDocument caexDocument = LoadCaexDocument(amlFileStream);
                 fragmentObject = FindFragmentObject(caexDocument, amlFragment);
 
-            } catch (AmlFragmentEvaluationException e)
+                var content = context.Request.QueryString.Get("content") ?? "normal";
+                var level = context.Request.QueryString.Get("level") ?? "deep";
+                var extent = context.Request.QueryString.Get("extent") ?? "withoutBlobValue";
+
+                if (level == "core")
+                {
+                    DeeplyNestedElementsRemover.RemoveDeeplements(fragmentObject);
+                }
+
+                if (content == "xml") {
+                    SendXmlResponse(context, fragmentObject.Node);
+                } else
+                {
+                    JsonConverter converter = new AmlJsonConverter(content, extent);
+                    string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
+                
+                    SendJsonResponse(context, json);
+                }
+
+                return;
+            }
+            catch (AmlFragmentEvaluationException e)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.NotFound,
                     e.Message);
                 return;
             }
-
-            var content = context.Request.QueryString.Get("content") ?? "normal";
-            var level = context.Request.QueryString.Get("level") ?? "deep";
-            var extent = context.Request.QueryString.Get("extent") ?? "withoutBlobValue";
-
-            if (level == "core")
-            {
-                DeeplyNestedElementsRemover.RemoveDeeplements(fragmentObject);
-            }
-
-            if (content == "xml") {
-                SendXmlResponse(context, fragmentObject.Node);
-            } else
-            {
-                JsonConverter converter = new AmlJsonConverter(content, extent);
-                string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
-                
-                SendJsonResponse(context, json);
-            }
-
-            return;
         }
 
         private static CAEXDocument LoadCaexDocument(Stream amlFileStream)
@@ -185,23 +185,66 @@ namespace AasxRestServerLibrary
                 throw new AmlFragmentEvaluationException("Unable to convert object to CAEXBasicObject: " + value);
             }
 
+            JContainer result;
+
             if (Content == "normal")
             {
-                JObject o = JObject.FromObject(basicObject.Node);
-                o.WriteTo(writer);
-                return;
+                result = JObject.FromObject(basicObject.Node);
             } else if (Content == "path")
             {
                 List<string> paths = CollectCaexPaths(basicObject);
-
-                JArray o = JArray.FromObject(paths);
-                o.WriteTo(writer);
-                return;
+                result = JArray.FromObject(paths);
             } else if (Content == "value")
             {
-
+                result = BuildJsonValueRecursively(basicObject);
+            } else
+            {
+                throw new AmlFragmentEvaluationException("Unsupported content modifier: " + Content);
             }
+
+            result.WriteTo(writer);
+            return;
+
+        }
+
+        private JObject BuildJsonValueRecursively(CAEXBasicObject value)
+        {
+            JObject o = new JObject();
+
+            if (value is CAEXFileType)
+            {
+                var caexFile = value as CAEXFileType;
+                caexFile.InstanceHierarchy.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+                caexFile.SystemUnitClassLib.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+                caexFile.RoleClassLib.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+                caexFile.InterfaceClassLib.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+                caexFile.AttributeTypeLib.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            }
+            (value as SystemUnitClassLibType)?.SystemUnitClass.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as InterfaceClassLibType)?.InterfaceClass.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as RoleClassLibType)?.RoleClass.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as AttributeTypeLibType)?.AttributeType.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as IInternalElementContainer)?.InternalElement.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as IObjectWithExternalInterface)?.ExternalInterface.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as SystemUnitFamilyType)?.SystemUnitClass.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as RoleFamilyType)?.RoleClass.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+            (value as AttributeFamilyType)?.AttributeType.ToList().ForEach(element => BuildJsonValueRecursively(element, o));
+
+            // fixme: how to handle/serialize nested attributes? should we incorporate the nested path (instead of the name) as JSON property name?
+            (value as IObjectWithAttributes)?.AttributeAndDescendants.ToList().ForEach(attribute => o[attribute.Name] = attribute.Value);
+
+            if (value is AttributeType)
+            {
+                o["@Value"] = (value as AttributeType).Value;
+            }
+
+            return o;
             
+        }
+
+        private void BuildJsonValueRecursively(CAEXObject childObject, JObject parentJObject)
+        {
+            parentJObject[childObject.Name] = BuildJsonValueRecursively(childObject);
         }
 
         private List<string> CollectCaexPaths(CAEXBasicObject caexBasicObject)
@@ -255,42 +298,15 @@ namespace AasxRestServerLibrary
                 caexFile.InterfaceClassLib.ToList().ForEach(RemoveNestedElements);
                 caexFile.AttributeTypeLib.ToList().ForEach(RemoveNestedElements);
             }
-            if (value is SystemUnitClassLibType)
-            {
-                (value as SystemUnitClassLibType).SystemUnitClass.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is InterfaceClassLibType)
-            {
-                (value as InterfaceClassLibType).InterfaceClass.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is RoleClassLibType)
-            {
-                (value as RoleClassLibType).RoleClass.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is AttributeTypeLibType)
-            {
-                (value as AttributeTypeLibType).AttributeType.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is IInternalElementContainer)
-            {
-                (value as IInternalElementContainer).InternalElement.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is IClassWithExternalInterface)
-            {
-                (value as IClassWithExternalInterface).ExternalInterface.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is SystemUnitFamilyType)
-            {
-                (value as SystemUnitFamilyType).SystemUnitClass.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is RoleFamilyType)
-            {
-                (value as RoleFamilyType).RoleClass.ToList().ForEach(RemoveNestedElements);
-            }
-            if (value is AttributeFamilyType)
-            {
-                (value as AttributeFamilyType).AttributeType.ToList().ForEach(RemoveNestedElements);
-            }
+            (value as SystemUnitClassLibType)?.SystemUnitClass.ToList().ForEach(RemoveNestedElements);
+            (value as InterfaceClassLibType)?.InterfaceClass.ToList().ForEach(RemoveNestedElements);
+            (value as RoleClassLibType)?.RoleClass.ToList().ForEach(RemoveNestedElements);
+            (value as AttributeTypeLibType)?.AttributeType.ToList().ForEach(RemoveNestedElements);
+            (value as IInternalElementContainer)?.InternalElement.ToList().ForEach(RemoveNestedElements);
+            (value as IObjectWithExternalInterface)?.ExternalInterface.ToList().ForEach(RemoveNestedElements);
+            (value as SystemUnitFamilyType)?.SystemUnitClass.ToList().ForEach(RemoveNestedElements);
+            (value as RoleFamilyType)?.RoleClass.ToList().ForEach(RemoveNestedElements);
+            (value as AttributeFamilyType)?.AttributeType.ToList().ForEach(RemoveNestedElements);
         }
 
         private static void RemoveNestedElements(InstanceHierarchyType ih)
