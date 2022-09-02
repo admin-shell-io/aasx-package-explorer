@@ -17,12 +17,12 @@ using System.Collections.Generic;
 
 namespace AasxRestServerLibrary
 {
-    public static class AasxHttpContextHelperAml20Extensions
+    public static class AasxHttpContextHelperAmlExtensions
     {
         /**
-         * This method is able to evaluate an AutomationML20 fragment and return a suitable serialization.
+         * This method is able to evaluate an AutomationML fragment and return a suitable serialization.
          */
-        public static void EvalGetAML20Fragment(this AasxHttpContextHelper helper, IHttpContext context, Stream amlFileStream, string amlFragment)
+        public static void EvalGetAMLFragment(this AasxHttpContextHelper helper, IHttpContext context, Stream amlFileStream, string amlFragment)
         {
             CAEXBasicObject fragmentObject;
 
@@ -31,7 +31,7 @@ namespace AasxRestServerLibrary
                 CAEXDocument caexDocument = LoadCaexDocument(amlFileStream);
                 fragmentObject = FindFragmentObject(caexDocument, amlFragment);
 
-            } catch (Aml20FragmentEvaluationException e)
+            } catch (AmlFragmentEvaluationException e)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.NotFound,
@@ -39,15 +39,20 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            var content = context.Request.QueryString.Get("Content") ?? "normal";
-            var level = context.Request.QueryString.Get("Level") ?? "deep";
-            var extent = context.Request.QueryString.Get("Extent") ?? "withoutBlobValue";
+            var content = context.Request.QueryString.Get("content") ?? "normal";
+            var level = context.Request.QueryString.Get("level") ?? "deep";
+            var extent = context.Request.QueryString.Get("extent") ?? "withoutBlobValue";
+
+            if (level == "core")
+            {
+                DeeplyNestedElementsRemover.RemoveDeeplements(fragmentObject);
+            }
 
             if (content == "xml") {
                 SendXmlResponse(context, fragmentObject.Node);
             } else
             {
-                JsonConverter converter = new Aml20CoreJsonConverter(content, level, extent);
+                JsonConverter converter = new AmlJsonConverter(content, extent);
                 string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
                 
                 SendJsonResponse(context, json);
@@ -72,7 +77,7 @@ namespace AasxRestServerLibrary
                     return CAEXDocument.LoadFromStream(amlContainer.RootDocumentStream());
                 } catch
                 {
-                    throw new Aml20FragmentEvaluationException($"Unable to load AML file/container from stream.");
+                    throw new AmlFragmentEvaluationException($"Unable to load AML file/container from stream.");
                 }
             }
         }
@@ -99,7 +104,7 @@ namespace AasxRestServerLibrary
 
                     if (caexObject == null)
                     {
-                        throw new Aml20FragmentEvaluationException($"Unable to locate element with ID '" + id + "' within AML file.");
+                        throw new AmlFragmentEvaluationException($"Unable to locate element with ID '" + id + "' within AML file.");
                     }
 
                     caexPath = caexObject.GetFullNodePath() + idFragmentMatches[0].Groups[2].ToString();
@@ -110,7 +115,7 @@ namespace AasxRestServerLibrary
 
             if (fragmentObject == null)
             {
-                throw new Aml20FragmentEvaluationException($"Unable to locate element with path '" + amlFragment + "' within AML file.");
+                throw new AmlFragmentEvaluationException($"Unable to locate element with path '" + amlFragment + "' within AML file.");
             }
 
             return fragmentObject;
@@ -141,20 +146,19 @@ namespace AasxRestServerLibrary
     }
 
     /**
-     * A JsonConverter that converts any CAEXBasicObject to a JSON representation but limits this representation to the 'core' level as defined by "Details of the AAS, part 2".
-     * This means that only the element and direct children a serialized but nested children are skipped in the serialization.
-     * The basic serialization is based on converting the XML represenation of the CAEXBsicObject to JSON.
+     * A JsonConverter that converts any CAEXBasicObject to a JSON representation. The converter refers to the parameters 'content' and 
+     * 'extent' as defined by "Details of the AAS, part 2".
+     * 
+     * Note: The serialization algorithm for 'content=normal' is based on converting the XML represenation of the CAEXBsicObject to JSON.
      */ 
-    class Aml20CoreJsonConverter : JsonConverter
+    class AmlJsonConverter : JsonConverter
     {
         string Content;
-        string Level;
         string Extent;
         
-        public Aml20CoreJsonConverter(string content = "normal", string level = "deep", string extent = "withoutBlobValue")
+        public AmlJsonConverter(string content = "normal", string extent = "withoutBlobValue")
         {
             this.Content = content;
-            this.Level = level;
             this.Extent = extent;
         }
 
@@ -178,12 +182,7 @@ namespace AasxRestServerLibrary
 
             if (basicObject == null)
             {
-                throw new Aml20FragmentEvaluationException("Unable to convert object to CAEXBasicObject: " + value);
-            }
-
-            if (Level == "core")
-            {
-                RemoveDeeplements(basicObject);
+                throw new AmlFragmentEvaluationException("Unable to convert object to CAEXBasicObject: " + value);
             }
 
             if (Content == "normal")
@@ -230,7 +229,22 @@ namespace AasxRestServerLibrary
             return children.Select(c => c.GetFullNodePath());
         }
 
-        private void RemoveDeeplements(CAEXBasicObject value)
+        
+    }
+
+    /**
+     * A utility class that can be used to remove 'deeply nested elements' from a CAEXBasicObject, i.e. elements that
+     * are descendants but no direct children of the given object.
+     * 
+     * Note: This will only remove deeply nested elements of certain types (e.g. InternalElements, ExternalInterfaces, 
+     * etc. but not Attributes, AdditionalInformation, etc.) to be aligned as closely as possible with 'Details of the
+     * AAS', part 2.
+     */
+    class DeeplyNestedElementsRemover
+    {
+        private DeeplyNestedElementsRemover() { }
+
+        public static void RemoveDeeplements(CAEXBasicObject value)
         {
             if (value is CAEXFileType)
             {
@@ -279,72 +293,74 @@ namespace AasxRestServerLibrary
             }
         }
 
-        private void RemoveNestedElements(InstanceHierarchyType ih)
+        private static void RemoveNestedElements(InstanceHierarchyType ih)
         {
             ih.InternalElement.Remove();
         }
 
-        private void RemoveNestedElements(SystemUnitClassLibType sucl)
+        private static void RemoveNestedElements(SystemUnitClassLibType sucl)
         {
             sucl.SystemUnitClass.Remove();
         }
 
-        private void RemoveNestedElements(RoleClassLibType rcl)
+        private static void RemoveNestedElements(RoleClassLibType rcl)
         {
             rcl.RoleClass.Remove();
         }
 
-        private void RemoveNestedElements(InterfaceClassLibType icl)
+        private static void RemoveNestedElements(InterfaceClassLibType icl)
         {
             icl.InterfaceClass.Remove();
         }
-        private void RemoveNestedElements(AttributeTypeLibType atl)
+        private static void RemoveNestedElements(AttributeTypeLibType atl)
         {
             atl.AttributeType.Remove();
         }
-        private void RemoveNestedElements(InternalElementType ie)
+        private static void RemoveNestedElements(InternalElementType ie)
         {
             ie.InternalElement.Remove();
             ie.InternalLink.Remove();
             ie.ExternalInterface.Remove();
         }
-        private void RemoveNestedElements(SystemUnitFamilyType suf)
+        private static void RemoveNestedElements(SystemUnitFamilyType suf)
         {
             suf.SystemUnitClass.Remove();
             suf.InternalElement.Remove();
             suf.ExternalInterface.Remove();
         }
-        private void RemoveNestedElements(ExternalInterfaceType ei)
+        private static void RemoveNestedElements(ExternalInterfaceType ei)
         {
             ei.ExternalInterface.Remove();
         }
-        private void RemoveNestedElements(RoleClassType rc)
+        private static void RemoveNestedElements(RoleClassType rc)
         {
             rc.ExternalInterface.Remove();
         }
-        private void RemoveNestedElements(InterfaceClassType ic)
+        private static void RemoveNestedElements(InterfaceClassType ic)
         {
             ic.ExternalInterface.Remove();
         }
-        private void RemoveNestedElements(InterfaceFamilyType ift) {
+        private static void RemoveNestedElements(InterfaceFamilyType ift)
+        {
             ift.InterfaceClass.Remove();
         }
-        private void RemoveNestedElements(AttributeFamilyType aft)
+        private static void RemoveNestedElements(AttributeFamilyType aft)
         {
             aft.AttributeType.Remove();
-        }        
+        }
+
     }
 
     /**
      * An exception that indicates that something went wrong while evaluating an AML20 fragment.
      */
-    public class Aml20FragmentEvaluationException : ArgumentException {
+    public class AmlFragmentEvaluationException : ArgumentException {
 
-        public Aml20FragmentEvaluationException(string message) : base(message)
+        public AmlFragmentEvaluationException(string message) : base(message)
         {
         }
 
-        public Aml20FragmentEvaluationException(string message, Exception innerException) : base(message, innerException)
+        public AmlFragmentEvaluationException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }
