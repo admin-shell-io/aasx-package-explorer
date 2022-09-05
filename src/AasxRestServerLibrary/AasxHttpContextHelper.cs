@@ -1190,7 +1190,9 @@ namespace AasxRestServerLibrary
 
             switch (fragmentType)
             {
+                case "aml":
                 case "aml20":
+                case "aml21":
                     this.EvalGetAMLFragment(context, packageStream, fragment);
                     break;
                 // possibility to add support for more fragment types in the future
