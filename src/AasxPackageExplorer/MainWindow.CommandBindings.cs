@@ -31,8 +31,8 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
-using AasxSignature;
-using AasxUANodesetImExport;
+// OZOZ using AasxSignature;
+// OZOZ using AasxUANodesetImExport;
 using AdminShellNS;
 using AnyUi;
 using Jose;
@@ -40,7 +40,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Org.BouncyCastle.Crypto;
-using Org.Webpki.JsonCanonicalizer;
+// OZOZ using Org.Webpki.JsonCanonicalizer;
 
 namespace AasxPackageExplorer
 {
@@ -554,8 +554,9 @@ namespace AasxPackageExplorer
                             s = JsonConvert.SerializeObject(smc, Formatting.Indented);
                         }
                         json.value = s;
-                        JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
-                        string result = jsonCanonicalizer.GetEncodedString();
+                        // OZOZ JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                        // OZOZ string result = jsonCanonicalizer.GetEncodedString();
+                        string result = "";
                         canonical.value = result;
                         if (smc == null)
                         {
@@ -898,8 +899,9 @@ namespace AasxPackageExplorer
                                 {
                                     s = JsonConvert.SerializeObject(smcp, Formatting.Indented);
                                 }
-                                JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
-                                string result = jsonCanonicalizer.GetEncodedString();
+                                // OZOZ JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                                // OZOZ string result = jsonCanonicalizer.GetEncodedString();
+                                string result = "";
 
                                 X509Store storeCA = new X509Store("CA", StoreLocation.CurrentUser);
                                 storeCA.Open(OpenFlags.ReadWrite);
@@ -1044,11 +1046,11 @@ namespace AasxPackageExplorer
                 {
                     if (cmd == "sign")
                     {
-                        PackageHelper.SignAll(dlg.FileName);
+                        // OZOZ packageHelper.SignAll(dlg.FileName);
                     }
                     if (cmd == "validatecertificate")
                     {
-                        PackageHelper.Validate(dlg.FileName);
+                        // OZOZ PackageHelper.Validate(dlg.FileName);
                     }
                     if (cmd == "encrypt")
                     {
@@ -1858,6 +1860,8 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ServerRest()
         {
+            // OZOZ
+            /*
             // make a logger
             var logger = new AasxRestServerLibrary.GrapevineLoggerToListOfStrings();
 
@@ -1882,18 +1886,24 @@ namespace AasxPackageExplorer
             {
                 AasxRestServerLibrary.AasxRestServer.Stop();
             });
+            */
         }
 
         public class FlyoutAgentMqttPublisher : FlyoutAgentBase
         {
+            // OZOZ 
+            /*
             public AasxMqttClient.AnyUiDialogueDataMqttPublisher DiaData;
             public AasxMqttClient.GrapevineLoggerToStoredPrints Logger;
             public AasxMqttClient.MqttClient Client;
             public BackgroundWorker Worker;
+            */
         }
 
         public void CommandBinding_MQTTPub()
         {
+            //OZOZ 
+            /*
             // make an agent
             var agent = new FlyoutAgentMqttPublisher();
 
@@ -1976,11 +1986,14 @@ namespace AasxPackageExplorer
 
             // modal dialogue
             this.StartFlyoverModal(uc2, closingAction: () => { });
+            */
         }
 
         static string lastConnectInput = "";
         public async void CommandBinding_ConnectRest()
         {
+            // OZOZ 
+            /*
             var uc = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
             if (lastConnectInput == "")
             {
@@ -2069,7 +2082,7 @@ namespace AasxPackageExplorer
                         if (_packageCentral.MainAvailable)
                             _packageCentral.MainItem.Close();
                         File.Delete(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx");
-                        await AasxOpenIdClient.OpenIDClient.Run(tag, value/*, this*/);
+                        await AasxOpenIdClient.OpenIDClient.Run(tag, value);
 
                         if (File.Exists(AasxOpenIdClient.OpenIDClient.outputDir + "\\download.aasx"))
                             UiLoadPackageWithNew(
@@ -2097,6 +2110,7 @@ namespace AasxPackageExplorer
                     }
                 }
             }
+            */
         }
 
         public void CommandBinding_BMEcatImport()
@@ -2439,6 +2453,8 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_SubmodelPut()
         {
+            // OZOZ 
+            /*
             VisualElementSubmodelRef ve1 = null;
 
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
@@ -2484,12 +2500,15 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Error(ex, $"Connecting to REST server {PUTURL}");
             }
+            */
         }
 
         static string GETURL = "http://???:51310";
 
         public void CommandBinding_SubmodelGet()
         {
+            // OZOZ 
+            /*
             VisualElementSubmodelRef ve1 = null;
 
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
@@ -2584,6 +2603,7 @@ namespace AasxPackageExplorer
                 RedrawAllAasxElements();
                 RedrawElementView();
             }
+            */
         }
 
         public void CommandBinding_OpcUaClientRead()
@@ -2762,7 +2782,7 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
+                // OZOZ dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
             }
             catch (Exception e)
             {
@@ -2803,8 +2823,8 @@ namespace AasxPackageExplorer
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
-                    submodel);
+                // OZOZ dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
+                // OZOZ submodel);
             }
             catch (Exception e)
             {
@@ -2875,8 +2895,8 @@ namespace AasxPackageExplorer
                 {
                     // do it
                     RememberForInitialDirectory(dlg.FileName);
-                    AasxBammRdfImExport.BAMMRDFimport.ImportInto(
-                        dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    // OZOZ AasxBammRdfImExport.BAMMRDFimport.ImportInto(
+                    // OZOZ dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
                     // redisplay
                     RedrawAllAasxElements();
                     RedrawElementView();
@@ -3472,6 +3492,8 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportOPCUANodeSet()
         {
+            // OZOZ 
+            /*
             //choose File to import to
             var dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
@@ -3491,10 +3513,13 @@ namespace AasxPackageExplorer
             }
 
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            */
         }
 
         public void CommandBinding_ExportOPCUANodeSet()
         {
+            // OZOZ 
+            /*
             // try to access I4AAS export information
             UANodeSet InformationModel = null;
             try
@@ -3551,10 +3576,13 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Error(ex, "when exporting i4AAS based OPC UA mapping.");
             }
+            */
         }
 
         public void CommandBinding_ExportSMD()
         {
+            // OZOZ 
+            /*
             // trivial things
             if (!_packageCentral.MainStorable)
             {
@@ -3620,6 +3648,7 @@ namespace AasxPackageExplorer
             // Redraw for changes to be visible
             RedrawAllAasxElements();
             //-----------------------------------
+            */
         }
     }
 }

@@ -22,6 +22,19 @@
     <Reference Include="PresentationFramework.Aero2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
+    <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
+	  <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+  </ItemGroup>
+
+  <!--
+  
+    <ItemGroup>
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
 	<ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj" />
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
@@ -42,8 +55,7 @@
     <ProjectReference Include="..\jsoncanonicalizer\jsoncanonicalizer.csproj" />
     <ProjectReference Include="..\es6numberserializer\es6numberserializer.csproj" />
   </ItemGroup>
-
-  <!--
+  
     The default options for Debug differ from Release such that the plugin directory is
     ".", while Release's plugin directory is ".\\plugins"
   -->
@@ -67,6 +79,7 @@
   </Choose>
 
   <ItemGroup>
+    <Folder Include="Flyout\" />
     <None Update="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -104,7 +117,9 @@
     <None Include="content-for-demo\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Remove="Flyout\MqttPublisherFlyout.xaml.cs" />
     <None Remove="i4AASCS.xml" />
+    <Page Remove="Flyout\MqttPublisherFlyout.xaml" />
     <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -126,11 +141,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="Flyout\MqttPublisherFlyout.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
   <PropertyGroup />
   <ProjectExtensions />
