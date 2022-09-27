@@ -75,6 +75,9 @@ namespace AasxPackageExplorer
         public static Dictionary<string, Plugins.PluginInstance> LoadAndActivatePlugins(
             IReadOnlyList<OptionsInformation.PluginDllInfo> pluginDllInfos)
         {
+            // OZOZ
+            return null;
+
             // Plugins to be loaded
             if (pluginDllInfos.Count == 0) return new Dictionary<string, Plugins.PluginInstance>();
 

@@ -1582,6 +1582,9 @@ namespace AasxPackageExplorer
 
         private async Task MainTimer_HandleApplicationEvents()
         {
+            // OZOZ
+            return;
+
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {
