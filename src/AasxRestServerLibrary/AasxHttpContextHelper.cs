@@ -1195,6 +1195,9 @@ namespace AasxRestServerLibrary
                 case "aml21":
                     this.EvalGetAMLFragment(context, packageStream, fragment);
                     break;
+                case "xml":
+                    this.EvalGetXMLFragment(context, packageStream, fragment);
+                    break;
                 // possibility to add support for more fragment types in the future
                 default:
                     context.Response.SendResponse(
