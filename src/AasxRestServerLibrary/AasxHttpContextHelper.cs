@@ -1188,15 +1188,20 @@ namespace AasxRestServerLibrary
                 return;
             }
 
+            this.EvalGetFragment(context, packageStream, fragmentType, fragment);
+        }
+
+        public void EvalGetFragment(IHttpContext context, Stream fragmentFileStream, string fragmentType, string fragment)
+        {
             switch (fragmentType)
             {
                 case "aml":
                 case "aml20":
                 case "aml21":
-                    this.EvalGetAMLFragment(context, packageStream, fragment);
+                    this.EvalGetAMLFragment(context, fragmentFileStream, fragment);
                     break;
                 case "xml":
-                    this.EvalGetXMLFragment(context, packageStream, fragment);
+                    this.EvalGetXMLFragment(context, fragmentFileStream, fragment);
                     break;
                 // possibility to add support for more fragment types in the future
                 default:
@@ -1206,7 +1211,7 @@ namespace AasxRestServerLibrary
                     break;
             }
 
-            packageStream.Close();
+            fragmentFileStream.Close();
         }
 
         public void EvalPutSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids)
