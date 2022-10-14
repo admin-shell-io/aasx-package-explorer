@@ -43,7 +43,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         }
 
         /* TODO (MIHO, 2021-11-17): damned, weird dependency reasons between
-         * .netstandard2.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
+         * .net6.0 and .net472 seem NOT TO ALLOW referring to AasxIntegrationBase.
          * Fix */
         private static T LoadDefaultOptionsFromAssemblyDirXXXX<T>(
             string pluginName, Assembly assy = null,

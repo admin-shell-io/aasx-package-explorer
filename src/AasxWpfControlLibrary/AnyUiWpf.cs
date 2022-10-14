@@ -7,13 +7,15 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxPackageExplorer;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,13 +23,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using AasxIntegrationBase;
-using AasxPackageExplorer;
-using AasxPackageLogic;
-using AasxPackageLogic.PackageCentral;
-using AasxWpfControlLibrary;
-using AdminShellNS;
-using Newtonsoft.Json;
 
 namespace AnyUi
 {
@@ -797,15 +792,15 @@ namespace AnyUi
                    }
                 }),
 
-                new RenderRec(typeof(AnyUiCountryFlag), typeof(CountryFlag.CountryFlag), (a, b, mode) =>
+                new RenderRec(typeof(AnyUiCountryFlag), typeof(CountryFlag.Wpf.CountryFlag), (a, b, mode) =>
                 {
-                   if (a is AnyUiCountryFlag cntl && b is CountryFlag.CountryFlag wpf
+                   if (a is AnyUiCountryFlag cntl && b is CountryFlag.Wpf.CountryFlag wpf
                        && mode == AnyUiRenderMode.All)
                    {
                         // need to translate two enums
-                        foreach (var ev in (CountryFlag.CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
-                            if (Enum.GetName(typeof(CountryFlag.CountryCode), ev)?.Trim().ToUpper() == cntl.ISO3166Code)
-                                wpf.Code = ev;
+                        //foreach (var ev in (CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
+                        //    if (Enum.GetName(typeof(CountryCode), ev)?.Trim().ToUpper() == cntl.ISO3166Code)
+                        //        wpf.Code = ev;
                    }
                 }),
 

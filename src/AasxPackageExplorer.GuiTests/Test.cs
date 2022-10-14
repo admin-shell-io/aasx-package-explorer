@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Interop;
 using FlaUI.Core.AutomationElements;
 using FlaUI.Core.Definitions;
+using FlaUI.Core.Tools;
 using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 using AssertionException = NUnit.Framework.AssertionException;

@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
@@ -16,9 +16,9 @@
     <Resource Include="LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="ScottPlot" Version="4.1.26" />
-    <PackageReference Include="ScottPlot.WPF" Version="4.1.26" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="ScottPlot" Version="4.1.58" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.58" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="WpfPlotViewControlCumulative.xaml.cs">

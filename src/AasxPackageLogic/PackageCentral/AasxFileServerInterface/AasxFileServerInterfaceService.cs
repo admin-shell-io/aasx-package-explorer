@@ -16,6 +16,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using IO.Swagger.Api;
 using IO.Swagger.Client;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using RestSharp;
 
@@ -197,11 +198,11 @@ namespace AasxPackageLogic.PackageCentral
                 this.runtimeOptions = runtimeOptions;
             }
 
-            internal void Action(Stream str, IHttpResponse httpResp)
+            internal void Action(Stream str, HttpResponse httpResp)
             {
-                if (httpResp.StatusCode == System.Net.HttpStatusCode.OK)
+                if (httpResp.StatusCode == (int)System.Net.HttpStatusCode.OK)
                 {
-                    var headerDict = httpResp.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value));
+                    var headerDict = httpResp.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
                     headerDict.TryGetValue("X-FileName", out string fileName);
                     headerDict.TryGetValue("Content-Length", out string contentLength);
                     long.TryParse(contentLength, out long fileSize);

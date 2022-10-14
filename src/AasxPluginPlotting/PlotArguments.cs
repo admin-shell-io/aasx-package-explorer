@@ -147,7 +147,7 @@ namespace AasxPluginPlotting
             return null;
         }
 
-        public ScottPlot.Drawing.Palette GetScottPalette()
+        public ScottPlot.IPalette GetScottPalette()
         {
             if (palette?.HasContent() == true)
                 foreach (var pl in ScottPlot.Palette.GetPalettes())

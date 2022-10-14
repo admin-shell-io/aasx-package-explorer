@@ -1,9 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
     <UseWPF>true</UseWPF>
 
     <!--
@@ -11,16 +13,12 @@
 	        * Dotnet CLI will only recognize "Platform",
 			* Visual Studio will only recognize "Platforms".
 	-->
-	<Platforms>x64</Platforms>
+	<Platforms>x64;AnyCPU</Platforms>
 	<Platform>x64</Platform>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>aasx.ico</ApplicationIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- This is needed for XAML. InspectCode complains otherwise. -->
-    <Reference Include="PresentationFramework.Aero2" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
@@ -126,14 +124,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <!-- Workaround for https://github.com/dotnet/wpf/issues/2648#issuecomment-635674683 -->
-    <Reference Include="System.Web" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="ExhaustiveMatching.Analyzer" Version="0.5.0" />
-    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="jose-jwt" Version="2.5.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
+    <PackageReference Include="jose-jwt" Version="4.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

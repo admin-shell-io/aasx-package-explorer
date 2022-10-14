@@ -26,7 +26,6 @@ using AdminShellNS;
 using AnyUi;
 using MQTTnet;
 using MQTTnet.Client;
-using MQTTnet.Client.Options;
 using Newtonsoft.Json;
 
 namespace AasxMqttClient
@@ -221,7 +220,7 @@ namespace AasxMqttClient
                                         _diaData.FirstTopicAAS, defaultIfNull: "AAS",
                                         aasIdShort: aas.idShort, aasId: aas.identification))
                                    .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(aas))
-                                   .WithExactlyOnceQoS()
+                                   .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                    .WithRetainFlag(_diaData.MqttRetain)
                                    .Build();
 
@@ -240,7 +239,7 @@ namespace AasxMqttClient
                                             aasIdShort: aas.idShort, aasId: aas.identification,
                                             smIdShort: sm.idShort, smId: sm.identification))
                                        .WithPayload(Newtonsoft.Json.JsonConvert.SerializeObject(sm))
-                                       .WithExactlyOnceQoS()
+                                       .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                        .WithRetainFlag(_diaData.MqttRetain)
                                        .Build();
 
@@ -292,7 +291,7 @@ namespace AasxMqttClient
                                 smIdShort: sm.idShort, smId: sm.identification,
                                 path: pathStr))
                             .WithPayload(valStr)
-                            .WithExactlyOnceQoS()
+                            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build();
                 _mqttClient.PublishAsync(msg).GetAwaiter().GetResult();
@@ -353,7 +352,7 @@ namespace AasxMqttClient
                                 smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                                 path: pathStr))
                             .WithPayload(valStr)
-                            .WithExactlyOnceQoS()
+                            .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                             .WithRetainFlag(_diaData.MqttRetain)
                             .Build());
 
@@ -400,7 +399,7 @@ namespace AasxMqttClient
                         smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                         path: pathStr))
                     .WithPayload(valStr)
-                    .WithExactlyOnceQoS()
+                    .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                     .WithRetainFlag(_diaData.MqttRetain)
                     .Build();
 
@@ -451,7 +450,7 @@ namespace AasxMqttClient
                                     smIdShort: ri?.Submodel?.idShort, smId: ri?.Submodel?.identification,
                                     path: sourcePathStr))
                                .WithPayload(json)
-                               .WithExactlyOnceQoS()
+                               .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                                .WithRetainFlag(_diaData.MqttRetain)
                                .Build();
 
