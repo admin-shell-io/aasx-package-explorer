@@ -27,24 +27,20 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
+using AdminShellNS;
+using Opc.Ua;
+using Opc.Ua.Server;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Xml;
-using System.Xml.Serialization;
-using AdminShellNS;
-using Opc.Ua;
-using Opc.Ua.Sample;
 
 namespace AasOpcUaServer
 {
     /// <summary>
     /// A node manager the diagnostic information exposed by the server.
     /// </summary>
-    public class AasModeManager : SampleNodeManager
+    public class AasModeManager : CustomNodeManager2
     {
         private AdminShellPackageEnv thePackageEnv = null;
         private AasxUaServerOptions theServerOptions = null;
@@ -328,12 +324,6 @@ namespace AasOpcUaServer
                         builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects?.NodeId);
                     }
 
-                    // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
-                    this.AddExternalReferencePublic(new NodeId(85, 0), ReferenceTypeIds.Organizes, false,
-                        builder.RootAAS.NodeId, externalReferences);
-                    this.AddExternalReferencePublic(builder.RootAAS.NodeId, ReferenceTypeIds.Organizes, true,
-                        new NodeId(85, 0), externalReferences);
-
                     // Folders for DataSpecs
                     // DO NOT USE THIS FEATURE -> Data Spec are "under" the CDs
                     //// builder.RootDataSpecifications = builder.CreateAddFolder(
@@ -373,13 +363,6 @@ namespace AasOpcUaServer
                         }
 
                         topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeServer?.NodeId);
-
-                        // Note: this is TOTALLY WEIRD, but it establishes an inverse reference .. somehow
-                        // 2253 = Server.Dictionaries ?
-                        this.AddExternalReferencePublic(new NodeId(2253, 0),
-                            ReferenceTypeIds.HasComponent, false, topOfDict.NodeId, externalReferences);
-                        this.AddExternalReferencePublic(topOfDict.NodeId,
-                            ReferenceTypeIds.HasComponent, true, new NodeId(2253, 0), externalReferences);
 
                         // now, create a dictionary under ..
                         // Folders for Concept Descriptions
@@ -469,6 +452,8 @@ namespace AasOpcUaServer
                     }
                 }
 
+                AddReverseReferences(externalReferences);
+
                 Debug.WriteLine("Done creating custom address space!");
                 Utils.Trace(Utils.TraceMasks.Operation,
                     "Done creating custom address space!");
@@ -529,54 +514,6 @@ namespace AasOpcUaServer
             return predefinedNode;
         }
 
-        /// <summary>
-        /// Does any processing after a monitored item is created.
-        /// </summary>
-        protected override void OnCreateMonitoredItem(
-            ISystemContext systemContext,
-            MonitoredItemCreateRequest itemToCreate,
-            MonitoredNode monitoredNode,
-            DataChangeMonitoredItem monitoredItem)
-        {
-            // TBD
-        }
-
-        /// <summary>
-        /// Does any processing after a monitored item is created.
-        /// </summary>
-        protected override void OnModifyMonitoredItem(
-            ISystemContext systemContext,
-            MonitoredItemModifyRequest itemToModify,
-            MonitoredNode monitoredNode,
-            DataChangeMonitoredItem monitoredItem,
-            double previousSamplingInterval)
-        {
-            // TBD
-        }
-
-        /// <summary>
-        /// Does any processing after a monitored item is deleted.
-        /// </summary>
-        protected override void OnDeleteMonitoredItem(
-            ISystemContext systemContext,
-            MonitoredNode monitoredNode,
-            DataChangeMonitoredItem monitoredItem)
-        {
-            // TBD
-        }
-
-        /// <summary>
-        /// Does any processing after a monitored item is created.
-        /// </summary>
-        protected override void OnSetMonitoringMode(
-            ISystemContext systemContext,
-            MonitoredNode monitoredNode,
-            DataChangeMonitoredItem monitoredItem,
-            MonitoringMode previousMode,
-            MonitoringMode currentMode)
-        {
-            // TBD
-        }
         #endregion
 
         #region Private Fields

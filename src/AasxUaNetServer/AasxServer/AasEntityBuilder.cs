@@ -333,13 +333,12 @@ namespace AasOpcUaServer
             x.Symmetric = false;
             x.IsAbstract = false;
             x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
 
             // set Subtype reference
             if (sourceId == null)
                 sourceId = new NodeId(32, 0);
-            nodeMgr.AddExternalReferencePublic(sourceId, ReferenceTypeIds.HasSubtype, false,
-                x.NodeId, nodeMgrExternalReferences);
+            //nodeMgr.AddReference(sourceId, ReferenceTypeIds.HasSubtype, false, x.NodeId, nodeMgrExternalReferences);
 
             if (extraSubtype != null)
                 x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: true, extraSubtype);
@@ -361,7 +360,7 @@ namespace AasOpcUaServer
             x.DisplayName = browseDisplayName;
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
             x.TypeDefinitionId = ObjectTypeIds.FolderType;
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             if (parent != null && !doNotAddToParent)
                 parent.AddChild(x);
 
@@ -380,7 +379,7 @@ namespace AasOpcUaServer
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
             x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             return x;
         }
 
@@ -405,7 +404,7 @@ namespace AasOpcUaServer
             var x = AasUaNodeHelper.CreateObjectType(browseDisplayName, superTypeId, descriptionKey: descriptionKey);
             x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
                 x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             return x;
         }
 
@@ -430,8 +429,7 @@ namespace AasOpcUaServer
             x.SuperTypeId = superTypeId;
             x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
                 x, preferredNumId);
-
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             return x;
         }
 
@@ -461,7 +459,7 @@ namespace AasOpcUaServer
             var x = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId: typeDefinitionId,
                         modellingRule: modellingRule, extraName: extraName);
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
 
@@ -542,7 +540,7 @@ namespace AasOpcUaServer
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
 
             // add Node
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
 
@@ -587,7 +585,7 @@ namespace AasOpcUaServer
             m.Executable = true;
             m.UserExecutable = true;
 
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, m);
+            //nodeMgr.AddReference(nodeMgr.SystemContext, m);
             if (parent != null)
                 parent.AddChild(m);
 

@@ -32,12 +32,10 @@
 
 // ReSharper disable all
 
-using System;
-using System.IdentityModel.Selectors;
-using System.Security.Cryptography.X509Certificates;
-using System.Xml;
 using Opc.Ua;
 using Opc.Ua.Server;
+using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AasOpcUaServer
 {
@@ -67,7 +65,7 @@ namespace AasOpcUaServer
                             configuration.SecurityConfiguration.RejectedCertificateStore);
 
                         // set custom validator for user certificates.
-                        m_certificateValidator = (X509CertificateValidator)certificateValidator.GetChannelValidator();
+                        m_certificateValidator = certificateValidator.GetChannelValidator();
                     }
                 }
             }
@@ -179,7 +177,7 @@ namespace AasOpcUaServer
         #endregion
 
         #region Private Fields
-        private X509CertificateValidator m_certificateValidator;
+        private ICertificateValidator m_certificateValidator;
         #endregion 
     }
 }
