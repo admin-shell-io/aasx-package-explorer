@@ -474,6 +474,10 @@ namespace AasOpcUaServer
                 }
             }
 
+            //topOfDict.AddReference(ReferenceTypeIds.Organizes, true, root.NodeId);
+            //references.Add(new NodeStateReference(ReferenceTypes.Organizes, false, root.NodeId));
+            //AddPredefinedNode(SystemContext, root);
+
             return x;
         }
 

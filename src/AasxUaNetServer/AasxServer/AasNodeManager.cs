@@ -182,6 +182,30 @@ namespace AasOpcUaServer
         }
 
         #region INodeManager Members
+
+        private FolderState CreateAASFolder(IList<IReference> objectsFolder)
+        {
+            string name = "AssetAdminShell";
+            FolderState folder = new FolderState(null)
+            {
+                SymbolicName = name,
+                ReferenceTypeId = ReferenceTypes.Organizes,
+                TypeDefinitionId = ObjectTypeIds.FolderType,
+                NodeId = new NodeId(name, NamespaceIndex),
+                BrowseName = new QualifiedName(name, NamespaceIndex),
+                DisplayName = new LocalizedText("en", name),
+                WriteMask = AttributeWriteMask.None,
+                UserWriteMask = AttributeWriteMask.None,
+                EventNotifier = EventNotifiers.None
+            };
+
+            folder.AddReference(ReferenceTypes.Organizes, true, ObjectIds.ObjectsFolder);
+            objectsFolder.Add(new NodeStateReference(ReferenceTypes.Organizes, false, folder.NodeId));
+            AddPredefinedNode(SystemContext, folder);
+
+            return folder;
+        }
+        
         /// <summary>
         /// Does any initialization required before the address space can be used.
         /// </summary>
@@ -194,68 +218,56 @@ namespace AasOpcUaServer
         {
             lock (Lock)
             {
-                base.CreateAddressSpace(externalReferences);
+                var builder = new AasEntityBuilder(this, thePackageEnv, null, theServerOptions);
 
-                var builder = new AasEntityBuilder(this, thePackageEnv, null, this.theServerOptions);
-
-                // Overall root node is "Objects"
-                // Note: it would be better to already have the "Objects" NodeState, but not
-                // clear how to find ..
-                var fakeObjects = new BaseObjectState(null) { NodeId = new NodeId(85, 0) };
-                var fakeServer = new BaseObjectState(null) { NodeId = new NodeId(2253, 0) };
-
-                // remark: set parent to null, to disable for no HasComponent
-                if (!theServerOptions.LinkRootAsComponent)
+                // get a reference to the objects folder
+                IList<IReference> objectsFolder = null;
+                if (!externalReferences.TryGetValue(ObjectIds.ObjectsFolder, out objectsFolder))
                 {
-                    //fakeObjects = null;
-                    //fakeServer = null;
+                    externalReferences[ObjectIds.ObjectsFolder] = objectsFolder = new List<IReference>();
                 }
 
-                // Root of whole structure is special, needs to link to external reference
-                builder.RootAAS = builder.CreateAddFolder(AasUaBaseEntity.CreateMode.Instance,
-                    fakeObjects, "AASROOT",
-                    doNotAddToParent: true);
-                if (!theServerOptions.LinkRootAsComponent)
+                // create AAS folder under objects folder
+                FolderState root = CreateAASFolder(objectsFolder);
+   
+                // ceate dictionaries folder
+                var topOfDict = new BaseObjectState(root) 
                 {
-                    builder.RootAAS.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeObjects?.NodeId);
-                }
+                    NodeId = new NodeId("Dictionaries", NamespaceIndex)
+                };
 
+                if (theServerOptions.CeateDictionariesFolder)
                 {
-                    // create folder(s) under "Objects"
-                    var topOfDict = new BaseObjectState(null) { NodeId = new NodeId(17594, 0) };
-
-                    // it seems, that CeateDictionariesFolder always have to be true!
-                    // adding references to a node outside the own node space seems not to work
-                    if (theServerOptions.CeateDictionariesFolder)
-                    {
-                        topOfDict = builder.CreateAddObject(
-                            fakeServer,
-                            AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "Dictionaries",
-                            referenceTypeFromParentId: null,
-                            typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
-                    }
-
-                    topOfDict.AddReference(ReferenceTypeIds.Organizes, isInverse: true, fakeServer?.NodeId);
-
-                    // now, create a dictionary under ..
-                    // Folders for Concept Descriptions
-                    builder.RootConceptDescriptions = builder.CreateAddObject(topOfDict,
-                        AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "ConceptDescriptions",
-                        referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
-                        typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
-
-                    // create missing dictionary entries
-                    builder.RootMissingDictionaryEntries = builder.CreateAddObject(topOfDict,
-                        AasOpcUaServer.AasUaBaseEntity.CreateMode.Instance, "DictionaryEntries",
-                        referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
+                    topOfDict = builder.CreateAddObject(
+                        root,
+                        AasUaBaseEntity.CreateMode.Instance,
+                        "Dictionaries",
+                        referenceTypeFromParentId: null,
                         typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
                 }
 
-                // start process
+                // now, create a folder for Concept Descriptions
+                builder.RootConceptDescriptions = builder.CreateAddObject(
+                    topOfDict,
+                    AasUaBaseEntity.CreateMode.Instance,
+                    "ConceptDescriptions",
+                    referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
+                    typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+
+                // create missing dictionary entries
+                builder.RootMissingDictionaryEntries = builder.CreateAddObject(
+                    topOfDict,
+                    AasUaBaseEntity.CreateMode.Instance, 
+                    "DictionaryEntries",
+                    referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
+                    typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                
                 builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
 
-                if (theServerOptions != null
-                    && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
+                AddReverseReferences(externalReferences);
+
+                // write nodeset2.xml file, if required
+                if (theServerOptions != null && theServerOptions.SpecialJob == AasxUaServerOptions.JobType.ExportNodesetXml)
                 {
                     try
                     {
@@ -312,8 +324,6 @@ namespace AasOpcUaServer
                     }
                 }
             
-                AddReverseReferences(externalReferences);
-
                 Debug.WriteLine("Done creating custom address space!");
                 Utils.Trace(Utils.TraceMasks.Operation, "Done creating custom address space!");
             }
