@@ -94,9 +94,13 @@ namespace AasxRestServerLibrary
             var xPath = HttpUtility.UrlDecode(xmlFragment.Trim('/'));
 
             XPathNavigator navigator = xmlDocument.CreateNavigator();
-            XPathExpression query = navigator.Compile(xPath);
+            XPathExpression query;
 
-            if (query == null)
+            try
+            {
+                query = navigator.Compile(xPath);
+            }
+            catch
             {
                 throw new XmlFragmentEvaluationException($"Unable to compile xPath query '" + xPath + "'.");
             }
