@@ -321,9 +321,7 @@ namespace AasOpcUaServer
         //// Reference types
         //
 
-        public ReferenceTypeState CreateAddReferenceType(
-            string browseDisplayName, string inverseName,
-            uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null, ExpandedNodeId extraSubtype = null)
+        public ReferenceTypeState CreateAddReferenceType(string browseDisplayName, string inverseName, uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null, ExpandedNodeId extraSubtype = null)
         {
             // create node itself
             var x = new ReferenceTypeState();
@@ -332,13 +330,11 @@ namespace AasOpcUaServer
             x.InverseName = inverseName;
             x.Symmetric = false;
             x.IsAbstract = false;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
 
             // set Subtype reference
             if (sourceId == null)
                 sourceId = new NodeId(32, 0);
-            //nodeMgr.AddReference(sourceId, ReferenceTypeIds.HasSubtype, false, x.NodeId, nodeMgrExternalReferences);
 
             if (extraSubtype != null)
                 x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: true, extraSubtype);
@@ -350,8 +346,10 @@ namespace AasOpcUaServer
         //// Folders
         //
 
-        public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode,
-            NodeState parent, string browseDisplayName,
+        public FolderState CreateAddFolder(
+            AasUaBaseEntity.CreateMode mode,
+            NodeState parent,
+            string browseDisplayName,
             NodeId extraParentNodeId = null,
             bool doNotAddToParent = false)
         {
@@ -360,7 +358,8 @@ namespace AasOpcUaServer
             x.DisplayName = browseDisplayName;
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
             x.TypeDefinitionId = ObjectTypeIds.FolderType;
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+            x.ReferenceTypeId = ReferenceTypes.Organizes;
+
             if (parent != null && !doNotAddToParent)
                 parent.AddChild(x);
 
@@ -378,8 +377,8 @@ namespace AasOpcUaServer
             x.DisplayName = "" + browseDisplayName;
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+
             return x;
         }
 
@@ -402,9 +401,8 @@ namespace AasOpcUaServer
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             var x = AasUaNodeHelper.CreateObjectType(browseDisplayName, superTypeId, descriptionKey: descriptionKey);
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
-                x, preferredNumId);
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+
             return x;
         }
 
@@ -427,9 +425,8 @@ namespace AasOpcUaServer
             x.DisplayName = "" + browseDisplayName;
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
-                x, preferredNumId);
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+
             return x;
         }
 
@@ -459,7 +456,7 @@ namespace AasOpcUaServer
             var x = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId: typeDefinitionId,
                         modellingRule: modellingRule, extraName: extraName);
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
+
             if (parent != null)
                 parent.AddChild(x);
 
@@ -468,22 +465,14 @@ namespace AasOpcUaServer
                 if (parent != null)
                 {
                     parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
                 }
-
-                //// nodeMgr.AddReference(parentNodeId, new AasReference(referenceTypeId, false, x.NodeId));
             }
-
-            //// if (typeDefinitionId != null)
-            //// {
-            ////     x.TypeDefinitionId = typeDefinitionId;
-            ////     x.AddReference(ReferenceTypeIds.HasTypeDefinition, false, typeDefinitionId);
-            ////     // nodeMgr.AddReference(x.NodeId, new AasReference(ReferenceTypeIds.HasTypeDefinition, false, 
-            ////     // typeDefinitionId));
-            //// }
 
             return x;
         }
@@ -540,7 +529,6 @@ namespace AasOpcUaServer
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
 
             // add Node
-            //nodeMgr.AddReference(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
 
@@ -550,8 +538,10 @@ namespace AasOpcUaServer
                 if (parent != null)
                 {
                     parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
                 }
@@ -585,7 +575,6 @@ namespace AasOpcUaServer
             m.Executable = true;
             m.UserExecutable = true;
 
-            //nodeMgr.AddReference(nodeMgr.SystemContext, m);
             if (parent != null)
                 parent.AddChild(m);
 
@@ -594,8 +583,10 @@ namespace AasOpcUaServer
                 if (parent != null)
                 {
                     parent.AddReference(referenceTypeFromParentId, false, m.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
                         m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
                         m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
                 }

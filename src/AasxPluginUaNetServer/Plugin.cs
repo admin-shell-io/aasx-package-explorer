@@ -190,8 +190,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // run the server
                 try
                 {
-                    this.server = new UaServerWrapper(_autoAccept: true, _stopTimeout: 0, _aasxEnv: package,
-                        logger: logger, _serverOptions: internalOptions);
+                    this.server = new UaServerWrapper(_stopTimeout: 0, _aasxEnv: package, logger: logger, _serverOptions: internalOptions);
                     this.server.Run();
                 }
                 catch (Exception ex)

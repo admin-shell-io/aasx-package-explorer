@@ -18,7 +18,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.IdentityModel" />
-  </ItemGroup>
 </Project>

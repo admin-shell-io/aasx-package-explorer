@@ -216,6 +216,7 @@ namespace AdminShellNS
         private string _fn = "New Package";
 
         private string _tempFn = null;
+        private static long _size = 0;
 
         private AdminShell.AdministrationShellEnv _aasEnv = new AdminShell.AdministrationShellEnv();
         private Package _openPackage = null;
@@ -362,6 +363,7 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Open))
                         {
+                            _size = s.Length;
                             using (var file = new StreamReader(s))
                             {
                                 JsonSerializer serializer = new JsonSerializer();
@@ -378,6 +380,8 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Open))
                         {
+                            _size = s.Length;
+
                             // own catch loop to be more specific
                             aasEnv = AdminShellSerializationHelper.DeserializeXmlFromStreamWithCompat(s);
                             openPackage = package;
@@ -385,6 +389,7 @@ namespace AdminShellNS
                             if (aasEnv == null)
                                 throw new Exception("Type error for XML file!");
                         }
+                        specPart = null;
                     }
                 }
                 catch (Exception ex)
@@ -1045,6 +1050,7 @@ namespace AdminShellNS
 
             // exist
             var puri = new Uri(uriString, UriKind.RelativeOrAbsolute);
+
             if (!_openPackage.PartExists(puri))
                 throw (new Exception(string.Format($"AASX Package has no part {uriString}. Aborting!")));
 
@@ -1058,23 +1064,7 @@ namespace AdminShellNS
 
         public long GetStreamSizeFromPackage(string uriString)
         {
-            long res = 0;
-            try
-            {
-                if (_openPackage == null)
-                    return 0;
-                var part = _openPackage.GetPart(new Uri(uriString, UriKind.RelativeOrAbsolute));
-                using (var s = part.GetStream(FileMode.Open))
-                {
-                    res = s.Length;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogInternally.That.SilentlyIgnoredError(ex);
-                return 0;
-            }
-            return res;
+            return _size;
         }
 
         /// <remarks>

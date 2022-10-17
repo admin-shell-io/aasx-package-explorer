@@ -1977,10 +1977,7 @@ namespace AasOpcUaServer
             : base(entityBuilder)
         {
             // create type object
-            this.typeObject = this.entityBuilder.CreateAddReferenceType("AASReference", "AASReferencedBy",
-                preferredTypeNumId, useZeroNS: false,
-                extraSubtype: new NodeId(31, 0) /* request Florian */
-            );
+            this.typeObject = this.entityBuilder.CreateAddReferenceType("AASReference", "AASReferencedBy", preferredTypeNumId, useZeroNS: false, extraSubtype: new NodeId(31, 0) /* request Florian */);
         }
 
         public NodeState CreateAddInstanceReference(NodeState parent)

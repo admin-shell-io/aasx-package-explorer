@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AasxUaNetConsoleServer": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Code\\aasx-server\\src\\AasxServerBlazor\\erich-repo.aasx"
+    }
+  }
+}
