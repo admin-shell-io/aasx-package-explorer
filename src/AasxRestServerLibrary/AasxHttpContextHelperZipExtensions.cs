@@ -260,20 +260,28 @@ namespace AasxRestServerLibrary
                 {
                     // only go to the first level of children in case we are in 'core' mode
 
-                    var children = GetChildren(archive, path, false);
-                    if (children.Count() == 0)
+                    try
                     {
-                        return result;
+                        var children = GetChildren(archive, path, false);
+
+                        if (children.Count() == 0)
+                        {
+                            return result;
+                        }
+
+                        JArray childArray = new JArray();
+
+                        foreach (var child in children)
+                        {
+                            childArray.Add(BuildJsonRecursively(archive, child, deep, level+1));
+                        }
+
+                        result["subEntries"] = childArray;
                     }
-
-                    JArray childArray = new JArray();
-
-                    foreach (var child in children)
+                    catch (Exception e)
                     {
-                        childArray.Add(BuildJsonRecursively(archive, child, deep, level+1));
+                        throw new ZipFragmentEvaluationException("An internal error occurred while trying to recurse through the ZIP file!", e);
                     }
-
-                    result["subEntries"] = childArray;
 
                 }
 
@@ -285,18 +293,12 @@ namespace AasxRestServerLibrary
         {
             SortedSet<string> result = new SortedSet<string>();
 
-            foreach (var entry in archive.Entries)
+            foreach (var entry in archive?.Entries)
             {
-                string entryPath = entry.FullName.TrimEnd(PathSeparators).Replace("\\\\", "\\");
+                string entryPath = entry.FullName?.TrimEnd(PathSeparators).Replace("\\\\", "\\");                
+                string relativeEntryPath = GetRelativePath(path, entryPath);
 
-                if (entryPath == path || !entryPath.StartsWith(path))
-                {
-                    continue;
-                }
-                
-                string relativeEntryPath = path == "" ? entryPath : entryPath.Replace(path, "");
-
-                if (relativeEntryPath.Length == 1 && PathSeparators.Contains(relativeEntryPath[0]))
+                if (relativeEntryPath == null)
                 {
                     continue;
                 }
@@ -317,6 +319,28 @@ namespace AasxRestServerLibrary
             }
 
             return result;
+        }
+
+        private string GetRelativePath(string sourcePath, string targetPath)
+        {
+            if (targetPath == null || !targetPath.StartsWith(sourcePath) || sourcePath == targetPath) {
+                return null;
+            }
+
+            if (sourcePath == null || sourcePath.Length == 0)
+            {
+                return targetPath;
+            }
+
+            string relativePath =  targetPath.Substring(sourcePath.Length, targetPath.Length - sourcePath.Length);
+
+            if (relativePath.Length == 1 && PathSeparators.Contains(relativePath[0]))
+            {
+                // the paths are actually the same and only differ in a trailing slash
+                return null;
+            }
+
+            return relativePath;
         }
     }
 
