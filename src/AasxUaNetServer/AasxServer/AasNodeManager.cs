@@ -30,6 +30,7 @@
 using AdminShellNS;
 using Opc.Ua;
 using Opc.Ua.Server;
+using Org.BouncyCastle.Asn1.X509;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace AasOpcUaServer
     /// <summary>
     /// A node manager the diagnostic information exposed by the server.
     /// </summary>
-    public class AasModeManager : CustomNodeManager2
+    public class AasNodeManager : CustomNodeManager2
     {
         private AdminShellPackageEnv thePackageEnv = null;
         private AasxUaServerOptions theServerOptions = null;
@@ -49,13 +50,13 @@ namespace AasOpcUaServer
         /// <summary>
         /// Initializes the node manager.
         /// </summary>
-        public AasModeManager(
-            Opc.Ua.Server.IServerInternal server,
+        public AasNodeManager(
+            IServerInternal server,
             ApplicationConfiguration configuration,
             AdminShellPackageEnv env,
             AasxUaServerOptions serverOptions = null)
         :
-            base(server)
+            base(server, configuration)
         {
             thePackageEnv = env;
             theServerOptions = serverOptions;
@@ -67,7 +68,7 @@ namespace AasOpcUaServer
             NamespaceUris = namespaceUris;
 
             m_typeNamespaceIndex = Server.NamespaceUris.GetIndexOrAppend(namespaceUris[0]);
-            m_namespaceIndex = Server.NamespaceUris.GetIndexOrAppend(namespaceUris[1]);
+            m_instanceNamespaceIndex = Server.NamespaceUris.GetIndexOrAppend(namespaceUris[1]);
 
             m_lastUsedId = 0;
         }
@@ -91,7 +92,7 @@ namespace AasOpcUaServer
             }
             else
             {
-                return new NodeId(id, m_namespaceIndex);
+                return new NodeId(id, m_instanceNamespaceIndex);
             }
         }
         #endregion
@@ -186,22 +187,21 @@ namespace AasOpcUaServer
         private FolderState CreateAASFolder(IList<IReference> objectsFolder)
         {
             string name = "AssetAdminShell";
+
             FolderState folder = new FolderState(null)
             {
                 SymbolicName = name,
                 ReferenceTypeId = ReferenceTypes.Organizes,
                 TypeDefinitionId = ObjectTypeIds.FolderType,
-                NodeId = new NodeId(name, NamespaceIndex),
-                BrowseName = new QualifiedName(name, NamespaceIndex),
+                NodeId = new NodeId(name, m_instanceNamespaceIndex),
+                BrowseName = new QualifiedName(name, m_instanceNamespaceIndex),
                 DisplayName = new LocalizedText("en", name),
                 WriteMask = AttributeWriteMask.None,
                 UserWriteMask = AttributeWriteMask.None,
                 EventNotifier = EventNotifiers.None
             };
 
-            folder.AddReference(ReferenceTypes.Organizes, true, ObjectIds.ObjectsFolder);
-            objectsFolder.Add(new NodeStateReference(ReferenceTypes.Organizes, false, folder.NodeId));
-            AddPredefinedNode(SystemContext, folder);
+            objectsFolder?.Add(new NodeStateReference(ReferenceTypes.Organizes, false, folder.NodeId));
 
             return folder;
         }
@@ -229,41 +229,35 @@ namespace AasOpcUaServer
 
                 // create AAS folder under objects folder
                 FolderState root = CreateAASFolder(objectsFolder);
-   
+                builder.RootAAS = root;
+
                 // ceate dictionaries folder
-                var topOfDict = new BaseObjectState(root) 
-                {
-                    NodeId = new NodeId("Dictionaries", NamespaceIndex)
-                };
+                BaseObjectState topOfDict = builder.CreateAddObject(
+                    root,
+                    AasUaBaseEntity.CreateMode.Instance,
+                    "Dictionaries",
+                    null,
+                    builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
 
-                if (theServerOptions.CeateDictionariesFolder)
-                {
-                    topOfDict = builder.CreateAddObject(
-                        root,
-                        AasUaBaseEntity.CreateMode.Instance,
-                        "Dictionaries",
-                        referenceTypeFromParentId: null,
-                        typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
-                }
-
-                // now, create a folder for Concept Descriptions
+                // create a folder for Concept Descriptions
                 builder.RootConceptDescriptions = builder.CreateAddObject(
                     topOfDict,
                     AasUaBaseEntity.CreateMode.Instance,
                     "ConceptDescriptions",
-                    referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
-                    typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+                    ReferenceTypeIds.HasComponent,
+                    builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
 
-                // create missing dictionary entries
+                // create dictionary entries
                 builder.RootMissingDictionaryEntries = builder.CreateAddObject(
                     topOfDict,
                     AasUaBaseEntity.CreateMode.Instance, 
                     "DictionaryEntries",
-                    referenceTypeFromParentId: ReferenceTypeIds.HasComponent,
-                    typeDefinitionId: builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
-                
+                    ReferenceTypeIds.HasComponent,
+                    builder.AasTypes.DictionaryFolderType.GetTypeNodeId());
+
                 builder.CreateAddInstanceObjects(thePackageEnv.AasEnv);
 
+                AddPredefinedNode(SystemContext, root);
                 AddReverseReferences(externalReferences);
 
                 // write nodeset2.xml file, if required
@@ -329,47 +323,10 @@ namespace AasOpcUaServer
             }
         }
 
-        public NodeStateCollection GenerateInjectNodeStates()
-        {
-            // new list
-            var res = new NodeStateCollection();
-
-            // Missing Object Types
-            res.Add(AasUaNodeHelper.CreateObjectType("BaseInterfaceType",
-                ObjectTypeIds.BaseObjectType, new NodeId(17602, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryFolderType",
-                ObjectTypeIds.FolderType, new NodeId(17591, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("DictionaryEntryType",
-                ObjectTypeIds.BaseObjectType, new NodeId(17589, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("UriDictionaryEntryType",
-                new NodeId(17589, 0), new NodeId(17600, 0)));
-            res.Add(AasUaNodeHelper.CreateObjectType("IrdiDictionaryEntryType",
-                new NodeId(17589, 0), new NodeId(17598, 0)));
-
-            // Missing Reference Types
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasDictionaryEntry", "DictionaryEntryOf",
-                ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17597, 0)));
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasInterface", "InterfaceOf",
-                ReferenceTypeIds.NonHierarchicalReferences, new NodeId(17603, 0)));
-            res.Add(AasUaNodeHelper.CreateReferenceType("HasAddIn", "AddInOf",
-                ReferenceTypeIds.HasComponent, new NodeId(17604, 0)));
-
-            // deliver list
-            return res;
-        }
-
-        public void AddReference(NodeId node, IReference reference)
-        {
-            var dict = new Dictionary<NodeId, IList<IReference>>();
-            // ReSharper disable once RedundantExplicitArrayCreation
-            dict.Add(node, new List<IReference>(new IReference[] { reference }));
-            this.AddReferences(dict);
-        }
-
         #endregion
 
         #region Private Fields
-        private ushort m_namespaceIndex;
+        private ushort m_instanceNamespaceIndex;
         private ushort m_typeNamespaceIndex;
         private long m_lastUsedId;
         private long m_lastUsedTypeId;

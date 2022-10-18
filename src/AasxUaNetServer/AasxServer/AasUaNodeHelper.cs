@@ -7,11 +7,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Opc.Ua;
 
 namespace AasOpcUaServer
@@ -35,8 +30,12 @@ namespace AasOpcUaServer
         public static LocalizedText SetLocalizedTextWithDescription(LocalizedText l, string key)
         {
             var dk = AasEntityDescriptions.LookupDescription(key);
+
             if (key != null)
+            {
                 l = new LocalizedText("en", dk);
+            }
+
             return l;
         }
 
@@ -46,15 +45,30 @@ namespace AasOpcUaServer
         public static NodeState CheckSetModellingRule(ModellingRule modellingRule, NodeState o)
         {
             if (o == null || modellingRule == ModellingRule.None)
+            {
                 return o;
+            }
+
             if (modellingRule == ModellingRule.Optional)
+            {
                 o.AddReference(ReferenceTypeIds.HasModellingRule, false, ObjectIds.ModellingRule_Optional);
+            }
+
             if (modellingRule == ModellingRule.OptionalPlaceholder)
+            {
                 o.AddReference(ReferenceTypeIds.HasModellingRule, false, ObjectIds.ModellingRule_OptionalPlaceholder);
+            }
+
             if (modellingRule == ModellingRule.Mandatory)
+            {
                 o.AddReference(ReferenceTypeIds.HasModellingRule, false, ObjectIds.ModellingRule_Mandatory);
+            }
+
             if (modellingRule == ModellingRule.MandatoryPlaceholder)
+            {
                 o.AddReference(ReferenceTypeIds.HasModellingRule, false, ObjectIds.ModellingRule_MandatoryPlaceholder);
+            }
+
             return o;
         }
 
@@ -75,16 +89,22 @@ namespace AasOpcUaServer
             string descriptionKey = null,
             ModellingRule modellingRule = ModellingRule.None)
         {
-            var x = new BaseObjectTypeState();
-            x.BrowseName = "" + browseDisplayName;
-            x.DisplayName = "" + browseDisplayName;
-            x.Description = new LocalizedText("en", browseDisplayName);
-            x.Description = SetLocalizedTextWithDescription(x.Description, descriptionKey);
-            x.SuperTypeId = superTypeId;
+            BaseObjectTypeState baseObjectType = new()
+            {
+                BrowseName = "" + browseDisplayName,
+                DisplayName = "" + browseDisplayName,
+                Description = SetLocalizedTextWithDescription(new LocalizedText("en", browseDisplayName), descriptionKey),
+                SuperTypeId = superTypeId
+            };
+
             if (presetNodeId != null)
-                x.NodeId = presetNodeId;
-            CheckSetModellingRule(modellingRule, x);
-            return x;
+            {
+                baseObjectType.NodeId = presetNodeId;
+            }
+
+            CheckSetModellingRule(modellingRule, baseObjectType);
+            
+            return baseObjectType;
         }
 
         /// <summary>
@@ -102,17 +122,22 @@ namespace AasOpcUaServer
             NodeId superTypeId,
             NodeId presetNodeId = null)
         {
-            // create node itself
-            var x = new ReferenceTypeState();
-            x.BrowseName = browseDisplayName;
-            x.DisplayName = browseDisplayName;
-            x.InverseName = inverseName;
-            x.Symmetric = false;
-            x.IsAbstract = false;
-            x.SuperTypeId = superTypeId;
+            ReferenceTypeState referenceType = new()
+            {
+                BrowseName = browseDisplayName,
+                DisplayName = browseDisplayName,
+                InverseName = inverseName,
+                Symmetric = false,
+                IsAbstract = false,
+                SuperTypeId = superTypeId
+            };
+
             if (presetNodeId != null)
-                x.NodeId = presetNodeId;
-            return x;
+            {
+                referenceType.NodeId = presetNodeId;
+            }
+
+            return referenceType;
         }
 
         /// <summary>
@@ -132,16 +157,22 @@ namespace AasOpcUaServer
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None,
             string extraName = null)
         {
-            var x = new BaseObjectState(parent);
-            x.BrowseName = "" + browseDisplayName;
-            x.DisplayName = "" + browseDisplayName;
+            BaseObjectState baseObject = new(parent)
+            {
+                BrowseName = string.Empty + browseDisplayName,
+                DisplayName = string.Empty + browseDisplayName,
+                Description = new LocalizedText("en", string.Empty + browseDisplayName),
+                TypeDefinitionId = typeDefinitionId
+            };
+
             if (extraName != null)
-                x.DisplayName = "" + extraName;
-            x.Description = new LocalizedText("en", browseDisplayName);
-            if (typeDefinitionId != null)
-                x.TypeDefinitionId = typeDefinitionId;
-            CheckSetModellingRule(modellingRule, x);
-            return x;
+            {
+                baseObject.DisplayName = extraName;
+            }
+            
+            CheckSetModellingRule(modellingRule, baseObject);
+
+            return baseObject;
         }
 
     }

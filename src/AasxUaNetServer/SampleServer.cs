@@ -73,14 +73,11 @@ namespace AasOpcUaServer
         {
             Debug.WriteLine("Creating the Node Managers.");
 
-            List<INodeManager> nodeManagers = new List<INodeManager>();
+            List<INodeManager> nodeManagers = new()
+            {
+                new AasNodeManager(server, configuration, thePackageEnv, theServerOptions)
+            };
 
-            // create the custom node managers.
-            var aasnm = new global::AasOpcUaServer.AasModeManager(
-                            server, configuration, thePackageEnv, theServerOptions);
-            nodeManagers.Add(aasnm);
-
-            // create master node manager.
             return new MasterNodeManager(server, configuration, null, nodeManagers.ToArray());
         }
 
@@ -92,14 +89,15 @@ namespace AasOpcUaServer
         /// </remarks>
         protected override ServerProperties LoadServerProperties()
         {
-            ServerProperties properties = new ServerProperties();
-
-            properties.ManufacturerName = "OPC Foundation";
-            properties.ProductName = "OPC UA SDK Samples";
-            properties.ProductUri = "http://opcfoundation.org/UA/Samples/v1.0";
-            properties.SoftwareVersion = Utils.GetAssemblySoftwareVersion();
-            properties.BuildNumber = Utils.GetAssemblyBuildNumber();
-            properties.BuildDate = Utils.GetAssemblyTimestamp();
+            ServerProperties properties = new()
+            {
+                ManufacturerName = "OPC Foundation",
+                ProductName = "OPC UA SDK Samples",
+                ProductUri = "http://opcfoundation.org/UA/Samples/v1.0",
+                SoftwareVersion = Utils.GetAssemblySoftwareVersion(),
+                BuildNumber = Utils.GetAssemblyBuildNumber(),
+                BuildDate = Utils.GetAssemblyTimestamp()
+            };
 
             return properties;
         }
