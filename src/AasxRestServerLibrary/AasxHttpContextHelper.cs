@@ -1206,6 +1206,10 @@ namespace AasxRestServerLibrary
                 case "zip":
                     this.EvalGetZIPFragment(context, fragmentFileStream, fragment);
                     break;
+                case "xls":
+                case "xlsx":
+                    this.EvalGetXLSFragment(context, fragmentFileStream, fragment);
+                    break;
                 // possibility to add support for more fragment types in the future
                 default:
                     context.Response.SendResponse(
