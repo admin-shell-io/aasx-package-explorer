@@ -7,22 +7,18 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
+using AasxOpenIdClient;
+using AdminShellNS;
+using IdentityModel.Client;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
-using AasxIntegrationBase;
-using AasxOpenIdClient;
-using AdminShellNS;
-using IdentityModel.Client;
-using Newtonsoft.Json;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -199,12 +195,12 @@ namespace AasxPackageLogic.PackageCentral
                     string[] splitResult = redirectUrl.Split(new string[] { "?" },
                         StringSplitOptions.RemoveEmptyEntries);
                     splitResult[0] = splitResult[0].TrimEnd('/');
-                    var queryString = HttpUtility.ParseQueryString(splitResult[1]);
-                    string authType = queryString["authType"];
-                    if (authType == "keycloak")
-                    {
-                        OpenIDClient.keycloak = splitResult[0];
-                    }
+                    //var queryString = ParseQueryString(splitResult[1]);
+                    //string authType = queryString["authType"];
+                    //if (authType == "keycloak")
+                    //{
+                    //    OpenIDClient.keycloak = splitResult[0];
+                    //}
 
                     if (splitResult.Length < 1)
                     {
@@ -213,7 +209,7 @@ namespace AasxPackageLogic.PackageCentral
                     }
 
                     runtimeOptions?.Log?.Info("Redirect to: " + splitResult[0]);
-                    runtimeOptions?.Log?.Info("AuthType: " + authType);
+                    //runtimeOptions?.Log?.Info("AuthType: " + authType);
 
                     if (oidc == null)
                     {

@@ -136,7 +136,7 @@ namespace AasxPackageExplorer
                 if (csi.code.Trim().ToLower() == "dmc")
                 {
                     // DMC
-                    var barcodeWriter = new BarcodeWriter();
+                    var barcodeWriter = new BarcodeWriter<Bitmap>();
 
                     // set the barcode format
                     barcodeWriter.Format = BarcodeFormat.DATA_MATRIX;

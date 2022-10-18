@@ -22,7 +22,7 @@ namespace AasOpcUaServer
         //// Static singleton for AAS entity builders
         // ugly, but simple: the singleton variables gives access to information
         //
-        public static AasModeManager nodeMgr = null;
+        public static AasNodeManager nodeMgr = null;
 
         public AdminShellPackageEnv package = null;
 
@@ -51,7 +51,7 @@ namespace AasOpcUaServer
         /// </summary>
         public NodeState RootMissingDictionaryEntries = null;
 
-        public AasEntityBuilder(AasModeManager nodeMgr, AdminShellPackageEnv package,
+        public AasEntityBuilder(AasNodeManager nodeMgr, AdminShellPackageEnv package,
             IDictionary<NodeId, IList<IReference>> externalReferences, AasxUaServerOptions options)
         {
             AasEntityBuilder.nodeMgr = nodeMgr;
@@ -289,41 +289,7 @@ namespace AasOpcUaServer
             }
         }
 
-
-        //// references
-        //
-
-        // ReSharper disable once UnusedType.Global
-        public class AasReference : IReference
-        {
-            // private members
-            private NodeId referenceTypeId = null;
-            private bool isInverse = false;
-            private ExpandedNodeId targetId = null;
-
-            // public getters for IReference
-            public NodeId ReferenceTypeId { get { return referenceTypeId; } }
-            public bool IsInverse { get { return isInverse; } }
-            public ExpandedNodeId TargetId { get { return targetId; } }
-
-            public AasReference()
-            {
-            }
-
-            public AasReference(NodeId referenceTypeId, bool isInverse, ExpandedNodeId targetId)
-            {
-                this.referenceTypeId = referenceTypeId;
-                this.isInverse = isInverse;
-                this.targetId = targetId;
-            }
-        }
-
-        //// Reference types
-        //
-
-        public ReferenceTypeState CreateAddReferenceType(
-            string browseDisplayName, string inverseName,
-            uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null, ExpandedNodeId extraSubtype = null)
+        public ReferenceTypeState CreateAddReferenceType(string browseDisplayName, string inverseName, uint preferredNumId = 0, bool useZeroNS = false, NodeId sourceId = null, ExpandedNodeId extraSubtype = null)
         {
             // create node itself
             var x = new ReferenceTypeState();
@@ -332,14 +298,11 @@ namespace AasOpcUaServer
             x.InverseName = inverseName;
             x.Symmetric = false;
             x.IsAbstract = false;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
 
             // set Subtype reference
             if (sourceId == null)
                 sourceId = new NodeId(32, 0);
-            nodeMgr.AddExternalReferencePublic(sourceId, ReferenceTypeIds.HasSubtype, false,
-                x.NodeId, nodeMgrExternalReferences);
 
             if (extraSubtype != null)
                 x.AddReference(ReferenceTypeIds.HasSubtype, isInverse: true, extraSubtype);
@@ -347,29 +310,6 @@ namespace AasOpcUaServer
             // done
             return x;
         }
-
-        //// Folders
-        //
-
-        public FolderState CreateAddFolder(AasUaBaseEntity.CreateMode mode,
-            NodeState parent, string browseDisplayName,
-            NodeId extraParentNodeId = null,
-            bool doNotAddToParent = false)
-        {
-            var x = new FolderState(parent);
-            x.BrowseName = browseDisplayName;
-            x.DisplayName = browseDisplayName;
-            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
-            x.TypeDefinitionId = ObjectTypeIds.FolderType;
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
-            if (parent != null && !doNotAddToParent)
-                parent.AddChild(x);
-
-            return x;
-        }
-
-        //// DataTypes
-        //
 
         public DataTypeState CreateAddDataType(
             string browseDisplayName, NodeId superTypeId, uint preferredNumId = 0)
@@ -379,13 +319,10 @@ namespace AasOpcUaServer
             x.DisplayName = "" + browseDisplayName;
             x.Description = new LocalizedText("en", browseDisplayName);
             x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type, x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+
             return x;
         }
-
-        //// Object types
-        //
 
         /// <summary>
         /// Helper to create an ObjectType-Node and it to the information model.
@@ -403,40 +340,11 @@ namespace AasOpcUaServer
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None)
         {
             var x = AasUaNodeHelper.CreateObjectType(browseDisplayName, superTypeId, descriptionKey: descriptionKey);
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
-                x, preferredNumId);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
+
+            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, x, preferredNumId);
+
             return x;
         }
-
-        //// Variable types
-        //
-
-        public class AasVariableTypeState : BaseVariableTypeState
-        {
-            // ReSharper disable once EmptyConstructor
-            public AasVariableTypeState()
-                : base()
-            { }
-        }
-
-        public AasVariableTypeState CreateAddVariableType(string browseDisplayName, NodeId superTypeId,
-            uint preferredNumId = 0)
-        {
-            var x = new AasVariableTypeState();
-            x.BrowseName = "" + browseDisplayName;
-            x.DisplayName = "" + browseDisplayName;
-            x.Description = new LocalizedText("en", browseDisplayName);
-            x.SuperTypeId = superTypeId;
-            x.NodeId = nodeMgr.NewType(nodeMgr.SystemContext, AasUaBaseEntity.CreateMode.Type,
-                x, preferredNumId);
-
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
-            return x;
-        }
-
-        //// Objects
-        //
 
         /// <summary>
         /// Helper to create an Object-Node. Note: __NO__ NodeId is created by the default! Must be done by outer 
@@ -451,43 +359,39 @@ namespace AasOpcUaServer
         /// <param name="extraName"></param>
         /// <returns>The node</returns>
         public BaseObjectState CreateAddObject(
-            NodeState parent, AasUaBaseEntity.CreateMode mode,
+            NodeState parent,
+            AasUaBaseEntity.CreateMode mode,
             string browseDisplayName,
             NodeId referenceTypeFromParentId = null,
             NodeId typeDefinitionId = null,
             AasUaNodeHelper.ModellingRule modellingRule = AasUaNodeHelper.ModellingRule.None,
             string extraName = null)
         {
-            var x = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId: typeDefinitionId,
-                        modellingRule: modellingRule, extraName: extraName);
-            x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
-            if (parent != null)
-                parent.AddChild(x);
+            BaseObjectState baseObject = AasUaNodeHelper.CreateObject(parent, browseDisplayName, typeDefinitionId, modellingRule, extraName);
+            
+            baseObject.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, baseObject);
+
+            parent?.AddChild(baseObject);
 
             if (referenceTypeFromParentId != null)
             {
                 if (parent != null)
                 {
-                    parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
-                    if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
-                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                    if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
-                        x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
-                }
+                    parent.AddReference(referenceTypeFromParentId, false, baseObject.NodeId);
 
-                //// nodeMgr.AddReference(parentNodeId, new AasReference(referenceTypeId, false, x.NodeId));
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
+                    {
+                        baseObject.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                    }
+
+                    if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
+                    {
+                        baseObject.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+                    }
+                }
             }
 
-            //// if (typeDefinitionId != null)
-            //// {
-            ////     x.TypeDefinitionId = typeDefinitionId;
-            ////     x.AddReference(ReferenceTypeIds.HasTypeDefinition, false, typeDefinitionId);
-            ////     // nodeMgr.AddReference(x.NodeId, new AasReference(ReferenceTypeIds.HasTypeDefinition, false, 
-            ////     // typeDefinitionId));
-            //// }
-
-            return x;
+            return baseObject;
         }
 
         //// Properties
@@ -524,8 +428,11 @@ namespace AasOpcUaServer
             {
                 referenceTypeFromParentId = ReferenceTypeIds.HasProperty;
                 typeDefinitionId = VariableTypeIds.PropertyType;
+
                 if (valueRank == -2)
+                {
                     valueRank = -1;
+                }
             }
 
             // make Property
@@ -542,7 +449,6 @@ namespace AasOpcUaServer
             x.NodeId = nodeMgr.New(nodeMgr.SystemContext, mode, x);
 
             // add Node
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, x);
             if (parent != null)
                 parent.AddChild(x);
 
@@ -552,12 +458,15 @@ namespace AasOpcUaServer
                 if (parent != null)
                 {
                     parent.AddReference(referenceTypeFromParentId, false, x.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
                         x.AddReference(referenceTypeFromParentId, true, parent.NodeId);
                 }
             }
+
             if (typeDefinitionId != null)
             {
                 x.TypeDefinitionId = typeDefinitionId;
@@ -587,7 +496,6 @@ namespace AasOpcUaServer
             m.Executable = true;
             m.UserExecutable = true;
 
-            nodeMgr.AddPredefinedNode(nodeMgr.SystemContext, m);
             if (parent != null)
                 parent.AddChild(m);
 
@@ -596,8 +504,10 @@ namespace AasOpcUaServer
                 if (parent != null)
                 {
                     parent.AddReference(referenceTypeFromParentId, false, m.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasComponent)
                         m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
+
                     if (referenceTypeFromParentId == ReferenceTypeIds.HasProperty)
                         m.AddReference(referenceTypeFromParentId, true, parent.NodeId);
                 }

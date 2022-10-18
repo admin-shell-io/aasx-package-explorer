@@ -34,20 +34,18 @@
  * http://opcfoundation.org/License/MIT/1.00/
  * ======================================================================*/
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using AasOpcUaServer;
 using AasxIntegrationBase;
 using AdminShellNS;
 using Opc.Ua;
 using Opc.Ua.Configuration;
 using Opc.Ua.Server;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AasxUaNetServer
 {
@@ -68,7 +66,6 @@ namespace AasxUaNetServer
         Task status;
         DateTime lastEventTime;
         int serverRunTime = Timeout.Infinite;
-        static bool autoAccept = false;
         static ExitCode exitCode;
         static AdminShellPackageEnv aasxEnv = null;
         static AasxUaServerOptions aasxServerOptions = null;
@@ -77,11 +74,8 @@ namespace AasxUaNetServer
         public bool AllowFinallyStopped = true;
         public bool FinallyStopped = false;
 
-        public UaServerWrapper(
-            bool _autoAccept, int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null,
-            AasxUaServerOptions _serverOptions = null)
+        public UaServerWrapper(int _stopTimeout, AdminShellPackageEnv _aasxEnv, LogInstance logger = null, AasxUaServerOptions _serverOptions = null)
         {
-            autoAccept = _autoAccept;
             aasxEnv = _aasxEnv;
             aasxServerOptions = _serverOptions;
             serverRunTime = _stopTimeout == 0 ? Timeout.Infinite : _stopTimeout * 1000;
@@ -137,34 +131,6 @@ namespace AasxUaNetServer
             }
         }
 
-        public bool IsNotRunningAnymore()
-        {
-            if (status == null)
-                return true;
-            if (status.IsCanceled || status.IsCompleted || status.IsFaulted)
-                return true;
-            return false;
-        }
-
-        public static ExitCode ExitCode { get => exitCode; }
-
-        private static void CertificateValidator_CertificateValidation(
-            CertificateValidator validator, CertificateValidationEventArgs e)
-        {
-            if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
-            {
-                e.Accept = autoAccept;
-                if (autoAccept)
-                {
-                    Console.WriteLine("Accepted Certificate: {0}", e.Certificate.Subject);
-                }
-                else
-                {
-                    Console.WriteLine("Rejected Certificate: {0}", e.Certificate.Subject);
-                }
-            }
-        }
-
         private static bool _traceHandleAttached = false;
 
         private async Task ConsoleSampleServer()
@@ -186,22 +152,13 @@ namespace AasxUaNetServer
             ApplicationConfiguration config = await application.LoadApplicationConfiguration(false);
 
             // check the application certificate.
-            bool haveAppCertificate = await application.CheckApplicationInstanceCertificate(false, 0);
-            if (!haveAppCertificate)
+            if (!await application.CheckApplicationInstanceCertificate(false, 0))
             {
                 throw new Exception("Application instance certificate invalid!");
             }
 
-            if (!config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
-            {
-                config.CertificateValidator.CertificateValidation +=
-                    // ReSharper disable once RedundantDelegateCreation
-                    new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
-            }
-
             // Important: set appropriate trace mask
-            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information
-                | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
+            Utils.SetTraceMask(Utils.TraceMasks.Error | Utils.TraceMasks.Information | Utils.TraceMasks.StartStop | Utils.TraceMasks.StackTrace);
 
             // attach tracing?
             if (!_traceHandleAttached)

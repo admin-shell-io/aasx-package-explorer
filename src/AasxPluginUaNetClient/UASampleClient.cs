@@ -107,7 +107,7 @@ namespace SampleClient
                 throw new Exception("Application instance certificate invalid!");
             }
 
-            config.ApplicationUri = Utils.GetApplicationUriFromCertificate(
+            config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(
                 config.SecurityConfiguration.ApplicationCertificate.Certificate);
             if (config.SecurityConfiguration.AutoAcceptUntrustedCertificates)
             {

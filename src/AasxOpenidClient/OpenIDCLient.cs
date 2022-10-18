@@ -1,27 +1,20 @@
-﻿using System;
+﻿using IdentityModel;
+using IdentityModel.Client;
+using Jose;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
+using SSIExtension;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using System.Windows;
 using System.Windows.Forms;
-using AasxOpenIdClient;
-using IdentityModel;
-using IdentityModel.Client;
-using Jose;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SSIExtension;
 
 /*
 Copyright (c) 2020 see https://github.com/IdentityServer/IdentityServer4
@@ -290,7 +283,7 @@ namespace AasxOpenIdClient
             UiLambdaSet.MesssageBoxShow(uiLambda, disco.Raw, "", "Discovery JSON", MessageBoxButtons.OK);
 
             List<string> rootCertSubject = new List<string>();
-            dynamic discoObject = Json.Decode(disco.Raw);
+            dynamic discoObject = null;// Json.Decode(disco.Raw);
             if (discoObject.rootCertSubjects != null)
             {
                 int i = 0;
