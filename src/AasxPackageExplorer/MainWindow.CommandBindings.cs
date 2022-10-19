@@ -39,6 +39,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Org.BouncyCastle.Crypto;
 using Org.Webpki.JsonCanonicalizer;
 
 namespace AasxPackageExplorer
@@ -89,6 +90,128 @@ namespace AasxPackageExplorer
             // redraw everything
             RedrawAllAasxElements();
             RedrawElementView();
+        }
+
+        private static string makeJsonLD(string json, int count)
+        {
+            int total = json.Length;
+            string header = "";
+            string jsonld = "";
+            string name = "";
+            int state = 0;
+            int identification = 0;
+            string id = "idNotFound";
+
+            for (int i = 0; i < total; i++)
+            {
+                var c = json[i];
+                switch (state)
+                {
+                    case 0:
+                        if (c == '"')
+                        {
+                            state = 1;
+                        }
+                        else
+                        {
+                            jsonld += c;
+                        }
+                        break;
+                    case 1:
+                        if (c == '"')
+                        {
+                            state = 2;
+                        }
+                        else
+                        {
+                            name += c;
+                        }
+                        break;
+                    case 2:
+                        if (c == ':')
+                        {
+                            bool skip = false;
+                            string pattern = ": null";
+                            if (i + pattern.Length < total)
+                            {
+                                if (json.Substring(i, pattern.Length) == pattern)
+                                {
+                                    skip = true;
+                                    i += pattern.Length;
+                                    // remove last "," in jsonld if character after null is not ","
+                                    int j = jsonld.Length - 1;
+                                    while (Char.IsWhiteSpace(jsonld[j]))
+                                    {
+                                        j--;
+                                    }
+                                    if (jsonld[j] == ',' && json[i] != ',')
+                                    {
+                                        jsonld = jsonld.Substring(0, j) + "\r\n";
+                                    }
+                                    else
+                                    {
+                                        jsonld = jsonld.Substring(0, j + 1) + "\r\n";
+                                    }
+                                    while (json[i] != '\n')
+                                        i++;
+                                }
+                            }
+
+                            if (!skip)
+                            {
+                                if (name == "identification")
+                                    identification++;
+                                if (name == "id" && identification == 1)
+                                {
+                                    id = "";
+                                    int j = i;
+                                    while (j < json.Length && json[j] != '"')
+                                    {
+                                        j++;
+                                    }
+                                    j++;
+                                    while (j < json.Length && json[j] != '"')
+                                    {
+                                        id += json[j];
+                                        j++;
+                                    }
+                                }
+                                count++;
+                                name += "__" + count;
+                                if (header != "")
+                                    header += ",\r\n";
+                                header += "  \"" + name + "\": " + "\"aio:" + name + "\"";
+                                jsonld += "\"" + name + "\":";
+                            }
+                        }
+                        else
+                        {
+                            jsonld += "\"" + name + "\"" + c;
+                        }
+                        state = 0;
+                        name = "";
+                        break;
+                }
+            }
+
+            string prefix = "  \"aio\": \"https://admin-shell-io.com/ns#\",\r\n";
+            prefix += "  \"I40GenericCredential\": \"aio:I40GenericCredential\",\r\n";
+            prefix += "  \"__AAS\": \"aio:__AAS\",\r\n";
+            header = prefix + header;
+            header = "\"context\": {\r\n" + header + "\r\n},\r\n";
+            int k = jsonld.Length - 2;
+            while (k >= 0 && jsonld[k] != '}' && jsonld[k] != ']')
+            {
+                k--;
+            }
+            #pragma warning disable format
+            jsonld = jsonld.Substring(0, k+1);
+            jsonld += ",\r\n" + "  \"id\": \"" + id + "\"\r\n}\r\n";
+            jsonld = "\"doc\": " + jsonld;
+            jsonld = "{\r\n\r\n" + header + jsonld + "\r\n\r\n}\r\n";
+            #pragma warning restore format
+
+            return jsonld;
         }
 
         private async void CommandBinding_GeneralDispatch(string cmd)
@@ -364,6 +487,10 @@ namespace AasxPackageExplorer
                     if (sm == null && smcp == null)
                         return;
 
+                    bool useX509 = (AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
+                        "Use X509 (yes) or Verifiable Credential (No)?",
+                        "X509 or VerifiableCredential", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
+
                     List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
                     if (smc == null)
                     {
@@ -399,96 +526,206 @@ namespace AasxPackageExplorer
                             }
                         }
                     }
-                    AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
-                    AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
-                    AdminShell.Property canonical = AdminShellV20.Property.CreateNew("submodelJsonCanonical");
-                    AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
-                    AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
-                    AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
-                    AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
-                    AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
-                    smec.Add(json);
-                    smec.Add(canonical);
-                    smec.Add(subject);
-                    smec.Add(x5c);
-                    smec.Add(algorithm);
-                    smec.Add(sigT);
-                    smec.Add(signature);
-                    string s = null;
-                    if (smc == null)
+
+                    if (useX509)
                     {
-                        s = JsonConvert.SerializeObject(sm, Formatting.Indented);
-                    }
-                    else
-                    {
-                        s = JsonConvert.SerializeObject(smc, Formatting.Indented);
-                    }
-                    json.value = s;
-                    JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
-                    string result = jsonCanonicalizer.GetEncodedString();
-                    canonical.value = result;
-                    if (smc == null)
-                    {
-                        foreach (var e in existing)
+                        AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
+                        AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
+                        AdminShell.Property canonical = AdminShellV20.Property.CreateNew("submodelJsonCanonical");
+                        AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
+                        AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
+                        AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
+                        AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
+                        AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
+                        smec.Add(json);
+                        smec.Add(canonical);
+                        smec.Add(subject);
+                        smec.Add(x5c);
+                        smec.Add(algorithm);
+                        smec.Add(sigT);
+                        smec.Add(signature);
+                        string s = null;
+                        if (smc == null)
                         {
-                            sm.Add(e);
+                            s = JsonConvert.SerializeObject(sm, Formatting.Indented);
                         }
-                        sm.Add(smec);
-                    }
-                    else
-                    {
-                        foreach (var e in existing)
+                        else
                         {
-                            smc.Add(e);
+                            s = JsonConvert.SerializeObject(smc, Formatting.Indented);
                         }
-                        smc.Add(smec);
-                    }
-
-                    X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
-                    store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
-
-                    X509Certificate2Collection collection = store.Certificates;
-                    X509Certificate2Collection fcollection = collection.Find(
-                        X509FindType.FindByTimeValid, DateTime.Now, false);
-
-                    X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
-                        "Test Certificate Select",
-                        "Select a certificate from the following list to get information on that certificate",
-                        X509SelectionFlag.SingleSelection);
-                    if (scollection.Count != 0)
-                    {
-                        var certificate = scollection[0];
-                        subject.value = certificate.Subject;
-
-                        X509Chain ch = new X509Chain();
-                        ch.Build(certificate);
-
-                        //// string[] X509Base64 = new string[ch.ChainElements.Count];
-
-                        int j = 1;
-                        foreach (X509ChainElement element in ch.ChainElements)
+                        json.value = s;
+                        JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
+                        string result = jsonCanonicalizer.GetEncodedString();
+                        canonical.value = result;
+                        if (smc == null)
                         {
-                            AdminShell.Property c = AdminShellV20.Property.CreateNew("certificate_" + j++);
-                            c.value = Convert.ToBase64String(element.Certificate.GetRawCertData());
-                            x5c.Add(c);
-                        }
-
-                        try
-                        {
-                            using (RSA rsa = certificate.GetRSAPrivateKey())
+                            foreach (var e in existing)
                             {
-                                algorithm.value = "RS256";
-                                byte[] data = Encoding.UTF8.GetBytes(result);
-                                byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                                signature.value = Convert.ToBase64String(signed);
-                                sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                                sm.Add(e);
                             }
+                            sm.Add(smec);
                         }
-                        // ReSharper disable EmptyGeneralCatchClause
-                        catch
+                        else
                         {
+                            foreach (var e in existing)
+                            {
+                                smc.Add(e);
+                            }
+                            smc.Add(smec);
                         }
-                        // ReSharper enable EmptyGeneralCatchClause
+
+                        X509Store store = new X509Store("MY", StoreLocation.CurrentUser);
+                        store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
+
+                        X509Certificate2Collection collection = store.Certificates;
+                        X509Certificate2Collection fcollection = collection.Find(
+                            X509FindType.FindByTimeValid, DateTime.Now, false);
+
+                        X509Certificate2Collection scollection = X509Certificate2UI.SelectFromCollection(fcollection,
+                            "Test Certificate Select",
+                            "Select a certificate from the following list to get information on that certificate",
+                            X509SelectionFlag.SingleSelection);
+                        if (scollection.Count != 0)
+                        {
+                            var certificate = scollection[0];
+                            subject.value = certificate.Subject;
+
+                            X509Chain ch = new X509Chain();
+                            ch.Build(certificate);
+
+                            //// string[] X509Base64 = new string[ch.ChainElements.Count];
+
+                            int j = 1;
+                            foreach (X509ChainElement element in ch.ChainElements)
+                            {
+                                AdminShell.Property c = AdminShellV20.Property.CreateNew("certificate_" + j++);
+                                c.value = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                                x5c.Add(c);
+                            }
+
+                            try
+                            {
+                                using (RSA rsa = certificate.GetRSAPrivateKey())
+                                {
+                                    algorithm.value = "RS256";
+                                    byte[] data = Encoding.UTF8.GetBytes(result);
+                                    byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                                    signature.value = Convert.ToBase64String(signed);
+                                    sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                                }
+                            }
+                            // ReSharper disable EmptyGeneralCatchClause
+                            catch
+                            {
+                            }
+                            // ReSharper enable EmptyGeneralCatchClause
+                        }
+                    }
+                    else // Verifiable Credential
+                    {
+                        AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
+                        AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
+                        AdminShell.Property jsonld = AdminShellV20.Property.CreateNew("submodelJsonLD");
+                        AdminShell.Property vc = AdminShellV20.Property.CreateNew("vc");
+                        AdminShell.Property epvc = AdminShellV20.Property.CreateNew("endpointVC");
+                        AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
+                        AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
+                        AdminShell.Property proof = AdminShellV20.Property.CreateNew("proof");
+                        smec.Add(json);
+                        smec.Add(jsonld);
+                        smec.Add(vc);
+                        smec.Add(epvc);
+                        smec.Add(algorithm);
+                        smec.Add(sigT);
+                        smec.Add(proof);
+                        string s = null;
+                        if (smc == null)
+                        {
+                            s = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                        }
+                        else
+                        {
+                            s = JsonConvert.SerializeObject(smc, Formatting.Indented);
+                        }
+                        json.value = s;
+                        s = makeJsonLD(s, 0);
+                        jsonld.value = s;
+
+                        if (smc == null)
+                        {
+                            foreach (var e in existing)
+                            {
+                                sm.Add(e);
+                            }
+                            sm.Add(smec);
+                        }
+                        else
+                        {
+                            foreach (var e in existing)
+                            {
+                                smc.Add(e);
+                            }
+                            smc.Add(smec);
+                        }
+
+                        if (s != null && s != "")
+                        {
+                            epvc.value = "https://nameplate.h2894164.stratoserver.net";
+                            string requestPath = epvc.value + "/demo/sign?create_as_verifiable_presentation=false";
+
+                            var handler = new HttpClientHandler();
+                            handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
+
+                            var client = new HttpClient(handler);
+                            client.Timeout = TimeSpan.FromSeconds(60);
+
+                            bool error = false;
+                            HttpResponseMessage response = new HttpResponseMessage();
+                            try
+                            {
+                                var content = new StringContent(s, System.Text.Encoding.UTF8, "application/json");
+                                var task = Task.Run(async () =>
+                                {
+                                    response = await client.PostAsync(
+                                        requestPath, content);
+                                });
+                                task.Wait();
+                                error = !response.IsSuccessStatusCode;
+                            }
+                            catch
+                            {
+                                error = true;
+                            }
+                            if (!error)
+                            {
+                                s = response.Content.ReadAsStringAsync().Result;
+                                vc.value = s;
+
+                                var parsed = JObject.Parse(s);
+
+                                try
+                                {
+                                    var p = parsed.SelectToken("proof").Value<JObject>();
+                                    if (p != null)
+                                        proof.value = JsonConvert.SerializeObject(p, Formatting.Indented);
+                                }
+                                catch
+                                {
+                                    error = true;
+                                }
+                            }
+                            else
+                            {
+                                string r = "ERROR POST; " + response.StatusCode.ToString();
+                                r += " ; " + requestPath;
+                                if (response.Content != null)
+                                    r += " ; " + response.Content.ReadAsStringAsync().Result;
+                                Console.WriteLine(r);
+                                s = r;
+                            }
+                            algorithm.value = "VC";
+                            sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                        }
                     }
                     RedrawAllAasxElements();
                     RedrawElementView();
