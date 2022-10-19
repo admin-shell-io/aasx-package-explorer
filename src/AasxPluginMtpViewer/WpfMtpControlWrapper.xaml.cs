@@ -182,12 +182,12 @@ namespace AasxPluginMtpViewer
             AdminShell.Submodel mtpTypeSm = null;
 
             // check, if the user pointed to the instance submodel
-            if (this.theSubmodel.semanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
+            if (this.theSubmodel.semanticId.Matches(MTPV10.Static.SM_ProcessEquipmentAssembly.semanticId))
             {
                 // Source list
                 foreach (var srcLst in this.theSubmodel.submodelElements
                     .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceList?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
+                        MTPV10.Static.CD_SourceList?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
                 {
                     // found a source list, might contain sources
                     if (srcLst?.value == null)
@@ -195,12 +195,12 @@ namespace AasxPluginMtpViewer
 
                     // UA Server?
                     foreach (var src in srcLst.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceOpcUaServer?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
+                        MTPV10.Static.CD_OPCUAServer?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
                         if (src?.value != null)
                         {
                             // UA server
                             var ep = src.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                this.defsMtp.CD_Endpoint.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
+                                MTPV10.Static.CD_DiscoveryUrl.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
 
                             // add
                             if (preLoadInfo?.EndpointMapping != null)
@@ -247,7 +247,7 @@ namespace AasxPluginMtpViewer
                 if (instanceAas?.derivedFrom != null && typeAas != null)
                     foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>
                     {
-                        return aas == typeAas && true == sm?.semanticId?.Matches(this.defsMtp.SEM_MtpSubmodel);
+                        return aas == typeAas && true == sm?.semanticId?.Matches(MTPV10.Static.SM_ModuleTypePackage.GetSemanticId());
                     }))
                     {
                         mtpTypeSm = msm;
@@ -257,7 +257,7 @@ namespace AasxPluginMtpViewer
                 // another possibility: direct reference
                 var dirLink = this.theSubmodel.submodelElements
                     .FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                        this.defsMtp.CD_MtpTypeSubmodel?.GetReference(), AdminShell.Key.MatchMode.Relaxed);
+                        MTPV10.Static.SM_ModuleTypePackage?.GetReference(), AdminShell.Key.MatchMode.Relaxed);
                 var dirLinkSm = env.FindReferableByReference(dirLink?.value) as AdminShell.Submodel;
                 if (mtpTypeSm == null)
                     mtpTypeSm = dirLinkSm;
@@ -266,7 +266,7 @@ namespace AasxPluginMtpViewer
 
             // other (not intended) case: user points to type submodel directly
             if (mtpTypeSm == null
-                && this.theSubmodel.semanticId.Matches(this.defsMtp.SEM_MtpSubmodel))
+                && this.theSubmodel.semanticId.Matches(MTPV10.Static.SM_ModuleTypePackage.GetSemanticId()))
                 mtpTypeSm = this.theSubmodel;
 
             // ok, is there a type submodel?
@@ -276,7 +276,7 @@ namespace AasxPluginMtpViewer
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/ModuleTypePackage
             this.activeMtpFileElem = mtpTypeSm.submodelElements?
-                .FindFirstSemanticIdAs<AdminShell.File>(this.defsMtp.CD_MtpFile.GetReference(),
+                .FindFirstSemanticIdAs<AdminShell.File>(MTPV10.Static.CD_MTPFile.GetReference(),
                     AdminShell.Key.MatchMode.Relaxed);
             var inputFn = this.activeMtpFileElem?.value;
             if (inputFn == null)
