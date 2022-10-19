@@ -88,6 +88,7 @@ namespace AasxPredefinedConcepts
             thePool.IndexDefinitions(AasxPredefinedConcepts.ImageMap.Static);
             thePool.IndexDefinitions(AasxPredefinedConcepts.Plotting.Static);
 
+            thePool.IndexDefinitions(AasxPredefinedConcepts.MTPV10.Static);
             thePool.IndexDefinitions(new AasxPredefinedConcepts.DefinitionsMTP.ModuleTypePackage());
 
             thePool.IndexDefinitions(AasxPredefinedConcepts.PackageExplorer.Static);

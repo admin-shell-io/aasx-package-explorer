@@ -1,0 +1,222 @@
+{
+  "SM_ModuleTypePackage": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "https://admin-shell.io/vdi/2658/1/0/MTPSubmodel",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "www.vendor.com/ids/sm/6233_9041_1002_7102"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "ModuleTypePackage",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Template",
+    "descriptions": []
+  },
+  "SM_ProcessEquipmentAssembly": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "https://admin-shell.io/vdi/2658/1/0/PEASubmodel",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "www.vendor.com/ids/sm/8115_9041_1002_3217"
+    },
+    "administration": {
+      "version": "1",
+      "revision": "0"
+    },
+    "idShort": "ProcessEquipmentAssembly",
+    "category": null,
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Template",
+    "descriptions": null
+  },
+  "CD_MTPFile": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/ModuleTypePackage"
+    },
+    "administration": null,
+    "idShort": "MTPFile",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "ModuleTypePackage file included as a zipped package with ending “.mtp”"
+      }
+    ]
+  },
+  "CD_MTPReferences": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/MTPReferences"
+    },
+    "administration": null,
+    "idShort": "MTPReferences",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Collection containing references to documentation documents which are associated with TagNames within the MTP file"
+      }
+    ]
+  },
+  "CD_MTPReference": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/MTPReference"
+    },
+    "administration": null,
+    "idShort": "MTPReference",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Reference between (first) an element within the MTP file and (second) an element within another submodel (e.g. a documentation element within a documentation submodel)"
+      }
+    ]
+  },
+  "CD_SourceList": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/MTPSUCLib/CommunicationSet/SourceList"
+    },
+    "administration": null,
+    "idShort": "SourceList",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_OPCUAServer": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/MTPCommunicationSUCLib/ServerAssembly/OPCUAServer"
+    },
+    "administration": null,
+    "idShort": "OPCUAServer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_DisplayName": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/PEASubmodel/displayName"
+    },
+    "administration": null,
+    "idShort": "DisplayName",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Operator-specific module name"
+      }
+    ]
+  },
+  "CD_Description": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/vdi/2658/1/0/PEASubmodel/Description"
+    },
+    "administration": null,
+    "idShort": "Description",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Operator-specific module description"
+      }
+    ]
+  },
+  "CD_DiscoveryUrl": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/idta/opcua-server-datasheet/1/0/discovery-url"
+    },
+    "administration": null,
+    "idShort": "DiscoveryUrl01",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": null
+  },
+  "CD_ApplicationUri": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://admin-shell.io/idta/opcua-server-datasheet/1/0/application-uri"
+    },
+    "administration": null,
+    "idShort": "ApplicationUri01",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": [],
+    "isCaseOf": [],
+    "descriptions": null
+  }
+}
