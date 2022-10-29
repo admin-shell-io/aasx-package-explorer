@@ -424,7 +424,7 @@ namespace AdminShellNS
             if (elName != null)
                 qualifiedName = qualifiedName + (qualifiedName.Length > 0 ? "." : "") + elName;
 
-            // do NOT dive into objects, which are not in the reight assembly
+            // do NOT dive into objects, which are not in the right assembly
             if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
                 return;
 
