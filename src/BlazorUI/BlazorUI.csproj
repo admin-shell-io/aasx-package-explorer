@@ -4,6 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>false</UseWPF>
   </PropertyGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="wwwroot\_content\**" />

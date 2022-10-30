@@ -419,7 +419,7 @@ namespace AdminShellNS
                 var isMLP = (businessObject is AdminShell.MultiLanguageProperty);
 
 
-                if (!options.searchCollection && isColl) 
+                if (!options.searchCollection && isColl)
                     return;
 
                 if (!options.searchProperty && isProp)
@@ -439,7 +439,7 @@ namespace AdminShellNS
                     if (options.isRegex && options.CompiledRegex != null)
                     {
                         foundMatch = options.CompiledRegex.Match(foundText);
-                        found = foundMatch != null && foundMatch.Success;
+                        found = foundMatch.Success;
                     }
                     else
                     if (options.isWholeWord)
@@ -449,7 +449,7 @@ namespace AdminShellNS
                     }
                     else
                     {
-                        found = foundText.IndexOf(options.findText, 
+                        found = foundText.IndexOf(options.findText,
                             options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
                     }
                 }
@@ -467,7 +467,7 @@ namespace AdminShellNS
                     sri.containingObject = containingObject;
                     if (getMemberHash != null)
                         sri.foundHash = getMemberHash();
-                    
+
                     sri.foundMatch = foundMatch;
 
                     // avoid duplicates
@@ -493,6 +493,7 @@ namespace AdminShellNS
         /// <param name="depth">used for recursion</param>
         /// <param name="options">Search options</param>
         /// <param name="businessObject">used for recursion</param>
+        /// <param name="progress">Progress is reported for any check of field/ property and for any addition</param>
         public static void EnumerateSearchable(
             SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
             object businessObject = null,
@@ -627,7 +628,7 @@ namespace AdminShellNS
             if (!(member is string memstr))
             {
                 throw new NotImplementedException("ReplaceInSearchableMember::No string member");
-            }    
+            }
 
             // regex?
             if (options.isRegex)
@@ -662,8 +663,6 @@ namespace AdminShellNS
 
             // access the object
             Type objType = obj.GetType();
-            if (objType == null)
-                return;
 
             // reflect thru this object
             // look at fields, first

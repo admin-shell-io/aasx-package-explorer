@@ -6,6 +6,9 @@
     <LangVersion>8.0</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove="Resources\ZveiContactInformationV10.json" />
     <None Remove="Resources\ZveiDigitalTypeplate.json" />

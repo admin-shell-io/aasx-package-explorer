@@ -44,7 +44,7 @@ namespace AasxPackageExplorer
         private int CurrentResultIndex = -1;
 
         private int progressCount = 0;
-        
+
         //
         // Initialize
         //
@@ -179,14 +179,14 @@ namespace AasxPackageExplorer
                         CurrentResultIndex = 0;
                         var sri = TheSearchResults.foundResults[0];
                         SetFindInfo(1 + CurrentResultIndex, TheSearchResults.foundResults.Count, sri);
-                        ResultSelected(sri); 
-                        Log.Singleton.Info(StoredPrint.Color.Blue, 
-                            "First result of {0} for \u00bb{1}\u00ab displayed.", 
+                        ResultSelected(sri);
+                        Log.Singleton.Info(StoredPrint.Color.Blue,
+                            "First result of {0} for \u00bb{1}\u00ab displayed.",
                             TheSearchResults.foundResults.Count, TheSearchOptions.findText);
                     }
                     else
                     {
-                        Log.Singleton.Info(StoredPrint.Color.Blue, "Search text \u00bb{0}\u00ab not found!", 
+                        Log.Singleton.Info(StoredPrint.Color.Blue, "Search text \u00bb{0}\u00ab not found!",
                             TheSearchOptions.findText);
                     }
                 };
@@ -309,7 +309,7 @@ namespace AasxPackageExplorer
                     DoSearch();
 
                     if (sender == ButtonToolsReplaceStay)
-                        Log.Singleton.Info(StoredPrint.Color.Blue, 
+                        Log.Singleton.Info(StoredPrint.Color.Blue,
                             "New search of results initiated. Select replace operation again!");
 
                     return;
@@ -353,8 +353,8 @@ namespace AasxPackageExplorer
                     Log.Singleton.Info("In {0}, replaced »{1}« with »{2}« and {3}.",
                         sri?.ToString(),
                         TheSearchOptions.findText, rt,
-                        (fwd) ? "forwarding" : "staying") ;
-                    
+                        (fwd) ? "forwarding" : "staying");
+
                     if (fwd)
                     {
                         // can forward
@@ -380,9 +380,9 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonToolsReplaceAll)
             {
-                if (Flyout == null 
+                if (Flyout == null
                     || AnyUiMessageBoxResult.Yes == Flyout.MessageBoxFlyoutShow(
-                        "Perform replace on all found occurences? " + 
+                        "Perform replace on all found occurences? " +
                         "This operation cannot be reverted!", "Replace ALL",
                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                 {
@@ -411,7 +411,7 @@ namespace AasxPackageExplorer
                     }
 
                     // finally
-                    Log.Singleton.Info("Replaced {0} occurences of »{1}« with »{2}«." ,
+                    Log.Singleton.Info("Replaced {0} occurences of »{1}« with »{2}«.",
                         "" + replacements, TheSearchOptions.findText, rt);
                     if (foundSri != null)
                         ResultSelected(foundSri);
@@ -456,9 +456,9 @@ namespace AasxPackageExplorer
                         case "PROP": TheSearchOptions.searchProperty ^= true; break;
                         case "MLPR": TheSearchOptions.searchMultiLang ^= true; break;
                         case "OTHER": TheSearchOptions.searchOther ^= true; break;
-                        case "LANG": 
+                        case "LANG":
                             if (obj is string st)
-                                TheSearchOptions.searchLanguage = st; 
+                                TheSearchOptions.searchLanguage = st;
                             break;
                     }
                 });

@@ -1362,7 +1362,7 @@ namespace AasxPackageExplorer
                 CommandBinding_ConvertElement();
 
             if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward"
-                || cmd == "toolsreplacetext" || cmd == "toolsreplacestay" || cmd == "toolsreplaceforward" 
+                || cmd == "toolsreplacetext" || cmd == "toolsreplacestay" || cmd == "toolsreplaceforward"
                 || cmd == "toolsreplaceall")
                 CommandBinding_ToolsFind(cmd);
 

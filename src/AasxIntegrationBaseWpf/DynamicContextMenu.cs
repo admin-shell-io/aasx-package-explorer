@@ -57,7 +57,7 @@ namespace AasxIntegrationBaseWpf
             mi.IsChecked = checkState;
             MenuItem = mi;
         }
-    
+
         public static DynamicContextItem CreateSeparator()
         {
             var dci = new DynamicContextItem();
@@ -81,7 +81,8 @@ namespace AasxIntegrationBaseWpf
             var bx = new TextBox();
             bx.Text = text;
             bx.Width = textWidth;
-            bx.TextChanged += (s, e) => {
+            bx.TextChanged += (s, e) =>
+            {
                 dci.Lambda?.Invoke(tag, bx.Text);
             };
 

@@ -6,7 +6,10 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+<ItemGroup>
     <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="ReachFramework" />
     <Reference Include="System.Net.Http" />

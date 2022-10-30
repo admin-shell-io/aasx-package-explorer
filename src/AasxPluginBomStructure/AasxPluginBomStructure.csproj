@@ -6,6 +6,9 @@
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
   <ItemGroup>
     <None Update="AasxPluginBomStructure.options.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
