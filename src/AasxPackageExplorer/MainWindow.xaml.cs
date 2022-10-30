@@ -718,7 +718,9 @@ namespace AasxPackageExplorer
             MainTimer.Start();
 
             // attach result search
+            ToolFindReplace.Flyout = this;
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
+            ToolFindReplace.SetProgressBar += SetProgressBar;
 
             // Package Central starting ..
             _packageCentral.CentralRuntimeOptions = UiBuildRuntimeOptionsForMainAppLoad();

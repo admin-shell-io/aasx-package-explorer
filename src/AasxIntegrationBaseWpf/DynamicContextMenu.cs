@@ -26,6 +26,8 @@ namespace AasxIntegrationBaseWpf
         public string Tag = "";
         public Control MenuItem;
 
+        public Action<string, object> Lambda = null;
+
         public DynamicContextItem() { }
 
         public DynamicContextItem(string tag, Control menuItem)
@@ -43,6 +45,61 @@ namespace AasxIntegrationBaseWpf
             mi.Tag = tag;
             MenuItem = mi;
         }
+
+        public DynamicContextItem(string tag, object icon, object header, bool checkState)
+        {
+            Tag = tag;
+            var mi = new MenuItem();
+            mi.Icon = icon;
+            mi.Header = header;
+            mi.Tag = tag;
+            mi.IsCheckable = true;
+            mi.IsChecked = checkState;
+            MenuItem = mi;
+        }
+    
+        public static DynamicContextItem CreateSeparator()
+        {
+            var dci = new DynamicContextItem();
+            dci.Tag = "-";
+            dci.MenuItem = new Separator();
+            return dci;
+        }
+
+        public static DynamicContextItem CreateTextBox(string tag, object icon, object header, double headerWidth, string text, double textWidth)
+        {
+            var dci = new DynamicContextItem();
+
+            var g = new Grid();
+            g.ColumnDefinitions.Add(new ColumnDefinition());
+            g.ColumnDefinitions.Add(new ColumnDefinition());
+
+            var bl = new TextBlock();
+            bl.Text = header as string;
+            bl.Width = headerWidth;
+
+            var bx = new TextBox();
+            bx.Text = text;
+            bx.Width = textWidth;
+            bx.TextChanged += (s, e) => {
+                dci.Lambda?.Invoke(tag, bx.Text);
+            };
+
+            Grid.SetColumn(bl, 0);
+            Grid.SetColumn(bx, 1);
+
+            g.Children.Add(bl);
+            g.Children.Add(bx);
+
+            var mi = new MenuItem();
+            mi.Icon = icon;
+            mi.Header = g;
+            mi.Tag = tag;
+
+            dci.Tag = tag;
+            dci.MenuItem = mi;
+            return dci;
+        }
     }
 
     public class DynamicContextMenu : List<DynamicContextItem>
@@ -56,20 +113,21 @@ namespace AasxIntegrationBaseWpf
             return res;
         }
 
-        public void Start(UIElement placementTarget, Action<string> lambda)
+        public void Start(UIElement placementTarget, Action<string, object> lambda)
         {
             // render
             var cm = new ContextMenu();
             foreach (var dci in this)
             {
                 var myDci = dci;
+                dci.Lambda = lambda;
                 var mi = dci.MenuItem;
                 if (mi == null)
                     continue;
                 if (mi is MenuItem mii)
                     mii.Click += (s, e) =>
                     {
-                        lambda?.Invoke(myDci.Tag);
+                        lambda?.Invoke(myDci.Tag, 1);
                     };
                 cm.Items.Add(mi);
             }

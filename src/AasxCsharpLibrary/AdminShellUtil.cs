@@ -313,8 +313,32 @@ namespace AdminShellNS
             public bool findFirst = false;
             public int skipFirstResults = 0;
             public string findText = null;
+
+            public bool isWholeWord = false;
             public bool isIgnoreCase = false;
             public bool isRegex = false;
+
+            public bool searchCollection = true;
+            public bool searchProperty = true;
+            public bool searchMultiLang = true;
+            public bool searchOther = true;
+            public string searchLanguage = "";
+
+            public RegexOptions CompiledRegOpt = RegexOptions.None;
+            public Regex CompiledRegex = null;
+
+            public void CompileOptions()
+            {
+                CompiledRegex = null;
+                CompiledRegOpt = RegexOptions.None;
+                if (isRegex)
+                {
+                    CompiledRegOpt = RegexOptions.Compiled | RegexOptions.CultureInvariant;
+                    if (isIgnoreCase)
+                        CompiledRegOpt |= RegexOptions.IgnoreCase;
+                    CompiledRegex = new Regex(findText, CompiledRegOpt);
+                }
+            }
         }
 
         public class SearchResultItem : IEquatable<SearchResultItem>
@@ -327,6 +351,7 @@ namespace AdminShellNS
             public object foundObject;
             public object containingObject;
             public int foundHash;
+            public Match foundMatch = null;
 
             public bool Equals(SearchResultItem other)
             {
@@ -339,6 +364,14 @@ namespace AdminShellNS
                        this.containingObject == other.containingObject &&
                        this.foundText == other.foundText &&
                        this.foundHash == other.foundHash;
+            }
+
+            public override string ToString()
+            {
+                var idn = "";
+                if (businessObject is AdminShell.Referable rf)
+                    idn = "." + rf.idShort;
+                return "" + qualifiedNameHead + idn + "." + metaModelName;
             }
         }
 
@@ -359,7 +392,8 @@ namespace AdminShellNS
         /// </summary>
         private static void CheckSearchable(
             SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
-            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
+            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash,
+            Action<bool, int> progress = null)
         {
             // try get a speaking name
             var metaModelName = "<unknown>";
@@ -374,11 +408,51 @@ namespace AdminShellNS
                 // what to check?
                 string foundText = "" + memberValue?.ToString();
 
+                // quite late: investigate, if we accepted findings from the 
+                // type of business element
+                var isColl = (businessObject is AdminShell.AdministrationShell
+                        || businessObject is AdminShell.Submodel
+                        || businessObject is AdminShell.SubmodelElementCollection);
+
+                var isProp = (businessObject is AdminShell.Property);
+
+                var isMLP = (businessObject is AdminShell.MultiLanguageProperty);
+
+
+                if (!options.searchCollection && isColl) 
+                    return;
+
+                if (!options.searchProperty && isProp)
+                    return;
+
+                if (!options.searchMultiLang && isMLP)
+                    return;
+
+                if (!options.searchOther && !(isColl || isProp || isMLP))
+                    return;
+
                 // find options
                 var found = true;
+                Match foundMatch = null;
                 if (options.findText != null)
-                    found = foundText.IndexOf(
-                        options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+                {
+                    if (options.isRegex && options.CompiledRegex != null)
+                    {
+                        foundMatch = options.CompiledRegex.Match(foundText);
+                        found = foundMatch != null && foundMatch.Success;
+                    }
+                    else
+                    if (options.isWholeWord)
+                    {
+                        found = string.Equals(foundText, options.findText,
+                            options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0);
+                    }
+                    else
+                    {
+                        found = foundText.IndexOf(options.findText, 
+                            options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+                    }
+                }
 
                 // add?
                 if (found)
@@ -393,10 +467,15 @@ namespace AdminShellNS
                     sri.containingObject = containingObject;
                     if (getMemberHash != null)
                         sri.foundHash = getMemberHash();
+                    
+                    sri.foundMatch = foundMatch;
 
                     // avoid duplicates
                     if (!results.foundResults.Contains(sri))
                         results.foundResults.Add(sri);
+
+                    // progress
+                    progress?.Invoke(true, results.foundResults.Count % 50);
                 }
             }
         }
@@ -416,7 +495,8 @@ namespace AdminShellNS
         /// <param name="businessObject">used for recursion</param>
         public static void EnumerateSearchable(
             SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
-            object businessObject = null)
+            object businessObject = null,
+            Action<bool, int> progress = null)
         {
             // access
             if (results == null || obj == null || options == null)
@@ -448,6 +528,9 @@ namespace AdminShellNS
             if (objType.IsEnum)
                 return;
 
+            // report a "false" progress
+            progress?.Invoke(false, 0);
+
             // look at fields, first
             var fields = objType.GetFields();
             foreach (var fi in fields)
@@ -470,17 +553,17 @@ namespace AdminShellNS
                 {
                     // field is a collection .. dive deeper, if allowed
                     foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject, progress);
                 }
                 else
                 {
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, fi, fieldValue, obj,
-                        () => { return fieldValue.GetHashCode(); });
+                        () => { return fieldValue.GetHashCode(); }, progress);
 
                     // dive deeper ..
-                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject);
+                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject, progress);
                 }
             }
 
@@ -511,17 +594,17 @@ namespace AdminShellNS
                 {
                     // property is a collection .. dive deeper, if allowed
                     foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject, progress);
                 }
                 else
                 {
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, pi, propValue, obj,
-                        () => { return propValue.GetHashCode(); });
+                        () => { return propValue.GetHashCode(); }, progress);
 
                     // dive deeper ..
-                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject);
+                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject, progress);
                 }
             }
         }
@@ -549,7 +632,8 @@ namespace AdminShellNS
             // regex?
             if (options.isRegex)
             {
-                throw new NotImplementedException("ReplaceInSearchableMember::Regex");
+                memstr = Regex.Replace(memstr, options.findText, replaceText, options.CompiledRegOpt);
+                return memstr;
             }
             else
             {
