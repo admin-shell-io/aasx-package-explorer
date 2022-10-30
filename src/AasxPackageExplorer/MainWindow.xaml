@@ -97,6 +97,10 @@
                     <RoutedUICommand x:Key="ToolsFindText" Text="ToolsFindText" />
                     <RoutedUICommand x:Key="ToolsFindForward" Text="ToolsFindForward" />
                     <RoutedUICommand x:Key="ToolsFindBackward" Text="ToolsFindbackward" />
+                    <RoutedUICommand x:Key="ToolsReplaceText" Text="ToolsReplaceText" />
+                    <RoutedUICommand x:Key="ToolsReplaceStay" Text="ToolsReplaceStay" />
+                    <RoutedUICommand x:Key="ToolsReplaceForward" Text="ToolsReplaceForward" />
+                    <RoutedUICommand x:Key="ToolsReplaceAll" Text="ToolsReplaceAll" />
                     <RoutedUICommand x:Key="NewSubmodelFromPlugin" Text="NewSubmodelFromPlugin" />
                     <RoutedUICommand x:Key="ConvertElement" Text="ConvertElement" />
                     <RoutedUICommand x:Key="EventsShowLogMenu" Text="EventsShowLogMenu" />
@@ -195,6 +199,7 @@
         <KeyBinding Key="F12" Command="{StaticResource FileRepoQuery}"/>
         <KeyBinding Key="A" Modifiers="Ctrl" Command="{StaticResource QueryRepo}"/>
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{StaticResource ToolsFindText}"/>
+        <KeyBinding Key="H" Modifiers="Ctrl" Command="{StaticResource ToolsReplaceText}"/>
         <KeyBinding Key="F3" Command="{StaticResource ToolsFindForward}"/>
         <KeyBinding Key="F3" Modifiers="Shift" Command="{StaticResource ToolsFindBackward}"/>
         <KeyBinding Key="M" Modifiers="Ctrl+Shift" Command="{StaticResource NewSubmodelFromPlugin}"/>
@@ -268,6 +273,10 @@
         <CommandBinding Command="{StaticResource ToolsFindText}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindForward}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ToolsFindBackward}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ToolsReplaceText}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ToolsReplaceStay}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ToolsReplaceForward}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ToolsReplaceAll}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource NewSubmodelFromPlugin}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ConvertElement}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource EventsShowLogKey}" Executed="CommandBinding_Executed"/>
@@ -412,6 +421,7 @@
                         <MenuItem x:Name="MenuItemTest" Header="Test" Command="{StaticResource Test}"/>
                         <Separator/>
                         <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
+                        <MenuItem x:Name="MenuItemReplace" Header="Replace ..." Command="{StaticResource ToolsReplaceText}"/>
                         <Separator/>
                         <MenuItem Header="Plugins ..">
                             <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Header="New Submodel" InputGestureText="Ctrl+Shift+M" Command="{StaticResource NewSubmodelFromPlugin}"/>
@@ -471,16 +481,7 @@
                     <!-- Find -->
                     <TabItem x:Name="TabItemToolsFind" Visibility="Collapsed">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Center"/>
-                            <!--
-                            <WrapPanel Orientation="Horizontal">
-
-                                <ComboBox x:Name="ComboBoxToolsFindText" Width="200" Margin="2" IsEditable="True"></ComboBox>
-                                <Button x:Name="ButtonToolsFindBackward" Content="&#x25c0;" Margin="2" />
-                                <Button x:Name="ButtonToolsFindForward" Content="&#x25b6;" Margin="2" />
-
-                            </WrapPanel>
-                            -->
+                            <TextBlock Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Top"/>
                             <local:ToolControlFindReplace x:Name="ToolFindReplace"/>
                         </StackPanel>
                     </TabItem>

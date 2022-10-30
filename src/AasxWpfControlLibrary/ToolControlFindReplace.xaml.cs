@@ -11,6 +11,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
 
@@ -63,6 +64,11 @@ namespace AasxPackageExplorer
         //
         // Public functionality
         //
+
+        public void ShowReplace(bool visible)
+        {
+            WrapPanelToolsReplace.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+        }
 
         public void FocusFirstField()
         {
@@ -146,6 +152,27 @@ namespace AasxPackageExplorer
             }
         }
 
+        public void DoReplace(AdminShellUtil.SearchResultItem sri, string replaceText)
+        {
+            // access
+            if (TheSearchOptions == null || TheSearchResults == null || TheAasEnv == null
+                || replaceText == null || sri == null)
+            {
+                Log.Singleton.Error("Invalid result data. Cannot use for replace.");
+                return;
+            }
+
+            // execution
+            try
+            {
+                AdminShellUtil.ReplaceInSearchable(TheSearchOptions, sri, replaceText);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "When searching for results");
+            }
+        }
+
         //
         // Callbacks
         //
@@ -171,7 +198,8 @@ namespace AasxPackageExplorer
                     TheSearchResults.foundResults == null || ResultSelected == null)
                 return;
 
-            if (sender == ButtonToolsFindBackward || sender == ButtonToolsFindForward)
+            if (sender == ButtonToolsFindBackward || sender == ButtonToolsFindForward
+                || sender == ButtonToolsReplaceStay)
             {
                 // 1st check .. renew search?
                 if (ComboBoxToolsFindText.Text != TheSearchOptions.findText)
@@ -180,6 +208,11 @@ namespace AasxPackageExplorer
                     TheSearchOptions.findText = ComboBoxToolsFindText.Text;
                     ClearResults();
                     DoSearch();
+
+                    if (sender == ButtonToolsReplaceStay)
+                        Log.Singleton.Info(StoredPrint.Color.Blue, 
+                            "New search of results initiated. Select replace operation again!");
+
                     return;
                 }
             }
@@ -200,6 +233,19 @@ namespace AasxPackageExplorer
                 var sri = TheSearchResults.foundResults[CurrentResultIndex];
                 SetFindInfo(1 + CurrentResultIndex, TheSearchResults.foundResults.Count, sri);
                 ResultSelected(sri);
+            }
+
+            if (sender == ButtonToolsReplaceStay)
+            {
+                if (CurrentResultIndex >= 0 &&
+                    CurrentResultIndex < TheSearchResults.foundResults.Count)
+                {
+                    var sri = TheSearchResults.foundResults[CurrentResultIndex];
+                    var rt = ComboBoxToolsReplaceText.Text;
+                    DoReplace(sri, rt);
+                    Log.Singleton.Info("Replaced {0} with {1} and staying.", TheSearchOptions.findText, rt);
+                    ResultSelected(sri);
+                }
             }
         }
 

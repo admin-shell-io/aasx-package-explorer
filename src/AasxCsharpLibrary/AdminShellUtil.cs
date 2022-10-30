@@ -354,7 +354,10 @@ namespace AdminShellNS
             }
         }
 
-        public static void CheckSearchable(
+        /// <summary>
+        /// Internal function used by <c>EnumerateSearchable</c>
+        /// </summary>
+        private static void CheckSearchable(
             SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
             MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
         {
@@ -398,6 +401,19 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// Uses reflection to investigate the members of a data structure, which is supposely a
+        /// structure of the AAS meta model. Inspected classes need to be in <c>options.allowedAssemblies</c>
+        /// and classes shall be annotated with attributes <c>AdminShell.MetaModelName</c> and
+        /// <c>AdminShell.TextSearchable</c>. Inspection recursion is controlled via attributes
+        /// <c>AdminShell.SkipForReflection</c> and <c>AdminShell.SkipForSearch</c>
+        /// </summary>
+        /// <param name="results">Found result items</param>
+        /// <param name="obj">Root of the data structures to be inspected</param>
+        /// <param name="qualifiedNameHead">used for recursion</param>
+        /// <param name="depth">used for recursion</param>
+        /// <param name="options">Search options</param>
+        /// <param name="businessObject">used for recursion</param>
         public static void EnumerateSearchable(
             SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
             object businessObject = null)
@@ -510,15 +526,107 @@ namespace AdminShellNS
             }
         }
 
+        /// <summary>
+        /// Internal function for <c>ReplaceInSearchable</c>
+        /// </summary>
+        /// <returns>New member object, if to set.</returns>
+        private static object ReplaceInSearchableMember(
+            SearchOptions options,
+            SearchResultItem item,
+            string replaceText,
+            object member)
+        {
+            // access
+            if (options == null || item == null || replaceText == null || member == null)
+                return null;
+
+            // member type
+            if (!(member is string memstr))
+            {
+                throw new NotImplementedException("ReplaceInSearchableMember::No string member");
+            }    
+
+            // regex?
+            if (options.isRegex)
+            {
+                throw new NotImplementedException("ReplaceInSearchableMember::Regex");
+            }
+            else
+            {
+                // plain text replacement
+                memstr = memstr.Replace(options.findText, replaceText);
+                return memstr;
+            }
+        }
+
+        /// <summary>
+        /// Do a replacement according to the <c>options</c> in one search result item.
+        /// </summary>
+        public static void ReplaceInSearchable(
+            SearchOptions options,
+            SearchResultItem item,
+            string replaceText)
+        {
+            // access
+            if (options == null || item == null || replaceText == null)
+                return;
+
+            // access in item
+            var obj = item.containingObject;
+            if (obj == null)
+                return;
+
+            // access the object
+            Type objType = obj.GetType();
+            if (objType == null)
+                return;
+
+            // reflect thru this object
+            // look at fields, first
+            var fields = objType.GetFields();
+            foreach (var fi in fields)
+            {
+                // get value(s)
+                var fieldValue = fi.GetValue(obj);
+                if (fieldValue == null)
+                    continue;
+
+                // hash check on the fieldValue
+                if (fieldValue.GetHashCode() == item.foundHash)
+                {
+                    var newval = ReplaceInSearchableMember(options, item, replaceText, fieldValue);
+                    if (newval != null)
+                        fi.SetValue(obj, newval);
+                }
+            }
+
+            // properties & objects behind
+            var properties = objType.GetProperties();
+            foreach (var pi in properties)
+            {
+                // get value(s)
+                var propValue = pi.GetValue(obj, null);
+                if (propValue == null)
+                    continue;
+
+                // hash check on the propValue
+                if (propValue.GetHashCode() == item.foundHash)
+                {
+                    ReplaceInSearchableMember(options, item, replaceText, propValue);
+                }
+            }
+
+        }
+
         //
         // String manipulations
         //
 
         public static string ReplacePercentPlaceholder(
-            string input,
-            string searchFor,
-            Func<string> substLamda,
-            StringComparison comparisonType = StringComparison.InvariantCulture)
+        string input,
+        string searchFor,
+        Func<string> substLamda,
+        StringComparison comparisonType = StringComparison.InvariantCulture)
         {
             // access
             if (input == null || searchFor == null || searchFor == "")

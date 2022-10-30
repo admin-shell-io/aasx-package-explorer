@@ -1361,7 +1361,9 @@ namespace AasxPackageExplorer
             if (cmd == "convertelement")
                 CommandBinding_ConvertElement();
 
-            if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward")
+            if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward"
+                || cmd == "toolsreplacetext" || cmd == "toolsreplacestay" || cmd == "toolsreplaceforward" 
+                || cmd == "toolsreplaceall")
                 CommandBinding_ToolsFind(cmd);
 
             if (cmd == "checkandfix")
@@ -3449,11 +3451,14 @@ namespace AasxPackageExplorer
             if (ToolsGrid == null || TabControlTools == null || TabItemToolsFind == null || ToolFindReplace == null)
                 return;
 
-            if (cmd == "toolsfindtext")
+            if (cmd == "toolsfindtext" || cmd == "toolsreplacetext")
             {
                 // make panel visible
                 ToolsGrid.Visibility = Visibility.Visible;
                 TabControlTools.SelectedItem = TabItemToolsFind;
+
+                // do not show Replace
+                ToolFindReplace.ShowReplace(cmd == "toolsreplacetext");
 
                 // set the link to the AAS environment
                 // Note: dangerous, as it might change WHILE the find tool is opened!

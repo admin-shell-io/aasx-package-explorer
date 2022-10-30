@@ -22,21 +22,29 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <WrapPanel Grid.Row="0" Grid.Column="0"  Orientation="Horizontal">
 
-            <ComboBox x:Name="ComboBoxToolsFindText" Width="200" Margin="2" IsEditable="True" KeyUp="ComboBoxToolsFindText_KeyUp"/>
-            <Button x:Name="ButtonToolsFindBackward" Content="◀" Margin="2" Click="ButtonToolsFind_Click" />
-            <Button x:Name="ButtonToolsFindForward" Content="▶" Margin="2" Click="ButtonToolsFind_Click" />
+            <ComboBox x:Name="ComboBoxToolsFindText" Width="200" Margin="2" IsEditable="True" TabIndex="0" KeyUp="ComboBoxToolsFindText_KeyUp"/>
+            <Button x:Name="ButtonToolsFindBackward" Content="◀" Margin="2" TabIndex="2" Click="ButtonToolsFind_Click" />
+            <Button x:Name="ButtonToolsFindForward" Content="▶" Margin="2" TabIndex="3" Click="ButtonToolsFind_Click" />
             
-            <CheckBox x:Name="CheckBoxToolsFindIgnoreCase" Content="Ignore case" Margin="2" VerticalContentAlignment="Center"/>
-            <CheckBox x:Name="CheckBoxToolsFindRegex" Content="Regex" Margin="2" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="CheckBoxToolsFindIgnoreCase" Content="Ignore case" Margin="2" IsTabStop="False" VerticalContentAlignment="Center"/>
+            <CheckBox x:Name="CheckBoxToolsFindRegex" Content="Regex" Margin="2" IsTabStop="False" VerticalContentAlignment="Center"/>
 
-            <TextBox x:Name="ButtonToolsFindInfo" Text="1 of 534" Margin="2" Width="100" VerticalContentAlignment="Center"/>
+            <TextBox x:Name="ButtonToolsFindInfo" Text="1 of 534" Margin="2" Width="100" IsTabStop="False" VerticalContentAlignment="Center"/>
 
+        </WrapPanel>
+
+        <WrapPanel Grid.Row="1" Grid.Column="0" x:Name="WrapPanelToolsReplace" Orientation="Horizontal" Visibility="Visible">
+            <ComboBox x:Name="ComboBoxToolsReplaceText" Width="200" Margin="2" IsEditable="True" TabIndex="1"/>
+            <Button x:Name="ButtonToolsReplaceStay" Content="Replace (stay)" Margin="2" Padding="2,0,2,0" Click="ButtonToolsFind_Click" />
+            <Button x:Name="ButtonToolsReplaceForward" Content="Replace (forward)" Margin="2" Padding="2,0,2,0" Click="ButtonToolsFind_Click" />
+            <Button x:Name="ButtonToolsReplaceAll" Content="Replace all .." Margin="2" Padding="2,0,2,0" Click="ButtonToolsFind_Click" />
         </WrapPanel>
     </Grid>
 </UserControl>
