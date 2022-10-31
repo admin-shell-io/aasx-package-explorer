@@ -20,8 +20,19 @@ function Main
     $artefactsDir = CreateAndGetArtefactsDir
 
     $reportPath = Join-Path $artefactsDir "dotnet-format-report.json"
-	# MIHO: changed --check with --verify-no-changes
-    dotnet format --verify-no-changes --report $reportPath --exclude "**/DocTest*.cs"
+
+	# MIHO: dotnet format seems to changed --check with --verify-no-changes
+	# therefore try to detect
+	$checkswitch = "--check"
+	$fmthelp = dotnet format --help | Out-String
+	if ($fmthelp.Contains("--verify-no-changes")) 
+	{		
+		$checkswitch = "--verify-no-changes"
+	}
+		
+	Write-Host "Using dotnet format switch: $checkswitch"
+
+    dotnet format $checkswitch --report $reportPath --exclude "**/DocTest*.cs"
     $formatReport = Get-Content $reportPath |ConvertFrom-Json
     if ($formatReport.Count -ge 1)
     {
