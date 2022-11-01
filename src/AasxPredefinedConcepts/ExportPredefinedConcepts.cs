@@ -48,7 +48,8 @@ namespace AasxPredefinedConcepts
                     if (sme.semanticId == null)
                         continue;
 
-                    var cd = env.FindConceptDescription(sme.semanticId.GetAsExactlyOneKey());
+                    var cd = env.FindConceptDescription(
+                        sme.semanticId.GetAsExactlyOneKey(), AdminShell.Key.MatchMode.Identification);
                     if (cd == null)
                         continue;
 

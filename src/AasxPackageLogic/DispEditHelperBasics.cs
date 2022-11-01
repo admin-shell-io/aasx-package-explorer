@@ -2090,12 +2090,13 @@ namespace AasxPackageLogic
         /// </summary>
         /// <param name="env">Environment</param>
         /// <param name="root">Submodel or SME</param>
-        /// <param name="recurse">Recurse on child elements</param>
+        /// <param name="recurseChilds">Recurse on child elements</param>
         /// <returns>Tuple (#no valid id, #already present, #added) </returns>
         public Tuple<int, int, int> ImportCDsFromSmSme(
             AdminShell.AdministrationShellEnv env, 
             object root,
-            bool recurse = false)
+            bool recurseChilds = false,
+            bool repairSemIds = false)
         {
             // access
             var noValidId = 0;
@@ -2117,6 +2118,24 @@ namespace AasxPackageLogic
                 }
                 else
                 {
+                    // repair semanticId
+                    if (repairSemIds)
+                    {
+                        if (rf is AdminShell.Submodel rfsm && rfsm.semanticId != null 
+                            && rfsm.semanticId.Count >= 1)
+                        {
+                            rfsm.semanticId[0].type = AdminShell.Key.Submodel;
+                            rfsm.semanticId[0].local = true;
+                        }
+
+                        if (rf is AdminShell.SubmodelElement rfsme && rfsme.semanticId != null 
+                            && rfsme.semanticId.Count >= 1)
+                        {
+                            rfsme.semanticId[0].type = AdminShell.Key.ConceptDescription;
+                            rfsme.semanticId[0].local = true;
+                        }
+                    }
+
                     // id of new CD
                     var cdid = new AdminShell.Identification(newid[0].idType, newid[0].value);
 
@@ -2131,10 +2150,10 @@ namespace AasxPackageLogic
                         // create such CD
                         var cd = new AdminShell.ConceptDescription();
                         cd.identification = cdid;
-                        if (root is AdminShell.Referable rrf)
+                        if (rf != null)
                         {
-                            cd.idShort = rrf.idShort;
-                            cd.description = rrf.description;
+                            cd.idShort = rf.idShort;
+                            cd.description = rf.description;
                         }
 
                         // store in AAS enviroment
@@ -2161,7 +2180,7 @@ namespace AasxPackageLogic
             // Part 2 : semanticId of all children
             //
 
-            if (recurse)
+            if (recurseChilds)
                 foreach (var smw in AdminShell.IEnumerateChildrenHelper.RecurseOnChildren(
                     root as AdminShell.IEnumerateChildren))
                 {

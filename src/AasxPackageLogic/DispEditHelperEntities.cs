@@ -1550,22 +1550,12 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1)
                         {
                             // from SMEs
-                            var res = this.ImportCDsFromSmSme(env, submodel, recurse: true);
-                            if (res.Item1 > 0)
-                            {
-                                Log.Singleton.Error("Cannot create CD because no valid semanticId is present " +
-                                    "in SME.");
-                                return new AnyUiLambdaActionNone();
-                            }
-                            if (res.Item2 > 0)
-                            {
-                                Log.Singleton.Error("Cannot create CD because CD with semanticId is already " +
-                                    "present in AAS environment.");
-                                return new AnyUiLambdaActionNone();
-                            }
+                            var res = this.ImportCDsFromSmSme(env, submodel, recurseChilds: true, repairSemIds: true);
                             Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
                                 $"while {res.Item1} invalid semanticIds were present and " +
                                 $"{res.Item2} CDs were already existing.");
+                            return new AnyUiLambdaActionRedrawAllElements(
+                                        submodel, isExpanded: true);
                         }
 
                         return new AnyUiLambdaActionNone();
@@ -2246,12 +2236,26 @@ namespace AasxPackageLogic
                                 "the SubmodelElement to an ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
+
+                var actionDef = new List<string>(new[] {
+                    "Use existing", "Create empty", "Create \U0001f844 ECLASS",
+                    "Create \U0001f844 this"});
+
+                var toolTipDef = new List<string>(new[] {
+                    "Assign SME to existing CD", "Create empty CD with new id and assign to SME",
+                    "Create CD with existing id from ECLASS and assign to SME",
+                    "Create CD from data of this SME"});
+
+                if (sme is AdminShell.IEnumerateChildren)
+                {
+                    actionDef.Add("Create \U0001f844 all");
+                    toolTipDef.Add("Create CDs from data of this SME and all subsequent children.");
+                }
+
                 this.AddAction(
                     stack, "Concept Description:",
-                    new[] { "Use existing", "Create empty", "Create \U0001f844 ECLASS", "Create \U0001f844 this" },
-                    toolTips: new[] { "Assign SME to existing CD", "Create empty CD with new id and assign to SME",
-                        "Create CD with existing id from ECLASS and assign to SME",
-                        "Create CD from data of this SME"},
+                    actionDef.ToArray(),
+                    toolTips: toolTipDef.ToArray(),
                     repo: repo,
                     action: (buttonNdx) =>
                     {
@@ -2374,36 +2378,7 @@ namespace AasxPackageLogic
 
                         if (buttonNdx == 3)
                         {
-                            //// create CD from this SME
-                            //var cd = new AdminShell.ConceptDescription();
-
-                            //// make an ID, automatically
-                            //var sid = sme.GetSemanticId();
-                            //if (sid == null || sid.Count < 1)
-                            //{
-                            //    Log.Singleton.Error("Cannot create CD because no valid semanticId is present " +
-                            //        "in SME.");
-                            //    return new AnyUiLambdaActionNone();
-                            //}
-                            //cd.identification.idType = sid[0].idType;
-                            //cd.identification.id = sid[0].value;
-
-                            //// check if existing
-                            //var exCd = env.FindConceptDescription(cd.identification);
-                            //if (exCd != null)
-                            //{
-                            //    Log.Singleton.Error("Cannot create CD because CD with semanticId is already " +
-                            //        "present in AAS environment.");
-                            //    return new AnyUiLambdaActionNone();
-                            //}
-
-                            //// store in AAS enviroment
-                            //env.ConceptDescriptions.Add(cd);
-
-                            //// emit event
-                            //this.AddDiaryEntry(sme, new DiaryEntryStructChange());
-
-                            var res = this.ImportCDsFromSmSme(env, sme, recurse: false);
+                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: false, repairSemIds: true);
                             if (res.Item1 > 0)
                             {
                                 Log.Singleton.Error("Cannot create CD because no valid semanticId is present " +
@@ -2420,6 +2395,14 @@ namespace AasxPackageLogic
 
                             // redraw
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
+                        }
+
+                        if (buttonNdx == 4)
+                        {
+                            var res = this.ImportCDsFromSmSme(env, sme, recurseChilds: true, repairSemIds: true);
+                            Log.Singleton.Info(StoredPrint.Color.Blue, $"Added {res.Item3} CDs to the environment, " +
+                                $"while {res.Item1} invalid semanticIds were present and " +
+                                $"{res.Item2} CDs were already existing.");
                         }
 
                         return new AnyUiLambdaActionNone();

@@ -23,6 +23,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static AdminShellNS.AdminShellV20.Key;
 
 namespace AdminShellNS
 {
@@ -4724,34 +4725,39 @@ namespace AdminShellNS
             // Handling of CDs
             //
 
-            public ConceptDescription FindConceptDescription(ConceptDescriptionRef cdr)
+            public ConceptDescription FindConceptDescription(
+                ConceptDescriptionRef cdr, MatchMode matchMode = MatchMode.Strict)
             {
                 if (cdr == null)
                     return null;
-                return FindConceptDescription(cdr.Keys);
+                return FindConceptDescription(cdr.Keys, matchMode);
             }
 
-            public ConceptDescription FindConceptDescription(SemanticId semId)
+            public ConceptDescription FindConceptDescription(
+                SemanticId semId, MatchMode matchMode = MatchMode.Strict)
             {
                 if (semId == null)
                     return null;
-                return FindConceptDescription(semId.Keys);
+                return FindConceptDescription(semId.Keys, matchMode);
             }
 
-            public ConceptDescription FindConceptDescription(Reference rf)
+            public ConceptDescription FindConceptDescription(
+                Reference rf, MatchMode matchMode = MatchMode.Strict)
             {
                 if (rf == null)
                     return null;
-                return FindConceptDescription(rf.Keys);
+                return FindConceptDescription(rf.Keys, matchMode);
             }
 
-            public ConceptDescription FindConceptDescription(Identification id)
+            public ConceptDescription FindConceptDescription(
+                Identification id, MatchMode matchMode = MatchMode.Strict)
             {
                 var cdr = ConceptDescriptionRef.CreateNew("Conceptdescription", true, id.idType, id.id);
-                return FindConceptDescription(cdr);
+                return FindConceptDescription(cdr, matchMode);
             }
 
-            public ConceptDescription FindConceptDescription(List<Key> keys)
+            public ConceptDescription FindConceptDescription(
+                List<Key> keys, MatchMode matchMode = MatchMode.Strict)
             {
                 // trivial
                 if (keys == null)
@@ -4761,8 +4767,13 @@ namespace AdminShellNS
                     return null;
                 // and we're picky
                 var key = keys[0];
-                if (!key.local || key.type.ToLower().Trim() != "conceptdescription")
+
+                if (matchMode == MatchMode.Strict && !key.local)
                     return null;
+
+                if (matchMode != MatchMode.Identification && key.type.ToLower().Trim() != "conceptdescription")
+                    return null;
+
                 // brute force
                 foreach (var cd in conceptDescriptions)
                     if (cd.identification.idType.ToLower().Trim() == key.idType.ToLower().Trim()
@@ -4798,12 +4809,13 @@ namespace AdminShellNS
                 }
             }
 
-            public ConceptDescription FindConceptDescription(Key key)
+            public ConceptDescription FindConceptDescription(
+                Key key, MatchMode matchMode = MatchMode.Strict)
             {
                 if (key == null)
                     return null;
                 var l = new List<Key> { key };
-                return (FindConceptDescription(l));
+                return (FindConceptDescription(l, matchMode));
             }
 
             public IEnumerable<LocatedReference> FindAllReferences()
