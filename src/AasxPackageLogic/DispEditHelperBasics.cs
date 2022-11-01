@@ -1623,7 +1623,7 @@ namespace AasxPackageLogic
         //
 
         public int AddElementInSmwListBefore<T>(
-            AdminShell.BaseSubmodelElementWrapperCollection<T> list, 
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
             AdminShell.SubmodelElementWrapper entity, AdminShell.SubmodelElementWrapper existing,
             bool makeUniqueIfNeeded = false)
             where T : AdminShell.SubmodelElement
@@ -2091,9 +2091,11 @@ namespace AasxPackageLogic
         /// <param name="env">Environment</param>
         /// <param name="root">Submodel or SME</param>
         /// <param name="recurseChilds">Recurse on child elements</param>
+        /// <param name="repairSemIds">Will check if the type/ local of the semanticId of
+        /// the source SMEs shall be adopted.</param>
         /// <returns>Tuple (#no valid id, #already present, #added) </returns>
         public Tuple<int, int, int> ImportCDsFromSmSme(
-            AdminShell.AdministrationShellEnv env, 
+            AdminShell.AdministrationShellEnv env,
             object root,
             bool recurseChilds = false,
             bool repairSemIds = false)
@@ -2121,14 +2123,14 @@ namespace AasxPackageLogic
                     // repair semanticId
                     if (repairSemIds)
                     {
-                        if (rf is AdminShell.Submodel rfsm && rfsm.semanticId != null 
+                        if (rf is AdminShell.Submodel rfsm && rfsm.semanticId != null
                             && rfsm.semanticId.Count >= 1)
                         {
                             rfsm.semanticId[0].type = AdminShell.Key.Submodel;
                             rfsm.semanticId[0].local = true;
                         }
 
-                        if (rf is AdminShell.SubmodelElement rfsme && rfsme.semanticId != null 
+                        if (rf is AdminShell.SubmodelElement rfsme && rfsme.semanticId != null
                             && rfsme.semanticId.Count >= 1)
                         {
                             rfsme.semanticId[0].type = AdminShell.Key.ConceptDescription;
@@ -2186,7 +2188,7 @@ namespace AasxPackageLogic
                 {
                     var child = smw?.submodelElement;
                     if (child is AdminShell.IGetSemanticId rsmid2)
-                        actionAddCD(rsmid2.GetSemanticId(), child as AdminShell.Referable);
+                        actionAddCD(rsmid2.GetSemanticId(), child);
                 }
 
             // done

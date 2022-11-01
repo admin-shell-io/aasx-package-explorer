@@ -556,7 +556,7 @@ namespace AasxRestServerLibrary
             }
             context.Server.Logger.Debug(
                 $"Putting AdministrationShell with idShort {aas.idShort ?? "--"} and " +
-                $"id {aas.identification.ToString() }");
+                $"id {aas.identification.ToString()}");
             var existingAas = this.Package.AasEnv.FindAAS(aas.identification);
             if (existingAas != null)
                 this.Package.AasEnv.AdministrationShells.Remove(existingAas);
@@ -803,7 +803,7 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding Submodel with idShort {submodel.idShort ?? "--"} and " +
-                $"id {submodel.identification?.ToString() }");
+                $"id {submodel.identification?.ToString()}");
             var existingSm = this.Package.AasEnv.FindSubmodel(submodel.identification);
             if (existingSm != null)
                 this.Package.AasEnv.Submodels.Remove(existingSm);
@@ -1595,7 +1595,7 @@ namespace AasxRestServerLibrary
             // add Submodel
             context.Server.Logger.Debug(
                 $"Adding ConceptDescription with idShort {cd.idShort ?? "--"} and " +
-                $"id {cd.identification.ToString() }");
+                $"id {cd.identification.ToString()}");
             var existingCd = this.Package.AasEnv.FindConceptDescription(cd.identification);
             if (existingCd != null)
                 this.Package.AasEnv.ConceptDescriptions.Remove(existingCd);
