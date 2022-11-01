@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
@@ -688,7 +689,8 @@ namespace AasxPackageLogic
         public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
                 Func<int, AnyUiLambdaActionBase> action = null,
                 string[] actionTags = null,
-                bool[] addWoEdit = null)
+                bool[] addWoEdit = null,
+                string[] toolTips = null)
         {
             // access 
             if (action == null || actionStr == null)
@@ -743,6 +745,10 @@ namespace AasxPackageLogic
                 b.Content = "" + actionStr[i];
                 b.Margin = new AnyUiThickness(2, 2, 2, 2);
                 b.Padding = new AnyUiThickness(5, 0, 5, 0);
+
+                if (toolTips != null && toolTips.Length > i && toolTips[i] != null)
+                    b.ToolTip = toolTips[i];
+
                 wp.Children.Add(b);
                 AnyUiUIElement.RegisterControl(b,
                     (o) =>
@@ -2077,6 +2083,95 @@ namespace AasxPackageLogic
 
             // ok
             return true;
+        }
+
+        /// <summary>
+        /// Creates CDs depending on semanticId of SM or SME.
+        /// </summary>
+        /// <param name="env">Environment</param>
+        /// <param name="root">Submodel or SME</param>
+        /// <param name="recurse">Recurse on child elements</param>
+        /// <returns>Tuple (#no valid id, #already present, #added) </returns>
+        public Tuple<int, int, int> ImportCDsFromSmSme(
+            AdminShell.AdministrationShellEnv env, 
+            object root,
+            bool recurse = false)
+        {
+            // access
+            var noValidId = 0;
+            var alreadyPresent = 0;
+            var added = 0;
+
+            if (env == null || root == null)
+                return new Tuple<int, int, int>(noValidId, alreadyPresent, added);
+
+            //
+            // Part 0 : define a lambda
+            //
+
+            Action<AdminShell.SemanticId, AdminShell.Referable> actionAddCD = (newid, rf) =>
+            {
+                if (newid == null || newid.Count < 1)
+                {
+                    noValidId++;
+                }
+                else
+                {
+                    // id of new CD
+                    var cdid = new AdminShell.Identification(newid[0].idType, newid[0].value);
+
+                    // check if existing
+                    var exCd = env.FindConceptDescription(cdid);
+                    if (exCd != null)
+                    {
+                        alreadyPresent++;
+                    }
+                    else
+                    {
+                        // create such CD
+                        var cd = new AdminShell.ConceptDescription();
+                        cd.identification = cdid;
+                        if (root is AdminShell.Referable rrf)
+                        {
+                            cd.idShort = rrf.idShort;
+                            cd.description = rrf.description;
+                        }
+
+                        // store in AAS enviroment
+                        env.ConceptDescriptions.Add(cd);
+
+                        // count and emit event
+                        added++;
+                        if (root is AdminShell.Referable)
+                            this.AddDiaryEntry(root as AdminShell.Referable, new DiaryEntryStructChange());
+                    }
+                }
+            };
+
+            //
+            // Part 1 : semanticId of root
+            //
+
+
+            if (root is AdminShell.IGetSemanticId rsmid)
+                actionAddCD(rsmid.GetSemanticId(), root as AdminShell.Referable);
+
+
+            //
+            // Part 2 : semanticId of all children
+            //
+
+            if (recurse)
+                foreach (var smw in AdminShell.IEnumerateChildrenHelper.RecurseOnChildren(
+                    root as AdminShell.IEnumerateChildren))
+                {
+                    var child = smw?.submodelElement;
+                    if (child is AdminShell.IGetSemanticId rsmid2)
+                        actionAddCD(rsmid2.GetSemanticId(), child as AdminShell.Referable);
+                }
+
+            // done
+            return new Tuple<int, int, int>(noValidId, alreadyPresent, added);
         }
 
         //

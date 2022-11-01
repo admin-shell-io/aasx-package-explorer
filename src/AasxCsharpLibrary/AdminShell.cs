@@ -1958,6 +1958,29 @@ namespace AdminShellNS
             object AddChild(SubmodelElementWrapper smw, EnumerationPlacmentBase placement = null);
         }
 
+        public static class IEnumerateChildrenHelper
+        {
+            public static IEnumerable<SubmodelElementWrapper> RecurseOnChildren(IEnumerateChildren root)
+            {
+                // access 
+                if (root == null)
+                    yield break;
+
+                foreach (var smw in root.EnumerateChildren())
+                {
+                    var ch = smw?.submodelElement;
+                    if (ch == null)
+                        continue;
+
+                    yield return smw;
+
+                    if (ch is IEnumerateChildren chiec)
+                        foreach (var x in RecurseOnChildren(chiec))
+                            yield return x;
+                }
+            }
+        }
+
         public interface IValidateEntity
         {
             void Validate(AasValidationRecordList results);
@@ -4149,7 +4172,7 @@ namespace AdminShellNS
                 return this.GetSelfDescription()?.ElementName;
             }
 
-            // sorting
+            // creating
 
 
         }
