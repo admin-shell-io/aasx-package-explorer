@@ -1613,6 +1613,46 @@ namespace AasxPackageLogic
         }
 
         //
+        // manipulations for list of SME wrappers
+        //
+
+        public int AddElementInSmwListBefore<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list, 
+            AdminShell.SubmodelElementWrapper entity, AdminShell.SubmodelElementWrapper existing,
+            bool makeUniqueIfNeeded = false)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || list.Count < 1 || entity?.submodelElement == null)
+                return -1;
+
+            // make unqiue
+            if (makeUniqueIfNeeded && !list.CheckIdShortIsUnique(entity.submodelElement.idShort))
+                this.MakeNewReferableUnique(entity.submodelElement);
+
+            // delegate
+            return AddElementInListBefore<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        public int AddElementInSmwListAfter<T>(
+            AdminShell.BaseSubmodelElementWrapperCollection<T> list,
+            AdminShell.SubmodelElementWrapper entity, AdminShell.SubmodelElementWrapper existing,
+            bool makeUniqueIfNeeded = false)
+            where T : AdminShell.SubmodelElement
+        {
+            // access
+            if (list == null || list.Count < 1 || entity?.submodelElement == null)
+                return -1;
+
+            // make unqiue
+            if (makeUniqueIfNeeded && !list.CheckIdShortIsUnique(entity.submodelElement.idShort))
+                this.MakeNewReferableUnique(entity.submodelElement);
+
+            // delegate
+            return AddElementInListAfter<AdminShell.SubmodelElementWrapper>(list, entity, existing);
+        }
+
+        //
         // Helper
         //
 
