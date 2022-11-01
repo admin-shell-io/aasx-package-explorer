@@ -4944,7 +4944,7 @@ namespace AdminShellNS
                     // seems fine
                     return res;
                 }
-
+                else
                 if (typeof(T) == typeof(Submodel))
                 {
                     // check, if exist or not exist
@@ -4974,7 +4974,7 @@ namespace AdminShellNS
                     // seems fine
                     return res;
                 }
-
+                else
                 if (typeof(T) == typeof(Asset))
                 {
                     // check, if exist or not exist
@@ -4998,8 +4998,24 @@ namespace AdminShellNS
                                 }
                     }
 
-                    // rename old Submodel
+                    // rename old Asset
                     assetOld.identification = newId;
+
+                    // seems fine
+                    return res;
+                }
+                else
+                if (typeof(T) == typeof(AdministrationShell))
+                {
+                    // check, if exist or not exist
+                    var aasOld = FindAAS(oldId);
+                    if (aasOld == null || FindAAS(newId) != null)
+                        return null;
+
+                    // recurse? -> no?
+
+                    // rename old Asset
+                    aasOld.identification = newId;
 
                     // seems fine
                     return res;
