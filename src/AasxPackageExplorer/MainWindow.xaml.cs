@@ -1068,8 +1068,13 @@ namespace AasxPackageExplorer
                     // sure to find business object
                     DisplayElements.ExpandAllItems();
 
+                    // more information (e.g. for plugin)
+                    ListOfVisualElement.SupplementaryReferenceInformation sri = null;
+                    if (lab is AnyUiLambdaActionRedrawAllElements wishhl2)
+                        sri = wishhl2.SupplementaryInfo;
+
                     // now: search
-                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
+                    DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded, sri);
                 }
                 // fake selection
                 DispEditHighlight.HighlightFieldInfo hfi = null;
@@ -1193,7 +1198,7 @@ namespace AasxPackageExplorer
                     while (DispEditEntityPanel.WishForOutsideAction.Count > 0)
                     {
                         var temp = DispEditEntityPanel.WishForOutsideAction[0];
-                        DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
+                     DispEditEntityPanel.WishForOutsideAction.RemoveAt(0);
 
                         await MainTimer_HandleLambdaAction(temp);
                     }

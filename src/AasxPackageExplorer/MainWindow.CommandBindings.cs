@@ -1382,6 +1382,12 @@ namespace AasxPackageExplorer
             {
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
+
+            if (cmd == "capabilitysubmodel")
+                CommandBinding_SearchSubmodelFromPlugin();
+
+            if (cmd == "connectstardog")
+                CommandBinding_ConnectStardog();
         }
 
         public void CommandBinding_TDImport()
@@ -3620,6 +3626,442 @@ namespace AasxPackageExplorer
             // Redraw for changes to be visible
             RedrawAllAasxElements();
             //-----------------------------------
+        }
+
+        //
+        // Test for Capability Search
+        // needs to be relocated
+        //
+
+        public void CommandBinding_ConnectStardog()
+        {
+            // make dialgue flyout
+            var uc = new StardogConnectFlyout();
+            uc.LoadPresets(Options.Curr.StardogConnectPresets);
+
+
+            // modal dialogue
+            this.StartFlyoverModal(uc, closingAction: () =>
+            {
+            });
+
+            // succss?
+            if (uc.Result == null)
+                return;
+            var preset = uc.Result;
+
+            Log.Singleton.Info(preset.ServerAddress.Value);
+            Log.Singleton.Info(preset.KnowledgeBaseID.Value);
+            Log.Singleton.Info(preset.Username.Value);
+            Log.Singleton.Info(preset.Password.Value);
+
+            string json = File.ReadAllText("options-debug.MIHO.json");
+            dynamic jsonObj = JsonConvert.DeserializeObject(json);
+            jsonObj["StardogConnectPresets"][0]["ServerAddress"]["Value"] = preset.ServerAddress.Value;
+            jsonObj["StardogConnectPresets"][1]["KnowledgeBaseID"]["Value"] = preset.KnowledgeBaseID.Value;
+            jsonObj["StardogConnectPresets"][2]["Username"]["Value"] = preset.Username.Value;
+            jsonObj["StardogConnectPresets"][3]["Password"]["Value"] = preset.Password.Value;
+            string output = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+            File.WriteAllText("options-debug.MIHO.json", output);
+
+            MessageBoxFlyoutShow(
+                "Changes are applied after Restart.",
+                "", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.None);
+            // done
+            Log.Singleton.Info("Changed Stardog settings.");
+        }
+
+        public void CommandBinding_SearchSubmodelFromPlugin()
+        {
+            Log.Singleton.Info("CapabilitySearch started");
+            // trivial things
+            if (!_packageCentral.MainStorable)
+            {
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open for storage", "Error"
+                    , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                return;
+            }
+
+            VisualElementSubmodelRef ref1 = null;
+            VisualElementAdminShell ve1 = null;
+            VisualElementGeneric gen1 = null;
+
+            // a submodel needs to be selected
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+            {
+                ref1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+                try
+                {
+                    AasxCapabilitySearch.StardogConnection conn = new AasxCapabilitySearch.StardogConnection();
+                    string[] connection = conn.LoadPresets(Options.Curr.StardogConnectPresets);
+                    AasxCapabilitySearch.SearchWindow search = new AasxCapabilitySearch.SearchWindow(connection);
+                    search.ShowDialog();
+                    AasxCapabilitySearch.Triples subresult = search.GetTriples();
+
+
+                    if (subresult != null)
+                    {
+                        AdminShell.SubmodelElementCollection capabilitySet;
+
+
+                        if (ref1.theSubmodel.submodelElements == null)
+                        {
+                            //Create CapabilitySet
+                            capabilitySet = new AdminShell.SubmodelElementCollection();
+                            capabilitySet.idShort = "CapabilitySet";
+                        }
+                        else
+                        {
+
+                            AdminShell.SubmodelElementWrapper newwrap = ref1.theSubmodel.submodelElements.FindFirstIdShort("CapabilitySet");
+                            capabilitySet = newwrap.submodelElement as AdminShell.SubmodelElementCollection;
+                        }
+
+
+                        //Create CapabilityContainer
+                        AdminShell.SubmodelElementCollection capabilityContainer = new AdminShell.SubmodelElementCollection();
+                        capabilityContainer.idShort = "Capability" + subresult.Name + "Container";
+
+                        //selected result to Capability and wrapping
+                        AdminShell.Capability cap = new AdminShellV20.Capability();
+                        cap.idShort = subresult.Name;
+                        AdminShell.Key key = AdminShell.Key.CreateNew("Capability", false, "IRI", subresult.IRI);
+                        cap.semanticId = new AdminShell.SemanticId(key);
+                        var capRef = new AdminShell.SubmodelRef(cap.GetReference());
+                        AdminShell.SubmodelElementWrapper capWrap = new AdminShell.SubmodelElementWrapper(cap);
+
+                        //insert Capability into container and wrapping container
+                        capabilityContainer.AddChild(capWrap);
+
+                        //adding description and wrapping
+                        string[] comments = subresult.Description.Split(';');
+                        AdminShell.MultiLanguageProperty capDescription = new AdminShell.MultiLanguageProperty();
+                        capDescription.idShort = "Comment";
+
+                        foreach (string comm in comments)
+                        {
+                            if (comm.Contains("@en"))
+                            {
+                                capDescription.value.Add("en", comm);
+                            }
+                            else if (comm.Contains("@de"))
+                            {
+                                capDescription.value.Add("de", comm);
+                            }
+                            else if (comm.Contains("http:"))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                capDescription.value.Add("", comm);
+                            }
+                        }
+                        AdminShell.SubmodelElementWrapper desWrap = new AdminShell.SubmodelElementWrapper(capDescription);
+                        capabilityContainer.AddChild(desWrap);
+
+                        AdminShell.SubmodelElementWrapper containerWrap = new AdminShell.SubmodelElementWrapper(capabilityContainer);
+                        var ccref = new AdminShell.SubmodelRef(capabilityContainer.GetReference());
+
+                        //insert container into set and wrapping set
+                        capabilitySet.AddChild(containerWrap);
+                        AdminShell.SubmodelElementWrapper setWrap = new AdminShell.SubmodelElementWrapper(capabilitySet);
+                        var setRef = new AdminShell.SubmodelRef(setWrap.submodelElement.GetReference());
+
+                        //Add the set to the submodel
+                        if (ref1.theSubmodel.submodelElements == null)
+                        {
+                            ref1.theSubmodel.AddChild(setWrap);
+                        }
+
+                        //redraw
+                        DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(setRef));
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Info(ex + "No stable Connection to stardog");
+                }
+                return;
+            }
+
+            //a AAS needs to be selected
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAdminShell)
+            {
+                ve1 = DisplayElements.SelectedItem as VisualElementAdminShell;
+
+                try
+                {
+                    AasxCapabilitySearch.StardogConnection conn = new AasxCapabilitySearch.StardogConnection();
+                    string[] connection = conn.LoadPresets(Options.Curr.StardogConnectPresets);
+                    AasxCapabilitySearch.SearchWindow search = new AasxCapabilitySearch.SearchWindow(connection);
+                    search.ShowDialog();
+                    AasxCapabilitySearch.Triples subresult = search.GetTriples();
+
+        #if __Zugriff_auf_Plugins_direkt_nicht_moeglich
+
+                            if (subresult != null)
+                            {
+
+                                //Create new submodel into the AAS
+                                AdminShell.Submodel newsub = new AdminShellV20.Submodel();
+                                newsub.idShort = "Capabilities";
+                                newsub.SetIdentification("IRI", "");
+                                newsub.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                    Options.Curr.TemplateIdSubmodelInstance);
+                                var newsubref = new AdminShell.SubmodelRef(newsub.GetReference());
+                                ve1.theAas.AddSubmodelRef(newsubref);
+
+                                //Create new CapabilitySet
+                                AdminShell.SubmodelElementCollection capabilitySet = new AdminShell.SubmodelElementCollection();
+                                capabilitySet.idShort = "CapabilitySet";
+
+                                //Create new CapabilityContainer
+                                AdminShell.SubmodelElementCollection capabilityContainer = new AdminShell.SubmodelElementCollection();
+                                capabilityContainer.idShort = "Capability"+subresult.Name+"Container";
+
+                                //selected result to Capability and wrapping
+                                AdminShell.Capability cap = new AdminShellV20.Capability();
+                                cap.idShort = subresult.Name;
+                                AdminShell.Key key = AdminShell.Key.CreateNew("Capability", false, "IRI", subresult.IRI);
+                                cap.semanticId = new AdminShell.SemanticId(key);
+                                var capRef = new AdminShell.SubmodelRef(cap.GetReference());
+                                AdminShell.SubmodelElementWrapper capWrap = new AdminShell.SubmodelElementWrapper(cap);
+
+                                //insert Capability into container and wrapping container
+                                capabilityContainer.AddChild(capWrap);
+
+                                //adding description and wrapping
+                                string[] comments = subresult.Description.Split(';');
+                                AdminShell.MultiLanguageProperty capDescription = new AdminShell.MultiLanguageProperty();
+                                capDescription.idShort = "Comment";
+
+                                foreach (string comm in comments)
+                                {
+                                    if (comm.Contains("@en"))
+                                    {
+                                        capDescription.value.Add("en", comm);
+                                    }
+                                    else if (comm.Contains("@de"))
+                                    {
+                                        capDescription.value.Add("de", comm);
+                                    }
+                                    else if (comm.Contains("http:"))
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        capDescription.value.Add("", comm);
+                                    }
+                                }
+                                AdminShell.SubmodelElementWrapper desWrap = new AdminShell.SubmodelElementWrapper(capDescription);
+                                capabilityContainer.AddChild(desWrap);
+
+                                AdminShell.SubmodelElementWrapper containerWrap = new AdminShell.SubmodelElementWrapper(capabilityContainer);
+                                var ccref = new AdminShell.SubmodelRef(capabilityContainer.GetReference());
+
+                                //insert container into set and wrapping set
+                                capabilitySet.AddChild(containerWrap);
+                                AdminShell.SubmodelElementWrapper setWrap = new AdminShell.SubmodelElementWrapper(capabilitySet);
+                                var setRef = new AdminShell.SubmodelRef(setWrap.submodelElement.GetReference());
+
+                                //Add the set to the submodel
+                                newsub.AddChild(setWrap);
+
+                                //redraw
+                                _packageCentral.Main.AasEnv.Submodels.Add(newsub);
+                                DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(setRef));
+
+                            }
+
+        #endif
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Info("No stable Connection to stardog");
+                }
+                return;
+            }
+            //a GenericForms Capability-Submodel has to be selected
+            if (false && DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementGeneric)
+            {
+                //
+                // Alex
+                //
+
+                gen1 = DisplayElements.SelectedItem as VisualElementGeneric;
+
+
+                /*AasxPluginCapabilitySearch.StardogConnection conn = new AasxPluginCapabilitySearch.StardogConnection();
+                string[] connection = conn.LoadPresets(Options.Curr.StardogConnectPresets);
+                AasxPluginCapabilitySearch.SearchWindow search = new AasxPluginCapabilitySearch.SearchWindow(connection);
+                search.ShowDialog();
+                AasxPluginCapabilitySearch.Triples subresult = search.GetTriples(); */
+
+                //if(subresult != null)
+                if (File.Exists("CapTest.json"))
+                {
+                    // get JSON data
+                    var subresult = JsonConvert.DeserializeObject<AasxCapabilitySearch.Triples>(File.ReadAllText("CapTest.json"));
+                    Log.Singleton.Info(subresult.Name.ToString());
+                    Log.Singleton.Info(subresult.IRI.ToString());
+                    Log.Singleton.Info(subresult.Description.ToString());
+
+        #if __Zugriff_auf_Plugins_direkt_nicht_moeglich
+
+                            //GenericFormControl
+                            var dock = this.DispEditEntityPanel.Content as System.Windows.Controls.DockPanel;
+                            var uiColl = dock.Children as System.Windows.Controls.UIElementCollection;
+                            var gfc = uiColl[0] as GenericFormsControl;
+                            Log.Singleton.Info("GenericFormsControl loaded");
+
+                            //Submodel
+                            var sm = gfc.currentFormInst.GetListOfDifferent();
+                            Log.Singleton.Info(gfc.currentFormInst.sm.idShort + " loaded");
+
+                            //Capabilityset
+                            var set = sm[0].instances;
+                            Log.Singleton.Info("CapabilitySet loaded");
+
+                            //CapabilityContainer
+                            var contList = set.SubInstances;
+                            var contColl = contList[0] as FormInstanceSubmodelElementCollection;
+                            var contdif = contColl.GetListOfDifferent();
+                            var cont = contdif[0].instances;
+                            Log.Singleton.Info("CapabilityContainer loaded");
+
+
+                            var testcollection = AdminShell.SubmodelElementCollection.CreateNew("TestContainer");
+                            var testcapability = AdminShell.Capability.CreateNew<AdminShell.Capability>("TestCapbility");
+                            var testcapabilitywrapper = new AdminShell.SubmodelElementWrapper(testcapability);
+                            testcollection.AddChild(testcapabilitywrapper);
+                            var testcollectionwrapper = new AdminShell.SubmodelElementWrapperCollection(testcollection);
+                            cont.AddOrUpdateSameElementsToCollection(testcollectionwrapper);
+
+                            var control = cont.subControl as FormListOfSameControl;
+
+                            var newdist = new FormDescSubmodelElementCollection(
+                                "Capability" + subresult.Name + "Container",
+                                FormMultiplicity.OneToMany,
+                                AdminShell.Key.CreateNew("Capability" + subresult.Name + "Container", false, "GlobalReference", ""),
+                                "Capability" + subresult.Name + "Container");
+                            var newcap = new FormDescCapability(subresult.Name, FormMultiplicity.One,
+                                AdminShell.Key.CreateNew("Capability", false, "IRI", subresult.IRI), subresult.Name);
+
+                            var newcomment = new FormDescMultiLangProp("Comment", FormMultiplicity.OneToMany, new AdminShellV20.Key(), "TestComment");
+
+                            newcap.FormEditIdShort = true;
+                            newcap.CreateInstance(cont).Touched = true;
+                            newcap.CreateInstance(cont).ProcessSmeForRender();
+
+
+
+                            var commcontrol = newcomment.CreateInstance(cont);
+                            var comm = commcontrol.subControl as FormSubControlMultiLangProp;
+
+                            var cd = FormSubControlMultiLangProp.IndividualDataContext.CreateDataContext(comm.DataContext);
+                            Log.Singleton.Info(comm.Content.ToString());
+                            cd.instance.Touch();
+                            cd.prop.value.Add("de", "test");
+                            Log.Singleton.Info(cd.prop.value[0].ToString());
+                            Log.Singleton.Info(commcontrol.subControl.Resources.Count.ToString());
+
+                            newdist.Add(newcap);
+
+                            newdist.Add(newcomment);
+
+                            var newdistinstance = newdist.CreateInstance(cont);
+                            newdistinstance.Touch();
+                            var capinst = newcap.CreateInstance(cont);
+                            capinst.Touch();
+
+                            control.AddElement(cont, newdist);
+
+                            Log.Singleton.Info(cont.SubInstances.Count.ToString());
+
+                            cont.SubInstances.Add(newdistinstance);
+
+
+                            //gfc.Update();
+
+                            //this.RedrawAllAasxElements();
+        #endif
+                }
+                return;
+            }
+
+            if (true
+                && DisplayElements.SelectedItem is VisualElementPluginExtension vepe
+                && vepe.theReferable is AdminShell.Submodel capasm)
+            {
+                //
+                // Micha: am I supposed to add here something?
+                //
+
+                var defs = AasxPredefinedConcepts.CapabilitySet.Static;
+                var mm = AdminShell.Key.MatchMode.Relaxed;
+
+                // find a capability set to attach?
+                if (capasm.submodelElements == null)
+                    capasm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
+
+                var smcCapaSet = capasm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    defs.CD_CapabilitySet.GetSingleKey(), mm);
+
+                // if not, create!
+                if (smcCapaSet == null)
+                    smcCapaSet = capasm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                                    defs.CD_CapabilitySet, addSme: true, idShort: "CapabilitySet");
+
+                Log.Singleton.Info($"CapabilitySet {smcCapaSet.idShort} found/ created.");
+
+                // count existing Capa Containers
+                var excnt = smcCapaSet.value.FindAllSemanticId(defs.CD_CapabilityContainer.GetSingleKey(), matchMode: mm).Count();
+
+                // make a Capa Container
+                var smcCapaCnt = smcCapaSet.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                                defs.CD_CapabilityContainer, addSme: true, idShort: $"TestContainer{(excnt + 1):00}");
+
+                // make a new capability
+                var capCntCap = smcCapaCnt.value.CreateSMEForCD<AdminShell.Capability>(
+                                defs.CD_Capability, addSme: true, idShort: "TestCapabilty");
+
+                // and comment
+                var capCntCmt = smcCapaCnt.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(
+                                defs.CD_Comment, addSme: true, idShort: "TestComment")
+                    .Set("de", "Testkommentar")
+                    .Set("en", "testing commentary");
+
+                Log.Singleton.Info($"All intended capability data created.");
+
+                //redraw
+
+                var sri = new ListOfVisualElement.SupplementaryReferenceInformation() 
+                    { SearchPluginTag = "TBD" };
+
+                if (vepe.Parent is VisualElementSubmodelRef vesr)
+                    DispEditEntityPanel.AddWishForOutsideAction(
+                        new AnyUiLambdaActionRedrawAllElements(nextFocus: vesr.theSubmodelRef, sri: sri));
+
+                // done
+                return;
+            }
+
+            if (ve1 == null && ref1 == null && gen1 == null)
+            {
+                {
+                    MessageBoxFlyoutShow(
+                        "No valid AAS,GenericForms or submodel selected for searching a new capability-element.",
+                        "CapabilitySearch",
+                        AnyUiMessageBoxButton.OK,
+                        AnyUiMessageBoxImage.Error);
+                    return;
+                }
+            }
         }
     }
 }

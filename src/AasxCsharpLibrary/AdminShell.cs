@@ -1372,6 +1372,9 @@ namespace AdminShellNS
 
             public HasDataSpecification(IEnumerable<EmbeddedDataSpecification> src)
             {
+                if (src == null)
+                    return;
+
                 foreach (var r in src)
                     this.Add(new EmbeddedDataSpecification(r));
             }

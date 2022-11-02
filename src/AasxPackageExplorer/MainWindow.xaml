@@ -117,6 +117,9 @@
                     <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
                     <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
 
+                    <RoutedUICommand x:Key="CapabilitySubmodel" Text="CapabilitySubmodel" />
+                    <RoutedUICommand x:Key="ConnectStardog" Text="ConnectStardog" />
+
                     <!-- TODO: move this to separate xaml file -->
                     <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
                         <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
@@ -198,6 +201,8 @@
         <KeyBinding Key="F3" Command="{StaticResource ToolsFindForward}"/>
         <KeyBinding Key="F3" Modifiers="Shift" Command="{StaticResource ToolsFindBackward}"/>
         <KeyBinding Key="M" Modifiers="Ctrl+Shift" Command="{StaticResource NewSubmodelFromPlugin}"/>
+
+        <KeyBinding Key="N" Modifiers="Ctrl+Shift" Command="{StaticResource CapabilitySubmodel}"/>
     </Window.InputBindings>
 
     <Window.CommandBindings>
@@ -287,6 +292,9 @@
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
+
+        <CommandBinding Command="{StaticResource CapabilitySubmodel}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ConnectStardog}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
 
     <Grid x:Name="OuterGrid">
@@ -349,6 +357,7 @@
                             <MenuItem Header="Secure Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectSecure}"/>
                             <MenuItem Header="Connect via OPC-UA .." Command="{StaticResource ConnectOpcUa}"/>
                             <MenuItem Header="Connect via REST .." InputGestureText="F6" Command="{StaticResource ConnectRest}"/>
+                            <MenuItem Header="Stardog Connect .." Command="{StaticResource ConnectStardog}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="AASX File Repository ..">
@@ -390,7 +399,7 @@
                             <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
                             <MenuItem Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
                             <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
-							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
+							 <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
                             <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
                         </MenuItem>
@@ -415,6 +424,7 @@
                         <Separator/>
                         <MenuItem Header="Plugins ..">
                             <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Header="New Submodel" InputGestureText="Ctrl+Shift+M" Command="{StaticResource NewSubmodelFromPlugin}"/>
+                            <MenuItem x:Name="MenuItemWorkspaceCapabilitySubmodel" Header="CapabilitySearch" InputGestureText="Ctrl+Shift+N" Command="{StaticResource CapabilitySubmodel}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem x:Name="MenuItemWorkspacConvertElement" Header="Convert .." Command="{StaticResource ConvertElement}"/>

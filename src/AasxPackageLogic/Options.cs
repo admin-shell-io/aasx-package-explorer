@@ -431,6 +431,10 @@ namespace AasxPackageLogic
         [JetBrains.Annotations.UsedImplicitly]
         public Newtonsoft.Json.Linq.JToken IntegratedConnectPresets;
 
+        [OptionDescription(Description = "Point to a set of options for the connection to a Stardog-Server")]
+        [JetBrains.Annotations.UsedImplicitly]
+        public Newtonsoft.Json.Linq.JToken StardogConnectPresets;
+
         public OptionsInformation()
         {
             AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFCBD8EBu);

@@ -47,16 +47,19 @@ namespace AasxPackageLogic
     public class AnyUiLambdaActionRedrawAllElements : AnyUiLambdaActionRedrawAllElementsBase
     {
         public DispEditHighlight.HighlightFieldInfo HighlightField = null;
+        public ListOfVisualElement.SupplementaryReferenceInformation SupplementaryInfo = null;
 
         public AnyUiLambdaActionRedrawAllElements(
             object nextFocus, bool? isExpanded = true,
             DispEditHighlight.HighlightFieldInfo highlightField = null,
-            bool onlyReFocus = false)
+            bool onlyReFocus = false,
+            ListOfVisualElement.SupplementaryReferenceInformation sri = null)
         {
             this.NextFocus = nextFocus;
             this.IsExpanded = isExpanded;
             this.HighlightField = highlightField;
             this.OnlyReFocus = onlyReFocus;
+            this.SupplementaryInfo = sri;
         }
     }
 

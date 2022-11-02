@@ -391,10 +391,12 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
-        public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
+        public bool TrySelectMainDataObject(
+            object dataObject, bool? wishExpanded,
+            ListOfVisualElement.SupplementaryReferenceInformation sri = null)
         {
             // access?
-            var ve = SearchVisualElementOnMainDataObject(dataObject);
+            var ve = SearchVisualElementOnMainDataObject(dataObject, sri: sri);
             if (ve == null)
                 return false;
 

@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+	<TargetFramework>net472</TargetFramework>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\CapabilitySet.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CapabilitySet.json" />
+    <EmbeddedResource Include="Resources\LICENSE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="dotNetRDF" Version="2.7.2" />
+    <PackageReference Include="dotNetRDF.Data.DataTables" Version="2.7.2" />
+    <PackageReference Include="dotNetRDF.Data.Sql" Version="0.7.0" />
+    <PackageReference Include="dotNetRDF.Data.Virtuoso" Version="2.7.2" />
+    <PackageReference Include="dotNetRDF.Query.FullText" Version="2.7.2" />
+    <PackageReference Include="dotNetRDF.Query.Spin" Version="2.7.2" />
+    <PackageReference Include="dotNetRDF.Web" Version="2.7.2" />
+    <PackageReference Include="DynamicSPARQL" Version="1.0.2.2" />
+    <PackageReference Include="DynamicSPARQL.BrightstarDB" Version="1.0.2.3" />
+    <PackageReference Include="DynamicSPARQL.dotNetRDF" Version="1.0.0.3" />
+    <PackageReference Include="LINQtoSPARQL" Version="1.0.2.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="VDS.Common" Version="1.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
+    <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,76 @@
+﻿<Window x:Class="AasxCapabilitySearch.SearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Height="450" Width="800">
+
+    <Grid>
+
+        <TextBox x:Name="suchfeld"
+                 TextWrapping="Wrap" 
+                 Text="{Binding SearchCriteria, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" 
+                 Margin="10,10,150,0" 
+                 VerticalAlignment="Top" 
+                 MinWidth="550" Height="18"
+                 GotFocus="TextBoxOnClick"
+                 KeyDown="OnKeyDownHandler"
+                 />
+
+        <DataGrid x:Name="liste"
+                 Margin="10,35,10,40" 
+                 Width="Auto" Height="Auto"
+                 MinColumnWidth="200"
+                 >
+        </DataGrid>
+
+        <TextBlock x:Name="stardogConnection"
+                   Text="{Binding Connection}"
+                   FontSize="10"
+                   Margin="10,0,0,10"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom">
+        </TextBlock>
+
+        <TextBlock x:Name="searchCount"
+                   Text="{Binding Count}"
+                   FontSize="10"
+                   Margin="10,0,0,20"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Bottom">
+        </TextBlock>
+
+        <Button x:Name="search" 
+                Content="Search" 
+                Margin="0,10,15,0" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Top" 
+                MinWidth="90" Width="Auto" Height="Auto" 
+                Click="SearchOnClick" 
+                ClickMode="Release">
+        </Button>
+
+        <Button x:Name="cancel" 
+                Content="Cancel" 
+                HorizontalAlignment="Right" 
+                Margin="0,0,10,10" 
+                VerticalAlignment="Bottom" 
+                IsCancel="True" 
+                MinWidth="90" Height="Auto" Width="Auto" 
+                Click="CancelOnClick" 
+                ClickMode="Release">
+        </Button>
+
+        <Button x:Name="accept" 
+                Content="Accept" 
+                HorizontalAlignment="Right" 
+                Margin="0,0,105,10" 
+                VerticalAlignment="Bottom" 
+                MinWidth="90" Height="Auto" Width="Auto" 
+                Click="AcceptOnClick" 
+                ClickMode="Release">
+        </Button>
+
+    </Grid>
+</Window>

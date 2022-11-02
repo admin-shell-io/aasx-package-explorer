@@ -1,0 +1,294 @@
+﻿{
+  "SM_Capabilities": {
+    "semanticId": {
+      "keys": [
+        {
+          "type": "Submodel",
+          "local": false,
+          "value": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability",
+          "index": 0,
+          "idType": "IRI"
+        }
+      ]
+    },
+    "qualifiers": [],
+    "hasDataSpecification": [],
+    "identification": {
+      "idType": "IRI",
+      "id": "www.example.com/ids/sm/4400_8010_1122_8296"
+    },
+    "administration": null,
+    "idShort": "Capabilities",
+    "category": "CONSTANT",
+    "modelType": {
+      "name": "Submodel"
+    },
+    "kind": "Template",
+    "descriptions": null
+  },
+  "CD_CapabilitySet": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#CapabilitySet"
+    },
+    "administration": null,
+    "idShort": "CapabilitySet",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CapabilityContainer": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#CapabilityContainer"
+    },
+    "administration": null,
+    "idShort": "CapabilityContainer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Capability": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#Capability"
+    },
+    "administration": null,
+    "idShort": "Capability",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Reference to an implementation-independent description, defined in a knowledge base, of the function to achieve a certain effect in the physical or virtual world."
+      }
+    ]
+  },
+  "CD_Comment": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#Comment"
+    },
+    "administration": null,
+    "idShort": "Comment",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CapabilityRelationships": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#CapabilityRelationships"
+    },
+    "administration": null,
+    "idShort": "CapabilityRelationships",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_realizedBy": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#CapabilityRealizedBy"
+    },
+    "administration": null,
+    "idShort": "realizedBy",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Relation to an capabaility submodel-external skill/implementation realizing the capability."
+      }
+    ]
+  },
+  "CD_ComposedOfContainer": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#ComposedOfContainer"
+    },
+    "administration": null,
+    "idShort": "ComposedOfContainer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_ComposedOfRelationship": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#ComposedOfRelationship"
+    },
+    "administration": null,
+    "idShort": "ComposedOfRelationship",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "A reference to another capability, which this capability is compsed of."
+      }
+    ]
+  },
+  "CD_ConditionContainer": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#ConditionContainer"
+    },
+    "administration": null,
+    "idShort": "ConditionContainer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_CapabilityCondition": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#CapabilityCondition"
+    },
+    "administration": null,
+    "idShort": "CapabilityCondition",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Specific condition which apply before the skill is triggered or the skill is completed, respectively. These conditions can be used to check the availability of the capability."
+      }
+    ]
+  },
+  "CD_PropertySet": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#PropertySet"
+    },
+    "administration": null,
+    "idShort": "PropertySet",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_PropertyContainer": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#PropertyContainer"
+    },
+    "administration": null,
+    "idShort": "PropertyContainer",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Property": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#Property"
+    },
+    "administration": null,
+    "idShort": "Property",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_Comment_2": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#Comment_2"
+    },
+    "administration": null,
+    "idShort": "Comment_2",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_PropertyRelationships": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#PropertyRelationships"
+    },
+    "administration": null,
+    "idShort": "PropertyRelationships",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": null
+  },
+  "CD_realizedBy_2": {
+    "identification": {
+      "idType": "IRI",
+      "id": "https://wiki.eclipse.org/BaSyx_/_Documentation_/_Submodels_/_Capability#PropertyRealizedBy"
+    },
+    "administration": null,
+    "idShort": "realizedBy_2",
+    "category": null,
+    "modelType": {
+      "name": "ConceptDescription"
+    },
+    "embeddedDataSpecifications": null,
+    "isCaseOf": null,
+    "descriptions": [
+      {
+        "language": "en",
+        "text": "Relation to an capabaility submodel-external skill parameter realizing the property."
+      }
+    ]
+  }
+}
