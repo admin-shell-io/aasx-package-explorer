@@ -56,6 +56,17 @@ namespace AasxPluginExportTable
             this.cd = cd;
             this.Parent = parent;
         }
+
+        public AdminShell.Referable GetHeadingReferable()
+        {
+            if (Parent != null)
+                return Parent;
+            if (sm != null)
+                return sm;
+            if (sme != null)
+                return sme;
+            return null;
+        }
     }
 
     public class ExportTableAasEntitiesList : List<ExportTableAasEntitiesItem>
@@ -69,8 +80,8 @@ namespace AasxPluginExportTable
         // Types
         //
 
-        public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
-        public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
+        public enum FormatEnum { TSF = 0, LaTex, Word, Excel, NarkdownGH }
+        public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)" };
 
         //
         // Members
@@ -157,7 +168,7 @@ namespace AasxPluginExportTable
         public class CellRecord
         {
             public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
-                Text = "", TextWithHeaders = "", Width = null;
+                Text = "", TextWithHeaders = "", Width = null, Md = "";
 
             public CellRecord() { }
 
@@ -695,6 +706,9 @@ namespace AasxPluginExportTable
                         case "width":
                             cr.Width = argtl;
                             break;
+                        case "md":
+                            cr.Md = argtl;
+                            break;
                     }
 
                     // in any case, replace the wohl match!
@@ -725,6 +739,8 @@ namespace AasxPluginExportTable
                 {
                     // top
                     var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                    proc.Start();
+                    proc.ReplaceNewlineWith = " "; // for TSF, this is not possible!
                     for (int ri = 0; ri < this.RowsTop; ri++)
                     {
                         var line = "";
@@ -752,7 +768,7 @@ namespace AasxPluginExportTable
                         // create processing
                         proc = new ItemProcessor(this, item);
                         proc.Start();
-                        proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
+                        proc.ReplaceNewlineWith = " "; // for TSF, this is not possible!
 
                         var lines = new List<string>();
 
@@ -1341,6 +1357,123 @@ namespace AasxPluginExportTable
                 // End
                 //
 
+            }
+
+            return true;
+        }
+
+        //
+        // Markdown (GitHub sy´ntax)
+        //
+
+        public bool ExportMarkdownGithub(
+            string fn,
+            List<ExportTableAasEntitiesList> iterateAasEntities)
+        {
+            // access
+            if (!IsValid())
+                return false;
+
+            using (var f = new StreamWriter(fn))
+            {
+                // Heading
+                f.WriteLine("# 3 Heading");
+                f.WriteLine();
+
+                // over entities
+                var headingIdx = 1;
+                foreach (var entities in iterateAasEntities)
+                {
+                    // top entity
+                    var topEnt = entities.FirstOrDefault();
+
+                    // Heading
+                    var hr = topEnt?.GetHeadingReferable();
+                    f.WriteLine($"## 3.{headingIdx++} { (hr != null ? hr.idShort : "Heading" ) }");
+
+                    // one blank line is important for Markdown
+                    f.WriteLine();
+                    
+                    // top
+                    var proc = new ItemProcessor(this, topEnt);
+                    proc.Start();
+                    proc.ReplaceNewlineWith = "<br/>"; 
+
+                    for (int ri = 0; ri < this.RowsTop; ri++)
+                    {
+                        var line = "|";
+                        var headline = false;
+                        for (int ci = 0; ci < this.Cols; ci++)
+                        {
+                            // get cell record
+                            var cr = GetTopCell(ri, ci);
+
+                            // process text
+                            proc.ProcessCellRecord(cr);
+
+                            // flags
+                            if (cr.Md.Contains("headline"))
+                                headline = true;
+
+                            // add
+                            line += " " + cr.Text + "|";
+                        }
+
+                        if (headline)
+                            f.WriteLine();
+
+                        f.WriteLine(line);
+
+                        // write dashes line
+                        if (headline)
+                        {
+                            // Markdown .. indicate table horizontal row
+                            f.Write("|");
+                            for (int ci = 0; ci < this.Cols; ci++)
+                                f.Write(" --- |");
+                            f.WriteLine();
+                        }
+                    }
+
+                    // elements
+                    foreach (var item in entities)
+                    {
+                        // create processing
+                        proc = new ItemProcessor(this, item);
+                        proc.Start();
+                        proc.ReplaceNewlineWith = "<br/>"; 
+
+                        var lines = new List<string>();
+
+                        // all elements
+                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        {
+                            var line = "|";
+                            for (int ci = 0; ci < this.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                line += " " + cr.Text + "|";
+                            }
+
+                            lines.Add(line);
+                        }
+
+                        // export really?
+                        if (proc.NumberReplacements > 0)
+                            foreach (var line in lines)
+                                f.WriteLine(line);
+                    }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                        f.WriteLine("");
+                }
             }
 
             return true;
