@@ -1430,7 +1430,7 @@ namespace AasxPluginExportTable
                             // Markdown .. indicate table horizontal row
                             f.Write("|");
                             for (int ci = 0; ci < this.Cols; ci++)
-                                f.Write(" --- |");
+                                f.Write(" :--- |");
                             f.WriteLine();
                         }
                     }
