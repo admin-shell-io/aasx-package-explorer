@@ -79,6 +79,13 @@ namespace AasxPackageLogic.PackageCentral
             // we do it not caring on any errors
             try
             {
+                // make sure the backup dir exists
+                if (!Directory.Exists(backupDir))
+                {
+                    Directory.CreateDirectory(backupDir);
+                    Log.Singleton.Info(StoredPrint.Color.Blue, "Created backup directory : " + backupDir);
+                }
+
                 // get index in form
                 if (BackupIndex == 0)
                 {

@@ -6,6 +6,9 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />

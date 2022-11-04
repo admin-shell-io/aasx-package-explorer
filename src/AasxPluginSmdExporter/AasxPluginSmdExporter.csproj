@@ -5,8 +5,11 @@
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
         <UseWPF>true</UseWPF>
     </PropertyGroup>
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
 
-    <ItemGroup>
+  <ItemGroup>
         <None Update="AasxPluginSmdExporter.plugin">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
