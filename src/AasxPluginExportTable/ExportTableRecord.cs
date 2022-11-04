@@ -1389,15 +1389,15 @@ namespace AasxPluginExportTable
 
                     // Heading
                     var hr = topEnt?.GetHeadingReferable();
-                    f.WriteLine($"## 3.{headingIdx++} { (hr != null ? hr.idShort : "Heading" ) }");
+                    f.WriteLine($"## 3.{headingIdx++} {(hr != null ? hr.idShort : "Heading")}");
 
                     // one blank line is important for Markdown
                     f.WriteLine();
-                    
+
                     // top
                     var proc = new ItemProcessor(this, topEnt);
                     proc.Start();
-                    proc.ReplaceNewlineWith = "<br/>"; 
+                    proc.ReplaceNewlineWith = "<br/>";
 
                     for (int ri = 0; ri < this.RowsTop; ri++)
                     {
@@ -1441,7 +1441,7 @@ namespace AasxPluginExportTable
                         // create processing
                         proc = new ItemProcessor(this, item);
                         proc.Start();
-                        proc.ReplaceNewlineWith = "<br/>"; 
+                        proc.ReplaceNewlineWith = "<br/>";
 
                         var lines = new List<string>();
 
