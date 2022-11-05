@@ -587,12 +587,13 @@ namespace AasxPluginDocumentShelf
             var hds = new List<string>();
             if (_opContext?.IsDisplayModeEditOrAdd == true)
             {
-                hds.AddRange(new[] { "\u270e", "Edit" });
+                hds.AddRange(new[] { "\u270e", "Edit metadata" });
                 hds.AddRange(new[] { "\u2702", "Delete" });
             }
             else
-                hds.AddRange(new[] { "\u270e", "Display" });
-            hds.AddRange(new[] { "\U0001F4BE", "Save as .." });
+                hds.AddRange(new[] { "\u270e", "View metadata" });
+            hds.AddRange(new[] { "\U0001F56E", "View file" });
+            hds.AddRange(new[] { "\U0001F4BE", "Save file as .." });
 
             // context menu
             uitk.AddSmallContextMenuItemTo(g, 2, 2,
@@ -603,9 +604,9 @@ namespace AasxPluginDocumentShelf
                     fontWeight: AnyUiFontWeight.Bold,
                     menuItemLambda: (o) =>
                     {
-                        if (o is int ti)
+                        if (o is int ti && ti >= 0 && ti < hds.Count)
                             // awkyard, but for compatibility to WPF version
-                            de?.RaiseMenuClick((new[] { "Edit", "Delete", "Save file .." })[ti], null);
+                            de?.RaiseMenuClick(hds[2 * ti + 1], null);
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -715,7 +716,7 @@ namespace AasxPluginDocumentShelf
             _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
             {
                 // get the always currentplugin name
-                PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                PluginName = "AasxPluginDocumentShelf",
                 Session = _session,
                 Mode = mode,
                 UseInnerGrid = true
@@ -808,7 +809,7 @@ namespace AasxPluginDocumentShelf
 
             // what to do?
             if (tag == null
-                && (menuItemHeader == "Edit" || menuItemHeader == "Display")
+                && (menuItemHeader == "Edit metadate" || menuItemHeader == "View metadata")
                 && e.SourceElementsDocument != null && e.SourceElementsDocumentVersion != null)
             {
                 // prepare form instance, take over existing data
@@ -910,8 +911,12 @@ namespace AasxPluginDocumentShelf
                     _log?.Error("Document element was not found properly!");
             }
 
+            // show digital file
+            if (tag == null && menuItemHeader == "View file")
+                DocumentEntity_DoubleClick(e);
+
             // save digital file?
-            if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
+            if (tag == null && menuItemHeader == "Save file as .." && e.DigitalFile?.Path.HasContent() == true)
             {
                 // make a file available
                 var inputFn = e.DigitalFile.Path;
