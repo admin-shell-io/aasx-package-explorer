@@ -38,4 +38,29 @@ namespace AdminShellNS
             }
         }
     }
+
+    public class DoubleSidedDict<T1, T2>
+    {
+        private Dictionary<T1, T2> _forward = new Dictionary<T1, T2>();
+        private Dictionary<T2, T1> _backward = new Dictionary<T2, T1>();
+
+        public void AddPair(T1 item1, T2 item2)
+        {
+            _forward.Add(item1, item2);
+            _backward.Add(item2, item1);
+        }
+
+        public bool Contains1(T1 key1) => _forward.ContainsKey(key1);
+        public bool Contains2(T2 key2) => _backward.ContainsKey(key2);
+
+        public T2 Get2(T1 key1) => _forward[key1];
+        public T1 Get1(T2 key2) => _backward[key2];
+
+        public T2 Get2OrDefault(T1 key1) 
+            => (key1 != null && _forward.ContainsKey(key1)) ? _forward[key1] : default(T2);
+        public T1 Get1OrDefault(T2 key2) 
+            => (key2 != null && _backward.ContainsKey(key2)) ? _backward[key2] : default(T1);
+
+        public void Clear() { _forward.Clear(); _backward.Clear(); }
+    }
 }

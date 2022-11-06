@@ -41,6 +41,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Org.BouncyCastle.Crypto;
 using Org.Webpki.JsonCanonicalizer;
+using static AasxToolkit.Cli;
 
 namespace AasxPackageExplorer
 {
@@ -51,6 +52,170 @@ namespace AasxPackageExplorer
     public partial class MainWindow : Window, IFlyoutProvider
     {
         private string lastFnForInitialDirectory = null;
+
+        //// Note for UltraEdit:
+        //// <MenuItem Header="([^"]+)"\s*(|InputGestureText="([^"]+)")\s*Command="{StaticResource (\w+)}"/>
+        //// .AddWpf\(name: "\4", header: "\1", inputGesture: "\3"\)
+        //// or
+        //// <MenuItem Header="([^"]+)"\s+([^I]|InputGestureText="([^"]+)")(.*?)Command="{StaticResource (\w+)}"/>
+        //// .AddWpf\(name: "\5", header: "\1", inputGesture: "\3", \4\)
+
+        /// <summary>
+        /// Dynamic construction of the main menu
+        /// </summary>
+        public AasxMenu CreateMainMenu()
+        {
+            //
+            // Start
+            //
+
+            var menu = new AasxMenu();
+
+            //
+            // File
+            //
+
+            menu.AddMenu(header: "File", 
+                childs: (new AasxMenu())
+                .AddWpf(name: "New", header: "_New ..")
+                .AddWpf(name: "Open", header: "_Open ..", inputGesture: "Ctrl+O")
+                .AddWpf(name: "ConnectIntegrated", header: "Connect ..", inputGesture: "Ctrl+Shift+O")
+                .AddWpf(name: "Save", header: "_Save", inputGesture: "Ctrl+S")
+                .AddWpf(name: "SaveAs", header: "_Save as ..")
+                .AddWpf(name: "Close", header: "_Close ..")
+                .AddWpf(name: "CheckAndFix", header: "Check, validate and fix ..")
+                .AddMenu(header: "Security ..", childs: (new AasxMenu())
+                    .AddWpf(name: "Sign", header: "_Sign ..")
+                    .AddWpf(name: "ValidateCertificate", header: "_Validate ..")
+                    .AddWpf(name: "Encrypt", header: "_Encrypt ..")
+                    .AddWpf(name: "Decrypt", header: "_Decrypt .."))
+                .AddSeparator()
+                .AddWpf(name: "OpenAux", header: "Open Au_xiliary AAS ..", inputGesture: "Ctrl+X")
+                .AddWpf(name: "CloseAux", header: "Close Auxiliary AAS")
+                .AddSeparator()
+                .AddMenu(header: "Further connect options ..", childs: (new AasxMenu())
+                    .AddWpf(name: "ConnectSecure", header: "Secure Connect ..", inputGesture: "Ctrl+Shift+O")
+                    .AddWpf(name: "ConnectOpcUa", header: "Connect via OPC-UA ..")
+                    .AddWpf(name: "ConnectRest", header: "Connect via REST ..", inputGesture: "F6"))
+                .AddSeparator()
+                .AddMenu(header: "AASX File Repository ..", childs: (new AasxMenu())
+                    .AddWpf(name: "FileRepoNew", header: "New (local) repository..")
+                    .AddWpf(name: "FileRepoOpen", header: "Open (local) repository ..")
+                    .AddWpf(name: "FileRepoConnectRepository", header: "Connect HTTP/REST repository ..")
+                    .AddWpf(name: "FileRepoConnectRegistry", header: "Query HTTP/REST registry ..")
+                    .AddSeparator()
+                    .AddWpf(name: "FileRepoCreateLRU", header: "Create last recently used list ..")
+                    .AddSeparator()
+                    .AddWpf(name: "FileRepoQuery", header: "Query open repositories ..", inputGesture: "F12"))
+                .AddSeparator()
+                .AddMenu(header: "Import ..", childs: (new AasxMenu())
+                    .AddWpf(name: "ImportAML", header: "Import AutomationML into AASX ..")
+                    .AddWpf(name: "SubmodelRead", header: "Import Submodel from JSON ..")
+                    .AddWpf(name: "SubmodelGet", header: "GET Submodel from URL ..")
+                    .AddWpf(name: "ImportSubmodel", header: "Import Submodel from Dictionary ..")
+                    .AddWpf(name: "ImportSubmodelElements", header: "Import Submodel Elements from Dictionary ..")
+                    .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel ..")
+                    .AddWpf(name: "TDImport", header: "Import Thing Description JSON LD document into SubModel ..")
+                    .AddWpf(name: "CSVImport", header: "Import CSV-file into SubModel ..")
+                    .AddWpf(name: "OPCUAi4aasImport", header: "Import AAS from i4aas-nodeset ..")
+                    .AddWpf(name: "OpcUaImportNodeSet", header: "Import OPC UA nodeset.xml as Submodel ..")
+                    .AddWpf(name: "OPCRead", header: "Read OPC values into SubModel ..")
+                    .AddWpf(name: "RDFRead", header: "Import BAMM RDF into AASX ..")
+                    .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel ..")
+                    .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table .."))
+                .AddMenu(header: "Export ..", childs: (new AasxMenu())
+                    .AddWpf(name: "ExportAML", header: "Export AutomationML ..")
+                    .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON ..")
+                    .AddWpf(name: "SubmodelPut", header: "PUT Submodel to URL ..")
+                    .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset ..")
+                    .AddWpf(name: "OpcUaExportNodeSetUaPlugin", header: "Export OPC UA Nodeset2.xml (via UA server plug-in) ..")
+                    .AddWpf(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
+                    .AddWpf(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms ..")
+                    .AddWpf(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts ..")
+                    .AddWpf(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document")
+                    .AddWpf(name: "PrintAsset", header: "Print Asset as code sheet ..")
+                    .AddWpf(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) ..")
+                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table ..")
+                    .AddWpf(name: "ExportUml", header: "Export SubmodelElements as UML .."))
+                .AddSeparator()
+                .AddMenu(header: "Server ..", childs: (new AasxMenu())
+                    .AddWpf(name: "ServerRest", header: "Serve AAS as REST ..", inputGesture: "Shift+F6")
+                    .AddWpf(name: "MQTTPub", header: "Publish AAS via MQTT ..")
+                    .AddSeparator()
+                    .AddWpf(name: "ServerPluginEmptySample", header: "Plugin: Empty Sample ..")
+                    .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA ..")
+                    .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT .."))
+                .AddSeparator()
+                .AddWpf(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
+
+            //
+            // Workspace
+            //
+
+            menu.AddMenu(header: "Workspace",
+                childs: (new AasxMenu())
+                .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E", isCheckable: true)
+                .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H", isCheckable: true, isChecked: true)
+                .AddWpf(name: "Test", header: "Test")
+                .AddSeparator()
+                .AddWpf(name: "ToolsFindText", header: "Find ...")
+                .AddSeparator()
+                .AddMenu(header: "Plugins ..", childs: (new AasxMenu())
+                    .AddWpf(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M"))
+                .AddSeparator()
+                .AddWpf(name: "ConvertElement", header: "Convert ..")
+                .AddSeparator()
+                .AddMenu(header: "Buffer ..", childs: (new AasxMenu())
+                    .AddWpf(name: "BufferClear", header: "Clear internal paste buffer"))
+                .AddSeparator()
+                .AddMenu(header: "Events ..", childs: (new AasxMenu())
+                    .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L", isCheckable: true)
+                    .AddWpf(name: "EventsResetLocks", header: "Reset interlocking")));
+
+            //
+            // Options
+            //
+
+            menu.AddMenu(header: "Option",
+                childs: (new AasxMenu())
+                .AddWpf(name: "ShowIriMenu", header: "Show id as IRI", inputGesture: "Ctrl+I", isCheckable: true)
+                .AddWpf(name: "VerboseConnect", header: "Verbose connect", isCheckable: true)
+                .AddWpf(name: "FileRepoLoadWoPrompt", header: "Load without prompt", isCheckable: true)
+                .AddWpf(name: "AnimateElements", header: "Animate elements", isCheckable: true)
+                .AddWpf(name: "ObserveEvents", header: "ObserveEvents", isCheckable: true)
+                .AddWpf(name: "CompressEvents", header: "Compress events", isCheckable: true));
+
+            //
+            // Help
+            //
+
+            menu.AddMenu(header: "Help",
+                childs: (new AasxMenu())
+                .AddWpf(name: "About", header: "About ..")
+                .AddWpf(name: "HelpGithub", header: "Help on Github ..")
+                .AddWpf(name: "FaqGithub", header: "FAQ on Github ..")
+                .AddWpf(name: "HelpIssues", header: "Issues on Github ..")
+                .AddWpf(name: "HelpOptionsInfo", header: "Available options .."));
+
+            //
+            // Hotkeys
+            //
+
+            menu.AddHotkey(name: "", gesture: "")
+                .AddHotkey(name: "", gesture: "");
+
+            //
+            // End
+            //
+
+            menu.DefaultActionAsync = CommandBinding_GeneralDispatch;
+
+            return menu;
+        }
+
+        //
+        // Rest
+        //
 
         public void RememberForInitialDirectory(string fn)
         {
@@ -214,7 +379,7 @@ namespace AasxPackageExplorer
             return jsonld;
         }
 
-        private async void CommandBinding_GeneralDispatch(string cmd)
+        private async Task CommandBinding_GeneralDispatch(string cmd)
         {
             if (cmd == null)
             {
@@ -1204,13 +1369,13 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "editkey")
-                MenuItemWorkspaceEdit.IsChecked = !MenuItemWorkspaceEdit.IsChecked;
+                _mainMenu?.SetChecked("EditMenu", !(_mainMenu?.IsChecked("EditMenu") == true));
 
             if (cmd == "hintskey")
-                MenuItemWorkspaceHints.IsChecked = !MenuItemWorkspaceHints.IsChecked;
+                _mainMenu?.SetChecked("HintsMenu", !(_mainMenu?.IsChecked("HintsMenu") == true));
 
             if (cmd == "showirikey")
-                MenuItemOptionsShowIri.IsChecked = !MenuItemOptionsShowIri.IsChecked;
+                _mainMenu?.SetChecked("ShowIriMenu", !(_mainMenu?.IsChecked("ShowIriMenu") == true));
 
             if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
@@ -1376,7 +1541,7 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "eventsshowlogkey")
-                MenuItemWorkspaceEventsShowLog.IsChecked = !MenuItemWorkspaceEventsShowLog.IsChecked;
+                _mainMenu?.SetChecked("EventsShowLogMenu", !(_mainMenu?.IsChecked("ShowIriMenu") == true));
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
@@ -1440,9 +1605,10 @@ namespace AasxPackageExplorer
 
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
+
         public bool PanelConcurrentCheckIsVisible()
         {
-            return MenuItemWorkspaceEventsShowLog.IsChecked;
+            return _mainMenu?.IsChecked("WorkspaceEventsShowLog") == true;
         }
 
         public void PanelConcurrentSetVisibleIfRequired(

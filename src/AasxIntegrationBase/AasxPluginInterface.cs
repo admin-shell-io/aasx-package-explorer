@@ -17,7 +17,6 @@ using AnyUi;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-
 namespace AasxIntegrationBase
 {
     public class AasxPluginActionDescriptionBase

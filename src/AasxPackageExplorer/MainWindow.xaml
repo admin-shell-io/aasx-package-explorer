@@ -326,7 +326,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" Background="Transparent">
+                <Menu x:Name="MenuMain" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" Background="Transparent">
+                    
+                    <!-- Create dynamically
+                    
                     <MenuItem Header="_File" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem Header="_New .." Command="{StaticResource New}"/>
                         <MenuItem Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
@@ -443,6 +446,9 @@
                         <MenuItem x:Name="MenuItemFaqIssues" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
                         <MenuItem x:Name="MenuItemGenerateOptionInfo" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
+                    
+                    -->
+                    
                 </Menu>
 
                 <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50"

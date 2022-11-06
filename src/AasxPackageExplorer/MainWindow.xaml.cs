@@ -49,6 +49,8 @@ namespace AasxPackageExplorer
 
         public PackageCentral _packageCentral = new PackageCentral();
 
+        public AasxMenuWpf _mainMenu = new AasxMenuWpf();
+
         private string showContentPackageUri = null;
         private string showContentPackageMime = null;
         private VisualElementGeneric currentEntityForUpdate = null;
@@ -158,7 +160,7 @@ namespace AasxPackageExplorer
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
+                _packageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("WorkspaceEdit") == true,
                 lazyLoadingFirst: true);
 
             // ok .. try re-focus!!
@@ -195,7 +197,7 @@ namespace AasxPackageExplorer
                 // visually a new content
                 // switch off edit mode -> will will cause the browser to show the AAS as selected element
                 // and -> this will update the left side of the screen correctly!
-                MenuItemWorkspaceEdit.IsChecked = false;
+                _mainMenu?.SetChecked("EditMenu", false);
                 ClearAllViews();
                 RedrawAllAasxElements();
                 RedrawElementView();
@@ -244,7 +246,7 @@ namespace AasxPackageExplorer
                 ShowMesssageBox = (content, text, title, buttons) =>
                 {
                     // not verbose
-                    if (MenuItemOptionsVerboseConnect.IsChecked == false)
+                    if (_mainMenu?.IsChecked("VerboseConnect") == false)
                     {
                         // give specific default answers
                         if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
@@ -662,9 +664,9 @@ namespace AasxPackageExplorer
             PrepareDispEditEntity(
                 _packageCentral.Main,
                 DisplayElements.SelectedItems,
-                MenuItemWorkspaceEdit.IsChecked,
-                MenuItemWorkspaceHints.IsChecked,
-                MenuItemOptionsShowIri.IsChecked,
+                 _mainMenu?.IsChecked("EditMenu") == true,
+                 _mainMenu?.IsChecked("HintsMenu") == true,
+                 _mainMenu?.IsChecked("ShowIriMenu") == true,
                 hightlightField: hightlightField);
 
         }
@@ -678,6 +680,30 @@ namespace AasxPackageExplorer
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
+
+            // main menu
+            _mainMenu = new AasxMenuWpf();
+            _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain);
+
+
+            var cmd = new RoutedUICommand("Test", "NameOfTest", typeof(string));
+
+            this.CommandBindings.Add(new CommandBinding(cmd, (s3, e3) => {
+                // decode
+                var ruic = e3?.Command as RoutedUICommand;
+                if (ruic == null)
+                    return;
+                var cmdname = ruic.Text?.Trim().ToLower();
+            }));
+
+            var kb = new KeyBinding()
+            {
+                //Key = Key.K,
+                //Modifiers = ModifierKeys.Control,
+                Gesture = (new KeyGestureConverter()).ConvertFromInvariantString("Ctrl+K") as KeyGesture,
+                Command = cmd
+            };
+            this.InputBindings.Add(kb);
 
             // display elements has a cache
             DisplayElements.ActivateElementStateCache();
@@ -766,7 +792,7 @@ namespace AasxPackageExplorer
                     return;
 
                 // safety?
-                if (!MenuItemOptionsLoadWoPrompt.IsChecked)
+                if (_mainMenu?.IsChecked("FileRepoLoadWoPrompt") == false)
                 {
                     // ask double question
                     if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -884,12 +910,12 @@ namespace AasxPackageExplorer
 #endif
 
             // initialize menu
-            MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
-            MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
-            MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
-            MenuItemOptionsAnimateElems.IsChecked = Options.Curr.AnimateElements;
-            MenuItemOptionsObserveEvents.IsChecked = Options.Curr.ObserveEvents;
-            MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
+            _mainMenu?.SetChecked("FileRepoLoadWoPrompt", Options.Curr.LoadWithoutPrompt);
+            _mainMenu?.SetChecked("ShowIriMenu", Options.Curr.ShowIdAsIri);
+            _mainMenu?.SetChecked("VerboseConnect", Options.Curr.VerboseConnect);
+            _mainMenu?.SetChecked("AnimateElements", Options.Curr.AnimateElements);
+            _mainMenu?.SetChecked("ObserveEvents", Options.Curr.ObserveEvents);
+            _mainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
 
             // the UI application might receive events from items in the package central
             _packageCentral.ChangeEventHandler = (data) =>
@@ -954,7 +980,7 @@ namespace AasxPackageExplorer
                 return;
 
             // for valid display, app needs to be in edit mode
-            if (!MenuItemWorkspaceEdit.IsChecked)
+            if (_mainMenu.IsChecked("EditMenu") != true)
             {
                 this.MessageBoxFlyoutShow(
                     "The application needs to be in edit mode to show found entities correctly. Aborting.",
@@ -1251,7 +1277,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // make sure the user wants to change
-                    if (!MenuItemOptionsLoadWoPrompt.IsChecked)
+                    if (_mainMenu?.IsChecked("FileRepoLoadWoPrompt") != false)
                     {
                         // ask double question
                         if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -1626,7 +1652,7 @@ namespace AasxPackageExplorer
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
+            if (env == null || significantElems == null || !(_mainMenu?.IsChecked("AnimateElements") == true))
                 return;
 
             // find elements?
@@ -1670,7 +1696,7 @@ namespace AasxPackageExplorer
             bool directEmit)
         {
             // trivial
-            if (env == null || significantElems == null || !MenuItemOptionsObserveEvents.IsChecked)
+            if (env == null || significantElems == null || !(_mainMenu?.IsChecked("ObserveEvents") == true))
                 return;
 
             // do this twice
@@ -2039,7 +2065,7 @@ namespace AasxPackageExplorer
                     _mainTimer_LastCheckForDiaryEvents,
                     _packageCentral.MainItem.Container.Env?.AasEnv,
                     _packageCentral.MainItem.Container.SignificantElements,
-                    directEmit: !MenuItemOptionsCompressEvents.IsChecked);
+                    directEmit: !(_mainMenu?.IsChecked("CompressEvents") == true));
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?
@@ -2436,7 +2462,7 @@ namespace AasxPackageExplorer
 
         private void CheckIfToFlushEvents()
         {
-            if (MenuItemOptionsCompressEvents.IsChecked)
+            if (_mainMenu?.IsChecked("CompressEvents") == true)
             {
                 var evs = _eventCompressor?.Flush();
                 if (evs != null)
