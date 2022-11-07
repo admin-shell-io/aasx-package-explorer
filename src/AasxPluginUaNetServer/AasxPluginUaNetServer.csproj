@@ -6,6 +6,9 @@
     <!-- see: https://stackoverflow.com/questions/58085571/nuget-pkg-dlls-missing-from-build-folder-in-net-standard-dll-project-dlls-are -->
       <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
 
   <!--
       (mristin, 2020-11-25)
