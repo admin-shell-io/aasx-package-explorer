@@ -154,8 +154,10 @@ namespace AasxPackageExplorer
 
             menu.AddMenu(header: "Workspace",
                 childs: (new AasxMenu())
-                .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E", isCheckable: true)
-                .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H", isCheckable: true, isChecked: true)
+                .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E", 
+                    onlyDisplay: true, isCheckable: true)
+                .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H", 
+                    onlyDisplay: true, isCheckable: true, isChecked: true)
                 .AddWpf(name: "Test", header: "Test")
                 .AddSeparator()
                 .AddWpf(name: "ToolsFindText", header: "Find ...")
@@ -169,8 +171,11 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "BufferClear", header: "Clear internal paste buffer"))
                 .AddSeparator()
                 .AddMenu(header: "Events ..", childs: (new AasxMenu())
-                    .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L", isCheckable: true)
-                    .AddWpf(name: "EventsResetLocks", header: "Reset interlocking")));
+                    .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L",
+                        onlyDisplay: true, isCheckable: true)
+                    .AddWpf(name: "EventsResetLocks", header: "Reset interlocking"))
+                .AddMenu(header: "Scripts ..", childs: (new AasxMenu())
+                    .AddWpf(name: "ScriptEditLaunch", header: "Edit & launch ..", inputGesture: "Ctrl+Shift+L")));
 
             //
             // Options
@@ -201,8 +206,13 @@ namespace AasxPackageExplorer
             // Hotkeys
             //
 
-            menu.AddHotkey(name: "", gesture: "")
-                .AddHotkey(name: "", gesture: "");
+            menu.AddHotkey(name: "EditKey", gesture: "Ctrl+E")
+                .AddHotkey(name: "HintsKey", gesture: "Ctrl+H")
+                .AddHotkey(name: "ShowIriKey", gesture: "Ctrl+I")
+                .AddHotkey(name: "EventsShowLogKey", gesture: "Ctrl+L");
+
+            for (int i = 0; i < 9; i++)
+                menu.AddHotkey(name: $"LaunchScript{i}", gesture: $"Ctrl+Shift+{i}");
 
             //
             // End
@@ -379,7 +389,7 @@ namespace AasxPackageExplorer
             return jsonld;
         }
 
-        private async Task CommandBinding_GeneralDispatch(string cmd)
+        private async Task CommandBinding_GeneralDispatch(string cmd, AasxMenuItemBase menuItem)
         {
             if (cmd == null)
             {
@@ -1541,11 +1551,16 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "eventsshowlogkey")
-                _mainMenu?.SetChecked("EventsShowLogMenu", !(_mainMenu?.IsChecked("ShowIriMenu") == true));
+                _mainMenu?.SetChecked("EventsShowLogMenu", !(_mainMenu?.IsChecked("EventsShowLogMenu") == true));
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
+            }
+
+            if (cmd == "scripteditlaunch" || cmd.StartsWith("launchscript"))
+            {
+                CommandBinding_ScriptEditLaunch(cmd, menuItem);
             }
         }
 
@@ -1608,7 +1623,7 @@ namespace AasxPackageExplorer
 
         public bool PanelConcurrentCheckIsVisible()
         {
-            return _mainMenu?.IsChecked("WorkspaceEventsShowLog") == true;
+            return _mainMenu?.IsChecked("EventsShowLogMenu") == true;
         }
 
         public void PanelConcurrentSetVisibleIfRequired(
@@ -3786,6 +3801,55 @@ namespace AasxPackageExplorer
             // Redraw for changes to be visible
             RedrawAllAasxElements();
             //-----------------------------------
+        }
+
+        protected string _currentScriptText = "";
+
+        public void CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
+        {
+            if (cmd == "scripteditlaunch")
+            {
+                // trivial things
+                if (!_packageCentral.MainAvailable)
+                {
+                    MessageBoxFlyoutShow(
+                        "An AASX package needs to be available", "Error"
+                        , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    return;
+                }
+
+                // prompt for the script
+                var uc = new TextEditorFlyout();
+                uc.DiaData.MimeType = "application/C#";
+                uc.DiaData.Caption = "Edit script to be launched ..";
+                uc.DiaData.Presets = Options.Curr.ScriptPresets;
+                uc.DiaData.Text = _currentScriptText;
+                this.StartFlyoverModal(uc);
+                _currentScriptText = uc.DiaData.Text;
+                if (uc.DiaData.Result && uc.DiaData.Text.HasContent())
+                {
+                    try
+                    {
+                        // executing
+                        AasxScript.StartEnginBackground(uc.DiaData.Text);
+
+                        // redisplay; add to "normal" event quoue
+                        DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(null));
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, "when executing script");
+                    }
+                }
+            }
+
+            for (int i=0;i<9; i++)
+                if (cmd == $"launchscript{i}" 
+                    && Options.Curr.ScriptPresets != null
+                    && i < Options.Curr.ScriptPresets.Count)
+                {
+                    ;
+                }
         }
     }
 }

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace AasxWpfControlLibrary
 {
@@ -34,10 +35,17 @@ namespace AasxWpfControlLibrary
         public AasxMenu Menu { get => _menu; }
         private AasxMenu _menu = new AasxMenu();
 
-        private void RenderItemCollection(AasxMenu topMenu, AasxMenu menuItems, System.Windows.Controls.ItemCollection wpfItems)
+        private void RenderItemCollection(
+            AasxMenu topMenu, AasxMenu menuItems, 
+            System.Windows.Controls.ItemCollection wpfItems,
+            CommandBindingCollection cmdBindings = null,
+            InputBindingCollection inputBindings = null,
+            KeyGestureConverter kgConv = null)
         {
+            // loop
             foreach (var mi in menuItems)
             {
+                // access and trivial stuff
                 if (mi == null)
                     continue;
 
@@ -45,8 +53,48 @@ namespace AasxWpfControlLibrary
                 {
                     // add separator
                     wpfItems.Add(new System.Windows.Controls.Separator());
+
+                    // done
+                    continue;
                 }
-                else if (mi is AasxMenuItem mii)
+
+                // create a command and possibly a hotkey
+                ICommand cmd = null;
+                if (cmdBindings != null && mi?.Name?.HasContent() == true)
+                {
+                    // remember for lambdas
+                    var m_mii = mi;
+
+                    // creat cmd and bind
+                    cmd = new RoutedUICommand(mi.Name, mi.Name, typeof(string));
+                    cmdBindings.Add(new CommandBinding(cmd, (s3, e3) => {
+                        //// decode
+                        //var ruic = e3?.Command as RoutedUICommand;
+                        //if (ruic == null)
+                        //    return;
+                        //var cmdname = ruic.Text?.Trim().ToLower();
+                        // activate
+                        topMenu?.ActivateAction(m_mii);
+                    }));
+
+                    // possibly create hotkey
+                    if (inputBindings != null
+                        && kgConv != null
+                        && mi is AasxMenuItemHotkeyed mihk
+                        && mihk.InputGesture?.HasContent() == true
+                        && !mihk.GestureOnlyDisplay)
+                    {
+                        var kb = new KeyBinding()
+                        {
+                            Gesture = kgConv.ConvertFromInvariantString(mihk.InputGesture) as KeyGesture,
+                            Command = cmd
+                        };
+                        inputBindings.Add(kb);
+                    }
+                }
+
+                // visible items?
+                if (mi is AasxMenuItem mii)
                 {
                     // remember for lambdas
                     var m_mii = mii;
@@ -57,13 +105,19 @@ namespace AasxWpfControlLibrary
                         Header = mii.Header,
                         InputGestureText = mii.InputGesture,
                         IsCheckable = mii.IsCheckable,
-                        IsChecked = mii.IsChecked
+                        IsChecked = mii.IsChecked,
+                        Command = cmd
                     };
-                    wpf.Click += (s, e) =>
+
+                    // if for any sake cmd isn't available, do directly
+                    if (cmd == null && mii.Name?.HasContent() == true)
                     {
-                        e.Handled = true;
-                        topMenu?.ActivateAction(m_mii);
-                    };
+                        wpf.Click += (s, e) =>
+                        {
+                            e.Handled = true;
+                            topMenu?.ActivateAction(m_mii);
+                        };
+                    }
                     wpfItems.Add(wpf);
 
                     // remember in dictionaries
@@ -71,20 +125,27 @@ namespace AasxWpfControlLibrary
                         _menuItems.AddPair(m_mii.Name?.Trim().ToLower(), m_mii);
                     _wpfItems.AddPair(m_mii, wpf);
 
-                    // recurse
+                    // recurse (only on visible items possible)
                     if (mii.Childs != null)
-                        RenderItemCollection(topMenu, mii.Childs, wpf.Items);
+                        RenderItemCollection(topMenu, mii.Childs, wpf.Items, cmdBindings, inputBindings, kgConv);
                 }
             }
         }
 
-        public void LoadAndRender(AasxMenu menuInfo, System.Windows.Controls.Menu wpfMenu)
+        public void LoadAndRender(
+            AasxMenu menuInfo, 
+            System.Windows.Controls.Menu wpfMenu,
+            CommandBindingCollection cmdBindings = null,
+            InputBindingCollection inputBindings = null)
         {
             _menu = menuInfo;
             _menuItems.Clear();
             _wpfItems.Clear();
             wpfMenu.Items.Clear();
-            RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items);
+
+            var kgConv = new KeyGestureConverter();
+
+            RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items, cmdBindings, inputBindings, kgConv);
         }
 
         public bool IsChecked(string name)

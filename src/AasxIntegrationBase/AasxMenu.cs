@@ -29,16 +29,16 @@ namespace AasxIntegrationBase
     /// AASX menu items might call this action when activated.
     /// </summary>
     /// <param name="nameLower">Name of menu item in lower case</param>
-    public delegate void AasxMenuActionDelegate(string nameLower);
+    public delegate void AasxMenuActionDelegate(string nameLower, AasxMenuItemBase item);
 
     /// <summary>
     /// AASX menu items might call this action when activated.
     /// </summary>
     /// <param name="nameLower">Name of menu item in lower case</param>
-    public delegate Task AasxMenuActionAsyncDelegate(string nameLower);
+    public delegate Task AasxMenuActionAsyncDelegate(string nameLower, AasxMenuItemBase item);
 
     /// <summary>
-    /// Base class for menuitems.
+    /// Base class for menu items with a possible action.
     /// </summary>
     public abstract class AasxMenuItemBase
     {
@@ -60,11 +60,28 @@ namespace AasxIntegrationBase
     }
 
     /// <summary>
+    /// Menu item equipped with a possible hotkey
+    /// </summary>
+    public abstract class AasxMenuItemHotkeyed : AasxMenuItemBase
+    {
+        /// <summary>
+        /// Contains the gesture in form of "Ctrl+Shift+F" stuff.
+        /// see: https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.keygesture
+        /// </summary>
+        public string InputGesture;
+
+        /// <summary>
+        /// Displays gesture, but not auto-create a hotkey for it
+        /// </summary>
+        public bool GestureOnlyDisplay = false;
+    }
+
+    /// <summary>
     /// By this information, menu items for AASX Package Explorer, Blazor and Toolkit
     /// shall be described. Goal is to build up menu systems dynamically.
     /// Shall be also usable for plugins.
     /// </summary>
-    public class AasxMenuItem : AasxMenuItemBase
+    public class AasxMenuItem : AasxMenuItemHotkeyed
     {
         /// <summary>
         /// For which application is this menu item applicable.
@@ -91,11 +108,6 @@ namespace AasxIntegrationBase
         /// Switch state to initailize with.
         /// </summary>
         public bool IsChecked = false;
-
-        /// <summary>
-        /// Keyboard shortcut in GUI based applications.
-        /// </summary>
-        public string InputGesture = null;
 
         /// <summary>
         /// Command name in command line based applications. Typically lower case with
@@ -133,15 +145,10 @@ namespace AasxIntegrationBase
 
 
     /// <summary>
-    /// Represents a single hotkey which could activate an action
+    /// Represents a single hotkey which is not a visible menu item
     /// </summary>
-    public class AasxHotkey : AasxMenuItemBase
+    public class AasxHotkey : AasxMenuItemHotkeyed
     {
-        /// <summary>
-        /// Contains the gesture in form of "Ctrl+Shift+F" stuff.
-        /// see: https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.keygesture
-        /// </summary>
-        public string Gesture;
     }
 
     /// <summary>
@@ -174,6 +181,7 @@ namespace AasxIntegrationBase
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.WPF,
             string inputGesture = null,
+            bool onlyDisplay = false,
             bool isCheckable = false, bool isChecked = false)
         {
             this.Add(new AasxMenuItem()
@@ -184,6 +192,7 @@ namespace AasxIntegrationBase
                 ActionAsync = actionAsync,
                 Filter = filter,
                 InputGesture = inputGesture,
+                GestureOnlyDisplay = onlyDisplay,
                 IsCheckable = isCheckable,
                 IsChecked = isChecked
             });
@@ -196,6 +205,7 @@ namespace AasxIntegrationBase
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.WpfBlazor,
             string inputGesture = null,
+            bool onlyDisplay = false,
             bool isCheckable = false, bool isChecked = false)
         {
             this.Add(new AasxMenuItem()
@@ -206,6 +216,7 @@ namespace AasxIntegrationBase
                 ActionAsync = actionAsync,
                 Filter = filter,
                 InputGesture = inputGesture,
+                GestureOnlyDisplay = onlyDisplay,
                 IsCheckable = isCheckable,
                 IsChecked = isChecked
             });
@@ -218,7 +229,8 @@ namespace AasxIntegrationBase
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.All,
-            string inputGesture = null)
+            string inputGesture = null,
+            bool onlyDisplay = false)
         {
             this.Add(new AasxMenuItem()
             {
@@ -229,7 +241,8 @@ namespace AasxIntegrationBase
                 Action = action,
                 ActionAsync = actionAsync,
                 Filter = filter,
-                InputGesture = inputGesture
+                InputGesture = inputGesture,
+                GestureOnlyDisplay = onlyDisplay,
             });
             return this;
         }
@@ -261,7 +274,7 @@ namespace AasxIntegrationBase
             this.Add(new AasxHotkey()
             {
                 Name = name,
-                Gesture = gesture
+                InputGesture = gesture
             });
             return this;
         }
@@ -270,18 +283,18 @@ namespace AasxIntegrationBase
         // Operate
         //
 
-        public void ActivateAction(AasxMenuItem mii)
+        public void ActivateAction(AasxMenuItemBase mi)
         {
-            var name = mii?.Name?.Trim()?.ToLower();
+            var name = mi?.Name?.Trim()?.ToLower();
 
-            if (mii?.ActionAsync != null)
-                mii.ActionAsync(name);
-            else if (mii?.Action != null)
-                mii.Action(name);
+            if (mi?.ActionAsync != null)
+                mi.ActionAsync(name, mi);
+            else if (mi?.Action != null)
+                mi.Action(name, mi);
             else if (this.DefaultActionAsync != null)
-                this.DefaultActionAsync(name);
+                this.DefaultActionAsync(name, mi);
             else if (this.DefaultAction != null)
-                this.DefaultAction(name);
+                this.DefaultAction(name, mi);
         }
 
     }

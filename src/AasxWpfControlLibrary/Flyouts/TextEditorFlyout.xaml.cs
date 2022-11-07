@@ -87,6 +87,10 @@ namespace AasxPackageExplorer
             if (DiaData.MaxWidth.HasValue && DiaData.MaxWidth.Value > 200)
                 OuterGrid.MaxWidth = DiaData.MaxWidth.Value;
 
+            // populate preset combo
+            ComboBoxPreset.Items.Clear();
+            ComboBoxPreset.ItemsSource = DiaData.Presets?.Select((o) => o.Name);
+
             // text to edit
             SetMimeTypeAndText();
 
@@ -170,6 +174,8 @@ namespace AasxPackageExplorer
 
         private void ButtonClose_Click(object sender, RoutedEventArgs e)
         {
+            // prepare result, as client application migt want to save modified but cancelled text
+            PrepareResult();
             DiaData.Result = false;
             ControlClosed?.Invoke();
         }
@@ -183,6 +189,18 @@ namespace AasxPackageExplorer
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
         {
+        }
+
+        private void ComboBoxPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender == ComboBoxPreset 
+                && DiaData.Presets !=null
+                && ComboBoxPreset.SelectedIndex >= 0
+                && ComboBoxPreset.SelectedIndex < DiaData.Presets.Count)
+            {
+                DiaData.Text = DiaData.Presets[ComboBoxPreset.SelectedIndex].Text;
+                SetMimeTypeAndText();
+            }
         }
     }
 }

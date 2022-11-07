@@ -683,7 +683,7 @@ namespace AasxPackageExplorer
 
             // main menu
             _mainMenu = new AasxMenuWpf();
-            _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain);
+            _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain, this.CommandBindings, this.InputBindings);
 
 
             var cmd = new RoutedUICommand("Test", "NameOfTest", typeof(string));
@@ -2276,27 +2276,26 @@ namespace AasxPackageExplorer
             }
         }
 
-        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            // decode
-            var ruic = e?.Command as RoutedUICommand;
-            if (ruic == null)
-                return;
-            var cmd = ruic.Text?.Trim().ToLower();
+        //private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    // decode
+        //    var ruic = e?.Command as RoutedUICommand;
+        //    if (ruic == null)
+        //        return;
+        //    var cmd = ruic.Text?.Trim().ToLower();
 
-            // see: MainWindow.CommandBindings.cs
-            try
-            {
-                this.CommandBinding_GeneralDispatch(cmd);
-            }
-            catch (Exception err)
-            {
-                throw new InvalidOperationException(
-                    $"Failed to execute the command {cmd}: {err}");
-            }
+        //    // see: MainWindow.CommandBindings.cs
+        //    try
+        //    {
+        //        this.CommandBinding_GeneralDispatch(cmd);
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw new InvalidOperationException(
+        //            $"Failed to execute the command {cmd}: {err}");
+        //    }
 
-        }
-
+        //}
 
         private void DisplayElements_SelectedItemChanged(object sender, EventArgs e)
         {

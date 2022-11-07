@@ -415,6 +415,13 @@ namespace AasxPackageLogic
         [OptionDescription(Description = "Preset shown in the file repo connect to AAS repository dialogue")]
         public string DefaultConnectRepositoryLocation = "";
 
+        [OptionDescription(Description ="List of tuples (Name, Text) with presets for available scripts.")]
+        public List<AnyUiDialogueDataTextEditor.Preset> ScriptPresets;
+
+        [OptionDescription(Description = "Determins if user is prompted before strarting a script..",
+            Cmd = "-launch-without-prompt")]
+        public bool LaunchWithoutPrompt = false;
+
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
         public string StayConnectOptions = "";

@@ -36,8 +36,19 @@
         </Viewbox>
 
         <TextBlock x:Name="TextBlockCaption" Grid.Row="0" Grid.Column="1" Margin="4" FontSize="24" Foreground="White" HorizontalAlignment="Center" TextWrapping="Wrap"><Run Text="Caption .."/></TextBlock>
-        
-        <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="2" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="ButtonOk_Click"/>
+
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" MinWidth="140"/>
+                <ColumnDefinition Width="8*"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox x:Name="ComboBoxPreset" Grid.Row="0" Grid.Column="0" Height="22" VerticalAlignment="Center" Margin="0,2,10,4" SelectionChanged="ComboBoxPreset_SelectionChanged"/>
+            <Button x:Name="ButtonOk" IsDefault="True" Grid.Row="0" Grid.Column="1" Content="Ok" Style="{DynamicResource TranspRoundCorner}" Foreground="White" FontSize="18" Padding="6" Margin="0,8,0,10" Click="ButtonOk_Click"/>
+        </Grid>
 
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3" BorderBrush="#606060" BorderThickness="1"/>
         

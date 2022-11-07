@@ -153,8 +153,15 @@ namespace AnyUi
 
     public class AnyUiDialogueDataTextEditor : AnyUiDialogueDataBase
     {
+        public class Preset
+        {
+            public string Name;
+            public string Text;
+        }
+
         public string MimeType = "application/text";
         public string Text = "";
+        public List<Preset> Presets;
 
         public AnyUiDialogueDataTextEditor(
             string caption = "",

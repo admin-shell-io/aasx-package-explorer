@@ -30,6 +30,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AasxIntegrationBaseWpf;component/Themes/Generic.xaml"/>
                 <ResourceDictionary>
+                    <!--
                     <RoutedUICommand x:Key="ExportSMD" Text="ExportSMD" />
                     <RoutedUICommand x:Key="New" Text="New" />
                     <RoutedUICommand x:Key="Open" Text="Open" />
@@ -116,6 +117,7 @@
                     <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
                     <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
                     <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
+                    -->
 
                     <!-- TODO: move this to separate xaml file -->
                     <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
@@ -176,6 +178,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
+    <!--
     <Window.InputBindings>
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{StaticResource New}"/>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{StaticResource Open}"/>
@@ -199,8 +202,10 @@
         <KeyBinding Key="F3" Modifiers="Shift" Command="{StaticResource ToolsFindBackward}"/>
         <KeyBinding Key="M" Modifiers="Ctrl+Shift" Command="{StaticResource NewSubmodelFromPlugin}"/>
     </Window.InputBindings>
+    -->
 
     <Window.CommandBindings>
+        <!--
 		<CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Open}" Executed="CommandBinding_Executed"/>
@@ -287,6 +292,7 @@
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
+        -->
     </Window.CommandBindings>
 
     <Grid x:Name="OuterGrid">
