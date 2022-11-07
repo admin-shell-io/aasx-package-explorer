@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
@@ -41,7 +42,7 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceBase instance;
             public FormDescReferable desc;
-            public AdminShell.Referable rf;
+            public IReferable rf;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
@@ -90,12 +91,12 @@ namespace AasxIntegrationBase.AasForms
             LabelIdShort.Visibility = (visiIdShort) ? Visibility.Visible : Visibility.Collapsed;
             TextBoxIdShort.Visibility = LabelIdShort.Visibility;
 
-            TextBoxIdShort.Text = "" + dc.rf.idShort;
+            TextBoxIdShort.Text = "" + dc.rf.IdShort;
             TextBoxIdShort.TextChanged += (object sender3, TextChangedEventArgs e3) =>
             {
                 if (!UpdateDisplayInCharge)
                     dc.instance.Touch();
-                dc.rf.idShort = TextBoxIdShort.Text;
+                dc.rf.IdShort = TextBoxIdShort.Text;
             };
 
             LabelDescription.Visibility = (visiDescription) ? Visibility.Visible : Visibility.Collapsed;
@@ -130,8 +131,8 @@ namespace AasxIntegrationBase.AasForms
             if (visiDescription)
             {
                 int row = 2;
-                if (dc.rf.description != null && dc.rf.description.langString != null)
-                    foreach (var ls in dc.rf.description.langString)
+                if (dc.rf.Description != null && dc.rf.Description.LangStrings != null)
+                    foreach (var ls in dc.rf.Description.LangStrings)
                     {
                         // another row
                         rd = new RowDefinition();
@@ -145,18 +146,18 @@ namespace AasxIntegrationBase.AasForms
                             foreach (var l in FormDescMultiLangProp.DefaultLanguages)
                                 cb.Items.Add(l);
                         cb.IsEditable = true;
-                        cb.Text = ls.lang;
+                        cb.Text = ls.Language;
                         cb.SelectionChanged += (object sender2, SelectionChangedEventArgs e2) =>
                         {
                             if (!UpdateDisplayInCharge)
                                 dc.instance.Touch();
-                            ls.lang = "" + cb.SelectedItem;
+                            ls.Language = "" + cb.SelectedItem;
                         };
                         cb.KeyUp += (object sender3, KeyEventArgs e3) =>
                         {
                             if (!UpdateDisplayInCharge)
                                 dc.instance.Touch();
-                            ls.lang = cb.Text;
+                            ls.Language = cb.Text;
                         };
 
                         Grid.SetRow(cb, row);
@@ -166,12 +167,12 @@ namespace AasxIntegrationBase.AasForms
                         // build str text
                         var tb = new TextBox();
                         tb.Margin = new Thickness(2);
-                        tb.Text = ls.str;
+                        tb.Text = ls.Text;
                         tb.TextChanged += (object sender2, TextChangedEventArgs e2) =>
                         {
                             if (!UpdateDisplayInCharge)
                                 dc.instance.Touch();
-                            ls.str = tb.Text;
+                            ls.Text = tb.Text;
                         };
 
                         Grid.SetRow(tb, row);
@@ -185,11 +186,11 @@ namespace AasxIntegrationBase.AasForms
                         var lsToDel = ls;
                         bt.Click += (object sender3, RoutedEventArgs e3) =>
                         {
-                            if (dc.rf?.description?.langString != null)
-                                if (dc.rf.description.langString.Contains(lsToDel))
+                            if (dc.rf?.Description?.LangStrings != null)
+                                if (dc.rf.Description.LangStrings.Contains(lsToDel))
                                 {
                                     dc.instance.Touch();
-                                    dc.rf.description.langString.Remove(lsToDel);
+                                    dc.rf.Description.LangStrings.Remove(lsToDel);
                                     UpdateDisplay();
                                 }
                         };
@@ -220,11 +221,11 @@ namespace AasxIntegrationBase.AasForms
             if (sender == ButtonLangPlus)
             {
                 // add
-                if (dc.rf.description == null)
-                    dc.rf.description = new AdminShell.Description();
+                if (dc.rf.Description == null)
+                    dc.rf.Description = new LangStringSet(new List<LangString>());
 
                 dc.instance.Touch();
-                dc.rf.description.langString.Add(new AdminShell.LangStr("", ""));
+                dc.rf.Description.LangStrings.Add(new LangString("", ""));
 
                 // show
                 UpdateDisplay();

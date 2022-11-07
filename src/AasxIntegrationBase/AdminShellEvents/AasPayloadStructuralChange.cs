@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
@@ -35,7 +36,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem/*, IAasDiaryEntry*/ //TODO:jtikekar Need to check the purpose
     {
         /// <summary>
         /// Reason for the change. According to CRUD principle.
@@ -53,7 +54,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Observable of the defined Event. 
         /// Is null / empty, if identical to Observable.
         /// </summary>
-        public AdminShell.KeyList Path { get; set; }
+        public List<Key> Path { get; set; }
 
         /// <summary>
         /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
@@ -67,11 +68,11 @@ namespace AasxIntegrationBase.AdminShellEvents
         public int CreateAtIndex = -1;
 
         /// <summary>
-        /// Direct reference to Referable, when change item was successfully processed.
+        /// Direct reference to IReferable, when change item was successfully processed.
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]
-        public AdminShell.Referable FoundReferable;
+        public IReferable FoundReferable;
 
         //
         // Constructor
@@ -80,7 +81,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AasPayloadStructuralChangeItem(
             DateTime timeStamp,
             StructuralChangeReason reason,
-            AdminShell.KeyList path = null,
+            List<Key> path = null,
             int createAtIndex = -1,
             string data = null)
         {
@@ -100,7 +101,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = "PayloadStructuralChangeItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    res += "/" + k.value;
+                    res += "/" + k.Value;
             res += " -> " + Reason.ToString();
             return res;
         }
@@ -111,7 +112,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var left = "  MsgUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    left += "/" + k.value;
+                    left += "/" + k.Value;
 
             var right = "";
             right += " -> " + Reason.ToString();
@@ -129,14 +130,14 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 #endif
 
-        public AdminShell.Referable GetDataAsReferable()
+        public IReferable GetDataAsReferable()
         {
             // access
             if (Data == null)
                 return null;
 
             // try deserialize
-            return AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Referable>(Data);
+            return AdminShellSerializationHelper.DeserializeFromJSON<IReferable>(Data);
         }
 
         public string GetDetailsText()
@@ -191,7 +192,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = base.ToString();
             if (Changes != null)
                 foreach (var chg in Changes)
-                    res += Environment.NewLine + chg.ToString();
+                    res += System.Environment.NewLine + chg.ToString();
             return res;
         }
 

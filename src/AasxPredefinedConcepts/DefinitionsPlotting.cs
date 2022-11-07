@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -24,10 +25,10 @@ namespace AasxPredefinedConcepts
     {
         public static Plotting Static = new Plotting();
 
-        public AdminShell.SemanticId
+        public Reference
             SEM_PlottingSubmodel;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_Dummy;
 
         public Plotting()
@@ -35,13 +36,9 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Plugin Plotting";
 
-            // Referable
-            SEM_PlottingSubmodel = new AdminShell.SemanticId(
-                AdminShell.Key.CreateNew(
-                    type: "Submodel",
-                    local: false,
-                    idType: "IRI",
-                    value: "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0"));
+            // IReferable
+            SEM_PlottingSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0") });
+
 
             // dummy .. to be replaced later
             CD_Dummy = CreateSparseConceptDescription("en", "IRI",

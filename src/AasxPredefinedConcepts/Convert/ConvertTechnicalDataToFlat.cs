@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 // ReSharper disable MergeIntoPattern
 
@@ -27,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -36,16 +38,16 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                             new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_TechnicalData.GetSemanticKey()))
+            var sm = currentReferable as Submodel;
+            if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferTechnicalDataToFlat(this,
-                        $"Convert Submodel '{"" + sm.idShort}' from Technical Data to flat Submodel"));
+                        $"Convert Submodel '{"" + sm.IdShort}' from Technical Data to flat Submodel"));
 
             return res;
         }
 
         public override bool ExecuteOffer(
-            AdminShellPackageEnv package, AdminShell.Referable currentReferable,
+            AdminShellPackageEnv package, IReferable currentReferable,
             ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -58,36 +60,33 @@ namespace AasxPredefinedConcepts.Convert
                                 new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
             // access Submodel (again)
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm == null || sm.submodelElements == null
-                || true != sm.GetSemanticKey()?.Matches(defsTD.SM_TechnicalData.GetSemanticKey()))
+            var sm = currentReferable as Submodel;
+            if (sm == null || sm.SubmodelElements == null
+                || true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsTD.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
-            var smcOldTD = sm.submodelElements;
-            sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                    AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                    "http://admin-shell.io/sandbox/technical-data-flat/sm"));
+            var smcOldTD = sm.SubmodelElements;
+            sm.SubmodelElements = new List<ISubmodelElement>();
+            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
 
             // find all technical properties
-            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<SubmodelElementCollection>(
                 defsTD.CD_TechnicalProperties.GetSingleKey()))
             {
                 // access
-                if (smcTDP == null || smcTDP.value == null)
+                if (smcTDP == null || smcTDP.Value == null)
                     continue;
 
                 // now, take this as root for a recurse find ..
-                foreach (var oldSme in smcTDP.value.FindDeep<AdminShell.SubmodelElement>((o) => true))
+                foreach (var oldSme in smcTDP.Value.FindDeep<ISubmodelElement>((o) => true))
                 {
                     // no collections!
-                    if (oldSme is AdminShell.SubmodelElementCollection)
+                    if (oldSme is SubmodelElementCollection)
                         continue;
 
                     // simply add to new
-                    sm.submodelElements.Add(oldSme);
+                    sm.SubmodelElements.Add(oldSme);
                 }
             }
 

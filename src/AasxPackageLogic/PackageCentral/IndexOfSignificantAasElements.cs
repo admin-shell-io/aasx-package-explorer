@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxPackageLogic.PackageCentral
 {
@@ -41,12 +43,12 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public AdminShell.Reference Reference;
+        public Reference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
         /// </summary>
-        public AdminShell.IAasElement LiveObject;
+        public IClass LiveObject;
     }
 
     public class IndexOfSignificantAasElements
@@ -56,28 +58,29 @@ namespace AasxPackageLogic.PackageCentral
 
         public IndexOfSignificantAasElements() { }
 
-        public IndexOfSignificantAasElements(AdminShell.AdministrationShellEnv env)
+        public IndexOfSignificantAasElements(AasCore.Aas3_0_RC02.Environment env)
         {
             Index(env);
         }
 
         public void Add(
             SignificantAasElement kind,
-            AdminShell.Submodel sm,
-            AdminShell.ListOfReferable parents,
-            AdminShell.SubmodelElement sme)
+            Submodel sm,
+            List<IReferable> parents,
+            ISubmodelElement sme)
         {
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                Reference = sm?.GetReference()
-                    + parents?.GetReference()
-                    + sme?.GetReference(includeParents: false)
+                //Reference = sm?.GetReference()
+                //    + parents?.GetReference()
+                //    + sme?.GetReference(includeParents: false)
+                Reference = sm?.GetReference().Add(parents?.GetReference()).Add(sme?.GetModelReference())
             };
             _records.Add(kind, r);
         }
 
-        public void Index(AdminShell.AdministrationShellEnv env)
+        public void Index(AasCore.Aas3_0_RC02.Environment env)
         {
             // trivial
             if (env == null)
@@ -85,7 +88,7 @@ namespace AasxPackageLogic.PackageCentral
             _records = new MultiValueDictionary<SignificantAasElement, SignificantAasElemRecord>();
 
             // find all Submodels in use, but no one twice
-            var visited = new Dictionary<AdminShell.Submodel, bool>();
+            var visited = new Dictionary<Submodel, bool>();
             foreach (var sm in env.FindAllSubmodelGroupedByAAS())
                 if (!visited.ContainsKey(sm))
                     visited.Add(sm, true);
@@ -94,20 +97,20 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var sm in visited.Keys)
                 sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                 {
-                    if (sme is AdminShell.BasicEvent)
+                    if (sme is BasicEventElement)
                     {
-                        if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                        if (true == sme.SemanticId?.Matches(
+                            AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.GetReference(),
+                            MatchMode.Relaxed))
                             Add(SignificantAasElement.EventUpdateValueOutwards, sm, parents, sme);
 
-                        if (true == sme.semanticId?.Matches(
-                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                            AdminShell.Key.MatchMode.Relaxed))
+                        if (true == sme.SemanticId?.Matches(
+                            AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards.GetReference(),
+                            MatchMode.Relaxed))
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 
-                    if (null != sme.HasQualifierOfType("Animate.Args"))
+                    if (null != sme.FindQualifierOfType("Animate.Args"))
                         Add(SignificantAasElement.QualifiedAnimation, sm, parents, sme);
 
                     // recurse
@@ -116,7 +119,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         public IEnumerable<SignificantAasElemRecord> Retrieve(
-            AdminShell.AdministrationShellEnv env,
+            AasCore.Aas3_0_RC02.Environment env,
             SignificantAasElement kind)
         {
             if (env == null || true != _records.ContainsKey(kind))

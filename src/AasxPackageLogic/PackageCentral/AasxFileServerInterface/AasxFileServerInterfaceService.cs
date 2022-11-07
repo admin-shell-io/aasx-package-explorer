@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
+using Extenstions;
 using IO.Swagger.Api;
 using IO.Swagger.Client;
 using Microsoft.AspNetCore.Http;
@@ -46,7 +47,7 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        //This method retrieved all the packages and corresponsing AASs and Asset related information form the File Server.
+        //This method retrieved all the packages and corresponsing AASs and AssetInformation related information form the File Server.
         internal List<PackageContainerRepoItem> GeneratePackageRepository()
         {
             var output = new List<PackageContainerRepoItem>();
@@ -56,7 +57,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 foreach (var packageDescription in response)
                 {
-                    //Get AAS and Asset
+                    //Get AAS and AssetInformation
                     foreach (var aasId in packageDescription.AasIds)
                     {
                         try
@@ -66,7 +67,7 @@ namespace AasxPackageLogic.PackageCentral
                             var aas = aasAndAsset.aas;
                             if (aas != null)
                             {
-                                //Get Asset
+                                //Get AssetInformation
                                 try
                                 {
                                     var asset = aasAndAsset.asset;
@@ -77,12 +78,13 @@ namespace AasxPackageLogic.PackageCentral
                                         {
                                             ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                                             //Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,"server", "getaasx", aasi.Index),
-                                            Description = $"\"{"" + aas.idShort}\",\"{"" + asset.idShort}\"",
-                                            Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.idShort).SubstringMax(0, 3),
+                                            //Description = $"\"{"" + aas.IdShort}\",\"{"" + asset.IdShort}\"",
+                                            Description = $"\"{"" + aas.IdShort}\"", //No more IdShort in asset
+                                            Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(aas.IdShort).SubstringMax(0, 3),
                                             PackageId = packageDescription.PackageId
                                         };
-                                        packageContainer.AasIds.Add("" + aas.identification?.id);
-                                        packageContainer.AssetIds.Add("" + asset.identification?.id);
+                                        packageContainer.AasIds.Add("" + aas?.Id);
+                                        packageContainer.AssetIds.Add("" + asset.GlobalAssetId.GetAsExactlyOneKey().Value);
                                         output.Add(packageContainer);
                                     }
                                 }

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // reSharper disable UnusedType.Global
@@ -29,11 +30,11 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class ModuleTypePackage : AasxDefinitionBase
         {
-            public AdminShell.SemanticId
+            public Reference
                 SEM_MtpSubmodel,
                 SEM_MtpInstanceSubmodel;
 
-            public AdminShell.ConceptDescription
+            public ConceptDescription
                 CD_MtpTypeSubmodel,
                 CD_SourceList,
                 CD_SourceOpcUaServer,
@@ -49,20 +50,10 @@ namespace AasxPredefinedConcepts
                 // info
                 this.DomainInfo = "Module Type Package (MTP)";
 
-                // Referable
-                SEM_MtpSubmodel = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                        type: "Submodel",
-                        local: false,
-                        idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/submodel"));
+                // IReferable
+                SEM_MtpSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
 
-                SEM_MtpInstanceSubmodel = new AdminShell.SemanticId(
-                    AdminShell.Key.CreateNew(
-                        type: "Submodel",
-                        local: false,
-                        idType: "IRI",
-                        value: "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel"));
+                SEM_MtpInstanceSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",

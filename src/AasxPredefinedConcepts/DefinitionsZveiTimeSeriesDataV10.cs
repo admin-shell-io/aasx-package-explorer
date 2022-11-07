@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -27,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiTimeSeriesDataV10 Static = new ZveiTimeSeriesDataV10();
 
-        public AdminShell.Submodel
+        public Submodel
             SM_TimeSeriesData;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_TimeSeries,
             CD_Name,
             CD_Description,
@@ -55,7 +56,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Basic model for the modeling of time series data (ZVEI) v1.0";
 
-            // Referable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTimeSeriesDataV10.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiTimeSeriesDataV10), useFieldNames: true);

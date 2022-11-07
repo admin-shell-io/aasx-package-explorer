@@ -9,18 +9,22 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
 using AdminShellNS;
+using Extenstions;
 using IdentityModel.Client;
 using IO.Swagger.Api;
 using IO.Swagger.Client;
@@ -164,7 +168,7 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AdminShell.AdministrationShell, AdminShell.Asset>> GetAasAssetCore(string index)
+        public async Task<Tuple<AssetAdministrationShell, AssetInformation>> GetAasAssetCore(string index)
         {
             // access
             if (!IsValid())
@@ -180,18 +184,22 @@ namespace AasxPackageLogic.PackageCentral
             var response = await _client.GetAsync(StartQuery("aas", index, "core"));
             response.EnsureSuccessStatusCode();
             var frame = Newtonsoft.Json.Linq.JObject.Parse(await response.Content.ReadAsStringAsync());
+            var jsonNode = JsonNode.Parse(await response.Content.ReadAsStringAsync());
 
             // proudly to the parsing
-            AdminShell.AdministrationShell aas = null;
-            AdminShell.Asset asset = null;
+            AssetAdministrationShell aas = null;
+            AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
-                aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(frame["AAS"]);
-            if (frame.ContainsKey("Asset"))
-                asset = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.Asset>(frame["Asset"]);
+                //TODO:jtikekar TEST
+                //aas = AdminShellSerializationHelper.DeserializeFromJSON<AssetAdministrationShell>(frame["AAS"]);
+                aas = Jsonization.Deserialize.AssetAdministrationShellFrom(jsonNode["AAS"]);
+            if (frame.ContainsKey("AssetInformation"))
+                //asset = AdminShellSerializationHelper.DeserializeFromJSON<AssetInformation>(frame["AssetInformation"]);
+                asset = Jsonization.Deserialize.AssetInformationFrom(jsonNode["AssetInformation"]);
 
             // result
-            return new Tuple<AdminShell.AdministrationShell, AdminShell.Asset>(aas, asset);
+            return new Tuple<AssetAdministrationShell, AssetInformation>(aas, asset);
         }
 
         /// <summary>
@@ -199,9 +207,9 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <returns>True, if an event was emitted</returns>
         public async Task<bool> SimulateUpdateValuesEventByGetAsync(
-            AdminShell.Submodel rootSubmodel,
-            AdminShell.BasicEvent sourceEvent,
-            AdminShell.Referable requestedElement,
+            Submodel rootSubmodel,
+            BasicEventElement sourceEvent,
+            IReferable requestedElement,
             DateTime timestamp,
             string topic = null,
             string subject = null)
@@ -212,8 +220,8 @@ namespace AasxPackageLogic.PackageCentral
                     "connection not valid!");
 
             // first check (only allow two types of elements!)
-            var reqSm = requestedElement as AdminShell.Submodel;
-            var reqSme = requestedElement as AdminShell.SubmodelElement;
+            var reqSm = requestedElement as Submodel;
+            var reqSme = requestedElement as ISubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
                 || requestedElement == null || (reqSm == null && reqSme == null))
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
@@ -223,8 +231,8 @@ namespace AasxPackageLogic.PackageCentral
             rootSubmodel.SetAllParents();
 
             // get the reference of the sourceEvent and requestedElement
-            var sourceReference = sourceEvent.GetReference();
-            var requestedReference = (reqSm != null) ? reqSm.GetReference() : reqSme.GetReference();
+            var sourceReference = sourceEvent.GetModelReference();
+            var requestedReference = (reqSm != null) ? reqSm.GetReference() : reqSme.GetModelReference();
 
             // 2nd check
             if (sourceReference == null || requestedReference == null)
@@ -232,41 +240,41 @@ namespace AasxPackageLogic.PackageCentral
                     "element references cannot be determined!");
 
             //// try identify the original Observable
-            //// var origObservable = AdminShell.SubmodelElementWrapper.FindReferableByReference(
+            //// var origObservable = ISubmodelElement.FindReferableByReference(
             ////    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
 
             // basically, can query updates of Submodel or SubmodelElements
             string qst = null;
-            if (reqSm != null && reqSm.idShort.HasContent())
+            if (reqSm != null && reqSm.IdShort.HasContent())
             {
                 // easy query
-                qst = StartQuery("submodels", reqSm.idShort, "values");
+                qst = StartQuery("submodels", reqSm.IdShort, "values");
             }
-            else if (reqSme != null && reqSme.idShort.HasContent()
-                && rootSubmodel.idShort.HasContent())
+            else if (reqSme != null && reqSme.IdShort.HasContent()
+                && rootSubmodel.IdShort.HasContent())
             {
                 // TODO (all, 2021-01-30): check periodically for supported element types
 
                 // the query prepared here will fail deterministically, if the reqSme element type is not supported
                 // be the AAS server. Therefore, filter for element types, which are not expected to return a valid
                 // response
-                var reqSmeTypeSupported = reqSme is AdminShell.SubmodelElementCollection
-                    || reqSme is AdminShell.Property;
+                var reqSmeTypeSupported = reqSme is SubmodelElementCollection
+                    || reqSme is Property;
                 if (!reqSmeTypeSupported)
                     return false;
 
                 // build path
-                var path = "" + reqSme.idShort;
+                var path = "" + reqSme.IdShort;
 
                 // Resharper disable once IteratorMethodResultIsIgnored
                 reqSme.FindAllParents((x) =>
                 {
-                    path = x.idShort + "/" + path;
+                    path = x.IdShort + "/" + path;
                     return true;
                 }, includeThis: false, includeSubmodel: false);
 
                 // full query
-                qst = StartQuery("submodels", rootSubmodel.idShort, "elements", path, "values");
+                qst = StartQuery("submodels", rootSubmodel.IdShort, "elements", path, "values");
             }
 
             // valid
@@ -288,9 +296,10 @@ namespace AasxPackageLogic.PackageCentral
             var ev = new AasEventMsgEnvelope(
                 timestamp,
                 source: sourceReference,
-                sourceSemanticId: sourceEvent.semanticId,
+                sourceSemanticId: sourceEvent.SemanticId,
                 observableReference: requestedReference,
-                observableSemanticId: (requestedElement as AdminShell.IGetSemanticId).GetSemanticId(),
+                //observableSemanticId: (requestedElement as IGetSemanticId).GetSemanticId(),
+                observableSemanticId: (requestedElement as IHasSemantics).SemanticId,
                 topic: topic, subject: subject,
                 payload: pluv);
 
@@ -299,7 +308,9 @@ namespace AasxPackageLogic.PackageCentral
 
             // in order to serve goal (2), a wrapper-root is required from the observableReference,
             // that is: requestedElement!
-            var wrappers = ((requestedElement as AdminShell.IEnumerateChildren)?.EnumerateChildren())?.ToList();
+            //var wrappers = ((requestedElement as IEnumerateChildren)?.EnumerateChildren())?.ToList();
+            //TODO: jtikekar test for other than submodel
+            var wrappers = ((requestedElement as IReferable)?.EnumerateChildren())?.ToList();
 
             // parse dynamic response object
             // Note: currently only updating Properties
@@ -315,22 +326,20 @@ namespace AasxPackageLogic.PackageCentral
                     foreach (var tuple in vallist)
                         if (tuple.path != null)
                         {
-                            // KeyList from path
-                            var kl = AdminShell.KeyList.CreateNew(AdminShell.Key.SubmodelElement, false,
-                                        AdminShell.Key.IdShort, tuple.path.ToObject<string[]>());
+                            // List<Key> from path
+                            var kl = new List<Key>() { new Key(KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
                             // goal (1)
                             pluv.Values.Add(
-                                new AasPayloadUpdateValueItem(kl, "" + tuple.value));
+                                new AasPayloadUpdateValueItem(kl, "" + tuple.Value));
 
                             // goal (2)
                             if (wrappers != null)
                             {
-                                var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(kl), keyIndex: 0);
-                                if (x is AdminShell.Property prop)
+                                var x = wrappers.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, kl), keyIndex: 0);
+                                if (x is Property prop)
                                 {
-                                    if (tuple.value != null)
-                                        prop.value = tuple.value;
+                                    if (tuple.Value != null)
+                                        prop.Value = tuple.Value;
                                 }
                                 pluv.IsAlreadyUpdatedToAAS = true;
                             }
@@ -346,10 +355,10 @@ namespace AasxPackageLogic.PackageCentral
                     new AasPayloadUpdateValueItem(path: null, value: "" + val));
 
                 // goal (2)
-                if (reqSme is AdminShell.Property prop)
+                if (reqSme is Property prop)
                 {
                     if (val != null)
-                        prop.value = val;
+                        prop.Value = val;
                     pluv.IsAlreadyUpdatedToAAS = true;
                 }
             }
@@ -454,7 +463,7 @@ namespace AasxPackageLogic.PackageCentral
                     if (x.Item1 == null || x.Item2 == null)
                     {
                         Log.Singleton.Error($"when retrieving /aas/{aasi.Index}/, some null contents for AAS or" +
-                            $"Asset were found.");
+                            $"AssetInformation were found.");
                     }
 
                     // file item
@@ -463,11 +472,12 @@ namespace AasxPackageLogic.PackageCentral
                         ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
-                        Description = $"\"{"" + x.Item1?.idShort}\",\"{"" + x.Item2?.idShort}\"",
-                        Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.idShort).SubstringMax(0, 3)
+                        //Description = $"\"{"" + x.Item1?.IdShort}\",\"{"" + x.Item2?.IdShort}\"",
+                        Description = $"\"{"" + x.Item1?.IdShort}\"", //No more IdShort in AssetInformation 
+                        Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.IdShort).SubstringMax(0, 3)
                     };
-                    fi.AasIds.Add("" + x.Item1?.identification?.id);
-                    fi.AssetIds.Add("" + x.Item2?.identification?.id);
+                    fi.AasIds.Add("" + x.Item1?.Id);
+                    fi.AssetIds.Add("" + x.Item2?.GlobalAssetId.GetAsIdentifier());
                     res.Add(fi);
                 }
                 catch (Exception ex)
@@ -520,10 +530,10 @@ namespace AasxPackageLogic.PackageCentral
                             "Cannot deserize payload StructuralChangeItem!");
 
                     // try determine tarket of {Observavle}/{path}
-                    AdminShell.Referable target = null;
+                    IReferable target = null;
                     if (change.Path?.IsEmpty == false)
                     {
-                        AdminShell.KeyList kl = null;
+                        List<Key> kl = null;
                         if (change.Path.First().IsAbsolute())
                             kl = change.Path;
                         else
@@ -542,30 +552,30 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem Referable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
-                        if (target is AdminShell.IManageSubmodelElements targetMgr
-                            && dataRef is AdminShell.SubmodelElement sme
+                        if (target is IManageSubmodelElements targetMgr
+                            && dataRef is ISubmodelElement sme
                             && change.CreateAtIndex < 0)
                         {
                             targetMgr.Add(sme);
                         }
                         else
                         // at least for SMC, handle CreateAtIndex
-                        if (target is AdminShell.SubmodelElementCollection targetSmc
-                            && dataRef is AdminShell.SubmodelElement sme2
+                        if (target is SubmodelElementCollection targetSmc
+                            && dataRef is ISubmodelElement sme2
                             && change.CreateAtIndex >= 0
-                            && targetSmc.value != null
-                            && change.CreateAtIndex < targetSmc.value.Count)
+                            && targetSmc.Value != null
+                            && change.CreateAtIndex < targetSmc.Value.Count)
                         {
-                            targetSmc.value.Insert(change.CreateAtIndex, sme2);
+                            targetSmc.Value.Insert(change.CreateAtIndex, sme2);
                         }
                         else
                         // add to AAS
-                        if (target is AdminShell.AdministrationShell targetAas
-                            && dataRef is AdminShell.Submodel sm
+                        if (target is AssetAdministrationShell targetAas
+                            && dataRef is Submodel sm
                             && Env?.AasEnv != null)
                         {
                             Env.AasEnv.Submodels.Add(sm);
@@ -594,26 +604,28 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new AdminShell.KeyList();
-            AdminShell.Referable target = null;
-            if (change.Path?.IsEmpty == false)
+            var targetKl = new List<Key>();
+            IReferable target = null;
+            if (change.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new AdminShell.KeyList(env.ObservableReference.Keys);
+                    targetKl = new List<Key>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(change.Path);
 
                 if (targetKl.First().IsAbsolute())
-                    target = Env?.AasEnv?.FindReferableByReference(targetKl);
+                    //target = Env?.AasEnv?.FindReferableByReference(targetKl);
+                    target = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, targetKl));
             }
 
             // try evaluate parent of target?
-            var parentKl = new AdminShell.KeyList(targetKl);
-            AdminShell.Referable parent = null;
+            var parentKl = new List<Key>(targetKl);
+            IReferable parent = null;
             if (parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
-                parent = Env?.AasEnv?.FindReferableByReference(parentKl);
+                //parent = Env?.AasEnv?.FindReferableByReference(parentKl);
+                parent = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, parentKl));
             }
 
             // create
@@ -624,7 +636,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent Referable! " + change.Path.ToString(1)));
+                        "Cannot find parent IReferable! " + change.Path.ToString()));
                     return;
                 }
 
@@ -633,7 +645,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target Referable already existing .. Aborting! " + change.Path.ToString(1)));
+                        "Target IReferable already existing .. Aborting! " + change.Path.ToString()));
                     return;
                 }
 
@@ -643,61 +655,96 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot deserize StructuralChangeItem Referable data!"));
+                        "Cannot deserize StructuralChangeItem IReferable data!"));
                     return;
                 }
 
                 // need to care for parents inside
                 // TODO (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic
-                if (dataRef is AdminShell.Submodel drsm)
+                if (dataRef is Submodel drsm)
                     drsm.SetAllParents();
-                if (dataRef is AdminShell.SubmodelElement drsme)
-                    AdminShell.Submodel.SetParentsForSME(parent, drsme);
+                if (dataRef is ISubmodelElement drsme)
+                    //Submodel.SetParentsForSME(parent, drsme);
+                    ExtendSubmodel.SetParentsForSME(parent, drsme);
 
-                // paranoiac: make sure, that dataRef.idShort matches last key of target (in case of SME)
-                if (dataRef is AdminShell.SubmodelElement sme0
-                    && true != targetKl?.Last()?.Matches(
-                        "", false, AdminShell.Key.IdShort, sme0.idShort,
-                        AdminShellV20.Key.MatchMode.Identification))
+                // paranoiac: make sure, that dataRef.IdShort matches last key of target (in case of SME)
+                if (dataRef is ISubmodelElement sme0
+                    && true != targetKl?.Last()?.Matches(new Key(KeyTypes.SubmodelElement, sme0.IdShort), MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target SME idShort does not match provided data section! " + change.Path.ToString(1)));
+                        "Target SME idShort does not match provided data section! " + change.Path.ToStringExtended()));
                     return;
                 }
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if (parent is AdminShell.IManageSubmodelElements parentMgr
-                    && dataRef is AdminShell.SubmodelElement sme
+                if ((parent is Submodel || parent is AnnotatedRelationshipElement || parent is Entity || parent is SubmodelElementCollection || parent is SubmodelElementList)
+                    && dataRef is ISubmodelElement sme
                     && change.CreateAtIndex < 0)
                 {
-                    parentMgr.Add(sme);
+                    switch(parent)
+                    {
+                        case Submodel submodel:
+                            {
+                                submodel.SubmodelElements ??= new List<ISubmodelElement>();
+                                submodel.SubmodelElements.Add(sme);
+                                break;
+                            }
+                        case SubmodelElementCollection submodelElementCollection:
+                            {
+                                submodelElementCollection.Value ??= new List<ISubmodelElement>();
+                                submodelElementCollection.Value.Add(sme);
+                                break;
+                            }
+                        case SubmodelElementList submodelElementList:
+                            {
+                                submodelElementList.Value ??= new List<ISubmodelElement>();
+                                submodelElementList.Value.Add(sme);
+                                break;
+                            }
+                        case AnnotatedRelationshipElement annotatedRelationshipElement:
+                            {
+                                annotatedRelationshipElement.Annotations ??= new List<IDataElement>();
+                                annotatedRelationshipElement.Annotations.Add((IDataElement)sme);
+                                break;
+                            }
+                        case Entity entity:
+                            {
+                                entity.Statements ??= new List<ISubmodelElement>();
+                                entity.Statements.Add(sme);
+                                break;
+                            }
+                    }
                     change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme, parentRef: parent));
                 }
                 else
                 // at least for SMC, handle CreateAtIndex
-                if (parent is AdminShell.SubmodelElementCollection parentSmc
-                    && dataRef is AdminShell.SubmodelElement sme2
+                if (parent is SubmodelElementCollection parentSmc
+                    && dataRef is ISubmodelElement sme2
                     && change.CreateAtIndex >= 0
-                    && parentSmc.value != null
-                    && change.CreateAtIndex < parentSmc.value.Count)
+                    && parentSmc.Value != null
+                    && change.CreateAtIndex < parentSmc.Value.Count)
                 {
-                    parentSmc.value.Insert(change.CreateAtIndex, sme2);
+                    parentSmc.Value.Insert(change.CreateAtIndex, sme2);
                     change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sme2, parentRef: parent, createAtIndex: change.CreateAtIndex));
                 }
                 else
                 // add to AAS
-                if (parent is AdminShell.AdministrationShell parentAas
-                    && dataRef is AdminShell.Submodel sm
+                if (parent is AssetAdministrationShell parentAas
+                    && dataRef is Submodel sm
                     && Env?.AasEnv != null)
                 {
                     Env.AasEnv.Submodels.Add(sm);
-                    parentAas.AddSubmodelRef(sm?.GetSubmodelRef());
+                    if(parentAas.Submodels == null)
+                    {
+                        parentAas.Submodels = new List<Reference>();
+                    }
+                    parentAas.Submodels.Add(sm?.GetReference());
                     change.FoundReferable = dataRef;
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Create,
                         thisRef: sm, parentRef: parent));
@@ -706,7 +753,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception creating data within Observable/path! " + change.Path.ToString(1)));
+                        "Exception creating data within Observable/path! " + change.Path.ToStringExtended()));
                     return;
                 }
             }
@@ -719,7 +766,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target Referable! " + change.Path.ToString(1)));
+                        "Cannot find target IReferable! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -728,20 +775,60 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent Referable for target! " + change.Path.ToString(1)));
+                        "Cannot find parent IReferable for target! " + change.Path.ToStringExtended()));
                     return;
                 }
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if (parent is AdminShell.IManageSubmodelElements parentMgr
-                    && target is AdminShell.SubmodelElement sme)
+                if ((parent is Submodel || parent is AnnotatedRelationshipElement || parent is Entity || parent is SubmodelElementCollection || parent is SubmodelElementList)
+                    && target is ISubmodelElement sme)
                 {
                     // Note: assumption is, that Remove() will not throw exception,
                     // if sme does not exist. Sadly, there is also no exception to 
                     // handler in this case
                     change.FoundReferable = target;
-                    parentMgr.Remove(sme);
+                    switch (parent)
+                    {
+                        case Submodel submodel:
+                            {
+                                if (submodel.SubmodelElements != null)
+                                {
+                                    submodel.SubmodelElements.Remove(sme); 
+                                }
+                                break;
+                            }
+                        case SubmodelElementCollection submodelElementCollection:
+                            {
+                                if (submodelElementCollection.Value != null)
+                                {
+                                    submodelElementCollection.Value.Remove(sme); 
+                                }
+                                break;
+                            }
+                        case SubmodelElementList submodelElementList:
+                            {
+                                if (submodelElementList.Value != null)
+                                {
+                                    submodelElementList.Value.Remove(sme); 
+                                }
+                                break;
+                            }
+                        case AnnotatedRelationshipElement annotatedRelationshipElement:
+                            {
+                                if (annotatedRelationshipElement.Annotations != null)
+                                {
+                                    annotatedRelationshipElement.Annotations.Add((IDataElement)sme); 
+                                }
+                                break;
+                            }
+                        case Entity entity:
+                            {
+                                entity.Statements ??= new List<ISubmodelElement>();
+                                entity.Statements.Add(sme);
+                                break;
+                            }
+                    }
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
                         thisRef: sme, parentRef: parent));
                 }
@@ -750,15 +837,15 @@ namespace AasxPackageLogic.PackageCentral
                 // Note: this implementation requires, that path consists of:
                 //       <AAS> , <SM>
                 // TODO (MIHO, 2021-05-21): make sure, this is required by the specification!
-                if (parent is AdminShell.AdministrationShell parentAas
-                    && parentAas.submodelRefs != null
+                if (parent is AssetAdministrationShell parentAas
+                    && parentAas.Submodels != null
                     && targetKl.Count >= 1
-                    && target is AdminShell.Submodel sm
+                    && target is Submodel sm
                     && Env?.AasEnv != null)
                 {
-                    AdminShell.SubmodelRef smrefFound = null;
-                    foreach (var smref in parentAas.submodelRefs)
-                        if (smref.Matches(targetKl.Last(), AdminShellV20.Key.MatchMode.Relaxed))
+                    Reference smrefFound = null;
+                    foreach (var smref in parentAas.Submodels)
+                        if (smref.MatchesExactlyOneKey(targetKl.Last(), MatchMode.Relaxed))
                             smrefFound = smref;
 
                     if (smrefFound == null)
@@ -771,7 +858,7 @@ namespace AasxPackageLogic.PackageCentral
 
                     change.FoundReferable = target;
 
-                    parentAas.submodelRefs.Remove(smrefFound);
+                    parentAas.Submodels.Remove(smrefFound);
                     Env.AasEnv.Submodels.Remove(sm);
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Delete,
                         thisRef: target, parentRef: parent));
@@ -780,7 +867,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Exception deleting data within Observable/path! " + change.Path.ToString(1)));
+                        "Exception deleting data within Observable/path! " + change.Path.ToStringExtended()));
                 }
             }
 
@@ -802,17 +889,18 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new AdminShell.KeyList();
-            AdminShell.Referable target = null;
-            if (value.Path?.IsEmpty == false)
+            var targetKl = new List<Key>();
+            IReferable target = null;
+            if (value.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new AdminShell.KeyList(env.ObservableReference.Keys);
+                    targetKl = new List<Key>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(value.Path);
 
                 if (targetKl.First().IsAbsolute())
-                    target = Env?.AasEnv?.FindReferableByReference(targetKl);
+                    //target = Env?.AasEnv?.FindReferableByReference(targetKl);
+                    target = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, targetKl));
             }
 
             // no target?
@@ -820,7 +908,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Cannot find target Referable!"));
+                    "Cannot find target IReferable!"));
                 return;
             }
 
@@ -828,7 +916,7 @@ namespace AasxPackageLogic.PackageCentral
             value.FoundReferable = target;
 
             // try to update
-            if (target is AdminShell.AdministrationShell)
+            if (target is AssetAdministrationShell)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
@@ -837,7 +925,7 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
-            if (target is AdminShell.Submodel)
+            if (target is Submodel)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
@@ -846,7 +934,7 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
-            if (target is AdminShell.SubmodelElementCollection)
+            if (target is SubmodelElementCollection)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
@@ -855,7 +943,7 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
-            if (target is AdminShell.SubmodelElement sme)
+            if (target is ISubmodelElement sme)
             {
                 // use differentiated functionality
                 PackageContainerBase.UpdateSmeFromEventPayloadItem(sme, value);
@@ -971,10 +1059,10 @@ namespace AasxPackageLogic.PackageCentral
                             "Cannot deserize payload StructuralChangeItem!");
 
                     // try determine tarket of {Observavle}/{path}
-                    AdminShell.Referable target = null;
+                    IReferable target = null;
                     if (change.Path?.IsEmpty == false)
                     {
-                        AdminShell.KeyList kl = null;
+                        List<Key> kl = null;
                         if (change.Path.First().IsAbsolute())
                             kl = change.Path;
                         else
@@ -993,30 +1081,30 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem Referable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
-                        if (target is AdminShell.IManageSubmodelElements targetMgr
-                            && dataRef is AdminShell.SubmodelElement sme
+                        if (target is IManageSubmodelElements targetMgr
+                            && dataRef is ISubmodelElement sme
                             && change.CreateAtIndex < 0)
                         {
                             targetMgr.Add(sme);
                         }
                         else
                         // at least for SMC, handle CreateAtIndex
-                        if (target is AdminShell.SubmodelElementCollection targetSmc
-                            && dataRef is AdminShell.SubmodelElement sme2
+                        if (target is SubmodelElementCollection targetSmc
+                            && dataRef is ISubmodelElement sme2
                             && change.CreateAtIndex >= 0
-                            && targetSmc.value != null
-                            && change.CreateAtIndex < targetSmc.value.Count)
+                            && targetSmc.Value != null
+                            && change.CreateAtIndex < targetSmc.Value.Count)
                         {
-                            targetSmc.value.Insert(change.CreateAtIndex, sme2);
+                            targetSmc.Value.Insert(change.CreateAtIndex, sme2);
                         }
                         else
                         // add to AAS
-                        if (target is AdminShell.AdministrationShell targetAas
-                            && dataRef is AdminShell.Submodel sm
+                        if (target is AssetAdministrationShell targetAas
+                            && dataRef is Submodel sm
                             && Env?.AasEnv != null)
                         {
                             Env.AasEnv.Submodels.Add(sm);

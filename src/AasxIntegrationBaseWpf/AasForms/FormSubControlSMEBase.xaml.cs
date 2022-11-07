@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
@@ -42,7 +43,7 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceSubmodelElement instance;
             public FormDescSubmodelElement desc;
-            public AdminShell.SubmodelElement sme;
+            public ISubmodelElement sme;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {

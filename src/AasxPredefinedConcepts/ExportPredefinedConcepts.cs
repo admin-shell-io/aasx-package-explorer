@@ -13,17 +13,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
 
 namespace AasxPredefinedConcepts
 {
     public static class ExportPredefinedConcepts
     {
-        public static void Export(AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
+        public static void Export(AasCore.Aas3_0_RC02.Environment env, Submodel sm, string fn)
         {
             // access
-            if (fn == null || env == null || sm == null || sm.idShort == null || sm.submodelElements == null)
+            if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
                 return;
 
             // make text file
@@ -41,21 +43,22 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string, AdminShell.ConceptDescription>();
-                foreach (var sme in sm.submodelElements?.FindDeep<AdminShell.SubmodelElement>())
+                var usedCds = new Dictionary<string, ConceptDescription>();
+                foreach (var sme in sm.SubmodelElements?.FindDeep<ISubmodelElement>())
                 {
                     // for SME, try to lookup CD
-                    if (sme.semanticId == null)
+                    if (sme.SemanticId == null)
                         continue;
 
-                    var cd = env.FindConceptDescription(sme.semanticId.GetAsExactlyOneKey());
+                    var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
                     if (cd == null)
                         continue;
 
                     // name?
-                    var ids = cd.idShort;
-                    if ((ids == null || ids == "") && cd.GetIEC61360() != null)
-                        ids = cd.GetIEC61360().shortName?.GetDefaultStr();
+                    var ids = cd.IdShort;
+                    //TODO:jtikekar Temporarily removed
+                    //if ((ids == null || ids == "") && cd.GetIEC61360() != null)
+                    //    ids = cd.GetIEC61360().shortName?.GetDefaultStr();
                     if (ids == null || ids == "")
                         continue;
                     ids = "CD_" + ids;
@@ -79,7 +82,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine(message);
                 snippets.WriteLine(new String('=', message.Length));
 
-                var keySM = "SM_" + sm.idShort;
+                var keySM = "SM_" + sm.IdShort;
                 if (true)
                 {
                     // ok, for Serialization we just want the plain element with no BLOBs..
@@ -130,9 +133,9 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine(message);
                 snippets.WriteLine(new String('=', message.Length));
 
-                snippets.WriteLine($"this.{keySM} = bs.RetrieveReferable<AdminShell.Submodel>(\"{keySM}\");");
+                snippets.WriteLine($"this.{keySM} = bs.RetrieveReferable<Submodel>(\"{keySM}\");");
                 foreach (var k in usedCds.Keys)
-                    snippets.WriteLine($"this.{k} = bs.RetrieveReferable<AdminShell.ConceptDescription>(\"{k}\");");
+                    snippets.WriteLine($"this.{k} = bs.RetrieveReferable<ConceptDescription>(\"{k}\");");
 
                 snippets.WriteLine();
             }

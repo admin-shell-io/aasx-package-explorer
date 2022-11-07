@@ -23,7 +23,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxIntegrationBase.AasForms
 {
@@ -44,14 +46,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceMultiLangProp instance;
             public FormDescMultiLangProp desc;
-            public AdminShell.MultiLanguageProperty prop;
+            public MultiLanguageProperty prop;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceMultiLangProp;
                 dc.desc = dc.instance?.desc as FormDescMultiLangProp;
-                dc.prop = dc.instance?.sme as AdminShell.MultiLanguageProperty;
+                dc.prop = dc.instance?.sme as MultiLanguageProperty;
 
                 if (dc.instance == null || dc.desc == null || dc.prop == null)
                     return null;
@@ -80,7 +82,7 @@ namespace AasxIntegrationBase.AasForms
 
             // set plain fields
             TextBlockIndex.Text = (!dc.instance.ShowIndex) ? "" : "#" + (1 + dc.instance.Index);
-            TextBlockInfo.Visibility = (dc.prop.value == null || dc.prop.value.IsEmpty)
+            TextBlockInfo.Visibility = (dc.prop.Value == null || dc.prop.Value.IsEmpty())
                 ? Visibility.Visible
                 : Visibility.Hidden;
 
@@ -104,8 +106,8 @@ namespace AasxIntegrationBase.AasForms
 
             // build up net grid
             int row = 1;
-            if (dc.prop.value != null && dc.prop.value.langString != null)
-                foreach (var ls in dc.prop.value.langString)
+            if (dc.prop.Value != null && dc.prop.Value.LangStrings != null)
+                foreach (var ls in dc.prop.Value.LangStrings)
                 {
                     // another row
                     rd = new RowDefinition();
@@ -119,18 +121,18 @@ namespace AasxIntegrationBase.AasForms
                         foreach (var l in FormDescMultiLangProp.DefaultLanguages)
                             cb.Items.Add(l);
                     cb.IsEditable = true;
-                    cb.Text = ls.lang;
+                    cb.Text = ls.Language;
                     cb.SelectionChanged += (object sender2, SelectionChangedEventArgs e2) =>
                     {
                         if (!UpdateDisplayInCharge)
                             dc.instance.Touch();
-                        ls.lang = "" + cb.SelectedItem;
+                        ls.Language = "" + cb.SelectedItem;
                     };
                     cb.KeyUp += (object sender3, KeyEventArgs e3) =>
                     {
                         if (!UpdateDisplayInCharge)
                             dc.instance.Touch();
-                        ls.lang = cb.Text;
+                        ls.Language = cb.Text;
                     };
 
                     Grid.SetRow(cb, row);
@@ -140,12 +142,12 @@ namespace AasxIntegrationBase.AasForms
                     // build str text
                     var tb = new TextBox();
                     tb.Margin = new Thickness(2);
-                    tb.Text = ls.str;
+                    tb.Text = ls.Text;
                     tb.TextChanged += (object sender2, TextChangedEventArgs e2) =>
                     {
                         if (!UpdateDisplayInCharge)
                             dc.instance.Touch();
-                        ls.str = tb.Text;
+                        ls.Text = tb.Text;
                     };
 
                     Grid.SetRow(tb, row);
@@ -159,11 +161,11 @@ namespace AasxIntegrationBase.AasForms
                     var lsToDel = ls;
                     bt.Click += (object sender3, RoutedEventArgs e3) =>
                     {
-                        if (dc.prop?.value?.langString != null)
-                            if (dc.prop.value.langString.Contains(lsToDel))
+                        if (dc.prop?.Value?.LangStrings != null)
+                            if (dc.prop.Value.LangStrings.Contains(lsToDel))
                             {
                                 dc.instance.Touch();
-                                dc.prop.value.langString.Remove(lsToDel);
+                                dc.prop.Value.LangStrings.Remove(lsToDel);
                                 UpdateDisplay();
                             }
                     };
@@ -192,11 +194,11 @@ namespace AasxIntegrationBase.AasForms
             if (sender == ButtonLangPlus)
             {
                 // add
-                if (dc.prop.value == null)
-                    dc.prop.value = new AdminShell.LangStringSet();
+                if (dc.prop.Value == null)
+                    dc.prop.Value = new LangStringSet(new List<LangString>());
 
                 dc.instance.Touch();
-                dc.prop.value.Add("", "");
+                dc.prop.Value.LangStrings.Add(new LangString("", ""));
 
                 // show
                 UpdateDisplay();

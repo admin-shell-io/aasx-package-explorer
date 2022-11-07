@@ -22,6 +22,8 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using AasCore.Aas3_0_RC02;
+using Environment = System.Environment;
 
 namespace AdminShellNS
 {
@@ -91,12 +93,12 @@ namespace AdminShellNS
     public class AasValidationRecord
     {
         public AasValidationSeverity Severity = AasValidationSeverity.Hint;
-        public AdminShell.Referable Source = null;
+        public IReferable Source = null;
         public string Message = "";
 
         public Action Fix = null;
 
-        public AasValidationRecord(AasValidationSeverity Severity, AdminShell.Referable Source,
+        public AasValidationRecord(AasValidationSeverity Severity, IReferable Source,
             string Message, Action Fix = null)
         {
             this.Severity = Severity;

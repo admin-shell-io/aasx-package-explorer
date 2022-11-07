@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -85,7 +86,7 @@ namespace AasxPackageLogic
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            AdminShell.Reference targetReference,
+            Reference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -93,7 +94,7 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public AdminShell.Reference targetReference;
+        public Reference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
     }
@@ -109,7 +110,7 @@ namespace AasxPackageLogic
         public string Filter;
 
         // out
-        public AdminShell.KeyList ResultKeys;
+        public List<Key> ResultKeys;
         public VisualElementGeneric ResultVisualElement;
 
         public AnyUiDialogueDataSelectAasEntity(
@@ -149,7 +150,7 @@ namespace AasxPackageLogic
         // (the presets will be provided by the technology implementation)
 
         // out
-        public AdminShell.Qualifier ResultQualifier = null;
+        public Qualifier ResultQualifier = null;
 
         public AnyUiDialogueDataSelectQualifierPreset(
             string caption = "",

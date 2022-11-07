@@ -24,7 +24,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxIntegrationBase.AasForms
 {
@@ -39,8 +41,8 @@ namespace AasxIntegrationBase.AasForms
         public class ViewModel : WpfViewModelBase
         {
             // data binded properties
-            private AdminShell.Reference storedReference = null;
-            public AdminShell.Reference StoredReference
+            private Reference storedReference = null;
+            public Reference StoredReference
             {
                 get
                 {
@@ -58,9 +60,9 @@ namespace AasxIntegrationBase.AasForms
                 {
                     if (storedReference == null)
                         return "(no reference set)";
-                    if (storedReference.Count < 1)
+                    if (storedReference.Keys.Count < 1)
                         return "(no Keys)";
-                    return storedReference.ToString(format: 1, delimiter: Environment.NewLine);
+                    return storedReference.ToStringExtended(delimiter: System.Environment.NewLine);
                 }
             }
         }
@@ -71,14 +73,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceReferenceElement instance;
             public FormDescReferenceElement desc;
-            public AdminShell.ReferenceElement refElem;
+            public ReferenceElement refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceReferenceElement;
                 dc.desc = dc.instance?.desc as FormDescReferenceElement;
-                dc.refElem = dc.instance?.sme as AdminShell.ReferenceElement;
+                dc.refElem = dc.instance?.sme as ReferenceElement;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;
@@ -100,22 +102,22 @@ namespace AasxIntegrationBase.AasForms
                 return;
 
             // first update
-            this.theViewModel.StoredReference = dc.refElem?.value;
+            this.theViewModel.StoredReference = dc.refElem?.Value;
             UpdateDisplay();
 
             // attach lambdas for clear
             ButtonClear.Click += (object sender5, RoutedEventArgs e5) =>
             {
                 dc.instance.Touch();
-                dc.refElem.value = null;
-                this.theViewModel.StoredReference = dc.refElem.value;
+                dc.refElem.Value = null;
+                this.theViewModel.StoredReference = dc.refElem.Value;
             };
 
             // attach lambdas for select
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
                 // TEST
-                //// dc.refElem.value = new AdminShellV20.Reference(new AdminShell.Key(AdminShell.Key.GlobalReference, true, AdminShell.Identification.IRI, "http://ccc.de"));
+                //// dc.refElem.Value = new AdminShellV20.Reference(new Key(Key.GlobalReference, true, Identification.IRI, "http://ccc.de"));
                 //// UpdateDisplay();
 
                 // try find topmost instance
@@ -125,7 +127,7 @@ namespace AasxIntegrationBase.AasForms
                 {
                     // give over to event stack
                     var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                    ev.filterEntities = AdminShell.Key.AllElements;
+                    ev.filterEntities = "All";
                     ev.showAuxPackage = true;
                     ev.showRepoFiles = true;
                     topBase.outerEventStack.PushEvent(ev);
@@ -136,8 +138,8 @@ namespace AasxIntegrationBase.AasForms
                         if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                         {
                             dc.instance.Touch();
-                            dc.refElem.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
-                            this.theViewModel.StoredReference = dc.refElem.value;
+                            dc.refElem.Value = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                            this.theViewModel.StoredReference = dc.refElem.Value;
                         }
                     };
                 }

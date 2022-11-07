@@ -7,13 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0_RC02;
+using AnyUi;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AdminShellNS;
-using AnyUi;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -55,8 +52,8 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultGenerateSubmodel : AasxPluginResultBase
     {
-        public AdminShell.Submodel sm;
-        public AdminShell.ListOfConceptDescriptions cds;
+        public Submodel sm;
+        public List<ConceptDescription> cds;
     }
 
     public interface IPushApplicationEvent
@@ -72,7 +69,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventNavigateToReference : AasxPluginResultEventBase
     {
-        public AdminShell.Reference targetReference = null;
+        public Reference targetReference = null;
     }
 
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
@@ -118,7 +115,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
-        public AdminShell.KeyList resultKeys = null;
+        public List<Key> resultKeys = null;
     }
 
     public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase

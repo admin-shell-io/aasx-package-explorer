@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -97,10 +98,10 @@ namespace AasxPredefinedConcepts
 
         public class SetOfDefsVDI2770
         {
-            public AdminShell.Submodel
+            public Submodel
                 SM_VDI2770_Documentation;
 
-            public AdminShell.ConceptDescription
+            public ConceptDescription
                 CD_VDI2770_Document,
                 CD_VDI2770_DocumentIdValue,
                 CD_VDI2770_DocumentClassId,
@@ -128,51 +129,51 @@ namespace AasxPredefinedConcepts
 
             public SetOfDefsVDI2770(AasxDefinitionBase bs)
             {
-                this.SM_VDI2770_Documentation = bs.RetrieveReferable<AdminShell.Submodel>("SM_VDI2770_Documentation");
+                this.SM_VDI2770_Documentation = bs.RetrieveReferable<Submodel>("SM_VDI2770_Documentation");
 
-                this.CD_VDI2770_Document = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Document");
-                this.CD_VDI2770_DocumentIdValue = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_Document = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Document");
+                this.CD_VDI2770_DocumentIdValue = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentIdValue");
-                this.CD_VDI2770_DocumentClassId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentClassId = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentClassId");
-                this.CD_VDI2770_DocumentClassName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentClassName = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentClassName");
-                this.CD_VDI2770_DocumentClassificationSystem = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentClassificationSystem = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentClassificationSystem");
-                this.CD_VDI2770_OrganizationName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_OrganizationName = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_OrganizationName");
-                this.CD_VDI2770_OrganizationOfficialName = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_OrganizationOfficialName = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_OrganizationOfficialName");
-                this.CD_VDI2770_DocumentVersion = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentVersion = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentVersion");
-                this.CD_VDI2770_Language = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Language");
-                this.CD_VDI2770_Title = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Title");
-                this.CD_VDI2770_Date = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Date");
-                this.CD_VDI2770_DocumentVersionIdValue = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_Language = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Language");
+                this.CD_VDI2770_Title = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Title");
+                this.CD_VDI2770_Date = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Date");
+                this.CD_VDI2770_DocumentVersionIdValue = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentVersionIdValue");
-                this.CD_VDI2770_DigitalFile = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DigitalFile = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DigitalFile");
 
                 /* new, Birgit */
-                this.CD_VDI2770_DocumentId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentId = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentId");
-                this.CD_VDI2770_IsPrimaryDocumentId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_IsPrimaryDocumentId = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_IsPrimaryDocumentId");
-                this.CD_VDI2770_DocumentVersionId = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_DocumentVersionId = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_DocumentVersionId");
-                this.CD_VDI2770_Summary = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Summary");
-                this.CD_VDI2770_Keywords = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Keywords");
-                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_Summary = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Summary");
+                this.CD_VDI2770_Keywords = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Keywords");
+                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_StatusValue");
-                this.CD_VDI2770_Role = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_Role");
-                this.CD_VDI2770_DomainId = bs.RetrieveReferable<AdminShell.ConceptDescription>("CD_VDI2770_DomainId");
-                this.CD_VDI2770_ReferencedObject = bs.RetrieveReferable<AdminShell.ConceptDescription>(
+                this.CD_VDI2770_Role = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Role");
+                this.CD_VDI2770_DomainId = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_DomainId");
+                this.CD_VDI2770_ReferencedObject = bs.RetrieveReferable<ConceptDescription>(
                     "CD_VDI2770_ReferencedObject");
             }
 
-            public AdminShell.Referable[] GetAllReferables()
+            public IReferable[] GetAllReferables()
             {
-                return new AdminShell.Referable[] {
+                return new IReferable[] {
                     SM_VDI2770_Documentation,
                     CD_VDI2770_Document,
                     CD_VDI2770_DocumentIdValue,

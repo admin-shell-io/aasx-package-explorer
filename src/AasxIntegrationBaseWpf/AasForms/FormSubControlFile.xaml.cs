@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
@@ -44,14 +45,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceFile instance;
             public FormDescFile desc;
-            public AdminShell.File file;
+            public File file;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceFile;
                 dc.desc = dc.instance?.desc as FormDescFile;
-                dc.file = dc.instance?.sme as AdminShell.File;
+                dc.file = dc.instance?.sme as File;
 
                 if (dc.instance == null || dc.desc == null || dc.file == null)
                     return null;
@@ -136,8 +137,8 @@ namespace AasxIntegrationBase.AasForms
 
             // show file?
             TextBlockTargetArea.Text = "Drag a file to register loading it!";
-            if (dc.file.value != null && dc.file.value.Trim().Length > 0)
-                TextBlockTargetArea.Text = "File current: " + dc.file.value;
+            if (dc.file.Value != null && dc.file.Value.Trim().Length > 0)
+                TextBlockTargetArea.Text = "File current: " + dc.file.Value;
             if (dc.instance.FileToLoad != null)
                 TextBlockTargetArea.Text = "File to load: " + dc.instance.FileToLoad;
 

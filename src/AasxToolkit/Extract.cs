@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxToolkit
 {
@@ -29,13 +31,13 @@ namespace AasxToolkit
                 return;
 
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
+            var mm = MatchMode.Relaxed;
 
             // filter out Submodels
             foreach (var sm in package.AasEnv?.FindAllSubmodelGroupedByAAS((aas, sm) =>
             {
-                if (true == sm?.GetSemanticId().Matches(
-                    defs11.SM_ManufacturerDocumentation.GetSemanticId(), mm))
+                if (true == sm?.SemanticId.Matches(
+                    defs11.SM_ManufacturerDocumentation.SemanticId))
                     return true;
 
                 foreach (var x in new[] {
@@ -44,51 +46,51 @@ namespace AasxToolkit
                     "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/",
                     "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"
                 })
-                    if (true == sm?.GetSemanticId().Matches(
-                        AdminShell.Key.Submodel, false, AdminShell.Identification.IRI, x, mm))
+                    if (true == sm?.SemanticId.Matches(
+                        KeyTypes.Submodel, x, mm))
                         return true;
 
                 return false;
             }))
             {
                 // access
-                if (sm.submodelElements == null)
+                if (sm.SubmodelElements == null)
                     continue;
 
                 // look for Documents
                 foreach (var smcDoc in
-                    sm.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defs11.CD_Document?.GetReference(), mm))
+                    sm.SubmodelElements.FindAllSemanticIdAs<SubmodelElementCollection>(
+                        defs11.CD_Document?.GetReference().GetAsExactlyOneKey(), mm))
                 {
                     // access
-                    if (smcDoc == null || smcDoc.value == null)
+                    if (smcDoc == null || smcDoc.Value == null)
                         continue;
 
                     foreach (var smcVer in
-                        smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            defs11.CD_DocumentVersion?.GetReference(), mm))
+                        smcDoc.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                            defs11.CD_DocumentVersion?.GetReference().GetAsExactlyOneKey(), mm))
                     {
                         // access
-                        if (smcVer == null || smcVer.value == null)
+                        if (smcVer == null || smcVer.Value == null)
                             continue;
 
                         // look for document classifications
                         var clsFound = false;
                         foreach (var smcClass in
-                            smcDoc.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                                defs11.CD_DocumentClassification?.GetReference(), mm))
+                            smcDoc.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                                defs11.CD_DocumentClassification?.GetReference().GetAsExactlyOneKey(), mm))
                         {
                             // access
-                            if (smcClass?.value == null)
+                            if (smcClass?.Value == null)
                                 continue;
 
                             // shall be a 2770 classification
-                            var classSys = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_ClassificationSystem?.GetReference(), mm)?.value;
+                            var classSys = "" + smcClass.Value.FindFirstSemanticIdAs<Property>(
+                                    defs11.CD_ClassificationSystem?.GetReference().GetAsExactlyOneKey(), mm)?.Value;
 
                             // class infos
-                            var classId = "" + smcClass.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defs11.CD_ClassId?.GetReference(), mm)?.value;
+                            var classId = "" + smcClass.Value.FindFirstSemanticIdAs<Property>(
+                                    defs11.CD_ClassId?.GetReference().GetAsExactlyOneKey(), mm)?.Value;
 
                             // found?
                             clsFound = clsFound || (findSys.Trim().ToLower() == classSys.Trim().ToLower()
@@ -101,9 +103,9 @@ namespace AasxToolkit
                             continue;
 
                         // digital file
-                        var fl = smcVer.value.FindFirstSemanticIdAs<AdminShell.File>(
-                                    defs11.CD_DigitalFile?.GetReference(), mm);
-                        var fn = fl?.value;
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<File>(
+                                    defs11.CD_DigitalFile?.GetReference().GetAsExactlyOneKey(), mm);
+                        var fn = fl?.Value;
                         if (!fn.HasContent())
                             continue;
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -23,10 +24,10 @@ namespace AasxPredefinedConcepts
     {
         public static ImageMap Static = new ImageMap();
 
-        public AdminShell.SemanticId
+        public Reference
             SEM_ImageMapSubmodel;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_ImageFile,
             CD_EntityOfImageMap,
             CD_RegionRect,
@@ -43,13 +44,8 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Plugin ImageMap";
 
-            // Referable
-            SEM_ImageMapSubmodel = new AdminShell.SemanticId(
-                AdminShell.Key.CreateNew(
-                    type: "Submodel",
-                    local: false,
-                    idType: "IRI",
-                    value: "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0"));
+            // IReferable
+            SEM_ImageMapSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",
                 "ImageFile",

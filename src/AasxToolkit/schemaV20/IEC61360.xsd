@@ -56,7 +56,7 @@
 						<restriction base="string">
 							<enumeration value="AccessPermissionRule"/>
 							<enumeration value="AnnotatedRelationshipElement"/>
-							<enumeration value="Asset"/>
+							<enumeration value="AssetInformation"/>
 							<enumeration value="AssetAdministrationShell"/>
 							<enumeration value="BasicEvent"/>
 							<enumeration value="Blob"/>
@@ -76,7 +76,7 @@
 							<enumeration value="ReferenceElement"/>
 							<enumeration value="RelationshipElement"/>
 							<enumeration value="Submodel"/>
-							<enumeration value="SubmodelElement"/>
+							<enumeration value="ISubmodelElement"/>
 							<enumeration value="SubmodelElementCollection"/>
 							<enumeration value="View"/>
 						</restriction>

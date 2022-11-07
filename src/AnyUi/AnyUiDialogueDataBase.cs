@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -179,7 +180,7 @@ namespace AnyUi
 
         // out
         public string ResultIRDI = null;
-        public AdminShell.ConceptDescription ResultCD = null;
+        public ConceptDescription ResultCD = null;
 
         public AnyUiDialogueDataSelectEclassEntity(
             string caption = "",

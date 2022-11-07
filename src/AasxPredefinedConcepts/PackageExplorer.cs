@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -23,7 +24,7 @@ namespace AasxPredefinedConcepts
     {
         public static PackageExplorer Static = new PackageExplorer();
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_AasxLoadedNavigateTo;
 
         public PackageExplorer()
@@ -31,7 +32,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "AASX Package Explorer";
 
-            // Referable
+            // IReferable
             CD_AasxLoadedNavigateTo = CreateSparseConceptDescription("en", "IRI",
                 "AasxLoadedNavigateTo",
                 "http://admin-shell.io/aasx-package-explorer/main/AasxLoadedNavigateTo/1/0",

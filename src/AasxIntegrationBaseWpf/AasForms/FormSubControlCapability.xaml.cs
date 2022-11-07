@@ -24,6 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
@@ -47,14 +48,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceCapability instance;
             public FormDescCapability desc;
-            public AdminShell.Capability refElem;
+            public Capability refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceCapability;
                 dc.desc = dc.instance?.desc as FormDescCapability;
-                dc.refElem = dc.instance?.sme as AdminShell.Capability;
+                dc.refElem = dc.instance?.sme as Capability;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;

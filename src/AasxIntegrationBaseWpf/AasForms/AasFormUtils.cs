@@ -10,15 +10,18 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxIntegrationBase.AasForms
 {
     public static class AasFormUtils
     {
         private static void RecurseExportAsTemplate(
-            AdminShell.SubmodelElementWrapperCollection smwc, FormDescListOfElement tels,
-            AdminShell.AdministrationShellEnv env = null, AdminShell.ListOfConceptDescriptions cds = null)
+            List<ISubmodelElement> smwc, FormDescListOfElement tels,
+            AasCore.Aas3_0_RC02.Environment env = null, List<ConceptDescription> cds = null)
         {
             // access
             if (smwc == null || tels == null)
@@ -26,100 +29,100 @@ namespace AasxIntegrationBase.AasForms
 
             // over all elems
             foreach (var smw in smwc)
-                if (smw != null && smw.submodelElement != null)
+                if (smw != null && smw != null)
                 {
                     FormDescSubmodelElement tsme = null;
-                    if (smw.submodelElement is AdminShell.Property p)
+                    if (smw is Property p)
                     {
                         tsme = new FormDescProperty(
-                            "" + p.idShort, FormMultiplicity.One, p.semanticId?.GetAsExactlyOneKey(),
-                            "" + p.idShort, valueType: p.valueType);
+                            "" + p.IdShort, FormMultiplicity.One, p.SemanticId?.GetAsExactlyOneKey(),
+                            "" + p.IdShort, valueType: Stringification.ToString(p.ValueType));
                     }
-                    if (smw.submodelElement is AdminShell.MultiLanguageProperty mlp)
+                    if (smw is MultiLanguageProperty mlp)
                     {
                         tsme = new FormDescMultiLangProp(
-                            "" + mlp.idShort, FormMultiplicity.One, mlp.semanticId?.GetAsExactlyOneKey(),
-                            "" + mlp.idShort);
+                            "" + mlp.IdShort, FormMultiplicity.One, mlp.SemanticId?.GetAsExactlyOneKey(),
+                            "" + mlp.IdShort);
                     }
-                    if (smw.submodelElement is AdminShell.File fl)
+                    if (smw is AasCore.Aas3_0_RC02.File fl)
                     {
                         tsme = new FormDescFile(
-                            "" + fl.idShort, FormMultiplicity.One, fl.semanticId?.GetAsExactlyOneKey(),
-                            "" + fl.idShort);
+                            "" + fl.IdShort, FormMultiplicity.One, fl.SemanticId?.GetAsExactlyOneKey(),
+                            "" + fl.IdShort);
                     }
-                    if (smw.submodelElement is AdminShell.ReferenceElement rf)
+                    if (smw is ReferenceElement rf)
                     {
                         tsme = new FormDescReferenceElement(
-                            "" + rf.idShort, FormMultiplicity.One, rf.semanticId?.GetAsExactlyOneKey(),
-                            "" + rf.idShort);
+                            "" + rf.IdShort, FormMultiplicity.One, rf.SemanticId?.GetAsExactlyOneKey(),
+                            "" + rf.IdShort);
                     }
-                    if (smw.submodelElement is AdminShell.RelationshipElement re)
+                    if (smw is RelationshipElement re)
                     {
                         tsme = new FormDescRelationshipElement(
-                            "" + re.idShort, FormMultiplicity.One, re.semanticId?.GetAsExactlyOneKey(),
-                            "" + re.idShort);
+                            "" + re.IdShort, FormMultiplicity.One, re.SemanticId?.GetAsExactlyOneKey(),
+                            "" + re.IdShort);
                     }
-                    if (smw.submodelElement is AdminShell.Capability cap)
+                    if (smw is Capability cap)
                     {
                         tsme = new FormDescCapability(
-                            "" + cap.idShort, FormMultiplicity.One, cap.semanticId?.GetAsExactlyOneKey(),
-                            "" + cap.idShort);
+                            "" + cap.IdShort, FormMultiplicity.One, cap.SemanticId?.GetAsExactlyOneKey(),
+                            "" + cap.IdShort);
                     }
-                    if (smw.submodelElement is AdminShell.SubmodelElementCollection smec)
+                    if (smw is SubmodelElementCollection smec)
                     {
                         tsme = new FormDescSubmodelElementCollection(
-                            "" + smec.idShort, FormMultiplicity.One, smec.semanticId?.GetAsExactlyOneKey(),
-                            "" + smec.idShort);
+                            "" + smec.IdShort, FormMultiplicity.One, smec.SemanticId?.GetAsExactlyOneKey(),
+                            "" + smec.IdShort);
                     }
 
                     if (tsme != null)
                     {
                         // take over directly
-                        tsme.PresetCategory = smw.submodelElement.category;
+                        tsme.PresetCategory = smw.Category;
 
                         // Qualifers
-                        var qs = smw.submodelElement.qualifiers;
+                        var qs = smw.Qualifiers;
 
-                        var q = qs?.FindType("FormTitle");
+                        var q = qs?.FindQualifierOfType("FormTitle");
                         if (q != null)
-                            tsme.FormTitle = "" + q.value;
+                            tsme.FormTitle = "" + q.Value;
 
-                        q = qs?.FindType("FormInfo");
+                        q = qs?.FindQualifierOfType("FormInfo");
                         if (q != null)
-                            tsme.FormInfo = "" + q.value;
+                            tsme.FormInfo = "" + q.Value;
 
-                        q = qs?.FindType("FormUrl");
+                        q = qs?.FindQualifierOfType("FormUrl");
                         if (q != null)
-                            tsme.FormUrl = "" + q.value;
+                            tsme.FormUrl = "" + q.Value;
 
-                        q = qs?.FindType("EditIdShort");
+                        q = qs?.FindQualifierOfType("EditIdShort");
                         if (q != null)
-                            tsme.FormEditIdShort = q.value.Trim().ToLower() == "true";
+                            tsme.FormEditIdShort = q.Value.Trim().ToLower() == "true";
 
-                        q = qs?.FindType("EditDescription");
+                        q = qs?.FindQualifierOfType("EditDescription");
                         if (q != null)
-                            tsme.FormEditDescription = q.value.Trim().ToLower() == "true";
+                            tsme.FormEditDescription = q.Value.Trim().ToLower() == "true";
 
-                        q = qs?.FindType("Multiplicity");
+                        q = qs?.FindQualifierOfType("Multiplicity");
                         if (q != null)
                         {
                             foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                                if (("" + q.value) == Enum.GetName(typeof(FormMultiplicity), m))
+                                if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
                                     tsme.Multiplicity = m;
                         }
 
-                        q = qs?.FindType("PresetValue");
+                        q = qs?.FindQualifierOfType("PresetValue");
                         if (q != null && tsme is FormDescProperty)
-                            (tsme as FormDescProperty).presetValue = "" + q.value;
+                            (tsme as FormDescProperty).presetValue = "" + q.Value;
 
-                        q = qs?.FindType("PresetMimeType");
+                        q = qs?.FindQualifierOfType("PresetMimeType");
                         if (q != null && tsme is FormDescFile)
-                            (tsme as FormDescFile).presetMimeType = "" + q.value;
+                            (tsme as FormDescFile).presetMimeType = "" + q.Value;
 
-                        q = qs?.FindType("FormChoices");
-                        if (q != null && q.value.HasContent() && tsme is FormDescProperty fdprop)
+                        q = qs?.FindQualifierOfType("FormChoices");
+                        if (q != null && q.Value.HasContent() && tsme is FormDescProperty fdprop)
                         {
-                            var choices = q.value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                            var choices = q.Value.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                             if (choices != null && choices.Length > 0)
                                 fdprop.comboBoxChoices = choices;
                         }
@@ -130,7 +133,7 @@ namespace AasxIntegrationBase.AasForms
                             tsme.PresetIdShort += "{0:00}";
 
                         // Ignore this element
-                        q = qs?.FindType("FormIgnore");
+                        q = qs?.FindQualifierOfType("FormIgnore");
                         if (q != null)
                             continue;
                     }
@@ -139,25 +142,25 @@ namespace AasxIntegrationBase.AasForms
                         tels.Add(tsme);
 
                     // in any case, check for CD
-                    if (env != null && cds != null && smw?.submodelElement?.semanticId?.Keys != null)
+                    if (env != null && cds != null && smw?.SemanticId?.Keys != null)
                     {
-                        var masterCd = env.FindConceptDescription(smw?.submodelElement?.semanticId?.Keys);
-                        if (masterCd != null && masterCd.identification != null)
+                        var masterCd = env.FindConceptDescriptionByReference(smw?.SemanticId);
+                        if (masterCd != null && masterCd.Id != null)
                         {
                             // already in cds?
-                            var copyCd = cds.Find(masterCd.identification);
+                            var copyCd = cds.Where(cd => cd.Id.Equals(masterCd.Id)).First();
                             if (copyCd == null)
                             {
                                 // add clone
-                                cds.Add(new AdminShell.ConceptDescription(masterCd));
+                                cds.Add(new ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, masterCd.IdShort, masterCd.DisplayName, masterCd.Description, masterCd.Checksum, masterCd.Administration, masterCd.DataSpecifications, masterCd.IsCaseOf));
                             }
                         }
                     }
 
                     // recurse
-                    if (smw.submodelElement is AdminShell.SubmodelElementCollection)
+                    if (smw is SubmodelElementCollection)
                         RecurseExportAsTemplate(
-                            (smw.submodelElement as AdminShell.SubmodelElementCollection).value,
+                            (smw as SubmodelElementCollection).Value,
                             (tsme as FormDescSubmodelElementCollection).value, env, cds);
                 }
         }
@@ -170,8 +173,8 @@ namespace AasxIntegrationBase.AasForms
 
             // build templates
             var templateArr = new List<FormDescSubmodel>();
-            foreach (var aas in package.AasEnv.AdministrationShells)
-                foreach (var smref in aas.submodelRefs)
+            foreach (var aas in package.AasEnv.AssetAdministrationShells)
+                foreach (var smref in aas.Submodels)
                 {
                     // get Submodel
                     var sm = package.AasEnv.FindSubmodel(smref);
@@ -181,47 +184,47 @@ namespace AasxIntegrationBase.AasForms
                     // make submodel template
                     var tsm = new FormDescSubmodel(
                         "Submodel",
-                        sm.GetSemanticKey(),
-                        sm.idShort,
+                        sm.SemanticId.GetAsExactlyOneKey(),
+                        sm.IdShort,
                         "");
                     tsm.SubmodelElements = new FormDescListOfElement();
                     templateArr.Add(tsm);
 
                     // ok, export all SubmodelElems
-                    RecurseExportAsTemplate(sm.submodelElements, tsm.SubmodelElements);
+                    RecurseExportAsTemplate(sm.SubmodelElements, tsm.SubmodelElements);
                 }
 
             // write
             var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
-            File.WriteAllText(fn, json);
+            System.IO.File.WriteAllText(fn, json);
         }
 
-        public static void ExportAsTemplate(AdminShell.Submodel sm, string fn)
+        public static void ExportAsTemplate(Submodel sm, string fn)
         {
             // access
-            if (fn == null || sm == null || sm.submodelElements == null)
+            if (fn == null || sm == null || sm.SubmodelElements == null)
                 return;
 
             // make submodel template
             var templateArr = new List<FormDescSubmodel>();
             var tsm = new FormDescSubmodel(
                 "Submodel",
-                sm.semanticId?.GetAsExactlyOneKey(),
-                sm.idShort,
+                sm.SemanticId?.GetAsExactlyOneKey(),
+                sm.IdShort,
                 "");
             tsm.SubmodelElements = new FormDescListOfElement();
             templateArr.Add(tsm);
 
             // ok, export all SubmodelElems
-            RecurseExportAsTemplate(sm.submodelElements, tsm.SubmodelElements);
+            RecurseExportAsTemplate(sm.SubmodelElements, tsm.SubmodelElements);
 
             // write
             var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(templateArr, templateArr.GetType(), settings);
-            File.WriteAllText(fn, json);
+            System.IO.File.WriteAllText(fn, json);
         }
 
         [DisplayName("Record", noTypeLookup: true)]
@@ -230,7 +233,7 @@ namespace AasxIntegrationBase.AasForms
             public string FormTag = "";
             public string FormTitle = "";
             public FormDescSubmodel FormSubmodel = null;
-            public AdminShell.ListOfConceptDescriptions ConceptDescriptions = null;
+            public List<ConceptDescription> ConceptDescriptions = null;
         }
 
         [DisplayName("Options", noTypeLookup: true)]
@@ -241,38 +244,38 @@ namespace AasxIntegrationBase.AasForms
         }
 
         public static void ExportAsGenericFormsOptions(
-            AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, string fn)
+            AasCore.Aas3_0_RC02.Environment env, Submodel sm, string fn)
         {
             // access
-            if (fn == null || env == null || sm == null || sm.submodelElements == null)
+            if (fn == null || env == null || sm == null || sm.SubmodelElements == null)
                 return;
 
             // make submodel template
             var tsm = new FormDescSubmodel(
                 "Submodel",
-                sm.semanticId?.GetAsExactlyOneKey(),
-                sm.idShort,
+                sm.SemanticId?.GetAsExactlyOneKey(),
+                sm.IdShort,
                 "");
             tsm.SubmodelElements = new FormDescListOfElement();
 
             // will collect a list of CDs
-            var cds = new AdminShell.ListOfConceptDescriptions();
+            var cds = new List<ConceptDescription>();
 
             // ok, export all SubmodelElems into tsm
-            RecurseExportAsTemplate(sm.submodelElements, tsm.SubmodelElements, env, cds);
+            RecurseExportAsTemplate(sm.SubmodelElements, tsm.SubmodelElements, env, cds);
 
             // fill out record
             var rec = new ExportAsGenericFormsOptions_OptionsRecord();
 
             rec.FormTag = "TBD";
-            var q = sm.qualifiers?.FindType("FormTag");
+            var q = sm.Qualifiers?.FindQualifierOfType("FormTag");
             if (q != null)
-                rec.FormTag = "" + q.value;
+                rec.FormTag = "" + q.Value;
 
-            rec.FormTitle = "TBD/" + sm.idShort;
-            q = sm.qualifiers?.FindType("FormTitle");
+            rec.FormTitle = "TBD/" + sm.IdShort;
+            q = sm.Qualifiers?.FindQualifierOfType("FormTitle");
             if (q != null)
-                rec.FormTitle = "" + q.value;
+                rec.FormTitle = "" + q.Value;
 
             rec.FormSubmodel = tsm;
             rec.ConceptDescriptions = cds;
@@ -285,7 +288,7 @@ namespace AasxIntegrationBase.AasForms
             var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(new[] { typeof(FormDescBase) });
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(overall, overall.GetType(), settings);
-            File.WriteAllText(fn, json);
+            System.IO.File.WriteAllText(fn, json);
         }
 
     }

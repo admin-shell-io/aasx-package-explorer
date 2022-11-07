@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxPredefinedConcepts.ConceptModel
 {
@@ -26,10 +28,10 @@ namespace AasxPredefinedConcepts.ConceptModel
 
         public Version ActiveVersion = Version.Unknown;
 
-        public AdminShell.Submodel
+        public Submodel
             SM_TechnicalData;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_GeneralInformation,
             CD_ManufacturerName,
             CD_ManufacturerLogo,
@@ -50,7 +52,7 @@ namespace AasxPredefinedConcepts.ConceptModel
             CD_TextStatement,
             CD_ValidDate;
 
-        public ConceptModelZveiTechnicalData(AdminShell.Submodel sm)
+        public ConceptModelZveiTechnicalData(Submodel sm)
         {
             InitFromSubmodel(sm);
         }
@@ -125,17 +127,17 @@ namespace AasxPredefinedConcepts.ConceptModel
             }
         }
 
-        public void InitFromSubmodel(AdminShell.Submodel sm)
+        public void InitFromSubmodel(Submodel sm)
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
-            if (sm.semanticId.MatchesExactlyOneKey(
-                    defsV10.SM_TechnicalData.GetSemanticKey(), AdminShellV20.Key.MatchMode.Relaxed))
+            if (sm.SemanticId.MatchesExactlyOneKey(
+                    defsV10.SM_TechnicalData.SemanticId.GetAsExactlyOneKey(), MatchMode.Relaxed))
                 InitFromVersion(Version.V1_0);
 
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
-            if (sm.semanticId.MatchesExactlyOneKey(
-                    defsV11.SM_TechnicalData.GetSemanticKey(), AdminShellV20.Key.MatchMode.Relaxed))
+            if (sm.SemanticId.MatchesExactlyOneKey(
+                    defsV11.SM_TechnicalData.SemanticId.GetAsExactlyOneKey(), MatchMode.Relaxed))
                 InitFromVersion(Version.V1_1);
         }
     }

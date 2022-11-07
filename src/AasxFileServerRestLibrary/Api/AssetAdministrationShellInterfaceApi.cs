@@ -13,8 +13,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using AdminShellNS;
 using IO.Swagger.Client;
-using IO.Swagger.Model;
+//using IO.Swagger.Model;
 using RestSharp;
+using AasCore.Aas3_0_RC02;
 //using AdminShellNS;
 
 namespace IO.Swagger.Api
@@ -738,10 +739,10 @@ namespace IO.Swagger.Api
             //    (AssetAdministrationShell)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShell)));
 
             //TODO (jtikekar, 2022-04-04): Change during refactoring
-            var aas = AdminShellSerializationHelper.DeserializeFromJSON<AdminShell.AdministrationShell>(localVarResponse.Content);
+            var aas = AdminShellSerializationHelper.DeserializeFromJSON<AssetAdministrationShell>(localVarResponse.Content);
             return new ApiResponse<AssetAdministrationShell>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => string.Join(",", x.Value)),
-                (AssetAdministrationShell)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AdminShell.AdministrationShell)));
+                (AssetAdministrationShell)this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(AssetAdministrationShell)));
         }
 
         /// <summary>

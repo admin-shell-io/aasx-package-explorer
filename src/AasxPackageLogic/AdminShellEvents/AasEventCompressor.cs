@@ -9,8 +9,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {
@@ -34,7 +37,7 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         protected class TraceStateStructuralChangeOneModify : TraceStateBase
         {
-            public AdminShell.KeyList CurrentPath;
+            public List<Key> CurrentPath;
         }
 
         protected TraceStateBase FollowTraceState(TraceStateBase stateIn, AasEventMsgEnvelope ev)
@@ -44,8 +47,8 @@ namespace AasxIntegrationBase.AdminShellEvents
                 return null;
 
             // basically a unfold state machine
-            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards,
-                    AdminShell.Key.MatchMode.Relaxed)
+            if (ev.SourceSemanticId.Matches(AasxPredefinedConcepts.AasEvents.Static.CD_StructureChangeOutwards.GetReference(),
+                    MatchMode.Relaxed)
                 // a in special format
                 && ev.PayloadItems != null && ev.PayloadItems.Count == 1
                 && ev.PayloadItems[0] is AasPayloadStructuralChange evplsc
@@ -56,8 +59,8 @@ namespace AasxIntegrationBase.AdminShellEvents
 
                 // get a current key
                 var rf = evplsc.Changes[0].GetDataAsReferable();
-                rf.parent = null;
-                var currKey = rf.GetReference()?.Last;
+                rf.Parent = null;
+                Key currKey = rf.GetReference()?.Keys.Last();
 
                 // Transition NULL -> structural change
                 if (currKey != null && stateIn == null)
@@ -65,17 +68,18 @@ namespace AasxIntegrationBase.AdminShellEvents
                     // start new state
                     var res = new TraceStateStructuralChangeOneModify()
                     {
-                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey))
+                        //CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(List<Key>.CreateNew(currKey))
+                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Key>() { currKey})
                     };
                     return res;
                 }
                 else
                 if (currKey != null
                     && stateIn is TraceStateStructuralChangeOneModify stateCurr
-                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, AdminShell.Key.MatchMode.Relaxed))
+                    && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, MatchMode.Relaxed))
                 {
                     // happy path: continue state
-                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(AdminShell.KeyList.CreateNew(currKey));
+                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<Key>() { currKey });
                     return stateCurr;
                 }
             }

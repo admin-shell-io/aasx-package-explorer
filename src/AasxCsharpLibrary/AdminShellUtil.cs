@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,11 +18,124 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static AasxCompatibilityModels.AdminShellV20.SubmodelElementWrapper;
 
 namespace AdminShellNS
 {
     public static class AdminShellUtil
     {
+        #region V3 Methods
+
+        public static string[] GetPopularMimeTypes()
+        {
+            return
+                new[] {
+                    System.Net.Mime.MediaTypeNames.Text.Plain,
+                    System.Net.Mime.MediaTypeNames.Text.Xml,
+                    System.Net.Mime.MediaTypeNames.Text.Html,
+                    "application/json",
+                    "application/rdf+xml",
+                    System.Net.Mime.MediaTypeNames.Application.Pdf,
+                    System.Net.Mime.MediaTypeNames.Image.Jpeg,
+                    "image/png",
+                    System.Net.Mime.MediaTypeNames.Image.Gif,
+                    "application/iges",
+                    "application/step"
+                };
+        }
+
+        public static IEnumerable<AasSubmodelElements> GetAdequateEnums(AasSubmodelElements[] excludeValues = null, AasSubmodelElements[] includeValues = null)
+        {
+            if (includeValues != null)
+            {
+                foreach (var en in includeValues)
+                    yield return en;
+            }
+            else
+            {
+                foreach (var en in (AasSubmodelElements[])Enum.GetValues(typeof(AasSubmodelElements)))
+                {
+                    if (en == AasSubmodelElements.SubmodelElement)
+                        continue;
+                    if (excludeValues != null && excludeValues.Contains(en))
+                        continue;
+                    yield return en;
+                }
+            }
+        }
+
+        public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
+        {
+            if(sourceSme != null)
+            {
+                return sourceSme.Copy();
+            }
+            switch(smeEnum)
+            {
+                case AasSubmodelElements.Property:
+                    {
+                        return new Property(DataTypeDefXsd.String);
+                    }
+                case AasSubmodelElements.MultiLanguageProperty:
+                    {
+                        return new MultiLanguageProperty();
+                    }
+                case AasSubmodelElements.Range:
+                    {
+                        return new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String);
+                    }
+                case AasSubmodelElements.File:
+                    {
+                        return new AasCore.Aas3_0_RC02.File("");
+                    }
+                case AasSubmodelElements.Blob:
+                    {
+                        return new Blob("");
+                    }
+                case AasSubmodelElements.ReferenceElement:
+                    {
+                        return new ReferenceElement();
+                    }
+                case AasSubmodelElements.RelationshipElement:
+                    {
+                        return new RelationshipElement(null, null);
+                    }
+                case AasSubmodelElements.AnnotatedRelationshipElement:
+                    {
+                        return new AnnotatedRelationshipElement(null, null);
+                    }
+                case AasSubmodelElements.Capability:
+                    {
+                        return new Capability();
+                    }
+                case AasSubmodelElements.SubmodelElementCollection:
+                    {
+                        return new SubmodelElementCollection();
+                    }
+                case AasSubmodelElements.SubmodelElementList:
+                    {
+                        return new SubmodelElementList(AasSubmodelElements.SubmodelElement);
+                    }
+                case AasSubmodelElements.Operation:
+                    {
+                        return new Operation();
+                    }
+                case AasSubmodelElements.BasicEventElement:
+                    {
+                        return new BasicEventElement(null, Direction.Input, StateOfEvent.Off);
+                    }
+                case AasSubmodelElements.Entity:
+                    {
+                        return new Entity(EntityType.SelfManagedEntity);
+                    }
+                default:
+                    {
+                        return null;
+                    }
+            }
+        }
+
+        #endregion
         public static string EvalToNonNullString(string fmt, object o, string elseString = "")
         {
             if (o == null)
@@ -185,7 +300,7 @@ namespace AdminShellNS
         public static string CleanHereStringWithNewlines(string here, string nl = null)
         {
             if (nl == null)
-                nl = Environment.NewLine;
+                nl = System.Environment.NewLine;
             var lines = CleanHereStringToArray(here);
             if (lines == null)
                 return null;
@@ -360,12 +475,12 @@ namespace AdminShellNS
         {
             // try get a speaking name
             var metaModelName = "<unknown>";
-            var x1 = mi.GetCustomAttribute<AdminShell.MetaModelName>();
+            var x1 = mi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.MetaModelName>(); //TODO: jtikekar need to test
             if (x1 != null && x1.name != null)
                 metaModelName = x1.name;
 
             // check if this object is searchable
-            var x2 = mi.GetCustomAttribute<AdminShell.TextSearchable>();
+            var x2 = mi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.TextSearchable>();
             if (x2 != null)
             {
                 // what to check?
@@ -413,9 +528,10 @@ namespace AdminShellNS
 
             // try to get element name of an AAS entity
             string elName = null;
-            if (obj is AdminShell.Referable)
+            if (obj is IReferable referable)
             {
-                elName = (obj as AdminShell.Referable).GetElementName();
+                //elName = (obj as IReferable).GetElementName();
+                elName = obj.GetType().Name;
                 businessObject = obj;
             }
 
@@ -437,11 +553,11 @@ namespace AdminShellNS
             foreach (var fi in fields)
             {
                 // is the object marked to be skipped?
-                var x3 = fi.GetCustomAttribute<AdminShell.SkipForReflection>();
+                var x3 = fi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForReflection>();
                 if (x3 != null)
                     continue;
 
-                var x4 = fi.GetCustomAttribute<AdminShell.SkipForSearch>();
+                var x4 = fi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForSearch>();
                 if (x4 != null)
                     continue;
 
@@ -478,11 +594,11 @@ namespace AdminShellNS
                     continue;
 
                 // is the object marked to be skipped?
-                var x3 = pi.GetCustomAttribute<AdminShell.SkipForReflection>();
+                var x3 = pi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForReflection>();
                 if (x3 != null)
                     continue;
 
-                var x4 = pi.GetCustomAttribute<AdminShell.SkipForSearch>();
+                var x4 = pi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForSearch>();
                 if (x4 != null)
                     continue;
 

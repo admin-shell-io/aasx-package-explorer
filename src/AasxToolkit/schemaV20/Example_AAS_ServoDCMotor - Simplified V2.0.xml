@@ -11,7 +11,7 @@
 			</aas:identification>
 			<aas:assetRef>
 				<aas:keys>
-					<aas:key idType="IRI" local="true" type="Asset">
+					<aas:key idType="IRI" local="true" type="AssetInformation">
 						http://customer.com/assets/KHBVZJSQKIY
 					</aas:key>
 				</aas:keys>

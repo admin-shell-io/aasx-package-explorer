@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
@@ -31,13 +32,13 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// single payloads.
     /// </summary>
     [DisplayName("AasPayloadUpdateValueItem")]
-    public class AasPayloadUpdateValueItem : IAasPayloadItem, AdminShell.IAasDiaryEntry
+    public class AasPayloadUpdateValueItem : IAasPayloadItem /*, IAasDiaryEntry*/ //TODO:jtikekar Need to check the purpose
     {
         /// <summary>
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
         /// the defined Event.
         /// </summary>
-        public AdminShell.KeyList Path { get; set; }
+        public List<Key> Path { get; set; }
 
         /// <summary>
         /// Serialized updated value of the updated element.
@@ -47,23 +48,23 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// ValueId of the update element.
         /// </summary>
-        public AdminShell.Reference ValueId { get; set; }
+        public Reference ValueId { get; set; }
 
         /// <summary>
         /// Direct reference to Referable, when value item was successfully processed.
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]
-        public AdminShell.Referable FoundReferable;
+        public IReferable FoundReferable;
 
         //
         // Constructor
         //
 
         public AasPayloadUpdateValueItem(
-            AdminShell.KeyList path = null,
+            List<Key> path = null,
             string value = null,
-            AdminShell.Reference valueId = null)
+            Reference valueId = null)
         {
             Path = path;
             Value = value;
@@ -79,7 +80,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = "PayloadUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    res += "/" + k.value;
+                    res += "/" + k.Value;
             if (Value != null)
                 res += " = " + Value;
             if (ValueId != null)
@@ -93,7 +94,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var left = "  MsgUpdateValueItem: {Observable}";
             if (Path != null)
                 foreach (var k in Path)
-                    left += "/" + k.value;
+                    left += "/" + k.Value;
 
             var right = "";
             if (Value != null)
@@ -165,7 +166,7 @@ namespace AasxIntegrationBase.AdminShellEvents
             var res = base.ToString();
             if (Values != null)
                 foreach (var val in Values)
-                    res += Environment.NewLine + val.ToString();
+                    res += System.Environment.NewLine + val.ToString();
             return res;
         }
 

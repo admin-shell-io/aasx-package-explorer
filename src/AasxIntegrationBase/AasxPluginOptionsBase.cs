@@ -14,7 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
 
 // ReSharper disable AssignNullToNotNullAttribute .. a bit unclear, why issues here
@@ -55,9 +57,9 @@ namespace AasxIntegrationBase
                         System.IO.Path.GetDirectoryName(assy.Location),
                         pluginName + ".options.json");
 
-            if (File.Exists(optfn))
+            if (System.IO.File.Exists(optfn))
             {
-                var optText = File.ReadAllText(optfn);
+                var optText = System.IO.File.ReadAllText(optfn);
 
                 return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
             }
@@ -86,7 +88,7 @@ namespace AasxIntegrationBase
             foreach (var fn in files)
                 try
                 {
-                    var optText = File.ReadAllText(fn);
+                    var optText = System.IO.File.ReadAllText(fn);
                     var opts = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(optText, settings);
                     this.Merge(opts);
                 }
@@ -112,7 +114,7 @@ namespace AasxIntegrationBase
         /// This keyword is used by the plugin options to code allowed semantic ids for
         /// a Submodel sensitive plugin
         /// </summary>
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<Key> AllowSubmodelSemanticId = new List<Key>();
     }
 
     /// <summary>
@@ -121,17 +123,17 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxPluginLookupOptionsBase : AasxPluginOptionsBase
     {
-        private string GenerateIndexKey(AdminShell.Key key)
+        private string GenerateIndexKey(Key key)
         {
             if (key == null)
                 return null;
             // eliminate "local"
-            var k = new AdminShell.Key(key) { local = false };
-            var ndx = k?.ToString(format: 1);
+            var k = new Key(key.Type, key.Value);
+            var ndx = k?.ToStringExtended();
             return ndx;
         }
 
-        public void IndexRecord(AdminShell.Key key, AasxPluginOptionsRecordBase rec)
+        public void IndexRecord(Key key, AasxPluginOptionsRecordBase rec)
         {
             if (_recordLookup == null)
                 _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();
@@ -153,7 +155,7 @@ namespace AasxIntegrationBase
                         IndexRecord(a2, rec);
         }
 
-        public bool ContainsIndexKey(AdminShell.Key key)
+        public bool ContainsIndexKey(Key key)
         {
             // access
             var ndx = GenerateIndexKey(key);
@@ -163,7 +165,7 @@ namespace AasxIntegrationBase
             return _recordLookup.ContainsKey(ndx);
         }
 
-        public IEnumerable<T> LookupAllIndexKey<T>(AdminShell.Key key)
+        public IEnumerable<T> LookupAllIndexKey<T>(Key key)
             where T : AasxPluginOptionsRecordBase
         {
             // access

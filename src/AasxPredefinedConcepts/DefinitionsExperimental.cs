@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 // reSharper disable UnusedType.Global
 // reSharper disable ClassNeverInstantiated.Global
@@ -34,7 +36,7 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class InteropRelations : AasxDefinitionBase
         {
-            public AdminShell.ConceptDescription
+            public ConceptDescription
                 CD_FileToNavigateElement,
                 CD_FileToEntity,
                 CD_IsPartOfForBOM,
@@ -51,7 +53,7 @@ namespace AasxPredefinedConcepts
                 // info
                 this.DomainInfo = "Interoperable Relations (experimental)";
 
-                // Referable
+                // IReferable
                 CD_FileToNavigateElement = CreateSparseConceptDescription("en", "IRI",
                     "FileToNavigateElement",
                     "http://admin-shell.io/sandbox/CompositeComponent/General/FileToNavigateElement/1/0",
@@ -103,7 +105,7 @@ namespace AasxPredefinedConcepts
                     "TubePipeConnectionPneumatic",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/TubePipeConnectionPneumatic/1/0",
                     "States, that there is a pneumatic connection between two Electrical Entities.",
-                    isCaseOf: CD_TubePipeConnection.GetReference());
+                    isCaseOf: CD_TubePipeConnection.GetCdReference());
 
                 CD_TubePipeConnectionHydraulic = CreateSparseConceptDescription("en", "IRI",
                     "TubePipeConnectionHydraulic",

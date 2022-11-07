@@ -15,10 +15,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
+using Extenstions;
 using Newtonsoft.Json;
 
 // ReSharper disable UnassignedField.Global
@@ -71,8 +73,8 @@ namespace AasxPackageLogic
             public double Phase;
         }
 
-        protected Dictionary<AdminShell.Referable, AnimateState> _states =
-            new Dictionary<AdminShell.Referable, AnimateState>();
+        protected Dictionary<IReferable, AnimateState> _states =
+            new Dictionary<IReferable, AnimateState>();
 
         public void Clear()
         {
@@ -80,7 +82,7 @@ namespace AasxPackageLogic
         }
 
         public AnimateState GetState(
-            AdminShell.Referable rf,
+            IReferable rf,
             bool createIfNeeded = false)
         {
             if (rf == null)
@@ -115,12 +117,12 @@ namespace AasxPackageLogic
         }
 
         public void Animate(
-            AdminShell.Property prop,
-            Action<AdminShell.Property, AdminShell.IAasDiaryEntry> emitEvent)
+            Property prop,
+            Action<Property/*, IAasDiaryEntry*/> emitEvent) //TODO: jtikekar IAasDiaryEntry
         {
             // prop needs to exists and have qualifiers
-            var q = prop.HasQualifierOfType("Animate.Args");
-            var args = Parse(q.value);
+            var q = prop.FindQualifierOfType("Animate.Args");
+            var args = Parse(q.Value);
             if (args == null)
                 return;
 
@@ -166,14 +168,14 @@ namespace AasxPackageLogic
             if (res.HasValue)
             {
                 // set value
-                prop.value = res.Value.ToString(CultureInfo.InvariantCulture);
+                prop.Value = res.Value.ToString(CultureInfo.InvariantCulture);
 
                 // re-format?
                 if (args.fmt.HasContent())
                 {
                     try
                     {
-                        prop.value = res.Value.ToString(args.fmt, CultureInfo.InvariantCulture);
+                        prop.Value = res.Value.ToString(args.fmt, CultureInfo.InvariantCulture);
                     }
                     catch (Exception ex)
                     {
@@ -186,18 +188,20 @@ namespace AasxPackageLogic
                 {
                     // create
                     var evi = new AasPayloadUpdateValueItem(
-                        path: (prop as AdminShell.IGetReference)?.GetReference()?.Keys,
+                        path: (prop)?.GetModelReference()?.Keys,
                         value: prop.ValueAsText());
 
-                    evi.ValueId = prop.valueId;
+                    evi.ValueId = prop.ValueId;
 
                     evi.FoundReferable = prop;
 
                     // add 
-                    AdminShell.DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
+                    //TODO: jtikekar comment and support
+                    //DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
 
                     // kick lambda
-                    emitEvent.Invoke(prop, evi);
+                    //TODO: jtikekar comment and support
+                    //emitEvent.Invoke(prop, evi);
                 }
             }
         }

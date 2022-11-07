@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase
@@ -27,6 +28,6 @@ namespace AasxIntegrationBase
         string GetInfo();
         Stream GetThumbnailStream();
         string UpdatePropertyValue(
-            AdminShell.AdministrationShellEnv env, AdminShell.Submodel submodel, AdminShell.SubmodelElement sme);
+            AasCore.Aas3_0_RC02.Environment env, Submodel submodel, ISubmodelElement sme);
     }
 }

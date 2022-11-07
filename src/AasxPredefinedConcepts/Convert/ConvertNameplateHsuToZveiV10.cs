@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 // ReSharper disable MergeIntoPattern
 
@@ -27,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -36,16 +38,16 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Nameplate.GetSemanticKey(),
-                AdminShellV20.Key.MatchMode.Relaxed))
+            var sm = currentReferable as Submodel;
+            if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Nameplate.SemanticId.GetAsExactlyOneKey(),
+                MatchMode.Relaxed))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
-                            $"Convert Submodel '{"" + sm.idShort}' for Digital Nameplate HSU to ZVEI V1.0"));
+                            $"Convert Submodel '{"" + sm.IdShort}' for Digital Nameplate HSU to ZVEI V1.0"));
 
             return res;
         }
 
-        public override bool ExecuteOffer(AdminShellPackageEnv package, AdminShell.Referable currentReferable,
+        public override bool ExecuteOffer(AdminShellPackageEnv package, IReferable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -59,16 +61,16 @@ namespace AasxPredefinedConcepts.Convert
             var defsV10 = AasxPredefinedConcepts.ZveiNameplateV10.Static;
 
             // access Submodel (again)
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm == null || sm.submodelElements == null ||
-                    true != sm.GetSemanticKey()?.Matches(defsHSU.SM_Nameplate.GetSemanticKey()))
+            var sm = currentReferable as Submodel;
+            if (sm == null || sm.SubmodelElements == null ||
+                    true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsHSU.SM_Nameplate.SemanticId.GetAsExactlyOneKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
-            var smHSU = sm.submodelElements;
-            sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(defsV10.SM_Nameplate.GetSemanticKey());
+            var smHSU = sm.SubmodelElements;
+            sm.SubmodelElements = new List<ISubmodelElement>();
+            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { defsV10.SM_Nameplate.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -76,9 +78,9 @@ namespace AasxPredefinedConcepts.Convert
                 sm.RecurseOnSubmodelElements(null, (state, parents, current) =>
                 {
                     var sme = current;
-                    if (sme != null && sme.semanticId != null)
+                    if (sme != null && sme.SemanticId != null)
                     {
-                        var cd = package.AasEnv.FindConceptDescription(sme.semanticId);
+                        var cd = package.AasEnv.FindConceptDescriptionByReference(sme.SemanticId);
                         if (cd != null)
                             if (package.AasEnv.ConceptDescriptions.Contains(cd))
                                 package.AasEnv.ConceptDescriptions.Remove(cd);
@@ -91,111 +93,109 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsV10.GetAllReferables())
-                    if (rf is AdminShell.ConceptDescription)
-                        package.AasEnv.ConceptDescriptions.AddIfNew(new AdminShell.ConceptDescription(
-                                    rf as AdminShell.ConceptDescription));
+                    if (rf is ConceptDescription conceptDescription)
+                        package.AasEnv.ConceptDescriptions.AddConceptDescription(new ConceptDescription(conceptDescription.Id, conceptDescription.Extensions, conceptDescription.Category, conceptDescription.IdShort, conceptDescription.DisplayName, conceptDescription.Description, conceptDescription.Checksum, conceptDescription.Administration, conceptDescription.DataSpecifications, conceptDescription.IsCaseOf));
 
             // Submodel level
 
-            sm.submodelElements.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ManNam,
+            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManNam,
                 smHSU, defsHSU.CD_ManufacturerName,
                 createDefault: true, addSme: true, idShort: "ManufacturerName");
 
-            sm.submodelElements.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ManProDes,
+            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManProDes,
                 smHSU, defsHSU.CD_ManufacturerProductDesignation,
                 createDefault: true, addSme: true, idShort: "ManufacturerProductDesignation");
 
             // Address (target cardinality: 1)
-            foreach (var smcHSUadd in smHSU.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+            foreach (var smcHSUadd in smHSU.FindAllSemanticIdAs<SubmodelElementCollection>(
                         defsHSU.CD_PhysicalAddress.GetSingleKey()))
             {
                 // make a new one
-                var smcV10add = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                var smcV10add = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
                                 defsV10.CD_Add, idShort: "Address", addSme: true);
 
                 // SME
-                smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_Str,
-                    smcHSUadd.value, new[] {
+                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_Str,
+                    smcHSUadd.Value, new[] {
                         defsHSU.CD_Street.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRI,
+                    new Key(KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/street")},
                     createDefault: true, addSme: true, idShort: "Street");
 
-                smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ZipCod,
-                    smcHSUadd.value, new[] {
+                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_ZipCod,
+                    smcHSUadd.Value, new[] {
                         defsHSU.CD_Zip.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRI,
+                    new Key(KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/postalcode")},
                     createDefault: true, addSme: true, idShort: "Zipcode");
 
-                smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_CitTow,
-                    smcHSUadd.value, new[] {
+                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_CitTow,
+                    smcHSUadd.Value, new[] {
                         defsHSU.CD_CityTown.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRI,
+                    new Key(KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/city")},
                     createDefault: true, addSme: true, idShort: "CityTown");
 
-                smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_StaCou,
-                    smcHSUadd.value, new[] {
+                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_StaCou,
+                    smcHSUadd.Value, new[] {
                         defsHSU.CD_StateCounty.GetSingleKey(),
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, AdminShell.Identification.IRI,
+                    new Key(KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/statecounty")},
                     createDefault: true, addSme: true, idShort: "StateCounty");
 
-                smcV10add.value.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_NatCod,
-                    smcHSUadd.value, defsHSU.CD_CountryCode,
+                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_NatCod,
+                    smcHSUadd.Value, defsHSU.CD_CountryCode,
                     createDefault: true, addSme: true, idShort: "NationalCode");
             }
 
             // Submodel level - continued
 
-            sm.submodelElements.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_ManProFam,
+            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManProFam,
                 smHSU, defsHSU.CD_ManufacturerProductFamily,
                 createDefault: true, addSme: true, idShort: "ManufacturerProductFamily");
 
-            sm.submodelElements.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_SerNum,
+            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_SerNum,
                 smHSU, defsHSU.CD_SerialNumber,
                 createDefault: true, addSme: true, idShort: "SerialNumber");
 
-            sm.submodelElements.CopyOneSMEbyCopy<AdminShell.Property>(defsV10.CD_YeaOfCon,
+            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_YeaOfCon,
                 smHSU, defsHSU.CD_YearOfConstruction,
                 createDefault: true, addSme: true, idShort: "YearOfConstruction");
 
             // Markings 
-            var smcV10mks = sm.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+            var smcV10mks = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
                             defsV10.CD_Markings, idShort: "Markings", addSme: true);
 
             // each Marking
-            foreach (var smcHSUmk in smHSU.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+            foreach (var smcHSUmk in smHSU.FindAllSemanticIdAs<SubmodelElementCollection>(
                         defsHSU.CD_ProductMarking.GetSingleKey()))
             {
                 // make a new one
-                var smcV10mk = smcV10mks.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
-                                defsV10.CD_Marking, idShort: "" + smcHSUmk.idShort, addSme: true);
+                var smcV10mk = smcV10mks.Value.CreateSMEForCD<SubmodelElementCollection>(
+                                defsV10.CD_Marking, idShort: "" + smcHSUmk.IdShort, addSme: true);
 
                 // take over the name of the old collection in the distinct Property
-                var mkName = "" + smcHSUmk.idShort;
+                var mkName = "" + smcHSUmk.IdShort;
                 if (mkName.StartsWith("Marking_"))
                     mkName = mkName.Substring(8);
-                var mkNameProp = smcV10mk.value.CreateSMEForCD<AdminShell.Property>(
-                                    defsV10.CD_MarkingName, idShort: "MarkingName", addSme: true)?
-                                    .Set(AdminShell.DataElement.ValueType_STRING, "" + mkName);
+                var mkNameProp = smcV10mk.Value.CreateSMEForCD<Property>(
+                                    defsV10.CD_MarkingName, idShort: "MarkingName", addSme: true);
+                mkNameProp.Value = "" + mkName;
 
                 // file
-                smcV10mk.value.CopyOneSMEbyCopy<AdminShell.File>(defsV10.CD_MarkingFile,
-                    smcHSUmk.value, defsHSU.CD_File,
+                smcV10mk.Value.CopyOneSMEbyCopy<File>(defsV10.CD_MarkingFile,
+                    smcHSUmk.Value, defsHSU.CD_File,
                     createDefault: true, addSme: true, idShort: "ManufacturerName");
 
                 // if there a other Property inside, assume, that their semantic ids shall
                 // go into the valueId of the Name
 
-                foreach (var other in smcHSUmk.value.FindAll((smw) => smw?.submodelElement is AdminShell.Property))
+                foreach (var other in smcHSUmk.Value.FindAll((smw) => smw is Property))
                     if (mkNameProp != null
-                        && other?.submodelElement?.semanticId != null
-                        && !other.submodelElement.semanticId.IsEmpty
-                        && other.submodelElement.semanticId[0].IsIdType(AdminShell.Identification.IRDI))
+                        && other?.SemanticId != null
+                        && !other.SemanticId.IsEmpty())
                     {
-                        mkNameProp.valueId = other.submodelElement.semanticId;
+                        mkNameProp.ValueId = other.SemanticId;
                     }
             }
 

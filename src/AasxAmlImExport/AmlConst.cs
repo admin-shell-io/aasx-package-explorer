@@ -30,11 +30,11 @@ namespace AasxAmlImExport
 
         public static class Attributes
         {
-            public static string Referable_IdShort = "AAS:Referable/idShort";
-            public static string Referable_Category = "AAS:Referable/category";
-            public static string Referable_Description = "AAS:Referable/description";
+            public static string Referable_IdShort = "AAS:IReferable/idShort";
+            public static string Referable_Category = "AAS:IReferable/category";
+            public static string Referable_Description = "AAS:IReferable/description";
 
-            public static string Asset_Kind = "AAS:Asset/kind";
+            public static string Asset_Kind = "AAS:AssetInformation/kind";
             public static string HasKind_Kind = "AAS:HasKind/kind";
 
             public static string SemanticId = "AAS:HasSemantics/semanticId";
@@ -56,8 +56,8 @@ namespace AasxAmlImExport
 
             public static string AAS_DerivedFrom = "AAS:AssetAdministrationShell/derivedFrom";
 
-            public static string Asset_IdentificationModelRef = "AAS:Asset/assetIdentificationModel";
-            public static string Asset_BillOfMaterialRef = "AAS:Asset/billOfMaterial";
+            public static string Asset_IdentificationModelRef = "AAS:AssetInformation/assetIdentificationModel";
+            public static string Asset_BillOfMaterialRef = "AAS:AssetInformation/billOfMaterial";
 
             public static string SME_Property = "AAS:Property";
 
@@ -106,7 +106,7 @@ namespace AasxAmlImExport
         {
             public static string Qualifer = "AssetAdministrationShellRoleClassLib/Qualifier";
 
-            public static string Asset = "AssetAdministrationShellRoleClassLib/Asset";
+            public static string AssetInformation = "AssetAdministrationShellRoleClassLib/AssetInformation";
 
             public static string View = "AssetAdministrationShellRoleClassLib/View";
             public static string ContainedElementRef = "AssetAdministrationShellRoleClassLib/ContainedElementRef";

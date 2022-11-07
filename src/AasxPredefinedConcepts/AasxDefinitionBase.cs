@@ -14,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,7 +46,7 @@ namespace AasxPredefinedConcepts
 
         protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
 
-        protected List<AdminShell.Referable> theReflectedReferables = new List<AdminShell.Referable>();
+        protected List<IReferable> theReflectedReferables = new List<IReferable>();
 
         public string DomainInfo = "";
 
@@ -116,12 +117,12 @@ namespace AasxPredefinedConcepts
             return theLibrary[name];
         }
 
-        public T RetrieveReferable<T>(string name) where T : AdminShell.Referable
+        public T RetrieveReferable<T>(string name) where T : IReferable
         {
             // entry
             var entry = this.RetrieveEntry(name);
             if (entry == null || entry.contents == null)
-                return null;
+                return default(T);
 
             // try de-serialize
             try
@@ -132,32 +133,33 @@ namespace AasxPredefinedConcepts
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                return null;
+                return default(T);
             }
         }
 
-        public static AdminShell.ConceptDescription CreateSparseConceptDescription(
+        public static ConceptDescription CreateSparseConceptDescription(
             string lang,
             string idType,
             string idShort,
             string id,
             string definitionHereString,
-            AdminShell.Reference isCaseOf = null)
+            Reference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
                 return null;
 
             // create CD
-            var cd = AdminShell.ConceptDescription.CreateNew(idShort, idType, id);
-            var dsiec = cd.CreateDataSpecWithContentIec61360();
-            dsiec.preferredName = new AdminShellV20.LangStringSetIEC61360(lang, "" + idShort);
-            dsiec.definition = new AdminShellV20.LangStringSetIEC61360(lang,
-                "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
+            var cd = new ConceptDescription(id, idShort:idShort);
+            //TODO: jtikekar Temporarily removed
+            //var dsiec = cd.CreateDataSpecWithContentIec61360();
+            //dsiec.preferredName = new LangStringSetIEC61360(lang, "" + idShort);
+            //dsiec.definition = new LangStringSetIEC61360(lang,
+            //    "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<AdminShell.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<Reference>(new[] { isCaseOf });
 
             // ok
             return cd;
@@ -172,7 +174,7 @@ namespace AasxPredefinedConcepts
         {
         }
 
-        public virtual AdminShell.Referable[] GetAllReferables()
+        public virtual IReferable[] GetAllReferables()
         {
             return this.theReflectedReferables?.ToArray();
         }
@@ -185,7 +187,7 @@ namespace AasxPredefinedConcepts
                 return;
 
             // remember found Referables
-            this.theReflectedReferables = new List<AdminShell.Referable>();
+            this.theReflectedReferables = new List<IReferable>();
 
             // reflection
             foreach (var fi in typeToReflect.GetFields())
@@ -195,8 +197,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
-                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+                var isSM = fi.FieldType == typeof(Submodel);
+                var isCD = fi.FieldType == typeof(ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -213,13 +215,13 @@ namespace AasxPredefinedConcepts
                 // access library
                 if (isSM)
                 {
-                    var sm = this.RetrieveReferable<AdminShell.Submodel>(libName);
+                    var sm = this.RetrieveReferable<Submodel>(libName);
                     fi.SetValue(this, sm);
                     this.theReflectedReferables.Add(sm);
                 }
                 if (isCD)
                 {
-                    var cd = this.RetrieveReferable<AdminShell.ConceptDescription>(libName);
+                    var cd = this.RetrieveReferable<ConceptDescription>(libName);
                     fi.SetValue(this, cd);
                     this.theReflectedReferables.Add(cd);
                 }
@@ -241,8 +243,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AdminShell.Submodel);
-                var isCD = fi.FieldType == typeof(AdminShell.ConceptDescription);
+                var isSM = fi.FieldType == typeof(Submodel);
+                var isCD = fi.FieldType == typeof(ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -257,7 +259,7 @@ namespace AasxPredefinedConcepts
                     continue;
 
                 // add
-                var rf = fi.GetValue(this) as AdminShell.Referable;
+                var rf = fi.GetValue(this) as IReferable;
                 if (rf != null)
                     this.theReflectedReferables.Add(rf);
             }

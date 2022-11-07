@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Newtonsoft.Json;
 
@@ -35,14 +36,14 @@ namespace AasxIntegrationBase.AasForms
     }
 
     /// <summary>
-    /// Aim: provide a (abstract) communality for Submodel und SubmodelElement.
+    /// Aim: provide a (abstract) communality for Submodel und ISubmodelElement.
     /// Host FormTitle, Info, Presets and Semantic Id
     /// </summary>
     [DisplayName("FormSubmodelReferable")]
     public class FormDescReferable : FormDescBase
     {
         /// <summary>
-        /// Displayed as label in front/ on top of the SubmodelElement
+        /// Displayed as label in front/ on top of the ISubmodelElement
         /// </summary>
         [JsonProperty(Order = 1)]
         public string FormTitle = "";
@@ -54,13 +55,13 @@ namespace AasxIntegrationBase.AasForms
         public string FormInfo = null;
 
         /// <summary>
-        /// True, if the user shall be able to edit the idShort of the Referable
+        /// True, if the user shall be able to edit the idShort of the IReferable
         /// </summary>
         [JsonProperty(Order = 3)]
         public bool FormEditIdShort = false;
 
         /// <summary>
-        /// True, if the user shall be able to edit the description of the Referable
+        /// True, if the user shall be able to edit the description of the IReferable
         /// </summary>
         [JsonProperty(Order = 4)]
         public bool FormEditDescription = false;
@@ -71,28 +72,28 @@ namespace AasxIntegrationBase.AasForms
         public string FormUrl = null;
 
         /// <summary>
-        /// Preset for Referable.idShort. Always required. "{0}" will be replaced by instance number
+        /// Preset for IReferable.IdShort. Always required. "{0}" will be replaced by instance number
         /// </summary>
         [JsonProperty(Order = 5)]
         public string PresetIdShort = "SME{0:000}";
 
         /// <summary>
-        /// Preset for Referable.category. Always required
+        /// Preset for IReferable.Category. Always required
         /// </summary>
         [JsonProperty(Order = 6)]
         public string PresetCategory = "CONSTANT";
 
         /// <summary>
-        /// Preset for Referable.description
+        /// Preset for IReferable.Description
         /// </summary>
         [JsonProperty(Order = 7)]
-        public AdminShell.Description PresetDescription = null;
+        public List<LangString> PresetDescription = null;
 
         /// <summary>
-        /// SemanticId of the SubmodelElement. Always required.
+        /// SemanticId of the ISubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public AdminShell.Key KeySemanticId = new AdminShell.Key();
+        public Key KeySemanticId = new Key(KeyTypes.SubmodelElement, ""); //TODO:jtikear what about value?
 
         // Constructors
         //=============
@@ -100,7 +101,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescReferable() { }
 
         public FormDescReferable(
-            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
+            string formText, Key keySemanticId, string presetIdShort, string formInfo = null)
             : base()
         {
             this.FormTitle = formText;
@@ -125,15 +126,15 @@ namespace AasxIntegrationBase.AasForms
         // Dynamic behaviour
         //==================
 
-        protected void InitReferable(AdminShell.Referable rf)
+        protected void InitReferable(IReferable rf)
         {
             if (rf == null)
                 return;
 
-            rf.idShort = this.PresetIdShort;
-            rf.category = this.PresetCategory;
+            rf.IdShort = this.PresetIdShort;
+            rf.Category = this.PresetCategory;
             if (this.PresetDescription != null)
-                rf.description = new AdminShell.Description(this.PresetDescription);
+                rf.Description = new LangStringSet(this.PresetDescription);
         }
 
     }
@@ -157,7 +158,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodel() { }
 
         public FormDescSubmodel(
-            string formText, AdminShell.Key keySemanticId, string presetIdShort, string formInfo = null)
+            string formText, Key keySemanticId, string presetIdShort, string formInfo = null)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
         }
@@ -187,19 +188,19 @@ namespace AasxIntegrationBase.AasForms
         /// Needs to get a unique Identification.
         /// </summary>
         /// <returns></returns>
-        public AdminShell.Submodel GenerateDefault()
+        public Submodel GenerateDefault()
         {
-            var res = new AdminShell.Submodel();
+            var res = new Submodel("");
 
-            // is Referable
+            // is IReferable
             this.InitReferable(res);
 
             // has SemanticId
             if (this.KeySemanticId != null)
-                res.semanticId = AdminShell.SemanticId.CreateFromKey(this.KeySemanticId);
+                res.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key> { this.KeySemanticId});
 
             // has elements
-            res.submodelElements = this.SubmodelElements.GenerateDefault();
+            res.SubmodelElements = this.SubmodelElements.GenerateDefault();
 
             return res;
         }
@@ -226,13 +227,13 @@ namespace AasxIntegrationBase.AasForms
                 this.Add(o);
         }
 
-        public AdminShell.SubmodelElementWrapperCollection GenerateDefault()
+        public List<ISubmodelElement> GenerateDefault()
         {
-            var res = new AdminShell.SubmodelElementWrapperCollection();
+            var res = new List<ISubmodelElement>();
 
             foreach (var desc in this)
             {
-                AdminShell.SubmodelElement sme = null;
+                ISubmodelElement sme = null;
 
                 // generate element
 
@@ -261,7 +262,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescSubmodelElement : FormDescReferable
     {
         /// <summary>
-        /// In the containing collection, how often shall the SubmodelElement might occur?
+        /// In the containing collection, how often shall the ISubmodelElement might occur?
         /// </summary>
         [JsonProperty(Order = 10)]
         [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -285,7 +286,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElement() { }
 
         public FormDescSubmodelElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key keySemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Key keySemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
@@ -310,19 +311,19 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public virtual FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return null;
         }
 
-        public void InitSme(AdminShell.SubmodelElement sme)
+        public void InitSme(ISubmodelElement sme)
         {
-            // is a Referable
+            // is a IReferable
             this.InitReferable(sme);
 
             // has SemanticId
             if (this.KeySemanticId != null)
-                sme.semanticId = AdminShell.SemanticId.CreateFromKey(this.KeySemanticId);
+                sme.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key> { this.KeySemanticId});
         }
     }
 
@@ -341,7 +342,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElementCollection() { }
 
         public FormDescSubmodelElementCollection(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId, string presetIdShort,
             string formInfo = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo)
         {
@@ -364,7 +365,7 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceSubmodelElementCollection(parentInstance, this, source);
         }
@@ -379,12 +380,12 @@ namespace AasxIntegrationBase.AasForms
             value.Add(subDescription);
         }
 
-        public AdminShell.SubmodelElementCollection GenerateDefault()
+        public SubmodelElementCollection GenerateDefault()
         {
-            var res = new AdminShell.SubmodelElementCollection();
+            var res = new SubmodelElementCollection();
             this.InitSme(res);
 
-            res.value = this.value.GenerateDefault();
+            res.Value = this.value.GenerateDefault();
 
             return res;
         }
@@ -434,7 +435,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescProperty() { }
 
         public FormDescProperty(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
             string presetValue = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -465,20 +466,21 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceProperty(parentInstance, this, source);
         }
 
-        public AdminShell.Property GenerateDefault()
+        public Property GenerateDefault()
         {
-            var res = new AdminShell.Property();
+            var res = new Property(DataTypeDefXsd.String);
             this.InitSme(res);
             if (this.presetValue != null)
-                res.value = this.presetValue;
+                res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                res.valueType = this.allowedValueTypes[0];
+                //res.ValueType = this.allowedValueTypes[0];
+                res.ValueType = DataTypeDefXsd.String;
             }
             return res;
         }
@@ -495,7 +497,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescMultiLangProp(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
@@ -510,14 +512,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceMultiLangProp(parentInstance, this, source);
         }
 
-        public AdminShell.MultiLanguageProperty GenerateDefault()
+        public MultiLanguageProperty GenerateDefault()
         {
-            var res = new AdminShell.MultiLanguageProperty();
+            var res = new MultiLanguageProperty();
             this.InitSme(res);
             return res;
         }
@@ -539,7 +541,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescFile(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetMimeType = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -564,17 +566,17 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceFile(parentInstance, this, source);
         }
 
-        public AdminShell.File GenerateDefault()
+        public File GenerateDefault()
         {
-            var res = new AdminShell.File();
+            var res = new File("");
             this.InitSme(res);
             if (this.presetMimeType != null)
-                res.mimeType = this.presetMimeType;
+                res.ContentType = this.presetMimeType;
             return res;
         }
 
@@ -584,7 +586,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescReferenceElement : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed SubmodelElement types.
+        /// pre-set a filter for allowed ISubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";
@@ -595,7 +597,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescReferenceElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -620,14 +622,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceReferenceElement(parentInstance, this, source);
         }
 
-        public AdminShell.ReferenceElement GenerateDefault()
+        public ReferenceElement GenerateDefault()
         {
-            var res = new AdminShell.ReferenceElement();
+            var res = new ReferenceElement();
             this.InitSme(res);
             return res;
         }
@@ -638,7 +640,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescRelationshipElement : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed SubmodelElement types.
+        /// pre-set a filter for allowed ISubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";
@@ -649,7 +651,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescRelationshipElement(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -674,14 +676,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceRelationshipElement(parentInstance, this, source);
         }
 
-        public AdminShell.RelationshipElement GenerateDefault()
+        public RelationshipElement GenerateDefault()
         {
-            var res = new AdminShell.RelationshipElement();
+            var res = new RelationshipElement(null, null); //TODO:jtikekar: first and second cannot be null
             this.InitSme(res);
             return res;
         }
@@ -692,7 +694,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescCapability : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed SubmodelElement types.
+        /// pre-set a filter for allowed ISubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";
@@ -703,7 +705,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescCapability(
-            string formText, FormMultiplicity multiplicity, AdminShell.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -728,14 +730,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AdminShell.SubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, ISubmodelElement source = null)
         {
             return new FormInstanceCapability(parentInstance, this, source);
         }
 
-        public AdminShell.Capability GenerateDefault()
+        public Capability GenerateDefault()
         {
-            var res = new AdminShell.Capability();
+            var res = new Capability();
             this.InitSme(res);
             return res;
         }

@@ -8,7 +8,7 @@
       "asset": {
         "keys": [
           {
-            "type": "Asset",
+            "type": "AssetInformation",
             "idType": "URI",
             "value": "http://pk.festo.com/3S7PLFDRS35",
             "local": true,
@@ -173,7 +173,7 @@
         }
       ],
       "modelType": {
-        "name": "Asset"
+        "name": "AssetInformation"
       }
     }
   ],

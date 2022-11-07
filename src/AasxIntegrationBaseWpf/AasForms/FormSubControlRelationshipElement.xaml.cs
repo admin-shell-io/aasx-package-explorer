@@ -24,7 +24,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxIntegrationBase.AasForms
 {
@@ -39,28 +41,28 @@ namespace AasxIntegrationBase.AasForms
         public class ViewModel : WpfViewModelBase
         {
             // data binded properties
-            private AdminShell.Reference storedFirst = null;
-            private AdminShell.Reference storedSecond = null;
+            private Reference storedFirst = null;
+            private Reference storedSecond = null;
 
-            public AdminShell.Reference StoredFirst
+            public Reference StoredFirst
             {
                 get { return storedFirst; }
                 set { storedFirst = value; OnPropertyChanged("InfoFirst"); }
             }
 
-            public AdminShell.Reference StoredSecond
+            public Reference StoredSecond
             {
                 get { return storedSecond; }
                 set { storedSecond = value; OnPropertyChanged("InfoSecond"); }
             }
 
-            public static string FormatReference(AdminShell.Reference rf)
+            public static string FormatReference(Reference rf)
             {
                 if (rf == null)
                     return "(no reference set)";
-                if (rf.Count < 1)
+                if (rf.Keys.Count < 1)
                     return "(no Keys)";
-                return rf.ToString(format: 1, delimiter: Environment.NewLine);
+                return rf.ToStringExtended(delimiter: System.Environment.NewLine);
             }
 
             public string InfoFirst => FormatReference(storedFirst);
@@ -73,14 +75,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceRelationshipElement instance;
             public FormDescRelationshipElement desc;
-            public AdminShell.RelationshipElement relElem;
+            public RelationshipElement relElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceRelationshipElement;
                 dc.desc = dc.instance?.desc as FormDescRelationshipElement;
-                dc.relElem = dc.instance?.sme as AdminShell.RelationshipElement;
+                dc.relElem = dc.instance?.sme as RelationshipElement;
 
                 if (dc.instance == null || dc.desc == null || dc.relElem == null)
                     return null;
@@ -102,22 +104,22 @@ namespace AasxIntegrationBase.AasForms
                 return;
 
             // first update
-            this.theViewModel.StoredFirst = dc.relElem?.first;
-            this.theViewModel.StoredSecond = dc.relElem?.second;
+            this.theViewModel.StoredFirst = dc.relElem?.First;
+            this.theViewModel.StoredSecond = dc.relElem?.Second;
             UpdateDisplay();
 
             // attach lambdas for clear
             ButtonClearFirst.Click += (object sender5, RoutedEventArgs e5) =>
             {
                 dc.instance.Touch();
-                dc.relElem.first = null;
+                dc.relElem.First = null;
                 this.theViewModel.StoredFirst = null;
             };
 
             ButtonClearSecond.Click += (object sender7, RoutedEventArgs e7) =>
             {
                 dc.instance.Touch();
-                dc.relElem.second = null;
+                dc.relElem.Second = null;
                 this.theViewModel.StoredFirst = null;
             };
 
@@ -136,7 +138,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         // give over to event stack
                         var ev = new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity();
-                        ev.filterEntities = AdminShell.Key.AllElements;
+                        ev.filterEntities = "All";
                         ev.showAuxPackage = true;
                         ev.showRepoFiles = true;
                         topBase.outerEventStack.PushEvent(ev);
@@ -150,17 +152,17 @@ namespace AasxIntegrationBase.AasForms
                             if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                             {
                                 dc.instance.Touch();
-                                var newr = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                                var newr = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
 
                                 if (storedII == 0)
                                 {
-                                    dc.relElem.first = newr;
+                                    dc.relElem.First = newr;
                                     this.theViewModel.StoredFirst = newr;
                                 }
 
                                 if (storedII == 1)
                                 {
-                                    dc.relElem.second = newr;
+                                    dc.relElem.Second = newr;
                                     this.theViewModel.StoredSecond = newr;
                                 }
                             }

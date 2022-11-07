@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable MergeIntoPattern
@@ -34,13 +35,13 @@ namespace AasxPredefinedConcepts.Convert
 
     public class ConvertProviderBase
     {
-        public virtual List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)
+        public virtual List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
         {
             return null;
         }
 
         public virtual bool ExecuteOffer(
-            AdminShellPackageEnv package, AdminShell.Referable currentReferable, ConvertOfferBase offer,
+            AdminShellPackageEnv package, IReferable currentReferable, ConvertOfferBase offer,
             bool deleteOldCDs, bool addNewCDs)
         {
             return true;
@@ -59,7 +60,7 @@ namespace AasxPredefinedConcepts.Convert
             yield return new ConvertNameplateHsuToZveiV10Provider();
         }
 
-        public static List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)
+        public static List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
         {
             var res = new List<ConvertOfferBase>();
             var providers = GetAllProviders();

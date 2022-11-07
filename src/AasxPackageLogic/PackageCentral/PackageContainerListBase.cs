@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -222,7 +223,7 @@ namespace AasxPackageLogic.PackageCentral
                 // load
                 var pkg = new AdminShellPackageEnv(fn);
 
-                // for each Admin Shell and then each Asset
+                // for each Admin Shell and then each AssetInformation
                 this.AddByAasPackage(packageCentral, pkg, fn);
 
                 // close directly!
@@ -263,22 +264,21 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AasIds != null)
                     foreach (var id in fi.AasIds)
                     {
-                        var aas = new AdminShell.AdministrationShell(String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                        aas.AddDescription("en?", "" + fi.Description);
-                        aas.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
-                        pkg.AasEnv?.AdministrationShells.Add(aas);
+                        var aas = new AssetAdministrationShell("", new AssetInformation(AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
+                        aas.Description = new LangStringSet(new List<LangString>() { new LangString("en?", "" + fi.Description) });
+                        aas.Id = id;
+                        pkg.AasEnv?.AssetAdministrationShells.Add(aas);
                     }
 
                 // asset
                 if (fi.AssetIds != null)
                     foreach (var id in fi.AssetIds)
                     {
-                        var asset = new AdminShell.Asset(String.Format("Asset{0:00}_{1}", i, fi.Tag));
-                        asset.AddDescription("en?", "" + fi.Description);
-                        asset.identification = new AdminShell.Identification(
-                            AdminShell.Identification.IRI, "" + id);
-                        pkg.AasEnv?.Assets.Add(asset);
+                        var asset = new AssetInformation(AssetKind.Instance);
+                        //TODO:jtikekar globalAssetId or SpecficAssetId??
+                        asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, id) });
+                        //asset.identification = new Identification(
+                        //    Identification.IRI, "" + id);
                     }
             }
         }
@@ -309,13 +309,13 @@ namespace AasxPackageLogic.PackageCentral
         public bool LoadFromLocalFile(string fn)
         {
             // from file
-            if (!File.Exists(fn))
+            if (!System.IO.File.Exists(fn))
                 return false;
 
             // need special settings (to handle different typs of child classes of PackageContainer)
             var settings = GetSerializerSettings();
 
-            var init = File.ReadAllText(fn);
+            var init = System.IO.File.ReadAllText(fn);
             JsonConvert.PopulateObject(init, this, settings);
 
             // return

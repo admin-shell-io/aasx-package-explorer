@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
+using Extenstions;
 
 // ReSharper disable MergeIntoPattern
 
@@ -28,7 +30,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(AdminShell.Referable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -37,16 +39,16 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfDocumentation(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm != null && true == sm.GetSemanticKey()?.Matches(defs.SM_Document.GetSemanticKey()))
+            var sm = currentReferable as Submodel;
+            if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Document.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferDocumentationHsuToSg2(this,
-                            $"Convert Submodel '{"" + sm.idShort}' for Documentation HSU to SG2"));
+                            $"Convert Submodel '{"" + sm.IdShort}' for Documentation HSU to SG2"));
 
             return res;
         }
 
         public override bool ExecuteOffer(
-            AdminShellPackageEnv package, AdminShell.Referable currentReferable, ConvertOfferBase offerBase,
+            AdminShellPackageEnv package, IReferable currentReferable, ConvertOfferBase offerBase,
             bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -61,15 +63,15 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
 
             // access Submodel (again)
-            var sm = currentReferable as AdminShell.Submodel;
-            if (sm == null || sm.submodelElements == null ||
-                    true != sm.GetSemanticKey()?.Matches(defsHsu.SM_Document.GetSemanticKey()))
+            var sm = currentReferable as Submodel;
+            if (sm == null || sm.SubmodelElements == null ||
+                    true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsHsu.SM_Document.SemanticId.GetAsExactlyOneKey()))
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
-            var smcOldHsu = sm.submodelElements;
-            sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
-            sm.semanticId = new AdminShell.SemanticId(defsSg2.SM_VDI2770_Documentation.GetSemanticKey());
+            var smcOldHsu = sm.SubmodelElements;
+            sm.SubmodelElements = new List<ISubmodelElement>();
+            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -77,9 +79,9 @@ namespace AasxPredefinedConcepts.Convert
                 sm.RecurseOnSubmodelElements(null, (state, parents, current) =>
                 {
                     var sme = current;
-                    if (sme != null && sme.semanticId != null)
+                    if (sme != null && sme.SemanticId != null)
                     {
-                        var cd = package.AasEnv.FindConceptDescription(sme.semanticId);
+                        var cd = package.AasEnv.FindConceptDescriptionByReference(sme.SemanticId);
                         if (cd != null)
                             if (package.AasEnv.ConceptDescriptions.Contains(cd))
                                 package.AasEnv.ConceptDescriptions.Remove(cd);
@@ -92,85 +94,99 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsSg2.GetAllReferables())
-                    if (rf is AdminShell.ConceptDescription)
-                        package.AasEnv.ConceptDescriptions.AddIfNew(
-                                new AdminShell.ConceptDescription(rf as AdminShell.ConceptDescription));
+                    if (rf is ConceptDescription conceptDescription)
+                    {
+                        package.AasEnv.ConceptDescriptions.AddConceptDescription(
+                                new ConceptDescription(conceptDescription.Id, conceptDescription.Extensions, conceptDescription.Category, conceptDescription.IdShort, conceptDescription.DisplayName, conceptDescription.Description, conceptDescription.Checksum, conceptDescription.Administration, conceptDescription.DataSpecifications, conceptDescription.IsCaseOf));
+                    }
 
             // ok, go thru the old == HSU records
-            foreach (var smcSource in smcOldHsu.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        defsHsu.CD_DocumentationItem.GetSingleKey(), AdminShell.Key.MatchMode.Relaxed))
+            foreach (var smcSource in smcOldHsu.FindAllSemanticIdAs<SubmodelElementCollection>(
+                        defsHsu.CD_DocumentationItem.GetSingleKey(), MatchMode.Relaxed))
             {
                 // access
-                if (smcSource == null || smcSource.value == null)
+                if (smcSource == null || smcSource.Value == null)
                     continue;
 
                 // make new SG2 Document + DocumentItem
                 // Document Item
                 // ReSharper disable once ConvertToUsingDeclaration
-                using (var smcDoc = AdminShell.SubmodelElementCollection.CreateNew("" + smcSource.idShort,
-                            smcSource.category,
-                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetCdReference())))
-                using (var smcDocVersion = AdminShell.SubmodelElementCollection.CreateNew("DocumentVersion",
-                            smcSource.category,
-                            AdminShell.Key.GetFromRef(defsSg2.CD_VDI2770_DocumentVersion.GetCdReference())))
+                //using (var smcDoc = SubmodelElementCollection.CreateNew("" + smcSource.IdShort,
+                //            smcSource.Category,
+                //            Key.GetFromRef(defsSg2.CD_VDI2770_Document.GetCdReference())))
+                
+                SubmodelElementCollection smcDoc = new SubmodelElementCollection(idShort: "" + smcSource.IdShort, category: smcSource.Category, semanticId: defsSg2.CD_VDI2770_Document.GetCdReference());
+                //using (var smcDocVersion = SubmodelElementCollection.CreateNew("DocumentVersion",
+                //            smcSource.Category,
+                //            Key.GetFromRef(defsSg2.CD_VDI2770_DocumentVersion.GetCdReference())))
+                SubmodelElementCollection smcDocVersion = new SubmodelElementCollection(idShort: "DocumentVersion", category: smcSource.Category, semanticId: defsSg2.CD_VDI2770_DocumentVersion.GetCdReference());
                 {
                     // Document itself
-                    smcDoc.description = smcSource.description;
+                    smcDoc.Description = smcSource.Description;
 
                     // classification
-                    var clid = smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            defsHsu.CD_DocumentClassification_ClassId.GetSingleKey())?.value;
-                    var clname = "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            defsHsu.CD_VDI2770_ClassName.GetSingleKey())?.value;
-                    var clsys = "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            defsHsu.CD_VDI2770_ClassificationSystem.GetSingleKey())?.value;
+                    var clid = smcSource.Value.FindFirstSemanticIdAs<Property>(
+                            defsHsu.CD_DocumentClassification_ClassId.GetSingleKey())?.Value;
+                    var clname = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                            defsHsu.CD_VDI2770_ClassName.GetSingleKey())?.Value;
+                    var clsys = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                            defsHsu.CD_VDI2770_ClassificationSystem.GetSingleKey())?.Value;
 
 #if future_structure
                     // as described in the VDI 2770 Submodel template document
                     if (clid.HasContent())
-                        using (var smcClass = AdminShell.SubmodelElementCollection.CreateNew("DocumentClassification",
-                                    smcSource.category, AdminShell.Key.GetFromRef(defsSg2.CD_XXX.GetReference())))
+                        using (var smcClass = SubmodelElementCollection.CreateNew("DocumentClassification",
+                                    smcSource.Category, Key.GetFromRef(defsSg2.CD_XXX.GetReference())))
                         {
                             smcDoc.Add(smcClass);
 
-                            smcClass.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentClassId,
+                            smcClass.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentClassId,
                                 addSme: true)?.Set("string", "" + clid);
-                            smcClass.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentClassName,
+                            smcClass.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentClassName,
                                 addSme: true)?.Set("string", "" + clname);
-                            smcClass.value.CreateSMEForCD<AdminShell.Property>(
+                            smcClass.Value.CreateSMEForCD<Property>(
                                 defsSg2.CD_VDI2770_DocumentClassificationSystem, addSme: true)?
                                 .Set("string", "" + clsys);
                         }
 
 #else
                     // current state of code
-                    smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentClassId,
-                            addSme: true)?.Set("string", "" + clid);
-                    smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentClassName,
-                            addSme: true)?.Set("string", "" + clname);
-                    smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentClassificationSystem,
-                            addSme: true)?.Set("string", "" + clsys);
+                    var property = smcDoc.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentClassId,
+                            addSme: true);
+                    property.Value = clid;
+                    property.ValueType = DataTypeDefXsd.String;
+
+                    property = smcDoc.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentClassName,
+                            addSme: true);
+                    property.Value = clname;
+
+                    property = smcDoc.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentClassificationSystem,
+                            addSme: true);
+                    property.Value = clsys;
 #endif
 
                     // items ..
-                    smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentId, addSme: true)?.
-                        Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defsHsu.CD_DocumentId.GetSingleKey())?.value);
+                    property = smcDoc.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentId, addSme: true);
+                    property.Value = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                    defsHsu.CD_DocumentId.GetSingleKey())?.Value;
 
-                    var idt = "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            defsHsu.CD_VDI2770_IdType.GetSingleKey())?.IsTrue();
-                    smcDoc.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_IsPrimaryDocumentId,
-                            addSme: true)?.Set("boolean", (idt.Trim().ToLower() == "primary") ? "True" : "False");
+                    var idt = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                            defsHsu.CD_VDI2770_IdType.GetSingleKey())?.IsValueTrue();
 
-                    smcDoc.value.CreateSMEForCD<AdminShell.ReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
-                            addSme: true)?.
-                        Set(new AdminShell.Reference());
+                    property = smcDoc.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_IsPrimaryDocumentId,
+                            addSme: true);
+                    property.ValueType = DataTypeDefXsd.Boolean;
+                    property.Value = idt.Equals("primary", StringComparison.OrdinalIgnoreCase) ? "True" : "False";
+
+                    var referenceElement = smcDoc.Value.CreateSMEForCD<ReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
+                            addSme: true);
+                    referenceElement.Value = new Reference(ReferenceTypes.ModelReference, new List<Key>());
 
                     // DocumentVersion
 
                     // languages
-                    var lcs = "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            defsHsu.CD_DocumentVersion_LanguageCode.GetSingleKey())?.value;
+                    var lcs = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                            defsHsu.CD_DocumentVersion_LanguageCode.GetSingleKey())?.Value;
                     var lcsa = lcs.Trim().Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
                     //ReSharper disable ConditionIsAlwaysTrueOrFalse
                     if (lcsa != null && lcsa.Length > 0)
@@ -181,17 +197,17 @@ namespace AasxPredefinedConcepts.Convert
                             var lcc = "" + lc;
                             if (lcc.IndexOf('-') > 0)
                                 lcc = lc.Substring(0, lcc.IndexOf('-'));
-                            smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_Language,
-                                    idShort: $"Language{(i++):00}", addSme: true)?.
-                                Set("string", "" + lcc);
+                            property = smcDocVersion.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_Language,
+                                    idShort: $"Language{(i++):00}", addSme: true);
+                            property.Value = "" + lcc;
                         }
                     }
                     //ReSharper enable ConditionIsAlwaysTrueOrFalse
 
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_DocumentVersionId,
-                        addSme: true)?.
-                        Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defsHsu.CD_DocumentVersionId.GetSingleKey())?.value);
+                    property = smcDocVersion.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_DocumentVersionId,
+                        addSme: true);
+                    property.Value = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                    defsHsu.CD_DocumentVersionId.GetSingleKey())?.Value;
 
                     var cdSrc = new[] { defsHsu.CD_VDI2770_Title, defsHsu.CD_VDI2770_Summary,
                         defsHsu.CD_VDI2770_Keywords };
@@ -199,47 +215,51 @@ namespace AasxPredefinedConcepts.Convert
                         defsSg2.CD_VDI2770_Keywords };
                     for (int i = 0; i < 3; i++)
                     {
-                        var target = smcDocVersion.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(cdDst[i],
+                        var target = smcDocVersion.Value.CreateSMEForCD<MultiLanguageProperty>(cdDst[i],
                                 addSme: true);
                         if (target == null)
                             continue;
 
-                        var asProp = smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
+                        var asProp = smcSource.Value.FindFirstSemanticIdAs<Property>(
                                 cdSrc[i].GetSingleKey());
                         if (asProp != null)
-                            target.Set("en?", "" + asProp.value);
+                        {
+                            target.Value = new LangStringSet(new List<LangString>() { new LangString("en?", "" + asProp.Value) });
+                        }
 
-                        var asMLP = smcSource.value.FindFirstSemanticIdAs<AdminShell.MultiLanguageProperty>(
+                        var asMLP = smcSource.Value.FindFirstSemanticIdAs<MultiLanguageProperty>(
                                 cdSrc[i].GetSingleKey());
                         if (asMLP != null)
-                            target.value = asMLP.value;
+                            target.Value = asMLP.Value;
                     }
 
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_Date, addSme: true)?.
-                        Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defsHsu.CD_VDI2770_SetDate.GetSingleKey())?.value);
+                    property = smcDocVersion.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_Date, addSme: true);
+                    property.Value = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                    defsHsu.CD_VDI2770_SetDate.GetSingleKey())?.Value;
 
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_Role, addSme: true)?.
-                        Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defsHsu.CD_VDI2770_Role.GetSingleKey())?.value);
+                    property = smcDocVersion.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_Role, addSme: true);
+                    property.Value = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                    defsHsu.CD_VDI2770_Role.GetSingleKey())?.Value;
 
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(defsSg2.CD_VDI2770_OrganizationName,
-                        addSme: true)?.Set("string", "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                    defsHsu.CD_VDI2770_OrganisationName.GetSingleKey())?.value);
+                    property = smcDocVersion.Value.CreateSMEForCD<Property>(defsSg2.CD_VDI2770_OrganizationName,
+                        addSme: true);
+                    property.Value = smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                    defsHsu.CD_VDI2770_OrganisationName.GetSingleKey())?.Value;
 
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.Property>(
-                        defsSg2.CD_VDI2770_OrganizationOfficialName, addSme: true)?.Set("string",
-                            "" + smcSource.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                defsHsu.CD_VDI2770_OrganisationOfficialName.GetSingleKey())?.value);
+                    property = smcDocVersion.Value.CreateSMEForCD<Property>(
+                        defsSg2.CD_VDI2770_OrganizationOfficialName, addSme: true);
+                    property.Value = "" + smcSource.Value.FindFirstSemanticIdAs<Property>(
+                                defsHsu.CD_VDI2770_OrganisationOfficialName.GetSingleKey())?.Value;
 
                     // 1 file?
-                    var fl = smcSource.value.FindFirstSemanticIdAs<AdminShell.File>(defsHsu.CD_File.GetSingleKey());
-                    smcDocVersion.value.CreateSMEForCD<AdminShell.File>(defsSg2.CD_VDI2770_DigitalFile, addSme: true)?.
-                            Set("" + fl?.mimeType, "" + fl?.value);
+                    var fl = smcSource.Value.FindFirstSemanticIdAs<File>(defsHsu.CD_File.GetSingleKey());
+                    var file = smcDocVersion.Value.CreateSMEForCD<File>(defsSg2.CD_VDI2770_DigitalFile, addSme: true);
+                    file.ContentType = fl?.ContentType;
+                    file.Value = fl?.Value;
 
                     // finally, add
                     smcDoc.Add(smcDocVersion);
-                    sm.submodelElements.Add(smcDoc);
+                    sm.SubmodelElements.Add(smcDoc);
 
                 }
             }

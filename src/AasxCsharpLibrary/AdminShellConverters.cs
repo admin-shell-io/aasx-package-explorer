@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -26,7 +27,7 @@ namespace AdminShellNS
         /// "Referable" (the base class)
         /// and decides, which sub-class of the base class shall be populated.
         /// If the object is SubmodelElement, the decision, shich special sub-class to create is done in a factory
-        /// AdminShell.SubmodelElementWrapper.CreateAdequateType(),
+        /// SubmodelElementWrapper.CreateAdequateType(),
         /// in order to have all sub-class specific decisions in one place (SubmodelElementWrapper)
         /// Remark: There is a NuGet package JsonSubTypes, which could have done the job, except the fact of having
         /// "modelType" being a class property with a contained property "name".
@@ -49,7 +50,7 @@ namespace AdminShellNS
             public override bool CanConvert(Type objectType)
             {
                 // Info MIHO 21 APR 2020: changed this from SubmodelElement to Referable
-                if (typeof(AdminShell.Referable).IsAssignableFrom(objectType))
+                if (typeof(IReferable).IsAssignableFrom(objectType))
                     return true;
                 return false;
             }
@@ -68,7 +69,7 @@ namespace AdminShellNS
                 JObject jObject = JObject.Load(reader);
 
                 // Create target object based on JObject
-                object target = new AdminShell.Referable();
+                IReferable target = null;
 
                 if (jObject.ContainsKey(UpperClassProperty))
                 {
@@ -85,7 +86,7 @@ namespace AdminShellNS
                                 if (cpval == null)
                                     continue;
                                 // Info MIHO 21 APR 2020: use Referable.CreateAdequateType instead of SMW...
-                                var o = AdminShell.Referable.CreateAdequateType(cpval);
+                                var o = CreateAdequateType(cpval);
                                 if (o != null)
                                     target = o;
                             }
@@ -96,6 +97,31 @@ namespace AdminShellNS
                 serializer.Populate(jObject.CreateReader(), target);
 
                 return target;
+            }
+
+            public static IReferable CreateAdequateType(string elementName)
+            {
+                if (elementName == KeyTypes.AssetAdministrationShell.ToString())
+                    return new AssetAdministrationShell("", null);   //TODO: jtikekar: refactor default
+                //if (elementName == "Asset")  //TODO: jtikekar Change
+                //    return new AssetInformation(AssetKind.Instance);
+                if (elementName == KeyTypes.ConceptDescription.ToString())
+                    return new ConceptDescription("");
+                if (elementName == KeyTypes.Submodel.ToString())
+                    return new Submodel("");
+                //if (elementName == KeyTypes.View)
+                //    return new View();
+                return CreateSubmodelElementIstance(elementName);
+            }
+
+            private static ISubmodelElement CreateSubmodelElementIstance(string typeName)
+            {
+                //TODO: jtikekar Need to test
+                Type type = Type.GetType(typeName);
+                if (type == null || !type.IsSubclassOf(typeof(ISubmodelElement)))
+                    return null;
+                var sme = Activator.CreateInstance(type) as ISubmodelElement;
+                return sme;
             }
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -138,23 +164,23 @@ namespace AdminShellNS
             {
                 JsonProperty property = base.CreateProperty(member, memberSerialization);
 
-                if (!BlobHasValue && property.DeclaringType == typeof(AdminShell.Blob) &&
+                if (!BlobHasValue && property.DeclaringType == typeof(Blob) &&
                     property.PropertyName == "value")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SubmodelHasElements && property.DeclaringType == typeof(AdminShell.Submodel) &&
+                if (!SubmodelHasElements && property.DeclaringType == typeof(Submodel) &&
                     property.PropertyName == "submodelElements")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!SmcHasValue && property.DeclaringType == typeof(AdminShell.SubmodelElementCollection) &&
+                if (!SmcHasValue && property.DeclaringType == typeof(SubmodelElementCollection) &&
                     property.PropertyName == "value")
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!OpHasVariables && property.DeclaringType == typeof(AdminShell.Operation) &&
+                if (!OpHasVariables && property.DeclaringType == typeof(Operation) &&
                     (property.PropertyName == "in" || property.PropertyName == "out"))
                     property.ShouldSerialize = instance => { return false; };
 
-                if (!AasHasViews && property.DeclaringType == typeof(AdminShell.AdministrationShell) &&
+                if (!AasHasViews && property.DeclaringType == typeof(AssetAdministrationShell) &&
                     property.PropertyName == "views")
                     property.ShouldSerialize = instance => { return false; };
 

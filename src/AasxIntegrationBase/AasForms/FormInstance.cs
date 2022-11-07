@@ -12,8 +12,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
 using AnyUi;
+using Extenstions;
 using Newtonsoft.Json;
 
 /*
@@ -57,21 +60,21 @@ namespace AasxIntegrationBase.AasForms
     public static class FormInstanceHelper
     {
         /// <summary>
-        /// Check if <c>smw.idShort</c>c> contains something like "{0:00}" and iterate index to make it unique
+        /// Check if <c>smw.IdShort</c>c> contains something like "{0:00}" and iterate index to make it unique
         /// </summary>
         public static void MakeIdShortUnique(
-            AdminShell.SubmodelElementWrapperCollection collection, AdminShell.SubmodelElement sme)
+            List<ISubmodelElement> collection, ISubmodelElement sme)
         {
             // access
             if (collection == null || sme == null)
                 return;
 
             // check, if to make idShort unique?
-            if (sme.idShort.Contains("{0"))
+            if (sme.IdShort.Contains("{0"))
             {
-                var newIdShort = collection.IterateIdShortTemplateToBeUnique(sme.idShort, 999);
+                var newIdShort = collection.IterateIdShortTemplateToBeUnique(sme.IdShort, 999);
                 if (newIdShort != null)
-                    sme.idShort = newIdShort;
+                    sme.IdShort = newIdShort;
             }
         }
 
@@ -315,12 +318,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements,
+        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<ISubmodelElement> elements,
             AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // will be a list of newly added elements (for tracing)
-            var res = new AdminShell.SubmodelElementWrapperCollection();
+            var res = new List<ISubmodelElement>();
 
             // each description / instance pair
             foreach (var pair in this)
@@ -333,11 +336,11 @@ namespace AasxIntegrationBase.AasForms
                     foreach (var smw in lst)
                     {
                         // access
-                        if (smw?.submodelElement?.idShort == null)
+                        if (smw?.IdShort == null)
                             continue;
 
                         // check, if to make idShort unique?
-                        FormInstanceHelper.MakeIdShortUnique(elements, smw.submodelElement);
+                        FormInstanceHelper.MakeIdShortUnique(elements, smw);
 
                         // add to tracing
                         res.Add(smw);
@@ -369,7 +372,7 @@ namespace AasxIntegrationBase.AasForms
         /// Instances based on source elements are missing when updating.
         /// </summary>
         [JsonIgnore]
-        protected List<AdminShell.SubmodelElement> InitialSourceElements = null;
+        protected List<ISubmodelElement> InitialSourceElements = null;
 
         /// <summary>
         /// Clears <c>Instances</c>, <c>InitialSourceElements</c> and further dynamically data-
@@ -428,7 +431,7 @@ namespace AasxIntegrationBase.AasForms
         /// the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
         {
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
@@ -444,9 +447,9 @@ namespace AasxIntegrationBase.AasForms
             if (desc.Multiplicity == FormMultiplicity.ZeroToOne || desc.Multiplicity == FormMultiplicity.One)
             {
                 var smw = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
-                if (smw != null && smw.submodelElement != null)
+                if (smw != null)
                 {
-                    var y = desc.CreateInstance(this, smw.submodelElement);
+                    var y = desc.CreateInstance(this, smw);
                     if (y != null)
                         this.SubInstances.Add(y);
                 }
@@ -456,9 +459,9 @@ namespace AasxIntegrationBase.AasForms
             if (desc.Multiplicity == FormMultiplicity.ZeroToMany || desc.Multiplicity == FormMultiplicity.OneToMany)
             {
                 foreach (var smw in sourceElements.FindAllSemanticId(desc.KeySemanticId))
-                    if (smw != null && smw.submodelElement != null)
+                    if (smw != null)
                     {
-                        var y = desc.CreateInstance(this, smw.submodelElement);
+                        var y = desc.CreateInstance(this, smw);
                         if (y != null)
                             this.SubInstances.Add(y);
                     }
@@ -466,7 +469,7 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare list of original source elements
             if (this.InitialSourceElements == null)
-                this.InitialSourceElements = new List<AdminShellV20.SubmodelElement>();
+                this.InitialSourceElements = new List<ISubmodelElement>();
             foreach (var inst in this.SubInstances)
                 if (inst != null && inst is FormInstanceSubmodelElement &&
                     (inst as FormInstanceSubmodelElement).sourceSme != null)
@@ -476,12 +479,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the form description and adds or updates its instances into a list of SubmodelElements.
         /// </summary>
-        public AdminShell.SubmodelElementWrapperCollection AddOrUpdateSameElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+        public List<ISubmodelElement> AddOrUpdateSameElementsToCollection(
+            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             // access
-            var res = new AdminShell.SubmodelElementWrapperCollection();
+            var res = new List<ISubmodelElement>();
             if (this.SubInstances == null || this.workingDesc == null)
                 return null;
 
@@ -512,20 +515,20 @@ namespace AasxIntegrationBase.AasForms
                     // the Same-Instance was already prepared, however it needs to be eventually
                     // filled with the new elements
                     var smecInst = ins as FormInstanceSubmodelElementCollection;
-                    var sourceSmec = smecInst?.sourceSme as AdminShell.SubmodelElementCollection;
+                    var sourceSmec = smecInst?.sourceSme as SubmodelElementCollection;
 
-                    AdminShell.SubmodelElementWrapperCollection newElems = null;
+                    List<ISubmodelElement> newElems = null;
                     bool addMode = false;
                     if (sourceSmec == null)
                     {
                         // will become a NEW SMEC !
-                        newElems = new AdminShell.SubmodelElementWrapperCollection();
+                        newElems = new List<ISubmodelElement>();
                         addMode = true;
                     }
                     else
                     {
                         // will be added to an existing SMEC
-                        newElems = sourceSmec.value;
+                        newElems = sourceSmec.Value;
                         addMode = false;
                     }
 
@@ -534,15 +537,15 @@ namespace AasxIntegrationBase.AasForms
 
                     if (newElems != null && newElems.Count > 0)
                     {
-                        var smec = smecInst?.sme as AdminShell.SubmodelElementCollection;
+                        var smec = smecInst?.sme as SubmodelElementCollection;
 
                         // really add a new instances of the SMEC
                         if (addMode && smecInst != null && smec != null)
                         {
                             // add
-                            if (smec.value == null)
-                                smec.value = new AdminShellV20.SubmodelElementWrapperCollection();
-                            smec.value.AddRange(newElems);
+                            if (smec.Value == null)
+                                smec.Value = new List<ISubmodelElement>();
+                            smec.Value.AddRange(newElems);
 
                             // make smec unique
                             FormInstanceHelper.MakeIdShortUnique(elements, smec);
@@ -762,7 +765,7 @@ namespace AasxIntegrationBase.AasForms
         public static AnyUiGrid RenderAnyUiHead(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
-            AdminShell.Referable rf,
+            IReferable rf,
             int? extraRows = null,
             Func<object, AnyUiLambdaActionBase> plusButtonLambda = null,
             Func<object, AnyUiLambdaActionBase> expandButtonLambda = null)
@@ -785,7 +788,7 @@ namespace AasxIntegrationBase.AasForms
                 Foreground = AnyUiBrushes.DarkBlue,
                 FontSize = 1.3f,
                 Margin = new AnyUiThickness(0, 0, 10, 0),
-                Text = $"{desc?.FormTitle} {"" + rf?.idShort}"
+                Text = $"{desc?.FormTitle} {"" + rf?.IdShort}"
             });
 
             if (desc.FormUrl.HasContent())
@@ -834,7 +837,7 @@ namespace AasxIntegrationBase.AasForms
         public static AnyUiGrid RenderAnyUiRefAttribs(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
-            AdminShell.Referable rf,
+            IReferable rf,
             IFormInstanceParent current,
             Action touch = null,
             bool editIdShort = false,
@@ -853,7 +856,7 @@ namespace AasxIntegrationBase.AasForms
                     rows: 2
                         + (editIdShort ? 1 : 0)
                         + (editDesc ? 1 : 0)
-                        + (editDesc && rf.description?.langString != null ? rf.description.langString.Count : 0),
+                        + (editDesc && rf.Description?.LangStrings != null ? rf.Description.LangStrings.Count : 0),
                     cols: 6,
                     colWidths: new[] { "2:", "60:", "60:", "*", "22:", "2:" }));
 
@@ -871,11 +874,11 @@ namespace AasxIntegrationBase.AasForms
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(g, row, 2, colSpan: 2,
                         margin: new AnyUiThickness(1.0),
-                        text: "" + rf.idShort),
+                        text: "" + rf.IdShort),
                     (o) =>
                     {
                         if (o is string os)
-                            rf.idShort = os;
+                            rf.IdShort = os;
                         touch?.Invoke();
                         return new AnyUiLambdaActionNone();
                     });
@@ -895,7 +898,7 @@ namespace AasxIntegrationBase.AasForms
                     content: "Description:");
 
                 // info text only, if now langauges
-                if (rf.description?.langString == null || rf.description.langString.Count < 1)
+                if (rf.Description?.LangStrings == null || rf.Description.LangStrings.Count < 1)
                     uitk.AddSmallBasicLabelTo(g, row, 2, colSpan: 2,
                         foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
                         verticalAlignment: AnyUiVerticalAlignment.Center,
@@ -921,19 +924,19 @@ namespace AasxIntegrationBase.AasForms
                 row++;
 
                 // list single languages
-                if (rf.description?.langString != null)
-                    foreach (var ls in rf.description.langString)
+                if (rf.Description?.LangStrings != null)
+                    foreach (var ls in rf.Description.LangStrings)
                     {
                         // lang
                         AnyUiUIElement.RegisterControl(
                             uitk.AddSmallComboBoxTo(g, row, 2, margin: new AnyUiThickness(1.0),
                                 horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
-                                text: "" + ls.lang,
+                                text: "" + ls.Language,
                                 items: AasxLanguageHelper.GetLangCodes().ToArray()),
                             (o) =>
                             {
                                 if (o is string os)
-                                    ls.lang = os;
+                                    ls.Language = os;
                                 touch?.Invoke();
                                 return new AnyUiLambdaActionNone();
                             });
@@ -941,11 +944,11 @@ namespace AasxIntegrationBase.AasForms
                         // key
                         AnyUiUIElement.RegisterControl(
                             uitk.AddSmallTextBoxTo(g, row, 3, margin: new AnyUiThickness(1.0),
-                                text: "" + ls.str),
+                                text: "" + ls.Text),
                             (o) =>
                             {
                                 if (o is string os)
-                                    ls.str = os;
+                                    ls.Text = os;
                                 touch?.Invoke();
                                 return new AnyUiLambdaActionNone();
                             });
@@ -959,8 +962,8 @@ namespace AasxIntegrationBase.AasForms
                                     content: "\u2796"),
                                 (o) =>
                                 {
-                                    if (rf.description.langString.Contains(storedLs))
-                                        rf.description.langString.Remove(storedLs);
+                                    if (rf.Description.LangStrings.Contains(storedLs))
+                                        rf.Description.LangStrings.Remove(storedLs);
                                     touch?.Invoke();
                                     return FormInstanceBase.NewLambdaUpdateUi(current);
                                 });
@@ -981,12 +984,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// The Submodel is maintained by the instance
         /// </summary>
-        public AdminShell.Submodel sm = null;
+        public Submodel sm = null;
 
         /// <summary>
         /// This links to a Submodel, from which the instance was read/ edited.
         /// </summary>
-        public AdminShell.Submodel sourceSM = null;
+        public Submodel sourceSM = null;
 
         public FormInstanceListOfDifferent PairInstances = new FormInstanceListOfDifferent();
 
@@ -1008,26 +1011,26 @@ namespace AasxIntegrationBase.AasForms
             }
         }
 
-        public void InitReferable(FormDescSubmodel desc, AdminShell.Submodel source)
+        public void InitReferable(FormDescSubmodel desc, Submodel source)
         {
             if (desc == null)
                 return;
 
             // create sm here! (different than handling of SME!!)
-            this.sm = new AdminShell.Submodel();
+            this.sm = new Submodel("");
             this.sourceSM = source;
 
-            sm.idShort = desc.PresetIdShort;
-            if (source?.idShort != null)
-                sm.idShort = source.idShort;
-            sm.category = desc.PresetCategory;
+            sm.IdShort = desc.PresetIdShort;
+            if (source?.IdShort != null)
+                sm.IdShort = source.IdShort;
+            sm.Category = desc.PresetCategory;
             if (desc.PresetDescription != null)
-                sm.description = new AdminShell.Description(desc.PresetDescription);
-            if (source?.description != null)
-                sm.description = new AdminShell.Description(source.description);
+                sm.Description = new LangStringSet(desc.PresetDescription);
+            if (source?.Description != null)
+                sm.Description = new LangStringSet(source.Description.LangStrings);
 
             if (desc.KeySemanticId != null)
-                sm.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+                sm.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId });
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -1040,7 +1043,7 @@ namespace AasxIntegrationBase.AasForms
         /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
         {
             if (this.PairInstances != null)
                 foreach (var pair in this.PairInstances)
@@ -1052,8 +1055,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements,
+        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<ISubmodelElement> elements,
             AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false,
             bool editSource = false)
@@ -1061,10 +1064,10 @@ namespace AasxIntegrationBase.AasForms
             // SM itself?
             if (this.sm != null && Touched && this.sourceSM != null && editSource)
             {
-                if (this.sm.idShort != null)
-                    this.sourceSM.idShort = "" + this.sm.idShort;
-                if (this.sm.description != null)
-                    this.sourceSM.description = new AdminShell.Description(this.sm.description);
+                if (this.sm.IdShort != null)
+                    this.sourceSM.IdShort = "" + this.sm.IdShort;
+                if (this.sm.Description != null)
+                    this.sourceSM.Description = new LangStringSet(this.sm.Description.LangStrings);
             }
 
             // SM as a set of elements
@@ -1130,29 +1133,29 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// The SME which is maintained by the instance
         /// </summary>
-        public AdminShell.SubmodelElement sme = null;
+        public ISubmodelElement sme = null;
 
         /// <summary>
         /// This links to a SME, from which the instance was read/ edited.
         /// </summary>
-        public AdminShell.SubmodelElement sourceSme = null;
+        public ISubmodelElement sourceSme = null;
 
-        protected void InitReferable(FormDescSubmodelElement desc, AdminShell.SubmodelElement source)
+        protected void InitReferable(FormDescSubmodelElement desc, ISubmodelElement source)
         {
             if (desc == null || sme == null)
                 return;
 
-            sme.idShort = desc.PresetIdShort;
-            if (source?.idShort != null)
-                sme.idShort = source.idShort;
-            sme.category = desc.PresetCategory;
+            sme.IdShort = desc.PresetIdShort;
+            if (source?.IdShort != null)
+                sme.IdShort = source.IdShort;
+            sme.Category = desc.PresetCategory;
             if (desc.PresetDescription != null)
-                sme.description = new AdminShell.Description(desc.PresetDescription);
-            if (source?.description != null)
-                sme.description = new AdminShell.Description(source.description);
+                sme.Description = new LangStringSet(desc.PresetDescription);
+            if (source?.Description != null)
+                sme.Description = new LangStringSet(source.Description.LangStrings);
 
             if (desc.KeySemanticId != null)
-                sme.semanticId = AdminShell.SemanticId.CreateFromKey(desc.KeySemanticId);
+                sme.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId});
         }
 
         /// <summary>
@@ -1166,10 +1169,10 @@ namespace AasxIntegrationBase.AasForms
         {
             if (this.sme != null && Touched && this.sourceSme != null && editSource)
             {
-                if (this.sme.idShort != null)
-                    this.sourceSme.idShort = "" + this.sme.idShort;
-                if (this.sme.description != null)
-                    this.sourceSme.description = new AdminShell.Description(this.sme.description);
+                if (this.sme.IdShort != null)
+                    this.sourceSme.IdShort = "" + this.sme.IdShort;
+                if (this.sme.Description != null)
+                    this.sourceSme.Description = new LangStringSet(this.sme.Description.LangStrings);
             }
             return false;
         }
@@ -1178,12 +1181,12 @@ namespace AasxIntegrationBase.AasForms
         /// Render the instance into a list (right now, exactly one!) of SubmodelElements.
         /// Might be overridden in subclasses.
         /// </summary>
-        public virtual AdminShell.SubmodelElementWrapperCollection AddOrUpdateSmeToCollection(
-            AdminShell.SubmodelElementWrapperCollection collectionNewElements,
+        public virtual List<ISubmodelElement> AddOrUpdateSmeToCollection(
+            List<ISubmodelElement> collectionNewElements,
             AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // typically, there will be only one SME
-            var res = new AdminShell.SubmodelElementWrapperCollection();
+            var res = new List<ISubmodelElement>();
 
             // SME present?
             if (sme != null)
@@ -1195,10 +1198,13 @@ namespace AasxIntegrationBase.AasForms
                 if (doAdd)
                 {
                     // add to elements (this is the real transaction)
-                    collectionNewElements.Add(AdminShell.SubmodelElementWrapper.CreateFor(sme));
+                    //collectionNewElements.Add(SubmodelElementWrapper.CreateFor(sme));
+                    var clonedSme = sme.Copy();
+                    collectionNewElements.Add(clonedSme);
 
                     // add to the tracing information for new elements
-                    res.Add(AdminShell.SubmodelElementWrapper.CreateFor(sme));
+                    //res.Add(SubmodelElementWrapper.CreateFor(sme));
+                    res.Add(clonedSme);
                 }
             }
 
@@ -1221,7 +1227,7 @@ namespace AasxIntegrationBase.AasForms
 
         public FormInstanceSubmodelElementCollection(
             FormInstanceListOfSame parentInstance,
-            FormDescSubmodelElementCollection parentDesc, AdminShell.SubmodelElement source = null)
+            FormDescSubmodelElementCollection parentDesc, ISubmodelElement source = null)
         {
             // way back to description
             this.desc = parentDesc;
@@ -1229,7 +1235,7 @@ namespace AasxIntegrationBase.AasForms
             var smecDesc = this.desc as FormDescSubmodelElementCollection;
 
             // initialize Referable
-            var smec = new AdminShell.SubmodelElementCollection();
+            var smec = new SubmodelElementCollection();
             this.sme = smec;
             InitReferable(parentDesc, source);
 
@@ -1244,13 +1250,13 @@ namespace AasxIntegrationBase.AasForms
 
             // check, if a source is present
             this.sourceSme = source;
-            var smecSource = this.sourceSme as AdminShell.SubmodelElementCollection;
+            var smecSource = this.sourceSme as SubmodelElementCollection;
             if (smecSource != null)
             {
                 if (this.PairInstances != null)
                     foreach (var pair in this.PairInstances)
                     {
-                        pair?.instances?.PresetInstancesBasedOnSource(smecSource.value);
+                        pair?.instances?.PresetInstancesBasedOnSource(smecSource.Value);
                     }
             }
 
@@ -1273,8 +1279,8 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
 
-        public override AdminShell.SubmodelElementWrapperCollection AddOrUpdateSmeToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+        public override List<ISubmodelElement> AddOrUpdateSmeToCollection(
+            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             // SMEC as Refrable
@@ -1293,7 +1299,7 @@ namespace AasxIntegrationBase.AasForms
         /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(AdminShell.SubmodelElementWrapperCollection sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
         {
             if (this.PairInstances != null)
                 foreach (var pair in this.PairInstances)
@@ -1305,8 +1311,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public AdminShell.SubmodelElementWrapperCollection AddOrUpdateDifferentElementsToCollection(
-            AdminShell.SubmodelElementWrapperCollection elements, AdminShellPackageEnv packageEnv = null,
+        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             if (this.PairInstances != null)
@@ -1364,35 +1370,36 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceProperty(
             FormInstanceListOfSame parentInstance, FormDescProperty parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var p = new AdminShell.Property();
+            var p = new Property(DataTypeDefXsd.String);
             this.sme = p;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var pSource = this.sourceSme as AdminShell.Property;
+            var pSource = this.sourceSme as Property;
             if (pSource != null)
             {
                 // take over
-                p.valueType = pSource.valueType;
-                p.value = pSource.value;
+                p.ValueType = pSource.ValueType;
+                p.Value = pSource.Value;
             }
             else
             {
                 // some more preferences
                 if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.valueType = parentDesc.allowedValueTypes[0];
+                    //p.ValueType = parentDesc.allowedValueTypes[0];
+                    p.ValueType = DataTypeDefXsd.String;
 
                 if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
                 {
-                    p.value = parentDesc.presetValue;
+                    p.Value = parentDesc.presetValue;
                     // immediately set touched in order to have this value saved
                     this.Touch();
                 }
@@ -1420,12 +1427,12 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var p = this.sme as AdminShell.Property;
-            var pSource = this.sourceSme as AdminShell.Property;
+            var p = this.sme as Property;
+            var pSource = this.sourceSme as Property;
             if (p != null && Touched && pSource != null && editSource)
             {
-                pSource.valueType = p.valueType;
-                pSource.value = p.value;
+                pSource.ValueType = p.ValueType;
+                pSource.Value = p.Value;
                 return false;
             }
             return true;
@@ -1439,23 +1446,23 @@ namespace AasxIntegrationBase.AasForms
         {
             // access to master
             var pMasterInst = masterInst as FormInstanceProperty;
-            var pMaster = pMasterInst?.sme as AdminShell.Property;
-            if (pMaster?.value == null)
+            var pMaster = pMasterInst?.sme as Property;
+            if (pMaster?.Value == null)
                 return;
 
             // accues to this
-            var pThis = this.sme as AdminShell.Property;
+            var pThis = this.sme as Property;
             if (pThis == null)
                 return;
 
             // desc of this
             var pDesc = this.desc as FormDescProperty;
             if (pDesc == null || pDesc.valueFromMasterValue == null ||
-                !pDesc.valueFromMasterValue.ContainsKey(pMaster.value.Trim()))
+                !pDesc.valueFromMasterValue.ContainsKey(pMaster.Value.Trim()))
                 return;
 
             // simply take value
-            pThis.value = pDesc.valueFromMasterValue[pMaster.value.Trim()];
+            pThis.Value = pDesc.valueFromMasterValue[pMaster.Value.Trim()];
             this.Touch();
 
             // refresh
@@ -1465,13 +1472,13 @@ namespace AasxIntegrationBase.AasForms
 #endif
             if (MainControl is AnyUiTextBox mtb)
             {
-                mtb.Text = pThis.value;
+                mtb.Text = pThis.Value;
                 mtb.Touch();
             }
 
             if (MainControl is AnyUiComboBox mcb && mcb.IsEditable == true)
             {
-                mcb.Text = pThis.value;
+                mcb.Text = pThis.Value;
                 mcb.Touch();
             }
         }
@@ -1483,7 +1490,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var prop = sme as AdminShell.Property;
+            var prop = sme as Property;
             var pDesc = desc as FormDescProperty;
             if (prop == null || pDesc == null)
                 return;
@@ -1518,7 +1525,7 @@ namespace AasxIntegrationBase.AasForms
                             if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
                             {
                                 Touch();
-                                prop.value = "" + items[idx];
+                                prop.Value = "" + items[idx];
 
                                 // dependent values
                                 parentInstance?.TriggerSlaveEvents(this, Index);
@@ -1538,7 +1545,7 @@ namespace AasxIntegrationBase.AasForms
                     if (pDesc.valueFromComboBoxIndex != null && pDesc.valueFromComboBoxIndex.Length >= 1)
                     {
                         for (int i = 0; i < pDesc.valueFromComboBoxIndex.Length; i++)
-                            if (pDesc.valueFromComboBoxIndex[i].Trim() == prop.value)
+                            if (pDesc.valueFromComboBoxIndex[i].Trim() == prop.Value)
                             {
                                 mcb2.SelectedIndex = i;
                                 break;
@@ -1547,7 +1554,7 @@ namespace AasxIntegrationBase.AasForms
                     else
                     {
                         // editable combo box, initialize normal
-                        mcb2.Text = "" + prop.value;
+                        mcb2.Text = "" + prop.Value;
                     }
                 }
             }
@@ -1556,11 +1563,11 @@ namespace AasxIntegrationBase.AasForms
                 MainControl = AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(g, 0, 1,
                     margin: new AnyUiThickness(0, 2, 0, 2),
-                    text: "" + prop.value),
+                    text: "" + prop.Value),
                     (o) =>
                     {
                         if (o is string os)
-                            prop.value = os;
+                            prop.Value = os;
                         Touch();
                         return new AnyUiLambdaActionNone();
                     });
@@ -1572,24 +1579,24 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceMultiLangProp(
             FormInstanceListOfSame parentInstance, FormDescMultiLangProp parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var mlp = new AdminShell.MultiLanguageProperty();
+            var mlp = new MultiLanguageProperty();
             this.sme = mlp;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var mlpSource = this.sourceSme as AdminShell.MultiLanguageProperty;
+            var mlpSource = this.sourceSme as MultiLanguageProperty;
             if (mlpSource != null)
             {
                 // take over
-                mlp.value = new AdminShell.LangStringSet(mlpSource.value);
+                mlp.Value = new LangStringSet(mlpSource.Value.LangStrings);
             }
 
             // create user control
@@ -1613,11 +1620,11 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var mlp = this.sme as AdminShell.MultiLanguageProperty;
-            var mlpSource = this.sourceSme as AdminShell.MultiLanguageProperty;
+            var mlp = this.sme as MultiLanguageProperty;
+            var mlpSource = this.sourceSme as MultiLanguageProperty;
             if (mlp != null && Touched && mlpSource != null && editSource)
             {
-                mlpSource.value = new AdminShell.LangStringSet(mlp.value);
+                mlpSource.Value = new LangStringSet(mlp.Value.LangStrings);
                 return false;
             }
             return true;
@@ -1630,7 +1637,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var mlp = sme as AdminShell.MultiLanguageProperty;
+            var mlp = sme as MultiLanguageProperty;
             if (mlp == null)
                 return;
 
@@ -1642,7 +1649,7 @@ namespace AasxIntegrationBase.AasForms
             //   LANG2 VAL2        [-]
 
             var g = view.Add(
-                uitk.AddSmallGrid(rows: 1 + mlp.value.Count, cols: 5,
+                uitk.AddSmallGrid(rows: 1 + mlp.Value.LangStrings.Count, cols: 5,
                     colWidths: new[] { "2:", "60:", "*", "23:", "2:" }));
 
             // Label in 1st row
@@ -1659,15 +1666,15 @@ namespace AasxIntegrationBase.AasForms
                         content: "\u2795"),
                         (o) =>
                         {
-                            if (mlp.value?.langString == null)
-                                mlp.value = new AdminShell.LangStringSet();
-                            mlp.value.langString.Add(new AdminShell.LangStr());
+                            if (mlp.Value?.LangStrings == null)
+                                mlp.Value = new LangStringSet(new List<LangString>());
+                            mlp.Value.LangStrings.Add(new LangString("",""));
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
 
             // no content? .. info on 1st row
-            if (mlp.value?.langString == null || mlp.value.Count < 1)
+            if (mlp.Value?.LangStrings == null || mlp.Value.LangStrings.Count < 1)
             {
                 uitk.AddSmallBasicLabelTo(g, 0, 2,
                     foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
@@ -1679,7 +1686,7 @@ namespace AasxIntegrationBase.AasForms
             // simply render the langStrs
 
             int row = 0;
-            foreach (var ls in mlp.value.langString)
+            foreach (var ls in mlp.Value.LangStrings)
             {
                 // row by row
                 row++;
@@ -1688,12 +1695,12 @@ namespace AasxIntegrationBase.AasForms
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallComboBoxTo(g, row, 1, margin: new AnyUiThickness(1.0),
                         horizontalAlignment: AnyUiHorizontalAlignment.Stretch,
-                        text: "" + ls.lang,
+                        text: "" + ls.Language,
                         items: AasxLanguageHelper.GetLangCodes().ToArray()),
                     (o) =>
                     {
                         if (o is string os)
-                            ls.lang = os;
+                            ls.Language = os;
                         Touch();
                         return new AnyUiLambdaActionNone();
                     });
@@ -1701,11 +1708,11 @@ namespace AasxIntegrationBase.AasForms
                 // key
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallTextBoxTo(g, row, 2, margin: new AnyUiThickness(1.0),
-                        text: "" + ls.str),
+                        text: "" + ls.Text),
                     (o) =>
                     {
                         if (o is string os)
-                            ls.str = os;
+                            ls.Text = os;
                         Touch();
                         return new AnyUiLambdaActionNone();
                     });
@@ -1719,8 +1726,8 @@ namespace AasxIntegrationBase.AasForms
                             content: "\u2796"),
                         (o) =>
                         {
-                            if (mlp.value.langString.Contains(storedLs))
-                                mlp.value.langString.Remove(storedLs);
+                            if (mlp.Value.LangStrings.Contains(storedLs))
+                                mlp.Value.LangStrings.Remove(storedLs);
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
@@ -1738,24 +1745,24 @@ namespace AasxIntegrationBase.AasForms
 
         public FormInstanceFile(
             FormInstanceListOfSame parentInstance, FormDescFile parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Refwrable
-            var file = new AdminShell.File();
+            var file = new File("");
             this.sme = file;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var fileSource = this.sourceSme as AdminShell.File;
+            var fileSource = this.sourceSme as File;
             if (fileSource != null)
             {
                 // take over
-                file.value = fileSource.value;
+                file.Value = fileSource.Value;
             }
 
             // create user control
@@ -1781,8 +1788,8 @@ namespace AasxIntegrationBase.AasForms
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
             // access
-            var file = this.sme as AdminShell.File;
-            var fileSource = this.sourceSme as AdminShell.File;
+            var file = this.sme as File;
+            var fileSource = this.sourceSme as File;
 
             // need to do more than the base implementation!
             if (file != null)
@@ -1807,7 +1814,7 @@ namespace AasxIntegrationBase.AasForms
                             packageEnv.PrepareSupplementaryFileParameters(ref targetPath, ref targetFn);
 
                             // save
-                            file.value = targetPath + targetFn;
+                            file.Value = targetPath + targetFn;
 
                             if (addFilesToPackage)
                             {
@@ -1828,7 +1835,7 @@ namespace AasxIntegrationBase.AasForms
             // now, may be edit instead of new
             if (file != null && Touched && fileSource != null && editSource)
             {
-                fileSource.value = file.value;
+                fileSource.Value = file.Value;
                 return false;
             }
             return true;
@@ -1841,7 +1848,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var file = sme as AdminShell.File;
+            var file = sme as File;
             if (file == null)
                 return;
 
@@ -1856,8 +1863,8 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare file display
             var finfo = "Drag a file to register loading it!";
-            if (file.value.HasContent())
-                finfo = "File current: " + file.value;
+            if (file.Value.HasContent())
+                finfo = "File current: " + file.Value;
             if (FileToLoad != null)
                 finfo = "File to load: " + FileToLoad;
 
@@ -1883,7 +1890,7 @@ namespace AasxIntegrationBase.AasForms
                         content: "Clear"),
                         (o) =>
                         {
-                            file.value = "";
+                            file.Value = "";
                             FileToLoad = null;
                             Touch();
                             return NewLambdaUpdateUi(this);
@@ -1923,24 +1930,24 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceReferenceElement(
             FormInstanceListOfSame parentInstance, FormDescReferenceElement parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new AdminShell.ReferenceElement();
+            var re = new ReferenceElement();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            var reSource = this.sourceSme as ReferenceElement;
             if (reSource != null)
             {
                 // take over
-                re.value = new AdminShell.Reference(reSource.value);
+                re.Value = new Reference(ReferenceTypes.ModelReference, reSource.Value.Keys);
             }
 
             // create user control
@@ -1964,11 +1971,11 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as AdminShell.ReferenceElement;
-            var reSource = this.sourceSme as AdminShell.ReferenceElement;
+            var re = this.sme as ReferenceElement;
+            var reSource = this.sourceSme as ReferenceElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.value = new AdminShell.Reference(re.value);
+                reSource.Value = new Reference(ReferenceTypes.ModelReference, re.Value.Keys);
                 return false;
             }
             return true;
@@ -1981,7 +1988,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var refe = sme as AdminShell.ReferenceElement;
+            var refe = sme as ReferenceElement;
             if (refe == null)
                 return;
 
@@ -1996,10 +2003,10 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare reference display
             var info = "(no reference set)";
-            if (refe.value != null)
+            if (refe.Value != null)
                 info = "(no Keys)";
-            if (refe.value?.Keys != null && refe.value.Keys.Count > 0)
-                info = refe.value.ToString(format: 1, delimiter: Environment.NewLine);
+            if (refe.Value?.Keys != null && refe.Value.Keys.Count > 0)
+                info = refe.Value.ToStringExtended(delimiter: System.Environment.NewLine);
 
             // Use a drop box as info; but now allow drop
             uitk.AddSmallDropBoxTo(
@@ -2015,7 +2022,7 @@ namespace AasxIntegrationBase.AasForms
                         content: "Clear"),
                         (o) =>
                         {
-                            refe.value = null;
+                            refe.Value = null;
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
@@ -2032,7 +2039,8 @@ namespace AasxIntegrationBase.AasForms
                             tempI.PushAndAdaptEventFromTop(
                                 new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                 {
-                                    filterEntities = AdminShell.Key.AllElements,
+                                    //filterEntities = Key.AllElements, //TODO: jtikekar
+                                    filterEntities = "All",
                                     showAuxPackage = true,
                                     showRepoFiles = true
                                 },
@@ -2041,7 +2049,7 @@ namespace AasxIntegrationBase.AasForms
                                     if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                                     {
                                         // do it
-                                        refe.value = AdminShell.Reference.CreateNew(rsel.resultKeys);
+                                        refe.Value = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
                                         Touch();
 
                                         // send event to re-render
@@ -2058,25 +2066,23 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceRelationshipElement(
             FormInstanceListOfSame parentInstance, FormDescRelationshipElement parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new AdminShell.RelationshipElement();
-            this.sme = re;
-            InitReferable(parentDesc, source);
+            
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            var reSource = this.sourceSme as RelationshipElement;
             if (reSource != null)
             {
-                // take over
-                re.first = new AdminShell.Reference(reSource.first);
-                re.second = new AdminShell.Reference(reSource.second);
+                var re = new RelationshipElement(reSource.First, reSource.Second);
+                this.sme = re;
+                InitReferable(parentDesc, source);
             }
 
             // create user control
@@ -2100,12 +2106,12 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as AdminShell.RelationshipElement;
-            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            var re = this.sme as RelationshipElement;
+            var reSource = this.sourceSme as RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.first = new AdminShell.Reference(re.first);
-                reSource.second = new AdminShell.Reference(re.second);
+                reSource.First = re.First;
+                reSource.Second = re.Second;
                 return false;
             }
             return true;
@@ -2118,7 +2124,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var rele = sme as AdminShell.RelationshipElement;
+            var rele = sme as RelationshipElement;
             if (rele == null)
                 return;
 
@@ -2138,10 +2144,10 @@ namespace AasxIntegrationBase.AasForms
             for (int i = 0; i < 2; i++)
             {
                 // selektor
-                var valGet = (i == 0) ? rele.first : rele.second;
-                Action<AdminShell.Reference> valSet = (rf) => rele.first = rf;
+                var valGet = (i == 0) ? rele.First : rele.Second;
+                Action<Reference> valSet = (rf) => rele.First = rf;
                 if (i == 1)
-                    valSet = (rf) => rele.second = rf;
+                    valSet = (rf) => rele.Second = rf;
                 var name = (new[] { "first", "second" })[i];
                 var row = 3 * i;
 
@@ -2157,7 +2163,7 @@ namespace AasxIntegrationBase.AasForms
                 if (valGet != null)
                     info = "(no Keys)";
                 if (valGet?.Keys != null && valGet.Keys.Count > 0)
-                    info = valGet.ToString(format: 1, delimiter: Environment.NewLine);
+                    info = valGet.ToStringExtended(delimiter: System.Environment.NewLine);
 
                 // Use a drop box as info; but now allow drop
                 uitk.AddSmallDropBoxTo(
@@ -2190,7 +2196,8 @@ namespace AasxIntegrationBase.AasForms
                                 tempI.PushAndAdaptEventFromTop(
                                     new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                     {
-                                        filterEntities = AdminShell.Key.AllElements,
+                                        //filterEntities = Key.AllElements, //TODO: jtikekar
+                                        filterEntities = "All",
                                         showAuxPackage = true,
                                         showRepoFiles = true
                                     },
@@ -2200,7 +2207,7 @@ namespace AasxIntegrationBase.AasForms
                                             && rsel.resultKeys != null)
                                         {
                                             // do it
-                                            valSet(AdminShell.Reference.CreateNew(rsel.resultKeys));
+                                            valSet(new Reference(ReferenceTypes.ModelReference, rsel.resultKeys));
                                             Touch();
 
                                             // send event to re-render
@@ -2219,20 +2226,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceCapability(
             FormInstanceListOfSame parentInstance, FormDescCapability parentDesc,
-            AdminShell.SubmodelElement source = null, bool deepCopy = false)
+            ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new AdminShell.Capability();
+            var re = new Capability();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as AdminShell.Capability;
+            var reSource = this.sourceSme as Capability;
             if (reSource != null)
             {
                 // take over
@@ -2260,12 +2267,12 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as AdminShell.RelationshipElement;
-            var reSource = this.sourceSme as AdminShell.RelationshipElement;
+            var re = this.sme as RelationshipElement;
+            var reSource = this.sourceSme as RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.first = new AdminShell.Reference(re.first);
-                reSource.second = new AdminShell.Reference(re.second);
+                reSource.First = re.First;
+                reSource.Second = re.Second;
                 return false;
             }
             return true;

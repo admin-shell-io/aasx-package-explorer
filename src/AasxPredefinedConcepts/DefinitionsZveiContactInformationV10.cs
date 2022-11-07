@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -27,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiContactInformationV10 Static = new ZveiContactInformationV10();
 
-        public AdminShell.Submodel
+        public Submodel
             SM_ContactInformation;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
         CD_ContactInformation,
         CD_RolOfConPer,
         CD_NatCod,
@@ -74,7 +75,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "ZVEI Contact Information (V1.0)";
 
-            // Referable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(),
                 "AasxPredefinedConcepts.Resources." + "ZveiContactInformationV10.json");

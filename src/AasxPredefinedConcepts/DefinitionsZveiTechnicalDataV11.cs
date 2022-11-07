@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -27,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiTechnicalDataV11 Static = new ZveiTechnicalDataV11();
 
-        public AdminShell.Submodel
+        public Submodel
             SM_TechnicalData;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_GeneralInformation,
             CD_ManufacturerName,
             CD_ManufacturerLogo,
@@ -56,7 +57,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Generic Frame for Technical Data for Industrial Equipment (ZVEI) v1.1";
 
-            // Referable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTechnicalDataV11.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiTechnicalDataV11), useFieldNames: true);

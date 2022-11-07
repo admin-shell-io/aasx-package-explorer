@@ -10,13 +10,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 // to be disabled for AASX Server
 #define UseMarkup
 
+using AasxIntegrationBase.MiniMarkup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AasxIntegrationBase.MiniMarkup;
-using AdminShellNS;
 
 namespace AasxIntegrationBase.AdminShellEvents
 {

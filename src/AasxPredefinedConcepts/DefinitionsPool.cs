@@ -13,8 +13,10 @@ using System.Linq;
 using System.Security.Authentication.ExtendedProtection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
+using Extenstions;
 
 #nullable enable
 
@@ -39,7 +41,7 @@ namespace AasxPredefinedConcepts
 
     public class DefinitionsPoolReferableEntity : DefinitionsPoolEntityBase
     {
-        public AdminShell.Referable? Ref = null;
+        public IReferable? Ref = null;
         public string Name = "";
 
         public override string DisplayType
@@ -50,21 +52,21 @@ namespace AasxPredefinedConcepts
             }
         }
 
-        public override string DisplayName { get { return (Ref != null) ? Ref.idShort : ""; } }
+        public override string DisplayName { get { return (Ref != null) ? Ref.IdShort : ""; } }
 
         public override string DisplayId
         {
             get
             {
-                if (Ref is AdminShell.Identifiable id)
-                    return "" + id.identification?.ToString();
+                if (Ref is IIdentifiable id)
+                    return "" + id.Id?.ToString();
                 return "";
             }
         }
 
         public DefinitionsPoolReferableEntity() { }
 
-        public DefinitionsPoolReferableEntity(AdminShell.Referable? Ref, string Domain = "", string Name = "")
+        public DefinitionsPoolReferableEntity(IReferable? Ref, string Domain = "", string Name = "")
         {
             this.Domain = Domain;
             this.Name = Name;
@@ -167,13 +169,13 @@ namespace AasxPredefinedConcepts
         // Methods
         //
 
-        public void IndexReferables(string Domain, IEnumerable<AdminShell.Referable> indexRef)
+        public void IndexReferables(string Domain, IEnumerable<IReferable> indexRef)
         {
             foreach (var ir in indexRef)
             {
                 if (ir == null)
                     continue;
-                this.Add(new DefinitionsPoolReferableEntity(ir, Domain, ir.idShort));
+                this.Add(new DefinitionsPoolReferableEntity(ir, Domain, ir.IdShort));
             }
         }
 

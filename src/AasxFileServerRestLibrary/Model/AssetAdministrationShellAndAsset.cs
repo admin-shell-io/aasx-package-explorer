@@ -24,12 +24,12 @@ namespace IO.Swagger.Model
         /// Gets or sets AssetAdministrationShell
         /// </summary>
         [DataMember(Name = "aas")]
-        public AdminShell.AdministrationShell aas;
+        public AasCore.Aas3_0_RC02.AssetAdministrationShell aas;
 
         /// <summary>
         /// Gets or sets Asset
         /// </summary>
         [DataMember(Name = "asset")]
-        public AdminShell.Asset asset;
+        public AasCore.Aas3_0_RC02.AssetInformation asset;
     }
 }

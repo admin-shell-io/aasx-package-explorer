@@ -10,10 +10,13 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using AasCore.Aas3_0_RC02;
 using AasxPredefinedConcepts;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
+using NJsonSchema.Validation;
+using Environment = AasCore.Aas3_0_RC02.Environment;
 
 namespace AasxToolkit
 {
@@ -26,10 +29,10 @@ namespace AasxToolkit
             InputFilePrefs prefs = new InputFilePrefs();
             try
             {
-                if (preffn != null && preffn != "*" && File.Exists(preffn))
+                if (preffn != null && preffn != "*" && System.IO.File.Exists(preffn))
                 {
                     Log.WriteLine(2, "Opening {0} for reading preferences ..", preffn);
-                    var init = File.ReadAllText(preffn);
+                    var init = System.IO.File.ReadAllText(preffn);
                     Log.WriteLine(2, "Parsing preferences ..");
                     prefs = JsonConvert.DeserializeObject<InputFilePrefs>(init);
                 }
@@ -79,7 +82,7 @@ namespace AasxToolkit
     { 'fn' : 'data\\Secure-Retrieval-of-CAE-Data_EN.pdf',   'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Secure retrieval of CAE data',         'en',   'V3.6b'  ] },
     { 'fn' : 'data\\verwaltungsschale-praxis-flyer_DE.pdf', 'submodel' : 'docu',    'targetdir' : '/aasx/documentation/',   'args' : [ '03-02', 'Operation',                 '0173-1#02-ZWX727#001', 'VWS/ AAS in praxis',                   'de,en',   '1403a'  ] },
 ],  'webrecs' : [
-    { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-Asset-Administration-Shell-Part1.pdf?__blob=publicationFile&v=5',
+    { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/Details-of-the-AssetInformation-Administration-Shell-Part1.pdf?__blob=publicationFile&v=5',
                                                             'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'AAS in details V2.0 specification',    'en', '2013-05a'  ] },
     { 'url' : 'https://www.plattform-i40.de/PI40/Redaktion/EN/Downloads/Publikation/wg3-trilaterale-coop.pdf?__blob=publicationFile&v=4',
                                                             'submodel' : 'docu',                                            'args' : [ '03-04', 'Maintenance, Inspection',   '0173-1#02-ZWX725#001', 'Paris Declaration',                    'fr', '2013-05a'  ] },
@@ -93,7 +96,7 @@ namespace AasxToolkit
             catch (Exception ex)
             {
                 Console.Out.Write("While parsing preferences: " + ex.Message);
-                Environment.Exit(-1);
+                System.Environment.Exit(-1);
             }
 
             // REPOSITORY
@@ -106,30 +109,34 @@ namespace AasxToolkit
             catch (Exception ex)
             {
                 Console.Out.Write("While accessing IRI repository: " + ex.Message);
-                Environment.Exit(-1);
+                System.Environment.Exit(-1);
             }
 
             // AAS ENV
-            var aasenv1 = new AdminShellV20.AdministrationShellEnv();
+            var aasenv1 = new Environment();
 
             try
             {
 
                 // ASSET
-                var asset1 = new AdminShellV20.Asset("Asset_3s7plfdrs35");
-                aasenv1.Assets.Add(asset1);
-                asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
-                asset1.AddDescription("en", "USB Stick");
-                asset1.AddDescription("de", "USB Speichereinheit");
+                //var asset1 = new AssetInformation("Asset_3s7plfdrs35");
+                var asset1 = new AssetInformation(AssetKind.Instance);
+                //aasenv1.Assets.Add(asset1);
+                //TODO:jtikekar 
+                //asset1.SetIdentification("IRI", "http://example.com/3s7plfdrs35", "3s7plfdrs35");
+                //No Description in AssetInformation
+                //asset1.AddDescription("en", "USB Stick");
+                //asset1.AddDescription("de", "USB Speichereinheit");
 
                 // CAD
                 Log.WriteLine(2, "Creating submodel CAD ..");
                 var subCad = CreateSubmodelCad(prefs, repo, aasenv1);
 
                 // Test Hashing
-                Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
-                subCad.category += "!";
-                Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
+                //TODO:jtikekar Uncomment
+                //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
+                //subCad.Category += "!";
+                //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
 
                 // DOCU
                 Log.WriteLine(2, "Creating submodel DOCU ..");
@@ -151,38 +158,41 @@ namespace AasxToolkit
                 Log.WriteLine(2, "Creating submodel BOM for ECAD..");
                 var subBOM = CreateSubmodelBOMforECAD(repo, aasenv1);
 
-                Log.WriteLine(2, "Creating submodel BOM for Asset Structure..");
+                Log.WriteLine(2, "Creating submodel BOM for AssetInformation Structure..");
                 var subBOM2 = CreateSubmodelBOMforAssetStructure(repo, aasenv1);
 
                 // VIEW1
-                var view1 = CreateStochasticViewOnSubmodels(
-                    new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
+                //Viw Not supported in V3
+                //var view1 = CreateStochasticViewOnSubmodels(
+                //    new[] { subCad, subDocu, subDatasheet, subVars }, "View1");
 
                 // ADMIN SHELL
                 Log.WriteLine(2, "Create AAS ..");
-                var aas1 = AdminShellV20.AdministrationShell.CreateNew(
-                    "AAS_3s7plfdrs35", "IRI", repo.CreateOneTimeId(), "1", "0");
-                aas1.derivedFrom = new AdminShellV20.AssetAdministrationShellRef(
-                    new AdminShellV20.Key("AssetAdministrationShell", false, "IRI",
-                        "www.admin-shell.io/aas/sample-series-aas/1/1"));
-                aasenv1.AdministrationShells.Add(aas1);
-                aas1.assetRef = asset1.GetAssetReference();
+                var aas1 = new AssetAdministrationShell(repo.CreateOneTimeId(), new AssetInformation(AssetKind.Instance), idShort: "AAS_3s7plfdrs35", administration: new AdministrativeInformation(version: "1", revision: "0"));
+
+                aas1.DerivedFrom = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.AssetAdministrationShell, "www.admin-shell.io/aas/sample-series-aas/1/1") });
+
+                aasenv1.AssetAdministrationShells.Add(aas1);
+                aas1.AssetInformation = asset1;
 
                 // Link things together
                 Log.WriteLine(2, "Linking entities to AAS ..");
-                aas1.submodelRefs.Add(subCad.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subDocu.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subDatasheet.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subEng.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subVars.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.submodelRefs.Add(subBOM2.GetReference() as AdminShellV20.SubmodelRef);
-                aas1.AddView(view1);
+                if(aas1.Submodels == null)
+                {
+                    aas1.Submodels = new List<Reference>();
+                }
+                aas1.Submodels.Add(subCad.GetReference());
+                aas1.Submodels.Add(subDocu.GetReference());
+                aas1.Submodels.Add(subDatasheet.GetReference());
+                aas1.Submodels.Add(subEng.GetReference());
+                aas1.Submodels.Add(subVars.GetReference());
+                aas1.Submodels.Add(subBOM.GetReference());
+                aas1.Submodels.Add(subBOM2.GetReference());
             }
             catch (Exception ex)
             {
                 Console.Out.Write("While building AAS: {0} at {1}", ex.Message, ex.StackTrace);
-                Environment.Exit(-1);
+                System.Environment.Exit(-1);
             }
 
             //
@@ -210,7 +220,7 @@ namespace AasxToolkit
             catch (Exception ex)
             {
                 Console.Out.Write("While building OPC package: {0} at {1}", ex.Message, ex.StackTrace);
-                Environment.Exit(-1);
+                System.Environment.Exit(-1);
             }
 
             // final
@@ -218,53 +228,51 @@ namespace AasxToolkit
             return package;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelCad(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelCad(
+            InputFilePrefs prefs, IriIdentifierRepository repo, Environment aasenv)
         {
 
             // CONCEPTS
-            var cdGroup = AdminShellV20.ConceptDescription.CreateNew(
-                "CadItem", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"));
+            var cdGroup = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"), idShort: "CadItem");
             aasenv.ConceptDescriptions.Add(cdGroup);
-            cdGroup.SetIEC61360Spec(
-                preferredNames: new[] { "de", "CAD Dateieinheit", "en", "CAD file item" },
-                shortName: "CadItem",
-                unit: "",
-                definition: new[] {
-                    "de", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
-                    "en", "Collection of properties, which make a file for a CAD system accessible." }
-            );
+            //TODO:jtikekar Temporarily Commented
+            //cdGroup.SetIEC61360Spec(
+            //    preferredNames: new[] { "de", "CAD Dateieinheit", "en", "CAD file item" },
+            //    shortName: "CadItem",
+            //    unit: "",
+            //    definition: new[] {
+            //        "de", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
+            //        "en", "Collection of properties, which make a file for a CAD system accessible." }
+            //);
 
-            var cdFile = AdminShellV20.ConceptDescription.CreateNew(
-                "File", "IRI", repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"));
+            var cdFile = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"), idShort:"File");
             aasenv.ConceptDescriptions.Add(cdFile);
-            cdFile.SetIEC61360Spec(
-                preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
-                shortName: "File",
-                unit: "",
-                definition: new[] {
-                    "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
-            );
+            //TODO:jtikekar Temporarily Commented
+            //cdFile.SetIEC61360Spec(
+            //    preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
+            //    shortName: "File",
+            //    unit: "",
+            //    definition: new[] {
+            //        "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
+            //);
 
-            var cdFormat = AdminShellV20.ConceptDescription.CreateNew(
-                "FileFormat", AdminShellV20.Identification.IRDI, "0173-1#02-ZAA120#007");
+            var cdFormat = new ConceptDescription("0173-1#02-ZAA120#007", idShort:"FileFormat");
             aasenv.ConceptDescriptions.Add(cdFormat);
-            cdFormat.SetIEC61360Spec(
-                preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
-                shortName: "FileFormat",
-                unit: "",
-                definition: new[] {
-                    "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
-                    "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
-            );
+            //TODO:jtikekar Temporarily Removed
+            //cdFormat.SetIEC61360Spec(
+            //    preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
+            //    shortName: "FileFormat",
+            //    unit: "",
+            //    definition: new[] {
+            //        "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
+            //        "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
+            //);
 
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "CAD";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "CAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(
-                AdminShellV20.Key.CreateNew(
-                    "Submodel", false, "IRI", "http://example.com/id/type/submodel/cad/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/cad/1/1") });
 
             // for each cad file in prefs
             int ndx = 0;
@@ -279,33 +287,26 @@ namespace AasxToolkit
                 ndx++;
 
                 // GROUP
-                var propGroup = AdminShellV20.SubmodelElementCollection.CreateNew(
-                    $"CadItem{ndx:D2}", "PARAMETER",
-                    AdminShellV20.Key.GetFromRef(cdGroup.GetCdReference()));
+                var propGroup = new SubmodelElementCollection(category: "PARAMETER", idShort: $"CadItem{ndx:D2}", semanticId: cdGroup.GetCdReference());
                 sub1.Add(propGroup);
 
                 // FILE
-                var propFile = AdminShellV20.File.CreateNew(
-                    "File", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFile.GetCdReference()));
+                var propFile = new AasCore.Aas3_0_RC02.File("", idShort: "File", category: "PARAMETER", semanticId: cdFile.GetCdReference());
                 propGroup.Add(propFile);
-                propFile.mimeType = AdminShellPackageEnv.GuessMimeType(fr.fn);
-                propFile.value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
+                propFile.ContentType = AdminShellPackageEnv.GuessMimeType(fr.fn);
+                propFile.Value = "" + fr.targetdir.Trim() + Path.GetFileName(fr.fn);
 
                 // FILEFORMAT
-                var propType = AdminShellV20.ReferenceElement.CreateNew(
-                    "FileFormat", "PARAMETER", AdminShellV20.Key.GetFromRef(cdFormat.GetCdReference()));
+                var propType = new ReferenceElement(idShort: "FileFormat", category: "PARAMETER", semanticId: cdFormat.GetCdReference());
                 propGroup.Add(propType);
-                propType.value = AdminShellV20.Reference.CreateNew(
-                    AdminShellV20.Key.CreateNew(
-                        "GlobalReference", false,
-                        AdminShellV20.Identification.IRDI, "" + fr.args[0]));
+                propType.Value = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "" + fr.args[0]) });
             }
 
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelDocumentationBasedOnVDI2770(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelDocumentationBasedOnVDI2770(
+            InputFilePrefs prefs, IriIdentifierRepository repo, Environment aasenv)
         {
             // use pre-definitions
             var preDefLib = new DefinitionsVDI2770();
@@ -313,12 +314,12 @@ namespace AasxToolkit
 
             // add concept descriptions
             foreach (var rf in preDefs.GetAllReferables())
-                if (rf is AdminShellV20.ConceptDescription)
-                    aasenv.ConceptDescriptions.Add(rf as AdminShellV20.ConceptDescription);
+                if (rf is ConceptDescription)
+                    aasenv.ConceptDescriptions.Add(rf as ConceptDescription);
 
             // SUB MODEL
-            var sub1 = new AdminShellV20.Submodel(preDefs.SM_VDI2770_Documentation);
-            sub1.SetIdentification("IRI", repo.CreateOneTimeId());
+            var sub1 = new Submodel(preDefs.SM_VDI2770_Documentation.Id, preDefs.SM_VDI2770_Documentation.Extensions, preDefs.SM_VDI2770_Documentation.Category, preDefs.SM_VDI2770_Documentation.IdShort, preDefs.SM_VDI2770_Documentation.DisplayName, preDefs.SM_VDI2770_Documentation.Description, preDefs.SM_VDI2770_Documentation.Checksum, preDefs.SM_VDI2770_Documentation.Administration, preDefs.SM_VDI2770_Documentation.Kind, preDefs.SM_VDI2770_Documentation.SemanticId, preDefs.SM_VDI2770_Documentation.SupplementalSemanticIds, preDefs.SM_VDI2770_Documentation.Qualifiers, preDefs.SM_VDI2770_Documentation.DataSpecifications, preDefs.SM_VDI2770_Documentation.SubmodelElements);
+            sub1.Id = repo.CreateOneTimeId();
             aasenv.Submodels.Add(sub1);
 
             // execute LAMBDA on different data sources
@@ -326,8 +327,7 @@ namespace AasxToolkit
             {
                 // Document Item
                 var cd = preDefs.CD_VDI2770_Document;
-                using (var p0 = AdminShellV20.SubmodelElementCollection.CreateNew($"Document{idx:D2}",
-                    "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
+                var p0 = new SubmodelElementCollection(idShort: $"Document{idx:D2}", category: "CONSTANT", semanticId: cd.GetCdReference());
                 {
                     sub1.Add(p0);
 
@@ -335,60 +335,63 @@ namespace AasxToolkit
 
                     // DOCUMENT ID
                     cd = preDefs.CD_VDI2770_DocumentId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    //var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
+                    var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                     {
-                        p.valueType = "string";
-                        p.value = "" + args.GetHashCode();
+                        p.Value = "" + args.GetHashCode();
                         p0.Add(p);
                     }
 
                     // Is Primary
                     cd = preDefs.CD_VDI2770_IsPrimaryDocumentId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    //using (var p = Property.CreateNew(
+                    //    cd.GetDefaultPreferredName(), "CONSTANT", Key.GetFromRef(cd.GetReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                     {
-                        p.valueType = "boolean";
-                        p.value = "true";
+                        p.ValueType = DataTypeDefXsd.Boolean;
+                        p.Value = "true";
                         p0.Add(p);
                     }
 
                     // DOCUMENT CLASS ID
                     cd = preDefs.CD_VDI2770_DocumentClassId;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    //using (var p = Property.CreateNew(
+                    //    cd.GetDefaultPreferredName(), "CONSTANT", Key.GetFromRef(cd.GetReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                     {
-                        p.valueType = "string";
-                        p.value = "" + args[0];
-                        p.valueId = AdminShellV20.Reference.CreateIrdiReference(args[2]);
+                        p.Value = "" + args[0];
+                        p.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, args[2])});
                         p0.Add(p);
                     }
 
                     // DOCUMENT CLASS NAME
                     cd = preDefs.CD_VDI2770_DocumentClassName;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                     {
-                        p.valueType = "string";
-                        p.value = "" + args[1];
+                        p.Value = "" + args[1];
                         p0.Add(p);
                     }
 
                     // CLASS SYS
                     cd = preDefs.CD_VDI2770_DocumentClassificationSystem;
-                    using (var p = AdminShellV20.Property.CreateNew(
-                        cd.GetDefaultPreferredName(), "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p0.Add(p);
-                        p.valueType = "string";
-                        p.value = "VDI2770:2018";
+                        p.Value = "VDI2770:2018";
                     }
 
                     // Document version
 
                     cd = preDefs.CD_VDI2770_DocumentVersion;
-                    using (var p1 = AdminShellV20.SubmodelElementCollection.CreateNew($"DocumentVersion01",
-                                        "CONSTANT", AdminShellV20.Key.GetFromRef(cd.GetCdReference())))
+                    //using (var p1 = SubmodelElementCollection.CreateNew($"DocumentVersion01",
+                    //                    "CONSTANT", Key.GetFromRef(cd.GetCdReference())))
+                    //TODO:jtikekar support cd.GetDefaultPreferredName()
+                    var p1 = new SubmodelElementCollection(idShort: "DocumentVersion01", category:"CONSTANT", semanticId: cd.GetCdReference());
                     {
                         p0.Add(p1);
 
@@ -396,115 +399,136 @@ namespace AasxToolkit
                         cd = preDefs.CD_VDI2770_Language;
                         var lngs = args[4].Split(',');
                         for (int i = 0; i < lngs.Length; i++)
-                            using (var p = AdminShellV20.Property.CreateNew(
-                                cd.GetDefaultPreferredName() + $"{i + 1:00}", "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        {
+                            //using (var prop = Property.CreateNew(
+                            //    cd.GetDefaultPreferredName() + $"{i + 1:00}", "CONSTANT",
+                            //    Key.GetFromRef(cd.GetReference())))
+                            //TODO:jtikekar support cd.GetDefaultPreferredName()
+                            var prop2 = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                             {
-                                p1.Add(p);
-                                p.valueType = "string";
-                                p.value = "" + lngs[i];
+                                p1.Add(prop2);
+                                prop2.Value = "" + lngs[i];
                             }
+                        }
+                            
 
                         // VERSION
                         cd = preDefs.CD_VDI2770_DocumentVersionId;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                            //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        var prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "string";
-                            p.value = "" + args[5];
+                            p1.Add(prop);
+                            prop.Value = "" + args[5];
                         }
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Title;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var mlp = MultiLanguageProperty.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        var mlp = new MultiLanguageProperty(idShort:"", category:"CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.value.Add("en", "" + args[3]);
-                            p.value.Add("de", "Deutsche Übersetzung von: " + args[3]);
-                            p.value.Add("FR", "Traduction française de: " + args[3]);
+                            p1.Add(mlp);
+                            if(mlp.Value.LangStrings == null)
+                            {
+                                mlp.Value.LangStrings = new List<LangString>();
+                            }
+                            mlp.Value.LangStrings.Add(new LangString("en", args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("de", "Deutsche Übersetzung von: " + args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("FR", "Traduction française de: " + args[3]));
                         }
 
                         // SUMMARY
                         cd = preDefs.CD_VDI2770_Summary;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var p = MultiLanguageProperty.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        mlp = new MultiLanguageProperty(idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(p);
-                            p.value.Add("en", "Summary for: " + args[3]);
-                            p.value.Add("de", "Zusammenfassung von: " + args[3]);
-                            p.value.Add("FR", "Résumé de: " + args[3]);
+                            mlp.Value.LangStrings.Add(new LangString("en", "Summary for: " + args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("de", "Zusammenfassung von: " + args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("FR", "Résumé de: " + args[3]));
                         }
 
                         // TITLE
                         cd = preDefs.CD_VDI2770_Keywords;
-                        using (var p = AdminShellV20.MultiLanguageProperty.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var mlp = MultiLanguageProperty.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        mlp = new MultiLanguageProperty(idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.value.Add("en", "Keywords for: " + args[3]);
-                            p.value.Add("de", "Stichwörter für: " + args[3]);
-                            p.value.Add("FR", "Repèrs par: " + args[3]);
+                            p1.Add(mlp);
+                            mlp.Value.LangStrings.Add(new LangString("en", "Keywords for: " + args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("de", "Stichwörter für: " + args[3]));
+                            mlp.Value.LangStrings.Add(new LangString("FR", "Repèrs par: " + args[3]));
                         }
 
                         // SET DATE
                         cd = preDefs.CD_VDI2770_Date;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "date";
-                            p.value = "" + DateTime.Now.ToString("yyyy-MM-dd");
+                            p1.Add(prop);
+                            prop.ValueType = DataTypeDefXsd.Date;
+                            prop.Value = "" + DateTime.Now.ToString("yyyy-MM-dd");
                         }
 
                         // STATUS
                         cd = preDefs.CD_VDI2770_StatusValue;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "string";
-                            p.value = "Released";
+                            p1.Add(prop);
+                            prop.Value = "Released";
                         }
 
                         // ROLE
                         cd = preDefs.CD_VDI2770_Role;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "string";
-                            p.value = "Author";
+                            p1.Add(prop);
+                            prop.Value = "Author";
                         }
 
                         // ORGANIZATION
                         cd = preDefs.CD_VDI2770_OrganizationName;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "string";
-                            p.value = "Example company";
+                            p1.Add(prop);
+                            prop.Value = "Example company";
                         }
 
                         // ORGANIZATION OFFICIAL
                         cd = preDefs.CD_VDI2770_OrganizationOfficialName;
-                        using (var p = AdminShellV20.Property.CreateNew(
-                            cd.GetDefaultPreferredName(), "CONSTANT",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                        //using (var prop = Property.CreateNew(
+                        //    cd.GetDefaultPreferredName(), "CONSTANT",
+                        //    Key.GetFromRef(cd.GetReference())))
+                        //TODO:jtikekar support cd.GetDefaultPreferredName()
+                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                         {
-                            p1.Add(p);
-                            p.valueType = "string";
-                            p.value = "Example company Ltd.";
+                            p1.Add(prop);
+                            prop.Value = "Example company Ltd.";
                         }
 
                         // DIGITAL FILE
@@ -512,26 +536,30 @@ namespace AasxToolkit
                         {
                             // physical file
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShellV20.File.CreateNew(
-                                cd.GetDefaultPreferredName(), "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            //using (var file = File.CreateNew(
+                            //    cd.GetDefaultPreferredName(), "CONSTANT",
+                            //    Key.GetFromRef(cd.GetReference())))
+                            //TODO:jtikekar support cd.GetDefaultPreferredName()
+                            var file = new AasCore.Aas3_0_RC02.File("", idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                             {
-                                p1.Add(p);
-                                p.mimeType = AdminShellPackageEnv.GuessMimeType(fn);
-                                p.value = "" + targetdir.Trim() + Path.GetFileName(fn);
+                                p1.Add(file);
+                                file.ContentType = AdminShellPackageEnv.GuessMimeType(fn);
+                                file.Value = "" + targetdir.Trim() + Path.GetFileName(fn);
                             }
                         }
                         if (url != null)
                         {
                             // URL
                             cd = preDefs.CD_VDI2770_DigitalFile;
-                            using (var p = AdminShellV20.File.CreateNew(
-                                cd.GetDefaultPreferredName(), "CONSTANT",
-                                AdminShellV20.Key.GetFromRef(cd.GetReference())))
+                            //using (var p = File.CreateNew(
+                            //    cd.GetDefaultPreferredName(), "CONSTANT",
+                            //    Key.GetFromRef(cd.GetReference())))
+                            //TODO:jtikekar support cd.GetDefaultPreferredName()
+                            var file = new AasCore.Aas3_0_RC02.File("", idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                             {
-                                p1.Add(p);
-                                p.mimeType = AdminShellPackageEnv.GuessMimeType(url);
-                                p.value = "" + url.Trim();
+                                p1.Add(file);
+                                file.ContentType = AdminShellPackageEnv.GuessMimeType(url);
+                                file.Value = "" + url.Trim();
                             }
 
                         }
@@ -569,288 +597,308 @@ namespace AasxToolkit
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelDatasheet(
-            InputFilePrefs prefs, IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelDatasheet(
+            InputFilePrefs prefs, IriIdentifierRepository repo, Environment aasenv)
         {
             // eClass product group: 19-15-07-01 USB stick
 
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "Datatsheet";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "Datatsheet";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(
-                AdminShellV20.Key.CreateNew(
-                    "Submodel", false, "IRI",
-                    "http://example.com/id/type/submodel/datasheet/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/datasheet/1/1") });
 
             // CONCEPT: Manufacturer
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Manufacturer", AdminShellV20.Identification.IRDI, "0173-1#02-AAO677#001"))
+            var cd = new ConceptDescription("0173-1#02-AAO677#001", idShort: "Manufacturer");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] { "de", "TBD", "en", "Manufacturer name" },
-                    shortName: "Manufacturer",
-                    definition: new[] { "de", "TBD",
-                    "en",
-                    "legally valid designation of the natural or judicial person which is directly " +
-                        "responsible for the design, production, packaging and labeling of a product in respect " +
-                        "to its being brought into circulation" }
-                );
+                //TODO:jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] { "de", "TBD", "en", "Manufacturer name" },
+                //    shortName: "Manufacturer",
+                //    definition: new[] { "de", "TBD",
+                //    "en",
+                //    "legally valid designation of the natural or judicial person which is directly " +
+                //        "responsible for the design, production, packaging and labeling of a product in respect " +
+                //        "to its being brought into circulation" }
+                //);
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                //var p = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+
                 sub1.Add(p);
-                p.valueType = "string";
-                p.value = "Example company Ltd.";
+                p.Value = "Example company Ltd.";
             }
 
             // CONCEPT: Width
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Width", AdminShellV20.Identification.IRDI, "0173-1#02-BAF016#005"))
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "Width", Identification.IRDI, "0173-1#02-BAF016#005"))
+            cd = new ConceptDescription("0173-1#02-BAF016#005", idShort: "Width");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] { "de", "Breite", "en", "Width" },
-                    shortName: "Width",
-                    unit: "mm",
-                    valueFormat: "REAL_MEASURE",
-                    definition: new[] {
-                        "de",
-                        "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
-                        "rechtwinklig zur längsten Symmetrieachse",
-                        "en",
-                        "for objects with orientation in preferred position during use the dimension " +
-                        "perpendicular to height/ length/depth" }
-                );
+                //TODO jtikekar temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] { "de", "Breite", "en", "Width" },
+                //    shortName: "Width",
+                //    unit: "mm",
+                //    valueFormat: "REAL_MEASURE",
+                //    definition: new[] {
+                //        "de",
+                //        "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
+                //        "rechtwinklig zur längsten Symmetrieachse",
+                //        "en",
+                //        "for objects with orientation in preferred position during use the dimension " +
+                //        "perpendicular to height/ length/depth" }
+                //);
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.valueType = "double";
-                p.value = "48";
+                p.ValueType = DataTypeDefXsd.Double;
+                p.Value = "48";
             }
 
             // CONCEPT: Height
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Height", AdminShellV20.Identification.IRDI, "0173-1#02-BAA020#008"))
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "Height", Identification.IRDI, "0173-1#02-BAA020#008"))
+            cd = new ConceptDescription("0173-1#02-BAA020#008", idShort: "Height");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] { "de", "Höhe", "en", "Height" },
-                    shortName: "Height",
-                    unit: "mm",
-                    valueFormat: "REAL_MEASURE",
-                    definition: new[] {
-                        "de",
-                        "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
-                        "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
-                        "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
-                        "en",
-                        "for objects with orientation in preferred position during use the dimension " +
-                        "perpendicular to diameter/length/width/depth" }
-                );
+                //TODO jtikekar temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] { "de", "Höhe", "en", "Height" },
+                //    shortName: "Height",
+                //    unit: "mm",
+                //    valueFormat: "REAL_MEASURE",
+                //    definition: new[] {
+                //        "de",
+                //        "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
+                //        "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
+                //        "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
+                //        "en",
+                //        "for objects with orientation in preferred position during use the dimension " +
+                //        "perpendicular to diameter/length/width/depth" }
+                //);
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.valueType = "double";
-                p.value = "56";
+                p.ValueType = DataTypeDefXsd.Double;
+                p.Value = "56";
             }
 
             // CONCEPT: Depth
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Depth", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "Depth", Identification.IRDI, "0173-1#02-BAB577#007"))
+            cd = new ConceptDescription("0173-1#02-BAB577#007", idShort: "Depth");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] { "de", "Tiefe", "en", "Depth" },
-                    shortName: "Depth",
-                    unit: "mm",
-                    valueFormat: "REAL_MEASURE",
-                    definition: new[] {
-                        "de",
-                        "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
-                        "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
-                        "en",
-                        "for objects with fixed orientation or in preferred utilization position, " +
-                        "the rear , generally away from the observer expansion is described as depth" }
-                );
+                //TODO jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] { "de", "Tiefe", "en", "Depth" },
+                //    shortName: "Depth",
+                //    unit: "mm",
+                //    valueFormat: "REAL_MEASURE",
+                //    definition: new[] {
+                //        "de",
+                //        "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
+                //        "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
+                //        "en",
+                //        "for objects with fixed orientation or in preferred utilization position, " +
+                //        "the rear , generally away from the observer expansion is described as depth" }
+                //);
 
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.valueType = "double";
-                p.value = "11.9";
+                p.ValueType = DataTypeDefXsd.Double;
+                p.Value = "11.9";
             }
 
             // CONCEPT: Weight
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Weight", AdminShellV20.Identification.IRDI, "0173-1#02-AAS627#001"))
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "Weight", Identification.IRDI, "0173-1#02-AAS627#001"))
+                cd = new ConceptDescription("0173-1#02-AAS627#001", idShort:"Weight");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Gewicht der Artikeleinzelverpackung", "en", "Weight of the individual packaging" },
-                    shortName: "Weight",
-                    unit: "g",
-                    valueFormat: "REAL_MEASURE",
-                    definition: new[] { "de", "Masse der Einzelverpackung eines Artikels",
-                    "en", "Mass of the individual packaging of an article" }
-                );
+                //TODO jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Gewicht der Artikeleinzelverpackung", "en", "Weight of the individual packaging" },
+                //    shortName: "Weight",
+                //    unit: "g",
+                //    valueFormat: "REAL_MEASURE",
+                //    definition: new[] { "de", "Masse der Einzelverpackung eines Artikels",
+                //    "en", "Mass of the individual packaging of an article" }
+                //);
 
                 // as designed
-                var p = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.AddQualifier("life cycle qual", "SPEC",
-                    AdminShellV20.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF575"),
-                    AdminShellV20.Reference.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF579"));
-                p.valueType = "double";
-                p.value = "23.1";
+                p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value:"SPEC", semanticId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF579") })) };
+                //p.AddQualifier("life cycle qual", "SPEC",
+                //    KeyList.CreateNew(
+                //        "GlobalReference", false, Identification.IRDI,
+                //        "0112/2///61360_4#AAF575"),
+                //    Reference.CreateNew(
+                //        "GlobalReference", false, Identification.IRDI,
+                //        "0112/2///61360_4#AAF579"));
+                p.ValueType = DataTypeDefXsd.Double;
+                p.Value = "23.1";
 
                 // as produced
-                var p2 = AdminShellV20.Property.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p2 = Property.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p2 = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p2);
-                p2.AddQualifier("life cycle qual", "BUILT",
-                    AdminShellV20.KeyList.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF575"),
-                    AdminShellV20.Reference.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0112/2///61360_4#AAF573"));
-                p2.valueType = "double";
-                p2.value = "23.05";
+                p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "BUILT", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF573") })) };
+                p2.ValueType = DataTypeDefXsd.Double;
+                p2.Value = "23.05";
             }
 
             // CONCEPT: Material
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "Material", AdminShellV20.Identification.IRDI, "0173-1#02-BAB577#007"))
+            cd = new ConceptDescription("0173-1#02-BAB577#007", idShort: "Material");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] { "de", "Werkstoff", "en", "Material" },
-                    shortName: "Material",
-                    definition: new[] { "de", "TBD",
-                    "en",
-                    "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
-                    "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
-                    "Schweißen usw. in die endgültige Form gebracht werden" }
-                );
+                //TODO: jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] { "de", "Werkstoff", "en", "Material" },
+                //    shortName: "Material",
+                //    definition: new[] { "de", "TBD",
+                //    "en",
+                //    "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
+                //    "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
+                //    "Schweißen usw. in die endgültige Form gebracht werden" }
+                //);
 
-                var p = AdminShellV20.ReferenceElement.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER", AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = ReferenceElement.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new ReferenceElement(idShort:"",category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.value = p.value = AdminShellV20.Reference.CreateNew(
-                    AdminShellV20.Key.CreateNew(
-                        "GlobalReference", false, AdminShellV20.Identification.IRDI,
-                        "0173-1#07-AAA878#004")); // Polyamide (PA)
+                //p.Value = p.Value = Reference.CreateNew(
+                //    Key.CreateNew(
+                //        "GlobalReference", false, Identification.IRDI,
+                //        "0173-1#07-AAA878#004")); // Polyamide (PA)
+                p.Value = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0173-1#07-AAA878#004") });
             }
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelVariousSingleItems(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelVariousSingleItems(
+            IriIdentifierRepository repo, Environment aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "VariousItems";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "VariousItems";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/various/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/various/1/1") });
 
-            AdminShellV20.SubmodelElement sme1, sme2;
+            ISubmodelElement sme1, sme2;
 
             // CONCEPT: MultiLanguageProperty
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "DocuName",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ991#001"))                             // die ID des Merkmales bei ECLASS
+            var cd = new ConceptDescription("0173-1#02-ZZZ991#001", idShort: "DocuName");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei ECLASS
-                        "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
-                    shortName: "DocuName",                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "legally valid designation of the natural or judicial person..." }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei ECLASS
+                //        "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
+                //    shortName: "DocuName",                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "legally valid designation of the natural or judicial person..." }
+                //);
 
-                var p = AdminShellV20.MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
+                //            Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new MultiLanguageProperty(idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.value.Add("en", "An english value.");
-                p.value.Add("de", "Ein deutscher Wert.");
+                if(p.Value.LangStrings == null)
+                {
+                    p.Value.LangStrings = new List<LangString>();
+                }
+                p.Value.LangStrings.Add(new LangString("en", "An english value."));
+                p.Value.LangStrings.Add(new LangString("de", "Ein deutscher Wert."));
                 sme1 = p;
             }
 
             // CONCEPT: Range
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "VoltageRange",
-                idType: AdminShellV20.Identification.IRDI,                  // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "VoltageRange",
+            //    idType: Identification.IRDI,                  // immer IRDI für ECLASS
+            //    id: "0173-1#02-ZZZ992#001"))                             // die ID des Merkmales bei ECLASS
+            cd = new ConceptDescription("0173-1#02-ZZZ992#001", idShort: "VoltageRange");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei ECLASS
-                        "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
-                    shortName: "VoltageRange",                                // kurzer, sprechender Name
-                    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited voltage range..." }
-                );
+                //TODO:jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei ECLASS
+                //        "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
+                //    shortName: "VoltageRange",                                // kurzer, sprechender Name
+                //    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited voltage range..." }
+                //);
 
-                var p = AdminShellV20.Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var p = Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
+                //            Key.GetFromRef(cd.GetReference()));
+                //TODO:jtikekar support cd.GetDefaultPreferredName()
+                var p = new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                p.min = "11.5";
-                p.max = "13.8";
+                p.Min = "11.5";
+                p.Max = "13.8";
                 sme2 = p;
             }
 
             // CONCEPT: AnnotatedRelationship
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "VerConn",
-                idType: AdminShellV20.Identification.IRDI,  // immer IRDI für ECLASS
-                id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    "VerConn",
+            //    idType: Identification.IRDI,  // immer IRDI für ECLASS
+            //    id: "0173-1#02-XXX992#001"))  // die ID des Merkmales bei ECLASS
+                cd = new ConceptDescription("0173-1#02-XXX992#001", idShort: "VerConn");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Verbindung",    // wechseln Sie die Sprache bei ECLASS 
-                        "en", "Connection" },   // um die Sprach-Texte aufzufinden
-                    shortName: "VerConn",                                // kurzer, sprechender Name
-                    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely defined electrical connection..." }
-                );
+                //TODO: jtikekar Trmporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Verbindung",    // wechseln Sie die Sprache bei ECLASS 
+                //        "en", "Connection" },   // um die Sprach-Texte aufzufinden
+                //    shortName: "VerConn",                                // kurzer, sprechender Name
+                //    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely defined electrical connection..." }
+                //);
 
-                var ar = AdminShellV20.AnnotatedRelationshipElement.CreateNew(
-                    cd.GetDefaultPreferredName(), "PARAMETER",
-                    AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                //var ar = AnnotatedRelationshipElement.CreateNew(
+                //    cd.GetDefaultPreferredName(), "PARAMETER",
+                //    Key.GetFromRef(cd.GetReference()));
+                var ar = new AnnotatedRelationshipElement(sme1.GetModelReference(), sme2.GetModelReference(), idShort:"", category:"PARAMETER", semanticId:cd.GetReference());
                 sub1.Add(ar);
-                ar.first = sme1.GetReference();
-                ar.second = sme2.GetReference();
 
-                ar.annotations = new AdminShellV20.DataElementWrapperCollection();
-                ar.annotations.Add(sme1);
-                ar.annotations.Add(sme2);
+                ar.Annotations = new List<IDataElement>();
+                ar.Annotations.Add((IDataElement)sme1);
+                ar.Annotations.Add((IDataElement)sme2);
             }
 
 
@@ -858,349 +906,329 @@ namespace AasxToolkit
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelBOMforECAD(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelBOMforECAD(
+            IriIdentifierRepository repo, Environment aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "BOM-ECAD";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "BOM-ECAD";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/BOM/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
 
             // CONCEPT: electrical plan
 
-            AdminShellV20.ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
+            ConceptDescription cdRelEPlan, cdRelElCon, cdContact1, cdContact2;
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,        // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ993#001",
-                idShort: "E-CAD"))                             // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    idType: Identification.IRDI,        // immer IRDI für ECLASS
+            //    id: "0173-1#02-ZZZ993#001",
+            //    idShort: "E-CAD"))                             // die ID des Merkmales bei ECLASS
+            var cd = new ConceptDescription("0173-1#02-ZZZ993#001", idShort: "E-CAD");
             {
                 cdRelEPlan = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "en", "Electrical plan",    // wechseln Sie die Sprache bei ECLASS
-                        "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
-                    shortName: cd.idShort,                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited language constructs..." }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "en", "Electrical plan",    // wechseln Sie die Sprache bei ECLASS
+                //        "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
+                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited language constructs..." }
+                //);
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ982#001",
-                idShort: "single pole connection"))                             // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    idType: Identification.IRDI,                         // immer IRDI für ECLASS
+            //    id: "0173-1#02-ZZZ982#001",
+            //    idShort: "single pole connection"))                             // die ID des Merkmales bei ECLASS
+            cd = new ConceptDescription("0173-1#02-ZZZ982#001", idShort: "single pole connection");
             {
                 cdRelElCon = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei ECLASS
-                        "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
-                    shortName: cd.idShort,                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited language constructs..." }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei ECLASS
+                //        "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
+                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited language constructs..." }
+                //);
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,    // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ994#001",
-                idShort: "1"))                             // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    idType: Identification.IRDI,    // immer IRDI für ECLASS
+            //    id: "0173-1#02-ZZZ994#001",
+            //    idShort: "1"))                             // die ID des Merkmales bei ECLASS
+            cd = new ConceptDescription("0173-1#02-ZZZ994#001", idShort: "1");
             {
                 cdContact1 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "en", "Contact point 1",    // wechseln Sie die Sprache bei ECLASS
-                        "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
-                    shortName: cd.idShort,                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited language constructs..." }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "en", "Contact point 1",    // wechseln Sie die Sprache bei ECLASS
+                //        "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
+                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited language constructs..." }
+                //);
             }
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ995#001",
-                idShort: "2"))                             // die ID des Merkmales bei ECLASS
+            //using (var cd = ConceptDescription.CreateNew(
+            //    idType: Identification.IRDI,                // immer IRDI für ECLASS
+            //    id: "0173-1#02-ZZZ995#001",
+            //    idShort: "2"))                             // die ID des Merkmales bei ECLASS
+            cd = new ConceptDescription("0173-1#02-ZZZ995#001", idShort: "2");
             {
                 cdContact2 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "en", "Contact point 2",    // wechseln Sie die Sprache bei ECLASS
-                        "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
-                    shortName: cd.idShort,                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited language constructs..." }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "en", "Contact point 2",    // wechseln Sie die Sprache bei ECLASS
+                //        "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
+                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited language constructs..." }
+                //);
             }
 
             // ENTITIES
 
-            var ps001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "PowerSource001");
+            var ps001 = new Entity(
+                EntityType.CoManagedEntity, idShort:"PowerSource001");
             sub1.Add(ps001);
-            var ps001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var ps001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
-            ps001.Add(ps001_1);
-            ps001.Add(ps001_2);
+            var ps001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
+            var ps001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
+            if(ps001.Statements == null)
+            {
+                ps001.Statements = new List<ISubmodelElement>();
+            }
+            ps001.Statements.Add(ps001_1);
+            ps001.Statements.Add(ps001_2);
 
-            var sw001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Switch001");
+            var sw001 = new Entity(
+                EntityType.CoManagedEntity, idShort:"Switch001");
             sub1.Add(sw001);
-            var sw001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var sw001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
-            sw001.Add(sw001_1);
-            sw001.Add(sw001_2);
+            var sw001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
+            var sw001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
+            if (sw001.Statements == null)
+            {
+                sw001.Statements = new List<ISubmodelElement>();
+            }
+            sw001.Statements.Add(ps001_1);
+            sw001.Statements.Add(ps001_2);
 
-            var la001 = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity, "Lamp001",
-                new AdminShellV20.AssetRef(
-                    AdminShellV20.Reference.CreateNew(
-                        "Asset", false, "IRI", "example.com/assets/23224234234232342343234")));
+            //TODO: jtikekar keyType should be AssetInformation
+            var la001 = new Entity(
+                EntityType.SelfManagedEntity, idShort:"Lamp001", globalAssetId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Identifiable, "example.com/assets/23224234234232342343234") }));
             sub1.Add(la001);
-            var la001_1 = AdminShellV20.Property.CreateNew(
-                "1", "CONSTANT", cdContact1.GetCdReference()[0]);
-            var la001_2 = AdminShellV20.Property.CreateNew(
-                "2", "CONSTANT", cdContact2.GetCdReference()[0]);
-            la001.Add(la001_1);
-            la001.Add(la001_2);
+            var la001_1 = new Property(DataTypeDefXsd.String, idShort: "1", category: "CONSTANT", semanticId: cdContact1.GetCdReference());
+            var la001_2 = new Property(DataTypeDefXsd.String, idShort: "2", category: "CONSTANT", semanticId: cdContact2.GetCdReference());
+            if (la001.Statements == null)
+            {
+                la001.Statements = new List<ISubmodelElement>();
+            }
+            la001.Statements.Add(ps001_1);
+            la001.Statements.Add(ps001_2);
 
             // RELATIONS
 
-            var smec1 = AdminShellV20.SubmodelElementCollection.CreateNew(
-                "E-CAD", semanticIdKey: cdRelEPlan.GetCdReference()[0]);
+            var smec1 = new SubmodelElementCollection(idShort: "E-CAD", semanticId: cdRelEPlan.GetCdReference());
+            smec1.Value = new List<ISubmodelElement>();
             sub1.Add(smec1);
 
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w001", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: ps001_1.GetReference(), second: sw001_1.GetReference()));
-
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w002", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: sw001_2.GetReference(), second: la001_1.GetReference()));
-
-            smec1.Add(AdminShellV20.RelationshipElement.CreateNew(
-                "w003", semanticIdKey: cdRelElCon.GetCdReference()[0],
-                first: la001_2.GetReference(), second: ps001_2.GetReference()));
+            smec1.Value.Add(new RelationshipElement(ps001_1.GetModelReference(), sw001_1.GetModelReference(), idShort: "w001", semanticId: cdRelElCon.GetCdReference()));
+            smec1.Value.Add(new RelationshipElement(sw001_2.GetModelReference(), la001_1.GetModelReference(), idShort: "w002", semanticId: cdRelElCon.GetCdReference()));
+            smec1.Value.Add(new RelationshipElement(la001_2.GetModelReference(), ps001_2.GetModelReference(), idShort: "w003", semanticId: cdRelElCon.GetCdReference()));
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelBOMforAssetStructure(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelBOMforAssetStructure(
+            IriIdentifierRepository repo, Environment aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "BOM-ASSETS";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "BOM-ASSETS";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/BOM/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/BOM/1/1") });
 
             // CONCEPT: Generic asset decomposition
 
-            AdminShellV20.ConceptDescription cdIsPartOf;
+            ConceptDescription cdIsPartOf;
 
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                idType: AdminShellV20.Identification.IRDI,                         // immer IRDI für ECLASS
-                id: "0173-1#02-ZZZ998#002",
-                idShort: "isPartOf"))                             // die ID des Merkmales bei ECLASS
+            var cd = new ConceptDescription("0173-1#02-ZZZ998#002", idShort: "isPartOf");
             {
                 cdIsPartOf = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "en", "Is part of",    // wechseln Sie die Sprache bei ECLASS
-                        "de", "Teil von" },   // um die Sprach-Texte aufzufinden
-                    shortName: cd.idShort,                                // kurzer, sprechender Name
-                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                    definition: new[] { "de", "TBD",
-                    "en", "very precisely limited language constructs..." }
-                );
+                //TODO:jtikekar Temporarily removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "en", "Is part of",    // wechseln Sie die Sprache bei ECLASS
+                //        "de", "Teil von" },   // um die Sprach-Texte aufzufinden
+                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                //    definition: new[] { "de", "TBD",
+                //    "en", "very precisely limited language constructs..." }
+                //);
             }
 
             // ENTITIES
 
-            var axisGroup = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "AxisGroup001");
+            var axisGroup = new Entity(
+                EntityType.CoManagedEntity, idShort:"AxisGroup001");
             sub1.Add(axisGroup);
 
-            var motor = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Motor002");
+            var motor = new Entity(
+                EntityType.CoManagedEntity, idShort:"Motor002");
             sub1.Add(motor);
 
-            var encoder = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Encoder003");
+            var encoder = new Entity(
+                EntityType.CoManagedEntity, idShort:"Encoder003");
             sub1.Add(encoder);
 
-            var gearbox = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "Gearbox003");
+            var gearbox = new Entity(
+                EntityType.CoManagedEntity, idShort:"Gearbox003");
             sub1.Add(gearbox);
 
-            var amp = new AdminShellV20.Entity(
-                AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity, "ServoAmplifier004");
+            var amp = new Entity(
+                EntityType.CoManagedEntity, idShort:"ServoAmplifier004");
             sub1.Add(amp);
 
             // RELATIONS
 
-            sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel001", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: motor.GetReference()));
+            if(sub1.SubmodelElements == null)
+            {
+                sub1.SubmodelElements = new List<ISubmodelElement>();
+            }
 
-            sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel002", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: encoder.GetReference()));
-
-            sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel003", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: gearbox.GetReference()));
-
-            sub1.Add(
-                AdminShellV20.RelationshipElement.CreateNew(
-                    "rel004", semanticIdKey: cdIsPartOf.GetCdReference()[0],
-                first: axisGroup.GetReference(), second: amp.GetReference()));
-
+            sub1.SubmodelElements.Add(new RelationshipElement(axisGroup.GetModelReference(), motor.GetModelReference(), idShort: "rel001", semanticId: cdIsPartOf.GetCdReference()));
+            sub1.SubmodelElements.Add(new RelationshipElement(axisGroup.GetModelReference(), encoder.GetModelReference(), idShort: "rel002", semanticId: cdIsPartOf.GetCdReference()));
+            sub1.SubmodelElements.Add(new RelationshipElement(axisGroup.GetModelReference(), gearbox.GetModelReference(), idShort: "rel003", semanticId: cdIsPartOf.GetCdReference()));
+            sub1.SubmodelElements.Add(new RelationshipElement(axisGroup.GetModelReference(), amp.GetModelReference(), idShort: "rel004", semanticId: cdIsPartOf.GetCdReference()));
 
             // Nice
             return sub1;
         }
 
-        public static AdminShellV20.Submodel CreateSubmodelEnergyMode(
-            IriIdentifierRepository repo, AdminShellV20.AdministrationShellEnv aasenv)
+        public static Submodel CreateSubmodelEnergyMode(
+            IriIdentifierRepository repo, Environment aasenv)
         {
             // SUB MODEL
-            var sub1 = AdminShellV20.Submodel.CreateNew("IRI", repo.CreateOneTimeId());
-            sub1.idShort = "EnergyMode";
+            var sub1 = new Submodel(repo.CreateOneTimeId());
+            sub1.IdShort = "EnergyMode";
             aasenv.Submodels.Add(sub1);
-            sub1.semanticId.Keys.Add(AdminShellV20.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://example.com/id/type/submodel/energymode/1/1"));
+            sub1.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://example.com/id/type/submodel/energymode/1/1") });
 
             // CONCEPT: SetMode
-            var theOp = new AdminShellV20.Operation();
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "SetMode",
-                idType: AdminShellV20.Identification.IRDI,
-                id: "0173-1#02-AAS999#001"))
+            var theOp = new Operation();
+            var cd = new ConceptDescription("0173-1#02-AAS999#001", idShort: "SetMode");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Setze Energiespare-Modus",
-                        "en", "Set energy saving mode" },
-                    shortName: "SetMode",
-                    definition: new[] { "de", "Setze Energiemodus 1..4",
-                    "en", "Set energy saving mode 1..4" }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Setze Energiespare-Modus",
+                //        "en", "Set energy saving mode" },
+                //    shortName: "SetMode",
+                //    definition: new[] { "de", "Setze Energiemodus 1..4",
+                //    "en", "Set energy saving mode 1..4" }
+                //);
 
-                theOp.idShort = "setmode";
+                theOp.IdShort = "setmode";
                 sub1.Add(theOp);
             }
 
             // CONCEPT: Mode
-            using (var cd = AdminShellV20.ConceptDescription.CreateNew(
-                "mode",
-                idType: AdminShellV20.Identification.IRDI,
-                id: "0173-1#02-AAX777#002"))
+            cd = new ConceptDescription("0173-1#02-AAX777#002", idShort: "mode");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                cd.SetIEC61360Spec(
-                    preferredNames: new[] {
-                        "de", "Energiesparemodus-Vorgabe",
-                        "en", "Preset of energy saving mode" },
-                    shortName: "mode",
-                    valueFormat: "INT",
-                    definition: new[] { "de", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
-                    "en", "Preset in optimal case for the energy saving mode" }
-                );
+                //TODO:jtikekar Temporarily Removed
+                //cd.SetIEC61360Spec(
+                //    preferredNames: new[] {
+                //        "de", "Energiesparemodus-Vorgabe",
+                //        "en", "Preset of energy saving mode" },
+                //    shortName: "mode",
+                //    valueFormat: "INT",
+                //    definition: new[] { "de", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
+                //    "en", "Preset in optimal case for the energy saving mode" }
+                //);
 
-                var p = AdminShellV20.Property.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
-                            AdminShellV20.Key.GetFromRef(cd.GetReference()));
+                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
 
-                var ovp = new AdminShellV20.OperationVariable(p);
+                var ovp = new OperationVariable(p);
+                if(theOp.InputVariables == null)
+                {
+                    theOp.InputVariables = new List<OperationVariable>();
+                }
 
-                theOp.inputVariable.Add(ovp);
-                p.valueType = "int";
+                theOp.InputVariables.Add(ovp);
+                p.ValueType = DataTypeDefXsd.Int;
             }
 
             // Nice
             return sub1;
         }
 
-        private static void CreateStochasticViewOnSubmodelsRecurse(
-            AdminShellV20.View vw, AdminShellV20.Submodel submodel, AdminShellV20.SubmodelElement sme)
-        {
-            if (vw == null || sme == null)
-                return;
+        //View no more supported in AAS V3
+        //private static void CreateStochasticViewOnSubmodelsRecurse(
+        //    View vw, Submodel submodel, ISubmodelElement sme)
+        //{
+        //    if (vw == null || sme == null)
+        //        return;
 
-            var isSmc = (sme is AdminShellV20.SubmodelElementCollection);
+        //    var isSmc = (sme is SubmodelElementCollection);
 
-            // spare out some of the leafs of the tree ..
-            if (!isSmc)
-                if (Math.Abs(sme.idShort.GetHashCode() % 100) > 50)
-                    return;
+        //    // spare out some of the leafs of the tree ..
+        //    if (!isSmc)
+        //        if (Math.Abs(sme.IdShort.GetHashCode() % 100) > 50)
+        //            return;
 
-            // ok, create
-            var ce = new AdminShellV20.ContainedElementRef();
-            sme.CollectReferencesByParent(ce.Keys);
-            vw.AddContainedElement(ce.Keys);
-            // recurse
-            if (isSmc)
-                foreach (var sme2wrap in (sme as AdminShellV20.SubmodelElementCollection).value)
-                    CreateStochasticViewOnSubmodelsRecurse(vw, submodel, sme2wrap.submodelElement);
-        }
+        //    // ok, create
+        //    var ce = new ContainedElementRef();
+        //    sme.CollectReferencesByParent(ce.Keys);
+        //    vw.AddContainedElement(ce.Keys);
+        //    // recurse
+        //    if (isSmc)
+        //        foreach (var sme2wrap in (sme as SubmodelElementCollection).Value)
+        //            CreateStochasticViewOnSubmodelsRecurse(vw, submodel, sme2wrap.submodelElement);
+        //}
 
-        public static AdminShellV20.View CreateStochasticViewOnSubmodels(AdminShellV20.Submodel[] sms, string idShort)
-        {
-            // create
-            var vw = new AdminShellV20.View();
-            vw.idShort = idShort;
+        //View no more supported in AAS V3
+        //public static View CreateStochasticViewOnSubmodels(Submodel[] sms, string idShort)
+        //{
+        //    // create
+        //    var vw = new View();
+        //    vw.IdShort = idShort;
 
-            // over all submodel elements
-            if (sms != null)
-                foreach (var sm in sms)
-                {
-                    // parent-ize submodel
-                    sm.SetAllParents();
+        //    // over all submodel elements
+        //    if (sms != null)
+        //        foreach (var sm in sms)
+        //        {
+        //            // parent-ize submodel
+        //            sm.SetAllParents();
 
-                    // loop in
-                    if (sm.submodelElements != null)
-                        foreach (var sme in sm.submodelElements)
-                            CreateStochasticViewOnSubmodelsRecurse(vw, sm, sme.submodelElement);
-                }
-            // done
-            return vw;
-        }
+        //            // loop in
+        //            if (sm.SubmodelElements != null)
+        //                foreach (var sme in sm.SubmodelElements)
+        //                    CreateStochasticViewOnSubmodelsRecurse(vw, sm, sme);
+        //        }
+        //    // done
+        //    return vw;
+        //}
 
         // ReSharper disable ClassNeverInstantiated.Global
         // ReSharper disable CollectionNeverUpdated.Global

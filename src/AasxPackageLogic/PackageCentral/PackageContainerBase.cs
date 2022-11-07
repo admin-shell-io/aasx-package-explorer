@@ -13,10 +13,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
+using Extenstions;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic.PackageCentral
@@ -73,7 +75,7 @@ namespace AasxPackageLogic.PackageCentral
         StartOfChanges,
 
         /// <summary>
-        /// A Referable is created within the "typical" enumeration of another Referable.
+        /// A IReferable is created within the "typical" enumeration of another IReferable.
         /// </summary>
         Create,
 
@@ -84,23 +86,23 @@ namespace AasxPackageLogic.PackageCentral
         MoveToIndex,
 
         /// <summary>
-        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Referable.
-        /// The Referable is completely rebuild.
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a IReferable.
+        /// The IReferable is completely rebuild.
         /// </summary>
         StructuralUpdate,
 
         /// <summary>
-        /// A Referable is deleted
+        /// A IReferable is deleted
         /// </summary>
         Delete,
 
         /// <summary>
-        /// A value upatde of a single Referable (not children) is performed
+        /// A value upatde of a single IReferable (not children) is performed
         /// </summary>
         ValueUpdateSingle,
 
         /// <summary>
-        /// A value upatde of a Referable including possible children is performed
+        /// A value upatde of a IReferable including possible children is performed
         /// </summary>
         ValueUpdateHierarchy,
 
@@ -133,16 +135,16 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventReason Reason;
 
         /// <summary>
-        /// Changed AAS element itself (typically a Referable, but could also be a SubmodelRef)
+        /// Changed AAS element itself (typically a IReferable, but could also be a SubmodelRef)
         /// </summary>
-        public AdminShell.IAasElement ThisElem;
+        public IClass ThisElem;
 
         /// <summary>
-        /// Parent object/ structure of the changed AAS element. Often a Referable, but could also be a SubmodelRef.
+        /// Parent object/ structure of the changed AAS element. Often a IReferable, but could also be a SubmodelRef.
         /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
         /// for Assets, ConceptDescriptions, ..)
         /// </summary>
-        public AdminShell.IAasElement ParentElem;
+        public IClass ParentElem;
 
         /// <summary>
         /// If create, at which index; else: -1
@@ -166,14 +168,14 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <param name="container">Identification of the container</param>
         /// <param name="reason">The reason</param>
-        /// <param name="thisRef">Changed Referable itself</param>
-        /// <param name="parentRef">A Referable, which contains the changed Referable.</param>
+        /// <param name="thisRef">Changed IReferable itself</param>
+        /// <param name="parentRef">A IReferable, which contains the changed IReferable.</param>
         /// <param name="createAtIndex">If create, at which index; else: -1</param>
         /// <param name="info">Human readable information</param>
         public PackCntChangeEventData(PackageContainerBase container,
             PackCntChangeEventReason reason,
-            AdminShell.Referable thisRef = null,
-            AdminShell.Referable parentRef = null,
+            IReferable thisRef = null,
+            IReferable parentRef = null,
             int createAtIndex = -1,
             string info = null)
         {
@@ -362,7 +364,7 @@ namespace AasxPackageLogic.PackageCentral
         /* TODO (MIHO, 2021-08-17): check if to refactor/ move to another location 
          * and to extend to Submodels .. */
         public static bool UpdateSmeFromEventPayloadItem(
-            AdminShell.SubmodelElement smeToModify,
+            ISubmodelElement smeToModify,
             AasPayloadUpdateValueItem vl)
         {
             // access
@@ -373,38 +375,38 @@ namespace AasxPackageLogic.PackageCentral
 
             // adopt
             // TODO (MIHO, 2021-08-17): add more type specific conversions?
-            if (smeToModify is AdminShell.Property prop)
+            if (smeToModify is Property prop)
             {
                 if (vl.Value is string vls)
-                    prop.value = vls;
+                    prop.Value = vls;
                 if (vl.ValueId != null)
-                    prop.valueId = vl.ValueId;
+                    prop.ValueId = vl.ValueId;
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.MultiLanguageProperty mlp)
+            if (smeToModify is MultiLanguageProperty mlp)
             {
-                if (vl.Value is AdminShell.LangStringSet lss)
-                    mlp.value = lss;
+                if (vl.Value is LangStringSet lss)
+                    mlp.Value = lss;
                 if (vl.ValueId != null)
-                    mlp.valueId = vl.ValueId;
+                    mlp.ValueId = vl.ValueId;
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.Range rng)
+            if (smeToModify is AasCore.Aas3_0_RC02.Range rng)
             {
                 if (vl.Value is string[] sarr && sarr.Length >= 2)
                 {
-                    rng.min = sarr[0];
-                    rng.max = sarr[1];
+                    rng.Min = sarr[0];
+                    rng.Max = sarr[1];
                 }
                 changedSomething = true;
             }
 
-            if (smeToModify is AdminShell.Blob blob)
+            if (smeToModify is Blob blob)
             {
                 if (vl.Value is string vls)
-                    blob.value = vls;
+                    blob.Value = Encoding.Default.GetBytes(vls);
                 changedSomething = true;
             }
 
@@ -433,11 +435,11 @@ namespace AasxPackageLogic.PackageCentral
             {
                 if (pluv.Values != null
                     && !pluv.IsAlreadyUpdatedToAAS
-                    && foundObservable is AdminShell.IEnumerateChildren
-                    && (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement))
+                    && foundObservable is IEnumerateChildren
+                    && (foundObservable is Submodel || foundObservable is ISubmodelElement))
                 {
                     // will later access children ..
-                    var wrappers = ((foundObservable as AdminShell.IEnumerateChildren).EnumerateChildren())?.ToList();
+                    var wrappers = ((foundObservable as IReferable).EnumerateChildren())?.ToList();
                     var changedSomething = false;
 
                     // go thru all value updates
@@ -450,14 +452,14 @@ namespace AasxPackageLogic.PackageCentral
                             // Note: currently only updating Properties
                             // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
 
-                            AdminShell.SubmodelElement smeToModify = null;
-                            if (vl.Path == null && foundObservable is AdminShell.Property fop)
+                            ISubmodelElement smeToModify = null;
+                            if (vl.Path == null && foundObservable is Property fop)
                                 smeToModify = fop;
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
-                                var x = AdminShell.SubmodelElementWrapper.FindReferableByReference(
-                                    wrappers, AdminShell.Reference.CreateNew(vl.Path), keyIndex: 0);
-                                if (x is AdminShell.Property fpp)
+                                var x = wrappers.FindReferableByReference(
+                                    new Reference(ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
+                                if (x is Property fpp)
                                     smeToModify = fpp;
                             }
 

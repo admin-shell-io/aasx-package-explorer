@@ -23,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxIntegrationBase.AasForms
@@ -43,14 +44,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceProperty instance;
             public FormDescProperty desc;
-            public AdminShell.Property prop;
+            public Property prop;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceProperty;
                 dc.desc = dc.instance?.desc as FormDescProperty;
-                dc.prop = dc.instance?.sme as AdminShell.Property;
+                dc.prop = dc.instance?.sme as Property;
 
                 if (dc.instance == null || dc.desc == null || dc.prop == null)
                     return null;
@@ -111,7 +112,7 @@ namespace AasxIntegrationBase.AasForms
                 if (dc.desc.valueFromComboBoxIndex != null && dc.desc.valueFromComboBoxIndex.Length >= 1)
                 {
                     for (int i = 0; i < dc.desc.valueFromComboBoxIndex.Length; i++)
-                        if (dc.desc.valueFromComboBoxIndex[i].Trim() == dc.prop.value)
+                        if (dc.desc.valueFromComboBoxIndex[i].Trim() == dc.prop.Value)
                         {
                             ComboBoxValue.SelectedIndex = i;
                             break;
@@ -120,13 +121,13 @@ namespace AasxIntegrationBase.AasForms
                 else
                 {
                     // editable combo box, initialize normal
-                    ComboBoxValue.Text = "" + dc.prop.value;
+                    ComboBoxValue.Text = "" + dc.prop.Value;
                 }
             }
             else
             {
                 // initialize
-                TextBoxValue.Text = "" + dc.prop.value;
+                TextBoxValue.Text = "" + dc.prop.Value;
             }
 
             // release flag
@@ -172,7 +173,7 @@ namespace AasxIntegrationBase.AasForms
                         if (!UpdateDisplayInCharge)
                         {
                             dc.instance.Touch();
-                            dc.prop.value = "" + items[idx];
+                            dc.prop.Value = "" + items[idx];
 
                             // test
                             var ndx = dc.instance.Index;
@@ -200,7 +201,7 @@ namespace AasxIntegrationBase.AasForms
                 {
                     if (!UpdateDisplayInCharge)
                         dc.instance.Touch();
-                    dc.prop.value = TextBoxValue.Text;
+                    dc.prop.Value = TextBoxValue.Text;
                 };
 
             }
@@ -219,7 +220,7 @@ namespace AasxIntegrationBase.AasForms
 
             if (!UpdateDisplayInCharge)
                 dc.instance.Touch();
-            dc.prop.value = ComboBoxValue.Text;
+            dc.prop.Value = ComboBoxValue.Text;
         }
 
     }

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -29,10 +30,10 @@ namespace AasxPredefinedConcepts
 
         public const string Vdi2770Sys = "VDI2770:2020";
 
-        public AdminShell.Submodel
+        public Submodel
             SM_ManufacturerDocumentation;
 
-        public AdminShell.ConceptDescription
+        public ConceptDescription
             CD_Document,
             CD_DocumentId,
             CD_DocumentDomainId,
@@ -65,7 +66,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Manufacturer Documentation (VDI2770) v1.1";
 
-            // Referable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "VDI2770v11.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(VDI2770v11), useFieldNames: true);

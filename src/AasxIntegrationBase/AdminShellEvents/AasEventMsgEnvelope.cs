@@ -16,9 +16,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase.AdminShellEvents
@@ -35,23 +37,23 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
-        public AdminShell.Reference Source { get; set; }
+        public Reference Source { get; set; }
 
         /// <summary>
-        /// SemanticId  of  the  source  EventElement,  if available.
+        /// SematicId  of  the  source  EventElement,  if available.
         /// </summary>
-        public AdminShell.SemanticId SourceSemanticId { get; set; }
+        public Reference SourceSemanticId { get; set; }
 
         /// <summary>
         /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
         /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
-        public AdminShell.Reference ObservableReference { get; set; }
+        public Reference ObservableReference { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  Referable,  which  defines  the scope of the event, if available. 
         /// </summary>
-        public AdminShell.SemanticId ObservableSemanticId { get; set; }
+        public Reference ObservableSemanticId { get; set; }
 
         /// <summary>
         /// Information for the outer message infrastructure for  scheduling the  event to the  respective 
@@ -108,9 +110,9 @@ namespace AasxIntegrationBase.AdminShellEvents
         {
             get
             {
-                return Source != null && Source.Count > 0
-                    && SourceSemanticId != null && SourceSemanticId.Count > 0
-                    && ObservableReference != null && ObservableReference.Count > 0;
+                return Source != null && Source.Keys.Count > 0
+                    && SourceSemanticId != null && SourceSemanticId.Keys.Count > 0
+                    && ObservableReference != null && ObservableReference.Keys.Count > 0;
             }
         }
 
@@ -134,13 +136,13 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 
         [JsonIgnore]
-        public string DisplaySource { get { return "" + Source?.Keys?.MostSignificantInfo(); } }
+        public string DisplaySource { get { return "" + Source?.MostSignificantInfo(); } }
 
         [JsonIgnore]
-        public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.value; } }
+        public string DisplaySourceSemantic { get { return "" + SourceSemanticId?.GetAsExactlyOneKey()?.Value; } }
 
         [JsonIgnore]
-        public string DisplayObservable { get { return "" + ObservableReference?.Keys?.MostSignificantInfo(); } }
+        public string DisplayObservable { get { return "" + ObservableReference?.MostSignificantInfo(); } }
 
         [JsonIgnore]
         public string DisplayInfo
@@ -166,10 +168,10 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasEventMsgEnvelope(
             DateTime timestamp,
-            AdminShell.Reference source = null,
-            AdminShell.SemanticId sourceSemanticId = null,
-            AdminShell.Reference observableReference = null,
-            AdminShell.SemanticId observableSemanticId = null,
+            Reference source = null,
+            Reference sourceSemanticId = null,
+            Reference observableReference = null,
+            Reference observableSemanticId = null,
             string topic = null,
             string subject = null,
             AasPayloadBase payload = null,

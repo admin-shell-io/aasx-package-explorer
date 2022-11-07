@@ -21,10 +21,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+using AdminShell_V20;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AdminShellNS
+//namespace AdminShellNS
+//namespace AdminShell_V20
+namespace AasxCompatibilityModels
 {
     /// <summary>
     /// This empty class derives always from the current version of the Administration Shell class hierarchy.
@@ -562,8 +565,8 @@ namespace AdminShellNS
                 else
                 {
                     // check IdType
-                    var idf = AdminShellUtil.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
-                    if (idf == AdminShellUtil.ConstantFoundEnum.No)
+                    var idf = AdminShellUtilV20.CheckIfInConstantStringArray(IdentifierTypeNames, k.idType);
+                    if (idf == AdminShellUtilV20.ConstantFoundEnum.No)
                         // violation case
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SchemaViolation, container,
@@ -572,20 +575,20 @@ namespace AdminShellNS
                             {
                                 k.idType = Custom;
                             }));
-                    if (idf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                    if (idf == AdminShellUtilV20.ConstantFoundEnum.AnyCase)
                         // violation case
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SchemaViolation, container,
                             "Key: idType in wrong casing",
                             () =>
                             {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                k.idType = AdminShellUtilV20.CorrectCasingForConstantStringArray(
                                     IdentifierTypeNames, k.idType);
                             }));
 
                     // check type
-                    var tf = AdminShellUtil.CheckIfInConstantStringArray(KeyElements, k.type);
-                    if (tf == AdminShellUtil.ConstantFoundEnum.No)
+                    var tf = AdminShellUtilV20.CheckIfInConstantStringArray(KeyElements, k.type);
+                    if (tf == AdminShellUtilV20.ConstantFoundEnum.No)
                         // violation case
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SchemaViolation, container,
@@ -594,14 +597,14 @@ namespace AdminShellNS
                             {
                                 k.type = GlobalReference;
                             }));
-                    if (tf == AdminShellUtil.ConstantFoundEnum.AnyCase)
+                    if (tf == AdminShellUtilV20.ConstantFoundEnum.AnyCase)
                         // violation case
                         results.Add(new AasValidationRecord(
                             AasValidationSeverity.SchemaViolation, container,
                             "Key: type in wrong casing",
                             () =>
                             {
-                                k.idType = AdminShellUtil.CorrectCasingForConstantStringArray(
+                                k.idType = AdminShellUtilV20.CorrectCasingForConstantStringArray(
                                     KeyElements, k.type);
                             }));
                 }
@@ -2263,7 +2266,7 @@ namespace AdminShellNS
 
             public string GetFriendlyName()
             {
-                return AdminShellUtil.FilterFriendlyName(this.idShort);
+                return AdminShellUtilV20.FilterFriendlyName(this.idShort);
             }
 
             public virtual Reference GetReference(bool includeParents = true)
@@ -2603,8 +2606,8 @@ namespace AdminShellNS
             public new string GetFriendlyName()
             {
                 if (identification != null && identification.id != "")
-                    return AdminShellUtil.FilterFriendlyName(this.identification.id);
-                return AdminShellUtil.FilterFriendlyName(this.idShort);
+                    return AdminShellUtilV20.FilterFriendlyName(this.identification.id);
+                return AdminShellUtilV20.FilterFriendlyName(this.idShort);
             }
 
             public override string ToString()
@@ -2813,7 +2816,7 @@ namespace AdminShellNS
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "\"AAS\"");
+                var caption = AdminShellUtilV20.EvalToNonNullString("\"{0}\" ", idShort, "\"AAS\"");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
 
@@ -2988,7 +2991,7 @@ namespace AdminShellNS
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV20.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
 
@@ -3157,7 +3160,7 @@ namespace AdminShellNS
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV20.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
                 if (this.semanticId != null)
                     info = Key.KeyListToString(this.semanticId.Keys);
@@ -3601,7 +3604,7 @@ namespace AdminShellNS
                         () =>
                         {
                             this.preferredName = new AdminShell.LangStringSetIEC61360("EN?",
-                                AdminShellUtil.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
+                                AdminShellUtilV20.EvalToNonEmptyString("{0}", cd.idShort, "UNKNOWN"));
                         }));
 
                 if (this.shortName != null && this.shortName.Count < 1)
@@ -5783,12 +5786,12 @@ namespace AdminShellNS
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV20.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
                 // TODO (MIHO, 2021-07-08): obvious error .. info should receive semanticId .. but would change 
                 // display presentation .. therefore to be checked again
                 if (semanticId != null)
-                    AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
+                    AdminShellUtilV20.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
                 return Tuple.Create(caption, info);
             }
 
@@ -7123,7 +7126,7 @@ namespace AdminShellNS
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV20.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
                 var info = "";

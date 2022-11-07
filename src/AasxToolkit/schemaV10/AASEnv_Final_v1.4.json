@@ -25,7 +25,7 @@
     "assets": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Asset"
+        "$ref": "#/definitions/AssetInformation"
       }
     },
     "conceptDescriptions": {
@@ -219,7 +219,7 @@
         "DataElement",
         "View",
         "Property",
-        "SubmodelElement",
+        "ISubmodelElement",
         "File",
         "Blob",
         "ReferenceElement",
@@ -231,7 +231,7 @@
         "AssetAdministrationShell",
         "Submodel",
         "ConceptDescription",
-        "Asset"
+        "AssetInformation"
       ],
       "enum": [
         "GlobalReference",
@@ -240,7 +240,7 @@
         "DataElement",
         "View",
         "Property",
-        "SubmodelElement",
+        "ISubmodelElement",
         "File",
         "Blob",
         "ReferenceElement",
@@ -252,7 +252,7 @@
         "AssetAdministrationShell",
         "Submodel",
         "ConceptDescription",
-        "Asset"
+        "AssetInformation"
       ]
     },
     "ModelType": {
@@ -279,7 +279,7 @@
     "DataSpecificationContent": {
       "type": "object"
     },
-    "Asset": {
+    "AssetInformation": {
       "additionalProperties": false,
       "properties": {
         "identification": {
@@ -391,7 +391,7 @@
         "submodelElements": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SubmodelElement"
+            "$ref": "#/definitions/ISubmodelElement"
           }
         }
       }
@@ -551,7 +551,7 @@
         }
       }
     },
-    "SubmodelElement": {
+    "ISubmodelElement": {
       "type": "object",
       "properties": {
         "semanticId": {
@@ -962,7 +962,7 @@
         "value": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SubmodelElement"
+            "$ref": "#/definitions/ISubmodelElement"
           }
         },
         "valueType": {

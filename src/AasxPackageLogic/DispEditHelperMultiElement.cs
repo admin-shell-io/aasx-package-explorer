@@ -15,10 +15,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Extenstions;
 
 namespace AasxPackageLogic
 {
@@ -31,8 +33,8 @@ namespace AasxPackageLogic
         public void DispMultiElementCutCopyPasteHelper(
             AnyUiPanel stack,
             ModifyRepo repo,
-            AdminShell.AdministrationShellEnv env,
-            AdminShell.IAasElement parentContainer,
+            AasCore.Aas3_0_RC02.Environment env,
+            IClass parentContainer,
             CopyPasteBuffer cpb,
             ListOfVisualElementBasic entities,
             string label = "Buffer:")
@@ -59,11 +61,11 @@ namespace AasxPackageLogic
                         foreach (var el in entities)
                         {
                             if (el is VisualElementSubmodelElement vesme
-                                && parentContainer is AdminShell.Referable pcref)
+                                && parentContainer is IReferable pcref)
                             {
-                                var sme = vesme.theWrapper?.submodelElement;
-                                AdminShell.EnumerationPlacmentBase placement = null;
-                                if (parentContainer is AdminShell.IEnumerateChildren enc)
+                                var sme = vesme.theWrapper;
+                                EnumerationPlacmentBase placement = null;
+                                if (parentContainer is IEnumerateChildren enc)
                                     placement = enc.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
                                     vesme.theWrapper, sme, placement));
@@ -78,16 +80,16 @@ namespace AasxPackageLogic
                                     null, vesm.theSubmodel));
 
                             if (el is VisualElementOperationVariable veopv
-                                && parentContainer is AdminShell.Referable pcref2)
-                                if (veopv.theOpVar?.value != null)
+                                && parentContainer is IReferable pcref2)
+                                if (veopv.theOpVar?.Value != null)
                                     cpb.Items.Add(new CopyPasteItemSME(env, pcref2,
-                                        veopv.theOpVar.value, veopv.theOpVar.value?.submodelElement));
+                                        veopv.theOpVar.Value, veopv.theOpVar.Value));
 
                             if (el is VisualElementConceptDescription vecd)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, vecd.theCD));
 
-                            if (el is VisualElementAsset veass)
-                                cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veass.theAsset));
+                            //if (el is VisualElementAsset veass)
+                            //    cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veass.theAsset));
 
                             if (el is VisualElementAdminShell veaas)
                                 cpb.Items.Add(new CopyPasteItemIdentifiable(parentContainer, veaas.theAas));
@@ -283,33 +285,35 @@ namespace AasxPackageLogic
             return res;
         }
 
-        public void ChangeElementAttributes(AdminShell.IAasElement el, AnyUiDialogueDataChangeElementAttributes dia)
+        public void ChangeElementAttributes(IClass el, AnyUiDialogueDataChangeElementAttributes dia)
         {
             // access
             if (el == null || dia == null)
                 return;
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.IdShort &&
-                el is AdminShell.Referable rf1)
+                el is IReferable rf1)
             {
-                rf1.idShort = PerformWildcardReplace(rf1.idShort, dia.Pattern);
+                rf1.IdShort = PerformWildcardReplace(rf1.IdShort, dia.Pattern);
             }
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.Description &&
-                el is AdminShell.Referable rf2)
+                el is IReferable rf2)
             {
-                var input = (rf2.description?.langString == null) ? "" : rf2.description.langString[dia.AttributeLang];
+                //var input = (rf2.Description?.LangStrings == null) ? "" : rf2.Description.LangStrings[dia.AttributeLang];
+                var rf2LangString = rf2.Description.LangStrings.Where(s => s.Language.Equals(dia.AttributeLang)).First();
+                var input = (rf2.Description?.LangStrings == null) ? "" : rf2LangString.Text;
                 var nd = PerformWildcardReplace(input, dia.Pattern);
                 if (nd != null)
                 {
-                    if (rf2.description?.langString == null)
-                        rf2.description = new AdminShell.Description();
-                    rf2.description.langString[dia.AttributeLang] = nd;
+                    if (rf2.Description?.LangStrings == null)
+                        rf2.Description = new LangStringSet(new List<LangString>());
+                    rf2LangString.Text = nd;
                 }
             }
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.ValueText &&
-                el is AdminShell.SubmodelElement sme)
+                el is ISubmodelElement sme)
             {
                 var nd = PerformWildcardReplace(sme.ValueAsText(dia.AttributeLang), dia.Pattern);
                 if (nd != null)
@@ -427,14 +431,14 @@ namespace AasxPackageLogic
 
                 // which type?
                 var first = entities.First();
-                AdminShell.IAasElement parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
-                                                as AdminShell.IAasElement;
+                IClass parent = indexInfo.SharedParent.GetDereferencedMainDataObject()
+                                                as IClass;
 
                 // TODO (MIHO, 2021-07-08): check for completeness
                 if (first is VisualElementSubmodel vesm)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.Submodel>();
+                    var bos = entities.GetListOfBusinessObjects<Submodel>();
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true);
 
@@ -442,14 +446,14 @@ namespace AasxPackageLogic
                     DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, entities);
                 }
 
-                if (first is VisualElementSubmodelRef vesmr && parent is AdminShell.AdministrationShell aas
-                    && aas.submodelRefs != null)
+                if (first is VisualElementSubmodelRef vesmr && parent is AssetAdministrationShell aas
+                    && aas.Submodels != null)
                 {
                     // up down delete
-                    var bos = entities.GetListOfMapResults<AdminShell.SubmodelRef,
+                    var bos = entities.GetListOfMapResults<Reference,
                        VisualElementSubmodelRef>((ve) => ve?.theSubmodelRef);
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        aas.submodelRefs, bos, indexInfo, reFocus: true);
+                        aas.Submodels, bos, indexInfo, reFocus: true);
 
                     // cut copy
                     DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, entities);
@@ -458,21 +462,21 @@ namespace AasxPackageLogic
                 if (first is VisualElementSubmodelElement sme)
                 {
                     // up down delete
-                    var bos = entities.GetListOfMapResults<AdminShell.SubmodelElementWrapper,
+                    var bos = entities.GetListOfMapResults<ISubmodelElement,
                         VisualElementSubmodelElement>((ve) => ve?.theWrapper);
 
-                    if (bos.Count > 0 && parent is AdminShell.Submodel sm)
-                        EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
-                            sm.submodelElements, bos, indexInfo, reFocus: true);
+                    if (bos.Count > 0 && parent is Submodel sm)
+                        EntityListMultipleUpDownDeleteHelper<ISubmodelElement>(stack, repo,
+                            sm.SubmodelElements, bos, indexInfo, reFocus: true);
 
-                    if (bos.Count > 0 && parent is AdminShell.SubmodelElementCollection smec)
-                        EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
-                            smec.value, bos, indexInfo, reFocus: true);
+                    if (bos.Count > 0 && parent is SubmodelElementCollection smec)
+                        EntityListMultipleUpDownDeleteHelper<ISubmodelElement>(stack, repo,
+                            smec.Value, bos, indexInfo, reFocus: true);
 
                     DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, entities);
                 }
 
-                if (first is VisualElementOperationVariable opv && parent is AdminShell.Operation oppa)
+                if (first is VisualElementOperationVariable opv && parent is Operation oppa)
                 {
                     // sanity check: same dir?
                     var sameDir = true;
@@ -484,7 +488,7 @@ namespace AasxPackageLogic
                     // up down delete
                     if (sameDir)
                     {
-                        var bos = entities.GetListOfMapResults<AdminShell.OperationVariable,
+                        var bos = entities.GetListOfMapResults<OperationVariable,
                            VisualElementOperationVariable>((ve) => ve?.theOpVar);
                         EntityListMultipleUpDownDeleteHelper(stack, repo,
                             oppa[opv.theDir], bos, indexInfo, reFocus: true,
@@ -498,7 +502,7 @@ namespace AasxPackageLogic
                 if (first is VisualElementConceptDescription vecd)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.ConceptDescription>();
+                    var bos = entities.GetListOfBusinessObjects<ConceptDescription>();
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         vecd.theEnv?.ConceptDescriptions, bos, indexInfo,
@@ -508,49 +512,30 @@ namespace AasxPackageLogic
                         {
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == vecd.theEnv)
                                                  .FirstOrDefault(),
-                            ThisElem = vecd.theEnv?.ConceptDescriptions
+                            ThisElem = (IClass)(vecd.theEnv?.ConceptDescriptions)
                         });
 
                     // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions,
-                        this.theCopyPaste, entities);
-                }
-
-                if (first is VisualElementAsset veass)
-                {
-                    // up down delete
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.Asset>();
-
-                    EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        veass.theEnv?.Assets, bos, indexInfo,
-                        sendUpdateEvent: new PackCntChangeEventData()
-                        {
-                            Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veass.theEnv)
-                                                 .FirstOrDefault(),
-                            ThisElem = veass.theEnv?.Assets
-                        });
-
-                    // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, veass.theEnv, veass.theEnv?.Assets,
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, (IClass)(vecd.theEnv?.ConceptDescriptions),
                         this.theCopyPaste, entities);
                 }
 
                 if (first is VisualElementAdminShell veaas)
                 {
                     // up down delete
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.AdministrationShell>();
+                    var bos = entities.GetListOfBusinessObjects<AssetAdministrationShell>();
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        veaas.theEnv?.AdministrationShells, bos, indexInfo,
+                        veaas.theEnv?.AssetAdministrationShells, bos, indexInfo,
                         sendUpdateEvent: new PackCntChangeEventData()
                         {
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veaas.theEnv)
                                                  .FirstOrDefault(),
-                            ThisElem = veaas.theEnv?.AdministrationShells
+                            ThisElem = (IClass)(veaas.theEnv?.AssetAdministrationShells)
                         }); ;
 
                     // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, veaas.theEnv, veaas.theEnv?.AdministrationShells,
+                    DispMultiElementCutCopyPasteHelper(stack, repo, veaas.theEnv, (IClass)(veaas.theEnv?.AssetAdministrationShells),
                         this.theCopyPaste, entities);
                 }
 
@@ -558,7 +543,7 @@ namespace AasxPackageLogic
                 // Change element attributes?
                 //
                 {
-                    var bos = entities.GetListOfBusinessObjects<AdminShell.Referable>();
+                    var bos = entities.GetListOfBusinessObjects<IReferable>();
                     if (bos.Count > 0 &&
                         !(first is VisualElementSupplementalFile))
                     {
