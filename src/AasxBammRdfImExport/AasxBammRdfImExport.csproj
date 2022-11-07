@@ -4,7 +4,10 @@
 		<OutputType>Library</OutputType>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	</PropertyGroup>
-	<ItemGroup>
+  <PropertyGroup>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  <ItemGroup>
 		<ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
 		<ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
 	</ItemGroup>
