@@ -418,9 +418,12 @@ namespace AasxPackageLogic
         [OptionDescription(Description ="List of tuples (Name, Text) with presets for available scripts.")]
         public List<AnyUiDialogueDataTextEditor.Preset> ScriptPresets;
 
-        [OptionDescription(Description = "Determins if user is prompted before strarting a script..",
-            Cmd = "-launch-without-prompt")]
-        public bool LaunchWithoutPrompt = false;
+        [OptionDescription(Description = "Verbosity level for script execution (0=silent, 2=very verbose).")]
+        public int ScriptLoglevel = 2;
+
+        [OptionDescription(Description = "Determins if user is prompted before starting a script..",
+            Cmd = "-script-launch-without-prompt")]
+        public bool ScriptLaunchWithoutPrompt = false;
 
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]

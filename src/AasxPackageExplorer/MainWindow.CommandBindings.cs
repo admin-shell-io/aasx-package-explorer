@@ -3804,6 +3804,7 @@ namespace AasxPackageExplorer
         }
 
         protected string _currentScriptText = "";
+        protected AasxScript _aasxScript = null;
 
         public void CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
         {
@@ -3818,9 +3819,21 @@ namespace AasxPackageExplorer
                     return;
                 }
 
+                // trivial things
+                if (_aasxScript?.IsExecuting == true)
+                {
+                    if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
+                        "An AASX script is already executed! Continue anyway?", "Warning"
+                        , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                        return;
+                    else
+                        // brutal
+                        _aasxScript = null;
+                }
+
                 // prompt for the script
                 var uc = new TextEditorFlyout();
-                uc.DiaData.MimeType = "application/C#";
+                uc.DiaData.MimeType = "application/csharp";
                 uc.DiaData.Caption = "Edit script to be launched ..";
                 uc.DiaData.Presets = Options.Curr.ScriptPresets;
                 uc.DiaData.Text = _currentScriptText;
@@ -3830,8 +3843,12 @@ namespace AasxPackageExplorer
                 {
                     try
                     {
+                        // create first
+                        if (_aasxScript == null)
+                            _aasxScript = new AasxScript();
+
                         // executing
-                        AasxScript.StartEnginBackground(uc.DiaData.Text);
+                        _aasxScript.StartEnginBackground(uc.DiaData.Text, Options.Curr.ScriptLoglevel);
 
                         // redisplay; add to "normal" event quoue
                         DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(null));
@@ -3845,10 +3862,54 @@ namespace AasxPackageExplorer
 
             for (int i=0;i<9; i++)
                 if (cmd == $"launchscript{i}" 
-                    && Options.Curr.ScriptPresets != null
-                    && i < Options.Curr.ScriptPresets.Count)
+                    && Options.Curr.ScriptPresets != null)
                 {
-                    ;
+                    // order in human sense
+                    var scriptIndex = (i == 0) ? 9 : (i - 1);
+                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
+                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
+                        return;
+
+                    // still running?
+                    if (_aasxScript?.IsExecuting == true)
+                    {
+                        if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
+                            "An AASX script is already executed! Continue anyway?", "Warning"
+                            , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                            return;
+                        else
+                            // brutal
+                            _aasxScript = null;
+                    }
+
+                    // prompting
+                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
+                    {
+                        if (AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
+                            $"Executing script preset #{1 + scriptIndex} " +
+                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?", 
+                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
+                            return;
+                    }
+
+                    // execute
+                    try
+                    {
+                        // create first
+                        if (_aasxScript == null)
+                            _aasxScript = new AasxScript();
+
+                        // executing
+                        _aasxScript.StartEnginBackground(
+                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel);
+
+                        // redisplay; add to "normal" event quoue
+                        DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(null));
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Singleton.Error(ex, "when executing script");
+                    }
                 }
         }
     }

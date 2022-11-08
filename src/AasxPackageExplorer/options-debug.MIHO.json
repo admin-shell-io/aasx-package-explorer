@@ -259,15 +259,17 @@
       "AutoClose": false
     }
   ],
-  "FontSizePreset" :  16,
+  "FontSizePreset": 16,
   "ScriptPresets": [
     {
       "Name": "Test1",
-      "Text": "WriteLine(\"Hallo\");"
+      "Text": "WriteLine(\"Hallo\"); \nSleep(2000); \nWriteLine(\"Bye, bye\"); \n"
     },
     {
       "Name": "Test2",
       "Text": "c=1;\nd=2;"
     }
-  ]
+  ],
+  "ScriptLoglevel": 2,
+  "ScriptLaunchWithoutPrompt": false
 }
