@@ -106,11 +106,32 @@ namespace AasxPackageLogic.PackageCentral
             return output;
         }
 
-        internal int PostAasxFileOnServer(string fileName, byte[] fileContent)
+        internal int PostAasxFileOnServer(string fileName, byte[] fileContent)//going here SAVE AASX
         {
             var aasiIds = new List<string>();
 
             var response = _fileApiInstance.PostAASXPackageWithHttpInfo(aasiIds, fileContent, fileName);
+            if (response.StatusCode == 201)
+            {
+                return response.Data;
+            }
+            else
+            {
+                Log.Singleton.Error($"Uploading AASX File in file repository failed with error {response.StatusCode}");
+                return -1;
+            }
+
+        }
+
+
+        internal async Task<int> PostAasxFileOnServerAsync(string fileName, byte[] fileContent, PackCntRuntimeOptions runtimeOptions)
+        {
+            var aasiIds = new List<string>();
+
+            var uw = new UploadWriter(fileContent, runtimeOptions);
+            var fileparameter = FileParameter.Create("file", uw.Write, fileContent.Length, "no_file_name_provided");
+
+            var response = await _fileApiInstance.PostAASXPackageAsyncWithHttpInfo(aasiIds, fileparameter, fileName);
             if (response.StatusCode == 201)
             {
                 return response.Data;
@@ -139,14 +160,17 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        internal Task PutAasxFileOnServerAsync(string copyFileName, string packageId)
+        internal async Task PutAasxFileOnServerAsync(string copyFileName, string packageId, PackCntRuntimeOptions runtimeOptions)
         {
             try
             {
                 //TODO (jtikekar, 2022-04-04): aasIds?
                 var aasIds = new List<string>();
                 var fileContent = File.ReadAllBytes(copyFileName);
-                var response = _fileApiInstance.PutAASXByPackageIdWithHttpInfo(aasIds, fileContent, copyFileName, Base64UrlEncoder.Encode(packageId));
+                var uw = new UploadWriter(fileContent, runtimeOptions);
+                var fileparameter = FileParameter.Create("file", uw.Write, fileContent.Length, "no_file_name_provided");
+
+                var response = await _fileApiInstance.PutAASXByPackageIdAsyncWithHttpInfo(aasIds, fileparameter, copyFileName, Base64UrlEncoder.Encode(packageId));
                 if (response.StatusCode != 204)
                 {
                     Log.Singleton.Error($"Update AASX file in file repository failed with error {response.StatusCode}");
@@ -156,8 +180,6 @@ namespace AasxPackageLogic.PackageCentral
             {
                 Log.Singleton.Error(e.Message);
             }
-
-            return Task.CompletedTask;
         }
 
         internal async Task<string> LoadAasxPackageAsync(string packageId, PackCntRuntimeOptions runtimeOptions)
@@ -237,6 +259,42 @@ namespace AasxPackageLogic.PackageCentral
                     this.FileName = fileName;
                 }
             }
+        }
+    }
+
+    internal class UploadWriter
+    {
+        private const int _defaultBufferSize = 4096;
+        private byte[] _content;
+        private PackCntRuntimeOptions _runtimeOptions;
+
+        public UploadWriter(byte[] fileContent, PackCntRuntimeOptions runtimeOptions)
+        {
+            _content = fileContent;
+            _runtimeOptions = runtimeOptions;
+        }
+
+        internal void Write(Stream writeStream)
+        {
+            var buffer = new byte[_defaultBufferSize];
+            long uploaded = 0;
+
+            using (var _instream = new MemoryStream(_content))
+            {
+                while (true)
+                {
+                    var length = _instream.Read(buffer, 0, buffer.Length);
+                    if (length <= 0)
+                        break;
+
+                    uploaded += length;
+
+                    writeStream.Write(buffer, 0, length);
+                    _runtimeOptions?.ProgressChanged(PackCntRuntimeOptions.Progress.Ongoing, _content.Length, uploaded);
+                }
+            }
+            _runtimeOptions?.ProgressChanged(PackCntRuntimeOptions.Progress.Final, _content.Length, uploaded);
+
         }
     }
 }

@@ -56,7 +56,7 @@ namespace AasxIntegrationBaseWpf
             return res;
         }
 
-        public void Start(UIElement placementTarget, Action<string> lambda)
+        public void Start(UIElement placementTarget, Func<string, Task> lambda)
         {
             // render
             var cm = new ContextMenu();

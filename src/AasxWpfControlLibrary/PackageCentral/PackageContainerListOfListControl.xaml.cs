@@ -98,7 +98,7 @@ namespace AasxWpfControlLibrary.PackageCentral
         // UI higher-level stuff (taken over and maintained in from MainWindow.CommandBindings.cs)
         //
 
-        public void CommandBinding_FileRepoAll(Control senderList, PackageContainerListBase fr, string cmd)
+        public async Task CommandBinding_FileRepoAllAsync(Control senderList, PackageContainerListBase fr, string cmd)
         {
             // access
             if (cmd == null || _flyout == null)
@@ -279,7 +279,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     }
 
                     // generate appropriate container
-                    var cnt = PackageContainerFactory.GuessAndCreateFor(
+                    var cnt = await PackageContainerFactory.GuessAndCreateForAsync(
                         null, veEnv.thePackageSourceFn, veEnv.thePackageSourceFn,
                         overrideLoadResident: false,
                         containerOptions: PackageContainerOptionsBase.CreateDefault(Options.Curr));
@@ -314,8 +314,9 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     if (fr is PackageContainerAasxFileRepository fileRepo)
                     {
+                        var opt = _packageCentral.CentralRuntimeOptions;
                         //Add the file to File Server
-                        int packageId = fileRepo.AddPackageToServer(inputDialog.FileNames[0]);
+                        int packageId = await fileRepo.AddPackageToServerAsync(inputDialog.FileNames[0], opt);
                         fileRepo.LoadAasxFile(_packageCentral, inputDialog.FileNames[0], packageId);
                     }
                 }
@@ -397,7 +398,7 @@ namespace AasxWpfControlLibrary.PackageCentral
             FileDoubleClick?.Invoke(senderList, fr, fi);
         }
 
-        private void PackageContainerListControl_ButtonClick(
+        private async void PackageContainerListControl_ButtonClick(
             Control senderList,
             PackageContainerListBase fr, PackageContainerListControl.CustomButton btn,
             Button sender)
@@ -431,15 +432,15 @@ namespace AasxWpfControlLibrary.PackageCentral
                     cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
                 }
 
-                cm.Start(sender, (tag) =>
+                cm.Start(sender, async (tag) =>
                 {
-                    CommandBinding_FileRepoAll(senderList, fr, tag);
+                    await CommandBinding_FileRepoAllAsync(senderList, fr, tag);
                 });
             }
 
             if (btn == PackageContainerListControl.CustomButton.Query)
             {
-                CommandBinding_FileRepoAll(senderList, fr, "FileRepoQuery");
+                await CommandBinding_FileRepoAllAsync(senderList, fr, "FileRepoQuery");
             }
         }
 
