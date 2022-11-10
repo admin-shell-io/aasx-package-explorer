@@ -8,8 +8,11 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 
@@ -23,12 +26,49 @@ namespace AasxPackageExplorer
             if (windowTitle != null)
                 this.Title = windowTitle;
 
+            FlowDocViewer.Document = new FlowDocument();
+            //FlowDocViewer.Document.FontFamily = new System.Windows.Media.FontFamily("Lucida Console");
+            //FlowDocViewer.Document.FontSize = 12;
+            //FlowDocViewer.Document.Background = System.Windows.Media.Brushes.LightGray; 
+
+            FlowDocViewer.Document.PageWidth = 1000;
+
             foreach (var sp in storedPrints)
             {
+#if __disabled
                 // Add to rich text box
                 AasxWpfBaseUtils.StoredPrintToRichTextBox(
                     this.RichTextTextReport, sp, AasxWpfBaseUtils.DarkPrintColors, linkClickHandler: link_Click);
+#endif
+                // Add to flow document
+                AasxWpfBaseUtils.StoredPrintToFloqDoc(
+                    FlowDocViewer.Document, sp, AasxWpfBaseUtils.DarkPrintColors, 
+                    linkClickHandler: link_Click);
+            }            
+        }
+
+        protected ScrollViewer FindScrollViewer(FlowDocumentScrollViewer flowDocumentScrollViewer)
+        {
+            if (VisualTreeHelper.GetChildrenCount(flowDocumentScrollViewer) == 0)
+            {
+                return null;
             }
+
+            // Border is the first child of first child of a ScrolldocumentViewer
+            DependencyObject firstChild = VisualTreeHelper.GetChild(flowDocumentScrollViewer, 0);
+            if (firstChild == null)
+            {
+                return null;
+            }
+
+            Decorator border = VisualTreeHelper.GetChild(firstChild, 0) as Decorator;
+
+            if (border == null)
+            {
+                return null;
+            }
+
+            return border.Child as ScrollViewer;
         }
 
         public MessageReportWindow(string fullText, string windowTitle = null)
@@ -37,8 +77,12 @@ namespace AasxPackageExplorer
             if (windowTitle != null)
                 this.Title = windowTitle;
 
+#if __disabled
             this.RichTextTextReport.Document.Blocks.Clear();
             this.RichTextTextReport.Document.Blocks.Add(new Paragraph(new Run(fullText)));
+#endif
+            this.FlowDocViewer.Document.Blocks.Clear();
+            this.FlowDocViewer.Document.Blocks.Add(new Paragraph(new Run(fullText)));
         }
 
         protected void link_Click(object sender, RoutedEventArgs e)
@@ -54,6 +98,13 @@ namespace AasxPackageExplorer
             System.Diagnostics.Process.Start(uri);
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // scroll
+            FindScrollViewer(FlowDocViewer)?.ScrollToEnd();
+        }
+
+#if __disabled
         private void ButtonCopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
             var tr = new TextRange(
@@ -62,6 +113,22 @@ namespace AasxPackageExplorer
             );
             Clipboard.SetText(tr.Text);
             this.DialogResult = true;
+        }
+#endif
+
+        public void AddStoredPrint(StoredPrint sp)
+        {
+            // access
+            if (FlowDocViewer?.Document == null || sp == null)
+                return;
+
+            // Add to flow document
+            AasxWpfBaseUtils.StoredPrintToFloqDoc(
+                FlowDocViewer.Document, sp, AasxWpfBaseUtils.DarkPrintColors,
+                linkClickHandler: link_Click);
+
+            // scroll
+            FindScrollViewer(FlowDocViewer)?.ScrollToEnd();
         }
 
     }

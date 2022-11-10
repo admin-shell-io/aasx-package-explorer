@@ -1044,6 +1044,9 @@ namespace AasxPackageExplorer
                             break;
                         }
                 }
+
+                // message window
+                _messageReportWindow?.AddStoredPrint(sp);
             }
 
             // always tell the errors
@@ -2209,6 +2212,8 @@ namespace AasxPackageExplorer
             }
         }
 
+        protected MessageReportWindow _messageReportWindow = null;
+
         private void ButtonReport_Click(object sender, RoutedEventArgs e)
         {
             if (sender == ButtonClear)
@@ -2223,6 +2228,7 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonReport)
             {
+#if __disabled
                 // report on message / exception
                 var head = @"
                 |Dear user,
@@ -2273,6 +2279,34 @@ namespace AasxPackageExplorer
                 // show dialogue
                 var dlg = new MessageReportWindow(Prints());
                 dlg.ShowDialog();
+#endif
+
+                // show only if not present
+                if (_messageReportWindow != null)
+                    return;
+
+                // Collect all the stored log prints
+                IEnumerable<StoredPrint> Prints()
+                {
+                    var prints = Log.Singleton.GetStoredLongTermPrints();
+                    if (prints != null)
+                    {
+                        foreach (var sp in prints)
+                        {
+                            yield return sp;
+                            if (sp.stackTrace != null)
+                                yield return new StoredPrint("    Stacktrace: " + sp.stackTrace);
+                        }
+                    }
+                }
+
+                // show (non modal)
+                _messageReportWindow = new MessageReportWindow(Prints());
+                _messageReportWindow.Closed += (s2, e2) =>
+                {
+                    _messageReportWindow = null;
+                };
+                _messageReportWindow.Show();
             }
         }
 
@@ -2530,7 +2564,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        #region Modal Flyovers
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -2764,8 +2798,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2855,7 +2889,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
