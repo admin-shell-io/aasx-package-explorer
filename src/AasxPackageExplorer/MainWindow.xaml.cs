@@ -160,7 +160,7 @@ namespace AasxPackageExplorer
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("WorkspaceEdit") == true,
+                _packageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("EditMenu") == true,
                 lazyLoadingFirst: true);
 
             // ok .. try re-focus!!

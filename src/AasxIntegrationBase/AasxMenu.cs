@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,16 +27,73 @@ namespace AasxIntegrationBase
     }
 
     /// <summary>
-    /// AASX menu items might call this action when activated.
+    /// Special information requirement to an AASX menu item
     /// </summary>
-    /// <param name="nameLower">Name of menu item in lower case</param>
-    public delegate void AasxMenuActionDelegate(string nameLower, AasxMenuItemBase item);
+    public enum AasxMenuArgReqInfo { 
+        None = 0x00,
+        AAS = 0x01, 
+        Submodel = 0x02, 
+        SubmodelRef = 0x04, 
+        SME = 0x08};
+
+    /// <summary>
+    /// AASX menu items will link to functionality, which requires
+    /// a set of arguments to executed (automatically). This class
+    /// describes the requirements for a particular argument.
+    /// </summary>
+    public class AasxMenuArgDef
+    {
+        /// <summary>
+        /// Name of the argument. Might be used in script language and
+        /// command line. PascalCasing is recommended.
+        /// </summary>
+        public string Name = "";
+
+        /// <summary>
+        /// Helping text for the argument. Might be displayed on the
+        /// command line.
+        /// </summary>
+        public string Help = "";
+    }
+
+    /// <summary>
+    /// List of such argument definitions.
+    /// For future extension.
+    /// </summary>
+    public class AasxMenuListOfArgDefs : List<AasxMenuArgDef>
+    {
+        public AasxMenuListOfArgDefs Add(
+            string name, string help)
+        {
+            this.Add(new AasxMenuArgDef() { Name = name, Help = help }); 
+            return this;
+        }
+
+        public AasxMenuArgDef Find(string name)
+        {
+            return this
+                .FindAll((arg) => arg?.Name?.Trim().ToLower() == name?.Trim().ToLower())
+                .FirstOrDefault();
+        }
+    }
 
     /// <summary>
     /// AASX menu items might call this action when activated.
     /// </summary>
     /// <param name="nameLower">Name of menu item in lower case</param>
-    public delegate Task AasxMenuActionAsyncDelegate(string nameLower, AasxMenuItemBase item);
+    public delegate void AasxMenuActionDelegate(
+        string nameLower, 
+        AasxMenuItemBase item,
+        AasxMenuActionTicket ticket);
+
+    /// <summary>
+    /// AASX menu items might call this action when activated.
+    /// </summary>
+    /// <param name="nameLower">Name of menu item in lower case</param>
+    public delegate Task AasxMenuActionAsyncDelegate(
+        string nameLower, 
+        AasxMenuItemBase item,
+        AasxMenuActionTicket ticket);
 
     /// <summary>
     /// Base class for menu items with a possible action.
@@ -49,6 +107,17 @@ namespace AasxIntegrationBase
         public string Name = "";
 
         /// <summary>
+        /// List of argument definitions
+        /// </summary>
+        public AasxMenuListOfArgDefs ArgDefs = null;
+
+        /// <summary>
+        /// List of required informations to be available, but
+        /// not provided by used-provided arguments.
+        /// </summary>
+        public AasxMenuArgReqInfo RequiredInfos;
+
+        /// <summary>
         /// The action to be activated.
         /// </summary>
         public AasxMenuActionDelegate Action = null;
@@ -57,6 +126,21 @@ namespace AasxIntegrationBase
         /// The action to be activated.
         /// </summary>
         public AasxMenuActionAsyncDelegate ActionAsync = null;
+
+        //
+        // Convenience
+        //
+
+        public AasxMenuItemBase Set(
+            Nullable<AasxMenuArgReqInfo> reqs = null,
+            AasxMenuListOfArgDefs args = null)
+        {
+            if (reqs != null)
+                this.RequiredInfos = reqs.Value;
+            if (args != null)
+                this.ArgDefs = args;
+            return this;
+        }
     }
 
     /// <summary>
@@ -105,7 +189,7 @@ namespace AasxIntegrationBase
         public bool IsCheckable = false;
 
         /// <summary>
-        /// Switch state to initailize with.
+        /// Switch   state to initailize with.
         /// </summary>
         public bool IsChecked = false;
 
@@ -140,7 +224,7 @@ namespace AasxIntegrationBase
         public void Add(AasxMenuItemBase item)
         {
             Childs.Add(item);
-        }
+        }        
     }
 
 
@@ -182,7 +266,9 @@ namespace AasxIntegrationBase
             AasxMenuFilter filter = AasxMenuFilter.WPF,
             string inputGesture = null,
             bool onlyDisplay = false,
-            bool isCheckable = false, bool isChecked = false)
+            bool isCheckable = false, bool isChecked = false,
+            AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
+            AasxMenuListOfArgDefs args = null)
         {
             this.Add(new AasxMenuItem()
             {
@@ -283,20 +369,41 @@ namespace AasxIntegrationBase
         // Operate
         //
 
-        public void ActivateAction(AasxMenuItemBase mi)
+        public async Task ActivateAction(AasxMenuItemBase mi, AasxMenuActionTicket ticket = null)
         {
             var name = mi?.Name?.Trim()?.ToLower();
 
             if (mi?.ActionAsync != null)
-                mi.ActionAsync(name, mi);
+                await mi.ActionAsync(name, mi, ticket);
             else if (mi?.Action != null)
-                mi.Action(name, mi);
+                mi.Action(name, mi, ticket);
             else if (this.DefaultActionAsync != null)
-                this.DefaultActionAsync(name, mi);
+                await this.DefaultActionAsync(name, mi, ticket);
             else if (this.DefaultAction != null)
-                this.DefaultAction(name, mi);
+                this.DefaultAction(name, mi, ticket);
         }
 
+        //
+        // Child management
+        //
+
+        public IEnumerable<AasxMenuItemBase> FindAll(Func<AasxMenuItemBase, bool> pred)
+        {
+            foreach (var ch in this)
+            {
+                if (pred == null || pred(ch))
+                    yield return ch;
+                if (ch is AasxMenuItem chmi && chmi.Childs != null)
+                    foreach (var x in chmi.Childs.FindAll(pred))
+                        yield return x;
+            }
+        }
+
+        public AasxMenuItemBase FindName(string name)
+        {
+            return FindAll((i) => i?.Name?.Trim().ToLower() == name?.Trim().ToLower())
+                .FirstOrDefault(); ;
+        }
     }
 
     /// <summary>
@@ -304,6 +411,58 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxMenuSeparator : AasxMenuItemBase
     {
+    }
+
+    /// <summary>
+    /// This class holds a runtime item which is used to invoke a certain action,
+    /// transfer parameter assignments and give back action recults.
+    /// </summary>
+    public class AasxMenuActionTicket
+    {
+        /// <summary>
+        /// The reuqested AASX menu item
+        /// </summary>
+        public AasxMenuItemBase MenuItem;
+
+        /// <summary>
+        /// If set, will not show interactive dialogues but will try to
+        /// execute with as much information given as possible.
+        /// </summary>
+        public bool ScriptMode = false;
+
+        /// <summary>
+        /// This dictionary links to the single arg definitions of the menu item
+        /// and assign values to it. The invoked action needs to check for value
+        /// types.
+        /// </summary>
+        public Dictionary<AasxMenuArgDef, object> ArgValue = null;
+
+        /// <summary>
+        /// Indicates a success or the availablity of an result.
+        /// </summary>
+        public bool Result = false;
+
+        /// <summary>
+        /// If not <c>null</c> indicates the presence of an exception while executing
+        /// the action. Should correspond to <c>Result == null</c>.
+        /// </summary>
+        public string Exception = null;
+
+        //
+        // Convenience
+        //
+
+        public object this[string name]
+        {
+            get
+            {
+                if (ArgValue != null)
+                    foreach (var av in ArgValue)
+                        if (av.Key?.Name?.Trim().ToLower() == name?.Trim().ToLower())
+                            return av.Value;
+                return null;
+            }        
+        }
     }
 
 }

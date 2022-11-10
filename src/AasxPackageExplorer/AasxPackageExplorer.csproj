@@ -134,5 +134,5 @@
     </Page>
   </ItemGroup>
   <PropertyGroup />
-  <ProjectExtensions />
+  <ProjectExtensions><VisualStudio><UserProperties options-debug_1miho_1json__JsonSchema="https://appliedengdesign.github.io/cnccodes-json-schema/draft/2022-07/schema" /></VisualStudio></ProjectExtensions>
 </Project>

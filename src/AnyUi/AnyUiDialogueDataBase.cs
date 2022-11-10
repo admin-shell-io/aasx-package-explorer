@@ -156,7 +156,9 @@ namespace AnyUi
         public class Preset
         {
             public string Name;
-            public string Text;
+            public string[] Lines;
+
+            public string Text { get => string.Join("\n", Lines); }
         }
 
         public string MimeType = "application/text";

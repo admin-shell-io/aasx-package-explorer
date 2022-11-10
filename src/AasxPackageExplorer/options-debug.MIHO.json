@@ -14,7 +14,8 @@
   /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
-  "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
+  // "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3.aasx",
   "WindowLeft": -1,
   "WindowTop": -1,
   "WindowWidth": 900,
@@ -263,13 +264,46 @@
   "ScriptPresets": [
     {
       "Name": "Test1",
-      "Text": "WriteLine(\"Hallo\"); \nSleep(2000); \nWriteLine(\"Bye, bye\"); \n"
+      "Lines": [
+        "Select(\"AAS\", \"First\");",
+        "Sleep(1000);",
+        "Location(\"Push\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"Next\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"Next\");",
+        "Sleep(1000);",
+        "Location(\"Pop\");",
+        "Select(\"AAS\", \"Next\");"
+      ]
     },
     {
       "Name": "Test2",
-      "Text": "c=1;\nd=2;"
+      "Lines": [
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "Tool(\"ExportTable\", ",
+        "  \"Preset\", \"Submodel template spec - 1 rows\", ",
+        "  \"Format\", \"Excel\", \"Target\", \"Test.xlsx\");",
+        "Sleep(1000);",
+        "WriteLine(\"Done\");"
+      ]
+    },
+    {
+      "Name": "Select Test 1",
+      "Lines": [
+        "Select(\"AAS\", \"Next\");"
+      ]
+    },
+    {
+      "Name": "Select Test 2",
+      "Lines": [
+        "Select(\"AAS\", \"Prev\");"
+      ]
     }
   ],
   "ScriptLoglevel": 2,
-  "ScriptLaunchWithoutPrompt": false
+  "ScriptLaunchWithoutPrompt": true
 }

@@ -402,6 +402,11 @@ namespace AasxPackageExplorer
             return TrySelectVisualElement(ve, wishExpanded);
         }
 
+        public void ClearSelection()
+        {
+            _selectedItems.Clear();
+        }
+
         public void SelectSingleVisualElement(VisualElementGeneric ve, bool preventFireItem = false)
         {
             if (ve == null)

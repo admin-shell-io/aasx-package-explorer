@@ -41,6 +41,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Org.BouncyCastle.Crypto;
 using Org.Webpki.JsonCanonicalizer;
+using static AasxFormatCst.CstPropertyRecord;
 using static AasxToolkit.Cli;
 
 namespace AasxPackageExplorer
@@ -49,7 +50,7 @@ namespace AasxPackageExplorer
     /// This partial class contains all command bindings, such as for the main menu, in order to reduce the
     /// complexity of MainWindow.xaml.cs
     /// </summary>
-    public partial class MainWindow : Window, IFlyoutProvider
+    public partial class MainWindow : Window, IFlyoutProvider, IAasxScriptRemoteInterface
     {
         private string lastFnForInitialDirectory = null;
 
@@ -162,6 +163,10 @@ namespace AasxPackageExplorer
                 .AddSeparator()
                 .AddWpf(name: "ToolsFindText", header: "Find ...")
                 .AddSeparator()
+                .AddMenu(header: "Editing locations ..", childs: (new AasxMenu())
+                    .AddWpf(name: "LocationPush", header: "Push location", inputGesture: "Ctrl+Shift+P")
+                    .AddWpf(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
+                .AddSeparator()
                 .AddMenu(header: "Plugins ..", childs: (new AasxMenu())
                     .AddWpf(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M"))
                 .AddSeparator()
@@ -213,6 +218,16 @@ namespace AasxPackageExplorer
 
             for (int i = 0; i < 9; i++)
                 menu.AddHotkey(name: $"LaunchScript{i}", gesture: $"Ctrl+Shift+{i}");
+
+            //
+            // more details to single items
+            //
+
+            menu.FindName("ExportTable")?
+                .Set(AasxMenuArgReqInfo.SubmodelRef, new AasxMenuListOfArgDefs()
+                    .Add("Preset", "Name of table preset as given in options.")
+                    .Add("Format", "Format to export to (e.g. \"Excel\").")
+                    .Add("Target", "Target filename including directory and extension."));
 
             //
             // End
@@ -389,7 +404,10 @@ namespace AasxPackageExplorer
             return jsonld;
         }
 
-        private async Task CommandBinding_GeneralDispatch(string cmd, AasxMenuItemBase menuItem)
+        private async Task CommandBinding_GeneralDispatch(
+            string cmd, 
+            AasxMenuItemBase menuItem,
+            AasxMenuActionTicket ticket = null)
         {
             if (cmd == null)
             {
@@ -1419,6 +1437,9 @@ namespace AasxPackageExplorer
                     "enabled.");
             }
 
+            if (cmd.StartsWith("location"))
+                CommandBinding_EditingLocations(cmd);
+
             if (cmd == "exportsmd")
                 CommandBinding_ExportSMD();
 
@@ -1507,7 +1528,7 @@ namespace AasxPackageExplorer
                 CommandBinding_ExportPredefineConcepts();
 
             if (cmd == "exporttable")
-                CommandBinding_ExportImportTableUml(import: false);
+                CommandBinding_ExportImportTableUml(ticket, import: false);
 
             if (cmd == "importtable")
                 CommandBinding_ExportImportTableUml(import: true);
@@ -1562,6 +1583,46 @@ namespace AasxPackageExplorer
             {
                 CommandBinding_ScriptEditLaunch(cmd, menuItem);
             }
+        }
+
+        public class EditingLocation
+        {
+            public object MainDataObject;
+            public bool IsExpanded;
+        }
+
+        protected List<EditingLocation> _editingLocations = new List<EditingLocation>();
+
+        public bool CommandBinding_EditingLocations(string cmd)
+        {
+            if (cmd == "locationpush" 
+                && _editingLocations != null
+                && DisplayElements.SelectedItem is VisualElementGeneric vege
+                && vege.GetMainDataObject() != null)
+            {
+                var loc = new EditingLocation()
+                {
+                    MainDataObject = vege.GetMainDataObject(),
+                    IsExpanded = vege.IsExpanded
+                };
+                _editingLocations.Add(loc);
+                Log.Singleton.Info("Editing Locations: pushed location.");
+                return true;
+            }
+
+            if (cmd == "locationpop"
+                && _editingLocations != null
+                && _editingLocations.Count > 0)
+            {
+                var loc = _editingLocations.Last();
+                _editingLocations.Remove(loc);
+                Log.Singleton.Info("Editing Locations: popping location.");
+                DisplayElements.ClearSelection();
+                DisplayElements.TrySelectMainDataObject(loc.MainDataObject, wishExpanded: loc.IsExpanded);
+                return true;
+            }
+
+            return false;
         }
 
         public void CommandBinding_TDImport()
@@ -3366,6 +3427,7 @@ namespace AasxPackageExplorer
         }
 
         public void CommandBinding_ExportImportTableUml(
+            AasxMenuActionTicket ticket = null,
             bool import = false, bool exportUml = false, bool importTimeSeries = false)
         {
             // trivial things
@@ -3414,7 +3476,7 @@ namespace AasxPackageExplorer
             }
 
             // try activate plugin
-            pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel);
+            pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel, ticket);
 
             // redraw
             CommandExecution_RedrawAll();
@@ -3848,10 +3910,9 @@ namespace AasxPackageExplorer
                             _aasxScript = new AasxScript();
 
                         // executing
-                        _aasxScript.StartEnginBackground(uc.DiaData.Text, Options.Curr.ScriptLoglevel);
-
-                        // redisplay; add to "normal" event quoue
-                        DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(null));
+                        _aasxScript.StartEnginBackground(
+                            uc.DiaData.Text, Options.Curr.ScriptLoglevel,
+                            _mainMenu?.Menu, this);
                     }
                     catch (Exception ex)
                     {
@@ -3901,16 +3962,234 @@ namespace AasxPackageExplorer
 
                         // executing
                         _aasxScript.StartEnginBackground(
-                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel);
-
-                        // redisplay; add to "normal" event quoue
-                        DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(null));
+                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
+                            _mainMenu?.Menu, this);
                     }
                     catch (Exception ex)
                     {
                         Log.Singleton.Error(ex, "when executing script");
                     }
                 }
+        }
+
+
+        public enum ScriptSelectRefType { None = 0, AAS, SM, SME, CD };
+        protected static AdminShell.Referable[] _allowedSelectRefType = {
+            new AdminShell.AdministrationShell(),
+            new AdminShell.Submodel(),
+            new AdminShell.SubmodelElement(),
+            new AdminShell.ConceptDescription()
+        };
+
+        public enum ScriptSelectAdressMode { None = 0, First, Next, Prev, idShort, semanticId };
+        protected static string[] _allowedSelectAdressMode = {
+            "First", "Next", "Prev", "idShort", "semanticId"
+        };
+
+        protected Tuple<AdminShell.Referable, object> SelectEvalObject(
+            ScriptSelectRefType refType, ScriptSelectAdressMode adrMode)
+        {
+            //
+            // Try gather some selection states
+            //
+
+            // something to select
+            var pm = _packageCentral?.Main?.AasEnv;
+            if (pm == null)
+                if (adrMode == ScriptSelectAdressMode.None)
+                {
+                    Log.Singleton.Error("Script: Select: No main package environment available!");
+                    return null;
+                }
+
+            // available elements in the environment
+            var firstAas = pm.AdministrationShells.FirstOrDefault();
+
+            // selected items by user
+            var siThis = DisplayElements.SelectedItem;
+            var siSME = siThis?.FindFirstParent(
+                    (ve) => ve is VisualElementSubmodelElement, includeThis: true);
+            var siSM = siThis?.FindFirstParent(
+                    (ve) => ve is VisualElementSubmodelRef, includeThis: true) as VisualElementSubmodelRef;
+            var siAAS = siThis?.FindFirstParent(
+                    (ve) => ve is VisualElementAdminShell, includeThis: true) as VisualElementAdminShell;
+            var siCD = siThis?.FindFirstParent(
+                    (ve) => ve is VisualElementConceptDescription, includeThis: true);
+
+            //
+            // First
+            //
+
+            if (adrMode == ScriptSelectAdressMode.First)
+            {
+                if (refType == ScriptSelectRefType.AAS)
+                {
+                    if (firstAas == null)
+                    {
+                        Log.Singleton.Error("Script: Select: No AssetAdministrationShells available!");
+                        return null;
+                    }
+                    return new Tuple<AdminShell.Referable, object>(firstAas, firstAas);
+                }
+
+                if (refType == ScriptSelectRefType.SM)
+                {
+                    if (siAAS?.theAas != null)
+                    {
+                        var smr = siAAS.theAas.submodelRefs.FirstOrDefault();
+                        var sm = pm.FindSubmodel(smr);
+                        if (sm == null)
+                        {
+                            Log.Singleton.Error("Script: AAS selected, but no Submodel found!");
+                            return null;
+                        }
+                        return new Tuple<AdminShell.Referable, object>(sm, smr);
+                    }
+
+                    if (firstAas != null)
+                    {
+                        var smr = firstAas.submodelRefs.FirstOrDefault();
+                        var sm = pm.FindSubmodel(smr);
+                        if (sm == null)
+                        {
+                            Log.Singleton.Error("Script: first AAS taken, but no Submodel found!");
+                            return null;
+                        }
+                        return new Tuple<AdminShell.Referable, object>(sm, smr);
+                    }
+                }
+            }
+
+            //
+            // Next
+            //
+
+            if (adrMode == ScriptSelectAdressMode.Next)
+            {
+                if (refType == ScriptSelectRefType.AAS)
+                {
+                    var idx = pm?.AdministrationShells?.IndexOf(siAAS?.theAas);
+                    if (siAAS?.theAas == null || idx == null 
+                        || idx.Value < 0 || idx.Value >= pm.AdministrationShells.Count - 1)
+                    {
+                        Log.Singleton.Error("Script: For next AAS, the selected AAS is unknown " +
+                            "or no next AAS can be determined!");
+                        return null;
+                    }
+                    var aas = pm?.AdministrationShells[idx.Value + 1];
+                    return new Tuple<AdminShell.Referable, object>(aas, aas);
+                }
+
+                if (refType == ScriptSelectRefType.SM)
+                {
+                    var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
+                    if (siAAS?.theAas?.submodelRefs == null 
+                        || siSM?.theSubmodel == null
+                        || siSM?.theSubmodelRef == null
+                        || idx == null
+                        || idx.Value < 0 || idx.Value >= siAAS.theAas.submodelRefs.Count - 1)
+                    {
+                        Log.Singleton.Error("Script: For next SM, the selected AAS/ SM is unknown " +
+                            "or no next SM can be determined!");
+                        return null;
+                    }
+                    var smr = siAAS.theAas.submodelRefs[idx.Value + 1];
+                    var sm = pm.FindSubmodel(smr);
+                    if (sm == null)
+                    {
+                        Log.Singleton.Error("Script: For next SM, a SubmodelRef does not have a SM!");
+                        return null;
+                    }
+                    return new Tuple<AdminShell.Referable, object>(sm, smr);
+                }
+            }
+
+            //
+            // Prev
+            //
+
+            if (adrMode == ScriptSelectAdressMode.Prev)
+            {
+                if (refType == ScriptSelectRefType.AAS)
+                {
+                    var idx = pm?.AdministrationShells?.IndexOf(siAAS?.theAas);
+                    if (siAAS?.theAas == null || idx == null
+                        || idx.Value <= 0 || idx.Value >= pm.AdministrationShells.Count)
+                    {
+                        Log.Singleton.Error("Script: For previos AAS, the selected AAS is unknown " +
+                            "or no previous AAS can be determined!");
+                        return null;
+                    }
+                    var aas = pm?.AdministrationShells[idx.Value - 1];
+                    return new Tuple<AdminShell.Referable, object>(aas, aas);
+                }
+            }
+
+            // Oops!
+            return null;
+        }
+
+        AdminShellV20.Referable IAasxScriptRemoteInterface.Select(object[] args)
+        {
+            // access
+            if (args == null || args.Length < 2 
+                || !(args[0] is string refTypeName)
+                || !(args[1] is string adrModeName))
+            {
+                Log.Singleton.Error("Script: Select: Referable type or adressing mode missing!");
+                return null;
+            }
+
+            // check if Referable Type is ok
+            ScriptSelectRefType refType = ScriptSelectRefType.None;
+            for (int i = 0; i < _allowedSelectRefType.Length; i++)
+            {
+                var sd = _allowedSelectRefType[i].GetSelfDescription();
+                if ((sd?.ElementName.Trim().ToLower() == refTypeName.Trim().ToLower())
+                    || (sd?.ElementAbbreviation.Trim().ToLower() == refTypeName.Trim().ToLower()))
+                    refType = ScriptSelectRefType.AAS + i;
+            }
+            if (refType == ScriptSelectRefType.None)
+            {
+                Log.Singleton.Error("Script: Select: Referable type invalid!");
+                return null;
+            }
+
+            // check adress mode is ok
+            ScriptSelectAdressMode adrMode = ScriptSelectAdressMode.None;
+            for (int i = 0; i < _allowedSelectAdressMode.Length; i++)
+                if (_allowedSelectAdressMode[i].ToLower().Trim() == adrModeName.Trim().ToLower())
+                    adrMode = ScriptSelectAdressMode.First + i;
+            if (adrMode == ScriptSelectAdressMode.None)
+            {
+                Log.Singleton.Error("Script: Select: Adressing mode invalid!");
+                return null;
+            }
+
+            // evaluate next item
+
+            var selEval = SelectEvalObject(refType, adrMode);
+
+            // well-defined result?
+            if (selEval != null && selEval.Item1 != null && selEval.Item2 != null)
+            {
+                DisplayElements.ClearSelection();
+                DisplayElements.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
+                return selEval.Item1;
+            }            
+
+            // nothing found
+            return null;
+        }
+
+        bool IAasxScriptRemoteInterface.Location(object[] args)
+        {
+            // access
+            if (args == null || args.Length < 1 || !(args[0] is string cmd))
+                return false;
+
+            // delegat
+            return CommandBinding_EditingLocations("location" + cmd.Trim().ToLower());
         }
     }
 }
