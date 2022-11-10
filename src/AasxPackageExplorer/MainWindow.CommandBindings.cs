@@ -43,6 +43,7 @@ using Org.BouncyCastle.Crypto;
 using Org.Webpki.JsonCanonicalizer;
 using static AasxFormatCst.CstPropertyRecord;
 using static AasxToolkit.Cli;
+using static QRCoder.PayloadGenerator;
 
 namespace AasxPackageExplorer
 {
@@ -3973,7 +3974,7 @@ namespace AasxPackageExplorer
         }
 
 
-        public enum ScriptSelectRefType { None = 0, AAS, SM, SME, CD };
+        public enum ScriptSelectRefType { None = 0, This, AAS, SM, SME, CD };
         protected static AdminShell.Referable[] _allowedSelectRefType = {
             new AdminShell.AdministrationShell(),
             new AdminShell.Submodel(),
@@ -4015,6 +4016,20 @@ namespace AasxPackageExplorer
                     (ve) => ve is VisualElementAdminShell, includeThis: true) as VisualElementAdminShell;
             var siCD = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementConceptDescription, includeThis: true);
+
+            //
+            // This
+            //
+
+            if (refType == ScriptSelectRefType.This)
+            {
+                // just return as Referable
+                var rf = siThis.GetMainDataObject();
+                return new Tuple<AdminShell.Referable, object>(
+                    siThis?.GetMainDataObject() as AdminShell.Referable, 
+                    siThis.GetDereferencedMainDataObject()
+                );
+            }
 
             //
             // First
@@ -4132,16 +4147,17 @@ namespace AasxPackageExplorer
         AdminShellV20.Referable IAasxScriptRemoteInterface.Select(object[] args)
         {
             // access
-            if (args == null || args.Length < 2 
-                || !(args[0] is string refTypeName)
-                || !(args[1] is string adrModeName))
+            if (args == null || args.Length < 1
+                || !(args[0] is string refTypeName))
             {
-                Log.Singleton.Error("Script: Select: Referable type or adressing mode missing!");
+                Log.Singleton.Error("Script: Select: Referable type missing!");
                 return null;
             }
 
             // check if Referable Type is ok
             ScriptSelectRefType refType = ScriptSelectRefType.None;
+            if (refTypeName.Trim().ToLower() == "this")
+                refType = ScriptSelectRefType.This;
             for (int i = 0; i < _allowedSelectRefType.Length; i++)
             {
                 var sd = _allowedSelectRefType[i].GetSelfDescription();
@@ -4157,13 +4173,24 @@ namespace AasxPackageExplorer
 
             // check adress mode is ok
             ScriptSelectAdressMode adrMode = ScriptSelectAdressMode.None;
-            for (int i = 0; i < _allowedSelectAdressMode.Length; i++)
-                if (_allowedSelectAdressMode[i].ToLower().Trim() == adrModeName.Trim().ToLower())
-                    adrMode = ScriptSelectAdressMode.First + i;
-            if (adrMode == ScriptSelectAdressMode.None)
+
+            if (refType != ScriptSelectRefType.This)
             {
-                Log.Singleton.Error("Script: Select: Adressing mode invalid!");
-                return null;
+                if (args.Length < 2
+                    || !(args[1] is string adrModeName))
+                {
+                    Log.Singleton.Error("Script: Select: Adfress mode missing!");
+                    return null;
+                }
+
+                for (int i = 0; i < _allowedSelectAdressMode.Length; i++)
+                    if (_allowedSelectAdressMode[i].ToLower().Trim() == adrModeName.Trim().ToLower())
+                        adrMode = ScriptSelectAdressMode.First + i;
+                if (adrMode == ScriptSelectAdressMode.None)
+                {
+                    Log.Singleton.Error("Script: Select: Adressing mode invalid!");
+                    return null;
+                }
             }
 
             // evaluate next item

@@ -210,8 +210,9 @@ namespace AasxPackageExplorer
                 });
                 if (x != null)
                     Log.Singleton.Silent("" + x.idShort);
+                
                 // done
-                return 0;
+                return x;
             }
         }
 

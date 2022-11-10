@@ -271,12 +271,11 @@
         "Sleep(1000);",
         "Select(\"Submodel\", \"First\");",
         "Sleep(1000);",
-        "Select(\"Submodel\", \"Next\");",
-        "Sleep(1000);",
-        "Select(\"Submodel\", \"Next\");",
-        "Sleep(1000);",
-        "Location(\"Pop\");",
-        "Select(\"AAS\", \"Next\");"
+        "while (true) {",
+        "  rf = Select(\"This\");",
+        "  WriteLine(\"Approaching Referable \" + rf);",
+        "  if (Select(\"Submodel\", \"Next\") == null) break;",
+        "}"
       ]
     },
     {
