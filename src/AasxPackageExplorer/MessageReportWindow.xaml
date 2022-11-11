@@ -20,8 +20,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -41,7 +41,14 @@
         </RichTextBox>
         <Button x:Name="ButtonCopyToClipboard" Grid.Row="1" Grid.Column="0" Margin="2" Click="ButtonCopyToClipboard_Click">Copy report to clipboard and close</Button> 
         -->
-        <FlowDocumentScrollViewer x:Name="FlowDocViewer"  Grid.Row="0" Grid.Column="0"
+
+        <WrapPanel Grid.Row="0" Grid.Column="0">
+            <ToggleButton x:Name="ButtonToggleWrap" Content="&#x2bb0; Wrap" Margin="2" Padding="2,0,2,0" FontSize="14" Click="Button_Click"/>
+            <Button x:Name="ButtonGoTop" Content="&#x2b85;" Margin="2" Padding="4,0,4,0" FontSize="14" FontWeight="Bold" Click="Button_Click"/>
+            <Button x:Name="ButtonGoBottom" Content="&#x21ca;" Margin="2" Padding="4,0,4,0" FontSize="14" FontWeight="Bold" Click="Button_Click"/>
+        </WrapPanel>
+        
+        <FlowDocumentScrollViewer x:Name="FlowDocViewer"  Grid.Row="1" Grid.Column="0"
                                   Margin="2" Background="LightGray"
                                   BorderBrush="Black" BorderThickness="0">
             <FlowDocumentScrollViewer.Resources>

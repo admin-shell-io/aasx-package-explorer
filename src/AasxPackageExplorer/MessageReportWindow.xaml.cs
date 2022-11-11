@@ -27,11 +27,9 @@ namespace AasxPackageExplorer
                 this.Title = windowTitle;
 
             FlowDocViewer.Document = new FlowDocument();
-            //FlowDocViewer.Document.FontFamily = new System.Windows.Media.FontFamily("Lucida Console");
-            //FlowDocViewer.Document.FontSize = 12;
-            //FlowDocViewer.Document.Background = System.Windows.Media.Brushes.LightGray; 
 
-            FlowDocViewer.Document.PageWidth = 1000;
+            ButtonToggleWrap.IsChecked = false;
+            SetWordWrapping(false);            
 
             foreach (var sp in storedPrints)
             {
@@ -131,5 +129,34 @@ namespace AasxPackageExplorer
             FindScrollViewer(FlowDocViewer)?.ScrollToEnd();
         }
 
+        private void SetWordWrapping(bool state)
+        {
+            if (state)
+            {
+                FlowDocViewer.Document.PageWidth = double.NaN;
+            }
+            else
+            {
+                FlowDocViewer.Document.PageWidth = 1000;
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonGoTop)
+            {
+                FindScrollViewer(FlowDocViewer)?.ScrollToTop();
+            }
+
+            if (sender == ButtonGoBottom)
+            {
+                FindScrollViewer(FlowDocViewer)?.ScrollToBottom();
+            }
+
+            if (sender == ButtonToggleWrap)
+            {
+                SetWordWrapping(ButtonToggleWrap.IsChecked == true);
+            }
+        }
     }
 }
