@@ -137,7 +137,7 @@ namespace AasxPackageExplorer
             }
             else
             {
-                FlowDocViewer.Document.PageWidth = 1000;
+                FlowDocViewer.Document.PageWidth = 9999;
             }
         }
 

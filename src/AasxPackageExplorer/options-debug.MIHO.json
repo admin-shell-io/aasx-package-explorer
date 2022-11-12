@@ -304,5 +304,6 @@
     }
   ],
   "ScriptLoglevel": 2,
-  "ScriptLaunchWithoutPrompt": true
+  "ScriptLaunchWithoutPrompt": true,
+  "ScriptExecuteSystem" :  true
 }

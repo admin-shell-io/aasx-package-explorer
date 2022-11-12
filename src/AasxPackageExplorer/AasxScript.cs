@@ -20,6 +20,7 @@ using AdminShellNS;
 using System.ComponentModel;
 using System.Threading;
 using System.Windows;
+using System.Diagnostics;
 
 namespace AasxPackageExplorer
 {
@@ -257,6 +258,60 @@ namespace AasxPackageExplorer
             }
         }
 
+        public class Script_System : ScriptInvokableBase
+        {
+            public Script_System(AasxScript script) : base(script) { }
+
+            public override object Invoke(IScriptContext context, object[] args)
+            {
+                // access
+                if (_script == null)
+                    return -1;
+
+                if (args == null || args.Length < 1 || !(args[0] is string cmd))
+                {
+                    _script.ScriptLog?.Error("Script: System: Command is missing!");
+                    return -1;
+                }
+
+                if (!Options.Curr.ScriptExecuteSystem)
+                {
+                    _script.ScriptLog?.Error("Script: Options not allow executing system commands!");
+                    return -1;
+                }
+
+                // debug
+                if (_script._logLevel >= 2)
+                    Console.WriteLine($"Execute System " + string.Join(" ", args));
+
+                // Start the child process.
+                Process p = new Process();
+                // Redirect the output stream of the child process.
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.RedirectStandardError = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.StartInfo.FileName = "CMD.exe";
+                p.StartInfo.Arguments = "/C " + string.Join(" ", args);
+                p.Start();
+                // Do not wait for the child process to exit before
+                // reading to the end of its redirected stream.
+                // p.WaitForExit();
+                // Read the output stream first and then wait.
+                string stdout = p.StandardOutput.ReadToEnd();
+                string stderr = p.StandardError.ReadToEnd();
+                p.WaitForExit();
+
+                if (stdout?.HasContent() == true)
+                    Log.Singleton.Info("Script: System: " + stdout);
+                if (stderr?.HasContent() == true)
+                    Log.Singleton.Info(StoredPrint.Color.Red, "Script: System: " + stderr);
+
+                // done
+                return p.ExitCode;
+            }
+        }
+
         protected BackgroundWorker _worker = null;
 
         public bool IsExecuting { get => _worker != null; }
@@ -310,6 +365,7 @@ namespace AasxPackageExplorer
                     s.Context.Scope.SetItem("Sleep", new Script_Sleep(this));
                     s.Context.Scope.SetItem("Select", new Script_Select(this));
                     s.Context.Scope.SetItem("Location", new Script_Location(this));
+                    s.Context.Scope.SetItem("System", new Script_System(this));
                     if (_logLevel >= 2)
                         Log.Singleton.Info("Script: Scope extened.");
 

@@ -530,54 +530,61 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private void Import(ExportTableRecord job,
             IFlyoutProvider fop,
-            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env)
+            AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env,
+            AasxMenuActionTicket ticket = null)
         {
             // get the import file
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            try
+            var fn = ticket["Target"] as string;
+            if (fn == null)
             {
-                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                    System.AppDomain.CurrentDomain.BaseDirectory);
-            }
-            catch (Exception ex)
-            {
-                AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-            }
-            dlg.Title = "Select text file to be exported";
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                try
+                {
+                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                        System.AppDomain.CurrentDomain.BaseDirectory);
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+                dlg.Title = "Select text file to be exported";
 
-            if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-            {
-                dlg.DefaultExt = "*.txt";
-                dlg.Filter =
-                    "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-            {
-                dlg.DefaultExt = "*.tex";
-                dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-            {
-                dlg.DefaultExt = "*.xlsx";
-                dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-            }
-            if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-            {
-                dlg.DefaultExt = "*.docx";
-                dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-            }
+                if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
+                {
+                    dlg.DefaultExt = "*.txt";
+                    dlg.Filter =
+                        "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+                }
+                if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
+                {
+                    dlg.DefaultExt = "*.tex";
+                    dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+                }
+                if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+                {
+                    dlg.DefaultExt = "*.xlsx";
+                    dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                }
+                if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+                {
+                    dlg.DefaultExt = "*.docx";
+                    dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+                }
 
-            fop?.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(fop?.GetWin32Window());
-            fop?.CloseFlyover();
+                fop?.StartFlyover(new EmptyFlyout());
+                var res = dlg.ShowDialog(fop?.GetWin32Window());
+                fop?.CloseFlyover();
 
-            if (true != res)
+                fn = dlg.FileName;
+            } 
+
+            if (fn == null)
                 return;
 
             // try import
             try
             {
-                Log.Info("Importing table: {0}", dlg.FileName);
+                Log.Info("Importing table: {0}", fn);
                 var success = false;
                 try
                 {
@@ -585,7 +592,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         success = true;
                         var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        using (var stream = File.Open(dlg.FileName, FileMode.Open,
+                        using (var stream = File.Open(fn, FileMode.Open,
                                     FileAccess.Read, FileShare.ReadWrite))
                             foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
                                 pop.PopulateBy(tp);
@@ -595,7 +602,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     {
                         success = true;
                         var pop = new ImportPopulateByTable(Log, job, sm, env, options);
-                        foreach (var tp in ImportTableExcelProvider.CreateProviders(dlg.FileName))
+                        foreach (var tp in ImportTableExcelProvider.CreateProviders(fn))
                             pop.PopulateBy(tp);
                     }
                 }
@@ -605,7 +612,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     success = false;
                 }
 
-                if (!success)
+                if (!success && ticket?.ScriptMode != true)
                     fop?.MessageBoxFlyoutShow(
                         "Some error occured while importing the table. Please refer to the log messages.",
                         "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);

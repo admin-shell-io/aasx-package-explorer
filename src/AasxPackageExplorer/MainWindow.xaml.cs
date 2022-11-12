@@ -2396,6 +2396,7 @@ namespace AasxPackageExplorer
 
             try
             {
+                // save LRU
                 var lru = _packageCentral?.Repositories?.FindLRU();
                 if (lru != null)
                 {
@@ -2403,6 +2404,10 @@ namespace AasxPackageExplorer
                     var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
                     lru.SaveAsLocalFile(lruFn);
                 }
+
+                // also closelog silently
+                if (_messageReportWindow != null)
+                    _messageReportWindow.Close();
             }
             catch (Exception ex)
             {
@@ -2791,6 +2796,22 @@ namespace AasxPackageExplorer
             var uc = new MessageBoxFlyout(message, caption, buttons, image);
             StartFlyoverModal(uc);
             return uc.Result;
+        }
+
+        public AnyUiMessageBoxResult MessageBoxFlyoutLogOrShow(
+            bool log, StoredPrint.Color logColor,
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            if (log)
+            {
+                if (logColor == StoredPrint.Color.Red)
+                    Log.Singleton.Error(caption + ": " + message);
+                else
+                    Log.Singleton.Info(logColor, caption + ": " + message);
+                return AnyUiMessageBoxResult.OK;
+            }
+            else
+                return MessageBoxFlyoutShow(message, caption, buttons, image); 
         }
 
         public Window GetWin32Window()

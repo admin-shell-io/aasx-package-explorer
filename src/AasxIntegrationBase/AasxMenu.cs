@@ -261,6 +261,7 @@ namespace AasxIntegrationBase
 
         public AasxMenu AddWpf(
             string name, string header,
+            string help = null,
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.WPF,
@@ -274,6 +275,7 @@ namespace AasxIntegrationBase
             {
                 Name = name,
                 Header = header,
+                HelpText = help,
                 Action = action,
                 ActionAsync = actionAsync,
                 Filter = filter,

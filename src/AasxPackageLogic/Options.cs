@@ -425,6 +425,11 @@ namespace AasxPackageLogic
             Cmd = "-script-launch-without-prompt")]
         public bool ScriptLaunchWithoutPrompt = false;
 
+        [OptionDescription(Description = "Determins if the script is allowed to execute system commands " +
+            "on the shell (CMD.EXE).",
+            Cmd = "-script-execute-system")]
+        public bool ScriptExecuteSystem = false;
+
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
         public string StayConnectOptions = "";
