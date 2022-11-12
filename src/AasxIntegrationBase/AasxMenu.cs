@@ -34,7 +34,9 @@ namespace AasxIntegrationBase
         AAS = 0x01, 
         Submodel = 0x02, 
         SubmodelRef = 0x04, 
-        SME = 0x08};
+        SME = 0x08,
+        SmSmrSme = 0x02 | 0x04 | 0x08
+    };
 
     /// <summary>
     /// AASX menu items will link to functionality, which requires
@@ -464,6 +466,14 @@ namespace AasxIntegrationBase
                             return av.Value;
                 return null;
             }        
+        }
+
+        /// <summary>
+        /// Starts execution. For the time being, set <c>Result = true</c>.
+        /// </summary>
+        public void StartExec()
+        {
+            Result = true;
         }
     }
 

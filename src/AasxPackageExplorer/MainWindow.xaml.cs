@@ -62,6 +62,8 @@ namespace AasxPackageExplorer
 
         private AasEventCompressor _eventCompressor = new AasEventCompressor();
 
+        protected MainWindowLogic _logic = new MainWindowLogic();
+
         #endregion
         #region Init Component
         //====================

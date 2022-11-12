@@ -22,6 +22,7 @@
   <ItemGroup>
     <!-- Workaround for https://github.com/dotnet/wpf/issues/2648#issuecomment-635674683 -->
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
   </ItemGroup>
   
@@ -40,6 +41,7 @@
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\jsoncanonicalizer\jsoncanonicalizer.csproj" />
     <ProjectReference Include="..\SSIExtension\SSIExtension.csproj" />
   </ItemGroup>
 
