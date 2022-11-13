@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -2924,9 +2925,192 @@ namespace AasxPackageExplorer
             }
         }
 
+        public string CreateTempFileForKeyboardShortcuts()
+        {
+            try
+            {
+                //
+                // HTML statr
+                //
+
+                // create a temp HTML file
+                var tmpfn = System.IO.Path.GetTempFileName();
+
+                // rename to html file
+                var htmlfn = tmpfn.Replace(".tmp", ".html");
+                File.Move(tmpfn, htmlfn);
+
+                // create html content as string
+                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<!doctype html>
+                    <html lang=en>
+                    <head>
+                    <style>
+                    body {
+                      background-color: #FFFFE0;
+                      font-size: small;
+                      font-family: Arial, Helvetica, sans-serif;
+                    }
+
+                    table {
+                      font-family: arial, sans-serif;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+
+                    td, th {
+                      border: 1px solid #dddddd;
+                      text-align: left;
+                      padding: 8px;
+                    }
+
+                    </style>
+                    <meta charset=utf-8>
+                    <title>blah</title>
+                    </head>
+                    <body>");
+
+                    //tr:nth-child(even) {
+                    //  background-color: #fffff0;
+                    //}
+
+
+                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</body>
+                    </html>");
+
+                var html = new StringBuilder();
+
+                html.Append(htmlHeader);
+
+                var color = false;
+
+                //
+                // Keyboard shortcuts
+                //
+
+                html.AppendLine("<h3>Keyboard shortcuts</h3>");
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Modifiers & Keys</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    </tr>"));
+
+                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td>{1}</th>
+                    <td>{2}</th>
+                    <td>{3}</th>
+                    </tr>");
+
+                foreach (var sc in DispEditEntityPanel.EnumerateShortcuts())
+                {
+                    // Function
+                    var fnct = "";
+                    if (sc.Element is AnyUiButton btn)
+                        fnct = "" + btn.Content;
+
+                    // fill
+                    html.Append(String.Format(rowfmt,
+                        (color) ? "#ffffe0" : "#fffff0",
+                        "" + sc.GestureToString(fmt: 0),
+                        "" + fnct,
+                        "" + sc.Info));
+
+                    // color change
+                    color = !color;
+                }
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</table>"));
+
+                //
+                // Menu command
+                //
+
+                html.AppendLine("<h3>Menu and tool commands</h3>");
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Keyboard</th>
+                    <th>Menu header</th>
+                    <th>ToolCmd / <br><i>Argument</i></th>
+                    <th>Description</th>
+                    </tr>"));
+
+                var rowfmtTC = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td>{1}</th>
+                    <td>{2}</th>
+                    <td>{3}</th>
+                    <td>{4}</th>
+                    </tr>");
+
+                var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td colspan=""2""></th>
+                    <td><i>{1}</i></th>
+                    <td><i>{2}</i></th>
+                    </tr>");
+
+                foreach (var mib in _mainMenu.Menu.FindAll((x) => x is AasxMenuItem))
+                {
+                    // access
+                    if (!(mib is AasxMenuItem mi) || mi.Name?.HasContent() != true)
+                        continue;
+
+                    // filter header
+                    var header = mi.Header.Replace("_", "");
+
+                    // fill
+                    html.Append(String.Format(rowfmtTC,
+                        (color) ? "#ffffe0" : "#fffff0",
+                        "" + mi.InputGesture,
+                        "" + header,
+                        "" + mi.Name,
+                        "" + mi.HelpText));
+
+                    // arguments
+                    if (mi.ArgDefs != null)
+                        foreach (var ad in mi.ArgDefs)
+                        {
+                            html.Append(String.Format(rowfmtTCAD,
+                                (color) ? "#ffffe0" : "#fffff0",
+                                "" + ad.Name,
+                                "" + ad.Help));
+                        }
+
+                    // color change
+                    color = !color;
+                }
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</table>"));
+
+                //
+                // HTMLend
+                //
+
+                html.Append(htmlFooter);
+
+                // write
+                System.IO.File.WriteAllText(htmlfn, html.ToString());
+                return htmlfn;
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
+            }
+            return null;
+        }
+
         private void ButtonKeyboard_Click(object sender, RoutedEventArgs e)
         {
-            var htmlfn = DispEditEntityPanel.CreateTempFileForKeyboardShortcuts();
+            var htmlfn = CreateTempFileForKeyboardShortcuts();
             BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
                                     preferInternal: true);
         }

@@ -1026,7 +1026,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// This function reads a Submodel from JSON and add/ replaces it in a AAS / environment
+        /// Reads a Submodel from JSON and add/ replaces it in a AAS / environment
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_ReadSubmodel(
@@ -1094,6 +1094,148 @@ namespace AasxPackageExplorer
                 LogErrorToTicket(ticket, ex,
                     "Submodel Read: Can not read SubModel.");
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Writes a Submodel to JSON.
+        /// Note: check if there is a business case for this
+        /// </summary>
+        public void Tool_SubmodelWrite(
+            AdminShell.Submodel sm,
+            string targetFn,
+            AasxMenuActionTicket ticket = null)
+        {
+            // access
+            if (sm == null)
+            {
+                LogErrorToTicket(ticket, "Write Submodel: invalid Submodel.");
+                return;
+            }
+
+            try
+            {
+                using (var s = new StreamWriter(targetFn))
+                {
+                    var json = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                    s.WriteLine(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorToTicket(ticket, ex,
+                    "Submodel Read: Can not read SubModel.");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Puts a Submodel to URL.
+        /// Note: check if there is a business case for this
+        /// </summary>
+        public void Tool_SubmodelPut(
+            AdminShell.Submodel sm,
+            string url,
+            AasxMenuActionTicket ticket = null)
+        {
+            // access
+            if (sm == null)
+            {
+                LogErrorToTicket(ticket, "Put Submodel: invalid Submodel.");
+                return;
+            }
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                var client = new AasxRestServerLibrary.AasxRestClient(url);
+                client.PutSubmodelAsync(json);
+            }
+            catch (Exception ex)
+            {
+                LogErrorToTicket(ticket, ex,
+                    $"Submodel Put: Can not put SubModel to url '{url}'.");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Gets a Submodel to URL.
+        /// Note: check if there is a business case for this
+        /// </summary>
+        public void Tool_SubmodelGet(
+            AdminShell.AdministrationShellEnv env,
+            AdminShell.Submodel sm,
+            string url,
+            AasxMenuActionTicket ticket = null)
+        {
+            // access
+            if (sm == null || env == null)
+            {
+                LogErrorToTicket(ticket, "Get Submodel: invalid Submodel or Environment.");
+                return;
+            }
+
+            var smJson = "";
+            try
+            {
+                var client = new AasxRestServerLibrary.AasxRestClient(url);
+                smJson = client.GetSubmodel(sm.idShort);
+            }
+            catch (Exception ex)
+            {
+                LogErrorToTicket(ticket, ex, $"Connecting to REST server {url}");
+                return;
+            }
+
+            var aas = env.FindAASwithSubmodel(sm.identification);
+
+            // de-serialize Submodel
+            AdminShell.Submodel submodel = null;
+
+            try
+            {
+                using (TextReader reader = new StringReader(smJson))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                    submodel = (AdminShell.Submodel)serializer.Deserialize(reader, typeof(AdminShell.Submodel));
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorToTicket(ticket, ex, "Submodel Get: Can not read SubModel.");
+                return;
+            }
+
+            // need id for idempotent behaviour
+            if (submodel == null || submodel.identification == null)
+            {
+                LogErrorToTicket(ticket, "Submodel Get: Identification of SubModel is (null).");
+                return;
+            }
+
+            // datastructure update
+            if (env?.Assets == null)
+            {
+                LogErrorToTicket(ticket, "Submodel Get: Error accessing internal data structures.");
+                return;
+            }
+
+            // add Submodel
+            var existingSm = env.FindSubmodel(submodel.identification);
+            if (existingSm != null)
+                env.Submodels.Remove(existingSm);
+            env.Submodels.Add(submodel);
+
+            // add SubmodelRef to AAS
+            // access the AAS
+            var newsmr = AdminShell.SubmodelRef.CreateNew(
+                AdminShell.Key.Submodel, true, submodel.identification.idType, submodel.identification.id);
+            var existsmr = aas.HasSubmodelRef(newsmr);
+            if (!existsmr)
+            {
+                aas.AddSubmodelRef(newsmr);
             }
         }
     }

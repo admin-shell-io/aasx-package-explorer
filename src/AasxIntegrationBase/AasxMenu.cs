@@ -284,7 +284,9 @@ namespace AasxIntegrationBase
                 InputGesture = inputGesture,
                 GestureOnlyDisplay = onlyDisplay,
                 IsCheckable = isCheckable,
-                IsChecked = isChecked
+                IsChecked = isChecked,
+                RequiredInfos = reqs,
+                ArgDefs = args
             });
             return this;
         }

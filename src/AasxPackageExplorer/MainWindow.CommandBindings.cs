@@ -1669,20 +1669,12 @@ namespace AasxPackageExplorer
             if (cmd == "opcread")
                 CommandBinding_OpcUaClientRead(cmd, ticket);
 
-            if (cmd == "submodelread")
-                CommandBinding_SubmodelRead(cmd, ticket);
-
-            if (cmd == "submodelwrite")
-                CommandBinding_SubmodelWrite();
+            if (cmd == "submodelread" || cmd == "submodelwrite"
+                || cmd == "submodelput" || cmd == "submodelget")
+                CommandBinding_SubmodelReadWritePutGet(cmd, ticket);
 
             if (cmd == "rdfread")
                 CommandBinding_RDFRead();
-
-            if (cmd == "submodelput")
-                CommandBinding_SubmodelPut();
-
-            if (cmd == "submodelget")
-                CommandBinding_SubmodelGet();
 
             if (cmd == "bmecatimport")
                 CommandBinding_BMEcatImport();
@@ -2842,314 +2834,309 @@ namespace AasxPackageExplorer
             });
         }
 
-        public void CommandBinding_SubmodelWrite()
+        /// <summary>
+        /// Selects Submodel and Env from DisplayElements.
+        /// In future, may be take from ticket.
+        /// Checks, if these are not <c>NULL</c> or logs a message.
+        /// </summary>
+        /// <returns>Success</returns>
+        public bool MenuSelectEnvSubmodel(
+            AasxMenuActionTicket ticket, 
+            out AdminShell.AdministrationShellEnv env,
+            out AdminShell.Submodel sm,
+            string msg)
         {
-            VisualElementSubmodelRef ve1 = null;
-
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            env = null;
+            sm = null;
+            if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Submodel Write",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
+                env = vesmr.theEnv;
+                sm = vesmr.theSubmodel;
             }
-            var obj = ve1.theSubmodel;
-
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.FileName = "Submodel_" + obj.idShort + ".json";
-            dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
+            if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
             {
-                RememberForInitialDirectory(dlg.FileName);
-                using (var s = new StreamWriter(dlg.FileName))
-                {
-                    var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                    s.WriteLine(json);
-                }
+                env = vesm.theEnv;
+                sm = vesm.theSubmodel;
             }
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+
+            if (sm == null || env == null)
+            {
+                _logic?.LogErrorToTicket(ticket, "Submodel Read: No valid SubModel selected.");
+                return false;
+            }
+
+            return true;
         }
 
-        public void CommandBinding_SubmodelRead(
+        /// <summary>
+        /// Selects a filename to read either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public bool MenuSelectOpenFilename(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string proposeFn,
+            string filter,
+            out string sourceFn,
+            string msg)
+        {
+            // filename
+            sourceFn = ticket?[argName] as string;
+
+            if (sourceFn?.HasContent() != true)
+            {
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var dlg = new Microsoft.Win32.OpenFileDialog();
+                dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                if (proposeFn != null)
+                    dlg.FileName = proposeFn;
+                if (filter != null)
+                    dlg.Filter = filter;
+                
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                if (true == dlg.ShowDialog())
+                    sourceFn = dlg.FileName;
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
+
+            if (sourceFn?.HasContent() != true)
+            {
+                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Selects a filename to write either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public bool MenuSelectSaveFilename(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string proposeFn,
+            string filter,
+            out string targetFn,
+            string msg)
+        {
+            // filename
+            targetFn = ticket?[argName] as string;
+
+            if (targetFn?.HasContent() != true)
+            {
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                var dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                if (proposeFn != null)
+                    dlg.FileName = proposeFn;
+                if (filter != null)
+                    dlg.Filter = filter;
+
+                if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                if (true == dlg.ShowDialog())
+                    targetFn = dlg.FileName;
+                if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
+
+            if (targetFn?.HasContent() != true)
+            {
+                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Selects a text either from user or from ticket.
+        /// </summary>
+        /// <returns>Success</returns>
+        public bool MenuSelectText(
+            AasxMenuActionTicket ticket,
+            string argName,
+            string caption,
+            string proposeText,
+            out string targetText,
+            string msg)
+        {
+            // filename
+            targetText = ticket?[argName] as string;
+
+            if (targetText?.HasContent() != true)
+            {
+                var uc = new TextBoxFlyout(caption, AnyUiMessageBoxImage.Question);
+                uc.Text = proposeText;
+                this.StartFlyoverModal(uc);
+                if (uc.Result)
+                    targetText = uc.Text;
+            }
+
+            if (targetText?.HasContent() != true)
+            {
+                _logic?.LogErrorToTicketOrSilent(ticket, msg);
+                return false;
+            }
+
+            return true;
+        }
+
+        protected static string _userLastPutUrl = "http://???:51310";
+        protected static string _userLastGetUrl = "http://???:51310";
+
+        public void CommandBinding_SubmodelReadWritePutGet(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
-            if (cmd == "SubmodelRead")
+            if (cmd == "submodelread")
             {
                 // start
                 ticket?.StartExec();
 
                 // current Submodel
-                AdminShell.Submodel sm = null;
-                AdminShell.AdministrationShellEnv env = null;
-                if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
-                {
-                    sm = vesmr.theSubmodel;
-                    env = vesmr.theEnv;
-                }
-                if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
-                {
-                    sm = vesm.theSubmodel;
-                    env = vesm.theEnv;
-                }
-
-                if (sm == null)
-                {
-                    _logic?.LogErrorToTicket(ticket, "Submodel Read: No valid SubModel selected.");
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm,
+                    "Submodel Read: No valid Submodel selected."))
                     return;
-                }
 
                 // filename
-                var sourceFn = ticket?["File"] as string;
-
-                if (sourceFn?.HasContent() != true)
-                {
-                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                    var dlg = new Microsoft.Win32.OpenFileDialog();
-                    dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-                    dlg.FileName = "Submodel_" + sm.idShort + ".json";
-                    dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
-                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                    if (true == dlg.ShowDialog())
-                        sourceFn = dlg.FileName;
-                    if (Options.Curr.UseFlyovers) this.CloseFlyover();
-                }
-
-                if (sourceFn?.HasContent() != true)
-                {
-                    _logic?.LogErrorToTicketOrSilent(ticket, "Submodel Read: No valid filename.");
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Submodel_" + sm.idShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "Submodel Read: No valid filename."))
                     return;
-                }
 
                 RememberForInitialDirectory(sourceFn);
 
-                _logic?.Tool_ReadSubmodel(sm, env, sourceFn, ticket);
+                try
+                {
+                    _logic?.Tool_ReadSubmodel(sm, env, sourceFn, ticket);
 
-#if old
-                // locate AAS?
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(sm.identification);
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                } 
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
+                }
+            }
 
-                // de-serialize Submodel
-                AdminShell.Submodel submodel = null;
+            if (cmd == "submodelwrite")
+            {
+                // start
+                ticket?.StartExec();
+
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm,
+                    "Submodel Write: No valid Submodel selected."))
+                    return;
+
+                // filename
+                if (!MenuSelectSaveFilename(
+                    ticket, "File",
+                    "Submodel_" + sm.idShort + ".json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    out var targetFn,
+                    "Submodel Read: No valid filename."))
+                    return;
+
+                // do it directly
+                RememberForInitialDirectory(targetFn);
+
+                try
+                { 
+                    using (var s = new StreamWriter(targetFn))
+                    {
+                        var json = JsonConvert.SerializeObject(sm, Formatting.Indented);
+                        s.WriteLine(json);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Write");
+                }
+
+            }
+
+            if (cmd == "submodelput")
+            {
+                // start
+                ticket?.StartExec();
+
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm,
+                    "Submodel Put: No valid Submodel selected."))
+                    return;
+
+                // URL
+                if (!MenuSelectText(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastPutUrl,
+                    out var resurl,
+                    "Submodel Put: No valid URL selected,"))
+                    return;
+
+                _userLastPutUrl = resurl;
+
+                // execute
+                Log.Singleton.Info($"Connecting to REST server {resurl} ..");
 
                 try
                 {
-                    RememberForInitialDirectory(sourceFn);
-                    using (StreamReader file = System.IO.File.OpenText(sourceFn))
-                    {
-                        ITraceWriter tw = new MemoryTraceWriter();
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.TraceWriter = tw;
-                        serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                        submodel = (AdminShell.Submodel)serializer.Deserialize(file, typeof(AdminShell.Submodel));
-                    }
+                    _logic?.Tool_SubmodelPut(sm, resurl, ticket);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    MessageBoxFlyoutShow(
-                        "Can not read SubModel.", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Put");
+                }
+            }
+
+            if (cmd == "submodelget")
+            {
+                // start
+                ticket?.StartExec();
+
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm,
+                    "Submodel Get: No valid Submodel selected."))
                     return;
-                }
 
-                // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
-                {
-                    MessageBoxFlyoutShow(
-                        "Identification of SubModel is (null).", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                // URL
+                if (!MenuSelectText(
+                    ticket, "URL",
+                    "REST server adress:",
+                    _userLastGetUrl,
+                    out var resurl,
+                    "Submodel Get: No valid URL selected,"))
                     return;
-                }
 
-                // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
-                {
-                    MessageBoxFlyoutShow(
-                        "Error accessing internal data structures.", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
-                }
+                _userLastGetUrl = resurl;
 
-                // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
-                if (existingSm != null)
-                    _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
-                _packageCentral.Main.AasEnv.Submodels.Add(submodel);
-
-                // add SubmodelRef to AAS
-                // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
-                var existsmr = aas.HasSubmodelRef(newsmr);
-                if (!existsmr)
-                {
-                    aas.AddSubmodelRef(newsmr);
-                }
-#endif          
-                RedrawAllAasxElements();
-                RedrawElementView();
-                
-            }
-        }
-
-        static string PUTURL = "http://???:51310";
-
-        public void CommandBinding_SubmodelPut()
-        {
-            VisualElementSubmodelRef ve1 = null;
-
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "PUT Submodel",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                return;
-            }
-
-            var input = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
-            input.Text = PUTURL;
-            this.StartFlyoverModal(input);
-            if (!input.Result)
-            {
-                return;
-            }
-            PUTURL = input.Text;
-            Log.Singleton.Info($"Connecting to REST server {PUTURL} ..");
-
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "PUT Submodel",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-            var obj = ve1.theSubmodel;
-            var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-
-            try
-            {
-                var client = new AasxRestServerLibrary.AasxRestClient(PUTURL);
-                client.PutSubmodelAsync(json);
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, $"Connecting to REST server {PUTURL}");
-            }
-        }
-
-        static string GETURL = "http://???:51310";
-
-        public void CommandBinding_SubmodelGet()
-        {
-            VisualElementSubmodelRef ve1 = null;
-
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "GET Submodel",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Information);
-                return;
-            }
-
-            var input = new TextBoxFlyout("REST server adress:", AnyUiMessageBoxImage.Question);
-            input.Text = GETURL;
-            this.StartFlyoverModal(input);
-            if (!input.Result)
-            {
-                return;
-            }
-            GETURL = input.Text;
-            Log.Singleton.Info($"Connecting to REST server {GETURL} ..");
-
-            var obj = ve1.theSubmodel;
-            var sm = "";
-            try
-            {
-                var client = new AasxRestServerLibrary.AasxRestClient(GETURL);
-                sm = client.GetSubmodel(obj.idShort);
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, $"Connecting to REST server {GETURL}");
-            }
-
-            {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
-
-                // de-serialize Submodel
-                AdminShell.Submodel submodel = null;
+                // execute
+                Log.Singleton.Info($"Connecting to REST server {resurl} ..");
 
                 try
                 {
-                    using (TextReader reader = new StringReader(sm))
-                    {
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                        submodel = (AdminShell.Submodel)serializer.Deserialize(reader, typeof(AdminShell.Submodel));
-                    }
+                    _logic?.Tool_SubmodelGet(env, sm, resurl, ticket);
+                    RedrawAllAasxElements();
+                    RedrawElementView();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    MessageBoxFlyoutShow(
-                        "Can not read SubModel.", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
+                    _logic?.LogErrorToTicket(ticket, ex, "Submodel Get");
                 }
-
-                // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
-                {
-                    MessageBoxFlyoutShow(
-                        "Identification of SubModel is (null).", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
-                }
-
-                // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
-                {
-                    MessageBoxFlyoutShow(
-                        "Error accessing internal data structures.", "Submodel Read",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
-                }
-
-                // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
-                if (existingSm != null)
-                    _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
-                _packageCentral.Main.AasEnv.Submodels.Add(submodel);
-
-                // add SubmodelRef to AAS
-                // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
-                var existsmr = aas.HasSubmodelRef(newsmr);
-                if (!existsmr)
-                {
-                    aas.AddSubmodelRef(newsmr);
-                }
-                RedrawAllAasxElements();
-                RedrawElementView();
             }
+
         }
 
         public void CommandBinding_OpcUaClientRead(

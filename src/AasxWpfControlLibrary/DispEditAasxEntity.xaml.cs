@@ -24,6 +24,7 @@ using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using static AnyUi.AnyUiDisplayContextWpf;
 
 namespace AasxPackageExplorer
 {
@@ -723,111 +724,11 @@ namespace AasxPackageExplorer
                 e.Handled = true;
         }
 
-        public string CreateTempFileForKeyboardShortcuts()
+        public IEnumerable<KeyShortcutRecord> EnumerateShortcuts()
         {
-            try
-            {
-                // create a temp HTML file
-                var tmpfn = System.IO.Path.GetTempFileName();
-
-                // rename to html file
-                var htmlfn = tmpfn.Replace(".tmp", ".html");
-                File.Move(tmpfn, htmlfn);
-
-                // create html content as string
-                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<!doctype html>
-                    <html lang=en>
-                    <head>
-                    <style>
-                    body {
-                      background-color: #FFFFE0;
-                      font-size: small;
-                      font-family: Arial, Helvetica, sans-serif;
-                    }
-
-                    table {
-                      font-family: arial, sans-serif;
-                      border-collapse: collapse;
-                      width: 100%;
-                    }
-
-                    td, th {
-                      border: 1px solid #dddddd;
-                      text-align: left;
-                      padding: 8px;
-                    }
-
-                    tr:nth-child(even) {
-                      background-color: #fffff0;
-                    }
-                    </style>
-                    <meta charset=utf-8>
-                    <title>blah</title>
-                    </head>
-                    <body>");
-
-                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</body>
-                    </html>");
-
-                var html = "";
-
-                html += "<h3>Keyboard shortcuts</h3>" + Environment.NewLine;
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<table style=""width:100%"">
-                    <tr>
-                    <th>Modifiers & Keys</th>
-                    <th>Function</th>
-                    <th>Description</th>
-                    </tr>");
-
-                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<tr>
-                    <td>{0}</th>
-                    <td>{1}</th>
-                    <td>{2}</th>
-                    </tr>");
-
-                if (_displayContext?.KeyShortcuts != null)
-                    foreach (var sc in _displayContext.KeyShortcuts)
-                    {
-                        // Keys
-                        var keys = "";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Shift))
-                            keys += "[Shift] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Control))
-                            keys += "[Control] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Alt))
-                            keys += "[Alt] ";
-
-                        keys += "[" + sc.Key.ToString() + "]";
-
-                        // Function
-                        var fnct = "";
-                        if (sc.Element is AnyUiButton btn)
-                            fnct = "" + btn.Content;
-
-                        // fill
-                        html += String.Format(rowfmt,
-                            "" + keys,
-                            "" + fnct,
-                            "" + sc.Info);
-                    }
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</table>");
-
-                // write
-                System.IO.File.WriteAllText(htmlfn, htmlHeader + html + htmlFooter);
-                return htmlfn;
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
-            }
-            return null;
+            if (_displayContext?.KeyShortcuts != null)
+                foreach (var sc in _displayContext.KeyShortcuts)
+                    yield return sc;
         }
     }
 }

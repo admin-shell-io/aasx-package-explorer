@@ -40,6 +40,7 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxRestServerLibrary\AasxRestServerLibrary.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
     <ProjectReference Include="..\jsoncanonicalizer\jsoncanonicalizer.csproj" />
     <ProjectReference Include="..\SSIExtension\SSIExtension.csproj" />
