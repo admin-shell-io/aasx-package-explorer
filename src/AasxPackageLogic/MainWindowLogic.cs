@@ -36,7 +36,7 @@ using Newtonsoft.Json.Serialization;
 namespace AasxPackageExplorer
 {
     /// <summary>
-    /// This class contains pure logic elements of a typical "main window" of Package Explorer or
+    /// This class contains pure functionality pieces of a typical "main window" of Package Explorer or
     /// similar application.
     /// </summary>
     public class MainWindowLogic

@@ -1099,8 +1099,11 @@ namespace AasxPackageExplorer
                     {
                         string id = thingE.Value.ToString();
                         sm.SetIdentification("IRI", id);
-                        smref.First.idType = "IRI";
-                        smref.First.value = id;
+                        if (smref != null)
+                        {
+                            smref.First.idType = "IRI";
+                            smref.First.value = id;
+                        }
                     }
                     if (key == "properties")
                     {

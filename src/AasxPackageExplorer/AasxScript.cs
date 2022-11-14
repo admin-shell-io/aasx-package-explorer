@@ -42,6 +42,20 @@ namespace AasxPackageExplorer
 
         protected int _logLevel = 2;
 
+        public class HelpInfo
+        {
+            public string Keyword;
+            public string Description;
+            public AasxMenuListOfArgDefs ArgDefs;
+        }
+
+        public List<HelpInfo> ListOfHelp = new List<HelpInfo>();
+
+        public void AddHelpInfo(string key, string desc, AasxMenuListOfArgDefs args = null)
+        {
+            ListOfHelp.Add(new HelpInfo() { Keyword = key, Description = desc, ArgDefs = args });
+        }
+
         public class MessageBox
         {
             public static void Show(string caption)
@@ -59,7 +73,6 @@ namespace AasxPackageExplorer
                 Console.WriteLine($"Flex a {a} b {b} c{c}");
             }
         }
-
         
         public class ScriptInvokableBase : IInvokable
         {
@@ -80,7 +93,13 @@ namespace AasxPackageExplorer
 
         public class Script_WriteLine : ScriptInvokableBase
         {
-            public Script_WriteLine(AasxScript script) : base(script) { }
+            public Script_WriteLine(AasxScript script) : base(script) 
+            {
+                script?.AddHelpInfo("WriteLine",
+                    "Outputs all arguments to script log messages and starts new line.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<any>", "All arguments are writen to the scriot log."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -91,7 +110,13 @@ namespace AasxPackageExplorer
 
         public class Script_Sleep : ScriptInvokableBase
         {
-            public Script_Sleep(AasxScript script) : base(script) { }
+            public Script_Sleep(AasxScript script) : base(script) 
+            {
+                script?.AddHelpInfo("Sleep",
+                    "Pauses the execution for a number of given milli seconds.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<time>", "Pause time in milli seconds."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -103,7 +128,14 @@ namespace AasxPackageExplorer
 
         public class Script_Tool : ScriptInvokableBase
         {
-            public Script_Tool(AasxScript script) : base(script) { }
+            public Script_Tool(AasxScript script) : base(script)
+            {
+                script?.AddHelpInfo("Tool",
+                    "Invokes a menu-item (tool) of the application with arguments treated as key/value pairs.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<key>", "String which identifies the argument of the command.")
+                        .Add("<value>", "Arbitrary type and value for that argument."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -185,7 +217,17 @@ namespace AasxPackageExplorer
 
         public class Script_Select : ScriptInvokableBase
         {
-            public Script_Select(AasxScript script) : base(script) { }
+            public Script_Select(AasxScript script) : base(script)
+            {
+                script?.AddHelpInfo("Select",
+                    "Selects the currently selected item in the elements hierarchy of the main AAS environment.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<ref. type>", "String indicating Referable type, such as This, AAS, SM, SME, CD. " +
+                            "'This' returns the currently selected Referable without changing selection.")
+                        .Add("<adr. mode>", "Adressing mode, such as First, Next, Prev, idShort, semanticId.")
+                        .Add("<value>", "String search argument for idShort, semanticId.")
+                        .Add("returns:", "Referable which is currently selected."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -219,7 +261,13 @@ namespace AasxPackageExplorer
 
         public class Script_Location : ScriptInvokableBase
         {
-            public Script_Location(AasxScript script) : base(script) { }
+            public Script_Location(AasxScript script) : base(script) 
+            {
+                script?.AddHelpInfo("Location",
+                    "Stores (\"Push\") or retrieves (\"Pop\") the currently selected item from a stack.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<cmd>", "Either 'Push' or 'Pop'."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -260,7 +308,13 @@ namespace AasxPackageExplorer
 
         public class Script_System : ScriptInvokableBase
         {
-            public Script_System(AasxScript script) : base(script) { }
+            public Script_System(AasxScript script) : base(script) 
+            {
+                script?.AddHelpInfo("System",
+                    "Executes a command-line given by the arguments on the operating system prompt.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<any>", "All arguments are passed to the command line."));
+            }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
@@ -316,6 +370,16 @@ namespace AasxPackageExplorer
 
         public bool IsExecuting { get => _worker != null; }
 
+        public void PrepareHelp()
+        {
+            var root = typeof(AasxScript);
+            foreach (var nt in root.GetNestedTypes())
+                if (nt.GetInterfaces().Contains(typeof(IInvokable)))
+                {
+                    var x = Activator.CreateInstance(nt,this);
+                }
+        }
+
         public void StartEnginBackground(
             string script, 
             int logLevel,
@@ -367,7 +431,7 @@ namespace AasxPackageExplorer
                     s.Context.Scope.SetItem("Location", new Script_Location(this));
                     s.Context.Scope.SetItem("System", new Script_System(this));
                     if (_logLevel >= 2)
-                        Log.Singleton.Info("Script: Scope extened.");
+                        Log.Singleton.Info("Script: Scope extended.");
 
                     // execute
                     if (_logLevel >= 2)

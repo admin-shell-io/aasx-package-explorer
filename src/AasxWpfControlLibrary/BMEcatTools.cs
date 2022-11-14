@@ -35,8 +35,8 @@ namespace AasxPackageExplorer
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
         public static void ImportBMEcatToSubModel(
-            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
-            AdminShell.SubmodelRef smref)
+            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm /*,
+            AdminShell.SubmodelRef smref*/)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File

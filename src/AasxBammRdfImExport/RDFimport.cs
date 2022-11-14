@@ -28,8 +28,8 @@ namespace AasxBammRdfImExport
 
         public static AdminShellNS.AdminShellPackageEnv thePackageEnv;
 
-        public static void ImportInto(string rdffn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
-        AdminShell.SubmodelRef smref)
+        public static void ImportInto(string rdffn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm/*,
+        AdminShell.SubmodelRef smref*/)
 
         {
             thePackageEnv = new AdminShellNS.AdminShellPackageEnv();

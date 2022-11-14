@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -453,6 +454,40 @@ namespace AasxIntegrationBase
         /// the action. Should correspond to <c>Result == null</c>.
         /// </summary>
         public string Exception = null;
+
+        //
+        // Runtime data
+        //
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.IAasElement SelectedItem;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.AdministrationShellEnv Env;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.AdministrationShell AAS;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.Submodel Submodel;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.SubmodelRef SubmodelRef;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
+        public AdminShell.SubmodelElement SubmodelElement;
 
         //
         // Convenience

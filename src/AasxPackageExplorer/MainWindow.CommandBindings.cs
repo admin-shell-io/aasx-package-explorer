@@ -144,34 +144,69 @@ namespace AasxPackageExplorer
                             .Add("Asset", "String with Asset-Id.")))
                 .AddSeparator()
                 .AddMenu(header: "Import ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ImportAML", header: "Import AutomationML into AASX ..")
+                    .AddWpf(name: "ImportAML", header: "Import AutomationML into AASX ..",
+                        help: "Import AML file with AAS entities to overall AAS environment.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "AML file with AAS entities data."))
                     .AddWpf(name: "SubmodelRead", header: "Import Submodel from JSON ..",
                         help: "Read Submodel from JSON and add/ replace existing to current AAS.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON file with Submodel data."))
-                    .AddWpf(name: "SubmodelGet", header: "GET Submodel from URL ..")
-                    .AddWpf(name: "ImportSubmodel", header: "Import Submodel from Dictionary ..")
-                    .AddWpf(name: "ImportSubmodelElements", header: "Import Submodel Elements from Dictionary ..")
-                    .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel ..")
-                    .AddWpf(name: "TDImport", header: "Import Thing Description JSON LD document into SubModel ..")
-                    .AddWpf(name: "CSVImport", header: "Import CSV-file into SubModel ..")
+                    .AddWpf(name: "SubmodelGet", header: "GET Submodel from URL ..",
+                        help: "Get Submodel from REST server.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("URL", "URL to get Submodel data from."))
+                    .AddWpf(name: "ImportSubmodel", header: "Import Submodel from Dictionary ..",
+                        help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to a Submodel.")
+                    .AddWpf(name: "ImportSubmodelElements", header: "Import Submodel Elements from Dictionary ..",
+                        help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to SubmodelElement.")
+                    .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel ..",
+                        help: "Import BMEcat data into an existing Submodel.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "BMEcat file with data."))
+                    .AddWpf(name: "SubmodelTDImport", header: "Import Thing Description JSON LD document into SubModel ..",
+                        help: "Import Thing Description (TD) file in JSON LD format into an existing Submodel.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "JSON LD file with TD data."))
+                    .AddWpf(name: "CSVImport", header: "Import CSV-file into SubModel ..",
+                        help: "Import comma separated values (CSV) into an existing Submodel.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "CSV file with data."))
                     .AddWpf(name: "OPCUAi4aasImport", header: "Import AAS from i4aas-nodeset ..")
-                    .AddWpf(name: "OpcUaImportNodeSet", header: "Import OPC UA nodeset.xml as Submodel ..")
+                    .AddWpf(name: "OpcUaImportNodeSet", header: "Import OPC UA nodeset.xml as Submodel ..",
+                        help: "Import OPC UA nodeset.xml into an existing Submodel.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "OPC UA Nodeset file."))
                     .AddWpf(name: "OPCRead", header: "Read OPC values into SubModel ..",
                         help: "Use Qualifiers attributed in a Submodel to read actual OPC UA values.")
-                    .AddWpf(name: "RDFRead", header: "Import BAMM RDF into AASX ..")
+                    .AddWpf(name: "RDFRead", header: "Import BAMM RDF into AASX ..",
+                        help: "Import BAMM RDF into AASX.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "BAMM file with RDF data."))
                     .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel ..")
                     .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table .."))
                 .AddMenu(header: "Export ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ExportAML", header: "Export AutomationML ..")
-                    .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON ..")
-                    .AddWpf(name: "SubmodelPut", header: "PUT Submodel to URL ..")
+                    .AddWpf(name: "ExportAML", header: "Export AutomationML ..",
+                        help: "Export AML file with AAS entities from AAS environment.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "AML file with AAS entities data."))
+                    .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON ..",
+                        help: "Write Submodel to JSON.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "JSON file to write Submodel data to."))
+                    .AddWpf(name: "SubmodelPut", header: "PUT Submodel to URL ..",
+                        help: "Put Submodel to REST server.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("URL", "URL to put Submodel data to."))
                     .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset ..")
                     .AddWpf(name: "OpcUaExportNodeSetUaPlugin", header: "Export OPC UA Nodeset2.xml (via UA server plug-in) ..")
                     .AddWpf(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
                     .AddWpf(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms ..")
                     .AddWpf(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts ..")
-                    .AddWpf(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document")
+                    .AddWpf(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document",
+                        help: "Export Thing Description (TD) file in JSON LD format from an existing Submodel.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "JSON LD file with TD data."))
                     .AddWpf(name: "PrintAsset", header: "Print Asset as code sheet ..",
                         help: "Prints a sheet with 2D codes for the selected asset.")
                     .AddWpf(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) ..",
@@ -449,11 +484,43 @@ namespace AasxPackageExplorer
         }
 #endif
 
+        private void FillSelectedItem(AasxMenuActionTicket ticket = null)
+        {
+            // access
+            if (ticket == null)
+                return;
+
+            // set
+            if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
+            {
+                ticket.Env = veaas.theEnv;
+                ticket.AAS = veaas.theAas;
+            }
+            
+            if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
+            {
+                ticket.Env = vesmr.theEnv;
+                ticket.Submodel = vesmr.theSubmodel;
+                ticket.SubmodelRef = vesmr.theSubmodelRef;
+            }
+            
+            if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
+            {
+                ticket.Env = vesm.theEnv;
+                ticket.Submodel = vesm.theSubmodel;
+            }
+
+        }
+
         private async Task CommandBinding_GeneralDispatch(
             string cmd, 
             AasxMenuItemBase menuItem,
             AasxMenuActionTicket ticket = null)
         {
+            //
+            // Start
+            //
+
             if (cmd == null)
             {
                 throw new ArgumentNullException($"Unexpected null {nameof(cmd)}");
@@ -461,16 +528,25 @@ namespace AasxPackageExplorer
 
             var scriptmode = ticket?.ScriptMode == true;
 
+            FillSelectedItem(ticket);
+
+            //
+            // Dispatch
+            //
+
             if (cmd == "new")
             {
+                // start
                 ticket?.StartExec();
 
+                // check user
                 if (!scriptmode
                     && AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
                     "Create new Adminshell environment? This operation can not be reverted!", "AAS-ENV",
                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                     return;
 
+                // do
                 try
                 {
                     // clear
@@ -489,30 +565,19 @@ namespace AasxPackageExplorer
 
             if (cmd == "open" || cmd == "openaux")
             {
+                // start
                 ticket?.StartExec();
 
-                var fn = ticket?["File"] as string;
-
-                if (fn == null)
-                {
-                    var dlg = new Microsoft.Win32.OpenFileDialog();
-                    dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.Main?.Filename);
-                    dlg.Filter =
-                        "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
-                        "AAS JSON file (*.json)|*.json|All files (*.*)|*.*";
-
-                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                    if (true == dlg.ShowDialog())
-                        fn = dlg.FileName;
-                    if (Options.Curr.UseFlyovers) this.CloseFlyover();
-                }
-
-                if (fn?.HasContent() != true)
-                {
-                    _logic?.LogErrorToTicketOrSilent(ticket, 
-                        $"For opeinging '{cmd}', no filename given!");
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Open AASX",
+                    null,
+                    "AASX package files (*.aasx)|*.aasx|AAS XML file (*.xml)|*.xml|" +
+                        "AAS JSON file (*.json)|*.json|All files (*.*)|*.*",
+                    out var fn,
+                    "Open AASX: No valid filename."))
                     return;
-                }
 
                 // ok
                 RememberForInitialDirectory(fn);
@@ -530,24 +595,22 @@ namespace AasxPackageExplorer
                         break;
                     default:
                         throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
-                }
-                
+                }                
             }
 
             if (cmd == "save")
             {
+                // start
                 ticket?.StartExec();
 
                 // open?
                 if (!_packageCentral.MainStorable)
                 {
-                    MessageBoxFlyoutLogOrShow(
-                        scriptmode, StoredPrint.Color.Red,
-                        "No open AASX file to be saved.",
-                        "Save", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
+                    _logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
                     return;
                 }
 
+                // do
                 try
                 {
                     // save
@@ -582,15 +645,13 @@ namespace AasxPackageExplorer
 
             if (cmd == "saveas")
             {
+                // start
                 ticket?.StartExec();
 
                 // open?
-                if (!_packageCentral.MainAvailable || _packageCentral.MainItem.Container == null)
+                if (!_packageCentral.MainStorable)
                 {
-                    MessageBoxFlyoutLogOrShow(
-                        scriptmode, StoredPrint.Color.Red,
-                        "No open AASX file to be saved.",
-                        "Save", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Hand);
+                    _logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
                     return;
                 }
 
@@ -602,43 +663,19 @@ namespace AasxPackageExplorer
                         "Save", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand))
                         return;
 
-                // where?
-                var fn = ticket?["File"] as string;
-                int fi = 0;
-                if (fn?.HasContent() != true)
-                {
-                    var dlg = new Microsoft.Win32.SaveFileDialog();
-                    if (isLocalFile)
-                    {
-                        dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-                        dlg.FileName = _packageCentral.MainItem.Filename;
-                    }
-                    else
-                    {
-                        dlg.FileName = "copy";
-                    }
-
-                    dlg.DefaultExt = "*.aasx";
-                    dlg.Filter =
-                        "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
+                // filename
+                if (!MenuSelectSaveFilename(
+                    ticket, "File",
+                    "Save AASX package",
+                    "Submodel_" + sm.idShort + ".json",
+                    "AASX package files (*.aasx)|*.aasx|AASX package files w/ JSON (*.aasx)|*.aasx|" +
                         (!isLocalFile ? "" : "AAS XML file (*.xml)|*.xml|AAS JSON file (*.json)|*.json|") +
-                        "All files (*.*)|*.*";
-                    if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-                    if (true == dlg.ShowDialog())
-                    {
-                        fn = dlg.FileName;
-                        fi = dlg.FilterIndex;
-                    }
-                    if (Options.Curr.UseFlyovers) this.CloseFlyover();
-                }
-
-                if (fn?.HasContent() != true)
-                {
-                    _logic?.LogErrorToTicketOrSilent(ticket, $"For saving, no filename given!");
+                        "All files (*.*)|*.*",
+                    out var fn, out var filterIndex,
+                    "Save AASX: No valid filename."))
                     return;
-                }
-                
-                // save
+
+                // do
                 try
                 {
                     // if not local, do a bit of voodoo ..
@@ -670,9 +707,9 @@ namespace AasxPackageExplorer
 
                     // preferred format
                     var prefFmt = AdminShellPackageEnv.SerializationFormat.None;
-                    if (fi == 1)
+                    if (filterIndex == 1)
                         prefFmt = AdminShellPackageEnv.SerializationFormat.Xml;
-                    if (fi == 2)
+                    if (filterIndex == 2)
                         prefFmt = AdminShellPackageEnv.SerializationFormat.Json;
 
                     // save 
@@ -680,7 +717,7 @@ namespace AasxPackageExplorer
                     await _packageCentral.MainItem.SaveAsAsync(fn, prefFmt: prefFmt);
 
                     // backup (only for AASX)
-                    if (fi == 0)
+                    if (filterIndex == 0)
                         if (Options.Curr.BackupDir != null)
                             _packageCentral.MainItem.Container.BackupInDir(
                                 System.IO.Path.GetFullPath(Options.Curr.BackupDir),
@@ -715,6 +752,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "close" && _packageCentral?.Main != null)
             {
+                // start
                 ticket?.StartExec();
 
                 if (!scriptmode && AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
@@ -722,6 +760,7 @@ namespace AasxPackageExplorer
                     "Close Package?", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                     return;
 
+                // do
                 try
                 {
                     _packageCentral.MainItem.Close();
@@ -735,6 +774,7 @@ namespace AasxPackageExplorer
 
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt") && _packageCentral?.Main != null)
             {
+                // start
                 ticket?.StartExec();
 
                 // identify current selection
@@ -1674,34 +1714,28 @@ namespace AasxPackageExplorer
                 CommandBinding_SubmodelReadWritePutGet(cmd, ticket);
 
             if (cmd == "rdfread")
-                CommandBinding_RDFRead();
+                CommandBinding_RDFRead(cmd, ticket);
 
             if (cmd == "bmecatimport")
-                CommandBinding_BMEcatImport();
+                CommandBinding_BMEcatImport(cmd, ticket);
 
             if (cmd == "csvimport")
-                CommandBinding_CSVImport();
+                CommandBinding_CSVImport(cmd, ticket);
 
-            if (cmd == "tdimport")
-                CommandBinding_TDImport();
-
-            if (cmd == "submodeltdexport")
-                CommandBinding_SubmodelTDExport();
+            if (cmd == "submodeltdimport" || cmd == "submodeltdexport")
+                CommandBinding_SubmodelTdExportImport(cmd, ticket);
 
             if (cmd == "opcuaimportnodeset")
-                CommandBinding_OpcUaImportNodeSet();
+                CommandBinding_OpcUaImportNodeSet(cmd, ticket);
 
             if (cmd == "importsubmodel")
-                CommandBinding_ImportSubmodel();
+                CommandBinding_ImportDictToSubmodel(cmd, ticket);
 
             if (cmd == "importsubmodelelements")
-                CommandBinding_ImportSubmodelElements();
+                CommandBinding_ImportDictToSubmodelElements(cmd, ticket);
 
             if (cmd == "importaml")
-                CommandBinding_ImportAML();
-
-            if (cmd == "exportaml")
-                CommandBinding_ExportAML();
+                CommandBinding_ImportExportAML(cmd, ticket);
 
             if (cmd == "opcuai4aasexport")
                 CommandBinding_ExportOPCUANodeSet();
@@ -1837,63 +1871,6 @@ namespace AasxPackageExplorer
             }
 
             return false;
-        }
-
-        public void CommandBinding_TDImport()
-        {
-            VisualElementSubmodelRef ve = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel is selected.", "Unable to import TD JSON LD Document",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
-                try
-                {
-                    // do it
-                    RememberForInitialDirectory(dlg.FileName);
-                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
-                        (dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
-                    foreach (var temp in (JToken)importObject)
-                    {
-                        JProperty importProperty = (JProperty)temp;
-                        string key = importProperty.Name.ToString();
-                        if (key == "error")
-                        {
-                            MessageBoxFlyoutShow(
-                            "Unable to Import the JSON LD File", "Check the log"
-                            ,
-                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                            Log.Singleton.Error(importProperty.Value.ToString(), "When importing the jsonld document");
-                        }
-                        else
-                        {
-                            // redisplay
-                            RedrawAllAasxElements();
-                            RedrawElementView();
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "When importing the jsonld document");
-                }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public bool PanelConcurrentCheckIsVisible()
@@ -2627,122 +2604,133 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_BMEcatImport()
+        public void CommandBinding_BMEcatImport(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            VisualElementSubmodelRef ve = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            if (cmd == "bmecatimport")
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected for BMEcat information.", "BMEcat import",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "BMEcat import: No valid Submodel selected."))
+                    return;
 
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select BMEcat file to be imported",
+                    null,
+                    "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "RDF Read: No valid filename."))
+                    return;
 
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Filter = "BMEcat XML files (*.bmecat)|*.bmecat|All files (*.*)|*.*";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
+                RememberForInitialDirectory(sourceFn);
+
+                // do it
                 try
                 {
                     // do it
-                    RememberForInitialDirectory(dlg.FileName);
-                    BMEcatTools.ImportBMEcatToSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    BMEcatTools.ImportBMEcatToSubModel(sourceFn, env, sm);
+
                     // redisplay
                     RedrawAllAasxElements();
                     RedrawElementView();
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, "When importing BMEcat, an error occurred");
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        "When importing BMEcat, an error occurred");
                 }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
         }
 
-        public void CommandBinding_CSVImport()
+        public void CommandBinding_CSVImport(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            VisualElementSubmodelRef ve = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            if (cmd == "csvimport")
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "CSV import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "CSV import: No valid Submodel selected."))
+                    return;
 
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select CSF file to be imported",
+                    null,
+                    "CSV files (*.CSV)|*.csv|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "CSF inmport: No valid filename."))
+                    return;
 
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Filter = "CSV files (*.CSV)|*.csv|All files (*.*)|*.*";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
+                RememberForInitialDirectory(sourceFn);
+
+                // do it
                 try
                 {
                     // do it
-                    RememberForInitialDirectory(dlg.FileName);
-                    CSVTools.ImportCSVtoSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    CSVTools.ImportCSVtoSubModel(sourceFn, env, sm);
+
                     // redisplay
                     RedrawAllAasxElements();
                     RedrawElementView();
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, "When importing CSV, an error occurred");
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        "When importing CSV, an error occurred");
                 }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
         }
 
-        public void CommandBinding_OpcUaImportNodeSet()
+        public void CommandBinding_OpcUaImportNodeSet(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            VisualElementSubmodelRef ve = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            if (cmd == "opcuaimportnodeset")
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "OPC UA Nodeset import: No valid Submodel selected."))
+                    return;
 
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select OPC UA Nodeset to be imported",
+                    null,
+                    "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "OPC UA Nodeset import: No valid filename."))
+                    return;
 
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Filter = "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
+                RememberForInitialDirectory(sourceFn);
+
+                // do it
                 try
                 {
                     // do it
-                    RememberForInitialDirectory(dlg.FileName);
-                    OpcUaTools.ImportNodeSetToSubModel(dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                    OpcUaTools.ImportNodeSetToSubModel(sourceFn, env, sm, smr);
+
                     // redisplay
                     RedrawAllAasxElements();
                     RedrawElementView();
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, "When importing, an error occurred");
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        "When importing OPC UA Nodeset, an error occurred");
                 }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            }
         }
 
         private void CommandBinding_ExecutePluginServer(
@@ -2844,14 +2832,17 @@ namespace AasxPackageExplorer
             AasxMenuActionTicket ticket, 
             out AdminShell.AdministrationShellEnv env,
             out AdminShell.Submodel sm,
+            out AdminShell.SubmodelRef smr,
             string msg)
         {
             env = null;
             sm = null;
+            smr = null;
             if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
             {
                 env = vesmr.theEnv;
                 sm = vesmr.theSubmodel;
+                smr = vesmr.theSubmodelRef;
             }
             if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
             {
@@ -2875,6 +2866,7 @@ namespace AasxPackageExplorer
         public bool MenuSelectOpenFilename(
             AasxMenuActionTicket ticket,
             string argName,
+            string caption,
             string proposeFn,
             string filter,
             out string sourceFn,
@@ -2888,6 +2880,8 @@ namespace AasxPackageExplorer
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var dlg = new Microsoft.Win32.OpenFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                if (caption != null)
+                    dlg.Title = caption;
                 if (proposeFn != null)
                     dlg.FileName = proposeFn;
                 if (filter != null)
@@ -2915,19 +2909,24 @@ namespace AasxPackageExplorer
         public bool MenuSelectSaveFilename(
             AasxMenuActionTicket ticket,
             string argName,
+            string caption,
             string proposeFn,
             string filter,
             out string targetFn,
+            out int filterIndex,
             string msg)
         {
             // filename
             targetFn = ticket?[argName] as string;
+            filterIndex = 0;
 
             if (targetFn?.HasContent() != true)
             {
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 var dlg = new Microsoft.Win32.SaveFileDialog();
                 dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
+                if (caption != null)
+                    dlg.Title = caption;
                 if (proposeFn != null)
                     dlg.FileName = proposeFn;
                 if (filter != null)
@@ -2935,7 +2934,10 @@ namespace AasxPackageExplorer
 
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 if (true == dlg.ShowDialog())
+                {
                     targetFn = dlg.FileName;
+                    filterIndex = dlg.FilterIndex;
+                }
                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
             }
 
@@ -2996,13 +2998,14 @@ namespace AasxPackageExplorer
                 // current Submodel
                 if (!MenuSelectEnvSubmodel(
                     ticket,
-                    out var env, out var sm,
+                    out var env, out var sm, out var smr,
                     "Submodel Read: No valid Submodel selected."))
                     return;
 
                 // filename
                 if (!MenuSelectOpenFilename(
                     ticket, "File",
+                    "Read Submodel from JSON data",
                     "Submodel_" + sm.idShort + ".json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
                     out var sourceFn,
@@ -3032,16 +3035,17 @@ namespace AasxPackageExplorer
                 // current Submodel
                 if (!MenuSelectEnvSubmodel(
                     ticket,
-                    out var env, out var sm,
+                    out var env, out var sm, out var smr,
                     "Submodel Write: No valid Submodel selected."))
                     return;
 
                 // filename
                 if (!MenuSelectSaveFilename(
                     ticket, "File",
+                    "Write Submodel to JSON data",
                     "Submodel_" + sm.idShort + ".json",
                     "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
-                    out var targetFn,
+                    out var targetFn, out var filterIndex,
                     "Submodel Read: No valid filename."))
                     return;
 
@@ -3071,7 +3075,7 @@ namespace AasxPackageExplorer
                 // current Submodel
                 if (!MenuSelectEnvSubmodel(
                     ticket,
-                    out var env, out var sm,
+                    out var env, out var sm, out var smr,
                     "Submodel Put: No valid Submodel selected."))
                     return;
 
@@ -3107,7 +3111,7 @@ namespace AasxPackageExplorer
                 // current Submodel
                 if (!MenuSelectEnvSubmodel(
                     ticket,
-                    out var env, out var sm,
+                    out var env, out var sm, out var smr,
                     "Submodel Get: No valid Submodel selected."))
                     return;
 
@@ -3300,8 +3304,14 @@ namespace AasxPackageExplorer
 
         }
 
-        public void CommandBinding_ImportSubmodel()
+        public void CommandBinding_ImportDictToSubmodel(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
+            // start
+            ticket?.StartExec();
+
+            // which item selected?
             AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
             AdminShell.AdministrationShell aas = null;
             if (DisplayElements.SelectedItem != null)
@@ -3321,8 +3331,8 @@ namespace AasxPackageExplorer
                 else
                 {
                     // Other element is selected --> error
-                    MessageBoxFlyoutShow("Please select the administration shell for the submodel import.",
-                        "Submodel Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    _logic?.LogErrorToTicket(ticket, 
+                        "Dictionary Import: Please select the administration shell for the submodel import.");
                     return;
                 }
             }
@@ -3333,9 +3343,9 @@ namespace AasxPackageExplorer
             {
                 dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Log.Singleton.Error(e, "An error occurred during the submodel import.");
+                _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the Dictionary import.");
             }
 
             if (dataChanged)
@@ -3347,37 +3357,30 @@ namespace AasxPackageExplorer
 #endif
         }
 
-        public void CommandBinding_ImportSubmodelElements()
+        public void CommandBinding_ImportDictToSubmodelElements(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            AdminShell.AdministrationShellEnv env = null;
-            AdminShell.Submodel submodel = null;
-            if (DisplayElements.SelectedItem is VisualElementSubmodel ves)
-            {
-                env = ves.theEnv;
-                submodel = ves.theSubmodel;
-            }
-            else if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesr)
-            {
-                env = vesr.theEnv;
-                submodel = vesr.theSubmodel;
-            }
-            else
-            {
-                MessageBoxFlyoutShow("Please select the submodel for the submodel element import.",
-                    "Submodel Element Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+            // start
+            ticket?.StartExec();
+
+            // current Submodel
+            if (!MenuSelectEnvSubmodel(
+                ticket,
+                out var env, out var sm, out var smr,
+                "Dictionary import: No valid Submodel selected."))
                 return;
-            }
 
 #if !DoNotUseAasxDictionaryImport
             var dataChanged = false;
             try
             {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(this, env, Options.Curr.DictImportDir,
-                    submodel);
+                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(
+                    this, env, Options.Curr.DictImportDir, sm);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Log.Singleton.Error(e, "An error occurred during the submodel element import.");
+                _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the submodel element import.");
             }
 
             if (dataChanged)
@@ -3389,107 +3392,109 @@ namespace AasxPackageExplorer
 #endif
         }
 
-        public void CommandBinding_ImportAML()
+        public void CommandBinding_ImportExportAML(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select AML file to be imported";
-            dlg.Filter = "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
+            if (cmd == "importaml")
             {
-                if (res == true)
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select AML file to be imported",
+                    null,
+                    "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "Import AML: No valid filename."))
+                    return;
+
+                try
                 {
-                    RememberForInitialDirectory(dlg.FileName);
-                    AasxAmlImExport.AmlImport.ImportInto(_packageCentral.Main, dlg.FileName);
+                    RememberForInitialDirectory(sourceFn);
+                    AasxAmlImExport.AmlImport.ImportInto(_packageCentral.Main, sourceFn);
                     this.RestartUIafterNewPackage();
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "When importing AML, an error occurred");
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+                }
             }
 
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
+            if (cmd == "exportaml")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!MenuSelectSaveFilename(
+                    ticket, "File",
+                    "Select AML file to be exported",
+                    "new.aml",
+                    "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
+                    "*.aml|All files (*.*)|*.*",
+                    out var targetFn, out var filterIndex,
+                    "Export AML: No valid filename."))
+                    return;
+
+                try
+                {
+                    RememberForInitialDirectory(targetFn);
+                    AasxAmlImExport.AmlExport.ExportTo(
+                        _packageCentral.Main, targetFn, tryUseCompactProperties: filterIndex == 2);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                }
+            }
         }
 
-        public void CommandBinding_RDFRead()
+        public void CommandBinding_RDFRead(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
 
         {
-            VisualElementSubmodelRef ve = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve == null || ve.theSubmodel == null || ve.theEnv == null)
+            if (cmd == "rdfread")
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected.", "Import", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "RDF Read: No valid Submodel selected."))
+                    return;
 
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select RDF file to be imported",
+                    null,
+                    "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*",
+                    out var sourceFn,
+                    "RDF Read: No valid filename."))
+                    return;
 
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.Title = "Select RDF file to be imported";
-            dlg.Filter = "BAMM files (*.ttl)|*.ttl|All files (*.*)|*.*";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
+                RememberForInitialDirectory(sourceFn);
+
+                // do it
                 try
                 {
                     // do it
-                    RememberForInitialDirectory(dlg.FileName);
                     AasxBammRdfImExport.BAMMRDFimport.ImportInto(
-                        dlg.FileName, ve.theEnv, ve.theSubmodel, ve.theSubmodelRef);
+                        sourceFn, env, sm);
+
                     // redisplay
                     RedrawAllAasxElements();
                     RedrawElementView();
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, "When importing, an error occurred");
-                }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-        }
-
-
-
-        public void CommandBinding_ExportAML()
-        {
-            // get the output file
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select AML file to be exported";
-            dlg.FileName = "new.aml";
-            dlg.DefaultExt = "*.aml";
-            dlg.Filter =
-                "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
-                "*.aml|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
-            {
-                if (res == true)
-                {
-                    RememberForInitialDirectory(dlg.FileName);
-                    AasxAmlImExport.AmlExport.ExportTo(
-                        _packageCentral.Main, dlg.FileName, tryUseCompactProperties: dlg.FilterIndex == 2);
+                    _logic?.LogErrorToTicket(ticket, ex, 
+                        "When importing, an error occurred");
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "When exporting AML, an error occurred");
-            }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_ExportNodesetUaPlugin()
@@ -3809,53 +3814,107 @@ namespace AasxPackageExplorer
             CommandExecution_RedrawAll();
         }
 
-        public void CommandBinding_SubmodelTDExport()
+        public void CommandBinding_SubmodelTdExportImport(
+            string cmd,
+            AasxMenuActionTicket ticket = null)
         {
-            VisualElementSubmodelRef ve1 = null;
-
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            if (cmd == "submodeltdimport")
             {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel is selected.", "Unable to create TD JSON LD document",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-            var obj = ve1.theSubmodel;
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "TD import: No valid Submodel selected."))
+                    return;
 
-            // ok!
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+                // filename
+                if (!MenuSelectOpenFilename(
+                    ticket, "File",
+                    "Select Thing Description (TD) file to be imported",
+                    null,
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    out var sourceFn,
+                    "TD import: No valid filename."))
+                    return;
 
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.FileName = "Submodel_" + obj.idShort + ".jsonld";
-            dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog();
-            if (res == true)
-            {
-                JObject exportData = TDJsonExport.ExportSMtoJson(ve1.theSubmodel);
-                if (exportData["status"].ToString() == "success")
+                RememberForInitialDirectory(sourceFn);
+
+                // do it
+                try
                 {
-                    RememberForInitialDirectory(dlg.FileName);
-                    using (var s = new StreamWriter(dlg.FileName))
+                    // do it
+                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
+                        (sourceFn, env, sm, smr);
+
+                    // check result
+                    foreach (var temp in (JToken)importObject)
                     {
-                        string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
-                            Newtonsoft.Json.Formatting.Indented);
-                        s.WriteLine(output);
+                        JProperty importProperty = (JProperty)temp;
+                        string key = importProperty.Name.ToString();
+                        if (key == "error")
+                        {
+                            _logic?.LogErrorToTicket(ticket, "Unable to import the JSON LD File");
+                            break;
+                        }
+                    }
+
+                    // redisplay
+                    RedrawAllAasxElements();
+                    RedrawElementView();
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        "When importing JSON LD for Thing Description, an error occurred");
+                }
+            }
+
+            if (cmd == "submodeltdexport")
+            {
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "Thing Description (TD) export: No valid Submodel selected."))
+                    return;
+
+                // filename
+                if (!MenuSelectSaveFilename(
+                    ticket, "File",
+                    "Thing Description (TD) export",
+                    "Submodel_" + sm.idShort + ".jsonld",
+                    "JSON files (*.JSONLD)|*.jsonld",
+                    out var targetFn, out var filterIndex,
+                    "Thing Description (TD) export: No valid filename."))
+                    return;
+
+                RememberForInitialDirectory(targetFn);
+
+                // do it
+                try
+                {
+                    // do it
+                    JObject exportData = TDJsonExport.ExportSMtoJson(sm);
+                    if (exportData["status"].ToString() == "success")
+                    {
+                        using (var s = new StreamWriter(targetFn))
+                        {
+                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
+                                Newtonsoft.Json.Formatting.Indented);
+                            s.WriteLine(output);
+                        }
+                    }
+                    else
+                    {
+                        _logic?.LogErrorToTicket(ticket, "Unable to Export the JSON LD File");
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    MessageBoxFlyoutShow(
-                            "Unable to Import the JSON LD File", exportData["data"].ToString(),
-                            AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        "When importing BMEcat, an error occurred");
                 }
-
             }
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_NewSubmodelFromPlugin()

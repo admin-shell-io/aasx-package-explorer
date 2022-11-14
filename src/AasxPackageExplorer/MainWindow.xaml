@@ -63,7 +63,7 @@
                     <RoutedUICommand x:Key="SubmodelPut" Text="SubmodelPut" />
                     <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
                     <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
-                    <RoutedUICommand x:Key="TDImport" Text="TDImport" />
+                    <RoutedUICommand x:Key="SubmodelTDImport" Text="SubmodelTDImport" />
                     <RoutedUICommand x:Key="SubmodelTDExport" Text="SubmodelTDExport" />
                     <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
                     <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />

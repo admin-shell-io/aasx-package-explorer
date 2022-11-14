@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -2970,11 +2971,6 @@ namespace AasxPackageExplorer
                     </head>
                     <body>");
 
-                    //tr:nth-child(even) {
-                    //  background-color: #fffff0;
-                    //}
-
-
                 var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
                     @"</body>
                     </html>");
@@ -3031,7 +3027,7 @@ namespace AasxPackageExplorer
                 // Menu command
                 //
 
-                html.AppendLine("<h3>Menu and tool commands</h3>");
+                html.AppendLine("<h3>Menu and script commands</h3>");
 
                 html.Append(AdminShellUtil.CleanHereStringWithNewlines(
                     @"<table style=""width:100%"">
@@ -3044,17 +3040,19 @@ namespace AasxPackageExplorer
 
                 var rowfmtTC = AdminShellUtil.CleanHereStringWithNewlines(
                     @"<tr style=""background-color: {0}"">
-                    <td>{1}</th>
-                    <td>{2}</th>
-                    <td>{3}</th>
-                    <td>{4}</th>
+                    <td>{1}</td>
+                    <td>{2}</td>
+                    <td>{3}</td>
+                    <td>{4}</td>
                     </tr>");
 
                 var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
                     @"<tr style=""background-color: {0}"">
-                    <td colspan=""2""></th>
-                    <td><i>{1}</i></th>
-                    <td><i>{2}</i></th>
+                    <td colspan=""2"" 
+                     style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
+                    </td>
+                    <td><i>{1}</i></td>
+                    <td><i>{2}</i></td>
                     </tr>");
 
                 foreach (var mib in _mainMenu.Menu.FindAll((x) => x is AasxMenuItem))
@@ -3090,6 +3088,60 @@ namespace AasxPackageExplorer
 
                 html.Append(AdminShellUtil.CleanHereStringWithNewlines(
                     @"</table>"));
+
+                //
+                // Script command
+                //
+
+                var script = new AasxScript();
+                script.PrepareHelp();
+
+                html.AppendLine("<h3>Script built-in commands</h3>");
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Keyword</th>
+                    <th>Argument</th>
+                    <th>Description</th>
+                    </tr>"));
+
+                var rowfmtSC = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td>{1}</td>
+                    <td colspan=""2"">{2}</td>
+                    </tr>");
+
+                var rowfmtSCAD = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td  
+                     style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
+                    </td>
+                    <td><i>{1}</i></td>
+                    <td><i>{2}</i></td>
+                    </tr>");
+
+                foreach (var hr in script.ListOfHelp)
+                {
+                    // fill
+                    html.Append(String.Format(rowfmtSC,
+                        (color) ? "#ffffe0" : "#fffff0",
+                        "" + hr.Keyword,
+                        "" + hr.Description));
+
+                    // arguments
+                    if (hr.ArgDefs != null)
+                        foreach (var ad in hr.ArgDefs)
+                        {
+                            html.Append(String.Format(rowfmtSCAD,
+                                (color) ? "#ffffe0" : "#fffff0",
+                                "" + HttpUtility.HtmlEncode(ad.Name),
+                                "" + ad.Help));
+                        }
+
+                    // color change
+                    color = !color;
+                }
 
                 //
                 // HTMLend
