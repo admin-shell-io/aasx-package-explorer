@@ -25,6 +25,7 @@ using Grapevine.Server.Attributes;
 using Grapevine.Shared;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Microsoft.IdentityModel.Tokens;
 
 /*
 Please notice:
@@ -1156,6 +1157,17 @@ namespace AasxRestServerLibrary
 
         public void EvalGetSubmodelElementFragment(IHttpContext context, string aasid, string smid, string[] elemids, string fragmentType, string fragment)
         {
+            string decodedFragment;
+            try
+            {
+                decodedFragment = Base64UrlEncoder.Decode(fragment);
+            }
+            catch (FormatException)
+            {
+                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Unable to Base64URL-decode fragment '{fragment}'!");
+                return;
+            }
+
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
@@ -1188,7 +1200,7 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            this.EvalGetFragment(context, packageStream, fragmentType, fragment);
+            this.EvalGetFragment(context, packageStream, fragmentType, decodedFragment);
         }
 
         public void EvalGetFragment(IHttpContext context, Stream fragmentFileStream, string fragmentType, string fragment)

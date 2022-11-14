@@ -91,7 +91,7 @@ namespace AasxRestServerLibrary
 
         private static XPathNodeIterator FindFragmentObjects(XmlDocument xmlDocument, string xmlFragment)
         {
-            var xPath = HttpUtility.UrlDecode(xmlFragment.Trim('/'));
+            var xPath = xmlFragment.Trim('/');
 
             XPathNavigator navigator = xmlDocument.CreateNavigator();
             XPathExpression query;

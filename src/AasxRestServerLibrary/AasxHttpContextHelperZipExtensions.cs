@@ -89,15 +89,16 @@ namespace AasxRestServerLibrary
 
         private static dynamic FindFragmentObject(ZipArchive archive, string zipFragment)
         {
-            var zipPath = HttpUtility.UrlDecode(zipFragment.Trim('/'));
+            zipFragment = zipFragment.Trim('/');
 
-            if (zipPath.Length == 0) {
-                return zipPath;
+            if (zipFragment.Length == 0)
+            {
+                return zipFragment;
             }
 
             try
             {
-                var entry = archive.GetEntry(zipPath);
+                var entry = archive.GetEntry(zipFragment);
 
                 if (entry != null)
                 {
@@ -107,16 +108,16 @@ namespace AasxRestServerLibrary
                     } else
                     {
                         // path represents a directory
-                        return zipPath;
+                        return zipFragment;
                     }
                 } else
                 {
                     // might be a directory that does not have its own entry
-                    var entries = archive.Entries.Where(e => e.FullName.StartsWith(zipPath));
+                    var entries = archive.Entries.Where(e => e.FullName.StartsWith(zipFragment));
 
                     if (entries.Count() > 0)
                     {
-                        return zipPath;
+                        return zipFragment;
                     } else
                     {
                         return null;

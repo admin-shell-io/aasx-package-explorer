@@ -66,7 +66,7 @@ namespace AasxRestServerLibrary
 
         private static object FindFragmentObject(XLWorkbook workbook, string xlsFragment)
         {
-            String xlsExpression = HttpUtility.UrlDecode(xlsFragment.Trim('/'));
+            String xlsExpression = xlsFragment.Trim('/');
 
             try
             {
