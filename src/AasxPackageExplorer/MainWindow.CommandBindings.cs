@@ -31,6 +31,7 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
+using AasxSchemaExport;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
@@ -1382,6 +1383,9 @@ namespace AasxPackageExplorer
             {
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
+
+            if (cmd == "exportjsonschema")
+                CommandBinding_ExportJsonSchema();
         }
 
         public void CommandBinding_TDImport()
@@ -3620,6 +3624,11 @@ namespace AasxPackageExplorer
             // Redraw for changes to be visible
             RedrawAllAasxElements();
             //-----------------------------------
+        }
+        public void CommandBinding_ExportJsonSchema()
+        {
+            var jsonSchemaExporter = new SubmodelTemplateJsonSchemaExportV20();
+            
         }
     }
 }

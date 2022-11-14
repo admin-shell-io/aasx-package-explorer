@@ -75,6 +75,7 @@
                     <RoutedUICommand x:Key="ExportTable" Text="ExportTable" />
                     <RoutedUICommand x:Key="ImportTable" Text="ImportTable" />
                     <RoutedUICommand x:Key="ExportUml" Text="ExportUml" />
+                    <RoutedUICommand x:Key="ExportJsonSchema" Text="ExportJsonSchema" />
                     <RoutedUICommand x:Key="ImportTimeSeries" Text="ImportTimeSeries" />
                     <RoutedUICommand x:Key="ServerRest" Text="ServerRest" />
                     <RoutedUICommand x:Key="MQTTPub" Text="MQTTPub" />
@@ -247,6 +248,7 @@
         <CommandBinding Command="{StaticResource ExportTable}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportTable}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ExportUml}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ExportJsonSchema}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ImportTimeSeries}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource ServerRest}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource MQTTPub}" Executed="CommandBinding_Executed"/>
@@ -393,6 +395,7 @@
 							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
                             <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
+                            <MenuItem Header="Export Submodel template to JSON Schema" Command="{StaticResource ExportJsonSchema}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">
