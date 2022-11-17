@@ -45,6 +45,15 @@ namespace AnyUi
         YesNo = 4
     }
 
+    /// <summary>
+    /// This action can be used to pass minimal information/ errors/ questions from a 
+    /// called functionality back to the colling function.
+    /// </summary>
+    /// <param name="error">True, if an error condition is met.</param>
+    /// <param name="message">Message string</param>
+    /// <returns>On of AnyUiMessageBoxResult</returns>
+    public delegate AnyUiMessageBoxResult AnyUiMinimalInvokeMessageDelegate(bool error, string message);
+
     public class AnyUiDialogueDataBase
     {
         // flags

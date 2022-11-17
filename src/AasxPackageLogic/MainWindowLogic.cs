@@ -518,7 +518,7 @@ namespace AasxPackageExplorer
             AdminShell.SubmodelElementCollection smc = null;
             AdminShell.SubmodelElementCollection smcp = null;
             bool smcIsSignature = false;
-            if (rootSm == null)
+            if (rootSm != null)
             {
                 sm = rootSm;
             }
@@ -817,7 +817,7 @@ namespace AasxPackageExplorer
         /// <summary>
         /// Encrypts a full package
         /// </summary>
-        public bool Tool_Security_PackageEncrpty(
+        public bool Tool_Security_PackageEncrpt(
             string sourceFn,
             string certFn,
             string targetFn,

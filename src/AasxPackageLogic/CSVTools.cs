@@ -17,9 +17,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using AdminShellNS;
-using Microsoft.VisualBasic.FileIO;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     public static class CSVTools
     {

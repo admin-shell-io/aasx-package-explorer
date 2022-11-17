@@ -73,8 +73,13 @@ namespace AasxWpfControlLibrary
                         //if (ruic == null)
                         //    return;
                         //var cmdname = ruic.Text?.Trim().ToLower();
+
                         // activate
-                        topMenu?.ActivateAction(m_mii);
+                        var ticket = new AasxMenuActionTicket() 
+                        { 
+                            MenuItem = m_mii 
+                        };
+                        topMenu?.ActivateAction(m_mii, ticket);
                     }));
 
                     // possibly create hotkey
@@ -115,7 +120,11 @@ namespace AasxWpfControlLibrary
                         wpf.Click += (s, e) =>
                         {
                             e.Handled = true;
-                            topMenu?.ActivateAction(m_mii);
+                            var ticket = new AasxMenuActionTicket()
+                            {
+                                MenuItem = m_mii
+                            };
+                            topMenu?.ActivateAction(m_mii, ticket);
                         };
                     }
                     wpfItems.Add(wpf);

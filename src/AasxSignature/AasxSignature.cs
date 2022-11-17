@@ -16,7 +16,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Windows.Forms;
+using AnyUi;
 
 // ReSharper disable All .. as this is code from others!
 
@@ -36,10 +36,19 @@ namespace AasxSignature
         /// New files can be added to the package, but they will not be signed,
         /// therefore easy to detect during verification.        
         /// </summary>
-        /// <param name="packagePath"></param>
-        /// <param name="storeName"></param>
-        public static void SignAll(string packagePath, string storeName = "My")
+        public static bool SignAll(
+            string packagePath, 
+            string certFn,
+            string storeName = "My",
+            AnyUiMinimalInvokeMessageDelegate invokeMessage = null)
         {
+            // access
+            if (!File.Exists(packagePath) || !File.Exists(certFn))
+            {
+                invokeMessage?.Invoke(true, "SignAll: invalid package path or certificate filename.");
+                return false;
+            }
+
             using (Package package = Package.Open(packagePath, FileMode.Open))
             {
                 // Create the DigitalSignature Manager
@@ -101,18 +110,19 @@ namespace AasxSignature
                 // Sign() will prompt the user to select a Certificate to sign with.
                 try
                 {
-                    var dlg = new OpenFileDialog();
-                    try
-                    {
-                        dlg.InitialDirectory = System.IO.Path.GetDirectoryName("\\");
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-                    dlg.Filter = ".pfx files (*.pfx)|*.pfx";
-                    dlg.ShowDialog();
-                    X509Certificate2 x509 = new X509Certificate2(dlg.FileName, "i40");
+                    //var dlg = new OpenFileDialog();
+                    //try
+                    //{
+                    //    dlg.InitialDirectory = System.IO.Path.GetDirectoryName("\\");
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    //}
+                    //dlg.Filter = ".pfx files (*.pfx)|*.pfx";
+                    //dlg.ShowDialog();
+
+                    X509Certificate2 x509 = new X509Certificate2(certFn, "i40");
                     X509Certificate2Collection scollection = new X509Certificate2Collection(x509);
                     dsm.Sign(toSign, scollection[0], relationshipSelectors);
                 }
@@ -121,21 +131,25 @@ namespace AasxSignature
                 // not running, catch the exception and show an error message.
                 catch (CryptographicException ex)
                 {
-                    MessageBox.Show(
-                        "Cannot Sign\n" + ex.Message, "Error signing", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    invokeMessage?.Invoke(true, "Sign all: cannot sign \n" + ex.Message);
+                    return false;
                 }
             }
+
+            // ok?!
+            return true;
         }
 
         /// <summary>
         /// Checks the signatures in the package
         /// </summary>
-        /// <param name="packagePath"></param>
+        /// <param name="packagePath">Path to the existing package</param>
         /// <param name="certificatesStatus">Status of the certificate (dictionary with the subject and
-        /// verification status of the certificates) </param>
+        /// verification status of the certificates)</param>
         /// <returns></returns>
         private static VerifyResult VerifySignatures(
-            string packagePath, out Dictionary<string, X509ChainStatusFlags> certificatesStatus)
+            string packagePath, 
+            out Dictionary<string, X509ChainStatusFlags> certificatesStatus)
         {
             VerifyResult vResult;
             certificatesStatus = new Dictionary<string, X509ChainStatusFlags>();
@@ -159,8 +173,10 @@ namespace AasxSignature
         /// <summary>
         /// TODO
         /// </summary>
-        /// <param name="packagePath"></param>
-        public static bool Validate(string packagePath)
+        /// <param name="packagePath">Path to the existing package</param>
+        /// <param name="invokeMessage">Action to display/ log messages</param>
+        public static bool Validate(string packagePath,
+            AnyUiMinimalInvokeMessageDelegate invokeMessage = null)
         {
             // docx procedure:
             // Verify if OPC package
@@ -170,7 +186,6 @@ namespace AasxSignature
             // checked ceriticates
             // Signatures must be verifiesd
             // Which policies are implemented?
-
 
             try
             {
@@ -191,23 +206,20 @@ namespace AasxSignature
                     certRes += res.Key + ": " + res.Value.ToString() + "\n";
                 }
 
-                MessageBox.Show(
-                    null, "Certificate status: \n" + certRes, "Certificates",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                invokeMessage?.Invoke(false, 
+                    "Validate: Certificate status: \n" + certRes);
 
                 if (verifyResult == VerifyResult.Success)
                 {
-                    MessageBox.Show(
-                        null, "Package signatures verified", "Signatures",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    invokeMessage?.Invoke(false,
+                        "Validate: Package signatures verified");
+                    return true;
                 }
                 else
                 {
-                    MessageBox.Show(
-                        null, "Error verifying signatures: " + verifyResult.ToString(),
-                        "Signatures", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    invokeMessage?.Invoke(true,
+                        "Validate: Error verifying signatures: " + verifyResult.ToString());
                 }
-
 
                 // If there are no signatures - OK, but must be mentioned in the result
 
@@ -221,7 +233,8 @@ namespace AasxSignature
             }
             catch (Exception e)
             {
-                MessageBox.Show(null, e.Message, "Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                invokeMessage?.Invoke(true,
+                    "Validate: failed because of: "+e.Message);
             }
 
             return true;

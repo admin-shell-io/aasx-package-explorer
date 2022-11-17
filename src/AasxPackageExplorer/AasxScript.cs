@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows;
 using System.Diagnostics;
+using System.IO;
 
 namespace AasxPackageExplorer
 {
@@ -126,6 +127,63 @@ namespace AasxPackageExplorer
             }
         }
 
+        public class Script_FileReadAll : ScriptInvokableBase
+        {
+            public Script_FileReadAll(AasxScript script) : base(script)
+            {
+                script?.AddHelpInfo("FileReadAll",
+                    "Reads all lines of a text file and returns as one string.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<filename>", "Filename and path of the text file to read.")
+                        .Add("returns:", "All lines of text file as one string; null if file is not accessible."));
+            }
+
+            public override object Invoke(IScriptContext context, object[] args)
+            {
+                if (args != null && args.Length == 1 && args[0] is string fn)
+                    try
+                    {
+                        if (!File.Exists(fn))
+                            return null;
+                        using (var f = new StreamReader(fn))
+                            return f.ReadToEnd();
+                    }
+                    catch (Exception ex)
+                    {
+                        if (_script != null && _script._logLevel >= 2)
+                            Log.Singleton.Error($"when reading text contents of {fn}");
+                    }
+                return null;
+            }
+        }
+
+        public class Script_FileExists : ScriptInvokableBase
+        {
+            public Script_FileExists(AasxScript script) : base(script)
+            {
+                script?.AddHelpInfo("FileExists",
+                    "Check if a file or path exists.",
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("<filename>", "Filename and path of the text file to check.")
+                        .Add("returns:", "True, if file or path exists; null if not accessible."));
+            }
+
+            public override object Invoke(IScriptContext context, object[] args)
+            {
+                if (args != null && args.Length == 1 && args[0] is string fn)
+                    try
+                    {
+                        if (File.Exists(fn) || Directory.Exists(fn))
+                            return true;
+                    }
+                    catch (Exception ex)
+                    {
+                        if (_script != null && _script._logLevel >= 2)
+                            Log.Singleton.Error($"when check existence of {fn}");
+                    }
+                return false;
+            }
+        }
         public class Script_Tool : ScriptInvokableBase
         {
             public Script_Tool(AasxScript script) : base(script)
@@ -427,6 +485,8 @@ namespace AasxPackageExplorer
                     s.Context.Scope.SetItem("Tool", new Script_Tool(this));
                     s.Context.Scope.SetItem("WriteLine", new Script_WriteLine(this));
                     s.Context.Scope.SetItem("Sleep", new Script_Sleep(this));
+                    s.Context.Scope.SetItem("FileReadAll", new Script_FileReadAll(this));
+                    s.Context.Scope.SetItem("FileExists", new Script_FileExists(this));
                     s.Context.Scope.SetItem("Select", new Script_Select(this));
                     s.Context.Scope.SetItem("Location", new Script_Location(this));
                     s.Context.Scope.SetItem("System", new Script_System(this));

@@ -8,6 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AdminShellNS;
+using AnyUi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -376,7 +377,7 @@ namespace AasxIntegrationBase
         // Operate
         //
 
-        public async Task ActivateAction(AasxMenuItemBase mi, AasxMenuActionTicket ticket = null)
+        public async Task ActivateAction(AasxMenuItemBase mi, AasxMenuActionTicket ticket)
         {
             var name = mi?.Name?.Trim()?.ToLower();
 
@@ -477,6 +478,11 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
+        public AdminShell.Asset Asset;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
         public AdminShell.Submodel Submodel;
 
         /// <summary>
@@ -488,6 +494,12 @@ namespace AasxIntegrationBase
         /// Filled by the currently selected element.
         /// </summary>
         public AdminShell.SubmodelElement SubmodelElement;
+
+        /// <summary>
+        /// Gives the calling function the possibility to better handle messages
+        /// to/ from the user.
+        /// </summary>
+        public AnyUiMinimalInvokeMessageDelegate InvokeMessage = null;
 
         //
         // Convenience
@@ -503,6 +515,30 @@ namespace AasxIntegrationBase
                             return av.Value;
                 return null;
             }        
+            set
+            {
+                if (ArgValue != null)
+                    foreach (var av in ArgValue)
+                        if (av.Key?.Name?.Trim().ToLower() == name?.Trim().ToLower())
+                        {
+                            ArgValue[av.Key] = value;
+                            return;
+                        }
+
+                // find in ArgDefs
+                AasxMenuArgDef foundAd = null;
+                if (MenuItem?.ArgDefs != null)
+                    foreach (var ad in MenuItem?.ArgDefs)
+                        if (ad.Name?.Trim().ToLower() == name?.Trim().ToLower())
+                            foundAd = ad;
+                if (foundAd == null)
+                    return;
+
+                // no, add
+                if (ArgValue == null)
+                    ArgValue = new Dictionary<AasxMenuArgDef, object>();
+                ArgValue[foundAd] = value;
+            }
         }
 
         /// <summary>
