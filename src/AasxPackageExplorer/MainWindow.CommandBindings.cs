@@ -160,9 +160,9 @@ namespace AasxPackageExplorer
                         help: "Get Submodel from REST server.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("URL", "URL to get Submodel data from."))
-                    .AddWpf(name: "ImportSubmodel", header: "Import Submodel from Dictionary ..",
+                    .AddWpf(name: "ImportDictSubmodel", header: "Import Submodel from Dictionary ..",
                         help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to a Submodel.")
-                    .AddWpf(name: "ImportSubmodelElements", header: "Import Submodel Elements from Dictionary ..",
+                    .AddWpf(name: "ImportDictSubmodelElements", header: "Import Submodel Elements from Dictionary ..",
                         help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to SubmodelElement.")
                     .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel ..",
                         help: "Import BMEcat data into an existing Submodel.",
@@ -1016,11 +1016,8 @@ namespace AasxPackageExplorer
             if (cmd == "opcuaimportnodeset")
                 CommandBinding_OpcUaImportNodeSet(cmd, ticket);
 
-            if (cmd == "importsubmodel")
+            if (cmd == "importdictsubmodel" || cmd == "importdictsubmodelelements")
                 CommandBinding_ImportDictToSubmodel(cmd, ticket);
-
-            if (cmd == "importsubmodelelements")
-                CommandBinding_ImportDictToSubmodelElements(cmd, ticket);
 
             if (cmd == "importaml")
                 CommandBinding_ImportExportAML(cmd, ticket);
@@ -1903,30 +1900,22 @@ namespace AasxPackageExplorer
         {
             if (cmd == "opcuaimportnodeset")
             {
-                // current Submodel
-                if (!MenuSelectEnvSubmodel(
-                    ticket,
-                    out var env, out var sm, out var smr,
-                    "OPC UA Nodeset import: No valid Submodel selected."))
-                    return;
-
                 // filename
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                     ticket, "File",
                     "Select OPC UA Nodeset to be imported",
                     null,
                     "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
-                    out var sourceFn,
                     "OPC UA Nodeset import: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(sourceFn);
+                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
                 {
                     // do it
-                    OpcUaTools.ImportNodeSetToSubModel(sourceFn, env, sm, smr);
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2365,101 +2354,98 @@ namespace AasxPackageExplorer
 
         }
 
-        public void CommandBinding_OpcUaClientRead(
-            string cmd,
-            AasxMenuActionTicket ticket = null)
-        {
-
-        }
-
         public void CommandBinding_ImportDictToSubmodel(
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
-            // start
-            ticket?.StartExec();
+            // These 2 functions are using WPF and cannot migrated to PackageLogic
 
-            // which item selected?
-            AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
-            AdminShell.AdministrationShell aas = null;
-            if (DisplayElements.SelectedItem != null)
+            if (cmd == "importdictsubmodel")
             {
-                if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
+                // start
+                ticket?.StartExec();
+
+                // which item selected?
+                AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
+                AdminShell.AdministrationShell aas = null;
+                if (DisplayElements.SelectedItem != null)
                 {
-                    // AAS is selected --> import into AAS
-                    env = aasItem.theEnv;
-                    aas = aasItem.theAas;
+                    if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
+                    {
+                        // AAS is selected --> import into AAS
+                        env = aasItem.theEnv;
+                        aas = aasItem.theAas;
+                    }
+                    else if (DisplayElements.SelectedItem is VisualElementEnvironmentItem envItem &&
+                            envItem.theItemType == VisualElementEnvironmentItem.ItemType.EmptySet)
+                    {
+                        // Empty environment is selected --> create new AAS
+                        env = envItem.theEnv;
+                    }
+                    else
+                    {
+                        // Other element is selected --> error
+                        _logic?.LogErrorToTicket(ticket,
+                            "Dictionary Import: Please select the administration shell for the submodel import.");
+                        return;
+                    }
                 }
-                else if (DisplayElements.SelectedItem is VisualElementEnvironmentItem envItem &&
-                        envItem.theItemType == VisualElementEnvironmentItem.ItemType.EmptySet)
+
+#if !DoNotUseAasxDictionaryImport
+                var dataChanged = false;
+                try
                 {
-                    // Empty environment is selected --> create new AAS
-                    env = envItem.theEnv;
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Other element is selected --> error
-                    _logic?.LogErrorToTicket(ticket, 
-                        "Dictionary Import: Please select the administration shell for the submodel import.");
+                    _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the Dictionary import.");
+                }
+
+                if (dataChanged)
+                {
+                    Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                    RestartUIafterNewPackage();
+                    Mouse.OverrideCursor = null;
+                }
+#endif
+            }
+            
+            if (cmd == "importdictsubmodelelements")
+            {
+                // start
+                ticket?.StartExec();
+
+                // current Submodel
+                if (!MenuSelectEnvSubmodel(
+                    ticket,
+                    out var env, out var sm, out var smr,
+                    "Dictionary import: No valid Submodel selected."))
                     return;
+
+#if !DoNotUseAasxDictionaryImport
+                var dataChanged = false;
+                try
+                {
+                    dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(
+                        this, env, Options.Curr.DictImportDir, sm);
                 }
-            }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the submodel element import.");
+                }
 
-#if !DoNotUseAasxDictionaryImport
-            var dataChanged = false;
-            try
-            {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
-            }
-            catch (Exception ex)
-            {
-                _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the Dictionary import.");
-            }
-
-            if (dataChanged)
-            {
-                Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                RestartUIafterNewPackage();
-                Mouse.OverrideCursor = null;
-            }
+                if (dataChanged)
+                {
+                    Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+                    RestartUIafterNewPackage();
+                    Mouse.OverrideCursor = null;
+                }
 #endif
+            }
         }
 
-        public void CommandBinding_ImportDictToSubmodelElements(
-            string cmd,
-            AasxMenuActionTicket ticket = null)
-        {
-            // start
-            ticket?.StartExec();
-
-            // current Submodel
-            if (!MenuSelectEnvSubmodel(
-                ticket,
-                out var env, out var sm, out var smr,
-                "Dictionary import: No valid Submodel selected."))
-                return;
-
-#if !DoNotUseAasxDictionaryImport
-            var dataChanged = false;
-            try
-            {
-                dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(
-                    this, env, Options.Curr.DictImportDir, sm);
-            }
-            catch (Exception ex)
-            {
-                _logic?.LogErrorToTicket(ticket, ex, "An error occurred during the submodel element import.");
-            }
-
-            if (dataChanged)
-            {
-                Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                RestartUIafterNewPackage();
-                Mouse.OverrideCursor = null;
-            }
-#endif
-        }
-
+       
         public void CommandBinding_ImportExportAML(
             string cmd,
             AasxMenuActionTicket ticket = null)
@@ -2879,43 +2865,22 @@ namespace AasxPackageExplorer
         {
             if (cmd == "submodeltdimport")
             {
-                // current Submodel
-                if (!MenuSelectEnvSubmodel(
-                    ticket,
-                    out var env, out var sm, out var smr,
-                    "TD import: No valid Submodel selected."))
-                    return;
-
                 // filename
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                     ticket, "File",
                     "Select Thing Description (TD) file to be imported",
                     null,
                     "JSON files (*.JSONLD)|*.jsonld",
-                    out var sourceFn,
                     "TD import: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(sourceFn);
+                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
                 {
-                    // do it
-                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
-                        (sourceFn, env, sm, smr);
-
-                    // check result
-                    foreach (var temp in (JToken)importObject)
-                    {
-                        JProperty importProperty = (JProperty)temp;
-                        string key = importProperty.Name.ToString();
-                        if (key == "error")
-                        {
-                            _logic?.LogErrorToTicket(ticket, "Unable to import the JSON LD File");
-                            break;
-                        }
-                    }
+                    // delegate futher
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
                     // redisplay
                     RedrawAllAasxElements();
@@ -2930,48 +2895,27 @@ namespace AasxPackageExplorer
 
             if (cmd == "submodeltdexport")
             {
-                // current Submodel
-                if (!MenuSelectEnvSubmodel(
-                    ticket,
-                    out var env, out var sm, out var smr,
-                    "Thing Description (TD) export: No valid Submodel selected."))
-                    return;
-
                 // filename
-                if (!MenuSelectSaveFilename(
+                if (!MenuSelectSaveFilenameToTicket(
                     ticket, "File",
                     "Thing Description (TD) export",
-                    "Submodel_" + sm.idShort + ".jsonld",
+                    "Submodel_" + ticket.Submodel?.idShort + ".jsonld",
                     "JSON files (*.JSONLD)|*.jsonld",
-                    out var targetFn, out var filterIndex,
                     "Thing Description (TD) export: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(targetFn);
+                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
                 {
-                    // do it
-                    JObject exportData = TDJsonExport.ExportSMtoJson(sm);
-                    if (exportData["status"].ToString() == "success")
-                    {
-                        using (var s = new StreamWriter(targetFn))
-                        {
-                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
-                                Newtonsoft.Json.Formatting.Indented);
-                            s.WriteLine(output);
-                        }
-                    }
-                    else
-                    {
-                        _logic?.LogErrorToTicket(ticket, "Unable to Export the JSON LD File");
-                    }
+                    // delegate futher
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
                     _logic?.LogErrorToTicket(ticket, ex,
-                        "When importing BMEcat, an error occurred");
+                        "When exporting \"Thing Description (TD), an error occurred");
                 }
             }
         }

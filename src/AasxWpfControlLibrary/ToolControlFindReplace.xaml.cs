@@ -113,7 +113,7 @@ namespace AasxPackageExplorer
             if (TheSearchOptions == null || TheSearchResults == null || TheAasEnv == null)
                 return;
 
-            // do not accept empty field
+            // do not accept empty UaField
             if (TheSearchOptions.findText == null || TheSearchOptions.findText.Length < 1)
             {
                 this.ButtonToolsFindInfo.Text = "no search!";

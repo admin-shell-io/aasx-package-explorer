@@ -574,7 +574,7 @@ namespace AasxDictionaryImport.Eclass
         {
             // The ECLASS hierarchical position is typically displayed as groups of two digits, separated by a hyphen,
             // but is stored without hyphens in the XML file.  Therefore we remove the hyphens from the query string.
-            // To keep the hierarchical character of the field, we only search at the beginning of the string.
+            // To keep the hierarchical character of the UaField, we only search at the beginning of the string.
             return base.Match(query) || HierarchicalPosition.StartsWith(query.Replace("-", ""));
         }
 

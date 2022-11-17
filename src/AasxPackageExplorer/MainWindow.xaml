@@ -53,8 +53,8 @@
                     <RoutedUICommand x:Key="PrintRepo" Text="PrintRepo" />
                     <RoutedUICommand x:Key="PrintAsset" Text="PrintAsset" />
                     <RoutedUICommand x:Key="ImportAML" Text="ImportAML" />
-                    <RoutedUICommand x:Key="ImportSubmodel" Text="ImportSubmodel" />
-                    <RoutedUICommand x:Key="ImportSubmodelElements" Text="ImportSubmodelElements" />
+                    <RoutedUICommand x:Key="ImportDictSubmodel" Text="ImportSubmodel" />
+                    <RoutedUICommand x:Key="ImportDictSubmodelElements" Text="ImportSubmodelElements" />
                     <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
                     <RoutedUICommand x:Key="RDFRead" Text="RDFRead" />
                     <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />

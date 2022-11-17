@@ -14,8 +14,10 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
 using AasxSignature;
+using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -370,6 +372,104 @@ namespace AasxPackageLogic
                 {
                     LogErrorToTicket(ticket, ex,
                         "When importing CSV, an error occurred");
+                }
+            }
+
+            if (cmd == "submodeltdimport")
+            {
+                // arguments
+                if (ticket.Submodel == null || ticket.Env == null || ticket.SubmodelRef == null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "TD import: No valid Submodel, SubmodelEf, Env, source file selected");
+                    return;
+                }
+
+                // do it
+                try
+                {
+                    // do it
+                    JObject importObject = TDJsonImport.ImportTDJsontoSubModel
+                        (ticket["File"] as string, ticket.Env, ticket.Submodel, ticket.SubmodelRef);
+
+                    // check result
+                    foreach (var temp in (JToken)importObject)
+                    {
+                        JProperty importProperty = (JProperty)temp;
+                        string key = importProperty.Name.ToString();
+                        if (key == "error")
+                        {
+                            LogErrorToTicket(ticket, "Unable to import the JSON LD File");
+                            break;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing JSON LD for Thing Description, an error occurred");
+                }
+            }
+
+            if (cmd == "submodeltdexport")
+            {
+                // arguments
+                if (ticket.Submodel == null || 
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Thing Description (TD) export: No valid Submodel, source file selected");
+                    return;
+                }
+
+                // do it
+                try
+                {
+                    // do it
+                    JObject exportData = TDJsonExport.ExportSMtoJson(ticket.Submodel);
+                    if (exportData["status"].ToString() == "success")
+                    {
+                        using (var s = new StreamWriter(ticket["File"] as string))
+                        {
+                            string output = Newtonsoft.Json.JsonConvert.SerializeObject(exportData["data"],
+                                Newtonsoft.Json.Formatting.Indented);
+                            s.WriteLine(output);
+                        }
+                    }
+                    else
+                    {
+                        LogErrorToTicket(ticket, "Unable to Export the JSON LD File");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing BMEcat, an error occurred");
+                }
+            }
+
+            if (cmd == "opcuaimportnodeset")
+            {
+                // arguments
+                if (ticket.Submodel == null || ticket.Env == null || ticket.SubmodelRef == null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "OPC UA Nodeset import: No valid Submodel, SubmodelEf, Env, source file selected");
+                    return;
+                }
+
+                // do it
+                try
+                {
+                    // do it
+                    OpcUaTools.ImportNodeSetToSubModel(ticket["File"] as string, ticket.Env, ticket.Submodel, ticket.SubmodelRef);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex,
+                        "When importing OPC UA Nodeset, an error occurred");
                 }
             }
 

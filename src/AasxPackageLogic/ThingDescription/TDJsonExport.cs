@@ -22,7 +22,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace AasxPackageExplorer
+namespace AasxPackageLogic
 {
     public static class TDJsonExport
     {

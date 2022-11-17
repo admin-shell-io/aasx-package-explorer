@@ -164,7 +164,7 @@ namespace AasxPackageLogic
         }
 
         /// <summary>
-        /// During renderig, the last highlighted field will be identified.
+        /// During renderig, the last highlighted UaField will be identified.
         /// This function will perform the rendering; presuming that the controls
         /// are already displayed by the implementation technology.
         /// </summary>
