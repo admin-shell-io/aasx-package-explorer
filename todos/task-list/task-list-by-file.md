@@ -634,8 +634,8 @@ MIHO,
     consider extending for better testing or
     * script running
 
-[Line 1647, column 29](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1647
+[Line 1649, column 29](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1649
 ), 
 MIHO,
 2021-10-28
@@ -644,24 +644,24 @@ MIHO,
     * to instrument event updates in a way that they're automatically
     * visualized
 
-[Line 1752, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1752
+[Line 1754, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1754
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 1763, column 49](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1763
+[Line 1765, column 49](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L1765
 ), 
 MIHO,
 2021-10-09
 
     prepare path to be relative
 
-[Line 2457, column 17](
-https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2457
+[Line 2459, column 17](
+https://github.com/admin-shell-io/aasx-package-explorer/blob/master/src/AasxPackageExplorer/MainWindow.xaml.cs#L2459
 ), 
 MIHO,
 2021-06-08
