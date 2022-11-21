@@ -16,7 +16,7 @@ namespace AasxSchemaExport.Tests
     {
         private AdminShellV20.Submodel _submodel;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             var submodelTemplatePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData",
@@ -36,6 +36,40 @@ namespace AasxSchemaExport.Tests
             Assert.IsNotNull(schemaVersion);
             Assert.AreEqual(schemaVersion.Value<string>(), "https://json-schema.org/draft/2019-09/schema");
         }
+
+        [Test]
+        public void Test_title_corresponds_to_idShort()
+        {
+            var schema = this.ExportSchema();
+
+            var schemaVersion = schema["title"];
+
+            Assert.IsNotNull(schemaVersion);
+            Assert.AreEqual(schemaVersion.Value<string>(), "AssetAdministrationShellSubmodelNameplate");
+        }
+
+        [Test]
+        public void Test_type_should_be_object()
+        {
+            var schema = this.ExportSchema();
+
+            var schemaVersion = schema["type"];
+
+            Assert.IsNotNull(schemaVersion);
+            Assert.AreEqual(schemaVersion.Value<string>(), "object");
+        }
+
+        [Test]
+        public void Test_reference_to_root_schema_definition()
+        {
+            var schema = this.ExportSchema();
+
+            var allOff = schema["allOf"] as JArray;
+
+            Assert.IsNotNull(allOff);
+            Assert.AreEqual(allOff[0]["$ref"].Value<string>(), "#/definitions/root");
+        }
+
 
         private JObject ExportSchema()
         {

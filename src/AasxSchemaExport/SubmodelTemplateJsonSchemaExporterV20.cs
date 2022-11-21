@@ -10,6 +10,10 @@ namespace AasxSchemaExport
             var root = new JObject();
 
             root["$schema"] = "https://json-schema.org/draft/2019-09/schema";
+            root["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
+            root["type"] = "object";
+
+            root["allOf"] = new JArray(JObject.Parse("{\"$ref\": \"#/definitions/root\"}"));
 
             return root.ToString();
 
