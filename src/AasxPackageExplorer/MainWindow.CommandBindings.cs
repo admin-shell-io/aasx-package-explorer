@@ -3627,8 +3627,31 @@ namespace AasxPackageExplorer
         }
         public void CommandBinding_ExportJsonSchema()
         {
-            var jsonSchemaExporter = new SubmodelTemplateJsonSchemaExportV20();
-            
+            // trivial things
+            if (!_packageCentral.MainAvailable)
+            {
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                return;
+            }
+
+            // a SubmodelRef shall be exported/ imported
+            VisualElementSubmodelRef ve1 = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid Submodel Template selected for exporting the JSON Schema", "Export JSON Schema",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            var jsonSchemaExporter = new SubmodelTemplateJsonSchemaExporterV20();
+            var schema = jsonSchemaExporter.ExportSchema(ve1.theSubmodel);
+
         }
     }
 }

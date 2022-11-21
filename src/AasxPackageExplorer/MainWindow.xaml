@@ -395,7 +395,7 @@
 							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
                             <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
                             <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
-                            <MenuItem Header="Export Submodel template to JSON Schema" Command="{StaticResource ExportJsonSchema}"/>
+                            <MenuItem Header="Export JSON Schema" Command="{StaticResource ExportJsonSchema}"/>
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Server ..">

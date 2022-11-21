@@ -2,7 +2,7 @@
 
 namespace AasxSchemaExport
 {
-    internal interface ISchemaExport
+    public interface ISchemaExporter
     {
         string ExportSchema(AdminShell.Submodel submodel);
     }
