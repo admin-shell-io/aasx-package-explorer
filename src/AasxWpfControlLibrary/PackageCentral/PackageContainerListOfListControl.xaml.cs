@@ -431,7 +431,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
                 }
 
-                cm.Start(sender, (tag) =>
+                cm.Start(sender, (tag, obj) =>
                 {
                     CommandBinding_FileRepoAll(senderList, fr, tag);
                 });

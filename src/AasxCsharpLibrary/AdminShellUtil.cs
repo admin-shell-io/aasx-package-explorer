@@ -313,8 +313,32 @@ namespace AdminShellNS
             public bool findFirst = false;
             public int skipFirstResults = 0;
             public string findText = null;
+
+            public bool isWholeWord = false;
             public bool isIgnoreCase = false;
             public bool isRegex = false;
+
+            public bool searchCollection = true;
+            public bool searchProperty = true;
+            public bool searchMultiLang = true;
+            public bool searchOther = true;
+            public string searchLanguage = "";
+
+            public RegexOptions CompiledRegOpt = RegexOptions.None;
+            public Regex CompiledRegex = null;
+
+            public void CompileOptions()
+            {
+                CompiledRegex = null;
+                CompiledRegOpt = RegexOptions.None;
+                if (isRegex)
+                {
+                    CompiledRegOpt = RegexOptions.Compiled | RegexOptions.CultureInvariant;
+                    if (isIgnoreCase)
+                        CompiledRegOpt |= RegexOptions.IgnoreCase;
+                    CompiledRegex = new Regex(findText, CompiledRegOpt);
+                }
+            }
         }
 
         public class SearchResultItem : IEquatable<SearchResultItem>
@@ -327,6 +351,7 @@ namespace AdminShellNS
             public object foundObject;
             public object containingObject;
             public int foundHash;
+            public Match foundMatch = null;
 
             public bool Equals(SearchResultItem other)
             {
@@ -339,6 +364,14 @@ namespace AdminShellNS
                        this.containingObject == other.containingObject &&
                        this.foundText == other.foundText &&
                        this.foundHash == other.foundHash;
+            }
+
+            public override string ToString()
+            {
+                var idn = "";
+                if (businessObject is AdminShell.Referable rf)
+                    idn = "." + rf.idShort;
+                return "" + qualifiedNameHead + idn + "." + metaModelName;
             }
         }
 
@@ -354,9 +387,13 @@ namespace AdminShellNS
             }
         }
 
-        public static void CheckSearchable(
+        /// <summary>
+        /// Internal function used by <c>EnumerateSearchable</c>
+        /// </summary>
+        private static void CheckSearchable(
             SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
-            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
+            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash,
+            Action<bool, int> progress = null)
         {
             // try get a speaking name
             var metaModelName = "<unknown>";
@@ -371,11 +408,51 @@ namespace AdminShellNS
                 // what to check?
                 string foundText = "" + memberValue?.ToString();
 
+                // quite late: investigate, if we accepted findings from the 
+                // type of business element
+                var isColl = (businessObject is AdminShell.AdministrationShell
+                        || businessObject is AdminShell.Submodel
+                        || businessObject is AdminShell.SubmodelElementCollection);
+
+                var isProp = (businessObject is AdminShell.Property);
+
+                var isMLP = (businessObject is AdminShell.MultiLanguageProperty);
+
+
+                if (!options.searchCollection && isColl)
+                    return;
+
+                if (!options.searchProperty && isProp)
+                    return;
+
+                if (!options.searchMultiLang && isMLP)
+                    return;
+
+                if (!options.searchOther && !(isColl || isProp || isMLP))
+                    return;
+
                 // find options
                 var found = true;
+                Match foundMatch = null;
                 if (options.findText != null)
-                    found = foundText.IndexOf(
-                        options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+                {
+                    if (options.isRegex && options.CompiledRegex != null)
+                    {
+                        foundMatch = options.CompiledRegex.Match(foundText);
+                        found = foundMatch.Success;
+                    }
+                    else
+                    if (options.isWholeWord)
+                    {
+                        found = string.Equals(foundText, options.findText,
+                            options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0);
+                    }
+                    else
+                    {
+                        found = foundText.IndexOf(options.findText,
+                            options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
+                    }
+                }
 
                 // add?
                 if (found)
@@ -391,16 +468,36 @@ namespace AdminShellNS
                     if (getMemberHash != null)
                         sri.foundHash = getMemberHash();
 
+                    sri.foundMatch = foundMatch;
+
                     // avoid duplicates
                     if (!results.foundResults.Contains(sri))
                         results.foundResults.Add(sri);
+
+                    // progress
+                    progress?.Invoke(true, results.foundResults.Count % 50);
                 }
             }
         }
 
+        /// <summary>
+        /// Uses reflection to investigate the members of a data structure, which is supposely a
+        /// structure of the AAS meta model. Inspected classes need to be in <c>options.allowedAssemblies</c>
+        /// and classes shall be annotated with attributes <c>AdminShell.MetaModelName</c> and
+        /// <c>AdminShell.TextSearchable</c>. Inspection recursion is controlled via attributes
+        /// <c>AdminShell.SkipForReflection</c> and <c>AdminShell.SkipForSearch</c>
+        /// </summary>
+        /// <param name="results">Found result items</param>
+        /// <param name="obj">Root of the data structures to be inspected</param>
+        /// <param name="qualifiedNameHead">used for recursion</param>
+        /// <param name="depth">used for recursion</param>
+        /// <param name="options">Search options</param>
+        /// <param name="businessObject">used for recursion</param>
+        /// <param name="progress">Progress is reported for any check of field/ property and for any addition</param>
         public static void EnumerateSearchable(
             SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
-            object businessObject = null)
+            object businessObject = null,
+            Action<bool, int> progress = null)
         {
             // access
             if (results == null || obj == null || options == null)
@@ -424,13 +521,16 @@ namespace AdminShellNS
             if (elName != null)
                 qualifiedName = qualifiedName + (qualifiedName.Length > 0 ? "." : "") + elName;
 
-            // do NOT dive into objects, which are not in the reight assembly
+            // do NOT dive into objects, which are not in the right assembly
             if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
                 return;
 
             // do not dive into enums
             if (objType.IsEnum)
                 return;
+
+            // report a "false" progress
+            progress?.Invoke(false, 0);
 
             // look at fields, first
             var fields = objType.GetFields();
@@ -454,17 +554,17 @@ namespace AdminShellNS
                 {
                     // field is a collection .. dive deeper, if allowed
                     foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject, progress);
                 }
                 else
                 {
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, fi, fieldValue, obj,
-                        () => { return fieldValue.GetHashCode(); });
+                        () => { return fieldValue.GetHashCode(); }, progress);
 
                     // dive deeper ..
-                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject);
+                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject, progress);
                 }
             }
 
@@ -495,19 +595,110 @@ namespace AdminShellNS
                 {
                     // property is a collection .. dive deeper, if allowed
                     foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
+                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject, progress);
                 }
                 else
                 {
                     // field is a single entity .. check it
                     CheckSearchable(
                         results, options, qualifiedName, businessObject, pi, propValue, obj,
-                        () => { return propValue.GetHashCode(); });
+                        () => { return propValue.GetHashCode(); }, progress);
 
                     // dive deeper ..
-                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject);
+                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject, progress);
                 }
             }
+        }
+
+        /// <summary>
+        /// Internal function for <c>ReplaceInSearchable</c>
+        /// </summary>
+        /// <returns>New member object, if to set.</returns>
+        private static object ReplaceInSearchableMember(
+            SearchOptions options,
+            SearchResultItem item,
+            string replaceText,
+            object member)
+        {
+            // access
+            if (options == null || item == null || replaceText == null || member == null)
+                return null;
+
+            // member type
+            if (!(member is string memstr))
+            {
+                throw new NotImplementedException("ReplaceInSearchableMember::No string member");
+            }
+
+            // regex?
+            if (options.isRegex)
+            {
+                memstr = Regex.Replace(memstr, options.findText, replaceText, options.CompiledRegOpt);
+                return memstr;
+            }
+            else
+            {
+                // plain text replacement
+                memstr = memstr.Replace(options.findText, replaceText);
+                return memstr;
+            }
+        }
+
+        /// <summary>
+        /// Do a replacement according to the <c>options</c> in one search result item.
+        /// </summary>
+        public static void ReplaceInSearchable(
+            SearchOptions options,
+            SearchResultItem item,
+            string replaceText)
+        {
+            // access
+            if (options == null || item == null || replaceText == null)
+                return;
+
+            // access in item
+            var obj = item.containingObject;
+            if (obj == null)
+                return;
+
+            // access the object
+            Type objType = obj.GetType();
+
+            // reflect thru this object
+            // look at fields, first
+            var fields = objType.GetFields();
+            foreach (var fi in fields)
+            {
+                // get value(s)
+                var fieldValue = fi.GetValue(obj);
+                if (fieldValue == null)
+                    continue;
+
+                // hash check on the fieldValue
+                if (fieldValue.GetHashCode() == item.foundHash)
+                {
+                    var newval = ReplaceInSearchableMember(options, item, replaceText, fieldValue);
+                    if (newval != null)
+                        fi.SetValue(obj, newval);
+                }
+            }
+
+            // properties & objects behind
+            var properties = objType.GetProperties();
+            foreach (var pi in properties)
+            {
+                // get value(s)
+                var propValue = pi.GetValue(obj, null);
+                if (propValue == null)
+                    continue;
+
+                // hash check on the propValue
+                if (propValue.GetHashCode() == item.foundHash)
+                {
+                    ReplaceInSearchableMember(options, item, replaceText, propValue);
+                }
+            }
+
         }
 
         //
@@ -515,10 +706,10 @@ namespace AdminShellNS
         //
 
         public static string ReplacePercentPlaceholder(
-            string input,
-            string searchFor,
-            Func<string> substLamda,
-            StringComparison comparisonType = StringComparison.InvariantCulture)
+        string input,
+        string searchFor,
+        Func<string> substLamda,
+        StringComparison comparisonType = StringComparison.InvariantCulture)
         {
             // access
             if (input == null || searchFor == null || searchFor == "")

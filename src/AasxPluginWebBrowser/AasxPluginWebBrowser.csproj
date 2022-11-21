@@ -13,6 +13,9 @@
 	<Platforms>x64</Platforms>
 	<Platform>x64</Platform>
   </PropertyGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
   <ItemGroup>
     <None Update="AasxPluginWebBrowser.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
