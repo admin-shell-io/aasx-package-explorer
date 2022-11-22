@@ -193,7 +193,8 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "ExportAML", header: "Export AutomationML ..",
                         help: "Export AML file with AAS entities from AAS environment.",
                         args: new AasxMenuListOfArgDefs()
-                            .Add("File", "AML file with AAS entities data."))
+                            .Add("File", "AML file with AAS entities data.")
+                            .Add("FilterIndex", "Set FilterIndex=2 for compact AML format."))
                     .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON ..",
                         help: "Write Submodel to JSON.",
                         args: new AasxMenuListOfArgDefs()
@@ -202,8 +203,16 @@ namespace AasxPackageExplorer
                         help: "Put Submodel to REST server.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("URL", "URL to put Submodel data to."))
-                    .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset ..")
-                    .AddWpf(name: "OpcUaExportNodeSetUaPlugin", header: "Export OPC UA Nodeset2.xml (via UA server plug-in) ..")
+                    .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset ..",
+                        help: "Export OPC UA Nodeset2.xml format as i4aas-nodeset.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "OPC UA Nodeset2.xml file to write."))
+                    .AddWpf(name: "OpcUaExportNodeSetUaPlugin", 
+                        header: "Export OPC UA Nodeset2.xml (via UA server plug-in) ..",
+                        help: "Export OPC UA Nodeset2.xml format by starting OPC UA server in plugin and " +
+                            "execute a post-process command.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "OPC UA Nodeset2.xml file to write."))
                     .AddWpf(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
                     .AddWpf(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms ..")
                     .AddWpf(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts ..")
@@ -372,8 +381,15 @@ namespace AasxPackageExplorer
                 return;
 
             // set
+            if (DisplayElements.SelectedItem is VisualElementEnvironmentItem veei)
+            {
+                ticket.Package = veei.thePackage;
+                ticket.Env = veei.theEnv;
+            }
+
             if (DisplayElements.SelectedItem is VisualElementAdminShell veaas)
             {
+                ticket.Package = veaas.thePackage;
                 ticket.Env = veaas.theEnv;
                 ticket.AAS = veaas.theAas;
             }
@@ -1019,38 +1035,89 @@ namespace AasxPackageExplorer
             if (cmd == "importdictsubmodel" || cmd == "importdictsubmodelelements")
                 CommandBinding_ImportDictToSubmodel(cmd, ticket);
 
-            if (cmd == "importaml")
+            if (cmd == "importaml" || cmd == "exportaml")
                 CommandBinding_ImportExportAML(cmd, ticket);
 
-            if (cmd == "opcuai4aasexport")
+            if (cmd == "opcuai4aasimport" || cmd == "opcuai4aasexport")
                 CommandBinding_ExportOPCUANodeSet(cmd, ticket);
 
+            // TODO (MIHO, 2022-11-19): stays in WPF (tightly integrated, command line shall do own version)
             if (cmd == "opcuaexportnodesetuaplugin")
-                CommandBinding_ExportNodesetUaPlugin();
+                CommandBinding_ExportNodesetUaPlugin(cmd, ticket);
 
+            // stays in WPF
             if (cmd == "serverrest")
                 CommandBinding_ServerRest();
 
+            // stays in WPF
             if (cmd == "mqttpub")
                 CommandBinding_MQTTPub();
 
+            // stays in WPF
             if (cmd == "connectintegrated")
                 CommandBinding_ConnectIntegrated();
 
+            // stays in WPF
             if (cmd == "connectsecure")
                 CommandBinding_ConnectSecure();
 
+            // stays in WPF, ask OZ
             if (cmd == "connectrest")
                 CommandBinding_ConnectRest();
 
+            // stays in WPF
             if (cmd == "copyclipboardelementjson")
                 CommandBinding_CopyClipboardElementJson();
 
             if (cmd == "exportgenericforms")
-                CommandBinding_ExportGenericForms();
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!MenuSelectSaveFilenameToTicket(
+                    ticket, "File",
+                    "Select options file for GenericForms to be exported",
+                    "new.add-options.json",
+                    "Options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*",
+                    "Export GenericForms: No valid filename.",
+                    argFilterIndex: "FilterIndex"))
+                    return;
+
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
+                }
+            }
 
             if (cmd == "exportpredefineconcepts")
-                CommandBinding_ExportPredefineConcepts();
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename
+                if (!MenuSelectSaveFilenameToTicket(
+                    ticket, "File",
+                    "Select text file for PredefinedConcepts to be exported",
+                    "new.txt",
+                    "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*",
+                    "Export PredefinedConcepts: No valid filename.",
+                    argFilterIndex: "FilterIndex"))
+                    return;
+
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
+                }
+            }
 
             if (cmd == "exporttable")
                 CommandBinding_ExportImportTableUml(ticket, import: false);
@@ -1849,7 +1916,6 @@ namespace AasxPackageExplorer
                     "RDF Read: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
@@ -1879,7 +1945,6 @@ namespace AasxPackageExplorer
                     "CSF inmport: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
@@ -1908,8 +1973,6 @@ namespace AasxPackageExplorer
                     "OPC UA NodeSet XML files (*.XML)|*.XML|All files (*.*)|*.*",
                     "OPC UA Nodeset import: No valid filename."))
                     return;
-
-                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
@@ -2113,6 +2176,7 @@ namespace AasxPackageExplorer
             if (MenuSelectOpenFilename(ticket, argName, caption, proposeFn, filter, out var sourceFn, msg))
             {
                 ticket[argName] = sourceFn;
+                RememberForInitialDirectory(sourceFn);
                 return true;
             }
             return false;
@@ -2176,12 +2240,16 @@ namespace AasxPackageExplorer
             string caption,
             string proposeFn,
             string filter,
-            string msg)
+            string msg,
+            string argFilterIndex = null)
         {
             if (MenuSelectSaveFilename(ticket, argName, caption, proposeFn, filter, 
                     out var targetFn, out var filterIndex, msg))
             {
+                RememberForInitialDirectory(targetFn);
                 ticket[argName] = targetFn;
+                if (argFilterIndex?.HasContent() == true)
+                    ticket[argFilterIndex] = filterIndex;
                 return true;
             }
             return false;
@@ -2260,8 +2328,6 @@ namespace AasxPackageExplorer
                     "Submodel Read: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(ticket["File"] as string);
-
                 try
                 {
                     _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
@@ -2290,8 +2356,6 @@ namespace AasxPackageExplorer
                     return;
 
                 // do it directly
-                RememberForInitialDirectory(ticket["File"] as string);
-
                 try
                 {
                     _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
@@ -2456,19 +2520,17 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                     ticket, "File",
                     "Select AML file to be imported",
                     null,
                     "AutomationML files (*.aml)|*.aml|All files (*.*)|*.*",
-                    out var sourceFn,
                     "Import AML: No valid filename."))
                     return;
 
                 try
                 {
-                    RememberForInitialDirectory(sourceFn);
-                    AasxAmlImExport.AmlImport.ImportInto(_packageCentral.Main, sourceFn);
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                     this.RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
@@ -2483,21 +2545,19 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // filename
-                if (!MenuSelectSaveFilename(
+                if (!MenuSelectSaveFilenameToTicket(
                     ticket, "File",
                     "Select AML file to be exported",
                     "new.aml",
                     "AutomationML files (*.aml)|*.aml|AutomationML files (*.aml) (compact)|" +
                     "*.aml|All files (*.*)|*.*",
-                    out var targetFn, out var filterIndex,
-                    "Export AML: No valid filename."))
+                    "Export AML: No valid filename.",
+                    argFilterIndex: "FilterIndex"))
                     return;
 
                 try
                 {
-                    RememberForInitialDirectory(targetFn);
-                    AasxAmlImExport.AmlExport.ExportTo(
-                        _packageCentral.Main, targetFn, tryUseCompactProperties: filterIndex == 2);
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -2522,8 +2582,6 @@ namespace AasxPackageExplorer
                     "RDF Read: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(ticket["File"] as string);
-
                 // do it
                 try
                 {
@@ -2542,40 +2600,39 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_ExportNodesetUaPlugin()
+        public void CommandBinding_ExportNodesetUaPlugin(
+            string cmd,
+            AasxMenuActionTicket ticket)
         {
-            // get the output file
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select Nodeset2.XML file to be exported";
-            dlg.FileName = "new.xml";
-            dlg.DefaultExt = "*.xml";
-            dlg.Filter = "OPC UA Nodeset2 files (*.xml)|*.xml|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
+            if (cmd == "opcuaexportnodesetuaplugin")
             {
-                if (res == true)
+                // filename
+                if (!MenuSelectSaveFilename(
+                    ticket, "File",
+                    "Select Nodeset2.XML file to be exported",
+                    "new.xml",
+                    "OPC UA Nodeset2 files (*.xml)|*.xml|All files (*.*)|*.*",
+                    out var targetFn, out var filterIndex,
+                    "Export OPC UA Nodeset2 via plugin: No valid filename."))
+                    return;
+
+                try
                 {
-                    RememberForInitialDirectory(dlg.FileName);
+                    RememberForInitialDirectory(targetFn);
                     CommandBinding_ExecutePluginServer(
                         "AasxPluginUaNetServer",
                         "server-start",
                         "server-stop",
                         "Export Nodeset2 via OPC UA Server...",
-                        new[] { "-export-nodeset", dlg.FileName }
+                        new[] { "-export-nodeset", targetFn }
                         );
                 }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(
+                        ex, "When exporting UA nodeset via plug-in, an error occurred");
+                }
             }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, "When exporting UA nodeset via plug-in, an error occurred");
-            }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_CopyClipboardElementJson()
@@ -2622,116 +2679,6 @@ namespace AasxPackageExplorer
             {
                 Log.Singleton.Info("No JSON text could be generated for selected element.");
             }
-        }
-
-        public void CommandBinding_ExportGenericForms()
-        {
-            // trivial things
-            if (!_packageCentral.MainStorable)
-            {
-                MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                return;
-            }
-
-            // a SubmodelRef shall be exported
-            VisualElementSubmodelRef ve1 = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected for exporting options file for GenericForms.", "Generic Forms",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-
-            // get the output file
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select options file for GenericForms to be exported";
-            dlg.FileName = "new.add-options.json";
-            dlg.DefaultExt = "*.add-options.json";
-            dlg.Filter = "options file for GenericForms (*.add-options.json)|*.add-options.json|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
-            {
-                if (res == true)
-                {
-                    Log.Singleton.Info(
-                        "Exporting add-options file to GenericForm: {0}", dlg.FileName);
-                    RememberForInitialDirectory(dlg.FileName);
-                    AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(
-                        ve1.theEnv, ve1.theSubmodel, dlg.FileName);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, "When exporting options file for GenericForms, an error occurred");
-            }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
-        }
-
-        public void CommandBinding_ExportPredefineConcepts()
-        {
-            // trivial things
-            if (!_packageCentral.MainAvailable)
-            {
-                MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                return;
-            }
-
-            // a SubmodelRef shall be exported
-            VisualElementSubmodelRef ve1 = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid SubModel selected for exporting snippets.", "Snippets for PredefinedConcepts",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-
-            // get the output file
-            var dlg = new Microsoft.Win32.SaveFileDialog();
-            dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.Title = "Select text file for PredefinedConcepts to be exported";
-            dlg.FileName = "new.txt";
-            dlg.DefaultExt = "*.txt";
-            dlg.Filter = "Text file for PredefinedConcepts (*.txt)|*.txt|All files (*.*)|*.*";
-
-            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
-            var res = dlg.ShowDialog(this);
-
-            try
-            {
-                if (res == true)
-                {
-                    RememberForInitialDirectory(dlg.FileName);
-                    Log.Singleton.Info(
-                        "Exporting text snippets for PredefinedConcepts: {0}", dlg.FileName);
-                    AasxPredefinedConcepts.ExportPredefinedConcepts.Export(
-                        _packageCentral.Main.AasEnv, ve1.theSubmodel, dlg.FileName);
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(
-                    ex, "When exporting text snippets for PredefinedConcepts, an error occurred");
-            }
-
-            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
 
         public void CommandBinding_ConvertElement()
@@ -2874,8 +2821,6 @@ namespace AasxPackageExplorer
                     "TD import: No valid filename."))
                     return;
 
-                RememberForInitialDirectory(ticket["File"] as string);
-
                 // do it
                 try
                 {
@@ -2903,8 +2848,6 @@ namespace AasxPackageExplorer
                     "JSON files (*.JSONLD)|*.jsonld",
                     "Thing Description (TD) export: No valid filename."))
                     return;
-
-                RememberForInitialDirectory(ticket["File"] as string);
 
                 // do it
                 try
@@ -3131,37 +3074,18 @@ namespace AasxPackageExplorer
                 Log.Singleton.Info("Mapping types loaded.");
 
                 // filename
-                if (!MenuSelectSaveFilename(
+                if (!MenuSelectSaveFilenameToTicket(
                     ticket, "File",
                     "Select Nodeset file to be exported",
                     "new.xml",
                     "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    out var targetFn, out var filterIndex,
                     "Export i4AAS based OPC UA nodeset: No valid filename."))
                     return;
 
                 // ReSharper enable PossibleNullReferenceException
                 try
                 {
-                    RememberForInitialDirectory(targetFn);
-
-                    UANodeSetExport.root = InformationModel.Items.ToList();
-
-                    foreach (AdminShellV20.Asset ass in _packageCentral.Main.AasEnv.Assets)
-                    {
-                        UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
-                    }
-
-                    InformationModel.Items = UANodeSetExport.root.ToArray();
-
-                    using (var writer = new System.IO.StreamWriter(targetFn))
-                    {
-                        var serializer = new XmlSerializer(InformationModel.GetType());
-                        serializer.Serialize(writer, InformationModel);
-                        writer.Flush();
-                    }
-
-                    Log.Singleton.Info("i4AAS based OPC UA mapping exported: " + targetFn);
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
                 catch (Exception ex)
                 {
@@ -3172,23 +3096,25 @@ namespace AasxPackageExplorer
             if (cmd == "opcuai4aasimport")
             {
                 // filename
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                 ticket, "File",
                     "Select Nodeset file to be imported",
                     "Document",
                     "XML File (.xml)|*.xml|Text documents (.txt)|*.txt",
-                    out var sourceFn,
                     "Import i4AAS based OPC UA nodeset: No valid filename."))
                     return;
 
                 // do
-                try { 
-                    RememberForInitialDirectory(sourceFn);
-                    UANodeSet InformationModel = UANodeSetExport.getInformationModel(sourceFn);
-                    _packageCentral.MainItem.TakeOver(UANodeSetImport.Import(InformationModel));
-                    RestartUIafterNewPackage();
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
-                    Log.Singleton.Info("i4AAS based OPC UA mapping imported: " + sourceFn);
+                    // TODO (MIHO, 2022-11-17) notvery elegant
+                    if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
+                        && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
+                        _packageCentral.MainItem.TakeOver(pe);
+                    
+                    RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
                 {

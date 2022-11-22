@@ -69,7 +69,7 @@
   ],
   "PluginPrefer": "ANYUI",
   "PluginDll": [
-    /*
+    
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -86,7 +86,7 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
-    }, */
+    }, 
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []

@@ -14,17 +14,23 @@ using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
 using AasxSignature;
+using AasxUANodesetImExport;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using System.Xml.Serialization;
 
 namespace AasxPackageLogic
 {
@@ -473,6 +479,191 @@ namespace AasxPackageLogic
                 }
             }
 
+            if (cmd == "importaml")
+            {
+                // arguments
+                if (ticket.Env == null || ticket.Env == null 
+                    || ticket.Submodel != null || ticket.SubmodelElement != null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Import AML: No valid AAS-Env, package, source file selected or " +
+                        "a single Submodel, SubmodelElement selected");
+                    return;
+                }
+
+                // do it
+                try
+                {
+                    AasxAmlImExport.AmlImport.ImportInto(ticket.Package, fn);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When importing AML, an error occurred");
+                }
+            }
+
+            if (cmd == "exportaml")
+            {
+                // arguments
+                if (ticket.Env == null || ticket.Env == null
+                    || ticket.Submodel != null || ticket.SubmodelElement != null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Import AML: No valid AAS-Env, package, target file selected or " +
+                        "a single Submodel, SubmodelElement selected");
+                    return;
+                }
+
+                try
+                {
+                    var tryUseCompactProperties = false;
+                    if (ticket["FilterIndex"] is int filterIndex)
+                        tryUseCompactProperties = filterIndex == 2;
+
+                    AasxAmlImExport.AmlExport.ExportTo(ticket.Package, fn, tryUseCompactProperties);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                }
+            }
+
+            if (cmd == "opcuai4aasexport")
+            {
+                // arguments
+                if (ticket.Env == null || ticket.Env == null
+                    || ticket.Submodel != null || ticket.SubmodelElement != null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Import i4AAS based OPC UA mapping: No valid AAS-Env, package, target file " +
+                        "selected or a single Submodel, SubmodelElement selected");
+                    return;
+                }
+
+                // try to access I4AAS export information
+                AasxUANodesetImExport.UANodeSet InformationModel = null;
+                try
+                {
+                    var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
+                        "AasxPackageExplorer.Resources.i4AASCS.xml");
+
+                    InformationModel = UANodeSetExport.getInformationModel(xstream);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when accessing i4AASCS.xml mapping types.");
+                    return;
+                }
+                Log.Singleton.Info("Mapping types loaded.");
+
+                // ReSharper enable PossibleNullReferenceException
+                try
+                {
+                    UANodeSetExport.root = InformationModel.Items.ToList();
+
+                    foreach (AdminShellV20.Asset ass in ticket.Env.Assets)
+                    {
+                        UANodeSetExport.CreateAAS(ass.idShort, ticket.Env);
+                    }
+
+                    InformationModel.Items = UANodeSetExport.root.ToArray();
+
+                    using (var writer = new System.IO.StreamWriter(fn))
+                    {
+                        var serializer = new XmlSerializer(InformationModel.GetType());
+                        serializer.Serialize(writer, InformationModel);
+                        writer.Flush();
+                    }
+
+                    Log.Singleton.Info("i4AAS based OPC UA mapping exported: " + fn);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when exporting i4AAS based OPC UA mapping.");
+                }
+            }
+
+            if (cmd == "opcuai4aasimport")
+            {
+                // arguments
+                if (ticket.Env == null || ticket.Env == null
+                    || ticket.Submodel != null || ticket.SubmodelElement != null ||
+                    !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Import i4AAS based OPC UA mapping: No valid AAS-Env, package, target file " +
+                        "selected or a single Submodel, SubmodelElement selected");
+                    return;
+                }
+
+                // do
+                try
+                {
+                    UANodeSet InformationModel = UANodeSetExport.getInformationModel(fn);
+                    
+                    ticket.PostResults = new Dictionary<string, object>();
+                    ticket.PostResults.Add("TakeOver", UANodeSetImport.Import(InformationModel));
+
+                    Log.Singleton.Info("i4AAS based OPC UA mapping imported: " + fn);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "when importing i4AAS based OPC UA mapping.");
+                }
+            }
+
+            if (cmd == "exportgenericforms")
+            {
+                // arguments
+                if (ticket.Env == null || ticket.Env == null
+                    || ticket.Submodel == null 
+                    || !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Export GenericForms: No valid AAS-Env, package, Submodel or target file selected");
+                    return;
+                }
+
+                try
+                {
+                    Log.Singleton.Info("Exporting GenericForms: {0}", fn);
+                    AasxIntegrationBase.AasForms.AasFormUtils.ExportAsGenericFormsOptions(
+                        ticket.Env, ticket.Submodel, fn);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting GenericForms, an error occurred");
+                }
+            }
+
+            if (cmd == "exportpredefineconcepts")
+            {
+                // arguments
+                if (ticket.Env == null 
+                    || ticket.Submodel == null
+                    || !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Export PredefinedConcepts: No valid AAS-Env, package, Submodel or target file selected");
+                    return;
+                }
+
+                try
+                {
+                    Log.Singleton.Info("Exporting text snippets for PredefinedConcepts: {0}", fn);
+                    AasxPredefinedConcepts.ExportPredefinedConcepts.Export(ticket.Env, ticket.Submodel, fn);
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting PredefinedConcepts, an error occurred");
+                }
+            }
+
         }
+
+
     }
 }

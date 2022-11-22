@@ -468,6 +468,11 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
+        public AdminShellPackageEnv Package;
+
+        /// <summary>
+        /// Filled by the currently selected element.
+        /// </summary>
         public AdminShell.AdministrationShellEnv Env;
 
         /// <summary>
@@ -500,6 +505,11 @@ namespace AasxIntegrationBase
         /// to/ from the user.
         /// </summary>
         public AnyUiMinimalInvokeMessageDelegate InvokeMessage = null;
+
+        /// <summary>
+        /// In special cases, the ticket execution does require a post-process.
+        /// </summary>
+        public Dictionary<string, object> PostResults = null;
 
         //
         // Convenience
