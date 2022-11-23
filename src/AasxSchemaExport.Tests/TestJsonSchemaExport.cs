@@ -44,10 +44,10 @@ namespace AasxSchemaExport.Tests
         {
             var schema = this.ExportSchema();
 
-            var schemaVersion = schema["title"];
+            var title = schema["title"];
 
-            Assert.IsNotNull(schemaVersion);
-            Assert.AreEqual(schemaVersion.Value<string>(), "AssetAdministrationShellSubmodelSubmodelTest");
+            Assert.IsNotNull(title);
+            Assert.AreEqual(title.Value<string>(), "AssetAdministrationShellSubmodelSubmodelTest");
         }
 
         [Test]
@@ -55,10 +55,10 @@ namespace AasxSchemaExport.Tests
         {
             var schema = this.ExportSchema();
 
-            var schemaVersion = schema["type"];
+            var type = schema["type"];
 
-            Assert.IsNotNull(schemaVersion);
-            Assert.AreEqual(schemaVersion.Value<string>(), "object");
+            Assert.IsNotNull(type);
+            Assert.AreEqual(type.Value<string>(), "object");
         }
 
         [Test]
@@ -69,6 +69,16 @@ namespace AasxSchemaExport.Tests
             var refDefinition = schema["$ref"];
 
             Assert.AreEqual(refDefinition.Value<string>(), "#/definitions/Root");
+        }
+
+        [Test]
+        public void Test_unevaluated_properties_should_be_false()
+        {
+            var schema = this.ExportSchema();
+
+            var unevaluatedProperties = schema["unevaluatedProperties"];
+
+            Assert.AreEqual(unevaluatedProperties.Value<bool>(), false);
         }
 
 

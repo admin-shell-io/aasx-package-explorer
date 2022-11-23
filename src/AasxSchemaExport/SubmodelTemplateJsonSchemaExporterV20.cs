@@ -12,6 +12,7 @@ namespace AasxSchemaExport
             root["$schema"] = "https://json-schema.org/draft/2019-09/schema";
             root["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
             root["type"] = "object";
+            root["unevaluatedProperties"] = false;
 
             root["$ref"] = "#/definitions/Root";
 
