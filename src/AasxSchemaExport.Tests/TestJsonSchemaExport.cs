@@ -19,8 +19,10 @@ namespace AasxSchemaExport.Tests
         [OneTimeSetUp]
         public void Init()
         {
-            var submodelTemplatePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData",
-                "IDTA 02006-2-0_Template_Digital Nameplate.aasx");
+            var submodelTemplatePath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory, 
+                "TestData",
+                "SubmodelTest.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
@@ -45,7 +47,7 @@ namespace AasxSchemaExport.Tests
             var schemaVersion = schema["title"];
 
             Assert.IsNotNull(schemaVersion);
-            Assert.AreEqual(schemaVersion.Value<string>(), "AssetAdministrationShellSubmodelNameplate");
+            Assert.AreEqual(schemaVersion.Value<string>(), "AssetAdministrationShellSubmodelSubmodelTest");
         }
 
         [Test]
