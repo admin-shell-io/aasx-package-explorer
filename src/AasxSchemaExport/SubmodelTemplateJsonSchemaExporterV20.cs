@@ -13,7 +13,7 @@ namespace AasxSchemaExport
             root["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
             root["type"] = "object";
 
-            root["allOf"] = new JArray(JObject.Parse("{\"$ref\": \"#/definitions/root\"}"));
+            root["$ref"] = "#/definitions/Root";
 
             return root.ToString();
 

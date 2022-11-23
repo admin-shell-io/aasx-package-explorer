@@ -66,10 +66,9 @@ namespace AasxSchemaExport.Tests
         {
             var schema = this.ExportSchema();
 
-            var allOff = schema["allOf"] as JArray;
+            var refDefinition = schema["$ref"];
 
-            Assert.IsNotNull(allOff);
-            Assert.AreEqual(allOff[0]["$ref"].Value<string>(), "#/definitions/root");
+            Assert.AreEqual(refDefinition.Value<string>(), "#/definitions/Root");
         }
 
 
