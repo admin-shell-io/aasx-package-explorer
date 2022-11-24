@@ -42,7 +42,7 @@ namespace AasxPluginExportTable.TimeSeries
         public static void ImportTimeSeriesFromFile(
             AdminShell.AdministrationShellEnv env,
             AdminShell.Submodel submodel,
-            ImportTimeSeriesOptions options,
+            ImportTimeSeriesRecord options,
             string fn, LogInstance log = null)
         {
             // access
@@ -58,7 +58,7 @@ namespace AasxPluginExportTable.TimeSeries
                 // which importer?
                 var imp = new ImportTimeSeries();
 
-                if (options.Format == ImportTimeSeriesOptions.FormatEnum.Excel)
+                if (options.Format == ImportTimeSeriesRecord.FormatEnum.Excel)
                 {
                     imp._log = log;
                     imp._provider = ImportTableExcelProvider.CreateProviders(fn).FirstOrDefault();
@@ -164,7 +164,7 @@ namespace AasxPluginExportTable.TimeSeries
         protected IImportTableProvider _provider = null;
 
         protected bool ImportExcel(
-            ImportTimeSeriesOptions options)
+            ImportTimeSeriesRecord options)
         {
             // access
             if (_provider == null || options == null)
@@ -244,7 +244,7 @@ namespace AasxPluginExportTable.TimeSeries
         }
 
         protected bool WriteSeries(
-            ImportTimeSeriesOptions options,
+            ImportTimeSeriesRecord options,
             AdminShell.Submodel submodel)
         {
             // access 

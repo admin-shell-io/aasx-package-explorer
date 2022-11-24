@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:AasxPluginExportTable"
-             x:Class="AasxPluginExportTable.ExportUmlFlyout"
+             xmlns:local="clr-namespace:AasxPackageExplorer"
+             x:Class="AasxPackageExplorer.ExportUmlFlyout"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600"
              MaxHeight="400" MaxWidth="700" Loaded="UserControl_Loaded">
@@ -18,7 +18,7 @@
     -->
 
     <UserControl.Resources>
-        <ResourceDictionary Source="Themes/Generic.xaml"/>
+        <ResourceDictionary Source="../Themes/Generic.xaml"/>
     </UserControl.Resources>
 
     <Grid Margin="5">

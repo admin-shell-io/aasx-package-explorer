@@ -39,7 +39,7 @@ namespace AasxPluginExportTable.Uml
             public bool Valid => Id.HasContent();
         }
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;

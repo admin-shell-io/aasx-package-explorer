@@ -27,7 +27,7 @@ namespace AasxPluginExportTable.Uml
 {
     public interface IBaseWriter
     {
-        void StartDoc(ExportUmlOptions options);
+        void StartDoc(ExportUmlRecord options);
         void ProcessSubmodel(AdminShell.Submodel submodel);
         void ProcessPost();
         void SaveDoc(string fn);
@@ -42,7 +42,7 @@ namespace AasxPluginExportTable.Uml
         // Members
         //
 
-        protected ExportUmlOptions _options = new ExportUmlOptions();
+        protected ExportUmlRecord _options = new ExportUmlRecord();
 
         //
         // Ids

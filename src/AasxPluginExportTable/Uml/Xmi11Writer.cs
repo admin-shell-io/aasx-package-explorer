@@ -36,7 +36,7 @@ namespace AasxPluginExportTable.Uml
 
         public XmlElement Package;
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;

@@ -29,7 +29,7 @@ namespace AasxPluginExportTable
         //
 
         protected LogInstance _log;
-        protected ExportTableRecord _job;
+        protected ImportExportTableRecord _job;
         protected AdminShell.Submodel _sm;
         protected AdminShell.AdministrationShellEnv _env;
         protected ExportTableOptions _options;
@@ -39,7 +39,7 @@ namespace AasxPluginExportTable
 
         public ImportPopulateByTable(
             LogInstance log,
-            ExportTableRecord job,
+            ImportExportTableRecord job,
             AdminShell.Submodel sm,
             AdminShell.AdministrationShellEnv env,
             ExportTableOptions options)

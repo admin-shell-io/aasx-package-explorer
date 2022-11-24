@@ -63,91 +63,17 @@ namespace AasxPluginExportTable
 
     }
 
-    public class ExportTableRecord
+    public class ExportTableProcessor
     {
-        //
-        // Types
-        //
-
-        public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
-        public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
-
-        //
-        // Members
-        //
-
-        public string Name = "";
-
-        public int Format = 0;
-
-        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 1;
-
-        [JsonIgnore]
-        public int RealRowsTop { get { return 1 + RowsTop; } }
-
-        [JsonIgnore]
-        public int RealRowsBody { get { return 1 + RowsBody; } }
-
-        [JsonIgnore]
-        public int RealCols { get { return 1 + Cols; } }
-
-        public bool ReplaceFailedMatches = false;
-        public string FailText = "";
-
-        public bool ActInHierarchy = false;
-
-        // Note: the records contains elements for 1 + Rows, 1 + Columns fields
-        public List<string> Top = new List<string>();
-        public List<string> Body = new List<string>();
-
-        public bool IsValid()
-        {
-            return RowsTop >= 1 && RowsBody >= 1 && Cols >= 1
-                && Top != null && Top.Count >= RealRowsTop * RealCols
-                && Body != null && Body.Count >= RealRowsBody * RealCols;
-        }
+        protected ImportExportTableRecord Record = null;
 
         //
         // Constructurs
         //
 
-        public ExportTableRecord() { }
-
-        public ExportTableRecord(
-            int rowsTop, int rowsBody, int cols, string name = "", IEnumerable<string> header = null,
-            IEnumerable<string> elements = null)
+        public ExportTableProcessor(ImportExportTableRecord record)
         {
-            this.RowsTop = rowsTop;
-            this.RowsBody = rowsBody;
-            this.Cols = cols;
-            if (name != null)
-                this.Name = name;
-            if (header != null)
-                foreach (var h in header)
-                    this.Top.Add(h);
-            if (elements != null)
-                foreach (var e in elements)
-                    this.Body.Add(e);
-        }
-
-        public void SaveToFile(string fn)
-        {
-            using (StreamWriter file = File.CreateText(fn))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, this);
-            }
-        }
-
-        public static ExportTableRecord LoadFromFile(string fn)
-        {
-            using (StreamReader file = File.OpenText(fn))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                var res = (ExportTableRecord)serializer.Deserialize(file, typeof(ExportTableRecord));
-                return res;
-            }
+            Record = record;
         }
 
         //
@@ -169,25 +95,29 @@ namespace AasxPluginExportTable
 
         public CellRecord GetTopCell(int row, int col)
         {
-            var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Top == null || i >= this.Top.Count)
+            if (Record == null)
                 return null;
-            var cr = new CellRecord(this.Top[i]);
+            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            if (row < 0 || col < 0 || Record.Top == null || i >= Record.Top.Count)
+                return null;
+            var cr = new CellRecord(Record.Top[i]);
             cr.TextWithHeaders =
-                this.Top[0] + " " + this.Top[(1 + row) * (1 + this.Cols)] + " " +
-                this.Top[1 + col] + " " + cr.Text;
+                Record.Top[0] + " " + Record.Top[(1 + row) * (1 + Record.Cols)] + " " +
+                Record.Top[1 + col] + " " + cr.Text;
             return cr;
         }
 
         public CellRecord GetBodyCell(int row, int col)
         {
-            var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Body == null || i >= this.Body.Count)
+            if (Record == null)
                 return null;
-            var cr = new CellRecord(this.Body[i]);
+            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            if (row < 0 || col < 0 || Record.Body == null || i >= Record.Body.Count)
+                return null;
+            var cr = new CellRecord(Record.Body[i]);
             cr.TextWithHeaders =
-                this.Body[0] + " " + this.Body[(1 + row) * (1 + this.Cols)] + " " +
-                this.Body[1 + col] + " " + cr.Text;
+                Record.Body[0] + " " + Record.Body[(1 + row) * (1 + Record.Cols)] + " " +
+                Record.Body[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -201,7 +131,7 @@ namespace AasxPluginExportTable
             // Member
             //
 
-            ExportTableRecord Record = null;
+            ImportExportTableRecord Record = null;
             public ExportTableAasEntitiesItem Item = null;
 
             public ItemProcessor() { }
@@ -210,7 +140,7 @@ namespace AasxPluginExportTable
 
             public int NumberReplacements = 0;
 
-            public ItemProcessor(ExportTableRecord record, ExportTableAasEntitiesItem item)
+            public ItemProcessor(ImportExportTableRecord record, ExportTableAasEntitiesItem item)
             {
                 this.Record = record;
                 this.Item = item;
@@ -714,7 +644,7 @@ namespace AasxPluginExportTable
             string tab = "\t")
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             using (var f = new StreamWriter(fn))
@@ -724,12 +654,12 @@ namespace AasxPluginExportTable
                 foreach (var entities in iterateAasEntities)
                 {
                     // top
-                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
-                    for (int ri = 0; ri < this.RowsTop; ri++)
+                    var proc = new ItemProcessor(Record, entities.FirstOrDefault());
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
                     {
                         var line = "";
 
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get cell record
                             var cr = GetTopCell(ri, ci);
@@ -750,18 +680,18 @@ namespace AasxPluginExportTable
                     foreach (var item in entities)
                     {
                         // create processing
-                        proc = new ItemProcessor(this, item);
+                        proc = new ItemProcessor(Record, item);
                         proc.Start();
                         proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
 
                         var lines = new List<string>();
 
                         // all elements
-                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
                         {
                             var line = "";
 
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetBodyCell(ri, ci);
@@ -785,7 +715,7 @@ namespace AasxPluginExportTable
                     }
 
                     // empty rows
-                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
                         f.WriteLine("");
                 }
             }
@@ -800,7 +730,7 @@ namespace AasxPluginExportTable
         public bool ExportLaTex(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             using (var f = new StreamWriter(fn))
@@ -893,7 +823,8 @@ namespace AasxPluginExportTable
         public bool ExportExcel(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid() || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
+            if (Record?.IsValid() != true 
+                || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
                 return false;
 
             //
@@ -922,12 +853,12 @@ namespace AasxPluginExportTable
                 if (true)
                 {
                     // in order to access the parent information, take the first entity
-                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                    var proc = new ItemProcessor(Record, entities.FirstOrDefault());
                     proc.Start();
 
-                    for (int ri = 0; ri < this.RowsTop; ri++)
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
                     {
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get cell record
                             var cr = GetTopCell(ri, ci);
@@ -940,7 +871,7 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    rowIdx += this.RowsTop;
+                    rowIdx += Record.RowsTop;
                 }
 
                 // elements
@@ -949,13 +880,13 @@ namespace AasxPluginExportTable
                     foreach (var item in entities)
                     {
                         // create processing
-                        var proc = new ItemProcessor(this, item);
+                        var proc = new ItemProcessor(Record, item);
                         proc.Start();
 
                         // all elements
-                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
                         {
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetBodyCell(ri, ci);
@@ -972,12 +903,12 @@ namespace AasxPluginExportTable
                         if (proc.NumberReplacements > 0)
                         {
                             // advance
-                            rowIdx += this.RowsBody;
+                            rowIdx += Record.RowsBody;
                         }
                         else
                         {
                             // delete this out
-                            var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
+                            var rng = ws.Range(rowIdx, 1, rowIdx + Record.RowsBody - 1, 1 + Record.Cols - 1);
                             rng.Clear();
                         }
                     }
@@ -989,7 +920,7 @@ namespace AasxPluginExportTable
                     if (rowIdx > startRowIdx + 1)
                     {
                         // do a explicit process of overall table cell
-                        var proc = new ItemProcessor(this, null);
+                        var proc = new ItemProcessor(Record, null);
                         proc.Start();
                         var cr = GetTopCell(0, 0);
                         proc.ProcessCellRecord(cr);
@@ -997,7 +928,7 @@ namespace AasxPluginExportTable
                         // borders?
                         if (cr.Frame != null)
                         {
-                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + Record.Cols - 1);
 
                             if (cr.Frame == "1")
                             {
@@ -1019,10 +950,10 @@ namespace AasxPluginExportTable
                         }
 
                         // column widths
-                        ws.Columns(1, this.Cols).AdjustToContents();
+                        ws.Columns(1, Record.Cols).AdjustToContents();
 
                         // custom column width
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get the cell width from the very first top row
                             var cr2 = GetTopCell(0, ci);
@@ -1039,7 +970,7 @@ namespace AasxPluginExportTable
 
                 // leave some lines blank
 
-                rowIdx += Math.Max(0, RowsGap);
+                rowIdx += Math.Max(0, Record.RowsGap);
             }
 
             //
@@ -1160,7 +1091,7 @@ namespace AasxPluginExportTable
         public bool ExportWord(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             // Create Document
@@ -1193,7 +1124,7 @@ namespace AasxPluginExportTable
                     // do a process on overall table cells
                     if (true)
                     {
-                        var proc = new ItemProcessor(this, null);
+                        var proc = new ItemProcessor(Record, null);
                         proc.Start();
                         var cr = GetTopCell(0, 0);
                         proc.ProcessCellRecord(cr);
@@ -1261,16 +1192,16 @@ namespace AasxPluginExportTable
                     if (true)
                     {
                         // in order to access the parent information, take the first entity
-                        var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                        var proc = new ItemProcessor(Record, entities.FirstOrDefault());
                         proc.Start();
 
-                        for (int ri = 0; ri < this.RowsTop; ri++)
+                        for (int ri = 0; ri < Record.RowsTop; ri++)
                         {
                             // new row
                             TableRow tr = table.AppendChild(new TableRow());
 
                             // over cells
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetTopCell(ri, ci);
@@ -1290,21 +1221,21 @@ namespace AasxPluginExportTable
                         foreach (var item in entities)
                         {
                             // create processing
-                            var proc = new ItemProcessor(this, item);
+                            var proc = new ItemProcessor(Record, item);
                             proc.Start();
 
                             // remember rows in order to can deleten them later
                             var newRows = new List<TableRow>();
 
                             // all elements
-                            for (int ri = 0; ri < this.RowsBody; ri++)
+                            for (int ri = 0; ri < Record.RowsBody; ri++)
                             {
                                 // new row
                                 TableRow tr = table.AppendChild(new TableRow());
                                 newRows.Add(tr);
 
                                 // over cells
-                                for (int ci = 0; ci < this.Cols; ci++)
+                                for (int ci = 0; ci < Record.Cols; ci++)
                                 {
                                     // get cell record
                                     var cr = GetBodyCell(ri, ci);
@@ -1332,7 +1263,7 @@ namespace AasxPluginExportTable
                     }
 
                     // empty rows
-                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
                         body.AppendChild(new Paragraph(new Run(new Text(" "))));
 
                 }

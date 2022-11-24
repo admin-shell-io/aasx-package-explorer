@@ -29,7 +29,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxPluginExportTable
+namespace AasxPackageExplorer
 {
     public partial class ExportTableFlyout : UserControl, IFlyoutControl
     {
@@ -37,9 +37,9 @@ namespace AasxPluginExportTable
 
         protected string _caption;
 
-        public List<ExportTableRecord> Presets = null;
+        public List<ImportExportTableRecord> Presets = null;
 
-        public ExportTableRecord Result = null;
+        public ImportExportTableRecord Result = null;
 
         public bool CloseForHelp = false;
 
@@ -96,7 +96,7 @@ namespace AasxPluginExportTable
 
             // combo Formats
             ComboBoxFormat.Items.Clear();
-            foreach (var f in ExportTableRecord.FormatNames)
+            foreach (var f in ImportExportTableRecord.FormatNames)
                 ComboBoxFormat.Items.Add("" + f);
             ComboBoxFormat.SelectedIndex = 0;
         }
@@ -156,9 +156,9 @@ namespace AasxPluginExportTable
             AdaptRowsCols(GridOuterBody, _textBoxesBody, _rowsBody, _cols);
         }
 
-        private ExportTableRecord ThisToPreset()
+        private ImportExportTableRecord ThisToPreset()
         {
-            var x = new ExportTableRecord(_rowsTop, _rowsBody, _cols, "",
+            var x = new ImportExportTableRecord(_rowsTop, _rowsBody, _cols, "",
                     _textBoxesTop.Select(tb => tb.Text),
                     _textBoxesBody.Select(tb => tb.Text)
                     );
@@ -175,7 +175,7 @@ namespace AasxPluginExportTable
             return x;
         }
 
-        private void ThisFromPreset(ExportTableRecord preset)
+        private void ThisFromPreset(ImportExportTableRecord preset)
         {
             // access
             if (preset == null || preset.RowsTop < 1 || preset.RowsBody < 1 || preset.Cols < 1)
@@ -318,7 +318,7 @@ namespace AasxPluginExportTable
                 {
                     try
                     {
-                        var pr = ExportTableRecord.LoadFromFile(dlg.FileName);
+                        var pr = ImportExportTableRecord.LoadFromFile(dlg.FileName);
                         this.ThisFromPreset(pr);
                     }
                     catch (Exception ex)

@@ -26,28 +26,24 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
-using AasxPluginExportTable.TimeSeries;
-using AasxPluginExportTable.Uml;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-// ReSharper disable InlineOutVariableDeclaration
-
-namespace AasxPluginExportTable
+namespace AasxPackageExplorer
 {
-    public partial class ImportTimeSeriesFlyout : UserControl, IFlyoutControl
+    public partial class ExportUmlFlyout : UserControl, IFlyoutControl
     {
         public event IFlyoutControlAction ControlClosed;
 
         protected string _caption;
 
-        public ImportTimeSeriesOptions Result = new ImportTimeSeriesOptions();
+        public ExportUmlRecord Result = new ExportUmlRecord();
 
         //
         // Init
         //
 
-        public ImportTimeSeriesFlyout(string caption = null)
+        public ExportUmlFlyout(string caption = null)
         {
             InitializeComponent();
             _caption = caption;
@@ -57,7 +53,7 @@ namespace AasxPluginExportTable
         {
             // combo Formats
             ComboBoxFormat.Items.Clear();
-            foreach (var f in ImportTimeSeriesOptions.FormatNames)
+            foreach (var f in ExportUmlRecord.FormatNames)
                 ComboBoxFormat.Items.Add("" + f);
 
             // set given values
@@ -86,37 +82,21 @@ namespace AasxPluginExportTable
         // Mechanics
         //
 
-        private ImportTimeSeriesOptions ThisToPreset()
+        private ExportUmlRecord ThisToPreset()
         {
-            var x = new ImportTimeSeriesOptions();
+            var x = new ExportUmlRecord();
 
-            x.Format = (ImportTimeSeriesOptions.FormatEnum)ComboBoxFormat.SelectedIndex;
+            x.Format = (ExportUmlRecord.ExportFormat)ComboBoxFormat.SelectedIndex;
 
-            int i = 0;
+            if (int.TryParse(TextBoxLimitValues.Text, out int i))
+                x.LimitInitialValue = i;
 
-            x.StartTime = TextBoxStartTime.Text;
-
-            if (int.TryParse(TextBoxRowHeader.Text, out i))
-                x.RowData = i;
-
-            if (int.TryParse(TextBoxRowData.Text, out i))
-                x.RowData = i;
-
-            if (int.TryParse(TextBoxColumnTime.Text, out i))
-                x.ColTime = i;
-
-            if (int.TryParse(TextBoxColumnData.Text, out i))
-                x.ColData = i;
-
-            if (int.TryParse(TextBoxNumData.Text, out i))
-                x.NumData = i;
-
-            x.SetSmSemantic = CheckBoxSetSmSemId.IsChecked == true;
+            x.CopyToPasteBuffer = CheckBoxCopyTo.IsChecked == true;
 
             return x;
         }
 
-        private void ThisFromPreset(ImportTimeSeriesOptions preset)
+        private void ThisFromPreset(ExportUmlRecord preset)
         {
             // access
             if (preset == null)
@@ -124,13 +104,8 @@ namespace AasxPluginExportTable
 
             // take over
             ComboBoxFormat.SelectedIndex = (int)preset.Format;
-            TextBoxStartTime.Text = "" + preset.StartTime;
-            TextBoxRowHeader.Text = "" + preset.RowHeader;
-            TextBoxRowData.Text = "" + preset.RowData;
-            TextBoxColumnTime.Text = "" + preset.ColTime;
-            TextBoxColumnData.Text = "" + preset.ColData;
-            TextBoxNumData.Text = "" + preset.NumData;
-            CheckBoxSetSmSemId.IsChecked = preset.SetSmSemantic;
+            TextBoxLimitValues.Text = "" + preset.LimitInitialValue;
+            CheckBoxCopyTo.IsChecked = preset.CopyToPasteBuffer;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

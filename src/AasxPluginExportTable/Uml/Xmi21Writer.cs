@@ -59,7 +59,7 @@ namespace AasxPluginExportTable.Uml
 
         protected List<XmiTupleAssociationJob> _associationJobs = new List<XmiTupleAssociationJob>();
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;

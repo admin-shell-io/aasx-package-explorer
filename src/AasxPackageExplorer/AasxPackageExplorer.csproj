@@ -129,6 +129,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Update="FlyoutsForPlugins\ExportTableFlyout.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FlyoutsForPlugins\ExportUmlFlyout.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FlyoutsForPlugins\ImportTimeSeriesFlyout.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Flyout\MqttPublisherFlyout.xaml">
       <SubType>Designer</SubType>
     </Page>

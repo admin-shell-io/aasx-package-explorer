@@ -14,21 +14,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Xml;
-using System.Xml.Schema;
 using AasxIntegrationBase;
-using AasxIntegrationBase.AasForms;
 using AdminShellNS;
 using Newtonsoft.Json;
 
-namespace AasxPluginExportTable.Uml
+namespace AasxIntegrationBase
 {
     /// <summary>
     /// Some user options for exporting UML
     /// </summary>
-    public class ExportUmlOptions
+    public class ExportUmlRecord
     {
         public enum ExportFormat { Xmi11 = 0, Xmi21, PlantUml }
 

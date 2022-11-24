@@ -14,9 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
 
-namespace AasxPluginExportTable.TimeSeries
+namespace AasxIntegrationBase
 {
-    public class ImportTimeSeriesOptions
+    public class ImportTimeSeriesRecord
     {
         //
         // Types

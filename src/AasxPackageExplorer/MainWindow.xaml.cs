@@ -3133,6 +3133,8 @@ namespace AasxPackageExplorer
                     if (hr.ArgDefs != null)
                         foreach (var ad in hr.ArgDefs)
                         {
+                            if (ad.Hidden)
+                                continue;
                             html.Append(String.Format(rowfmtSCAD,
                                 (color) ? "#ffffe0" : "#fffff0",
                                 "" + HttpUtility.HtmlEncode(ad.Name),

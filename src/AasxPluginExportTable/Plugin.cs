@@ -78,6 +78,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             res.Add(
                 new AasxPluginActionDescriptionBase(
                     "get-events", "Pops and returns the earliest event from the event stack."));
+            res.Add(
+                new AasxPluginActionDescriptionBase(
+                    "get-presets", "Provides options/ preset data of plugin to caller."));
             res.Add(new AasxPluginActionDescriptionBase("export-submodel", "Exports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("import-submodel", "Imports a Submodel."));
             res.Add(new AasxPluginActionDescriptionBase("export-uml", "Exports a Submodel to an UML file."));
@@ -124,232 +127,74 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return _eventStack.PopEvent();
             }
 
-            if ((action == "export-submodel" || action == "import-submodel")
-                && args != null && args.Length >= 3)
+            if (action == "get-presets")
             {
-                if (args[0] is IFlyoutProvider fop
-                    && args[1] is AdminShell.AdministrationShellEnv env
-                    && args[2] is AdminShell.Submodel sm
-                    && args[3] is AasxMenuActionTicket ticket
-                    && env != null && sm != null)
+                var presets = new object[]
+                {
+                    options.Presets,
+                    options.UmlExport,
+                    options.TimeSeriesImport
+                };
+                return new AasxPluginResultBaseObject("presets", presets);
+            }
+
+            if ((action == "export-submodel" || action == "import-submodel")
+                && args != null && args.Length >= 5)
+            {
+                if (args[0] is ImportExportTableRecord record
+                    && args[1] is string fn
+                    && args[2] is AdminShell.AdministrationShellEnv env
+                    && args[3] is AdminShell.Submodel sm
+                    && args[4] is AasxMenuActionTicket ticket
+                    && fn != null && env != null && sm != null)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
 
-                    ExportTableRecord result = null;
-                    var closeForHelp = false;
-                    var scriptMode = false;
-
-                    if (ticket?.ScriptMode != true)
-                    {
-                        // interactive
-                        // handle the export dialogue
-                        var uc = new ExportTableFlyout((action == "export-submodel")
-                            ? "Export SubmodelElements as Table"
-                            : "Import SubmodelElements from Table");
-                        uc.Presets = this.options.Presets;
-
-                        fop?.StartFlyoverModal(uc);
-                        fop?.CloseFlyover();
-
-                        result = uc.Result;
-                        closeForHelp = uc.CloseForHelp;
-                    }
-                    else
-                    {
-                        // script
-                        scriptMode = true;
-
-                        if (this.options.Presets != null
-                            && ticket["Preset"] is string presetName)
-                            foreach (var pr in this.options.Presets)
-                                if (pr?.Name?.Trim().ToLower() == presetName.Trim().ToLower())
-                                {
-                                    result = pr;
-                                    break;
-                                }
-
-                        if (result != null && ticket["Format"] is string fmt)
-                            for (int i = 0; i < ExportTableRecord.FormatNames.Length; i++)
-                                if (ExportTableRecord.FormatNames[i]
-                                        .Equals(fmt, StringComparison.InvariantCultureIgnoreCase))
-                                    result.Format = i;
-                    }
-
-                    if (result == null)
-                    {
-                        if (closeForHelp)
-                        {
-                            // give over to event stack
-                            var evt = new AasxPluginResultEventDisplayContentFile();
-                            evt.fn = "https://github.com/admin-shell-io/aasx-package-explorer/tree/" +
-                                "MIHO/AddPluginForKnownSubmodels/src/AasxPluginExportTable/help";
-                            evt.mimeType = System.Net.Mime.MediaTypeNames.Text.Html;
-                            _eventStack?.PushEvent(evt);
-                        }
-
-                        return null;
-                    }
-
                     if (action == "export-submodel")
-                        Export(result, fop, sm, env, ticket);
+                        Export(record, fn, sm, env, ticket);
 
                     if (action == "import-submodel")
-                        Import(result, fop, sm, env);
+                        Import(record, fn, sm, env);
                 }
             }
 
-            if (action == "export-uml"
-                && args != null && args.Length >= 3
-                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv
-                && args[2] is AdminShell.Submodel)
+            if (action == "export-uml")
             {
-                var fn = (args.Length >= 4) ? args[3] as string : null;
-
-                // flyout provider (will be required in the future)
-                var fop = args[0] as IFlyoutProvider;
-
-                // which Submodel
-                var env = args[1] as AdminShell.AdministrationShellEnv;
-                var sm = args[2] as AdminShell.Submodel;
-                if (env == null || sm == null)
-                    return null;
-
-                // the Submodel elements need to have parents
-                sm.SetAllParents();
-
-                // prep options
-                var exop = options.UmlExport;
-                if (exop == null)
-                    exop = new ExportUmlOptions();
-
-                // dialogue for user options
-                var uc = new ExportUmlFlyout();
-                uc.Result = exop;
-                fop?.StartFlyoverModal(uc);
-                fop?.CloseFlyover();
-                if (uc.Result == null)
-                    return null;
-
-                // ask for filename
-                var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
+                if (args != null && args.Length >= 4
+                    && args[0] is ExportUmlRecord record
+                    && args[1] is string fn
+                    && args[2] is AdminShell.AdministrationShellEnv env
+                    && args[3] is AdminShell.Submodel sm
+                    && fn != null && env != null && sm != null)
                 {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
+                    // the Submodel elements need to have parents
+                    sm.SetAllParents();
+
+                    // use functionality
+                    ExportUml.ExportUmlToFile(env, sm, record, fn);
+                    Log.Info($"Export UML data to file: {fn}");
+
+
                 }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select file for UML export ..";
-
-                if (uc.Result.Format == ExportUmlOptions.ExportFormat.PlantUml)
-                {
-                    dlg.FileName = "new.uml";
-                    dlg.DefaultExt = "*.uml";
-                    dlg.Filter =
-                        "PlantUML text file (*.uml)|*.uml|All files (*.*)|*.*";
-                }
-                else
-                {
-                    dlg.FileName = "new.xml";
-                    dlg.DefaultExt = "*.xml";
-                    dlg.Filter =
-                        "XMI file (*.xml)|*.xml|All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                var fnres = dlg.ShowDialog(fop?.GetWin32Window());
-                fop?.CloseFlyover();
-                if (fnres != true)
-                    return null;
-                fn = dlg.FileName;
-
-                // use functionality
-                ExportUml.ExportUmlToFile(env, sm, uc.Result, fn);
-                Log.Info($"Export UML data to file: {fn}");
-
-                // copy?
-                if (uc.Result.CopyToPasteBuffer)
-                    try
-                    {
-                        var lines = File.ReadAllText(fn);
-                        Clipboard.SetData(DataFormats.Text, lines);
-                        Log.Info("Export UML data copied to paste buffer.");
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-
             }
 
-            if (action == "import-time-series"
-                && args != null && args.Length >= 3
-                && args[0] is IFlyoutProvider && args[1] is AdminShell.AdministrationShellEnv
-                && args[2] is AdminShell.Submodel)
+            if (action == "import-time-series")
             {
-                var fn = (args.Length >= 4) ? args[3] as string : null;
-
-                // flyout provider (will be required in the future)
-                var fop = args[0] as IFlyoutProvider;
-
-                // which Submodel
-                var env = args[1] as AdminShell.AdministrationShellEnv;
-                var sm = args[2] as AdminShell.Submodel;
-                if (env == null || sm == null)
-                    return null;
-
-                // the Submodel elements need to have parents
-                sm.SetAllParents();
-
-                // prep options
-                var imop = new ImportTimeSeriesOptions();
-                imop.StartTime = ImportTimeSeries.ConvertToIso8601(DateTime.UtcNow);
-
-                // dialogue for user options
-                var uc = new ImportTimeSeriesFlyout();
-                uc.Result = imop;
-                fop?.StartFlyoverModal(uc);
-                fop?.CloseFlyover();
-                if (uc.Result == null)
-                    return null;
-
-                // ask for filename
-                var dlg = new Microsoft.Win32.OpenFileDialog();
-                try
+                if (args != null && args.Length >= 4
+                    && args[0] is ImportTimeSeriesRecord record
+                    && args[1] is string fn
+                    && args[1] is AdminShell.AdministrationShellEnv env
+                    && args[2] is AdminShell.Submodel sm
+                    && fn != null && env != null && sm != null)
                 {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select file for time series import ..";
+                    // the Submodel elements need to have parents
+                    sm.SetAllParents();
 
-                if (uc.Result.Format == ImportTimeSeriesOptions.FormatEnum.Excel)
-                {
-                    dlg.DefaultExt = "*.xlsx";
-                    dlg.Filter = "Excel tables (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                    // use functionality
+                    Log.Info($"Importing time series from file: {fn} ..");
+                    ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, Log);
                 }
-                else
-                {
-                    dlg.DefaultExt = "*.*";
-                    dlg.Filter = "All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                var fnres = dlg.ShowDialog(fop?.GetWin32Window());
-                fop?.CloseFlyover();
-                if (fnres != true)
-                    return null;
-                fn = dlg.FileName;
-
-                // use functionality
-                Log.Info($"Importing time series from file: {fn} ..");
-                ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, uc.Result, fn, Log);
             }
 
             // default
@@ -434,150 +279,59 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
         }
 
-        private void Export(ExportTableRecord job,
-            IFlyoutProvider fop,
+        private void Export(ImportExportTableRecord record,
+            string fn,
             AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env,
             AasxMenuActionTicket ticket = null)
         {
             // prepare list of items to be exported
             var list = new List<ExportTableAasEntitiesList>();
             ExportTable_EnumerateSubmodel(list, env, broadSearch: false,
-                actInHierarchy: job.ActInHierarchy, depth: 1, sm: sm, sme: null);
+                actInHierarchy: record.ActInHierarchy, depth: 1, sm: sm, sme: null);
 
-            // get the output file
-            var fn = ticket["Target"] as string;
             if (fn == null)
-            {
-                var dlg = new Microsoft.Win32.SaveFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select text file to be exported";
-
-                if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                {
-                    dlg.FileName = "new.txt";
-                    dlg.DefaultExt = "*.txt";
-                    dlg.Filter =
-                        "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                {
-                    dlg.FileName = "new.tex";
-                    dlg.DefaultExt = "*.tex";
-                    dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                {
-                    dlg.FileName = "new.xlsx";
-                    dlg.DefaultExt = "*.xlsx";
-                    dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                {
-                    dlg.FileName = "new.docx";
-                    dlg.DefaultExt = "*.docx";
-                    dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                if (true == dlg.ShowDialog(fop?.GetWin32Window()))
-                    fn = dlg.FileName;
-                fop?.CloseFlyover();
-            }
+                return;
 
             try
             {
-                if (fn != null)
+                Log.Info("Exporting table: {0}", fn);
+                var success = false;
+                try
                 {
-                    Log.Info("Exporting table: {0}", fn);
-                    var success = false;
-                    try
-                    {
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                            success = job.ExportTabSeparated(fn, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                            success = job.ExportLaTex(fn, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                            success = job.ExportExcel(fn, list);
-                        if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                            success = job.ExportWord(fn, list);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "performing data format export");
-                        success = false;
-                    }
-
-                    if (!success && ticket?.ScriptMode != true)
-                        fop?.MessageBoxFlyoutShow(
-                            "Some error occured while exporting the table. Please refer to the log messages.",
-                            "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    var proc = new ExportTableProcessor(record);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
+                        success = proc.ExportTabSeparated(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
+                        success = proc.ExportLaTex(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+                        success = proc.ExportExcel(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+                        success = proc.ExportWord(fn, list);
                 }
+                catch (Exception ex)
+                {
+                    Log?.Error(ex, "performing data format export");
+                    success = false;
+                }
+
+                if (!success && ticket?.ScriptMode != true)
+                    Log?.Error(
+                        "Export table: Some error occured while exporting the table. " +
+                        "Please refer to the log messages.");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "When exporting table, an error occurred");
+                Log?.Error(ex, "When exporting table, an error occurred");
             }
 
         }
 
-        private void Import(ExportTableRecord job,
-            IFlyoutProvider fop,
+        private void Import(ImportExportTableRecord record,
+            string fn,
             AdminShell.Submodel sm, AdminShell.AdministrationShellEnv env,
             AasxMenuActionTicket ticket = null)
         {
             // get the import file
-            var fn = ticket["Target"] as string;
-            if (fn == null)
-            {
-                var dlg = new Microsoft.Win32.OpenFileDialog();
-                try
-                {
-                    dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                        System.AppDomain.CurrentDomain.BaseDirectory);
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-                dlg.Title = "Select text file to be exported";
-
-                if (job.Format == (int)ExportTableRecord.FormatEnum.TSF)
-                {
-                    dlg.DefaultExt = "*.txt";
-                    dlg.Filter =
-                        "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.LaTex)
-                {
-                    dlg.DefaultExt = "*.tex";
-                    dlg.Filter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
-                {
-                    dlg.DefaultExt = "*.xlsx";
-                    dlg.Filter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
-                }
-                if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
-                {
-                    dlg.DefaultExt = "*.docx";
-                    dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
-                }
-
-                fop?.StartFlyover(new EmptyFlyout());
-                var res = dlg.ShowDialog(fop?.GetWin32Window());
-                fop?.CloseFlyover();
-
-                fn = dlg.FileName;
-            } 
-
             if (fn == null)
                 return;
 
@@ -588,20 +342,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var success = false;
                 try
                 {
-                    if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
                     {
                         success = true;
-                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
+                        var pop = new ImportPopulateByTable(Log, record, sm, env, options);
                         using (var stream = File.Open(fn, FileMode.Open,
                                     FileAccess.Read, FileShare.ReadWrite))
                             foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
                                 pop.PopulateBy(tp);
                     }
 
-                    if (job.Format == (int)ExportTableRecord.FormatEnum.Excel)
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
                     {
                         success = true;
-                        var pop = new ImportPopulateByTable(Log, job, sm, env, options);
+                        var pop = new ImportPopulateByTable(Log, record, sm, env, options);
                         foreach (var tp in ImportTableExcelProvider.CreateProviders(fn))
                             pop.PopulateBy(tp);
                     }
@@ -613,13 +367,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
 
                 if (!success && ticket?.ScriptMode != true)
-                    fop?.MessageBoxFlyoutShow(
-                        "Some error occured while importing the table. Please refer to the log messages.",
-                        "Error", AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                    Log?.Error(
+                        "Table import: Some error occured while importing the table. " +
+                        "Please refer to the log messages.");
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "When exporting table, an error occurred");
+                Log?.Error(ex, "When exporting table, an error occurred");
             }
 
         }

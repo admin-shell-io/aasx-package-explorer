@@ -40,8 +40,11 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+//using NPOI.HSSF.Record;
+//using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Crypto;
 using Org.Webpki.JsonCanonicalizer;
+// using static System.Net.WebRequestMethods;
 using static AasxFormatCst.CstPropertyRecord;
 using static AasxToolkit.Cli;
 using static QRCoder.PayloadGenerator;
@@ -187,8 +190,20 @@ namespace AasxPackageExplorer
                         help: "Import BAMM RDF into AASX.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "BAMM file with RDF data."))
-                    .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel ..")
-                    .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table .."))
+                    .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel ..",
+                            help: "Import sets of time series values from an table in common format.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Format", "Format to be 'Excel'.")
+                                .Add("Record", "Record data", hidden: true))
+                    .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table ..",
+                            help: "Import sets of SubmodelElements from table datat in multiple common formats.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("File", "Filename and path of file to imported.")
+                                .Add("Preset", "Name of preset to load.")
+                                .Add("Format", "Format to be either " +
+                                        "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                                .Add("Record", "Record data", hidden: true)))
                 .AddMenu(header: "Export ..", childs: (new AasxMenu())
                     .AddWpf(name: "ExportAML", header: "Export AutomationML ..",
                         help: "Export AML file with AAS entities from AAS environment.",
@@ -227,8 +242,21 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("Machine", "Designation of the machine/ equipment.")
                             .Add("Model", "Model type, either 'Physical' or 'Signal'."))
-                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table ..")
-                    .AddWpf(name: "ExportUml", header: "Export SubmodelElements as UML .."))
+                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table ..", 
+                        help: "Export table(s) for sets of SubmodelElements in multiple common formats.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Preset", "Name of preset to load.")
+                            .Add("Format", "Format to be either " +
+                                    "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
+                            .Add("Record", "Record data", hidden: true))
+                    .AddWpf(name: "ExportUml", header: "Export SubmodelElements as UML ..",
+                        help: "Export UML of SubmodelElements in multiple common formats.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "Filename and path of file to exported.")
+                            .Add("Preset", "Name of preset to load.")
+                            .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
+                            .Add("Record", "Record data", hidden: true)))
                 .AddSeparator()
                 .AddMenu(header: "Server ..", childs: (new AasxMenu())
                     .AddWpf(name: "ServerRest", header: "Serve AAS as REST ..", inputGesture: "Shift+F6")
@@ -309,16 +337,6 @@ namespace AasxPackageExplorer
 
             for (int i = 0; i < 9; i++)
                 menu.AddHotkey(name: $"LaunchScript{i}", gesture: $"Ctrl+Shift+{i}");
-
-            //
-            // more details to single items
-            //
-
-            menu.FindName("ExportTable")?
-                .Set(AasxMenuArgReqInfo.SubmodelRef, new AasxMenuListOfArgDefs()
-                    .Add("Preset", "Name of table preset as given in options.")
-                    .Add("Format", "Format to export to (e.g. \"Excel\").")
-                    .Add("Target", "Target filename including directory and extension."));
 
             //
             // End
@@ -1120,16 +1138,16 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "exporttable")
-                CommandBinding_ExportImportTableUml(ticket, import: false);
+                CommandBinding_ExportImportTableUml(cmd, ticket, import: false);
 
             if (cmd == "importtable")
-                CommandBinding_ExportImportTableUml(import: true);
+                CommandBinding_ExportImportTableUml(cmd, ticket, import: true);
 
             if (cmd == "exportuml")
-                CommandBinding_ExportImportTableUml(exportUml: true);
+                CommandBinding_ExportImportTableUml(cmd, ticket, exportUml: true);
 
             if (cmd == "importtimeseries")
-                CommandBinding_ExportImportTableUml(importTimeSeries: true);
+                CommandBinding_ExportImportTableUml(cmd, ticket, importTimeSeries: true);
 
             if (cmd == "serverpluginemptysample")
                 CommandBinding_ExecutePluginServer(
@@ -2751,56 +2769,213 @@ namespace AasxPackageExplorer
         }
 
         public void CommandBinding_ExportImportTableUml(
-            AasxMenuActionTicket ticket = null,
+            string cmd,
+            AasxMenuActionTicket ticket,
             bool import = false, bool exportUml = false, bool importTimeSeries = false)
         {
-            // trivial things
-            if (!_packageCentral.MainAvailable)
-            {
-                MessageBoxFlyoutShow(
-                    "An AASX package needs to be open", "Error",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                return;
-            }
+            // start
+            ticket?.StartExec();
 
-            // a SubmodelRef shall be exported/ imported
-            VisualElementSubmodelRef ve1 = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
-                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
-
-            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            // help (called later)
+            Action callHelp = () =>
             {
-                MessageBoxFlyoutShow(
-                    "No valid Submodel selected for exporting/ importing.", "Export table/ UML/ time series",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-
-            // check, if required plugin can be found
-            var pluginName = "AasxPluginExportTable";
-            var actionName = (!import) ? "export-submodel" : "import-submodel";
-            if (exportUml)
-                actionName = "export-uml";
-            if (importTimeSeries)
-                actionName = "import-time-series";
-            var pi = Plugins.FindPluginInstance(pluginName);
-            if (pi == null || !pi.HasAction(actionName))
-            {
-                var res = MessageBoxFlyoutShow(
-                        $"This function requires a binary plug-in file named '{pluginName}', " +
-                        $"which needs to be added to the command line, with an action named '{actionName}'. " +
-                        $"Press 'OK' to show help page on GitHub.",
-                        "Plug-in not present",
-                        AnyUiMessageBoxButton.OKCancel, AnyUiMessageBoxImage.Hand);
-                if (res == AnyUiMessageBoxResult.OK)
+                try
                 {
-                    ShowHelp();
+                    BrowserDisplayLocalFile(
+                        "https://github.com/admin-shell-io/aasx-package-explorer/" +
+                        "tree/master/src/AasxPluginExportTable/help",
+                        System.Net.Mime.MediaTypeNames.Text.Html,
+                        preferInternal: true);
                 }
-                return;
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex,
+                        $"Import/Export: While displaying html-based help.");
+                }
+            };
+
+            if (cmd == "exporttable" || cmd == "importtable")
+            {
+                if (ticket?.ScriptMode != true)
+                {
+                    // interactive
+                    // handle the export dialogue
+                    var uc = new ExportTableFlyout((cmd == "exporttable")
+                        ? "Export SubmodelElements as Table"
+                        : "Import SubmodelElements from Table");
+                    uc.Presets = _logic?.GetImportExportTablePreset().Item1;
+
+                    StartFlyoverModal(uc);
+
+                    if (uc.CloseForHelp)
+                    {
+                        callHelp?.Invoke();
+                        return;
+                    }
+
+                    if (uc.Result == null)
+                        return;
+
+                    // have a result
+                    var record = uc.Result;
+
+                    // be a little bit specific
+                    var dlgTitle = "Select text file to be exported";
+                    var dlgFileName = "";
+                    var dlgFilter = "";
+
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.TSF)
+                    {
+                        dlgFileName = "new.txt";
+                        dlgFilter =
+                            "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+                    }
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.LaTex)
+                    {
+                        dlgFileName = "new.tex";
+                        dlgFilter = "LaTex file (*.tex)|*.tex|All files (*.*)|*.*";
+                    }
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
+                    {
+                        dlgFileName = "new.xlsx";
+                        dlgFilter = "Microsoft Excel (*.xlsx)|*.xlsx|All files (*.*)|*.*";
+                    }
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
+                    {
+                        dlgFileName = "new.docx";
+                        dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
+                    }
+
+                    // store
+                    ticket["Record"] = record;
+
+                    // ask now for a filename
+                    if (!MenuSelectSaveFilenameToTicket(
+                        ticket, "File",
+                        dlgTitle,
+                        dlgFileName,
+                        dlgFilter,
+                        "Import/ export table: No valid filename."))
+                        return;
+                }
+
+                // pass on
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
+                }
             }
 
-            // try activate plugin
-            pi.InvokeAction(actionName, this, ve1.theEnv, ve1.theSubmodel, ticket);
+            if (cmd == "exportuml")
+            {
+                bool copyLater = false;
+                if (ticket?.ScriptMode != true)
+                {
+                    // interactive
+                    // handle the export dialogue
+                    var uc = new ExportUmlFlyout();
+                    uc.Result = _logic?.GetImportExportTablePreset().Item2 ?? new ExportUmlRecord();
+
+                    StartFlyoverModal(uc);
+
+                    if (uc.Result == null)
+                        return;
+
+                    // have a result
+                    var result = uc.Result;
+                    copyLater = result.CopyToPasteBuffer;
+
+                    // store
+                    ticket["Record"] = result;
+
+                    // ask now for a filename
+                    if (!MenuSelectSaveFilenameToTicket(
+                        ticket, "File",
+                        "Select file for UML export ..",
+                        "new.uml",
+                        "PlantUML text file (*.uml)|*.uml|All files (*.*)|*.*",
+                        "Import/ export UML: No valid filename."))
+                        return;
+                }
+
+                // pass on
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "Import/export table: passing on.");
+                }
+
+                // copy?
+                if (copyLater)
+                    try
+                    {
+                        var lines = File.ReadAllText(ticket["File"] as string);
+                        Clipboard.SetData(DataFormats.Text, lines);
+                        Log.Singleton.Info("Export UML data copied to paste buffer.");
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+            }
+
+            if (cmd == "importtimeseries")
+            {
+                if (ticket?.ScriptMode != true)
+                {
+                    // interactive
+                    // handle the export dialogue
+                    var uc = new ImportTimeSeriesFlyout();
+                    uc.Result = _logic?.GetImportExportTablePreset().Item3 ?? new ImportTimeSeriesRecord();
+
+                    StartFlyoverModal(uc);
+
+                    if (uc.Result == null)
+                        return;
+
+                    // have a result
+                    var result = uc.Result;
+
+                    // store
+                    ticket["Record"] = result;
+
+                    // be a little bit specific
+                    var dlgTitle = "Select file for time series import ..";
+                    var dlgFilter = "All files (*.*)|*.*";
+
+                    if (result.Format == (int)ImportTimeSeriesRecord.FormatEnum.Excel)
+                    {
+                        dlgFilter =
+                            "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
+                    }
+                    
+                    // ask now for a filename
+                    if (!MenuSelectOpenFilenameToTicket(
+                        ticket, "File",
+                        dlgTitle,
+                        null,
+                        dlgFilter,
+                        "Import time series: No valid filename."))
+                        return;
+                }
+
+                // pass on
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
+                }
+            }         
 
             // redraw
             CommandExecution_RedrawAll();

@@ -58,6 +58,11 @@ namespace AasxIntegrationBase
         /// command line.
         /// </summary>
         public string Help = "";
+
+        /// <summary>
+        /// If true, not shown in user views.
+        /// </summary>
+        public bool Hidden = false;
     }
 
     /// <summary>
@@ -67,9 +72,9 @@ namespace AasxIntegrationBase
     public class AasxMenuListOfArgDefs : List<AasxMenuArgDef>
     {
         public AasxMenuListOfArgDefs Add(
-            string name, string help)
+            string name, string help, bool hidden = false)
         {
-            this.Add(new AasxMenuArgDef() { Name = name, Help = help }); 
+            this.Add(new AasxMenuArgDef() { Name = name, Help = help, Hidden = hidden }); 
             return this;
         }
 

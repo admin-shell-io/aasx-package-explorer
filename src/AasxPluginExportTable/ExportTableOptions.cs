@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasxIntegrationBase;
 using AdminShellNS;
 
 namespace AasxPluginExportTable
@@ -20,9 +21,11 @@ namespace AasxPluginExportTable
     {
         public string TemplateIdConceptDescription = "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
-        public Uml.ExportUmlOptions UmlExport = null;
+        public ExportUmlRecord UmlExport = null;
 
-        public List<ExportTableRecord> Presets = new List<ExportTableRecord>();
+        public ImportTimeSeriesRecord TimeSeriesImport = null;
+
+        public List<ImportExportTableRecord> Presets = new List<ImportExportTableRecord>();
 
         /// <summary>
         /// Create a set of minimal options
