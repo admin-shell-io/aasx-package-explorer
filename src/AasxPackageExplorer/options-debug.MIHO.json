@@ -287,9 +287,9 @@
       "Lines": [
         "Select(\"Submodel\", \"First\");",
         "Sleep(1000);",
-        "Tool(\"ExportTable\", ",
-        "  \"Preset\", \"Submodel template spec - 1 rows\", ",
-        "  \"Format\", \"Excel\", \"Target\", \"Test.xlsx\");",
+        "Tool(\"ImportTimeSeries\", ",
+        "  \"Format\", \"Excel\", \"File\", \"Test.xlsx\", ",
+        "  \"ColData\", \"3\" );",
         "Sleep(1000);",
         "WriteLine(\"Done\");"
       ]

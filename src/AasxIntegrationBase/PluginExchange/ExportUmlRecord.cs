@@ -36,6 +36,7 @@ namespace AasxIntegrationBase
 
         public ExportFormat Format = ExportFormat.Xmi21;
 
+        [AasxMenuArgument(help: "If greater or equal zero, limits the number of characters for inital values.")]
         public int LimitInitialValue = 15;
 
         public bool CopyToPasteBuffer = false;

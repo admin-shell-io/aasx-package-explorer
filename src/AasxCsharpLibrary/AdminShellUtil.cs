@@ -551,6 +551,82 @@ namespace AdminShellNS
         }
 
         //
+        // Reflection
+        //
+
+        public static void SetFieldLazyValue(FieldInfo f, object obj, object value)
+        {
+            // access
+            if (f == null || obj == null)
+                return;
+
+            switch (Type.GetTypeCode(f.FieldType))
+            {
+                case TypeCode.String:
+                    f.SetValue(obj, "" + value);
+                    break;
+
+                case TypeCode.Byte:
+                    if (Byte.TryParse("" + value, out var ui8))
+                        f.SetValue(obj, ui8);
+                    break;
+
+                case TypeCode.SByte:
+                    if (SByte.TryParse("" + value, out var i8))
+                        f.SetValue(obj, i8);
+                    break;
+
+                case TypeCode.Int16:
+                    if (Int16.TryParse("" + value, out var i16))
+                        f.SetValue(obj, i16);
+                    break;
+
+                case TypeCode.Int32:
+                    if (Int32.TryParse("" + value, out var i32))
+                        f.SetValue(obj, i32);
+                    break;
+
+                case TypeCode.Int64:
+                    if (Int64.TryParse("" + value, out var i64))
+                        f.SetValue(obj, i64);
+                    break;
+
+                case TypeCode.UInt16:
+                    if (UInt16.TryParse("" + value, out var ui16))
+                        f.SetValue(obj, ui16);
+                    break;
+
+                case TypeCode.UInt32:
+                    if (UInt32.TryParse("" + value, out var ui32))
+                        f.SetValue(obj, ui32);
+                    break;
+
+                case TypeCode.UInt64:
+                    if (UInt64.TryParse("" + value, out var ui64))
+                        f.SetValue(obj, ui64);
+                    break;
+
+                case TypeCode.Single:
+                    if (Single.TryParse("" + value, out var sgl))
+                        f.SetValue(obj, sgl);
+                    break;
+
+                case TypeCode.Double:
+                    if (Double.TryParse("" + value, out var dbl))
+                        f.SetValue(obj, dbl);
+                    break;
+
+                case TypeCode.Boolean:
+                    var isFalse = value == null
+                        || (value is int vi && vi == 0)
+                        || (value is string vs && vs == "")
+                        || (value is bool vb && !vb);
+                    f.SetValue(obj, isFalse);
+                    break;
+            }
+        }
+
+        //
         // Base 64
         //
 

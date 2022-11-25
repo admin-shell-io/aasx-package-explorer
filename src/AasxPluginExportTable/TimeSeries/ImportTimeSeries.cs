@@ -194,7 +194,7 @@ namespace AasxPluginExportTable.TimeSeries
             var rowI = options.RowData - 1;
             while (true)
             {
-                // tra gather delta
+                // try gather delta
                 double ofs = 0.0;
                 if (options.ColTime > 0)
                 {

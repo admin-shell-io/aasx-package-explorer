@@ -3076,6 +3076,8 @@ namespace AasxPackageExplorer
                     if (mi.ArgDefs != null)
                         foreach (var ad in mi.ArgDefs)
                         {
+                            if (ad.Hidden)
+                                continue;
                             html.Append(String.Format(rowfmtTCAD,
                                 (color) ? "#ffffe0" : "#fffff0",
                                 "" + ad.Name,

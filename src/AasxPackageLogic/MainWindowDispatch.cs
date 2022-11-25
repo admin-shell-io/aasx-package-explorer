@@ -31,6 +31,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace AasxPackageLogic
@@ -732,6 +733,10 @@ namespace AasxPackageLogic
                 if (record == null)
                     record = new ExportUmlRecord();
 
+                // arguments by reflection
+                ticket?.ArgValue?.PopulateObjectFromArgs(record);
+
+                // further settings
                 if (ticket["Format"] is string fmt)
                     for (int i = 0; i < ExportUmlRecord.FormatNames.Length; i++)
                         if (ExportUmlRecord.FormatNames[i].ToLower()
@@ -777,6 +782,10 @@ namespace AasxPackageLogic
                 if (record == null)
                     record = new ImportTimeSeriesRecord();
 
+                // arguments by reflection
+                ticket?.ArgValue?.PopulateObjectFromArgs(record);
+
+                // further settings
                 if (ticket["Format"] is string fmt)
                     for (int i = 0; i < ImportTimeSeriesRecord.FormatNames.Length; i++)
                         if (ImportTimeSeriesRecord.FormatNames[i].ToLower()
@@ -804,23 +813,165 @@ namespace AasxPackageLogic
                     LogErrorToTicket(ticket, ex, "When importing time series, an error occurred");
                 }
             }
+
+            if (cmd == "newsubmodelfromplugin")
+            {
+                // arguments
+                if (ticket.Env == null
+                || ticket.AAS == null
+                || ticket.Submodel != null)
+                {
+                    LogErrorToTicket(ticket,
+                        "New Submodel from plugin: No valid AAS-Env, AAS selected or individual " +
+                        "Submodel selected!");
+                    return;
+                }
+
+                // try to get tuple?
+                var record = ticket["Record"] as Tuple<Plugins.PluginInstance, string>;
+
+                // or search?
+                if (record == null && ticket["Name"] is string name && name.HasContent())
+                {
+                    foreach (var rec in GetPotentialGeneratedSubmodels())
+                        if (rec.Item2?.ToLower().Contains(name.ToLower()) == true)
+                        {
+                            record = rec;
+                            break;
+                        }
+                }
+
+                // found?
+                if (record == null || record.Item1 == null
+                    || record.Item2?.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket, "New Submodel from plugin: " +
+                        "No name or selection given to which Submodel shall be generated.");
+                    return;
+                }
+
+                // try to invoke plugin to get submodel
+                AdminShell.Submodel smres = null;
+                AdminShell.ListOfConceptDescriptions cdres = null;
+                try
+                {
+                    var res = record.Item1.InvokeAction("generate-submodel", record.Item2) as AasxPluginResultBase;
+                    if (res is AasxPluginResultBaseObject rbo)
+                    {
+                        smres = rbo.obj as AdminShell.Submodel;
+                    }
+                    if (res is AasxPluginResultGenerateSubmodel rgsm)
+                    {
+                        smres = rgsm.sm;
+                        cdres = rgsm.cds;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+                // something
+                if (smres == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "New Submodel from plugin: Error accessing plugins. Aborting.");
+                    return;
+                }
+
+                try
+                {
+                    // Submodel needs an identification
+                    smres.identification = new AdminShell.Identification(AdminShell.Identification.IRI, "");
+                    if (smres.kind == null || smres.kind.IsInstance)
+                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelInstance);
+                    else
+                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            Options.Curr.TemplateIdSubmodelTemplate);
+
+                    // add Submodel
+                    var smref = new AdminShell.SubmodelRef(smres.GetReference());
+                    ticket.AAS.AddSubmodelRef(smref);
+                    ticket.Env.Submodels.Add(smres);
+
+                    // add ConceptDescriptions?
+                    if (cdres != null && cdres.Count > 0)
+                    {
+                        int nr = 0;
+                        foreach (var cd in cdres)
+                        {
+                            if (cd == null || cd.identification == null)
+                                continue;
+                            var cdFound = ticket.Env.FindConceptDescription(cd.identification);
+                            if (cdFound != null)
+                                continue;
+                            // ok, add
+                            var newCd = new AdminShell.ConceptDescription(cd);
+                            ticket.Env.ConceptDescriptions.Add(newCd);
+                            nr++;
+                        }
+                        Log.Singleton.Info(
+                            $"added {nr} ConceptDescritions for Submodel {smres.idShort}.");
+                    }
+
+                    // give data bickt
+                    ticket["SmRef"] = smref;
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                }
+            }
         }
 
         public Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord> 
             GetImportExportTablePreset()
         {
             // try to get presets from the plugin
-            var pluginName = "AasxPluginExportTable";
-            var pi = Plugins.FindPluginInstance(pluginName);
-            var presets = (pi?.InvokeAction("get-presets") as AasxIntegrationBase.AasxPluginResultBaseObject)?
-                    .obj as object[];
-            if (presets != null && presets.Length >= 3)
-                return new Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>(
-                    presets[0] as List<ImportExportTableRecord>,
-                    presets[1] as ExportUmlRecord,
-                    presets[2] as ImportTimeSeriesRecord
-                );
+            try
+            {
+                var pluginName = "AasxPluginExportTable";
+                var pi = Plugins.FindPluginInstance(pluginName);
+                var presets = (pi?.InvokeAction("get-presets") as AasxIntegrationBase.AasxPluginResultBaseObject)?
+                        .obj as object[];
+                if (presets != null && presets.Length >= 3)
+                    return new Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>(
+                        presets[0] as List<ImportExportTableRecord>,
+                        presets[1] as ExportUmlRecord,
+                        presets[2] as ImportTimeSeriesRecord
+                    );
+            } catch (Exception ex)
+            {
+                LogInternally.That.SilentlyIgnoredError(ex);
+            }
             return null;
+        }
+
+        public List<Tuple<Plugins.PluginInstance, string>>
+            GetPotentialGeneratedSubmodels()
+        {
+            var res = new List<Tuple<Plugins.PluginInstance, string>>();
+            foreach (var lpi in Plugins.LoadedPlugins.Values)
+            {
+                if (lpi.HasAction("get-list-new-submodel"))
+                    try
+                    {
+                        var lpires = lpi.InvokeAction("get-list-new-submodel") as AasxPluginResultBaseObject;
+                        if (lpires != null)
+                        {
+                            var lpireslist = lpires.obj as List<string>;
+                            if (lpireslist != null)
+                                foreach (var smname in lpireslist)
+                                    res.Add(new Tuple<Plugins.PluginInstance, string>(lpi, smname));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogInternally.That.SilentlyIgnoredError(ex);
+                    }
+            }
+            return res;
         }
 
     }

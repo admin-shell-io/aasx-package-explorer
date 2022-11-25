@@ -10,10 +10,15 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AdminShellNS;
 using AnyUi;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using static AdminShellNS.AdminShellV20.Referable;
 
 namespace AasxIntegrationBase
 {
@@ -66,6 +71,22 @@ namespace AasxIntegrationBase
     }
 
     /// <summary>
+    /// This attribute indicates, that the field / property can be passed by an argument
+    /// of an AASX menu item ticket / command.
+    /// </summary>
+    [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property, AllowMultiple = true)]
+    public class AasxMenuArgument : System.Attribute
+    {
+        public string Name = "";
+        public string Help = "";
+        public AasxMenuArgument(string name = "", string help = "")
+        {
+            this.Name = name;
+            Help = help;
+        }
+    }
+
+    /// <summary>
     /// List of such argument definitions.
     /// For future extension.
     /// </summary>
@@ -83,6 +104,67 @@ namespace AasxIntegrationBase
             return this
                 .FindAll((arg) => arg?.Name?.Trim().ToLower() == name?.Trim().ToLower())
                 .FirstOrDefault();
+        }
+
+        public AasxMenuListOfArgDefs AddFromReflection(object o)
+        {
+            // access
+            if (o == null)
+                return this;
+
+            // find fields for this object
+            var t = o.GetType();
+            var l = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var f in l)
+            {
+                var a = f.GetCustomAttribute<AasxMenuArgument>();
+                if (a != null)
+                {
+                    var name = f.Name;
+                    if (!name.HasContent())
+                        name = t.Name;
+                    this.Add(new AasxMenuArgDef() { Name = "" + name, Help = "" + a.Help });
+                }
+            }
+            // OK
+            return this;
+        }
+    }
+
+    /// <summary>
+    /// Holds arguments for a AASX menu item.
+    /// </summary>
+    public class AasxMenuArgDictionary : Dictionary<AasxMenuArgDef, object>
+    {
+        public bool PopulateObjectFromArgs(object o)
+        {
+            // access
+            if (o == null)
+                return false;
+
+            // find fields for this object
+            var t = o.GetType();
+            var l = t.GetFields(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var f in l)
+            {
+                var a = f.GetCustomAttribute<AasxMenuArgument>();
+                if (a != null)
+                {
+                    var name = f.Name;
+                    if (!name.HasContent())
+                        name = t.Name;
+                    
+                    foreach (var ad in this)
+                        if (ad.Key?.Name?.Trim().ToLower() == name.ToLower())
+                        {
+                            AdminShellUtil.SetFieldLazyValue(f, o, ad.Value);
+                            break;
+                        }
+                }
+            }
+
+            // OK
+            return true;
         }
     }
 
@@ -448,7 +530,7 @@ namespace AasxIntegrationBase
         /// and assign values to it. The invoked action needs to check for value
         /// types.
         /// </summary>
-        public Dictionary<AasxMenuArgDef, object> ArgValue = null;
+        public AasxMenuArgDictionary ArgValue = null;
 
         /// <summary>
         /// Indicates a success or the availablity of an result.
@@ -551,7 +633,7 @@ namespace AasxIntegrationBase
 
                 // no, add
                 if (ArgValue == null)
-                    ArgValue = new Dictionary<AasxMenuArgDef, object>();
+                    ArgValue = new AasxMenuArgDictionary();
                 ArgValue[foundAd] = value;
             }
         }

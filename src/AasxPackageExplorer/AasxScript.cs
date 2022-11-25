@@ -224,7 +224,7 @@ namespace AasxPackageExplorer
                 {
                     MenuItem = mi,
                     ScriptMode = true,
-                    ArgValue = new Dictionary<AasxMenuArgDef, object>()
+                    ArgValue = new AasxMenuArgDictionary()
                 };
 
                 // go thru the remaining arguments and find arg names and values

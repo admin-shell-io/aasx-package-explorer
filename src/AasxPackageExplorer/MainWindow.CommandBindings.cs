@@ -40,6 +40,7 @@ using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+// using NPOI.SS.Formula.Functions;
 //using NPOI.HSSF.Record;
 //using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Crypto;
@@ -195,7 +196,8 @@ namespace AasxPackageExplorer
                             args: new AasxMenuListOfArgDefs()
                                 .Add("File", "Filename and path of file to imported.")
                                 .Add("Format", "Format to be 'Excel'.")
-                                .Add("Record", "Record data", hidden: true))
+                                .Add("Record", "Record data", hidden: true)
+                                .AddFromReflection(new ImportTimeSeriesRecord()))
                     .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table ..",
                             help: "Import sets of SubmodelElements from table datat in multiple common formats.",
                             args: new AasxMenuListOfArgDefs()
@@ -254,9 +256,9 @@ namespace AasxPackageExplorer
                         help: "Export UML of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
-                            .Add("Preset", "Name of preset to load.")
                             .Add("Format", "Format to be either 'XMI v1.1', 'XML v2.1', 'PlantUML'.")
-                            .Add("Record", "Record data", hidden: true)))
+                            .Add("Record", "Record data", hidden: true)
+                            .AddFromReflection(new ExportUmlRecord())))
                 .AddSeparator()
                 .AddMenu(header: "Server ..", childs: (new AasxMenu())
                     .AddWpf(name: "ServerRest", header: "Serve AAS as REST ..", inputGesture: "Shift+F6")
@@ -287,7 +289,12 @@ namespace AasxPackageExplorer
                     .AddWpf(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
                 .AddSeparator()
                 .AddMenu(header: "Plugins ..", childs: (new AasxMenu())
-                    .AddWpf(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M"))
+                    .AddWpf(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M",
+                            help: "Creates a new Submodel based on defintions provided by plugin.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("Name", "Name of the Submodel (partially)")
+                                .Add("Record", "Record data", hidden: true)
+                                .Add("SmRef", "Return: Submodel generated", hidden: true)))
                 .AddSeparator()
                 .AddWpf(name: "ConvertElement", header: "Convert ..")
                 .AddSeparator()
@@ -1162,7 +1169,7 @@ namespace AasxPackageExplorer
                     "AasxPluginMqttServer", "MQTTServer-start", "server-stop", "Plug-in for MQTT Server for AASX.");
 
             if (cmd == "newsubmodelfromplugin")
-                CommandBinding_NewSubmodelFromPlugin();
+                CommandBinding_NewSubmodelFromPlugin(cmd, ticket);
 
             if (cmd == "convertelement")
                 CommandBinding_ConvertElement();
@@ -3033,164 +3040,58 @@ namespace AasxPackageExplorer
                 catch (Exception ex)
                 {
                     _logic?.LogErrorToTicket(ticket, ex,
-                        "When exporting \"Thing Description (TD), an error occurred");
+                        "When exporting Thing Description (TD), an error occurred");
                 }
             }
         }
 
-        public void CommandBinding_NewSubmodelFromPlugin()
+        public void CommandBinding_NewSubmodelFromPlugin(
+            string cmd,
+            AasxMenuActionTicket ticket)
         {
-            // trivial things
-            if (!_packageCentral.MainStorable)
-            {
-                MessageBoxFlyoutShow(
-                    "An AASX package needs to be open for storage", "Error"
-                    , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                return;
-            }
-
-            // an AAS needs to be selected
-            VisualElementAdminShell ve1 = null;
-            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAdminShell)
-                ve1 = DisplayElements.SelectedItem as VisualElementAdminShell;
-
-            if (ve1 == null || ve1.theAas == null || ve1.theEnv == null)
-            {
-                MessageBoxFlyoutShow(
-                    "No valid AAS selected for creating a new Submodel.", "New Submodel from plugins",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
-            }
-
             // create a list of plugins, which are capable of generating Submodels
             var listOfSm = new List<AnyUiDialogueListItem>();
-            foreach (var lpi in Plugins.LoadedPlugins.Values)
-            {
-                if (lpi.HasAction("get-list-new-submodel"))
-                    try
-                    {
-                        var lpires = lpi.InvokeAction("get-list-new-submodel") as AasxPluginResultBaseObject;
-                        if (lpires != null)
-                        {
-                            var lpireslist = lpires.obj as List<string>;
-                            if (lpireslist != null)
-                                foreach (var smname in lpireslist)
-                                    listOfSm.Add(new AnyUiDialogueListItem(
-                                        "" + lpi.name + " | " + "" + smname,
-                                        new Tuple<Plugins.PluginInstance, string>(lpi, smname)
-                                        ));
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                    }
-            }
+            var list = _logic?.GetPotentialGeneratedSubmodels();
+            if (list != null)
+                foreach (var rec in list)
+                    listOfSm.Add(new AnyUiDialogueListItem(
+                        "" + rec.Item1.name + " | " + "" + rec.Item2, rec));
 
             // could be nothing
             if (listOfSm.Count < 1)
             {
-                MessageBoxFlyoutShow(
-                    "No plugins generating Submodels found. Aborting.", "New Submodel from plugins",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                _logic?.LogErrorToTicket(ticket, "New Submodel from plugin: No Submodels available " +
+                    "to be generated by plugins.");
                 return;
             }
 
-            // prompt for this list
-            var uc = new SelectFromListFlyout();
-            uc.DiaData.Caption = "Select Plug-in and Submodel to be generated ..";
-            uc.DiaData.ListOfItems = listOfSm;
-            this.StartFlyoverModal(uc);
-            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
-                uc.DiaData.ResultItem.Tag is Tuple<Plugins.PluginInstance, string>)
+            // prompt if no name is given
+            if (ticket["Name"] == null)
             {
-                // get result arguments
-                var TagTuple = uc.DiaData.ResultItem.Tag as Tuple<Plugins.PluginInstance, string>;
-                var lpi = TagTuple?.Item1;
-                var smname = TagTuple?.Item2;
-                if (lpi == null || smname == null || smname.Length < 1)
-                {
-                    MessageBoxFlyoutShow(
-                        "Error accessing plugins. Aborting.", "New Submodel from plugins",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                var uc = new SelectFromListFlyout();
+                uc.DiaData.Caption = "Select Plug-in and Submodel to be generated ..";
+                uc.DiaData.ListOfItems = listOfSm;
+                this.StartFlyoverModal(uc);
+                if (uc.DiaData.ResultItem == null)
                     return;
-                }
-
-                // try to invoke plugin to get submodel
-                AdminShell.Submodel smres = null;
-                AdminShell.ListOfConceptDescriptions cdres = null;
-                try
-                {
-                    var res = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBase;
-                    if (res is AasxPluginResultBaseObject rbo)
-                    {
-                        smres = rbo.obj as AdminShell.Submodel;
-                    }
-                    if (res is AasxPluginResultGenerateSubmodel rgsm)
-                    {
-                        smres = rgsm.sm;
-                        cdres = rgsm.cds;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
-                }
-
-                // something
-                if (smres == null)
-                {
-                    MessageBoxFlyoutShow(
-                        "Error accessing plugins. Aborting.", "New Submodel from plugins",
-                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                    return;
-                }
-
-                try
-                {
-                    // Submodel needs an identification
-                    smres.identification = new AdminShell.Identification("IRI", "");
-                    if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
-                            Options.Curr.TemplateIdSubmodelInstance);
-                    else
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
-                            Options.Curr.TemplateIdSubmodelTemplate);
-
-                    // add Submodel
-                    var smref = new AdminShell.SubmodelRef(smres.GetReference());
-                    ve1.theAas.AddSubmodelRef(smref);
-                    _packageCentral.Main.AasEnv.Submodels.Add(smres);
-
-                    // add ConceptDescriptions?
-                    if (cdres != null && cdres.Count > 0)
-                    {
-                        int nr = 0;
-                        foreach (var cd in cdres)
-                        {
-                            if (cd == null || cd.identification == null)
-                                continue;
-                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
-                            if (cdFound != null)
-                                continue;
-                            // ok, add
-                            var newCd = new AdminShell.ConceptDescription(cd);
-                            ve1.theEnv.ConceptDescriptions.Add(newCd);
-                            nr++;
-                        }
-                        Log.Singleton.Info(
-                            $"added {nr} ConceptDescritions for Submodel {smres.idShort}.");
-                    }
-
-                    // redisplay
-                    // add to "normal" event quoue
-                    DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(smref));
-                }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "when adding Submodel to AAS");
-                }
+                ticket["Record"] = uc.DiaData.ResultItem.Tag;
             }
+
+            // do it
+            try
+            {
+                // delegate futher
+                _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+            }
+            catch (Exception ex)
+            {
+                _logic?.LogErrorToTicket(ticket, ex,
+                    "When generating Submodel from plugins, an error occurred");
+            }
+
+            // redisplay
+            // add to "normal" event quoue
+            DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(ticket["SmRef"]));
         }
 
         public void CommandBinding_ToolsFind(string cmd)
