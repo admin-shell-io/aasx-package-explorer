@@ -7,16 +7,25 @@ namespace AasxSchemaExport
     {
         public string ExportSchema(AdminShellV20.Submodel submodel)
         {
-            var root = new JObject();
+            var schema = new JObject();
 
-            root["$schema"] = "https://json-schema.org/draft/2019-09/schema";
-            root["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
-            root["type"] = "object";
-            root["unevaluatedProperties"] = false;
+            schema["$schema"] = "https://json-schema.org/draft/2019-09/schema";
+            schema["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
+            schema["type"] = "object";
+            schema["unevaluatedProperties"] = false;
 
-            root["$ref"] = "#/definitions/Root";
+            schema["$ref"] = "#/definitions/Root";
 
-            return root.ToString();
+            schema["definitions"] = JToken.Parse("{\"Root\": {}}");
+            schema["definitions"]["Root"] = JToken.Parse("{\"allOf\": []}");
+            var rootAllOfDef = schema["definitions"]["Root"]["allOf"] as JArray;
+            
+            rootAllOfDef.Insert(0, JToken.Parse("{\"$ref\": \"aas.json#/definitions/Submodel\" }"));
+
+
+
+
+            return schema.ToString();
 
         }
     }

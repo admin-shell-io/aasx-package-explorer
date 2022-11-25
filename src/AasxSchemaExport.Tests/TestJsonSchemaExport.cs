@@ -81,6 +81,20 @@ namespace AasxSchemaExport.Tests
             Assert.AreEqual(unevaluatedProperties.Value<bool>(), false);
         }
 
+        [Test]
+        public void Test_rootDef_should_reference_submodelDef()
+        {
+            var schema = this.ExportSchema();
+
+            var rootDefAllOf = schema["definitions"]["Root"]["allOf"] as JArray;
+
+            var refToSubmodelDef = rootDefAllOf.Where(item => 
+                item.SingleOrDefault() != null && 
+                item.SingleOrDefault()["$ref"].Value<string>() == "aas.json#/definitions/Submodel");
+
+            Assert.NotNull(refToSubmodelDef);
+        }
+
 
         private JObject ExportSchema()
         {
