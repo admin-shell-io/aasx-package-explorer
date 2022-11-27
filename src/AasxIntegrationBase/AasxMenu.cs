@@ -548,9 +548,14 @@ namespace AasxIntegrationBase
         //
 
         /// <summary>
-        /// Filled by the currently selected element.
+        /// Pair of main data and dereferenced main data view.
         /// </summary>
-        public AdminShell.IAasElement SelectedItem;
+        public object MainDataObject = null;
+
+        /// <summary>
+        /// Pair of main data and dereferenced main data view.
+        /// </summary>
+        public object DereferencedMainDataObject = null;
 
         /// <summary>
         /// Filled by the currently selected element.

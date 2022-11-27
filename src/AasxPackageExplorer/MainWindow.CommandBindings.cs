@@ -296,7 +296,12 @@ namespace AasxPackageExplorer
                                 .Add("Record", "Record data", hidden: true)
                                 .Add("SmRef", "Return: Submodel generated", hidden: true)))
                 .AddSeparator()
-                .AddWpf(name: "ConvertElement", header: "Convert ..")
+                .AddWpf(name: "ConvertElement", header: "Convert ..",
+                        help: "Asks plugins if these could make offers to convert the current elements and " +
+                            "subsequently converts the element.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("Name", "Name of the potential offer (partially)")
+                            .Add("Record", "Record data", hidden: true))
                 .AddSeparator()
                 .AddMenu(header: "Buffer ..", childs: (new AasxMenu())
                     .AddWpf(name: "BufferClear", header: "Clear internal paste buffer"))
@@ -405,6 +410,14 @@ namespace AasxPackageExplorer
             if (ticket == null)
                 return;
 
+            // basics
+            var ve = DisplayElements.SelectedItem;
+            if (ve != null)
+            {
+                ticket.MainDataObject = ve.GetMainDataObject();
+                ticket.DereferencedMainDataObject = ve.GetDereferencedMainDataObject();
+            }
+
             // set
             if (DisplayElements.SelectedItem is VisualElementEnvironmentItem veei)
             {
@@ -427,6 +440,7 @@ namespace AasxPackageExplorer
 
             if (DisplayElements.SelectedItem is VisualElementSubmodelRef vesmr)
             {
+                ticket.Package = vesmr.thePackage;
                 ticket.Env = vesmr.theEnv;
                 ticket.Submodel = vesmr.theSubmodel;
                 ticket.SubmodelRef = vesmr.theSubmodelRef;
@@ -434,12 +448,14 @@ namespace AasxPackageExplorer
             
             if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
             {
+                ticket.Package = _packageCentral?.Main;
                 ticket.Env = vesm.theEnv;
                 ticket.Submodel = vesm.theSubmodel;
             }
 
             if (DisplayElements.SelectedItem is VisualElementSubmodelElement vesme)
             {
+                ticket.Package = _packageCentral?.Main;
                 ticket.Env = vesme.theEnv;
                 ticket.SubmodelElement = vesme.theWrapper?.submodelElement;
             }
@@ -1172,10 +1188,10 @@ namespace AasxPackageExplorer
                 CommandBinding_NewSubmodelFromPlugin(cmd, ticket);
 
             if (cmd == "convertelement")
-                CommandBinding_ConvertElement();
+                CommandBinding_ConvertElement(cmd, ticket);
 
             if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward")
-                CommandBinding_ToolsFind(cmd);
+                CommandBinding_ToolsFind(cmd, ticket);
 
             if (cmd == "checkandfix")
                 CommandBinding_CheckAndFix();
@@ -2706,73 +2722,61 @@ namespace AasxPackageExplorer
             }
         }
 
-        public void CommandBinding_ConvertElement()
+        public void CommandBinding_ConvertElement(
+            string cmd,
+            AasxMenuActionTicket ticket)
         {
-            // trivial things
-            if (!_packageCentral.MainStorable)
-            {
-                MessageBoxFlyoutShow(
-                    "An AASX package needs to be open for storage", "Error",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                return;
-            }
-
-            // a Referable shall be exported
-            AdminShell.Referable rf = null;
-            object bo = null;
-            if (DisplayElements.SelectedItem != null)
-            {
-                bo = DisplayElements.SelectedItem.GetMainDataObject();
-                rf = DisplayElements.SelectedItem.GetDereferencedMainDataObject() as AdminShell.Referable;
-            }
-
+            // check
+            var rf = ticket.DereferencedMainDataObject as AdminShell.Referable;
             if (rf == null)
             {
-                MessageBoxFlyoutShow(
-                    "No valid Referable selected for conversion.", "Convert Referable",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                _logic?.LogErrorToTicket(ticket,
+                    "Convert Referable: No valid Referable selected for conversion.");
                 return;
             }
 
-            // try to get offers
-            var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
-            if (offers == null || offers.Count < 1)
+            // try to get offers?
+            if ((ticket["Name"] as string)?.HasContent() != true)
             {
-                MessageBoxFlyoutShow(
-                    "No valid conversion offers found for this Referable. Aborting.", "Convert Referable",
-                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
-                return;
+                var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
+                if (offers == null || offers.Count < 1)
+                {
+                    _logic?.LogErrorToTicket(ticket,
+                        "Convert Referable: No valid conversion offers found for this Referable. Aborting.");
+                    return;
+                }
+
+                // convert these to list items
+                var fol = new List<AnyUiDialogueListItem>();
+                foreach (var o in offers)
+                    fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
+
+                // show a list
+                // prompt for this list
+                var uc = new SelectFromListFlyout();
+                uc.DiaData.Caption = "Select Conversion action to be executed ..";
+                uc.DiaData.ListOfItems = fol;
+                this.StartFlyoverModal(uc);
+                if (uc.DiaData.ResultItem != null)
+                    ticket["Record"] = uc.DiaData.ResultItem.Tag;
             }
-
-            // convert these to list items
-            var fol = new List<AnyUiDialogueListItem>();
-            foreach (var o in offers)
-                fol.Add(new AnyUiDialogueListItem(o.OfferDisplay, o));
-
-            // show a list
-            // prompt for this list
-            var uc = new SelectFromListFlyout();
-            uc.DiaData.Caption = "Select Conversion action to be executed ..";
-            uc.DiaData.ListOfItems = fol;
-            this.StartFlyoverModal(uc);
-            if (uc.DiaData.ResultItem != null && uc.DiaData.ResultItem.Tag != null &&
-                uc.DiaData.ResultItem.Tag is AasxPredefinedConcepts.Convert.ConvertOfferBase)
-                try
+                    
+            // pass on
+            try
+            {
                 {
-                    {
-                        var offer = uc.DiaData.ResultItem.Tag as AasxPredefinedConcepts.Convert.ConvertOfferBase;
-                        offer?.Provider?.ExecuteOffer(
-                            _packageCentral.Main, rf, offer, deleteOldCDs: true, addNewCDs: true);
-                    }
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
                 }
-                catch (Exception ex)
-                {
-                    Log.Singleton.Error(ex, "Executing user defined conversion");
-                }
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "Executing user defined conversion");
+            }
 
             // redisplay
             // add to "normal" event quoue
-            DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(bo));
+            DispEditEntityPanel.AddWishForOutsideAction(
+                new AnyUiLambdaActionRedrawAllElements(ticket.MainDataObject));
         }
 
         public void CommandBinding_ExportImportTableUml(
@@ -3094,7 +3098,9 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(ticket["SmRef"]));
         }
 
-        public void CommandBinding_ToolsFind(string cmd)
+        public void CommandBinding_ToolsFind(
+            string cmd,
+            AasxMenuActionTicket ticket)
         {
             // access
             if (ToolsGrid == null || TabControlTools == null || TabItemToolsFind == null || ToolFindReplace == null)
@@ -3115,10 +3121,10 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "toolsfindforward")
-                ToolFindReplace.FindForward();
+                ToolFindReplace.FindForward(ticket);
 
             if (cmd == "toolsfindbackward")
-                ToolFindReplace.FindBackward();
+                ToolFindReplace.FindBackward(ticket);
         }
 
         public void CommandBinding_ExportOPCUANodeSet(

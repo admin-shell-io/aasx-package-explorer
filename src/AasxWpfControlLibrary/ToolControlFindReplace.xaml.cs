@@ -11,6 +11,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
 
@@ -72,13 +73,13 @@ namespace AasxPackageExplorer
             ComboBoxToolsFindText.Focus();
         }
 
-        public void FindForward()
+        public void FindForward(AasxMenuActionTicket ticket)
         {
             // simulate
             ButtonToolsFind_Click(ButtonToolsFindForward, null);
         }
 
-        public void FindBackward()
+        public void FindBackward(AasxMenuActionTicket ticket)
         {
             // simulate
             ButtonToolsFind_Click(ButtonToolsFindBackward, null);
@@ -201,6 +202,11 @@ namespace AasxPackageExplorer
                 SetFindInfo(1 + CurrentResultIndex, TheSearchResults.foundResults.Count, sri);
                 ResultSelected(sri);
             }
+        }
+
+        private void ButtonToolsFind_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)

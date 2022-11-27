@@ -13,6 +13,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using AasxIntegrationBase;
 using AasxPackageExplorer;
 using AasxPackageLogic.PackageCentral;
+using AasxPredefinedConcepts.Convert;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
@@ -921,6 +922,52 @@ namespace AasxPackageLogic
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                }
+            }
+            
+            if (cmd == "convertelement")
+            {
+                // arguments
+                var rf = ticket.DereferencedMainDataObject as AdminShell.Referable;
+                if (ticket.Package == null
+                    || rf == null)
+                {
+                    LogErrorToTicket(ticket,
+                        "Convert Referable: No valid AAS package nor AAS Referable selected!");
+                    return;
+                }
+
+                // try to get tuple?
+                var record = ticket["Record"] as ConvertOfferBase;
+
+                // or search?
+                if (record == null && ticket["Name"] is string name && name.HasContent())
+                {
+                    var offers = AasxPredefinedConcepts.Convert.ConvertPredefinedConcepts.CheckForOffers(rf);
+                    if (offers != null)
+                        foreach (var o in offers)
+                            if (o.OfferDisplay.ToLower().Contains(name.Trim().ToLower()))
+                                record = o;
+                }
+
+                // found?
+                if (record == null)
+                {
+                    LogErrorToTicket(ticket, "Convert Referable: No name or selection given to " +
+                        "find an adequate offer toconvert from any plugin.");
+                    return;
+                }
+
+                // do
+                try
+                {
+                    record?.Provider?.ExecuteOffer(
+                        ticket.Package, rf, record, deleteOldCDs: true, addNewCDs: true);
+
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "while doing user defined conversion");
                 }
             }
         }
