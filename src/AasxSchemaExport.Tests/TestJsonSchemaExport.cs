@@ -86,13 +86,22 @@ namespace AasxSchemaExport.Tests
         {
             var schema = this.ExportSchema();
 
-            var rootDefAllOf = schema["definitions"]["Root"]["allOf"] as JArray;
-
-            var refToSubmodelDef = rootDefAllOf.Where(item => 
-                item.SingleOrDefault() != null && 
-                item.SingleOrDefault()["$ref"].Value<string>() == "aas.json#/definitions/Submodel");
+            var refToSubmodelDef = FindObjectInArrayWithProperty(
+                schema["definitions"]["Root"]["allOf"] as JArray,
+                "$ref",
+                "aas.json#/definitions/Submodel");
 
             Assert.NotNull(refToSubmodelDef);
+        }
+
+
+        private object FindObjectInArrayWithProperty(JArray jArray, string propertyName, string propertyValue)
+        {
+            var result = jArray.FirstOrDefault(item => 
+                item[propertyName] != null && 
+                item[propertyName].Value<string>() == propertyValue);
+
+            return result;
         }
 
 

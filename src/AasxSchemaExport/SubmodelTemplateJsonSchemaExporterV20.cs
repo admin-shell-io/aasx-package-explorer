@@ -16,17 +16,9 @@ namespace AasxSchemaExport
 
             schema["$ref"] = "#/definitions/Root";
 
-            schema["definitions"] = JToken.Parse("{\"Root\": {}}");
-            schema["definitions"]["Root"] = JToken.Parse("{\"allOf\": []}");
-            var rootAllOfDef = schema["definitions"]["Root"]["allOf"] as JArray;
-            
-            rootAllOfDef.Insert(0, JToken.Parse("{\"$ref\": \"aas.json#/definitions/Submodel\" }"));
-
-
-
+            schema["definitions"] = JObject.Parse(@"{'Root': {'allOf': [{'$ref': 'aas.json#/definitions/Submodel'}]}}");
 
             return schema.ToString();
-
         }
     }
 }
