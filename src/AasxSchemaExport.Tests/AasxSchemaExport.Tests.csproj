@@ -68,6 +68,7 @@
     <None Include="TestData\SubmodelTest.aasx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestData\test.schema.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj">
