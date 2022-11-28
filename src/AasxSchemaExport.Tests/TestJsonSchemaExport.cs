@@ -31,7 +31,7 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_schema_version()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
             var schemaVersion = schema["$schema"];
 
@@ -42,7 +42,7 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_title_corresponds_to_idShort()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
             var title = schema["title"];
 
@@ -53,7 +53,7 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_type_should_be_object()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
             var type = schema["type"];
 
@@ -64,7 +64,7 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_reference_to_root_schema_definition()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
             var refDefinition = schema["$ref"];
 
@@ -74,7 +74,7 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_unevaluated_properties_should_be_false()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
             var unevaluatedProperties = schema["unevaluatedProperties"];
 
@@ -84,14 +84,34 @@ namespace AasxSchemaExport.Tests
         [Test]
         public void Test_rootDef_should_reference_submodelDef()
         {
-            var schema = this.ExportSchema();
+            var schema = ExportSchema();
 
-            var refToSubmodelDef = FindObjectInArrayWithProperty(
+            var definitionRef = FindObjectInArrayWithProperty(
                 schema["definitions"]["Root"]["allOf"] as JArray,
                 "$ref",
                 "aas.json#/definitions/Submodel");
 
-            Assert.NotNull(refToSubmodelDef);
+            Assert.NotNull(definitionRef);
+        }
+
+        [Test]
+        public void Test_identifiable_properties()
+        {
+            var schema = ExportSchema();
+
+            var definitionRef = FindObjectInArrayWithProperty(
+                schema["definitions"]["Root"]["allOf"] as JArray,
+                "$ref",
+                "#/definitions/Identifiable");
+
+            Assert.NotNull(definitionRef);
+            Assert.AreEqual(schema
+                ["definitions"]
+                ["Identifiable"]
+                ["properties"]
+                ["modelType"]
+                ["name"]
+                ["const"].Value<string>(), "Submodel");
         }
 
 
