@@ -14,7 +14,7 @@
     /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
     /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
     /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
-    "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
+    "AasxToLoad": "C:\\Appl\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx",
     "WindowLeft": -1,
     "WindowTop": -1,
     "WindowWidth": 900,

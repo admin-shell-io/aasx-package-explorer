@@ -1165,7 +1165,7 @@ namespace AnyUi
                 if (el is AnyUiBorder cntl && dd.WpfElement is Border wpf
                     && cntl.Child != null)
                 {
-                    wpf.Child = GetOrCreateWpfElement(cntl.Child);
+                    wpf.Child = GetOrCreateWpfElement(cntl.Child, allowReUse: allowReUse);
                 }
             }
 

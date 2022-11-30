@@ -1420,6 +1420,11 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
+            // TODO
+            if (desc is FormDescSubmodelElement dd 
+                && dd.FormTitle == "engineeringDomainList")
+                ;
+
             var p = this.sme as AdminShell.Property;
             var pSource = this.sourceSme as AdminShell.Property;
             if (p != null && Touched && pSource != null && editSource)
@@ -1510,15 +1515,34 @@ namespace AasxIntegrationBase.AasForms
                         isEditable: editableMode),
                         (o) =>
                         {
-                            if (!(MainControl is AnyUiComboBox mcb) || mcb.SelectedIndex == null)
+                            if (!(MainControl is AnyUiComboBox mcb))
                                 return new AnyUiLambdaActionNone();
 
-                            var idx = mcb.SelectedIndex.Value;
-                            var items = pDesc.valueFromComboBoxIndex;
-                            if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
+                            string setText = null;
+
+                            // "good" selected index available?
+                            if (mcb.SelectedIndex.HasValue && mcb.Items != null
+                                && mcb.SelectedIndex >= 0 && mcb.SelectedIndex < mcb.Items.Count
+                                && o == mcb.Items[mcb.SelectedIndex.Value])
                             {
+                                var idx = mcb.SelectedIndex.Value;
+                                var items = pDesc.valueFromComboBoxIndex;
+                                if (items != null && items.Length > 0 && idx >= 0 && idx < items.Length && !editableMode)
+                                {
+                                    setText = items[idx];
+                                }
+                            }
+
+                            // else: simple text available
+                            if (setText == null && o is string os)
+                            {
+                                setText = os;
+                            }
+
+                            // now issue?
+                            if (setText != null) {
                                 Touch();
-                                prop.value = "" + items[idx];
+                                prop.value = setText;
 
                                 // dependent values
                                 parentInstance?.TriggerSlaveEvents(this, Index);

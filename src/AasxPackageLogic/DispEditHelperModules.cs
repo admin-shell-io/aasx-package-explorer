@@ -107,13 +107,7 @@ namespace AasxPackageLogic
                     },
                     "The idShort shall only feature letters, digits, underscore ('_'); " +
                     "starting mandatory with a letter."),
-                new HintCheck(
-                    () => {
-                        return true == referable.idShort?.Contains("---");
-                    },
-                    "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
-                    "to keep it unqiue because of an operation such a copy/ paste.",
-                    severityLevel: HintCheck.Severity.Notice)
+                // ...
             });
             this.AddKeyValueRef(
                 stack, "idShort", referable, ref referable.idShort, null, repo,
@@ -124,10 +118,13 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
                     return new AnyUiLambdaActionNone();
                 },
-                auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
-                auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
-                auxButtonLambda: injectToIdShort?.auxLambda
-                );
+                auxButtonTitles: new[] { "Sync" },
+                auxButtonLambda: (i) =>
+                {
+                    if (i == 0)
+                        ; // perfrom sync
+                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: referable);
+                });
 
             if (!categoryUsual)
                 this.AddHintBubble(
