@@ -66,9 +66,12 @@ namespace AasxSchemaExport.Tests
         {
             var schema = ExportSchema();
 
-            var refDefinition = schema["$ref"];
+            var definitionRef = FindObjectInArrayWithProperty(
+                schema["allOf"] as JArray,
+                "$ref",
+                "#/$defs/Root");
 
-            Assert.AreEqual(refDefinition.Value<string>(), "#/definitions/Root");
+            Assert.NotNull(definitionRef);
         }
 
         [Test]
@@ -87,9 +90,9 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             var definitionRef = FindObjectInArrayWithProperty(
-                schema["definitions"]["Root"]["allOf"] as JArray,
+                schema["$defs"]["Root"]["allOf"] as JArray,
                 "$ref",
-                "aas.json#/definitions/Submodel");
+                "aas.json#/$defs/Submodel");
 
             Assert.NotNull(definitionRef);
         }
@@ -100,13 +103,13 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             var definitionRef = FindObjectInArrayWithProperty(
-                schema["definitions"]["Root"]["allOf"] as JArray,
+                schema["$defs"]["Root"]["allOf"] as JArray,
                 "$ref",
-                "#/definitions/Identifiable");
+                "#/$defs/Identifiable");
 
             Assert.NotNull(definitionRef);
             Assert.AreEqual(schema
-                ["definitions"]
+                ["$defs"]
                 ["Identifiable"]
                 ["properties"]
                 ["modelType"]

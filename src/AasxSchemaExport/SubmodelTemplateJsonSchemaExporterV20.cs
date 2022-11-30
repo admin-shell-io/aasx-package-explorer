@@ -14,9 +14,9 @@ namespace AasxSchemaExport
             schema["type"] = "object";
             schema["unevaluatedProperties"] = false;
 
-            schema["$ref"] = "#/definitions/Root";
+            schema["allOf"] = JArray.Parse(@"[{'$ref': '#/$defs/Root'}]");
 
-            schema["definitions"] = JObject.Parse(@"{'Root': {'allOf': []}}");
+            schema["$defs"] = JObject.Parse(@"{'Root': {'allOf': []}}");
 
             AddDefinitionForSubmodel(schema);
             AddDefinitionForIdentifiable(schema);
@@ -27,15 +27,15 @@ namespace AasxSchemaExport
         private void AddDefinitionForSubmodel(JToken schema)
         {
             var rootAllOf = GetDefinitionRootAllOf(schema);
-            rootAllOf.Add(JObject.Parse(@"{'$ref': 'aas.json#/definitions/Submodel'}"));
+            rootAllOf.Add(JObject.Parse(@"{'$ref': 'aas.json#/$defs/Submodel'}"));
         }
 
         private void AddDefinitionForIdentifiable(JToken schema)
         {
             var rootAllOf = GetDefinitionRootAllOf(schema);
-            rootAllOf.Add(JObject.Parse(@"{'$ref': '#/definitions/Identifiable'}"));
+            rootAllOf.Add(JObject.Parse(@"{'$ref': '#/$defs/Identifiable'}"));
 
-            schema["definitions"]["Identifiable"] = JObject.Parse(@"
+            schema["$defs"]["Identifiable"] = JObject.Parse(@"
                 {
                     'type': 'object',
                     'properties': {
@@ -51,7 +51,7 @@ namespace AasxSchemaExport
 
         private JArray GetDefinitionRootAllOf(JToken schema)
         {
-            var rootAllOf = schema["definitions"]?["Root"]?["allOf"] as JArray;
+            var rootAllOf = schema["$defs"]?["Root"]?["allOf"] as JArray;
             return rootAllOf;
         }
     }
