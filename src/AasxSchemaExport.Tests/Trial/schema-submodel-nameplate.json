@@ -1,0 +1,551 @@
+{
+  "semanticId": {
+    "keys": [
+      {
+        "type": "GlobalReference",
+        "local": false,
+        "value": "https://www.hsu-hh.de/aut/aas/nameplate",
+        "index": 0,
+        "idType": "IRI"
+      }
+    ]
+  },
+  "qualifiers": [],
+  "hasDataSpecification": [],
+  "identification": {
+    "idType": "IRI",
+    "id": "www.company.com/ids/sm/4343_5072_7091_3242"
+  },
+  "administration": null,
+  "idShort": "Nameplate",
+  "category": null,
+  "modelType": {
+    "name": "Submodel"
+  },
+  "kind": "Instance",
+  "submodelElements": [
+    {
+      "value": {
+        "langString": [
+          {
+            "language": "en",
+            "text": "Company"
+          }
+        ]
+      },
+      "valueId": null,
+      "semanticId": {
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "local": false,
+            "value": "0173-1#02-AAO677#002",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      },
+      "constraints": [],
+      "hasDataSpecification": [],
+      "idShort": "ManufacturerName",
+      "category": "CONSTANT",
+      "modelType": {
+        "name": "MultiLanguageProperty"
+      },
+      "kind": "Instance",
+      "descriptions": []
+    },
+    {
+      "value": {
+        "langString": [
+          {
+            "language": "en",
+            "text": "UWA 182/52"
+          }
+        ]
+      },
+      "valueId": null,
+      "semanticId": {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAW338#001",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      },
+      "constraints": [],
+      "hasDataSpecification": [],
+      "idShort": "ManufacturerProductDesignation",
+      "category": "PARAMETER",
+      "modelType": {
+        "name": "MultiLanguageProperty"
+      },
+      "kind": "Instance",
+      "descriptions": null
+    },
+    {
+      "value": {
+        "langString": [
+          {
+            "language": "en",
+            "text": "QUINT POWER"
+          }
+        ]
+      },
+      "valueId": null,
+      "semanticId": {
+        "keys": [
+          {
+            "type": "GlobalReference",
+            "local": false,
+            "value": "0173-1#02-AAU731#001",
+            "index": 0,
+            "idType": "IRDI"
+          }
+        ]
+      },
+      "constraints": [],
+      "hasDataSpecification": [],
+      "idShort": "ManufacturerProductFamily",
+      "category": "PARAMETER",
+      "modelType": {
+        "name": "MultiLanguageProperty"
+      },
+      "kind": "Instance",
+      "descriptions": null
+    },
+    {
+      "ordered": false,
+      "allowDuplicates": false,
+      "semanticId": {
+        "keys": [
+          {
+            "type": "ConceptDescription",
+            "local": true,
+            "value": "https://www.hsu-hh.de/aut/aas/physicaladdress",
+            "index": 0,
+            "idType": "IRI"
+          }
+        ]
+      },
+      "constraints": [],
+      "hasDataSpecification": [],
+      "idShort": "PhysicalAddress",
+      "category": "PARAMETER",
+      "modelType": {
+        "name": "SubmodelElementCollection"
+      },
+      "value": [
+        {
+          "value": "DE",
+          "valueId": null,
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "local": true,
+                "value": "0173-1#02-AAO730#001",
+                "index": 0,
+                "idType": "IRDI"
+              }
+            ]
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "CountryCode",
+          "category": "PARAMETER",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "string"
+            }
+          },
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "value": "Flachsmarktstr. 8",
+          "valueId": null,
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "local": true,
+                "value": "https://www.hsu-hh.de/aut/aas/street",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "Street",
+          "category": "PARAMETER",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "string"
+            }
+          },
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "value": "32825",
+          "valueId": null,
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "local": true,
+                "value": "https://www.hsu-hh.de/aut/aas/postalcode",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "PostalCode",
+          "category": "PARAMETER",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "string"
+            }
+          },
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "value": "Blomberg",
+          "valueId": null,
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "local": true,
+                "value": "https://www.hsu-hh.de/aut/aas/city",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "City",
+          "category": "PARAMETER",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "string"
+            }
+          },
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "value": "Nordrhein-Westfalen",
+          "valueId": null,
+          "semanticId": {
+            "keys": [
+              {
+                "type": "ConceptDescription",
+                "local": true,
+                "value": "https://www.hsu-hh.de/aut/aas/statecounty",
+                "index": 0,
+                "idType": "IRI"
+              }
+            ]
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "StateCounty",
+          "category": "PARAMETER",
+          "modelType": {
+            "name": "Property"
+          },
+          "valueType": {
+            "dataObjectType": {
+              "name": "string"
+            }
+          },
+          "kind": "Instance",
+          "descriptions": null
+        }
+      ],
+      "kind": "Instance",
+      "descriptions": null
+    },
+    {
+      "ordered": false,
+      "allowDuplicates": false,
+      "semanticId": {
+        "keys": []
+      },
+      "constraints": [],
+      "hasDataSpecification": [],
+      "idShort": "Markings",
+      "category": null,
+      "modelType": {
+        "name": "SubmodelElementCollection"
+      },
+      "value": [
+        {
+          "ordered": false,
+          "allowDuplicates": false,
+          "semanticId": {
+            "keys": []
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "Marking_0",
+          "category": null,
+          "modelType": {
+            "name": "SubmodelElementCollection"
+          },
+          "value": [
+            {
+              "value": "CCC-Exempt Declaration",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "description",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            },
+            {
+              "value": "CCC-Exemp_QUINT AC.pdf",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "filename",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            }
+          ],
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "ordered": false,
+          "allowDuplicates": false,
+          "semanticId": {
+            "keys": []
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "Marking_1",
+          "category": null,
+          "modelType": {
+            "name": "SubmodelElementCollection"
+          },
+          "value": [
+            {
+              "value": "Declaration of compliance with China RoHS – Components",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "description",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            },
+            {
+              "value": "RoHS_2904601_en.pdf",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "filename",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            }
+          ],
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "ordered": false,
+          "allowDuplicates": false,
+          "semanticId": {
+            "keys": []
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "Marking_2",
+          "category": null,
+          "modelType": {
+            "name": "SubmodelElementCollection"
+          },
+          "value": [
+            {
+              "value": "Declaration of compliance with China RoHS – Components",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "description",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            },
+            {
+              "value": "RoHS_2904601_zh.pdf",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "filename",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            }
+          ],
+          "kind": "Instance",
+          "descriptions": null
+        },
+        {
+          "ordered": false,
+          "allowDuplicates": false,
+          "semanticId": {
+            "keys": []
+          },
+          "constraints": [],
+          "hasDataSpecification": [],
+          "idShort": "Marking_3",
+          "category": null,
+          "modelType": {
+            "name": "SubmodelElementCollection"
+          },
+          "value": [
+            {
+              "value": "EU Declaration of Conformity",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "description",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            },
+            {
+              "value": "2904601_CE_03.pdf",
+              "valueId": null,
+              "semanticId": {
+                "keys": []
+              },
+              "constraints": [],
+              "hasDataSpecification": [],
+              "idShort": "filename",
+              "category": null,
+              "modelType": {
+                "name": "Property"
+              },
+              "valueType": {
+                "dataObjectType": {
+                  "name": ""
+                }
+              },
+              "kind": "Instance",
+              "descriptions": null
+            }
+          ],
+          "kind": "Instance",
+          "descriptions": null
+        }
+      ],
+      "kind": "Instance",
+      "descriptions": null
+    }
+  ],
+  "descriptions": null
+}

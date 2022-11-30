@@ -2,15 +2,19 @@
   "$schema": "https://json-schema.org/draft/2019-09/schema",
   "title": "AssetAdministrationShellSubmodelNameplate",
   "type": "object",
-  "$ref": "#/definitions/Root",
-  "definitions": {
+  "allOf": [
+    {
+      "$ref": "#/$defs/Root"
+    }
+  ],
+  "$defs": {
     "Root": {
       "allOf": [
         {
-          "$ref": "aas.json#/definitions/Submodel"
+          "$ref": "aasV2.0.json#/definitions/Submodel"
         },
         {
-          "$ref": "#/definitions/Identifiable"
+          "$ref": "#/$defs/Identifiable"
         }
       ]
     },

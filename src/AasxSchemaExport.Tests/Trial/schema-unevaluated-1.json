@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$ref": "#/definitions/t1Check",
+  "definitions": {
+    "t1": {
+      "properties": {
+        "p1": {
+          "type": "string"
+        },
+        "p2": {
+          "type": "object",
+          "properties": {
+            "px": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "t1Check": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/t1"
+        },
+        {
+          "properties": {
+            "p2": {
+              "type": "object",
+              "properties": {
+                "px": {
+                  "const": "abc"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "unevaluatedProperties": false
+}

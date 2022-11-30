@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "definitions": {
+    "Person": {
+      "type": "object",
+      "required": [
+        "firstName"
+      ],
+      "properties": {
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "required": [
+        "p1"
+      ],
+      "properties": {
+        "p1": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Person"
+          },
+          "minItems": 1,
+          "contains": {
+            "type": "object",
+            "properties": {
+              "firstName": {
+                "const": "Bob"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

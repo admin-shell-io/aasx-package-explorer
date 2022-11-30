@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "allOf": [
+    {
+      "required": [
+        "p1"
+      ],
+      "properties": {
+        "p1": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "p1"
+      ],
+      "properties": {
+        "p1": {
+          "const": "test"
+        }
+      }
+    }
+  ]
+}

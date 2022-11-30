@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "$ref": "#/$defs/Root",
+  "$defs": {
+    "Root": {
+      "properties": {
+        "collection": {
+          "type": "array",
+          "additionalItems": false,
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/T1"
+              },
+              {
+                "$ref": "#/$defs/T2"
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "required": [
+                  "x"
+                ],
+                "properties": {
+                  "x": {
+                    "const": "test"
+                  }
+                }
+              }
+            },
+            {
+              "minContains": 1,
+              "maxContains": 1,
+              "contains": {
+                "required": [
+                  "y"
+                ],
+                "properties": {
+                  "y": {
+                    "const": 2
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "T1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x"
+      ],
+      "properties": {
+        "x": {
+          "type": "string"
+        }
+      }
+    },
+    "T2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "y"
+      ],
+      "properties": {
+        "y": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
