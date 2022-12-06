@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using AasxIntegrationBase;
+using AasxIntegrationBaseWpf;
 using AasxPackageLogic;
 using AnyUi;
 using Newtonsoft.Json;
@@ -36,6 +37,9 @@ namespace AasxPackageExplorer
 
         // TODO (MIHO, 2020-12-21): make DiaData non-Nullable
         public AnyUiDialogueDataTextEditor DiaData = new AnyUiDialogueDataTextEditor();
+
+        public Func<DynamicContextMenu> ContextMenuCreate = null;
+        public Action<string, object> ContextMenuAction = null;
 
         private PluginInstance pluginInstance = null;
         private Control textControl = null;
@@ -180,11 +184,28 @@ namespace AasxPackageExplorer
             ControlClosed?.Invoke();
         }
 
-        private void ButtonOk_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            PrepareResult();
-            DiaData.Result = true;
-            ControlClosed?.Invoke();
+            if (sender == ButtonOk)
+            {
+                PrepareResult();
+                DiaData.Result = true;
+                ControlClosed?.Invoke();
+            }
+
+            if (sender == ButtonContextMenu)
+            {
+                // somethink available?
+                var cm = ContextMenuCreate?.Invoke();
+                if (cm == null)
+                    return;
+
+                // update data
+                PrepareResult();
+
+                // show
+                cm.Start(sender as Button, ContextMenuAction); 
+            }
         }
 
         public void ControlPreviewKeyDown(KeyEventArgs e)
@@ -200,6 +221,14 @@ namespace AasxPackageExplorer
             {
                 DiaData.Text = DiaData.Presets[ComboBoxPreset.SelectedIndex].Text;
                 SetMimeTypeAndText();
+            }
+        }
+
+        private void UserControl_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e?.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                Button_Click(ButtonOk, null);
             }
         }
     }

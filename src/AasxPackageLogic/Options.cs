@@ -430,6 +430,14 @@ namespace AasxPackageLogic
             Cmd = "-script-execute-system")]
         public bool ScriptExecuteSystem = false;
 
+        [OptionDescription(Description = "Filename for scipt to read and execute.",
+            Cmd = "-script")]
+        public string ScriptFn = "";
+
+        [OptionDescription(Description = "Script command(s) to directly execute.",
+            Cmd = "-cmd")]
+        public string ScriptCmd = "";
+
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
         public string StayConnectOptions = "";
@@ -745,6 +753,18 @@ namespace AasxPackageLogic
                 if (arg == "-plugin-dir" && morearg > 0)
                 {
                     optionsInformation.PluginDir = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-script" && morearg > 0)
+                {
+                    optionsInformation.ScriptFn = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-cmd" && morearg > 0)
+                {
+                    optionsInformation.ScriptCmd = args[index + 1];
                     index++;
                     continue;
                 }

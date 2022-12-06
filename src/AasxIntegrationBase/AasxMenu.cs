@@ -275,6 +275,11 @@ namespace AasxIntegrationBase
         public object Icon = null;
 
         /// <summary>
+        /// If true, not shown in menu.
+        /// </summary>
+        public bool Hidden = false;
+
+        /// <summary>
         /// Can be switched to checked or not
         /// </summary>
         public bool IsCheckable = false;
@@ -359,6 +364,7 @@ namespace AasxIntegrationBase
             string inputGesture = null,
             bool onlyDisplay = false,
             bool isCheckable = false, bool isChecked = false,
+            bool isHidden = false,
             AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
             AasxMenuListOfArgDefs args = null)
         {
@@ -374,6 +380,7 @@ namespace AasxIntegrationBase
                 GestureOnlyDisplay = onlyDisplay,
                 IsCheckable = isCheckable,
                 IsChecked = isChecked,
+                Hidden = isHidden,
                 RequiredInfos = reqs,
                 ArgDefs = args
             });
@@ -450,7 +457,8 @@ namespace AasxIntegrationBase
 
         public AasxMenu AddHotkey(
             string name,
-            string gesture)
+            string gesture,
+            string header = null)
         {
             this.Add(new AasxHotkey()
             {
@@ -533,15 +541,26 @@ namespace AasxIntegrationBase
         public AasxMenuArgDictionary ArgValue = null;
 
         /// <summary>
+        /// Indicates that some functionality started the execution.
+        /// </summary>
+        public bool Started = false;
+
+        /// <summary>
         /// Indicates a success or the availablity of an result.
         /// </summary>
-        public bool Result = false;
+        public bool Success = false;
 
         /// <summary>
         /// If not <c>null</c> indicates the presence of an exception while executing
         /// the action. Should correspond to <c>Result == null</c>.
         /// </summary>
         public string Exception = null;
+
+        /// <summary>
+        /// If true, then script will sleep after leaving the UI STA thread.
+        /// 1 means short, 2 means long.
+        /// </summary>
+        public int SleepForVisual = 0;
 
         //
         // Runtime data
@@ -648,7 +667,8 @@ namespace AasxIntegrationBase
         /// </summary>
         public void StartExec()
         {
-            Result = true;
+            Started = true;
+            Success = true;
         }
     }
 

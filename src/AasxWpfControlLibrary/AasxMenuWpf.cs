@@ -99,7 +99,7 @@ namespace AasxWpfControlLibrary
                 }
 
                 // visible items?
-                if (mi is AasxMenuItem mii)
+                if (mi is AasxMenuItem mii && !mii.Hidden)
                 {
                     // remember for lambdas
                     var m_mii = mii;

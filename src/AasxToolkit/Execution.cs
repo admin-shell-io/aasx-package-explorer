@@ -7,6 +7,7 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+using AasxIntegrationBase;
 using System.Collections.Generic;
 using AasFormUtils = AasxIntegrationBase.AasForms.AasFormUtils;
 using AasSchemaValidation = AdminShellNS.AasSchemaValidation;
@@ -361,11 +362,11 @@ namespace AasxToolkit
                                         "www.admin-shell.io/nonsense"));
                                 fil.parent = fil;
 
-                                var so = new AdminShellUtil.SearchOptions();
-                                so.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
-                                var sr = new AdminShellUtil.SearchResults();
+                                var so = new AasxSearchUtil.SearchOptions();
+                                so.AllowedAssemblies = new[] { typeof(AdminShell).Assembly };
+                                var sr = new AasxSearchUtil.SearchResults();
 
-                                AdminShellUtil.EnumerateSearchable(
+                                AasxSearchUtil.EnumerateSearchable(
                                     sr, package.AasEnv, "", 0, so);
 
                                 // test debug

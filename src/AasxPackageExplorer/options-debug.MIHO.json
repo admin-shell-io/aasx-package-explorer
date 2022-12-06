@@ -69,7 +69,7 @@
   ],
   "PluginPrefer": "ANYUI",
   "PluginDll": [
-    
+
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
       "Args": [
@@ -86,7 +86,7 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
       "Args": [],
       "Options": null
-    }, 
+    },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []
@@ -295,19 +295,45 @@
       ]
     },
     {
-      "Name": "Select Test 1",
+      "Name": "Select Test 3",
       "Lines": [
         "Select(\"AAS\", \"Next\");"
       ]
     },
     {
-      "Name": "Select Test 2",
+      "Name": "Select Test 4",
       "Lines": [
         "Select(\"AAS\", \"Prev\");"
+      ]
+    },
+    {
+      "Name": "Test 5",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsFindText\", \"FindText\", \"DE\"); ",
+        "num = 0;",
+        "while (res) {",
+        "    x = Select(\"This\"); ",
+        "    WriteLine(num, \":\", x.idShort);",
+        "    num = num + 1;",
+        "    if (num > 18)",
+        "        break;",
+        "    res = Tool(\"ToolsFindForward\");",
+        "    Sleep(200);",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test 6",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsReplaceText\", \"FindText\", \"DE\", \"ReplaceText\", \"GDR\", \"Do\", \"All\"); "
       ]
     }
   ],
   "ScriptLoglevel": 2,
   "ScriptLaunchWithoutPrompt": true,
-  "ScriptExecuteSystem" :  true
+  "ScriptExecuteSystem": true,
+  // "ScriptCmd":  "WriteLine(\"Hallo\");"
+  // "ScriptFn" :  "test-script.txt"
 }

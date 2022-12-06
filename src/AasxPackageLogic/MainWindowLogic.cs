@@ -52,7 +52,7 @@ namespace AasxPackageExplorer
             if (ticket != null)
             {
                 ticket.Exception = message;
-                ticket.Result = false;
+                ticket.Success = false;
             }
 
             Log.Singleton.Error(message);
@@ -73,7 +73,7 @@ namespace AasxPackageExplorer
             if (ticket != null)
             {
                 ticket.Exception = message;
-                ticket.Result = false;
+                ticket.Success = false;
             }
 
             Log.Singleton.Error(message);
@@ -87,7 +87,7 @@ namespace AasxPackageExplorer
             if (ticket != null)
             {
                 ticket.Exception = $"Error {ex?.Message} in {where}.";
-                ticket.Result = false;
+                ticket.Success = false;
             }
 
             Log.Singleton.Error(ex, where);

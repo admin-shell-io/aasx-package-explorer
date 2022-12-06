@@ -157,6 +157,11 @@ namespace AasxPackageExplorer
             {
                 SetWordWrapping(ButtonToggleWrap.IsChecked == true);
             }
+
+            if (sender == ButtonClear)
+            {
+                FlowDocViewer.Document.Blocks.Clear();
+            }
         }
     }
 }

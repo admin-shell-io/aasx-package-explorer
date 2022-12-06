@@ -748,7 +748,9 @@ namespace AasxPackageExplorer
             MainTimer.Start();
 
             // attach result search
+            ToolFindReplace.Flyout = this;
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
+            ToolFindReplace.SetProgressBar += SetProgressBar;
 
             // Package Central starting ..
             _packageCentral.CentralRuntimeOptions = UiBuildRuntimeOptionsForMainAppLoad();
@@ -975,9 +977,46 @@ namespace AasxPackageExplorer
             // open last UI elements
             if (Options.Curr.ShowEvents)
                 PanelConcurrentSetVisibleIfRequired(true, targetEvents: true);
+
+            // script file to launch?
+            if (Options.Curr.ScriptFn.HasContent())
+            {
+                try
+                {
+                    Log.Singleton.Info("Opening and executing '{0}' for script commands.", Options.Curr.ScriptFn);
+                    if (_aasxScript == null)
+                        _aasxScript = new AasxScript();
+                    var script = File.ReadAllText(Options.Curr.ScriptFn);
+                    _aasxScript.StartEnginBackground(
+                        script, Options.Curr.ScriptLoglevel,
+                        _mainMenu?.Menu, this);
+                } 
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptFn}");
+                }
+            }
+
+            // script file to launch?
+            if (Options.Curr.ScriptCmd.HasContent())
+            {
+                try
+                {
+                    Log.Singleton.Info("Executing '{0}' as direct script commands.", Options.Curr.ScriptCmd);
+                    if (_aasxScript == null)
+                        _aasxScript = new AasxScript();
+                    _aasxScript.StartEnginBackground(
+                        Options.Curr.ScriptCmd, Options.Curr.ScriptLoglevel,
+                        _mainMenu?.Menu, this);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptCmd}");
+                }
+            }
         }
 
-        private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
+        private void ToolFindReplace_ResultSelected(AasxSearchUtil.SearchResultItem resultItem)
         {
             // have a result?
             if (resultItem == null || resultItem.businessObject == null)

@@ -482,19 +482,15 @@
 
                     <!-- Find -->
                     <TabItem x:Name="TabItemToolsFind" Visibility="Collapsed">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Center"/>
-                            <!--
-                            <WrapPanel Orientation="Horizontal">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
 
-                                <ComboBox x:Name="ComboBoxToolsFindText" Width="200" Margin="2" IsEditable="True"></ComboBox>
-                                <Button x:Name="ButtonToolsFindBackward" Content="&#x25c0;" Margin="2" />
-                                <Button x:Name="ButtonToolsFindForward" Content="&#x25b6;" Margin="2" />
-
-                            </WrapPanel>
-                            -->
-                            <local:ToolControlFindReplace x:Name="ToolFindReplace"/>
-                        </StackPanel>
+                            <TextBlock Grid.Column="0" Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Top"/>
+                            <local:ToolControlFindReplace x:Name="ToolFindReplace" Grid.Column="1"/>
+                        </Grid>
                     </TabItem>
 
                 </TabControl>

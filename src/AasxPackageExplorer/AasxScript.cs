@@ -192,19 +192,20 @@ namespace AasxPackageExplorer
                     "Invokes a menu-item (tool) of the application with arguments treated as key/value pairs.",
                     args: new AasxMenuListOfArgDefs()
                         .Add("<key>", "String which identifies the argument of the command.")
-                        .Add("<value>", "Arbitrary type and value for that argument."));
+                        .Add("<value>", "Arbitrary type and value for that argument.")
+                        .Add("returns:", "'True', if tool was found and successfully executed, 'False' elsewise."));
             }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
                 // access
                 if (_script == null)
-                    return -1;
+                    return false;
 
                 if (args == null || args.Length < 1 || !(args[0] is string toolName))
                 {
                     _script.ScriptLog?.Error("Script: Invoke Tool: Toolname missing");
-                    return -1;
+                    return false;
                 }
 
                 // debug
@@ -216,7 +217,7 @@ namespace AasxPackageExplorer
                 if (mi == null)
                 {
                     _script.ScriptLog?.Error("Script: Invoke Tool: Toolname invalid");
-                    return -1;
+                    return false;
                 }
 
                 // create a ticket
@@ -268,8 +269,15 @@ namespace AasxPackageExplorer
                 });
                 if (x != null)
                     Log.Singleton.Silent("" + x.Id);
+
+                // test
+                if (ticket.SleepForVisual == 1)
+                    Thread.Sleep(50);
+                if (ticket.SleepForVisual > 1)
+                    Thread.Sleep(200);
+
                 // done
-                return 0;
+                return ticket.Success;
             }
         }
 

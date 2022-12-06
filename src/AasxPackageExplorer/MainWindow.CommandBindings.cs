@@ -84,121 +84,121 @@ namespace AasxPackageExplorer
 
             menu.AddMenu(header: "File", 
                 childs: (new AasxMenu())
-                .AddWpf(name: "New", header: "_New ..")
-                .AddWpf(name: "Open", header: "_Open ..", inputGesture: "Ctrl+O", 
+                .AddWpf(name: "New", header: "_New …")
+                .AddWpf(name: "Open", header: "_Open …", inputGesture: "Ctrl+O", 
                     help: "Open existing AASX package.",
                     args: new AasxMenuListOfArgDefs()
                         .Add("File", "Source filename including a path and extension."))
-                .AddWpf(name: "ConnectIntegrated", header: "Connect ..", inputGesture: "Ctrl+Shift+O")
+                .AddWpf(name: "ConnectIntegrated", header: "Connect …", inputGesture: "Ctrl+Shift+O")
                 .AddWpf(name: "Save", header: "_Save", inputGesture: "Ctrl+S")
-                .AddWpf(name: "SaveAs", header: "_Save as ..")
-                .AddWpf(name: "Close", header: "_Close ..")
-                .AddWpf(name: "CheckAndFix", header: "Check, validate and fix ..")
-                .AddMenu(header: "Security ..", childs: (new AasxMenu())
-                    .AddWpf(name: "Sign", header: "_Sign (Submodel, Package) ..",
+                .AddWpf(name: "SaveAs", header: "_Save as …")
+                .AddWpf(name: "Close", header: "_Close …")
+                .AddWpf(name: "CheckAndFix", header: "Check, validate and fix …")
+                .AddMenu(header: "Security …", childs: (new AasxMenu())
+                    .AddWpf(name: "Sign", header: "_Sign (Submodel, Package) …",
                         help: "Sign a Submodel or SubmodelElement.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("UseX509", "Use X509 (true) or Verifiable Credential (false)")
                             .Add("Source", "Source package (.aasx) file.")
                             .Add("Certificate", "Certificate (.cer) file.")
                             .Add("Target", "Target package (.aasx2) file."))
-                    .AddWpf(name: "ValidateCertificate", header: "_Validate (Submodel, Package) ..",
+                    .AddWpf(name: "ValidateCertificate", header: "_Validate (Submodel, Package) …",
                         help: "Validate a already signed Submodel or SubmodelElement.")
-                    .AddWpf(name: "Encrypt", header: "_Encrypt (Package) ..",
+                    .AddWpf(name: "Encrypt", header: "_Encrypt (Package) …",
                         help: "Encrypts a Submodel, SubmodelElement or Package. For the latter, the arguments " +
                               "are required.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Source", "Source package (.aasx) file.")
                             .Add("Certificate", "Certificate (.cer) file.")
                             .Add("Target", "Target package (.aasx2) file."))
-                    .AddWpf(name: "Decrypt", header: "_Decrypt (Package) ..",
+                    .AddWpf(name: "Decrypt", header: "_Decrypt (Package) …",
                         help: "Decrypts a Package.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Source", "Source package (.aasx2) file.")
                             .Add("Certificate", "Certificate (.pfx) file.")
                             .Add("Target", "Target package (.aasx) file.")))
                 .AddSeparator()
-                .AddWpf(name: "OpenAux", header: "Open Au_xiliary AAS ..", inputGesture: "Ctrl+X",
+                .AddWpf(name: "OpenAux", header: "Open Au_xiliary AAS …", inputGesture: "Ctrl+X",
                     help: "Open existing AASX package to the auxiliary buffer (non visible in the tree).",
                     args: new AasxMenuListOfArgDefs()
                         .Add("File", "Source filename including a path and extension."))
                 .AddWpf(name: "CloseAux", header: "Close Auxiliary AAS")
                 .AddSeparator()
-                .AddMenu(header: "Further connect options ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ConnectSecure", header: "Secure Connect ..", inputGesture: "Ctrl+Shift+O")
-                    .AddWpf(name: "ConnectOpcUa", header: "Connect via OPC-UA ..")
-                    .AddWpf(name: "ConnectRest", header: "Connect via REST ..", inputGesture: "F6"))
+                .AddMenu(header: "Further connect options …", childs: (new AasxMenu())
+                    .AddWpf(name: "ConnectSecure", header: "Secure Connect …", inputGesture: "Ctrl+Shift+O")
+                    .AddWpf(name: "ConnectOpcUa", header: "Connect via OPC-UA …")
+                    .AddWpf(name: "ConnectRest", header: "Connect via REST …", inputGesture: "F6"))
                 .AddSeparator()
-                .AddMenu(header: "AASX File Repository ..", childs: (new AasxMenu())
-                    .AddWpf(name: "FileRepoNew", header: "New (local) repository..",
+                .AddMenu(header: "AASX File Repository …", childs: (new AasxMenu())
+                    .AddWpf(name: "FileRepoNew", header: "New (local) repository …",
                         help: "Create new (empty) file repository.")
-                    .AddWpf(name: "FileRepoOpen", header: "Open (local) repository ..",
+                    .AddWpf(name: "FileRepoOpen", header: "Open (local) repository …",
                         help: "Opens an existing AASX file repository and adds it to the list of open repos.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Path and filename of existing AASX file repository."))
-                    .AddWpf(name: "FileRepoConnectRepository", header: "Connect HTTP/REST repository ..",
+                    .AddWpf(name: "FileRepoConnectRepository", header: "Connect HTTP/REST repository …",
                         help: "Connects to an online repository via HTTP/REST.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Endpoint", "Endpoint of repo (without \"/server/listaas\")."))
-                    .AddWpf(name: "FileRepoConnectRegistry", header: "Query HTTP/REST registry ..")
+                    .AddWpf(name: "FileRepoConnectRegistry", header: "Query HTTP/REST registry …")
                     .AddSeparator()
-                    .AddWpf(name: "FileRepoCreateLRU", header: "Create last recently used list ..")
+                    .AddWpf(name: "FileRepoCreateLRU", header: "Create last recently used list …")
                     .AddSeparator()
-                    .AddWpf(name: "FileRepoQuery", header: "Query open repositories ..", inputGesture: "F12",
+                    .AddWpf(name: "FileRepoQuery", header: "Query open repositories …", inputGesture: "F12",
                         help: "Selects and repository item (AASX) from the open AASX file repositories.",
                         args: new AasxMenuListOfArgDefs() 
                             .Add("Index", "Zero-based integer index to the list of all open repos.")
                             .Add("AAS", "String with AAS-Id")
                             .Add("Asset", "String with Asset-Id.")))
                 .AddSeparator()
-                .AddMenu(header: "Import ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ImportAML", header: "Import AutomationML into AASX ..",
+                .AddMenu(header: "Import …", childs: (new AasxMenu())
+                    .AddWpf(name: "ImportAML", header: "Import AutomationML into AASX …",
                         help: "Import AML file with AAS entities to overall AAS environment.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "AML file with AAS entities data."))
-                    .AddWpf(name: "SubmodelRead", header: "Import Submodel from JSON ..",
+                    .AddWpf(name: "SubmodelRead", header: "Import Submodel from JSON …",
                         help: "Read Submodel from JSON and add/ replace existing to current AAS.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON file with Submodel data."))
-                    .AddWpf(name: "SubmodelGet", header: "GET Submodel from URL ..",
+                    .AddWpf(name: "SubmodelGet", header: "GET Submodel from URL …",
                         help: "Get Submodel from REST server.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("URL", "URL to get Submodel data from."))
-                    .AddWpf(name: "ImportDictSubmodel", header: "Import Submodel from Dictionary ..",
+                    .AddWpf(name: "ImportDictSubmodel", header: "Import Submodel from Dictionary …",
                         help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to a Submodel.")
-                    .AddWpf(name: "ImportDictSubmodelElements", header: "Import Submodel Elements from Dictionary ..",
+                    .AddWpf(name: "ImportDictSubmodelElements", header: "Import Submodel Elements from Dictionary …",
                         help: "UI assisted import from dictionaries such as ECLASS and IEC CDD to SubmodelElement.")
-                    .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel ..",
+                    .AddWpf(name: "BMEcatImport", header: "Import BMEcat-file into SubModel …",
                         help: "Import BMEcat data into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "BMEcat file with data."))
-                    .AddWpf(name: "SubmodelTDImport", header: "Import Thing Description JSON LD document into SubModel ..",
+                    .AddWpf(name: "SubmodelTDImport", header: "Import Thing Description JSON LD document into SubModel …",
                         help: "Import Thing Description (TD) file in JSON LD format into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON LD file with TD data."))
-                    .AddWpf(name: "CSVImport", header: "Import CSV-file into SubModel ..",
+                    .AddWpf(name: "CSVImport", header: "Import CSV-file into SubModel …",
                         help: "Import comma separated values (CSV) into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "CSV file with data."))
-                    .AddWpf(name: "OPCUAi4aasImport", header: "Import AAS from i4aas-nodeset ..")
-                    .AddWpf(name: "OpcUaImportNodeSet", header: "Import OPC UA nodeset.xml as Submodel ..",
+                    .AddWpf(name: "OPCUAi4aasImport", header: "Import AAS from i4aas-nodeset …")
+                    .AddWpf(name: "OpcUaImportNodeSet", header: "Import OPC UA nodeset.xml as Submodel …",
                         help: "Import OPC UA nodeset.xml into an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset file."))
-                    .AddWpf(name: "OPCRead", header: "Read OPC values into SubModel ..",
+                    .AddWpf(name: "OPCRead", header: "Read OPC values into SubModel …",
                         help: "Use Qualifiers attributed in a Submodel to read actual OPC UA values.")
-                    .AddWpf(name: "RDFRead", header: "Import BAMM RDF into AASX ..",
+                    .AddWpf(name: "RDFRead", header: "Import BAMM RDF into AASX …",
                         help: "Import BAMM RDF into AASX.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "BAMM file with RDF data."))
-                    .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel ..",
+                    .AddWpf(name: "ImportTimeSeries", header: "Read time series values into SubModel …",
                             help: "Import sets of time series values from an table in common format.",
                             args: new AasxMenuListOfArgDefs()
                                 .Add("File", "Filename and path of file to imported.")
                                 .Add("Format", "Format to be 'Excel'.")
                                 .Add("Record", "Record data", hidden: true)
                                 .AddFromReflection(new ImportTimeSeriesRecord()))
-                    .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table ..",
+                    .AddWpf(name: "ImportTable", header: "Import SubmodelElements from Table …",
                             help: "Import sets of SubmodelElements from table datat in multiple common formats.",
                             args: new AasxMenuListOfArgDefs()
                                 .Add("File", "Filename and path of file to imported.")
@@ -206,45 +206,45 @@ namespace AasxPackageExplorer
                                 .Add("Format", "Format to be either " +
                                         "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
                                 .Add("Record", "Record data", hidden: true)))
-                .AddMenu(header: "Export ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ExportAML", header: "Export AutomationML ..",
+                .AddMenu(header: "Export …", childs: (new AasxMenu())
+                    .AddWpf(name: "ExportAML", header: "Export AutomationML …",
                         help: "Export AML file with AAS entities from AAS environment.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "AML file with AAS entities data.")
                             .Add("FilterIndex", "Set FilterIndex=2 for compact AML format."))
-                    .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON ..",
+                    .AddWpf(name: "SubmodelWrite", header: "Export Submodel to JSON …",
                         help: "Write Submodel to JSON.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON file to write Submodel data to."))
-                    .AddWpf(name: "SubmodelPut", header: "PUT Submodel to URL ..",
+                    .AddWpf(name: "SubmodelPut", header: "PUT Submodel to URL …",
                         help: "Put Submodel to REST server.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("URL", "URL to put Submodel data to."))
-                    .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset ..",
+                    .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset …",
                         help: "Export OPC UA Nodeset2.xml format as i4aas-nodeset.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write."))
                     .AddWpf(name: "OpcUaExportNodeSetUaPlugin", 
-                        header: "Export OPC UA Nodeset2.xml (via UA server plug-in) ..",
+                        header: "Export OPC UA Nodeset2.xml (via UA server plug-in) …",
                         help: "Export OPC UA Nodeset2.xml format by starting OPC UA server in plugin and " +
                             "execute a post-process command.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write."))
                     .AddWpf(name: "CopyClipboardElementJson", header: "Copy selected element JSON to clipboard", inputGesture: "Shift+Ctrl+C")
-                    .AddWpf(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms ..")
-                    .AddWpf(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts ..")
+                    .AddWpf(name: "ExportGenericForms", header: "Export Submodel as options for GenericForms …")
+                    .AddWpf(name: "ExportPredefineConcepts", header: "Export Submodel as snippet for PredefinedConcepts …")
                     .AddWpf(name: "SubmodelTDExport", header: "Export Submodel as Thing Description JSON LD document",
                         help: "Export Thing Description (TD) file in JSON LD format from an existing Submodel.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "JSON LD file with TD data."))
-                    .AddWpf(name: "PrintAsset", header: "Print Asset as code sheet ..",
+                    .AddWpf(name: "PrintAsset", header: "Print Asset as code sheet …",
                         help: "Prints a sheet with 2D codes for the selected asset.")
-                    .AddWpf(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) ..",
+                    .AddWpf(name: "ExportSMD", header: "Export TeDZ Simulation Model Description (SMD) …",
                         help: "Export TeDZ Simulation Model Description (SMD).",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Machine", "Designation of the machine/ equipment.")
                             .Add("Model", "Model type, either 'Physical' or 'Signal'."))
-                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table ..", 
+                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table …", 
                         help: "Export table(s) for sets of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
@@ -252,7 +252,7 @@ namespace AasxPackageExplorer
                             .Add("Format", "Format to be either " +
                                     "'Tab separated', 'LaTex', 'Word', 'Excel', 'Markdown'.")
                             .Add("Record", "Record data", hidden: true))
-                    .AddWpf(name: "ExportUml", header: "Export SubmodelElements as UML ..",
+                    .AddWpf(name: "ExportUml", header: "Export SubmodelElements as UML …",
                         help: "Export UML of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
@@ -260,13 +260,13 @@ namespace AasxPackageExplorer
                             .Add("Record", "Record data", hidden: true)
                             .AddFromReflection(new ExportUmlRecord())))
                 .AddSeparator()
-                .AddMenu(header: "Server ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ServerRest", header: "Serve AAS as REST ..", inputGesture: "Shift+F6")
-                    .AddWpf(name: "MQTTPub", header: "Publish AAS via MQTT ..")
+                .AddMenu(header: "Server …", childs: (new AasxMenu())
+                    .AddWpf(name: "ServerRest", header: "Serve AAS as REST …", inputGesture: "Shift+F6")
+                    .AddWpf(name: "MQTTPub", header: "Publish AAS via MQTT …")
                     .AddSeparator()
-                    .AddWpf(name: "ServerPluginEmptySample", header: "Plugin: Empty Sample ..")
-                    .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA ..")
-                    .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT .."))
+                    .AddWpf(name: "ServerPluginEmptySample", header: "Plugin: Empty Sample …")
+                    .AddWpf(name: "ServerPluginOPCUA", header: "Plugin: OPC UA …")
+                    .AddWpf(name: "ServerPluginMQTT", header: "Plugin: MQTT …"))
                 .AddSeparator()
                 .AddWpf(name: "Exit", header: "_Exit", inputGesture: "Alt+F4"));
 
@@ -277,18 +277,32 @@ namespace AasxPackageExplorer
             menu.AddMenu(header: "Workspace",
                 childs: (new AasxMenu())
                 .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E", 
-                    onlyDisplay: true, isCheckable: true)
+                    onlyDisplay: true, isCheckable: true,
+                    args: new AasxMenuListOfArgDefs()
+                            .Add("Mode", "'True' to activate edit mode, 'False' to turn off."))
                 .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H", 
-                    onlyDisplay: true, isCheckable: true, isChecked: true)
+                    onlyDisplay: true, isCheckable: true, isChecked: true,
+                    args: new AasxMenuListOfArgDefs()
+                        .Add("Mode", "'True' to activate hints mode, 'False' to turn off."))
                 .AddWpf(name: "Test", header: "Test")
                 .AddSeparator()
-                .AddWpf(name: "ToolsFindText", header: "Find ...")
+                .AddWpf(name: "ToolsFindText", header: "Find …", inputGesture: "Ctrl+F",
+                    args: new AasxMenuListOfArgDefs()
+                        .AddFromReflection(new AasxSearchUtil.SearchOptions()))
+                .AddWpf(name: "ToolsReplaceText", header: "Replace …", inputGesture: "Ctrl+Shift+H",
+                    args: new AasxMenuListOfArgDefs()
+                        .AddFromReflection(new AasxSearchUtil.SearchOptions())
+                        .Add("Do", "Either do 'stay', 'forward' or 'all'."))
+                .AddWpf(name: "ToolsFindForward", header: "Find Forward", inputGesture: "F3", isHidden: true)
+                .AddWpf(name: "ToolsReplaceStay", header: "Replace and stay", isHidden: true)
+                .AddWpf(name: "ToolsReplaceForward", header: "Replace and stay", isHidden: true)
+                .AddWpf(name: "ToolsReplaceAll", header: "Replace all", isHidden: true)
                 .AddSeparator()
-                .AddMenu(header: "Editing locations ..", childs: (new AasxMenu())
+                .AddMenu(header: "Editing locations …", childs: (new AasxMenu())
                     .AddWpf(name: "LocationPush", header: "Push location", inputGesture: "Ctrl+Shift+P")
                     .AddWpf(name: "LocationPop", header: "Pop location", inputGesture: "Ctrl+Shift+O"))
                 .AddSeparator()
-                .AddMenu(header: "Plugins ..", childs: (new AasxMenu())
+                .AddMenu(header: "Plugins …", childs: (new AasxMenu())
                     .AddWpf(name: "NewSubmodelFromPlugin", header: "New Submodel", inputGesture: "Ctrl+Shift+M",
                             help: "Creates a new Submodel based on defintions provided by plugin.",
                             args: new AasxMenuListOfArgDefs()
@@ -296,22 +310,22 @@ namespace AasxPackageExplorer
                                 .Add("Record", "Record data", hidden: true)
                                 .Add("SmRef", "Return: Submodel generated", hidden: true)))
                 .AddSeparator()
-                .AddWpf(name: "ConvertElement", header: "Convert ..",
+                .AddWpf(name: "ConvertElement", header: "Convert …",
                         help: "Asks plugins if these could make offers to convert the current elements and " +
                             "subsequently converts the element.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("Name", "Name of the potential offer (partially)")
                             .Add("Record", "Record data", hidden: true))
                 .AddSeparator()
-                .AddMenu(header: "Buffer ..", childs: (new AasxMenu())
+                .AddMenu(header: "Buffer …", childs: (new AasxMenu())
                     .AddWpf(name: "BufferClear", header: "Clear internal paste buffer"))
                 .AddSeparator()
-                .AddMenu(header: "Events ..", childs: (new AasxMenu())
+                .AddMenu(header: "Events …", childs: (new AasxMenu())
                     .AddWpf(name: "EventsShowLogMenu", header: "_Event log", inputGesture: "Ctrl+L",
                         onlyDisplay: true, isCheckable: true)
                     .AddWpf(name: "EventsResetLocks", header: "Reset interlocking"))
-                .AddMenu(header: "Scripts ..", childs: (new AasxMenu())
-                    .AddWpf(name: "ScriptEditLaunch", header: "Edit & launch ..", inputGesture: "Ctrl+Shift+L")));
+                .AddMenu(header: "Scripts …", childs: (new AasxMenu())
+                    .AddWpf(name: "ScriptEditLaunch", header: "Edit & launch …", inputGesture: "Ctrl+Shift+L")));
 
             //
             // Options
@@ -332,11 +346,11 @@ namespace AasxPackageExplorer
 
             menu.AddMenu(header: "Help",
                 childs: (new AasxMenu())
-                .AddWpf(name: "About", header: "About ..")
-                .AddWpf(name: "HelpGithub", header: "Help on Github ..")
-                .AddWpf(name: "FaqGithub", header: "FAQ on Github ..")
-                .AddWpf(name: "HelpIssues", header: "Issues on Github ..")
-                .AddWpf(name: "HelpOptionsInfo", header: "Available options .."));
+                .AddWpf(name: "About", header: "About …")
+                .AddWpf(name: "HelpGithub", header: "Help on Github …")
+                .AddWpf(name: "FaqGithub", header: "FAQ on Github …")
+                .AddWpf(name: "HelpIssues", header: "Issues on Github …")
+                .AddWpf(name: "HelpOptionsInfo", header: "Available options …"));
 
             //
             // Hotkeys
@@ -967,6 +981,16 @@ namespace AasxPackageExplorer
                 // start
                 ticket.StartExec();
 
+                if (ticket.ScriptMode && cmd == "editmenu" && ticket["Mode"] is bool editMode)
+                {
+                    _mainMenu?.SetChecked("EditMenu", editMode);
+                }
+
+                if (ticket.ScriptMode && cmd == "hintsmenu" && ticket["Mode"] is bool hintsMode)
+                {
+                    _mainMenu?.SetChecked("HintsMenu", hintsMode);
+                }
+
                 // try to remember current selected data object
                 object currMdo = null;
                 if (DisplayElements.SelectedItem != null)
@@ -1190,8 +1214,9 @@ namespace AasxPackageExplorer
             if (cmd == "convertelement")
                 CommandBinding_ConvertElement(cmd, ticket);
 
-            if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward")
-                CommandBinding_ToolsFind(cmd, ticket);
+            if (cmd == "toolsfindtext" || cmd == "toolsfindforward" || cmd == "toolsfindbackward"
+                || cmd == "toolsreplacetext" || cmd == "toolsreplacestay" || cmd == "toolsreplaceforward"
+                || cmd == "toolsreplaceall") await CommandBinding_ToolsFind(cmd, ticket);
 
             if (cmd == "checkandfix")
                 CommandBinding_CheckAndFix();
@@ -1355,6 +1380,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "filereponew")
             {
                 ticket.StartExec();
@@ -1675,6 +1704,10 @@ namespace AasxPackageExplorer
         public void CommandBinding_PrintAsset(
             AasxMenuActionTicket ticket)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             // start
             ticket?.StartExec();
 
@@ -1946,6 +1979,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "bmecatimport")
             {
                 // filename
@@ -1975,6 +2012,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "csvimport")
             {
                 // filename
@@ -2004,6 +2045,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "opcuaimportnodeset")
             {
                 // filename
@@ -2355,6 +2400,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "submodelread")
             {
                 // start
@@ -2555,6 +2604,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "importaml")
             {
                 // start
@@ -2612,6 +2665,10 @@ namespace AasxPackageExplorer
             AasxMenuActionTicket ticket = null)
 
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "rdfread")
             {
                 // filename
@@ -2726,6 +2783,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             // check
             var rf = ticket.DereferencedMainDataObject as AdminShell.Referable;
             if (rf == null)
@@ -2784,8 +2845,12 @@ namespace AasxPackageExplorer
             AasxMenuActionTicket ticket,
             bool import = false, bool exportUml = false, bool importTimeSeries = false)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             // start
-            ticket?.StartExec();
+            ticket.StartExec();
 
             // help (called later)
             Action callHelp = () =>
@@ -2996,6 +3061,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket = null)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             if (cmd == "submodeltdimport")
             {
                 // filename
@@ -3053,6 +3122,10 @@ namespace AasxPackageExplorer
             string cmd,
             AasxMenuActionTicket ticket)
         {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
             // create a list of plugins, which are capable of generating Submodels
             var listOfSm = new List<AnyUiDialogueListItem>();
             var list = _logic?.GetPotentialGeneratedSubmodels();
@@ -3098,7 +3171,7 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(new AnyUiLambdaActionRedrawAllElements(ticket["SmRef"]));
         }
 
-        public void CommandBinding_ToolsFind(
+        public async Task CommandBinding_ToolsFind(
             string cmd,
             AasxMenuActionTicket ticket)
         {
@@ -3106,8 +3179,11 @@ namespace AasxPackageExplorer
             if (ToolsGrid == null || TabControlTools == null || TabItemToolsFind == null || ToolFindReplace == null)
                 return;
 
-            if (cmd == "toolsfindtext")
+            if (cmd == "toolsfindtext" || cmd == "toolsreplacetext")
             {
+                // start
+                ticket.StartExec();
+
                 // make panel visible
                 ToolsGrid.Visibility = Visibility.Visible;
                 TabControlTools.SelectedItem = TabItemToolsFind;
@@ -3118,19 +3194,66 @@ namespace AasxPackageExplorer
 
                 // cursor
                 ToolFindReplace.FocusFirstField();
+
+                // if in script mode, directly start
+                if (ticket.ScriptMode)
+                {
+                    if (cmd == "toolsfindtext" || cmd == "toolsreplacetext")
+                        ToolFindReplace.FindStart(ticket);
+
+                    var dos = (ticket["Do"] as string).Trim().ToLower();
+                    if (cmd == "toolsreplacetext" && dos == "stay")
+                        ToolFindReplace.ReplaceStay(ticket);
+
+                    if (cmd == "toolsreplacetext" && dos == "forward")
+                        ToolFindReplace.ReplaceForward(ticket);
+
+                    if (cmd == "toolsreplacetext" && dos == "all")
+                        ToolFindReplace.ReplaceAll(ticket);
+
+                    // update on screen
+                    await MainTimer_HandleEntityPanel();
+                    ticket.SleepForVisual = 2;
+                }
             }
 
-            if (cmd == "toolsfindforward")
-                ToolFindReplace.FindForward(ticket);
+            if (cmd == "toolsfindforward" || cmd == "toolsfindbackward"
+                || cmd == "toolsreplacestay"
+                || cmd == "toolsreplaceforward"
+                || cmd == "toolsreplaceall")
+            {
+                // start
+                ticket.StartExec();
 
-            if (cmd == "toolsfindbackward")
-                ToolFindReplace.FindBackward(ticket);
+                if (cmd == "toolsfindforward")
+                    ToolFindReplace.FindForward(ticket);
+
+                if (cmd == "toolsfindbackward")
+                    ToolFindReplace.FindBackward(ticket);
+
+                if (cmd == "toolsreplacestay")
+                    ToolFindReplace.ReplaceStay(ticket);
+
+                if (cmd == "toolsreplaceforward")
+                    ToolFindReplace.ReplaceForward(ticket);
+
+                if (cmd == "toolsreplaceall")
+                    ToolFindReplace.ReplaceAll(ticket);
+
+                // complete the selection
+                if (ticket.ScriptMode)
+                {
+                    await MainTimer_HandleEntityPanel();
+                    ticket.SleepForVisual = 2;
+                }
+            }
         }
 
         public void CommandBinding_ExportOPCUANodeSet(
             string cmd,
             AasxMenuActionTicket ticket)
         {
+            // rely on ticket availability
             if (ticket == null)
                 return;
 
@@ -3209,6 +3332,9 @@ namespace AasxPackageExplorer
             AasxMenuActionTicket ticket)
         {
             // Note: the plugin is currently WPF based!
+            // rely on ticket availability
+            if (ticket == null)
+                return;
 
             // start
             ticket.StartExec();
@@ -3273,423 +3399,5 @@ namespace AasxPackageExplorer
             //-----------------------------------
         }
 
-        protected string _currentScriptText = "";
-        protected AasxScript _aasxScript = null;
-
-        public void CommandBinding_ScriptEditLaunch(string cmd, AasxMenuItemBase menuItem)
-        {
-            if (cmd == "scripteditlaunch")
-            {
-                // trivial things
-                if (!_packageCentral.MainAvailable)
-                {
-                    MessageBoxFlyoutShow(
-                        "An AASX package needs to be available", "Error"
-                        , AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
-                    return;
-                }
-
-                // trivial things
-                if (_aasxScript?.IsExecuting == true)
-                {
-                    if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
-                        "An AASX script is already executed! Continue anyway?", "Warning"
-                        , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                        return;
-                    else
-                        // brutal
-                        _aasxScript = null;
-                }
-
-                // prompt for the script
-                var uc = new TextEditorFlyout();
-                uc.DiaData.MimeType = "application/csharp";
-                uc.DiaData.Caption = "Edit script to be launched ..";
-                uc.DiaData.Presets = Options.Curr.ScriptPresets;
-                uc.DiaData.Text = _currentScriptText;
-                this.StartFlyoverModal(uc);
-                _currentScriptText = uc.DiaData.Text;
-                if (uc.DiaData.Result && uc.DiaData.Text.HasContent())
-                {
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
-
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            uc.DiaData.Text, Options.Curr.ScriptLoglevel,
-                            _mainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
-            }
-
-            for (int i=0;i<9; i++)
-                if (cmd == $"launchscript{i}" 
-                    && Options.Curr.ScriptPresets != null)
-                {
-                    // order in human sense
-                    var scriptIndex = (i == 0) ? 9 : (i - 1);
-                    if (scriptIndex >= Options.Curr.ScriptPresets.Count
-                        || Options.Curr.ScriptPresets[scriptIndex]?.Text?.HasContent() != true)
-                        return;
-
-                    // still running?
-                    if (_aasxScript?.IsExecuting == true)
-                    {
-                        if (AnyUiMessageBoxResult.No == MessageBoxFlyoutShow(
-                            "An AASX script is already executed! Continue anyway?", "Warning"
-                            , AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                        else
-                            // brutal
-                            _aasxScript = null;
-                    }
-
-                    // prompting
-                    if (!Options.Curr.ScriptLaunchWithoutPrompt)
-                    {
-                        if (AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
-                            $"Executing script preset #{1 + scriptIndex} " +
-                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?", 
-                            "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
-                            return;
-                    }
-
-                    // execute
-                    try
-                    {
-                        // create first
-                        if (_aasxScript == null)
-                            _aasxScript = new AasxScript();
-
-                        // executing
-                        _aasxScript.StartEnginBackground(
-                            Options.Curr.ScriptPresets[scriptIndex].Text, Options.Curr.ScriptLoglevel,
-                            _mainMenu?.Menu, this);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "when executing script");
-                    }
-                }
-        }
-
-
-        public enum ScriptSelectRefType { None = 0, This, AAS, SM, SME, CD };
-        protected static AdminShell.Referable[] _allowedSelectRefType = {
-            new AdminShell.AdministrationShell(),
-            new AdminShell.Submodel(),
-            new AdminShell.SubmodelElement(),
-            new AdminShell.ConceptDescription()
-        };
-
-        public enum ScriptSelectAdressMode { None = 0, First, Next, Prev, idShort, semanticId };
-        protected static string[] _allowedSelectAdressMode = {
-            "First", "Next", "Prev", "idShort", "semanticId"
-        };
-
-        protected Tuple<AdminShell.Referable, object> SelectEvalObject(
-            ScriptSelectRefType refType, ScriptSelectAdressMode adrMode)
-        {
-            //
-            // Try gather some selection states
-            //
-
-            // something to select
-            var pm = _packageCentral?.Main?.AasEnv;
-            if (pm == null)
-                if (adrMode == ScriptSelectAdressMode.None)
-                {
-                    Log.Singleton.Error("Script: Select: No main package environment available!");
-                    return null;
-                }
-
-            // available elements in the environment
-            var firstAas = pm.AdministrationShells.FirstOrDefault();
-            
-            AdminShell.Submodel firstSm = null;
-            if (firstAas != null && firstAas.submodelRefs != null && firstAas.submodelRefs.Count > 0)
-                firstSm = pm.FindSubmodel(firstAas.submodelRefs[0]);
-
-            AdminShell.SubmodelElement firstSme = null;
-            if (firstSm != null && firstSm.submodelElements != null && firstSm.submodelElements.Count > 0)
-                firstSme = firstSm.submodelElements[0]?.submodelElement;
-
-            // selected items by user
-            var siThis = DisplayElements.SelectedItem;
-            var siSME = siThis?.FindFirstParent(
-                    (ve) => ve is VisualElementSubmodelElement, includeThis: true);
-            var siSM = siThis?.FindFirstParent(
-                    (ve) => ve is VisualElementSubmodelRef, includeThis: true) as VisualElementSubmodelRef;
-            var siAAS = siThis?.FindFirstParent(
-                    (ve) => ve is VisualElementAdminShell, includeThis: true) as VisualElementAdminShell;
-            var siCD = siThis?.FindFirstParent(
-                    (ve) => ve is VisualElementConceptDescription, includeThis: true);
-
-            //
-            // This
-            //
-
-            if (refType == ScriptSelectRefType.This)
-            {
-                // just return as Referable
-                return new Tuple<AdminShell.Referable, object>(
-                    siThis?.GetDereferencedMainDataObject() as AdminShell.Referable, 
-                    siThis?.GetMainDataObject()
-                );
-            }
-
-            //
-            // First
-            //
-
-            if (adrMode == ScriptSelectAdressMode.First)
-            {
-                if (refType == ScriptSelectRefType.AAS)
-                {
-                    if (firstAas == null)
-                    {
-                        Log.Singleton.Error("Script: Select: No AssetAdministrationShells available!");
-                        return null;
-                    }
-                    return new Tuple<AdminShell.Referable, object>(firstAas, firstAas);
-                }
-
-                if (refType == ScriptSelectRefType.SM)
-                {
-                    if (siAAS?.theAas != null)
-                    {
-                        var smr = siAAS.theAas.submodelRefs.FirstOrDefault();
-                        var sm = pm.FindSubmodel(smr);
-                        if (sm == null)
-                        {
-                            Log.Singleton.Error("Script: AAS selected, but no Submodel found!");
-                            return null;
-                        }
-                        return new Tuple<AdminShell.Referable, object>(sm, smr);
-                    }
-
-                    if (firstAas != null)
-                    {
-                        var smr = firstAas.submodelRefs.FirstOrDefault();
-                        var sm = pm.FindSubmodel(smr);
-                        if (sm == null)
-                        {
-                            Log.Singleton.Error("Script: first AAS taken, but no Submodel found!");
-                            return null;
-                        }
-                        return new Tuple<AdminShell.Referable, object>(sm, smr);
-                    }
-                }
-
-                if (refType == ScriptSelectRefType.SME)
-                {
-                    if (siSM?.theSubmodel?.submodelElements != null
-                        && siSM?.theSubmodel?.submodelElements.Count > 0)
-                    {
-                        var sme = siSM?.theSubmodel?.submodelElements.FirstOrDefault()?.submodelElement;
-                        if (sme != null)
-                            return new Tuple<AdminShell.Referable, object>(sme, sme);
-                    }
-
-                    if (firstSme != null)
-                    {
-                        return new Tuple<AdminShell.Referable, object>(firstSme, firstSme);
-                    }
-                }
-            }
-
-            //
-            // Next
-            //
-
-            if (adrMode == ScriptSelectAdressMode.Next)
-            {
-                if (refType == ScriptSelectRefType.AAS)
-                {
-                    var idx = pm?.AdministrationShells?.IndexOf(siAAS?.theAas);
-                    if (siAAS?.theAas == null || idx == null 
-                        || idx.Value < 0 || idx.Value >= pm.AdministrationShells.Count - 1)
-                    {
-                        Log.Singleton.Error("Script: For next AAS, the selected AAS is unknown " +
-                            "or no next AAS can be determined!");
-                        return null;
-                    }
-                    var aas = pm?.AdministrationShells[idx.Value + 1];
-                    return new Tuple<AdminShell.Referable, object>(aas, aas);
-                }
-
-                if (refType == ScriptSelectRefType.SM)
-                {
-                    var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
-                    if (siAAS?.theAas?.submodelRefs == null 
-                        || siSM?.theSubmodel == null
-                        || siSM?.theSubmodelRef == null
-                        || idx == null
-                        || idx.Value < 0 || idx.Value >= siAAS.theAas.submodelRefs.Count)
-                    {
-                        // complain
-                        Log.Singleton.Error("Script: For next SM, the selected AAS/ SM is unknown " +
-                            "or no next SM can be determined!");
-                        return null;
-                    }
-                    if (idx.Value >= siAAS.theAas.submodelRefs.Count - 1)
-                    {
-                        // return null without error, as this is "expected" behaviour
-                        return null;
-                    }
-
-                    // make the step
-                    var smr = siAAS.theAas.submodelRefs[idx.Value + 1];
-                    var sm = pm.FindSubmodel(smr);
-                    if (sm == null)
-                    {
-                        Log.Singleton.Error("Script: For next SM, a SubmodelRef does not have a SM!");
-                        return null;
-                    }
-                    return new Tuple<AdminShell.Referable, object>(sm, smr);
-                }
-            }
-
-            //
-            // Prev
-            //
-
-            if (adrMode == ScriptSelectAdressMode.Prev)
-            {
-                if (refType == ScriptSelectRefType.AAS)
-                {
-                    var idx = pm?.AdministrationShells?.IndexOf(siAAS?.theAas);
-                    if (siAAS?.theAas == null || idx == null
-                        || idx.Value <= 0 || idx.Value >= pm.AdministrationShells.Count)
-                    {
-                        Log.Singleton.Error("Script: For previos AAS, the selected AAS is unknown " +
-                            "or no previous AAS can be determined!");
-                        return null;
-                    }
-                    var aas = pm?.AdministrationShells[idx.Value - 1];
-                    return new Tuple<AdminShell.Referable, object>(aas, aas);
-                }
-
-                if (refType == ScriptSelectRefType.SM)
-                {
-                    var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
-                    if (siAAS?.theAas?.submodelRefs == null
-                        || siSM?.theSubmodel == null
-                        || siSM?.theSubmodelRef == null
-                        || idx == null
-                        || idx.Value < 0 || idx.Value >= siAAS.theAas.submodelRefs.Count)
-                    {
-                        // complain
-                        Log.Singleton.Error("Script: For prev SM, the selected AAS/ SM is unknown " +
-                            "or no prev SM can be determined!");
-                        return null;
-                    }
-                    if (idx.Value <= 0)
-                    {
-                        // return null without error, as this is "expected" behaviour
-                        return null;
-                    }
-
-                    // make the step
-                    var smr = siAAS.theAas.submodelRefs[idx.Value - 1];
-                    var sm = pm.FindSubmodel(smr);
-                    if (sm == null)
-                    {
-                        Log.Singleton.Error("Script: For prev SM, a SubmodelRef does not have a SM!");
-                        return null;
-                    }
-                    return new Tuple<AdminShell.Referable, object>(sm, smr);
-                }
-            }
-
-            // Oops!
-            return null;
-        }
-
-        AdminShellV20.Referable IAasxScriptRemoteInterface.Select(object[] args)
-        {
-            // access
-            if (args == null || args.Length < 1
-                || !(args[0] is string refTypeName))
-            {
-                Log.Singleton.Error("Script: Select: Referable type missing!");
-                return null;
-            }
-
-            // check if Referable Type is ok
-            ScriptSelectRefType refType = ScriptSelectRefType.None;
-            if (refTypeName.Trim().ToLower() == "this")
-                refType = ScriptSelectRefType.This;
-            for (int i = 0; i < _allowedSelectRefType.Length; i++)
-            {
-                var sd = _allowedSelectRefType[i].GetSelfDescription();
-                if ((sd?.ElementName.Trim().ToLower() == refTypeName.Trim().ToLower())
-                    || (sd?.ElementAbbreviation.Trim().ToLower() == refTypeName.Trim().ToLower()))
-                    refType = ScriptSelectRefType.AAS + i;
-            }
-            if (refType == ScriptSelectRefType.None)
-            {
-                Log.Singleton.Error("Script: Select: Referable type invalid!");
-                return null;
-            }
-
-            // check adress mode is ok
-            ScriptSelectAdressMode adrMode = ScriptSelectAdressMode.None;
-
-            if (refType != ScriptSelectRefType.This)
-            {
-                if (args.Length < 2
-                    || !(args[1] is string adrModeName))
-                {
-                    Log.Singleton.Error("Script: Select: Adfress mode missing!");
-                    return null;
-                }
-
-                for (int i = 0; i < _allowedSelectAdressMode.Length; i++)
-                    if (_allowedSelectAdressMode[i].ToLower().Trim() == adrModeName.Trim().ToLower())
-                        adrMode = ScriptSelectAdressMode.First + i;
-                if (adrMode == ScriptSelectAdressMode.None)
-                {
-                    Log.Singleton.Error("Script: Select: Adressing mode invalid!");
-                    return null;
-                }
-            }
-
-            // evaluate next item
-
-            var selEval = SelectEvalObject(refType, adrMode);
-
-            // well-defined result?
-            if (selEval != null && selEval.Item1 != null && selEval.Item2 != null)
-            {
-                DisplayElements.ClearSelection();
-                DisplayElements.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
-                return selEval.Item1;
-            }            
-
-            // nothing found
-            return null;
-        }
-
-        bool IAasxScriptRemoteInterface.Location(object[] args)
-        {
-            // access
-            if (args == null || args.Length < 1 || !(args[0] is string cmd))
-                return false;
-
-            // delegate
-            CommandBinding_GeneralDispatch(
-                "location" + cmd.Trim().ToLower(),
-                null,
-                ticket: new AasxMenuActionTicket()).GetAwaiter().GetResult();
-            return true;
-        }
     }
 }
