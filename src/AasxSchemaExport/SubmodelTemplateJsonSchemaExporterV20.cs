@@ -20,8 +20,15 @@ namespace AasxSchemaExport
 
             AddDefinitionForSubmodel(schema);
             AddDefinitionForIdentifiable(schema);
+            AddDefinitionsForSubmodelElements(schema);
+
 
             return schema.ToString();
+        }
+
+        private void AddDefinitionsForSubmodelElements(JToken schema)
+        {
+            schema.
         }
 
         private void AddDefinitionForSubmodel(JToken schema)
