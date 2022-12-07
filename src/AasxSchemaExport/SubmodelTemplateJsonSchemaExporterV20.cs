@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using Newtonsoft.Json.Linq;
 
@@ -89,6 +90,12 @@ namespace AasxSchemaExport
                 propertiesObject["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
             }
 
+            if (submodelElement is AdminShellV20.SubmodelElementCollection submodelElementCollection)
+            {
+                propertiesObject["value"] = new JArray();
+                var submodelElements = submodelElementCollection.value.Select(item => item.submodelElement);
+
+            }
 
             // Multiplicity
             var multiplicityQualifier = submodelElement.qualifiers.FindType("Multiplicity");
