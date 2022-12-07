@@ -56,14 +56,22 @@ namespace AasxSchemaExport
 
         private void AddDefinitionForSubmodelElement(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
-            var elementName = submodelElement.idShort;
+            var elementName = submodelElement.idShort.Replace("{00}", "");
             schema["$defs"][elementName] = JObject.Parse(@"{'contains': {'properties': {}}}");
 
             var propertiesObject = SelectToken<JObject>(schema, $"$.$defs.{elementName}.contains.properties");
 
             // idShort
-            propertiesObject["idShort"] = JObject.Parse($@"{{'const': '{elementName}'}}");
-
+            if (submodelElement.idShort.EndsWith("{00}"))
+            {
+                var idShortPattern = $@"{submodelElement.idShort.Replace("{00}", "")}\\d{{2}}";
+                propertiesObject["idShort"] = JObject.Parse($@"{{'pattern': '^{idShortPattern}$'}}");
+            }
+            else
+            {
+                propertiesObject["idShort"] = JObject.Parse($@"{{'const': '{elementName}'}}");
+            }
+            
             // kind
             propertiesObject["kind"] = JObject.Parse(@"{'const': 'Instance'}");
 
