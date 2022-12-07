@@ -45,31 +45,25 @@ namespace AasxSchemaExport
         private void AddDefinitionForSubmodelElement(JObject schema, AdminShellV20.SubmodelElement submodelElement)
         {
             var elementName = submodelElement.idShort;
-            schema["$defs"][elementName] = new JObject();
-            schema["$defs"][elementName]["contains"] = new JObject();
-            schema["$defs"][elementName]["contains"]["properties"] = new JObject();
+            schema["$defs"][elementName] = JObject.Parse(@"{'contains': {'properties': {}}}");
 
-            var properties = schema["$defs"][elementName]["contains"]["properties"] as JObject;
-            if (properties == null)
-            {
-                throw new Exception($"Something went wrong. Properties were not created (Element: {elementName}).");
-            }
+            var propertiesObject = SelectToken<JObject>(schema, $"$.$defs.{elementName}.contains.properties");
 
             // idShort
-            properties["idShort"] = JObject.Parse($@"{{'const': '{elementName}'}}");
+            propertiesObject["idShort"] = JObject.Parse($@"{{'const': '{elementName}'}}");
 
             // kind
-            properties["kind"] = JObject.Parse(@"{'const': 'Instance'}");
+            propertiesObject["kind"] = JObject.Parse(@"{'const': 'Instance'}");
 
             // modelType
             var modelType = submodelElement.JsonModelType.name;
-            properties["modelType"] = JObject.Parse($@"{{'properties': {{'name': {{'const': '{modelType}'}}}}}}");
+            propertiesObject["modelType"] = JObject.Parse($@"{{'properties': {{'name': {{'const': '{modelType}'}}}}}}");
 
             // semanticId
             if (!submodelElement.semanticId.IsEmpty)
             {
-                properties["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'allOf': []}}}");
-                var allOf = properties["semanticId"]?["properties"]?["keys"]?["allOf"] as JArray;
+                propertiesObject["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'allOf': []}}}");
+                var allOf = SelectToken<JArray>(propertiesObject, "semanticId.properties.keys.allOf");
                 submodelElement.semanticId.Keys.ForEach(key =>
                 {
                     var containsDef = JObject.Parse($@"
@@ -92,7 +86,7 @@ namespace AasxSchemaExport
             {
                 // valueType
                 var valueType = property.JsonValueType.dataObjectType.name;
-                properties["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
+                propertiesObject["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
             }
 
 
@@ -144,6 +138,15 @@ namespace AasxSchemaExport
                         }
                     }
                 }");
+        }
+
+        private T SelectToken<T>(JToken source, string path) where T: JToken
+        {
+            var result = source.SelectToken(path) as T;
+            if (result == null)
+                throw new Exception($"Token was not found. {path}");
+
+            return result;
         }
 
         private void AddReferenceToArray(Func<JObject,JArray> targetArrayProvider, JObject schema, string referenceValue)
