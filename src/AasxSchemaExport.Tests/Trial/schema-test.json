@@ -39,64 +39,67 @@
         "submodelElements": {
           "allOf": [
             {
-              "minContains": 1,
-              "maxContains": 1,
-              "contains": {
-                "properties": {
-                  "idShort": {
-                    "const": "Prop1"
-                  },
-                  "kind": {
-                    "const": "Instance"
-                  },
-                  "semanticId": {
-                    "properties": {
-                      "keys": {
-                        "allOf": [
-                          {
-                            "contains": {
-                              "properties": {
-                                "type": {
-                                  "const": "ConceptDescription"
-                                },
-                                "local": {
-                                  "const": "true"
-                                },
-                                "value": {
-                                  "const": "https://www.example.com/cd1"
-                                },
-                                "idType": {
-                                  "const": "IRI"
-                                }
-                              }
-                            }
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "modelType": {
-                    "properties": {
-                      "name": {
-                        "const": "Property"
-                      }
-                    }
-                  },
-                  "valueType": {
-                    "properties": {
-                      "dataObjectType": {
-                        "properties": {
-                          "name": {
-                            "const": "string"
-                          }
+              "$ref": "#/$defs/Prop1"
+            }
+          ]
+        }
+      }
+    },
+    "Prop1": {
+      "minContains": 1,
+      "maxContains": 1,
+      "contains": {
+        "properties": {
+          "idShort": {
+            "const": "Prop1"
+          },
+          "kind": {
+            "const": "Instance"
+          },
+          "semanticId": {
+            "properties": {
+              "keys": {
+                "allOf": [
+                  {
+                    "contains": {
+                      "properties": {
+                        "type": {
+                          "const": "ConceptDescription"
+                        },
+                        "local": {
+                          "const": "true"
+                        },
+                        "value": {
+                          "const": "https://www.example.com/cd1"
+                        },
+                        "idType": {
+                          "const": "IRI"
                         }
                       }
                     }
                   }
+                ]
+              }
+            }
+          },
+          "modelType": {
+            "properties": {
+              "name": {
+                "const": "Property"
+              }
+            }
+          },
+          "valueType": {
+            "properties": {
+              "dataObjectType": {
+                "properties": {
+                  "name": {
+                    "const": "String"
+                  }
                 }
               }
             }
-          ]
+          }
         }
       }
     }

@@ -117,6 +117,32 @@ namespace AasxSchemaExport.Tests
                 ["const"].Value<string>(), "Submodel");
         }
 
+        [Test]
+        public void Test_level0_prop1()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema,"Prop1");
+            var properties = GetPropertiesOfContains(definition);
+
+            Assert.AreEqual(properties["idShort"]?["const"].Value<string>(), "Prop1");
+            Assert.AreEqual(properties["kind"]?["const"].Value<string>(), "Instance");
+            Assert.AreEqual(properties["modelType"]?["properties"]?["name"]?["const"].Value<string>(), "Property");
+            Assert.AreEqual(properties["valueType"]?["properties"]?["dataObjectType"]?["properties"]?["name"]?["const"].Value<string>(), "String");
+        }
+
+        private JObject GetDefinition(JObject schema, string name)
+        {
+            var definition = schema["$defs"][name];
+            return definition as JObject;
+        }
+
+        private JObject GetPropertiesOfContains(JObject jObject)
+        {
+            var properties = jObject["contains"]["properties"];
+            return properties as JObject;
+        }
+
 
         private object FindObjectInArrayWithProperty(JArray jArray, string propertyName, string propertyValue)
         {

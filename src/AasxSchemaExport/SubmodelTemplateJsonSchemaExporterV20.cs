@@ -1,4 +1,6 @@
-﻿using AdminShellNS;
+﻿using System;
+using System.Linq;
+using AdminShellNS;
 using Newtonsoft.Json.Linq;
 
 namespace AasxSchemaExport
@@ -18,28 +20,116 @@ namespace AasxSchemaExport
 
             schema["$defs"] = JObject.Parse(@"{'Root': {'allOf': []}}");
 
-            AddDefinitionForSubmodel(schema);
+            AddReferenceForSubmodel(schema);
             AddDefinitionForIdentifiable(schema);
-            AddDefinitionsForSubmodelElements(schema);
-
+            AddArrayDefinitionForSubmodelElements(schema);
+            
+            foreach (var submodelElement in submodel.submodelElements.Select(item => item.submodelElement))
+            {
+                AddDefinitionForSubmodelElement(schema, submodelElement);
+            }
 
             return schema.ToString();
         }
 
-        private void AddDefinitionsForSubmodelElements(JToken schema)
+        private void AddArrayDefinitionForSubmodelElements(JObject schema)
         {
-            schema.
+            schema["$defs"]["Elements"] =
+                JObject.Parse(
+                    @"{'type': 'array', 'additionalItems': 'false', 'properties': {'submodelElements': {'allOf': []}}}");
+
+            AddReferenceToArray(GetRootAllOf, schema, "#/$defs/Elements");
         }
 
-        private void AddDefinitionForSubmodel(JToken schema)
+
+        private void AddDefinitionForSubmodelElement(JObject schema, AdminShellV20.SubmodelElement submodelElement)
         {
-            var rootAllOf = GetDefinitionRootAllOf(schema);
-            rootAllOf.Add(JObject.Parse(@"{'$ref': 'aas.json#/$defs/Submodel'}"));
+            var elementName = submodelElement.idShort;
+            schema["$defs"][elementName] = new JObject();
+            schema["$defs"][elementName]["contains"] = new JObject();
+            schema["$defs"][elementName]["contains"]["properties"] = new JObject();
+
+            var properties = schema["$defs"][elementName]["contains"]["properties"] as JObject;
+            if (properties == null)
+            {
+                throw new Exception($"Something went wrong. Properties were not created (Element: {elementName}).");
+            }
+
+            // idShort
+            properties["idShort"] = JObject.Parse($@"{{'const': '{elementName}'}}");
+
+            // kind
+            properties["kind"] = JObject.Parse(@"{'const': 'Instance'}");
+
+            // modelType
+            var modelType = submodelElement.JsonModelType.name;
+            properties["modelType"] = JObject.Parse($@"{{'properties': {{'name': {{'const': '{modelType}'}}}}}}");
+
+            // semanticId
+            if (!submodelElement.semanticId.IsEmpty)
+            {
+                properties["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'allOf': []}}}");
+                var allOf = properties["semanticId"]?["properties"]?["keys"]?["allOf"] as JArray;
+                submodelElement.semanticId.Keys.ForEach(key =>
+                {
+                    var containsDef = JObject.Parse($@"
+                            {{'contains': 
+                                {{'properties': 
+                                    {{
+                                        'type': {{'const': '{key.type}'}},
+                                        'local': {{'const': '{key.local.ToString().ToLower()}'}},
+                                        'referenceValue': {{'const': '{key.value}'}},
+                                        'idType': {{'const': '{key.idType}'}},
+                                    }}
+                                }}
+                            }}");
+                    allOf.Add(containsDef);
+                });
+            }
+
+
+            if (submodelElement is AdminShellV20.Property property)
+            {
+                // valueType
+                var valueType = property.JsonValueType.dataObjectType.name;
+                properties["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
+            }
+
+
+            // Multiplicity
+            var multiplicityQualifier = submodelElement.qualifiers.FindType("Multiplicity");
+            if (multiplicityQualifier != null)
+            {
+                switch (multiplicityQualifier.value)
+                {
+                    case "ZeroToOne":
+                        schema["$defs"][elementName]["minContains"] = 0;
+                        schema["$defs"][elementName]["maxContains"] = 1;
+                        break;
+                    case "One":
+                        schema["$defs"][elementName]["minContains"] = 1;
+                        schema["$defs"][elementName]["maxContains"] = 1;
+                        break;
+                    case "ZeroToMany":
+                        schema["$defs"][elementName]["minContains"] = 0;
+                        break;
+                    case "OneToMany":
+                        schema["$defs"][elementName]["minContains"] = 1;
+                        break;
+                }
+            }
+
+            AddReferenceToArray(GetSubmodelElementsAllOf, schema, $"#/$defs/{elementName}");
+        }
+
+        private void AddReferenceForSubmodel(JObject schema)
+        {
+            AddReferenceToArray(GetRootAllOf, schema, "aas.json#/$defs/Submodel");
         }
 
         private void AddDefinitionForIdentifiable(JToken schema)
         {
-            var rootAllOf = GetDefinitionRootAllOf(schema);
+            var rootAllOf = GetRootAllOf(schema);
             rootAllOf.Add(JObject.Parse(@"{'$ref': '#/$defs/Identifiable'}"));
 
             schema["$defs"]["Identifiable"] = JObject.Parse(@"
@@ -56,10 +146,22 @@ namespace AasxSchemaExport
                 }");
         }
 
-        private JArray GetDefinitionRootAllOf(JToken schema)
+        private void AddReferenceToArray(Func<JObject,JArray> targetArrayProvider, JObject schema, string referenceValue)
         {
-            var rootAllOf = schema["$defs"]?["Root"]?["allOf"] as JArray;
-            return rootAllOf;
+            var target = targetArrayProvider(schema);
+            target.Add(JObject.Parse($@"{{'$ref': '{referenceValue}' }}"));
+        }
+
+        private JArray GetRootAllOf(JToken schema)
+        {
+            var result = schema["$defs"]?["Root"]?["allOf"] as JArray;
+            return result;
+        }
+
+        private JArray GetSubmodelElementsAllOf(JObject schema)
+        {
+            var result = schema["$defs"]?["Elements"]?["properties"]?["submodelElements"]?["allOf"] as JArray;
+            return result;
         }
     }
 }
