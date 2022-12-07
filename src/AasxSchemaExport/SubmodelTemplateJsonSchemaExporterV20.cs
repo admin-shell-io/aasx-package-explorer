@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AasxCompatibilityModels;
 using AdminShellNS;
 using Newtonsoft.Json.Linq;
 
@@ -24,26 +24,37 @@ namespace AasxSchemaExport
             AddReferenceForSubmodel(schema);
             AddDefinitionForIdentifiable(schema);
             AddArrayDefinitionForSubmodelElements(schema);
-            
-            foreach (var submodelElement in submodel.submodelElements.Select(item => item.submodelElement))
-            {
-                AddDefinitionForSubmodelElement(schema, submodelElement);
-            }
 
-            return schema.ToString();
+            var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
+            var submodelElementsAllOf = GetSubmodelElementsAllOf(schema);
+            AddDefinitionsForSubmodelElements(schema, submodelElementsAllOf, submodelElements);
+
+            var result = schema.ToString();
+
+            return result;
         }
 
         private void AddArrayDefinitionForSubmodelElements(JObject schema)
         {
             schema["$defs"]["Elements"] =
                 JObject.Parse(
-                    @"{'type': 'array', 'additionalItems': 'false', 'properties': {'submodelElements': {'allOf': []}}}");
+                    @"{'properties': {'submodelElements': {'type': 'array', 'additionalItems': false, 'allOf': []}}}");
 
             AddReferenceToArray(GetRootAllOf, schema, "#/$defs/Elements");
         }
 
+        private void AddDefinitionsForSubmodelElements(
+            JObject schema,
+            JArray targetAllOf,
+            IEnumerable<AdminShellV20.SubmodelElement> submodelElements)
+        {
+            foreach (var submodelElement in submodelElements)
+            {
+                AddDefinitionForSubmodelElement(schema, targetAllOf, submodelElement);
+            }
+        }
 
-        private void AddDefinitionForSubmodelElement(JObject schema, AdminShellV20.SubmodelElement submodelElement)
+        private void AddDefinitionForSubmodelElement(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
             var elementName = submodelElement.idShort;
             schema["$defs"][elementName] = JObject.Parse(@"{'contains': {'properties': {}}}");
@@ -63,7 +74,7 @@ namespace AasxSchemaExport
             // semanticId
             if (!submodelElement.semanticId.IsEmpty)
             {
-                propertiesObject["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'allOf': []}}}");
+                propertiesObject["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'type': 'array', 'additionalItems': false, 'allOf': []}}}");
                 var allOf = SelectToken<JArray>(propertiesObject, "semanticId.properties.keys.allOf");
                 submodelElement.semanticId.Keys.ForEach(key =>
                 {
@@ -92,9 +103,10 @@ namespace AasxSchemaExport
 
             if (submodelElement is AdminShellV20.SubmodelElementCollection submodelElementCollection)
             {
-                propertiesObject["value"] = new JArray();
+                propertiesObject["value"] = JToken.Parse(@"{'type': 'array', 'additionalItems': false, 'allOf': []}");
+                var collectionAllOf = SelectToken<JArray>(propertiesObject, "value.allOf");
                 var submodelElements = submodelElementCollection.value.Select(item => item.submodelElement);
-
+                AddDefinitionsForSubmodelElements(schema, collectionAllOf, submodelElements);
             }
 
             // Multiplicity
@@ -119,8 +131,7 @@ namespace AasxSchemaExport
                         break;
                 }
             }
-
-            AddReferenceToArray(GetSubmodelElementsAllOf, schema, $"#/$defs/{elementName}");
+            AddReferenceToArray(targetAllOf, $"#/$defs/{elementName}");
         }
 
         private void AddReferenceForSubmodel(JObject schema)
@@ -156,6 +167,11 @@ namespace AasxSchemaExport
             return result;
         }
 
+        private void AddReferenceToArray(JArray targetArray, string referenceValue)
+        {
+            targetArray.Add(JObject.Parse($@"{{'$ref': '{referenceValue}' }}"));
+        }
+
         private void AddReferenceToArray(Func<JObject,JArray> targetArrayProvider, JObject schema, string referenceValue)
         {
             var target = targetArrayProvider(schema);
@@ -164,13 +180,13 @@ namespace AasxSchemaExport
 
         private JArray GetRootAllOf(JToken schema)
         {
-            var result = schema["$defs"]?["Root"]?["allOf"] as JArray;
+            var result = SelectToken<JArray>(schema, "$.$defs.Root.allOf");
             return result;
         }
 
         private JArray GetSubmodelElementsAllOf(JObject schema)
         {
-            var result = schema["$defs"]?["Elements"]?["properties"]?["submodelElements"]?["allOf"] as JArray;
+            var result = SelectToken<JArray>(schema, "$.$defs.Elements.properties.submodelElements.allOf");
             return result;
         }
     }

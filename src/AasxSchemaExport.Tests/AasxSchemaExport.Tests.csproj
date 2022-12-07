@@ -65,11 +65,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="TestData\IDTA 02006-2-0_Template_Digital Nameplate.aasx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="TestData\SubmodelTest.aasx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Trial\aasV2.0.json" />
     <None Include="Trial\schema-array-4.json" />
+    <None Include="Trial\schema-pattern-2.json" />
     <None Include="Trial\schema-test.json" />
     <None Include="Trial\schema-array-1.json" />
     <None Include="Trial\schema-array-2.json" />

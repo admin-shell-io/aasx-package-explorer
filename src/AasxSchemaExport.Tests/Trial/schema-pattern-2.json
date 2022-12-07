@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "title": "AssetAdministrationShellSubmodelSubmodelTest",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "allOf": [
+    {
+      "$ref": "#/$defs/Root"
+    }
+  ],
+  "$defs": {
+    "Root": {
+      "allOf": [
+        {
+          "properties": {
+            "xxx": {
+              "type": "array",
+              "additionalItems": false,
+              "allOf": [
+                {
+                  "minContains": 1,
+                  "maxContains": 1,
+                  "contains": {
+                    "properties": {
+                      "a": {
+                        "pattern": "^Marking\\d{2}$"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

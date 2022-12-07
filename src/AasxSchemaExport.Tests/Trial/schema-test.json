@@ -33,10 +33,10 @@
       }
     },
     "Elements": {
-      "type": "array",
-      "additionalItems": false,
       "properties": {
         "submodelElements": {
+          "type": "array",
+          "additionalItems": false,
           "allOf": [
             {
               "$ref": "#/$defs/Prop1"
@@ -59,6 +59,8 @@
           "semanticId": {
             "properties": {
               "keys": {
+                "type": "array",
+                "additionalItems": false,
                 "allOf": [
                   {
                     "contains": {
