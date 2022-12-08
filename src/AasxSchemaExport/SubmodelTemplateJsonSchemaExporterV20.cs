@@ -57,15 +57,20 @@ namespace AasxSchemaExport
         private void AddDefinitionForSubmodelElement(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
             var elementName = submodelElement.idShort.Replace("{00}", "");
-            schema["$defs"][elementName] = JObject.Parse(@"{'contains': {'properties': {}}}");
+            var submodelElementDefinition = JObject.Parse(@"{'contains': {'properties': {}}}");
 
-            var propertiesObject = SelectToken<JObject>(schema, $"$.$defs.{elementName}.contains.properties");
+            var propertiesObject = SelectToken<JObject>(submodelElementDefinition, "contains.properties");
+
+            var isArbitrary = false;
 
             // idShort
             if (submodelElement.idShort.EndsWith("{00}"))
             {
                 var idShortPattern = $@"{submodelElement.idShort.Replace("{00}", "")}\\d{{2}}";
                 propertiesObject["idShort"] = JObject.Parse($@"{{'pattern': '^{idShortPattern}$'}}");
+            } else if (submodelElement.idShort == "{arbitrary}")
+            {
+                isArbitrary = true;
             }
             else
             {
@@ -80,7 +85,7 @@ namespace AasxSchemaExport
             propertiesObject["modelType"] = JObject.Parse($@"{{'properties': {{'name': {{'const': '{modelType}'}}}}}}");
 
             // semanticId
-            if (!submodelElement.semanticId.IsEmpty)
+            if (!submodelElement.semanticId.IsEmpty && !isArbitrary)
             {
                 propertiesObject["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'type': 'array', 'additionalItems': false, 'allOf': []}}}");
                 var allOf = SelectToken<JArray>(propertiesObject, "semanticId.properties.keys.allOf");
@@ -106,14 +111,21 @@ namespace AasxSchemaExport
             {
                 // valueType
                 var valueType = property.JsonValueType.dataObjectType.name;
-                propertiesObject["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
+                if (!string.IsNullOrEmpty(valueType))
+                    propertiesObject["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
             }
 
             if (submodelElement is AdminShellV20.SubmodelElementCollection submodelElementCollection)
             {
-                propertiesObject["value"] = JToken.Parse(@"{'type': 'array', 'additionalItems': false, 'allOf': []}");
+                var submodelElements = submodelElementCollection.value
+                    .Select(item => item.submodelElement)
+                    .ToArray();
+
+                var additionalItems = submodelElements.Any(item => item.idShort == "{arbitrary}");
+
+                propertiesObject["value"] = JToken.Parse($@"{{'type': 'array', 'additionalItems': {additionalItems.ToString().ToLower()}, 'allOf': []}}");
                 var collectionAllOf = SelectToken<JArray>(propertiesObject, "value.allOf");
-                var submodelElements = submodelElementCollection.value.Select(item => item.submodelElement);
+                
                 AddDefinitionsForSubmodelElements(schema, collectionAllOf, submodelElements);
             }
 
@@ -124,22 +136,31 @@ namespace AasxSchemaExport
                 switch (multiplicityQualifier.value)
                 {
                     case "ZeroToOne":
-                        schema["$defs"][elementName]["minContains"] = 0;
-                        schema["$defs"][elementName]["maxContains"] = 1;
+                        submodelElementDefinition["minContains"] = 0;
+                        submodelElementDefinition["maxContains"] = 1;
                         break;
                     case "One":
-                        schema["$defs"][elementName]["minContains"] = 1;
-                        schema["$defs"][elementName]["maxContains"] = 1;
+                        submodelElementDefinition["minContains"] = 1;
+                        submodelElementDefinition["maxContains"] = 1;
                         break;
                     case "ZeroToMany":
-                        schema["$defs"][elementName]["minContains"] = 0;
+                        submodelElementDefinition["minContains"] = 0;
                         break;
                     case "OneToMany":
-                        schema["$defs"][elementName]["minContains"] = 1;
+                        submodelElementDefinition["minContains"] = 1;
                         break;
                 }
             }
-            AddReferenceToArray(targetAllOf, $"#/$defs/{elementName}");
+
+            if (isArbitrary)
+            {
+                targetAllOf.Add(submodelElementDefinition);
+            }
+            else
+            {
+                AddReferenceToArray(targetAllOf, $"#/$defs/{elementName}");
+                schema["$defs"][elementName] = submodelElementDefinition;
+            }
         }
 
         private void AddReferenceForSubmodel(JObject schema)
