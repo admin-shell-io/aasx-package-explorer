@@ -195,8 +195,8 @@ namespace AasxRestServerLibrary
             {
                 result["type"] = "workbook";
                 result["author"] = workbook.Author;
-                result["worksheets"] = new JArray();
             }
+            result["worksheets"] = new JArray();
 
             foreach (var worksheet in workbook.Worksheets)
             {

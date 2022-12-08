@@ -32,7 +32,7 @@ namespace AasxRestServerLibrary
             try
             {
                 XDocument xmlDocument = LoadXmlDocument(xmlFileStream);
-                IEnumerable<XObject> fragmentObjects = FindFragmentObjects(xmlDocument, xmlFragment);
+                List<XObject> fragmentObjects = FindFragmentObjects(xmlDocument, xmlFragment).ToList();
 
                 var content = context.Request.QueryString.Get("content") ?? "normal";
                 var level = context.Request.QueryString.Get("level") ?? "deep";

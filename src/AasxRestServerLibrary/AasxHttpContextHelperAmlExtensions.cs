@@ -211,8 +211,6 @@ namespace AasxRestServerLibrary
             }
 
             result.WriteTo(writer);
-            return;
-
         }
 
         private JObject BuildJsonValueRecursively(CAEXBasicObject value)
