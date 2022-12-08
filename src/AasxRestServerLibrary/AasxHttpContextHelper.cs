@@ -1155,19 +1155,8 @@ namespace AasxRestServerLibrary
             packageStream.Close();
         }
 
-        public void EvalGetSubmodelElementFragment(IHttpContext context, string aasid, string smid, string[] elemids, string fragmentType, string fragment)
+        public void EvalGetSubmodelElementFragment(IHttpContext context, string aasid, string smid, string[] elemids, List<(string fragmentType, string fragmentValue)> nestedFragments)
         {
-            string decodedFragment;
-            try
-            {
-                decodedFragment = Base64UrlEncoder.Decode(fragment);
-            }
-            catch (FormatException)
-            {
-                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Unable to Base64URL-decode fragment '{fragment}'!");
-                return;
-            }
-
             // access AAS and Submodel
             var aas = this.FindAAS(aasid, context.Request.QueryString, context.Request.RawUrl);
             var sm = this.FindSubmodelWithinAas(aas, smid, context.Request.QueryString, context.Request.RawUrl);
@@ -1200,37 +1189,84 @@ namespace AasxRestServerLibrary
                 return;
             }
 
-            this.EvalGetFragment(context, packageStream, fragmentType, decodedFragment);
+            EvalGetSubmodelElementFragment(context, packageStream, nestedFragments);
+
+            packageStream.Close();
         }
 
-        public void EvalGetFragment(IHttpContext context, Stream fragmentFileStream, string fragmentType, string fragment)
+        private void EvalGetSubmodelElementFragment(IHttpContext context, Stream fileStream, List<(string fragmentType, string fragmentValue)> nestedFragments)
         {
-            switch (fragmentType)
+            var fragment = nestedFragments.First();
+
+            string decodedFragment;
+            try
             {
-                case "aml":
-                case "aml20":
-                case "aml21":
-                    this.EvalGetAMLFragment(context, fragmentFileStream, fragment);
-                    break;
-                case "xml":
-                    this.EvalGetXMLFragment(context, fragmentFileStream, fragment);
-                    break;
-                case "zip":
-                    this.EvalGetZIPFragment(context, fragmentFileStream, fragment);
-                    break;
-                case "xls":
-                case "xlsx":
-                    this.EvalGetXLSFragment(context, fragmentFileStream, fragment);
-                    break;
-                // possibility to add support for more fragment types in the future
-                default:
-                    context.Response.SendResponse(
-                        Grapevine.Shared.HttpStatusCode.NotFound,
-                        $"Unsupported fragment format. Fragment type '" + fragmentType + "' is not supported.");
-                    break;
+                decodedFragment = Base64UrlEncoder.Decode(fragment.fragmentValue);
+            }
+            catch (FormatException)
+            {
+                context.Response.SendResponse(Grapevine.Shared.HttpStatusCode.BadRequest, $"Unable to Base64URL-decode fragment '{fragment}'!");
+                return;
             }
 
-            fragmentFileStream.Close();
+            var otherFragments = nestedFragments.Skip(1).ToList();
+            if (otherFragments.Count == 0)
+            {
+                switch (fragment.fragmentType)
+                {
+                    case "aml":
+                    case "aml20":
+                    case "aml21":
+                        this.EvalGetAMLFragment(context, fileStream, decodedFragment);
+                        break;
+                    case "xml":
+                        this.EvalGetXMLFragment(context, fileStream, decodedFragment);
+                        break;
+                    case "zip":
+                        this.EvalGetZIPFragment(context, fileStream, decodedFragment);
+                        break;
+                    case "xls":
+                    case "xlsx":
+                        this.EvalGetXLSFragment(context, fileStream, decodedFragment);
+                        break;
+                    // possibility to add support for more fragment types in the future
+                    default:
+                        context.Response.SendResponse(
+                            Grapevine.Shared.HttpStatusCode.NotFound,
+                            $"Unsupported fragment format. Fragment type '" + fragment.fragmentType + "' is not supported.");
+                        break;
+                }
+            }
+            else
+            {
+                // the fragment represents an intermediate fragment in a set of nested fragment; consequently, evaluation
+                // is expected to return a stream to a file that will then be used for evaluation of the next fragment
+                Stream nestedFileStream = null;
+                switch (fragment.fragmentType)
+                {
+                    case "zip":
+                        nestedFileStream = this.EvalGetZIPFragmentAsStream(context, fileStream, decodedFragment);
+                        break;
+                    // possibility to add support for more fragment types in the future
+                    default:
+                        context.Response.SendResponse(
+                            Grapevine.Shared.HttpStatusCode.NotFound,
+                            $"Unsupported fragment format. Fragment type '" + fragment.fragmentType + "' does not support nested fragments.");
+                        break;
+                }
+
+                if (nestedFileStream == null)
+                {
+                    context.Response.SendResponse(
+                            Grapevine.Shared.HttpStatusCode.NotFound,
+                            $"Unable to retrieve nested file for fragment '" + fragment.fragmentValue + "'.");
+                    return;
+                }
+
+                EvalGetSubmodelElementFragment(context, nestedFileStream, otherFragments);
+
+                nestedFileStream.Close();
+            }
         }
 
         public void EvalPutSubmodelElementContents(IHttpContext context, string aasid, string smid, string[] elemids)

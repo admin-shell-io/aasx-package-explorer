@@ -38,7 +38,7 @@ namespace AasxRestServerLibrary
 
                 JsonConverter converter = new XlsJsonConverter(content, extent);
                 string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
-                
+
                 SendJsonResponse(context, json);
 
                 return;
@@ -56,7 +56,7 @@ namespace AasxRestServerLibrary
         {
             try
             {
-               return new XLWorkbook(xlsFileStream);
+                return new XLWorkbook(xlsFileStream);
             }
             catch
             {
@@ -74,7 +74,8 @@ namespace AasxRestServerLibrary
                 {
                     // provided expression references the complete workbook
                     return workbook;
-                } else if (xlsExpression.StartsWith("="))
+                }
+                else if (xlsExpression.StartsWith("="))
                 {
                     // provided expression is a formula
                     return workbook.Evaluate(xlsExpression.Substring(1));
@@ -95,7 +96,8 @@ namespace AasxRestServerLibrary
                     return workbook.Worksheet(xlsExpression);
                 }
 
-            } catch 
+            }
+            catch
             {
                 throw new XlsFragmentEvaluationException("An error occurred while evaluating Excel expression '" + xlsExpression + "'!");
             }
@@ -123,7 +125,7 @@ namespace AasxRestServerLibrary
     {
         string Content;
         string Extent;
-        
+
         public XlsJsonConverter(string content = "normal", string extent = "withoutBlobValue")
         {
             this.Content = content;
@@ -132,7 +134,7 @@ namespace AasxRestServerLibrary
 
         public override bool CanConvert(Type objectType)
         {
-            return typeof(XLWorkbook).IsAssignableFrom(objectType) || typeof(IXLWorksheet).IsAssignableFrom(objectType) || 
+            return typeof(XLWorkbook).IsAssignableFrom(objectType) || typeof(IXLWorksheet).IsAssignableFrom(objectType) ||
                 typeof(IXLCell).IsAssignableFrom(objectType) || typeof(IXLCells).IsAssignableFrom(objectType) || typeof(string).IsAssignableFrom(objectType);
         }
         public override bool CanRead
@@ -155,17 +157,20 @@ namespace AasxRestServerLibrary
             if (value is XLWorkbook)
             {
                 result = CompileJson(value as XLWorkbook, valueOnly);
-            } else if (value is IXLWorksheet)
+            }
+            else if (value is IXLWorksheet)
             {
                 result = CompileJson(value as IXLWorksheet, valueOnly);
-            } else if (value is IXLCells)
+            }
+            else if (value is IXLCells)
             {
                 result = CompileJson(value as IXLCells, valueOnly);
             }
             else if (value is IXLCell)
             {
                 result = CompileJson(value as IXLCell, valueOnly);
-            } else if (value is string)
+            }
+            else if (value is string)
             {
                 result = new JObject
                 {
@@ -176,7 +181,8 @@ namespace AasxRestServerLibrary
                 {
                     result["type"] = "formula";
                 }
-            } else
+            }
+            else
             {
                 throw new XlsFragmentEvaluationException("Unable to convert object to a suitbale type: " + value);
             }
@@ -196,13 +202,14 @@ namespace AasxRestServerLibrary
                 result["worksheets"] = new JArray();
             }
 
-            foreach(var worksheet in workbook.Worksheets)
+            foreach (var worksheet in workbook.Worksheets)
             {
                 var worksheetJson = CompileJson(worksheet, valueOnly);
                 if (valueOnly)
                 {
                     result[worksheet.Name] = worksheetJson;
-                } else
+                }
+                else
                 {
                     (result["worksheets"] as JArray).Add(worksheetJson);
                 }
@@ -238,16 +245,17 @@ namespace AasxRestServerLibrary
             {
                 result = new JObject();
 
-                foreach(var cell in cells)
+                foreach (var cell in cells)
                 {
                     result[cell.Address.ToString()] = cell.Value.ToString();
                 }
 
-            } else
+            }
+            else
             {
                 result = new JArray();
 
-                foreach(var cell in cells)
+                foreach (var cell in cells)
                 {
                     result.Add(CompileJson(cell, valueOnly));
                 }
@@ -281,7 +289,8 @@ namespace AasxRestServerLibrary
     /**
      * An exception that indicates that something went wrong while evaluating an XLS fragment.
      */
-    public class XlsFragmentEvaluationException : ArgumentException {
+    public class XlsFragmentEvaluationException : ArgumentException
+    {
 
         public XlsFragmentEvaluationException(string message) : base(message)
         {

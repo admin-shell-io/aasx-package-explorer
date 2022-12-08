@@ -40,13 +40,15 @@ namespace AasxRestServerLibrary
                     DeeplyNestedElementsRemover.RemoveDeeplements(fragmentObject);
                 }
 
-                if (content == "xml") {
+                if (content == "xml")
+                {
                     SendXmlResponse(context, fragmentObject.Node);
-                } else
+                }
+                else
                 {
                     JsonConverter converter = new AmlJsonConverter(content, extent);
                     string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
-                
+
                     SendJsonResponse(context, json);
                 }
 
@@ -61,7 +63,7 @@ namespace AasxRestServerLibrary
             }
         }
 
-        private static CAEXDocument LoadCaexDocument(Stream amlFileStream)
+        public static CAEXDocument LoadCaexDocument(Stream amlFileStream)
         {
             try
             {
@@ -75,7 +77,8 @@ namespace AasxRestServerLibrary
                 {
                     var amlContainer = new AutomationMLContainer(amlFileStream);
                     return CAEXDocument.LoadFromStream(amlContainer.RootDocumentStream());
-                } catch
+                }
+                catch
                 {
                     throw new AmlFragmentEvaluationException($"Unable to load AML file/container from stream.");
                 }
@@ -150,12 +153,12 @@ namespace AasxRestServerLibrary
      * 'extent' as defined by "Details of the AAS, part 2".
      * 
      * Note: The serialization algorithm for 'content=normal' is based on converting the XML represenation of the CAEXBsicObject to JSON.
-     */ 
+     */
     class AmlJsonConverter : JsonConverter
     {
         string Content;
         string Extent;
-        
+
         public AmlJsonConverter(string content = "normal", string extent = "withoutBlobValue")
         {
             this.Content = content;
@@ -190,14 +193,17 @@ namespace AasxRestServerLibrary
             if (Content == "normal")
             {
                 result = JObject.FromObject(basicObject.Node);
-            } else if (Content == "path")
+            }
+            else if (Content == "path")
             {
                 List<string> paths = CollectCaexPaths(basicObject);
                 result = JArray.FromObject(paths);
-            } else if (Content == "value")
+            }
+            else if (Content == "value")
             {
                 result = BuildJsonValueRecursively(basicObject);
-            } else
+            }
+            else
             {
                 throw new AmlFragmentEvaluationException("Unsupported content modifier: " + Content);
             }
@@ -239,7 +245,7 @@ namespace AasxRestServerLibrary
             }
 
             return o;
-            
+
         }
 
         private void BuildJsonValueRecursively(CAEXObject childObject, JObject parentJObject)
@@ -268,11 +274,11 @@ namespace AasxRestServerLibrary
         private IEnumerable<string> ChildPaths<T>(CAEXBasicObject basicObject) where T : CAEXObject
         {
             IEnumerable<T> children = basicObject.Descendants<T>();
-            
+
             return children.Select(c => c.GetFullNodePath());
         }
 
-        
+
     }
 
     /**
@@ -370,7 +376,8 @@ namespace AasxRestServerLibrary
     /**
      * An exception that indicates that something went wrong while evaluating an AML20 fragment.
      */
-    public class AmlFragmentEvaluationException : ArgumentException {
+    public class AmlFragmentEvaluationException : ArgumentException
+    {
 
         public AmlFragmentEvaluationException(string message) : base(message)
         {

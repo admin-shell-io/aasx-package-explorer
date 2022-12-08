@@ -318,7 +318,7 @@ namespace AasxRestServerLibrary
 
             [RestRoute(
                 HttpMethod = HttpMethod.GET,
-                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?/fragments/([a-zA-Z0-9]+)/(.*)$")]
+                PathInfo = "^/aas/(id|([^/]+))/submodels/([^/]+)/elements(/([^/]+)){1,99}?(/fragments/([a-zA-Z0-9]+)/(.*))$")]
             public IHttpContext GetSubmodelElementFragmentsContents(IHttpContext context)
             {
                 var m = helper.PathInfoRegexMatch(MethodBase.GetCurrentMethod(), context.Request.PathInfo);
@@ -327,13 +327,24 @@ namespace AasxRestServerLibrary
                     var aasid = m.Groups[1].ToString();
                     var smid = m.Groups[3].ToString();
                     var elemids = new List<string>();
-                    var fragmentType = m.Groups[6].ToString();
-                    var fragment = m.Groups[7].ToString().TrimEnd(new[] { '/' });
 
                     for (int i = 0; i < m.Groups[5].Captures.Count; i++)
                         elemids.Add(m.Groups[5].Captures[i].ToString());
 
-                    helper.EvalGetSubmodelElementFragment(context, aasid, smid, elemids.ToArray(), fragmentType, fragment);
+                    // a string describing potentially nested fragments, i.e. "/fragments/<type1>/<fragment1>/fragments/<type2>/<fragment2>/..."
+                    var fragmentString = m.Groups[6].ToString();
+
+                    var nestedFragmentStrings = fragmentString.Split(new[] { "/fragments/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    List<(string fragmentType, string fragment)> nestedFragments = new List<(string, string)>();
+
+                    foreach (var fragment in nestedFragmentStrings)
+                    {
+                        var parts = fragment.Split(new[] { '/' }, 2);
+                        nestedFragments.Add((parts[0], parts[1].TrimEnd(new[] { '/' })));
+                    }
+
+                    helper.EvalGetSubmodelElementFragment(context, aasid, smid, elemids.ToArray(), nestedFragments);
                 }
                 return context;
             }
