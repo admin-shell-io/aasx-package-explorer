@@ -52,7 +52,7 @@
     <PackageReference Include="CefSharp.Common" Version="84.4.10" />
     <PackageReference Include="CefSharp.Wpf" Version="84.4.10" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="System.CodeDom" Version="4.7.0" />
   </ItemGroup>
   <ItemGroup>
