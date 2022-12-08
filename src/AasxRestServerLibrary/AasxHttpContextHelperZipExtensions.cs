@@ -1,19 +1,22 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Text;
-using System.Linq;
-using Grapevine.Shared;
+﻿/*
+Copyright (c) 2022 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Matthias Freund
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
 using Grapevine.Interfaces.Server;
-using System.IO;
 using Grapevine.Server;
-using System.Text.RegularExpressions;
-using System.Web;
+using Grapevine.Shared;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
+using System;
 using System.Collections.Generic;
-using System.Xml;
-using System.Xml.XPath;
+using System.IO;
 using System.IO.Compression;
+using System.Linq;
+using System.Text;
 
 namespace AasxRestServerLibrary
 {

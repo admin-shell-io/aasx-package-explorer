@@ -1,19 +1,26 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Text;
-using Aml.Engine.CAEX;
-using System.Linq;
-using Grapevine.Shared;
-using Grapevine.Interfaces.Server;
-using System.IO;
+﻿/*
+Copyright (c) 2022 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Matthias Freund
+
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
 using Aml.Engine.AmlObjects;
-using Grapevine.Server;
-using System.Text.RegularExpressions;
-using System.Web;
+using Aml.Engine.CAEX;
 using Aml.Engine.CAEX.Extensions;
+using Grapevine.Interfaces.Server;
+using Grapevine.Server;
+using Grapevine.Shared;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace AasxRestServerLibrary
 {
@@ -24,12 +31,10 @@ namespace AasxRestServerLibrary
          */
         public static void EvalGetAMLFragment(this AasxHttpContextHelper helper, IHttpContext context, Stream amlFileStream, string amlFragment)
         {
-            CAEXBasicObject fragmentObject;
-
             try
             {
                 CAEXDocument caexDocument = LoadCaexDocument(amlFileStream);
-                fragmentObject = FindFragmentObject(caexDocument, amlFragment);
+                CAEXBasicObject fragmentObject = FindFragmentObject(caexDocument, amlFragment);
 
                 var content = context.Request.QueryString.Get("content") ?? "normal";
                 var level = context.Request.QueryString.Get("level") ?? "deep";
@@ -51,15 +56,12 @@ namespace AasxRestServerLibrary
 
                     SendJsonResponse(context, json);
                 }
-
-                return;
             }
             catch (AmlFragmentEvaluationException e)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.NotFound,
                     e.Message);
-                return;
             }
         }
 
@@ -289,10 +291,8 @@ namespace AasxRestServerLibrary
      * etc. but not Attributes, AdditionalInformation, etc.) to be aligned as closely as possible with 'Details of the
      * AAS', part 2.
      */
-    class DeeplyNestedElementsRemover
+    static class DeeplyNestedElementsRemover
     {
-        private DeeplyNestedElementsRemover() { }
-
         public static void RemoveDeeplements(CAEXBasicObject value)
         {
             if (value is CAEXFileType)

@@ -1,20 +1,21 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Text;
-using System.Linq;
-using Grapevine.Shared;
-using Grapevine.Interfaces.Server;
-using System.IO;
-using Grapevine.Server;
-using System.Text.RegularExpressions;
-using System.Web;
-using Newtonsoft.Json.Linq;
-using System.Xml.Linq;
-using System.Collections.Generic;
+﻿/*
+Copyright (c) 2022 Festo SE & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
+Author: Matthias Freund
 
-using System.Data;
+This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
+
+This source code may use other Open Source software components (see LICENSE.txt).
+*/
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Packaging;
+using Grapevine.Interfaces.Server;
+using Grapevine.Server;
+using Grapevine.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace AasxRestServerLibrary
 {
@@ -40,15 +41,12 @@ namespace AasxRestServerLibrary
                 string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
 
                 SendJsonResponse(context, json);
-
-                return;
             }
             catch (XlsFragmentEvaluationException e)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.NotFound,
                     e.Message);
-                return;
             }
         }
 
@@ -188,8 +186,6 @@ namespace AasxRestServerLibrary
             }
 
             result.WriteTo(writer);
-            return;
-
         }
 
         private JContainer CompileJson(XLWorkbook workbook, bool valueOnly)
