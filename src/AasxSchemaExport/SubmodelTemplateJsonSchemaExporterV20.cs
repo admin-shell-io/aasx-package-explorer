@@ -96,8 +96,8 @@ namespace AasxSchemaExport
                                 {{'properties': 
                                     {{
                                         'type': {{'const': '{key.type}'}},
-                                        'local': {{'const': '{key.local.ToString().ToLower()}'}},
-                                        'referenceValue': {{'const': '{key.value}'}},
+                                        'local': {{'const': {key.local.ToString().ToLower()}}},
+                                        'value': {{'const': '{key.value}'}},
                                         'idType': {{'const': '{key.idType}'}},
                                     }}
                                 }}

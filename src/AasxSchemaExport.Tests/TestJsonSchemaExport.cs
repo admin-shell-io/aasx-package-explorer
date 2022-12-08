@@ -22,7 +22,7 @@ namespace AasxSchemaExport.Tests
             var submodelTemplatePath = Path.Combine(
                 TestContext.CurrentContext.TestDirectory, 
                 "TestData",
-                "IDTA 02006-2-0_Template_Digital Nameplate.aasx");
+                "SubmodelTest.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
