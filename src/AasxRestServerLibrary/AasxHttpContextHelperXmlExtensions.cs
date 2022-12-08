@@ -6,11 +6,6 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 
 This source code may use other Open Source software components (see LICENSE.txt).
 */
-using Grapevine.Interfaces.Server;
-using Grapevine.Server;
-using Grapevine.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +14,11 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Grapevine.Interfaces.Server;
+using Grapevine.Server;
+using Grapevine.Shared;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AasxRestServerLibrary
 {
@@ -51,7 +51,7 @@ namespace AasxRestServerLibrary
 
                 if (content == "xml")
                 {
-                    if (fragmentObjects.Count() > 1)
+                    if (fragmentObjects.Count > 1)
                     {
                         throw new XmlFragmentEvaluationException($"Fragment evaluation did return multiple XML elements. Only xPath expressions returning a single element are supported when returning xml content.");
                     }
@@ -112,17 +112,17 @@ namespace AasxRestServerLibrary
                 throw new XmlFragmentEvaluationException($"Unable to compile xPath query '" + xPath + "'.");
             }
 
-            IEnumerable<XObject> nodes;
+            List<XObject> nodes;
             try
             {
-                nodes = ((IEnumerable<object>)result).Cast<XObject>();
+                nodes = ((IEnumerable<object>)result).Cast<XObject>().ToList();
             }
             catch
             {
                 throw new XmlFragmentEvaluationException($"Evaluating xPath query '" + xPath + "' did not return a node list.");
             }
 
-            if (nodes.Count() == 0)
+            if (nodes.Count == 0)
             {
                 throw new XmlFragmentEvaluationException($"Evaluating xPath query '" + xPath + "' did not return a result.");
             }
@@ -231,16 +231,13 @@ namespace AasxRestServerLibrary
                 throw new XmlFragmentEvaluationException("Unable to convert object to IEnumerable<XObject>: " + value);
             }
 
-            JContainer result = ConvertToJson(nodeList);
+            JContainer result = ConvertToJson(nodeList.ToList());
             result.WriteTo(writer);
-
-            return;
-
         }
 
-        private JContainer ConvertToJson(IEnumerable<XObject> nodeList)
+        private JContainer ConvertToJson(List<XObject> nodeList)
         {
-            if (nodeList.Count() == 1)
+            if (nodeList.Count == 1)
             {
                 return ConvertToJson(nodeList.First());
             }
