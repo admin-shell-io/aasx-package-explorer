@@ -22,7 +22,7 @@ namespace AasxSchemaExport.Tests
             var submodelTemplatePath = Path.Combine(
                 TestContext.CurrentContext.TestDirectory, 
                 "TestData",
-                "SubmodelTest.aasx");
+                "SubmodelTest2.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
