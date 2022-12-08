@@ -57,7 +57,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="OPCFoundation.NetStandard.Opc.Ua" Version="1.4.360.33" />
   </ItemGroup>
 </Project>
