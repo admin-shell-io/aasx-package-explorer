@@ -1384,8 +1384,8 @@ namespace AasxPackageExplorer
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
 
-            if (cmd == "exportjsonschema")
-                CommandBinding_ExportJsonSchema();
+            if (cmd == "exportsubmodeljsonschema")
+                CommandBinding_ExportSubmodelJsonSchema();
         }
 
         public void CommandBinding_TDImport()
@@ -3625,7 +3625,7 @@ namespace AasxPackageExplorer
             RedrawAllAasxElements();
             //-----------------------------------
         }
-        public void CommandBinding_ExportJsonSchema()
+        public void CommandBinding_ExportSubmodelJsonSchema()
         {
             // trivial things
             if (!_packageCentral.MainAvailable)
@@ -3652,6 +3652,20 @@ namespace AasxPackageExplorer
             var jsonSchemaExporter = new SubmodelTemplateJsonSchemaExporterV20();
             var schema = jsonSchemaExporter.ExportSchema(ve1.theSubmodel);
 
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            saveFileDialog.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            saveFileDialog.FileName = "Submodel_Schema_" + ve1.theSubmodel.idShort + ".json";
+            saveFileDialog.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = saveFileDialog.ShowDialog();
+            if (res == true)
+            {
+                using (var s = new StreamWriter(saveFileDialog.FileName))
+                {
+                    s.Write(schema);
+                }
+            }
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
     }
 }
