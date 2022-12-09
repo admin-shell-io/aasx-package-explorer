@@ -22,33 +22,21 @@ namespace AasxSchemaExport.Tests
             var submodelTemplatePath = Path.Combine(
                 TestContext.CurrentContext.TestDirectory, 
                 "TestData",
-                "IDTA 02006-2-0_Template_Digital Nameplate.aasx");
+                "SubmodelTest.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
         }
 
         [Test]
-        public void Test_schema_version()
+        public void Test_meta_information()
         {
             var schema = ExportSchema();
 
-            var schemaVersion = schema["$schema"];
-
-            Assert.IsNotNull(schemaVersion);
-            Assert.AreEqual(schemaVersion.Value<string>(), "https://json-schema.org/draft/2019-09/schema");
+            Assert.AreEqual(schema["$schema"].Value<string>(), "https://json-schema.org/draft/2019-09/schema");
+            Assert.AreEqual(schema["title"].Value<string>(), "AssetAdministrationShellSubmodelTest");
         }
 
-        [Test]
-        public void Test_title_corresponds_to_idShort()
-        {
-            var schema = ExportSchema();
-
-            var title = schema["title"];
-
-            Assert.IsNotNull(title);
-            Assert.AreEqual(title.Value<string>(), "AssetAdministrationShellSubmodelSubmodelTest");
-        }
 
         [Test]
         public void Test_type_should_be_object()

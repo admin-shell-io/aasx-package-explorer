@@ -8,39 +8,78 @@ namespace AasxSchemaExport
 {
     public class SubmodelTemplateJsonSchemaExporterV20 : ISchemaExporter
     {
+        private const string MetaModelSchemaUrl = "aas.json";
+        private const string MetaModelSubmodelDefinitionPath = "#/definitions/Submodel";
+
         public string ExportSchema(AdminShellV20.Submodel submodel)
         {
             var schema = new JObject();
 
-            schema["$schema"] = "https://json-schema.org/draft/2019-09/schema";
-            schema["title"] = $"AssetAdministrationShellSubmodel{submodel.idShort}";
-            schema["type"] = "object";
-            schema["unevaluatedProperties"] = false;
-
-            schema["allOf"] = JArray.Parse(@"[{'$ref': '#/$defs/Root'}]");
-
-            schema["$defs"] = JObject.Parse(@"{'Root': {'allOf': []}}");
-
-            AddReferenceForSubmodel(schema);
+            AddRootData(schema, submodel);
+            AddSubmodelReference(schema);
             AddDefinitionForIdentifiable(schema);
-            AddArrayDefinitionForSubmodelElements(schema);
-
-            var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
-            var submodelElementsAllOf = GetSubmodelElementsAllOf(schema);
-            AddDefinitionsForSubmodelElements(schema, submodelElementsAllOf, submodelElements);
+            AddDefinitionForSubmodelElements(schema, submodel);
 
             var result = schema.ToString();
-
             return result;
         }
 
-        private void AddArrayDefinitionForSubmodelElements(JObject schema)
+        private void AddRootData(JObject schema, AdminShellV20.Submodel submodel)
         {
-            schema["$defs"]["Elements"] =
-                JObject.Parse(
-                    @"{'properties': {'submodelElements': {'type': 'array', 'allOf': []}}}");
+            schema[Tokens.Schema] = "https://json-schema.org/draft/2019-09/schema";
+            schema[Tokens.Title] = $"AssetAdministrationShell{submodel.idShort}";
+            schema[Tokens.Type] = "object";
+            schema[Tokens.UnevaluatedProperties] = false;
+            schema[Tokens.AllOf] = new JArray();
+            schema[Tokens.Definitions] = new JArray();
+        }
 
-            AddReferenceToArray(GetRootAllOf, schema, "#/$defs/Elements");
+        private void AddSubmodelReference(JObject schema)
+        {
+            var reference = $"{MetaModelSchemaUrl}{MetaModelSubmodelDefinitionPath}";
+            AddReferenceToArray(schema, GetRootAllOf, reference);
+        }
+
+        private void AddDefinitionForIdentifiable(JObject schema)
+        {
+            AddDefinitionReferenceToRootAllOf(schema, Tokens.Identifiable);
+
+            schema[Tokens.Definitions][Tokens.Identifiable] = JObject.Parse(@"
+            {
+                'type': 'object',
+                'properties': {
+                    'modelType': {
+                        'type': 'object',
+                        'properties': {
+                            'name': {
+                                'const': 'Submodel'
+                            }
+                        }
+                    }
+                }
+            }");
+        }
+
+        private void AddDefinitionForSubmodelElements(JObject schema, AdminShellV20.Submodel submodel)
+        {
+            AddDefinitionReferenceToRootAllOf(schema, Tokens.SubmodelElements);
+
+            schema[Tokens.Definitions][Tokens.SubmodelElements] = JObject.Parse(@"
+            {
+                'properties': {
+                    'submodelElements': {
+                        'type': 'array', 
+                        'allOf': []
+                    }
+                }
+            }");
+
+            var targetAllOf = SelectToken<JArray>(
+                schema, 
+                $"$.{Tokens.Definitions}.{Tokens.SubmodelElements}.properties.submodelElements.allOf");
+            var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
+
+            AddDefinitionsForSubmodelElements(schema, targetAllOf, submodelElements);
         }
 
         private void AddDefinitionsForSubmodelElements(
@@ -162,28 +201,13 @@ namespace AasxSchemaExport
             targetAllOf.Add(allOfEntry);
         }
 
-        private void AddReferenceForSubmodel(JObject schema)
-        {
-            AddReferenceToArray(GetRootAllOf, schema, "aas.json#/$defs/Submodel");
-        }
 
-        private void AddDefinitionForIdentifiable(JToken schema)
-        {
-            var rootAllOf = GetRootAllOf(schema);
-            rootAllOf.Add(JObject.Parse(@"{'$ref': '#/$defs/Identifiable'}"));
 
-            schema["$defs"]["Identifiable"] = JObject.Parse(@"
-                {
-                    'type': 'object',
-                    'properties': {
-                        'modelType': {
-                            'type': 'object',
-                            'name': {
-                                'const': 'Submodel'
-                            }
-                        }
-                    }
-                }");
+
+        private void AddDefinitionReferenceToRootAllOf(JObject schema, string token)
+        {
+            var reference = $"#/{Tokens.Definitions}/{token}";
+            AddReferenceToArray(schema, GetRootAllOf, reference);
         }
 
         private T SelectToken<T>(JToken source, string path) where T: JToken
@@ -200,21 +224,15 @@ namespace AasxSchemaExport
             targetArray.Add(JObject.Parse($@"{{'$ref': '{referenceValue}' }}"));
         }
 
-        private void AddReferenceToArray(Func<JObject,JArray> targetArrayProvider, JObject schema, string referenceValue)
+        private void AddReferenceToArray(JObject schema, Func<JObject,JArray> targetArrayProvider, string reference)
         {
-            var target = targetArrayProvider(schema);
-            target.Add(JObject.Parse($@"{{'$ref': '{referenceValue}' }}"));
+            var targetArray = targetArrayProvider(schema);
+            targetArray.Add(JObject.Parse($@"{{'$ref': '{reference}' }}"));
         }
 
         private JArray GetRootAllOf(JToken schema)
         {
-            var result = SelectToken<JArray>(schema, "$.$defs.Root.allOf");
-            return result;
-        }
-
-        private JArray GetSubmodelElementsAllOf(JObject schema)
-        {
-            var result = SelectToken<JArray>(schema, "$.$defs.Elements.properties.submodelElements.allOf");
+            var result = SelectToken<JArray>(schema, $"{Tokens.AllOf}");
             return result;
         }
     }

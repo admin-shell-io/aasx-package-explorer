@@ -4,23 +4,16 @@
   "type": "object",
   "allOf": [
     {
-      "$ref": "#/$defs/Root"
+      "$ref": "aasV2.0.json#/definitions/Submodel"
+    },
+    {
+      "$ref": "#/$defs/Identifiable"
+    },
+    {
+      "$ref": "#/$defs/Elements"
     }
   ],
   "$defs": {
-    "Root": {
-      "allOf": [
-        {
-          "$ref": "aasV2.0.json#/definitions/Submodel"
-        },
-        {
-          "$ref": "#/$defs/Identifiable"
-        },
-        {
-          "$ref": "#/$defs/Elements"
-        }
-      ]
-    },
     "Identifiable": {
       "type": "object",
       "properties": {
