@@ -22,7 +22,7 @@ namespace AasxSchemaExport.Tests
             var submodelTemplatePath = Path.Combine(
                 TestContext.CurrentContext.TestDirectory, 
                 "TestData",
-                "SubmodelTest.aasx");
+                "IDTA 02006-2-0_Template_Digital Nameplate.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
@@ -121,7 +121,7 @@ namespace AasxSchemaExport.Tests
 
         private JObject GetDefinition(JObject schema, string name)
         {
-            var definition = schema["$defs"][name];
+            var definition = schema["definitions"][name];
             return definition as JObject;
         }
 

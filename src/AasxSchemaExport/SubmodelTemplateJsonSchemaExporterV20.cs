@@ -11,10 +11,13 @@ namespace AasxSchemaExport
         private const string MetaModelSchemaUrl = "aas.json";
         private const string MetaModelSubmodelDefinitionPath = "#/definitions/Submodel";
 
+        private List<Func<Context, bool>> _submodelElementDefinitionSuppliers;
+
         public string ExportSchema(AdminShellV20.Submodel submodel)
         {
             var schema = new JObject();
 
+            InitSubmodelElementDefinitionSuppliers();
             AddRootData(schema, submodel);
             AddSubmodelReference(schema);
             AddDefinitionForIdentifiable(schema);
@@ -24,6 +27,22 @@ namespace AasxSchemaExport
             return result;
         }
 
+        private void InitSubmodelElementDefinitionSuppliers()
+        {
+            _submodelElementDefinitionSuppliers = new List<Func<Context, bool>>
+            {
+                SupplyGateArbitrary, 
+                SupplyIdShort,
+                SupplyKind,
+                SupplyModelType,
+                SupplySemanticId,
+                SupplyValueType,
+                SupplyMultiplicity,
+                SupplyCollectionSubmodelElements,
+                SupplyCreatedDefinition
+            };
+        }
+
         private void AddRootData(JObject schema, AdminShellV20.Submodel submodel)
         {
             schema[Tokens.Schema] = "https://json-schema.org/draft/2019-09/schema";
@@ -31,7 +50,7 @@ namespace AasxSchemaExport
             schema[Tokens.Type] = "object";
             schema[Tokens.UnevaluatedProperties] = false;
             schema[Tokens.AllOf] = new JArray();
-            schema[Tokens.Definitions] = new JArray();
+            schema[Tokens.Definitions] = new JObject();
         }
 
         private void AddSubmodelReference(JObject schema)
@@ -44,39 +63,39 @@ namespace AasxSchemaExport
         {
             AddDefinitionReferenceToRootAllOf(schema, Tokens.Identifiable);
 
-            schema[Tokens.Definitions][Tokens.Identifiable] = JObject.Parse(@"
-            {
-                'type': 'object',
-                'properties': {
-                    'modelType': {
-                        'type': 'object',
-                        'properties': {
-                            'name': {
-                                'const': 'Submodel'
-                            }
-                        }
-                    }
-                }
-            }");
+            schema[Tokens.Definitions][Tokens.Identifiable] = JObject.Parse($@"
+            {{
+                '{Tokens.Type}': 'object',
+                '{Tokens.Properties}': {{
+                    '{Tokens.ModelType}': {{
+                        '{Tokens.Type}': 'object',
+                        '{Tokens.Properties}': {{
+                            '{Tokens.Name}': {{
+                                '{Tokens.Const}': 'Submodel'
+                            }}
+                        }}
+                    }}
+                }}
+            }}");
         }
 
         private void AddDefinitionForSubmodelElements(JObject schema, AdminShellV20.Submodel submodel)
         {
-            AddDefinitionReferenceToRootAllOf(schema, Tokens.SubmodelElements);
+            AddDefinitionReferenceToRootAllOf(schema, Tokens.Elements);
 
-            schema[Tokens.Definitions][Tokens.SubmodelElements] = JObject.Parse(@"
-            {
-                'properties': {
-                    'submodelElements': {
-                        'type': 'array', 
-                        'allOf': []
-                    }
-                }
-            }");
+            schema[Tokens.Definitions][Tokens.Elements] = JObject.Parse($@"
+            {{
+                '{Tokens.Properties}': {{
+                    '{Tokens.SubmodelElements}': {{
+                        '{Tokens.Type}': 'array', 
+                        '{Tokens.AllOf}': []
+                    }}
+                }}
+            }}");
 
             var targetAllOf = SelectToken<JArray>(
                 schema, 
-                $"$.{Tokens.Definitions}.{Tokens.SubmodelElements}.properties.submodelElements.allOf");
+                $"$.{Tokens.Definitions}.{Tokens.Elements}.properties.submodelElements.allOf");
             var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
 
             AddDefinitionsForSubmodelElements(schema, targetAllOf, submodelElements);
@@ -95,71 +114,188 @@ namespace AasxSchemaExport
 
         private void AddDefinitionForSubmodelElement(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
-            // Ignore arbitrary submodel elements
-            if (submodelElement.idShort == "{arbitrary}")
-                return;
+            var context = new Context(schema, targetAllOf, submodelElement);
 
-            var isDynamicIdShort = false;
-            var elementName = submodelElement.idShort;
-
-            if (submodelElement.idShort.EndsWith("{00}"))
+            foreach (var submodelElementHandler in _submodelElementDefinitionSuppliers)
             {
-                isDynamicIdShort = true;
-                elementName = submodelElement.idShort.Replace("{00}", "");
+                var result = submodelElementHandler(context);
+                if (!result)
+                    break;
+            }
+        }
+
+        private bool SupplyGateArbitrary(Context context)
+        {
+            if (context.SubmodelElement.idShort == "{arbitrary}")
+                return false;
+
+            return true;
+        }
+
+        private bool SupplyIdShort(Context context)
+        {
+            var submodelElement = context.SubmodelElement;
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
+
+            if (context.IsDynamicIdShort)
+            {
+                var idShortPattern = $@"{context.SubmodelElementName}\\d{{2}}";
+                definitionProperties[Tokens.IdShort] = JObject.Parse($@"
+                {{
+                    '{Tokens.Pattern}': '^{idShortPattern}$'
+                }}");
+            }
+            else
+            {
+                definitionProperties[Tokens.IdShort] = JObject.Parse($@"
+                {{
+                    '{Tokens.Const}': '{submodelElement.idShort}'
+                }}");
             }
 
-            var allOfEntry = JObject.Parse($@"{{'contains': {{'$ref': '#/$defs/{elementName}'}}}}");
-            var submodelElementDefinition = JObject.Parse(@"{'properties': {}}");
-            var propertiesObject = SelectToken<JObject>(submodelElementDefinition, "properties");
+            return true;
+        }
 
+        private bool SupplyKind(Context context)
+        {
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
+            definitionProperties[Tokens.Kind] = JObject.Parse($@"
+            {{
+                '{Tokens.Const}': 'Instance'
+            }}");
 
-            // idShort
-            if (isDynamicIdShort)
-            {
-                var idShortPattern = $@"{elementName}\\d{{2}}";
-                propertiesObject["idShort"] = JObject.Parse($@"{{'pattern': '^{idShortPattern}$'}}");
-            } else
-            {
-                propertiesObject["idShort"] = JObject.Parse($@"{{'const': '{submodelElement.idShort}'}}");
-            }
-            
-            // kind
-            propertiesObject["kind"] = JObject.Parse(@"{'const': 'Instance'}");
+            return true;
+        }
 
-            // modelType
+        private bool SupplyModelType(Context context)
+        {
+            var submodelElement = context.SubmodelElement;
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
+
             var modelType = submodelElement.JsonModelType.name;
-            propertiesObject["modelType"] = JObject.Parse($@"{{'properties': {{'name': {{'const': '{modelType}'}}}}}}");
+            definitionProperties[Tokens.ModelType] = JObject.Parse($@"
+            {{
+                '{Tokens.Properties}': {{
+                    '{Tokens.Name}': {{
+                        '{Tokens.Const}': '{modelType}'
+                    }}
+                }}
+            }}");
 
-            // semanticId
+            return true;
+        }
+
+        private bool SupplySemanticId(Context context)
+        {
+            var submodelElement = context.SubmodelElement;
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
+
             if (!submodelElement.semanticId.IsEmpty)
             {
-                propertiesObject["semanticId"] = JObject.Parse(@"{'properties': {'keys': {'type': 'array', 'allOf': []}}}");
-                var allOf = SelectToken<JArray>(propertiesObject, "semanticId.properties.keys.allOf");
+                definitionProperties[Tokens.SemanticId] = JObject.Parse($@"
+                {{
+                    '{Tokens.Properties}': {{
+                        '{Tokens.Keys}': {{
+                            '{Tokens.Type}': 'array', 
+                            '{Tokens.AllOf}': []
+                        }}
+                     }}
+                }}");
+
+                var allOf = SelectToken<JArray>(
+                    definitionProperties, 
+                    $"{Tokens.SemanticId}.{Tokens.Properties}.{Tokens.Keys}.{Tokens.AllOf}");
+
                 submodelElement.semanticId.Keys.ForEach(key =>
                 {
                     var containsDef = JObject.Parse($@"
-                            {{'contains': 
-                                {{'properties': 
-                                    {{
-                                        'type': {{'const': '{key.type}'}},
-                                        'local': {{'const': {key.local.ToString().ToLower()}}},
-                                        'value': {{'const': '{key.value}'}},
-                                        'idType': {{'const': '{key.idType}'}},
-                                    }}
-                                }}
-                            }}");
+                    {{
+                        '{Tokens.Contains}': {{
+                            '{Tokens.Properties}': {{
+                                '{Tokens.MType}': {{
+                                    '{Tokens.Const}': '{key.type}'
+                                 }},
+                                '{Tokens.Local}': {{
+                                    '{Tokens.Const}': {key.local.ToString().ToLower()}
+                                 }},
+                                '{Tokens.Value}': {{
+                                    '{Tokens.Const}': '{key.value}'
+                                 }},
+                                '{Tokens.IdType}': {{
+                                    '{Tokens.Const}': '{key.idType}'
+                                }},
+                            }}
+                        }}
+                    }}");
+
                     allOf.Add(containsDef);
                 });
             }
 
+            return true;
+        }
+
+        private bool SupplyValueType(Context context)
+        {
+            var submodelElement = context.SubmodelElement;
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
 
             if (submodelElement is AdminShellV20.Property property)
             {
-                // valueType
                 var valueType = property.JsonValueType.dataObjectType.name;
                 if (!string.IsNullOrEmpty(valueType))
-                    propertiesObject["valueType"] = JObject.Parse($@"{{'properties': {{'dataObjectType': {{'properties': {{'name': {{'const': '{valueType}'}}}}}}}}}}");
+                    definitionProperties[Tokens.ValueType] = JObject.Parse($@"
+                    {{
+                        '{Tokens.Properties}': {{
+                            '{Tokens.DataObjectType}': {{
+                                '{Tokens.Properties}': {{
+                                    '{Tokens.Name}': {{
+                                        '{Tokens.Const}': '{valueType}'
+                                    }}
+                                }}
+                            }}
+                        }}
+                    }}");
             }
+
+            return true;
+        }
+
+        private bool SupplyMultiplicity(Context context)
+        {
+            var submodelElement = context.SubmodelElement;
+            var containsReference = context.ContainsReference;
+
+            var multiplicityQualifier = submodelElement.qualifiers.FindType("Multiplicity");
+            if (multiplicityQualifier != null)
+            {
+                switch (multiplicityQualifier.value)
+                {
+                    case "ZeroToOne":
+                        containsReference[Tokens.MinContains] = 0;
+                        containsReference[Tokens.MaxContains] = 1;
+                        break;
+                    case "One":
+                        containsReference[Tokens.MinContains] = 1;
+                        containsReference[Tokens.MaxContains] = 1;
+                        break;
+                    case "ZeroToMany":
+                        containsReference[Tokens.MinContains] = 0;
+                        break;
+                    case "OneToMany":
+                        containsReference[Tokens.MinContains] = 1;
+                        break;
+                }
+            }
+
+            return true;
+        }
+
+        private bool SupplyCollectionSubmodelElements(Context context)
+        {
+            var schema = context.Schema;
+            var submodelElement = context.SubmodelElement;
+            var definitionProperties = context.SubmodelElementDefinitionProperties;
 
             if (submodelElement is AdminShellV20.SubmodelElementCollection submodelElementCollection)
             {
@@ -168,40 +304,32 @@ namespace AasxSchemaExport
                     .ToArray();
 
 
-                propertiesObject["value"] = JToken.Parse($@"{{'type': 'array', 'allOf': []}}");
-                var collectionAllOf = SelectToken<JArray>(propertiesObject, "value.allOf");
-                
-                AddDefinitionsForSubmodelElements(schema, collectionAllOf, submodelElements);
+                definitionProperties[Tokens.Value] = JToken.Parse($@"
+                {{
+                    '{Tokens.Type}': 'array', 
+                    '{Tokens.AllOf}': []
+                }}");
+
+                var targetAllOf = SelectToken<JArray>(definitionProperties, $"{Tokens.Value}.{Tokens.AllOf}");
+
+                AddDefinitionsForSubmodelElements(schema, targetAllOf, submodelElements);
             }
 
-            // Multiplicity
-            var multiplicityQualifier = submodelElement.qualifiers.FindType("Multiplicity");
-            if (multiplicityQualifier != null)
-            {
-                switch (multiplicityQualifier.value)
-                {
-                    case "ZeroToOne":
-                        allOfEntry["minContains"] = 0;
-                        allOfEntry["maxContains"] = 1;
-                        break;
-                    case "One":
-                        allOfEntry["minContains"] = 1;
-                        allOfEntry["maxContains"] = 1;
-                        break;
-                    case "ZeroToMany":
-                        allOfEntry["minContains"] = 0;
-                        break;
-                    case "OneToMany":
-                        allOfEntry["minContains"] = 1;
-                        break;
-                }
-            }
-
-            schema["$defs"][elementName] = submodelElementDefinition;
-            targetAllOf.Add(allOfEntry);
+            return true;
         }
 
+        private bool SupplyCreatedDefinition(Context context)
+        {
+            var schemaDefinitions = context.SchemaDefinitions;
+            var targetAllOf = context.TargetAllOf;
+            var containsReference = context.ContainsReference;
+            var submodelElementName = context.SubmodelElementName;
 
+            schemaDefinitions[submodelElementName] = context.SubmodelElementDefinition;
+            targetAllOf.Add(containsReference);
+
+            return true;
+        }
 
 
         private void AddDefinitionReferenceToRootAllOf(JObject schema, string token)
@@ -217,11 +345,6 @@ namespace AasxSchemaExport
                 throw new Exception($"Token was not found. {path}");
 
             return result;
-        }
-
-        private void AddReferenceToArray(JArray targetArray, string referenceValue)
-        {
-            targetArray.Add(JObject.Parse($@"{{'$ref': '{referenceValue}' }}"));
         }
 
         private void AddReferenceToArray(JObject schema, Func<JObject,JArray> targetArrayProvider, string reference)
