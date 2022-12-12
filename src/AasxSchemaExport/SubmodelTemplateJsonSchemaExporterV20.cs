@@ -11,7 +11,7 @@ namespace AasxSchemaExport
         private const string MetaModelSchemaUrl = "aas.json";
         private const string MetaModelSubmodelDefinitionPath = "#/definitions/Submodel";
 
-        private List<Func<Context, bool>> _submodelElementDefinitionSuppliers;
+        private List<Func<SubmodelElementDefinitionContext, bool>> _submodelElementDefinitionSuppliers;
 
         public string ExportSchema(AdminShellV20.Submodel submodel)
         {
@@ -29,7 +29,7 @@ namespace AasxSchemaExport
 
         private void InitSubmodelElementDefinitionSuppliers()
         {
-            _submodelElementDefinitionSuppliers = new List<Func<Context, bool>>
+            _submodelElementDefinitionSuppliers = new List<Func<SubmodelElementDefinitionContext, bool>>
             {
                 SupplyGateArbitrary, 
                 SupplyIdShort,
@@ -114,7 +114,7 @@ namespace AasxSchemaExport
 
         private void AddDefinitionForSubmodelElement(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
-            var context = new Context(schema, targetAllOf, submodelElement);
+            var context = new SubmodelElementDefinitionContext(schema, targetAllOf, submodelElement);
 
             foreach (var submodelElementHandler in _submodelElementDefinitionSuppliers)
             {
@@ -124,7 +124,7 @@ namespace AasxSchemaExport
             }
         }
 
-        private bool SupplyGateArbitrary(Context context)
+        private bool SupplyGateArbitrary(SubmodelElementDefinitionContext context)
         {
             if (context.SubmodelElement.idShort == "{arbitrary}")
                 return false;
@@ -132,7 +132,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyIdShort(Context context)
+        private bool SupplyIdShort(SubmodelElementDefinitionContext context)
         {
             var submodelElement = context.SubmodelElement;
             var definitionProperties = context.SubmodelElementDefinitionProperties;
@@ -156,7 +156,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyKind(Context context)
+        private bool SupplyKind(SubmodelElementDefinitionContext context)
         {
             var definitionProperties = context.SubmodelElementDefinitionProperties;
             definitionProperties[Tokens.Kind] = JObject.Parse($@"
@@ -167,7 +167,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyModelType(Context context)
+        private bool SupplyModelType(SubmodelElementDefinitionContext context)
         {
             var submodelElement = context.SubmodelElement;
             var definitionProperties = context.SubmodelElementDefinitionProperties;
@@ -185,7 +185,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplySemanticId(Context context)
+        private bool SupplySemanticId(SubmodelElementDefinitionContext context)
         {
             var submodelElement = context.SubmodelElement;
             var definitionProperties = context.SubmodelElementDefinitionProperties;
@@ -235,7 +235,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyValueType(Context context)
+        private bool SupplyValueType(SubmodelElementDefinitionContext context)
         {
             var submodelElement = context.SubmodelElement;
             var definitionProperties = context.SubmodelElementDefinitionProperties;
@@ -261,7 +261,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyMultiplicity(Context context)
+        private bool SupplyMultiplicity(SubmodelElementDefinitionContext context)
         {
             var submodelElement = context.SubmodelElement;
             var containsReference = context.ContainsReference;
@@ -291,7 +291,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyCollectionSubmodelElements(Context context)
+        private bool SupplyCollectionSubmodelElements(SubmodelElementDefinitionContext context)
         {
             var schema = context.Schema;
             var submodelElement = context.SubmodelElement;
@@ -318,7 +318,7 @@ namespace AasxSchemaExport
             return true;
         }
 
-        private bool SupplyCreatedDefinition(Context context)
+        private bool SupplyCreatedDefinition(SubmodelElementDefinitionContext context)
         {
             var schemaDefinitions = context.SchemaDefinitions;
             var targetAllOf = context.TargetAllOf;

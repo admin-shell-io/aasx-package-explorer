@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AasxSchemaExport
 {
-    internal class Context
+    internal class SubmodelElementDefinitionContext
     {
         private const string DynamicIdShortIndicator = "{00}";
 
@@ -22,7 +22,7 @@ namespace AasxSchemaExport
 
         public JObject SchemaDefinitions => Schema[Tokens.Definitions] as JObject;
 
-        public Context(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
+        public SubmodelElementDefinitionContext(JObject schema, JArray targetAllOf, AdminShellV20.SubmodelElement submodelElement)
         {
             Schema = schema;
             TargetAllOf = targetAllOf;
