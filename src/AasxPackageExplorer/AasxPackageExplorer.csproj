@@ -15,6 +15,9 @@
 	<Platform>x64</Platform>
   </PropertyGroup>
   <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+  <PropertyGroup>
     <ApplicationIcon>aasx.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>

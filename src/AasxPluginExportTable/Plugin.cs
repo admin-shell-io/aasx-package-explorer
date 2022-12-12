@@ -452,6 +452,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 dlg.DefaultExt = "*.docx";
                 dlg.Filter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
             }
+            if (job.Format == (int)ExportTableRecord.FormatEnum.NarkdownGH)
+            {
+                dlg.FileName = "new.md";
+                dlg.DefaultExt = "*.md";
+                dlg.Filter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
+            }
 
             fop?.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog(fop?.GetWin32Window());
@@ -473,6 +479,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                             success = job.ExportExcel(dlg.FileName, list);
                         if (job.Format == (int)ExportTableRecord.FormatEnum.Word)
                             success = job.ExportWord(dlg.FileName, list);
+                        if (job.Format == (int)ExportTableRecord.FormatEnum.NarkdownGH)
+                            success = job.ExportMarkdownGithub(dlg.FileName, list);
                     }
                     catch (Exception ex)
                     {

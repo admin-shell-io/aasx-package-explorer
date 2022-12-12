@@ -8,6 +8,9 @@
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <PropertyGroup>
+	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FlaUI.UIA3" Version="3.2.0" />
     <PackageReference Include="NUnit" Version="3.12.0" />
