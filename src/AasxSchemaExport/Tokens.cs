@@ -1,8 +1,8 @@
 ﻿namespace AasxSchemaExport
 {
-    internal class Tokens
+    public class Tokens
     {
-        public static string Schema = "$Schema";
+        public static string Schema = "$schema";
         public static string Title = "title";
         public static string Type = "type";
         public static string UnevaluatedProperties = "unevaluatedProperties";

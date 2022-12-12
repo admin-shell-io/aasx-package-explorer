@@ -1,13 +1,8 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AdminShellNS;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 
 namespace AasxSchemaExport.Tests
 {
@@ -22,7 +17,7 @@ namespace AasxSchemaExport.Tests
             var submodelTemplatePath = Path.Combine(
                 TestContext.CurrentContext.TestDirectory, 
                 "TestData",
-                "IDTA 02006-2-0_Template_Digital Nameplate.aasx");
+                "SubmodelTest.aasx");
 
             var packageEnv = new AdminShellPackageEnv(submodelTemplatePath);
             _submodel = packageEnv.AasEnv.Submodels[0];
@@ -33,56 +28,52 @@ namespace AasxSchemaExport.Tests
         {
             var schema = ExportSchema();
 
-            Assert.AreEqual(schema["$schema"].Value<string>(), "https://json-schema.org/draft/2019-09/schema");
-            Assert.AreEqual(schema["title"].Value<string>(), "AssetAdministrationShellSubmodelTest");
+            Assert.AreEqual(
+                schema.GetValue<string>("$schema"), 
+                "https://json-schema.org/draft/2019-09/schema",
+                "Exported schema must support the draft 2019-09 draft.");
+
+            Assert.AreEqual(
+                schema.GetValue<string>("title"), 
+                "AssetAdministrationShellSubmodelTest",
+                "The title of the schema must contain the prefix AssetAdministrationShell plus the idShort of the submodel.");
         }
 
-
         [Test]
-        public void Test_type_should_be_object()
+        public void Test_root_type_should_be_object()
         {
             var schema = ExportSchema();
 
-            var type = schema["type"];
-
-            Assert.IsNotNull(type);
-            Assert.AreEqual(type.Value<string>(), "object");
+            Assert.AreEqual(
+                schema.GetValue<string>("type"), 
+                "object", 
+                "The type of the root element must be object.");
         }
 
         [Test]
-        public void Test_reference_to_root_schema_definition()
+        public void Test_unevaluated_properties_should_be_set_to_false()
         {
             var schema = ExportSchema();
 
-            var definitionRef = FindObjectInArrayWithProperty(
-                schema["allOf"] as JArray,
-                "$ref",
-                "#/$defs/Root");
-
-            Assert.NotNull(definitionRef);
+            Assert.AreEqual(schema.GetValue<bool>(
+                "unevaluatedProperties"), 
+                false,
+                "The value of unevaluatedProperties must be set to false.");
         }
 
         [Test]
-        public void Test_unevaluated_properties_should_be_false()
-        {
-            var schema = ExportSchema();
-
-            var unevaluatedProperties = schema["unevaluatedProperties"];
-
-            Assert.AreEqual(unevaluatedProperties.Value<bool>(), false);
-        }
-
-        [Test]
-        public void Test_rootDef_should_reference_submodelDef()
+        public void Test_submodel_reference()
         {
             var schema = ExportSchema();
 
             var definitionRef = FindObjectInArrayWithProperty(
-                schema["$defs"]["Root"]["allOf"] as JArray,
-                "$ref",
-                "aas.json#/$defs/Submodel");
+                schema.SelectToken($"{Tokens.AllOf}"),
+                $"{Tokens.Ref}",
+                "aas.json#/definitions/Submodel");
 
-            Assert.NotNull(definitionRef);
+            Assert.NotNull(
+                definitionRef, 
+                "There must be a reference to the submodel definition.");
         }
 
         [Test]
@@ -91,48 +82,163 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             var definitionRef = FindObjectInArrayWithProperty(
-                schema["$defs"]["Root"]["allOf"] as JArray,
-                "$ref",
-                "#/$defs/Identifiable");
+                schema.SelectToken($"{Tokens.AllOf}"),
+                $"{Tokens.Ref}",
+                $"#/{Tokens.Definitions}/{Tokens.Identifiable}");
 
-            Assert.NotNull(definitionRef);
-            Assert.AreEqual(schema
-                ["$defs"]
-                ["Identifiable"]
-                ["properties"]
-                ["modelType"]
-                ["name"]
-                ["const"].Value<string>(), "Submodel");
+            var definition = GetDefinition(schema, Tokens.Identifiable);
+            
+            Assert.NotNull(definitionRef, "Must contain the reference to identifiable.");
+            Assert.AreEqual(definition.GetValue<string>("" +
+                                                        $"{Tokens.Properties}." +
+                                                        $"{Tokens.ModelType}." +
+                                                        $"{Tokens.Properties}." +
+                                                        $"{Tokens.Name}." +
+                                                        $"{Tokens.Const}")
+              , "Submodel");
         }
 
         [Test]
-        public void Test_level0_prop1()
+        public void Test_multiplicity_zero_to_one()
         {
             var schema = ExportSchema();
 
-            var definition = GetDefinition(schema,"Prop1");
-            var properties = GetPropertiesOfContains(definition);
+            var prop1Reference = GetSubmodelElementsAllOfItem(schema, "Prop1");
 
-            Assert.AreEqual(properties["idShort"]?["const"].Value<string>(), "Prop1");
-            Assert.AreEqual(properties["kind"]?["const"].Value<string>(), "Instance");
-            Assert.AreEqual(properties["modelType"]?["properties"]?["name"]?["const"].Value<string>(), "Property");
-            Assert.AreEqual(properties["valueType"]?["properties"]?["dataObjectType"]?["properties"]?["name"]?["const"].Value<string>(), "String");
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MinContains), 0);
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MaxContains), 1);
+        }
+
+        [Test]
+        public void Test_multiplicity_one()
+        {
+            var schema = ExportSchema();
+
+            var prop1Reference = GetSubmodelElementsAllOfItem(schema, "Prop2");
+
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MinContains), 1);
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MaxContains), 1);
+        }
+
+        [Test]
+        public void Test_multiplicity_zero_to_many()
+        {
+            var schema = ExportSchema();
+
+            var prop1Reference = GetSubmodelElementsAllOfItem(schema, "Prop3");
+
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MinContains), 0);
+            Assert.IsNull(prop1Reference[Tokens.MaxContains]);
+        }
+
+        [Test]
+        public void Test_multiplicity_one_to_many()
+        {
+            var schema = ExportSchema();
+
+            var prop1Reference = GetSubmodelElementsAllOfItem(schema, "Prop4");
+
+            Assert.AreEqual(prop1Reference.GetValue<int>(Tokens.MinContains), 1);
+            Assert.IsNull(prop1Reference[Tokens.MaxContains]);
+        }
+
+        [Test]
+        public void Test_submodel_element_definition_idShort()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema, "Prop1");
+            var path = $"{Tokens.Properties}.{Tokens.IdShort}.{Tokens.Const}";
+
+            Assert.AreEqual(definition.GetValue<string>(path), "Prop1");
+        }
+
+        [Test]
+        public void Test_submodel_element_definition_kind()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema, "Prop1");
+            var path = $"{Tokens.Properties}.{Tokens.Kind}.{Tokens.Const}";
+
+            Assert.AreEqual(definition.GetValue<string>(path), "Instance");
+        }
+
+        [Test]
+        public void Test_submodel_element_definition_modelType()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema, "Prop1");
+            var path = $"{Tokens.Properties}.{Tokens.ModelType}.{Tokens.Properties}.{Tokens.Name}.{Tokens.Const}";
+
+            Assert.AreEqual(definition.GetValue<string>(path), "Property");
+        }
+
+        [Test]
+        public void Test_submodel_element_definition_valueType()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema, "Prop6");
+            var path = $"" +
+                       $"{Tokens.Properties}." +
+                       $"{Tokens.ValueType}." +
+                       $"{Tokens.Properties}." +
+                       $"{Tokens.DataObjectType}." +
+                       $"{Tokens.Properties}." +
+                       $"{Tokens.Name}." +
+                       $"{Tokens.Const}";
+
+            Assert.AreEqual(definition.GetValue<string>(path), "short");
+        }
+
+
+        [Test]
+        public void Test_submodel_element_definition_semanticId()
+        {
+            var schema = ExportSchema();
+
+            var definition = GetDefinition(schema, "Prop5");
+            var semanticIdAllOf = definition.SelectToken($"" +
+                                                         $"{Tokens.Properties}." +
+                                                         $"{Tokens.SemanticId}." +
+                                                         $"{Tokens.Properties}." +
+                                                         $"{Tokens.Keys}." +
+                                                         $"{Tokens.AllOf}") as JArray;
+
+            var keyItem = semanticIdAllOf[0][Tokens.Contains];
+
+            Assert.AreEqual(keyItem.GetValue<string>($"{Tokens.Properties}.{Tokens.Type}.{Tokens.Const}"), "ConceptDescription");
+            Assert.AreEqual(keyItem.GetValue<bool>($"{Tokens.Properties}.{Tokens.Local}.{Tokens.Const}"), true);
+            Assert.AreEqual(keyItem.GetValue<string>($"{Tokens.Properties}.{Tokens.Value}.{Tokens.Const}"), "https://www.example.com/1");
+            Assert.AreEqual(keyItem.GetValue<string>($"{Tokens.Properties}.{Tokens.IdType}.{Tokens.Const}"), "IRI");
         }
 
         private JObject GetDefinition(JObject schema, string name)
         {
-            var definition = schema["definitions"][name];
+            var definition = schema.SelectToken($"{Tokens.Definitions}.{name}");
             return definition as JObject;
         }
 
-        private JObject GetPropertiesOfContains(JObject jObject)
+
+        private JObject GetSubmodelElementsAllOfItem(JObject schema, string definitionName)
         {
-            var properties = jObject["contains"]["properties"];
-            return properties as JObject;
+            var allOf = schema.SelectToken($"" +
+                                           $"{Tokens.Definitions}." +
+                                           $"{Tokens.Elements}." +
+                                           $"{Tokens.Properties}." +
+                                           $"{Tokens.SubmodelElements}." +
+                                           $"{Tokens.AllOf}") as JArray;
+
+            var result = allOf.FirstOrDefault(item =>
+                item.GetValue<string>($"{Tokens.Contains}.{Tokens.Ref}") == $"#/{Tokens.Definitions}/{definitionName}"
+            ) as JObject;
+
+            return result;
         }
 
-
-        private object FindObjectInArrayWithProperty(JArray jArray, string propertyName, string propertyValue)
+        private object FindObjectInArrayWithProperty(JToken jArray, string propertyName, string propertyValue)
         {
             var result = jArray.FirstOrDefault(item => 
                 item[propertyName] != null && 
@@ -140,7 +246,6 @@ namespace AasxSchemaExport.Tests
 
             return result;
         }
-
 
         private JObject ExportSchema()
         {

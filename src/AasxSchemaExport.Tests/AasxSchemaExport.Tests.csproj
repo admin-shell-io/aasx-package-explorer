@@ -60,6 +60,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JTokenExtensions.cs" />
     <Compile Include="TestJsonSchemaExport.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
