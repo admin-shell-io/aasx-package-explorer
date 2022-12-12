@@ -72,9 +72,6 @@
     <None Include="TestData\SubmodelTest.aasx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestData\SubmodelTest2.aasx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Trial\aasV2.0.json" />
     <None Include="Trial\schema-array-4.json" />
     <None Include="Trial\schema-pattern-2.json" />
