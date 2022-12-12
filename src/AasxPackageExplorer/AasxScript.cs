@@ -31,6 +31,7 @@ namespace AasxPackageExplorer
     /// </summary>
     public interface IAasxScriptRemoteInterface
     {
+        Task<int> Tool(object[] args);
         AdminShell.Referable Select(object[] args);
         bool Location(object[] args);
     }
@@ -191,93 +192,38 @@ namespace AasxPackageExplorer
                 script?.AddHelpInfo("Tool",
                     "Invokes a menu-item (tool) of the application with arguments treated as key/value pairs.",
                     args: new AasxMenuListOfArgDefs()
+                        .Add("Toolname", "String identifying command or action.")
                         .Add("<key>", "String which identifies the argument of the command.")
-                        .Add("<value>", "Arbitrary type and value for that argument.")
-                        .Add("returns:", "'True', if tool was found and successfully executed, 'False' elsewise."));
+                        .Add("<value>", "Arbitrary type and value for that argument."));
             }
 
             public override object Invoke(IScriptContext context, object[] args)
             {
                 // access
                 if (_script == null)
-                    return false;
+                    return -1;
 
-                if (args == null || args.Length < 1 || !(args[0] is string toolName))
+                if (args == null || args.Length < 1 || !(args[0] is string))
                 {
                     _script.ScriptLog?.Error("Script: Invoke Tool: Toolname missing");
-                    return false;
+                    return -1;
                 }
 
                 // debug
                 if (_script._logLevel >= 2)
                     Console.WriteLine($"Execute Tool " + string.Join(",", args));
 
-                // name of tool, find it
-                var mi = _script.RootMenu?.FindName(toolName);
-                if (mi == null)
-                {
-                    _script.ScriptLog?.Error("Script: Invoke Tool: Toolname invalid");
-                    return false;
-                }
-
-                // create a ticket
-                var ticket = new AasxMenuActionTicket()
-                {
-                    MenuItem = mi,
-                    ScriptMode = true,
-                    ArgValue = new AasxMenuArgDictionary()
-                };
-
-                // go thru the remaining arguments and find arg names and values
-                var argi = 1;
-                while (argi < args.Length)
-                {
-                    // get arg name
-                    if (!(args[argi] is string argname))
-                    {
-                        _script.ScriptLog?.Error($"Script: Invoke Tool: Argument at index {argi} is " +
-                            $"not string type for argument name.");
-                        return -1;
-                    }
-
-                    // find argname?
-                    var ad = mi.ArgDefs?.Find(argname);
-                    if (ad == null)
-                    {
-                        _script.ScriptLog?.Error($"Script: Invoke Tool: Argument at index {argi} is " +
-                            $"not valid argument name.");
-                        return -1;
-                    }
-
-                    // create arg value (not available is okay)
-                    object av = null;
-                    if (argi + 1 < args.Length)
-                        av = args[argi + 1];
-
-                    // into ticket
-                    ticket.ArgValue.Add(ad, av);
-
-                    // 2 forward!
-                    argi += 2;
-                }
-
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
-                var x = Application.Current.Dispatcher.Invoke(() =>
+                var x = Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    return _script.RootMenu.ActivateAction(mi, ticket);
+                    return await _script.Remote?.Tool(args);
                 });
                 if (x != null)
-                    Log.Singleton.Silent("" + x.Id);
-
-                // test
-                if (ticket.SleepForVisual == 1)
-                    Thread.Sleep(50);
-                if (ticket.SleepForVisual > 1)
-                    Thread.Sleep(200);
+                    Log.Singleton.Silent("" + x);
 
                 // done
-                return ticket.Success;
+                return 0;
             }
         }
 
@@ -301,7 +247,7 @@ namespace AasxPackageExplorer
                 if (_script == null)
                     return -1;
 
-                if (args == null || args.Length < 1 || !(args[0] is string refTypeStr))
+                if (args == null || args.Length < 1 || !(args[0] is string))
                 {
                     _script.ScriptLog?.Error("Script: Select: Referable type missing");
                     return -1;

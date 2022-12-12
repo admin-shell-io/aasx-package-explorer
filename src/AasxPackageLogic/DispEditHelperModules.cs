@@ -660,7 +660,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityQualifierCollection(AnyUiStackPanel stack,
             AdminShell.QualifierCollection qualifiers,
             Action<AdminShell.QualifierCollection> setOutput,
-            AdminShell.Referable relatedReferable = null)
+            AdminShell.Referable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -678,7 +679,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable);
+                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable, superMenu);
             }
 
         }

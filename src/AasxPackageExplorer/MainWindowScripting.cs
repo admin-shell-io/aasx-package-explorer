@@ -486,6 +486,84 @@ namespace AasxPackageExplorer
             return null;
         }
 
+            
+        public async Task<int> Tool(object[] args)
+        {
+            if (args == null || args.Length < 1 || !(args[0] is string toolName))
+            {
+                Log.Singleton.Error("Script: Invoke Tool: Toolname missing");
+                return -1;
+            }
+
+            // name of tool, find it
+            var foundMenu = _mainMenu.Menu;
+            var mi = foundMenu.FindName(toolName);
+            if (mi == null)
+            {
+                foundMenu = _dynamicMenu.Menu;
+                mi = foundMenu.FindName(toolName);
+            }
+
+            if (foundMenu == null || mi == null)
+            {
+                Log.Singleton.Error($"Script: Invoke Tool: Toolname invalid: {toolName}");
+                return -1;
+            }
+
+            // create a ticket
+            var ticket = new AasxMenuActionTicket()
+            {
+                MenuItem = mi,
+                ScriptMode = true,
+                ArgValue = new AasxMenuArgDictionary()
+            };
+
+            // go thru the remaining arguments and find arg names and values
+            var argi = 1;
+            while (argi < args.Length)
+            {
+                // get arg name
+                if (!(args[argi] is string argname))
+                {
+                    Log.Singleton.Error($"Script: Invoke Tool: Argument at index {argi} is " +
+                        $"not string type for argument name.");
+                    return -1;
+                }
+
+                // find argname?
+                var ad = mi.ArgDefs?.Find(argname);
+                if (ad == null)
+                {
+                    Log.Singleton.Error($"Script: Invoke Tool: Argument at index {argi} is " +
+                        $"not valid argument name.");
+                    return -1;
+                }
+
+                // create arg value (not available is okay)
+                object av = null;
+                if (argi + 1 < args.Length)
+                    av = args[argi + 1];
+
+                // into ticket
+                ticket.ArgValue.Add(ad, av);
+
+                // 2 forward!
+                argi += 2;
+            }
+
+            // invoke action
+            await foundMenu.ActivateAction(mi, ticket);
+
+            // perform UI updates if required
+            if (ticket.UiLambdaAction != null && !(ticket.UiLambdaAction is AnyUiLambdaActionNone))
+            {
+                // add to "normal" event quoue
+                DispEditEntityPanel.AddWishForOutsideAction(ticket.UiLambdaAction);
+            }
+
+            return 0;
+        }
+
         bool IAasxScriptRemoteInterface.Location(object[] args)
         {
             // access

@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasxIntegrationBase;
 using AdminShellNS;
+using AnyUi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,6 +140,30 @@ namespace AasxWpfControlLibrary
                         RenderItemCollection(topMenu, mii.Childs, wpf.Items, cmdBindings, inputBindings, kgConv);
                 }
             }
+        }
+
+        public AnyUiLambdaActionBase HandleGlobalKeyDown(KeyEventArgs e, bool preview)
+        {
+            // access
+            if (e == null || Menu == null)
+                return null;
+
+            var kgConv = new KeyGestureConverter();
+
+            foreach (var mi in Menu.FindAll<AasxMenuItemHotkeyed>())
+            {
+                var g = kgConv.ConvertFromInvariantString(mi.InputGesture) as KeyGesture;
+                if (g != null 
+                    && g.Key == e.Key
+                    && g.Modifiers == Keyboard.Modifiers)
+                {
+                    var ticket = new AasxMenuActionTicket();
+                    mi.Action?.Invoke(mi.Name, mi, ticket);
+                    return ticket.UiLambdaAction;
+                }
+            }
+
+            return null;
         }
 
         public void LoadAndRender(

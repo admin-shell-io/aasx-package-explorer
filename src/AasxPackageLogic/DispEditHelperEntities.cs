@@ -1304,7 +1304,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.AdministrationShell aas,
             AdminShell.SubmodelRef smref, AdminShell.Submodel submodel, bool editMode,
-            AnyUiStackPanel stack, bool hintMode = false)
+            AnyUiStackPanel stack, bool hintMode = false,
+            AasxMenu superMenu = null)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
@@ -1709,7 +1710,8 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, submodel.qualifiers,
                     (q) => { submodel.qualifiers = q; },
-                    relatedReferable: submodel);
+                    relatedReferable: submodel,
+                    superMenu: superMenu);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.hasDataSpecification,
@@ -2102,7 +2104,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AdminShell.AdministrationShellEnv env,
             AdminShell.Referable parentContainer, AdminShell.SubmodelElementWrapper wrapper,
             AdminShell.SubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            bool hintMode = false, bool nestedCds = false)
+            bool hintMode = false, bool nestedCds = false,
+            AasxMenu superMenu = null)
         {
             //
             // Submodel Element GENERAL
@@ -2142,20 +2145,23 @@ namespace AasxPackageLogic
                 if (parentContainer != null && parentContainer is AdminShell.Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Submodel).submodelElements, wrapper, env,
-                        "SubmodelElement:", nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
+                        "SubmodelElement:", nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is AdminShell.SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.SubmodelElementCollection).value,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
+                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is AdminShell.Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(
                         horizStack, repo, (parentContainer as AdminShell.Entity).statements,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate);
+                        nextFocus: wrapper.submodelElement, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 // refactor?
                 if (parentContainer != null && parentContainer is AdminShell.IManageSubmodelElements)
@@ -2194,7 +2200,7 @@ namespace AasxPackageLogic
                 if (parentContainer != null)
                 {
                     this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
-                        label: "Buffer:");
+                        label: "Buffer:", superMenu: superMenu);
                 }
             }
 
@@ -2818,7 +2824,8 @@ namespace AasxPackageLogic
                 // That is: multiple x multiple keys!
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, sme.qualifiers,
-                    (q) => { sme.qualifiers = q; }, relatedReferable: sme);
+                    (q) => { sme.qualifiers = q; }, relatedReferable: sme,
+                    superMenu: superMenu);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.hasDataSpecification,

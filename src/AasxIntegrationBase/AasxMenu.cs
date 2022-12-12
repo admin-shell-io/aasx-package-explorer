@@ -435,6 +435,32 @@ namespace AasxIntegrationBase
             return this;
         }
 
+        public AasxMenu AddAction(
+            string name, string header,
+            string help = null,
+            AasxMenuActionDelegate action = null,
+            AasxMenuActionAsyncDelegate actionAsync = null,
+            AasxMenuFilter filter = AasxMenuFilter.WPF,
+            string inputGesture = null,
+            AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
+            AasxMenuListOfArgDefs args = null)
+        {
+            this.Add(new AasxMenuItem()
+            {
+                Name = name,
+                Header = header,
+                HelpText = help,
+                Action = action,
+                ActionAsync = actionAsync,
+                Filter = filter,
+                InputGesture = inputGesture,
+                RequiredInfos = reqs,
+                ArgDefs = args
+            });
+            return this;
+        }
+
+
         public AasxMenu AddSeparator()
         {
             this.Add(new AasxMenuSeparator());
@@ -490,7 +516,7 @@ namespace AasxIntegrationBase
         // Child management
         //
 
-        public IEnumerable<AasxMenuItemBase> FindAll(Func<AasxMenuItemBase, bool> pred)
+        public IEnumerable<AasxMenuItemBase> FindAll(Func<AasxMenuItemBase, bool> pred = null)
         {
             foreach (var ch in this)
             {
@@ -499,6 +525,20 @@ namespace AasxIntegrationBase
                 if (ch is AasxMenuItem chmi && chmi.Childs != null)
                     foreach (var x in chmi.Childs.FindAll(pred))
                         yield return x;
+            }
+        }
+
+        public IEnumerable<T> FindAll<T>(Func<AasxMenuItemBase, bool> pred = null) 
+            where T : AasxMenuItemBase
+        {
+            foreach (var ch in this)
+            {
+                if (ch is T cht && (pred == null || pred(ch)))
+                    yield return cht;
+                if (ch is AasxMenuItem chmi && chmi.Childs != null)
+                    foreach (var x in chmi.Childs.FindAll(pred))
+                        if (x is T xt)
+                            yield return xt;
             }
         }
 
@@ -561,6 +601,12 @@ namespace AasxIntegrationBase
         /// 1 means short, 2 means long.
         /// </summary>
         public int SleepForVisual = 0;
+
+        /// <summary>
+        /// If the ticket is executed, then executing action can return a
+        /// UI lambda action to update the screen.
+        /// </summary>
+        public AnyUiLambdaActionBase UiLambdaAction = null;
 
         //
         // Runtime data

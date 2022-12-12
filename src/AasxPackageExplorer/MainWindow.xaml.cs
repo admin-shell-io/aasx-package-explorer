@@ -66,6 +66,8 @@ namespace AasxPackageExplorer
 
         protected MainWindowDispatch _logic = new MainWindowDispatch();
 
+        protected AasxMenuWpf _dynamicMenu = new AasxMenuWpf();
+
         #endregion
         #region Init Component
         //====================
@@ -504,11 +506,13 @@ namespace AasxPackageExplorer
                 VisualElementEnvironmentItem;
 
             // update element view?
+            _dynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
                     _packageCentral, entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                     flyoutProvider: this,
                     appEventProvider: this,
-                    hightlightField: hightlightField);
+                    hightlightField: hightlightField,
+                    superMenu: _dynamicMenu.Menu);
 
             // panels
             var panelHeight = 48;
@@ -2599,7 +2603,14 @@ namespace AasxPackageExplorer
                 currentFlyoutControl.ControlPreviewKeyDown(e);
             }
 
-            DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
+            // DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
+
+            var la = _dynamicMenu?.HandleGlobalKeyDown(e, preview: true);            
+            if (la != null && !(la is AnyUiLambdaActionNone))
+            {
+                // add to "normal" event quoue
+                DispEditEntityPanel.AddWishForOutsideAction(la);
+            }
 
             if (e.Key == Key.T
                 && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
@@ -3066,10 +3077,11 @@ namespace AasxPackageExplorer
                 // Menu command
                 //
 
-                html.AppendLine("<h3>Menu and script commands</h3>");
+                Action<AasxMenu> lambdaMenu = (menu) =>
+                {
 
-                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<table style=""width:100%"">
+                    html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<table style=""width:100%"">
                     <tr>
                     <th>Keyboard</th>
                     <th>Menu header</th>
@@ -3077,16 +3089,16 @@ namespace AasxPackageExplorer
                     <th>Description</th>
                     </tr>"));
 
-                var rowfmtTC = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<tr style=""background-color: {0}"">
+                    var rowfmtTC = AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<tr style=""background-color: {0}"">
                     <td>{1}</td>
                     <td>{2}</td>
                     <td>{3}</td>
                     <td>{4}</td>
                     </tr>");
 
-                var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<tr style=""background-color: {0}"">
+                    var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<tr style=""background-color: {0}"">
                     <td colspan=""2"" 
                      style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
                     </td>
@@ -3094,41 +3106,48 @@ namespace AasxPackageExplorer
                     <td><i>{2}</i></td>
                     </tr>");
 
-                foreach (var mib in _mainMenu.Menu.FindAll((x) => x is AasxMenuItem))
-                {
-                    // access
-                    if (!(mib is AasxMenuItem mi) || mi.Name?.HasContent() != true)
-                        continue;
+                    foreach (var mib in menu.FindAll((x) => x is AasxMenuItem))
+                    {
+                        // access
+                        if (!(mib is AasxMenuItem mi) || mi.Name?.HasContent() != true)
+                            continue;
 
-                    // filter header
-                    var header = mi.Header.Replace("_", "");
+                        // filter header
+                        var header = mi.Header.Replace("_", "");
 
-                    // fill
-                    html.Append(String.Format(rowfmtTC,
-                        (color) ? "#ffffe0" : "#fffff0",
-                        "" + mi.InputGesture,
-                        "" + header,
-                        "" + mi.Name,
-                        "" + mi.HelpText));
+                        // fill
+                        html.Append(String.Format(rowfmtTC,
+                            (color) ? "#ffffe0" : "#fffff0",
+                            "" + mi.InputGesture,
+                            "" + header,
+                            "" + mi.Name,
+                            "" + mi.HelpText));
 
-                    // arguments
-                    if (mi.ArgDefs != null)
-                        foreach (var ad in mi.ArgDefs)
-                        {
-                            if (ad.Hidden)
-                                continue;
-                            html.Append(String.Format(rowfmtTCAD,
-                                (color) ? "#ffffe0" : "#fffff0",
-                                "" + ad.Name,
-                                "" + ad.Help));
-                        }
+                        // arguments
+                        if (mi.ArgDefs != null)
+                            foreach (var ad in mi.ArgDefs)
+                            {
+                                if (ad.Hidden)
+                                    continue;
+                                html.Append(String.Format(rowfmtTCAD,
+                                    (color) ? "#ffffe0" : "#fffff0",
+                                    "" + ad.Name,
+                                    "" + ad.Help));
+                            }
 
-                    // color change
-                    color = !color;
-                }
+                        // color change
+                        color = !color;
+                    }
 
-                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</table>"));
+                    html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                        @"</table>"));
+                };
+
+                html.AppendLine("<h3>Menu and script commands</h3>");
+                lambdaMenu(_mainMenu.Menu);
+
+                html.AppendLine("<h3>Displayed entity and script commands</h3>");
+                lambdaMenu(_dynamicMenu.Menu);
 
                 //
                 // Script command

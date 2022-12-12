@@ -241,7 +241,8 @@ namespace AasxPackageExplorer
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
-            DispEditHighlight.HighlightFieldInfo hightlightField = null)
+            DispEditHighlight.HighlightFieldInfo hightlightField = null,
+            AasxMenu superMenu = null)
         {
             //
             // Start
@@ -380,7 +381,7 @@ namespace AasxPackageExplorer
                     _helper.DisplayOrEditAasEntitySubmodelElement(
                         packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement,
                         editMode,
-                        repo, stack, hintMode: hintMode,
+                        repo, stack, hintMode: hintMode, superMenu: superMenu,
                         nestedCds: cdSortOrder.HasValue &&
                             cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
                 }
