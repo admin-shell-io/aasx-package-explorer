@@ -34,7 +34,7 @@ namespace AasxPredefinedConcepts
         {
             "All",      "* - All document classes",
             "01-01",    "Identification",
-            "02-01",    "Technical specifiction",
+            "02-01",    "Technical specification",
             "02-02",    "Drawings, plans",
             "02-03",    "Assemblies",
             "02-04",    "Certificates, declarations",
