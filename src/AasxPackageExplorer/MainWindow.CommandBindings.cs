@@ -31,6 +31,7 @@ using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
+using AasxSchemaExport;
 using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
@@ -1382,6 +1383,9 @@ namespace AasxPackageExplorer
             {
                 PanelConcurrentSetVisibleIfRequired(PanelConcurrentCheckIsVisible());
             }
+
+            if (cmd == "exportsubmodeljsonschema")
+                CommandBinding_ExportSubmodelJsonSchema();
         }
 
         public void CommandBinding_TDImport()
@@ -3620,6 +3624,48 @@ namespace AasxPackageExplorer
             // Redraw for changes to be visible
             RedrawAllAasxElements();
             //-----------------------------------
+        }
+        public void CommandBinding_ExportSubmodelJsonSchema()
+        {
+            // trivial things
+            if (!_packageCentral.MainAvailable)
+            {
+                MessageBoxFlyoutShow(
+                    "An AASX package needs to be open", "Error",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Exclamation);
+                return;
+            }
+
+            // a SubmodelRef shall be exported/ imported
+            VisualElementSubmodelRef ve1 = null;
+            if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementSubmodelRef)
+                ve1 = DisplayElements.SelectedItem as VisualElementSubmodelRef;
+
+            if (ve1 == null || ve1.theSubmodel == null || ve1.theEnv == null)
+            {
+                MessageBoxFlyoutShow(
+                    "No valid Submodel Template selected for exporting the JSON Schema", "Export JSON Schema",
+                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Error);
+                return;
+            }
+
+            var jsonSchemaExporter = new SubmodelTemplateJsonSchemaExporterV20();
+            var schema = jsonSchemaExporter.ExportSchema(ve1.theSubmodel);
+
+            var saveFileDialog = new Microsoft.Win32.SaveFileDialog();
+            saveFileDialog.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
+            saveFileDialog.FileName = "Submodel_Schema_" + ve1.theSubmodel.idShort + ".json";
+            saveFileDialog.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
+            if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
+            var res = saveFileDialog.ShowDialog();
+            if (res == true)
+            {
+                using (var s = new StreamWriter(saveFileDialog.FileName))
+                {
+                    s.Write(schema);
+                }
+            }
+            if (Options.Curr.UseFlyovers) this.CloseFlyover();
         }
     }
 }
