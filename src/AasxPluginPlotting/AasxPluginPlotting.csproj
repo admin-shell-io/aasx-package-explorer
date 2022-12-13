@@ -19,7 +19,7 @@
     <Resource Include="LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="ScottPlot" Version="4.1.26" />
     <PackageReference Include="ScottPlot.WPF" Version="4.1.26" />
   </ItemGroup>
