@@ -23,7 +23,7 @@ namespace AasxSchemaExport.Tests
         public void Init()
         {
             var submodelTemplatePath = Path.Combine(
-                TestContext.CurrentContext.TestDirectory, 
+                TestContext.CurrentContext.TestDirectory,
                 "TestData",
                 "SubmodelTest.aasx");
 
@@ -37,12 +37,12 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             Assert.AreEqual(
-                schema.GetValue<string>("$schema"), 
+                schema.GetValue<string>("$schema"),
                 "https://json-schema.org/draft/2019-09/schema",
                 "Exported schema must support the draft 2019-09 draft.");
 
             Assert.AreEqual(
-                schema.GetValue<string>("title"), 
+                schema.GetValue<string>("title"),
                 "AssetAdministrationShellSubmodelTest",
                 "The title of the schema must contain the prefix AssetAdministrationShell plus the idShort of the submodel.");
         }
@@ -53,8 +53,8 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             Assert.AreEqual(
-                schema.GetValue<string>("type"), 
-                "object", 
+                schema.GetValue<string>("type"),
+                "object",
                 "The type of the root element must be object.");
         }
 
@@ -64,7 +64,7 @@ namespace AasxSchemaExport.Tests
             var schema = ExportSchema();
 
             Assert.AreEqual(schema.GetValue<bool>(
-                "unevaluatedProperties"), 
+                "unevaluatedProperties"),
                 false,
                 "The value of unevaluatedProperties must be set to false.");
         }
@@ -80,7 +80,7 @@ namespace AasxSchemaExport.Tests
                 "aas.json#/definitions/Submodel");
 
             Assert.NotNull(
-                definitionRef, 
+                definitionRef,
                 "There must be a reference to the submodel definition.");
         }
 
@@ -95,7 +95,7 @@ namespace AasxSchemaExport.Tests
                 $"#/{Tokens.Definitions}/{Tokens.Identifiable}");
 
             var definition = GetDefinition(schema, Tokens.Identifiable);
-            
+
             Assert.NotNull(definitionRef, "Must contain the reference to identifiable.");
             Assert.AreEqual(definition.GetValue<string>("" +
                                                         $"{Tokens.Properties}." +
@@ -253,8 +253,8 @@ namespace AasxSchemaExport.Tests
 
         private object FindObjectInArrayWithProperty(JToken jArray, string propertyName, string propertyValue)
         {
-            var result = jArray.FirstOrDefault(item => 
-                item[propertyName] != null && 
+            var result = jArray.FirstOrDefault(item =>
+                item[propertyName] != null &&
                 item[propertyName].Value<string>() == propertyValue);
 
             return result;

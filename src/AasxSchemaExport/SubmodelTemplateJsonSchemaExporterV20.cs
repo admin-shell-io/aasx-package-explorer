@@ -39,7 +39,7 @@ namespace AasxSchemaExport
         {
             _submodelElementDefinitionSuppliers = new List<Func<SubmodelElementDefinitionContext, bool>>
             {
-                SupplyGateArbitrary, 
+                SupplyGateArbitrary,
                 SupplyIdShort,
                 SupplyKind,
                 SupplyModelType,
@@ -102,7 +102,7 @@ namespace AasxSchemaExport
             }}");
 
             var targetAllOf = SelectToken<JArray>(
-                schema, 
+                schema,
                 $"$.{Tokens.Definitions}.{Tokens.Elements}.properties.submodelElements.allOf");
             var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
 
@@ -211,7 +211,7 @@ namespace AasxSchemaExport
                 }}");
 
                 var allOf = SelectToken<JArray>(
-                    definitionProperties, 
+                    definitionProperties,
                     $"{Tokens.SemanticId}.{Tokens.Properties}.{Tokens.Keys}.{Tokens.AllOf}");
 
                 submodelElement.semanticId.Keys.ForEach(key =>
@@ -346,7 +346,7 @@ namespace AasxSchemaExport
             AddReferenceToArray(schema, GetRootAllOf, reference);
         }
 
-        private T SelectToken<T>(JToken source, string path) where T: JToken
+        private T SelectToken<T>(JToken source, string path) where T : JToken
         {
             var result = source.SelectToken(path) as T;
             if (result == null)
@@ -355,7 +355,7 @@ namespace AasxSchemaExport
             return result;
         }
 
-        private void AddReferenceToArray(JObject schema, Func<JObject,JArray> targetArrayProvider, string reference)
+        private void AddReferenceToArray(JObject schema, Func<JObject, JArray> targetArrayProvider, string reference)
         {
             var targetArray = targetArrayProvider(schema);
             targetArray.Add(JObject.Parse($@"{{'$ref': '{reference}' }}"));
