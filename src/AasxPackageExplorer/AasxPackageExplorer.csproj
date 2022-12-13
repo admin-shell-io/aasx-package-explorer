@@ -30,6 +30,7 @@
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
+    <ProjectReference Include="..\AasxSchemaExport\AasxSchemaExport.csproj" />
     <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
