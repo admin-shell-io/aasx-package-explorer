@@ -2340,10 +2340,15 @@ namespace AasxPackageExplorer
             if (res == true)
             {
                 RememberForInitialDirectory(dlg.FileName);
-                using (var s = new StreamWriter(dlg.FileName))
+                using (var streamWriter = new StreamWriter(dlg.FileName))
                 {
-                    var json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-                    s.WriteLine(json);
+                    var serializerSettings = new JsonSerializerSettings();
+                    serializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                    serializerSettings.Formatting = Formatting.Indented;
+                    serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+
+                    var json = JsonConvert.SerializeObject(obj, serializerSettings);
+                    streamWriter.WriteLine(json);
                 }
             }
             if (Options.Curr.UseFlyovers) this.CloseFlyover();
