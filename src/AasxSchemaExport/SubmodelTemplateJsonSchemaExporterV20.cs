@@ -16,7 +16,7 @@ namespace AasxSchemaExport
 {
     public class SubmodelTemplateJsonSchemaExporterV20 : ISchemaExporter
     {
-        private const string MetaModelSchemaUrl = "aas.json";
+        private const string MetaModelSchemaUrl = "https://admin-shell-io.com/schemas/v2/aas.json";
         private const string MetaModelSubmodelDefinitionPath = "#/definitions/Submodel";
 
         private List<Func<SubmodelElementDefinitionContext, bool>> _submodelElementDefinitionSuppliers;
