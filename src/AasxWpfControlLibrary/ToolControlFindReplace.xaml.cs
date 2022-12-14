@@ -25,7 +25,7 @@ namespace AasxPackageExplorer
         public AdminShellUtil.SearchOptions TheSearchOptions = new AdminShellUtil.SearchOptions();
         public AdminShellUtil.SearchResults TheSearchResults = new AdminShellUtil.SearchResults();
 
-        public AdminShell.AdministrationShellEnv TheAasEnv = null;
+        public AasCore.Aas3_0_RC02.Environment TheAasEnv = null;
 
         public delegate void ResultSelectedDelegate(AdminShellUtil.SearchResultItem resultItem);
 
@@ -41,7 +41,7 @@ namespace AasxPackageExplorer
         {
             InitializeComponent();
 
-            TheSearchOptions.allowedAssemblies = new[] { typeof(AdminShell).Assembly };
+            TheSearchOptions.allowedAssemblies = new[] { typeof(AasCore.Aas3_0_RC02.IClass).Assembly };
 
             // the combo box needs a special treatment in order to have it focussed ..
             ComboBoxToolsFindText.Loaded += (object sender, RoutedEventArgs e) =>

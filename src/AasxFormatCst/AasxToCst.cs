@@ -147,19 +147,18 @@ namespace AasxFormatCst
                         // more info
                         if (cd != null)
                         {
-                            //TODO:jtikekar Temporarily removed
-                            //var ds61360 = cd.IEC61360Content;
-                            //if (ds61360 != null)
-                            //{
-                            //    if (ds61360.definition != null)
-                            //        tmpPd.Definition = ds61360.definition.GetDefaultStr("en");
+                            var ds61360 = cd.EmbeddedDataSpecification?.IEC61360Content;
+                            if (ds61360 != null)
+                            {
+                                if (ds61360.definition != null)
+                                    tmpPd.Definition = ds61360.definition.GetDefaultString("en");
 
-                            //    var dst = ds61360.dataType?.Trim().ToUpper();
-                            //    if (ds61360 == null && dst != null)
-                            //    {
-                            //        tmpDt = dst;
-                            //    }
-                            //}
+                                var dst = ds61360.dataType?.Trim().ToUpper();
+                                if (ds61360 == null && dst != null)
+                                {
+                                    tmpDt = dst;
+                                }
+                            }
                         }
 
                         // default

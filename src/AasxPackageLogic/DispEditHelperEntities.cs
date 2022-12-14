@@ -17,10 +17,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extenstions;
@@ -80,9 +82,13 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-
+                List<string> keys = new();
+                foreach(var key in asset.GlobalAssetId.Keys)
+                {
+                    keys.Add(key.Value);
+                }
                 this.AddKeyListOfIdentifier(
-                    stack, "globalAssetId", asset.GlobalAssetId.GetAsIdentifier(), repo,
+                    stack, "globalAssetId", keys, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
                     auxButtonTitles: new[] { "Generate", "Input", "Rename" },
                     auxButtonToolTips: new[] {
@@ -270,17 +276,11 @@ namespace AasxPackageLogic
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions))
             {
                 // some hints
                 this.AddHintBubble(stack, hintMode, new[] {
-                    //TODO:jtikekar support asset
-                    //new HintCheck(
-                    //    () => { return env.Assets == null || env.Assets.Count < 1; },
-                    //    "There are no assets in this AAS environment. You should consider adding " +
-                    //        "an asset by clicking 'Add asset' on the edit panel below."),
                     new HintCheck(
                         () => { return env.AssetAdministrationShells == null || env.AssetAdministrationShells.Count < 1; },
                         "There are no Administration Shells in this AAS environment. " +
@@ -309,23 +309,12 @@ namespace AasxPackageLogic
 
                 // let the user control the number of entities
                 this.AddAction(
-                    stack, "Entities:", new[] { "Add AssetInformation", "Add AAS", "Add ConceptDescription" }, repo,
+                    stack, "Entities:", new[] { "Add AAS", "Add ConceptDescription" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
                         {
-                            var asset = new AssetInformation(AssetKind.Type);
-                            //TODO:jtikekar Support asset
-                            //this.MakeNewIdentifiableUnique(asset);
-                            //env.Assets.Add(asset);
-                            //this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                            //    StructuralChangeReason.Create));
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
-                        }
-
-                        if (buttonNdx == 1)
-                        {
-                            var aas = new AssetAdministrationShell("", null); //TODO:jtikekar refere an Asset
+                            var aas = new AssetAdministrationShell("", null, submodels:new List<Reference>()); //TODO:jtikekar refere an Asset
                             this.MakeNewIdentifiableUnique(aas);
                             env.AssetAdministrationShells.Add(aas);
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange(
@@ -333,7 +322,7 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: aas);
                         }
 
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 1)
                         {
                             var cd = new ConceptDescription("");
                             this.MakeNewIdentifiableUnique(cd);
@@ -385,36 +374,19 @@ namespace AasxPackageLogic
                                         //
                                         try
                                         {
-                                            // in any case, copy the AssetInformation as well
-                                            //var sourceAsset = rve.theEnv.FindAsset(sourceAAS.assetRef);
-                                            var sourceAsset = sourceAAS.AssetInformation;
-                                            var destAsset = sourceAsset;
-                                            if (copyRecursively)
-                                            {
-                                                destAsset = sourceAsset.Copy();
-                                                //if (createNewIds)
-                                                //    destAsset.identification = new Identification(
-                                                //        Identification.IRI,
-                                                //        AdminShellUtil.GenerateIdAccordingTemplate(
-                                                //            Options.Curr.TemplateIdAsset));
-                                                if (createNewIds)
-                                                    destAsset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key           (KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(
-                                                            Options.Curr.TemplateIdAsset))});
-
-                                                //env.Assets.Add(destAsset);
-                                                //TODO: jtikekar support asset
-                                                //this.AddDiaryEntry(destAsset, new DiaryEntryStructChange(
-                                                //    StructuralChangeReason.Create));
-                                            }
-
                                             // make a copy of the AAS itself
                                             destAAS = (mdo as AssetAdministrationShell).Copy();
-                                            if (copyRecursively)
-                                                destAAS.AssetInformation = destAsset.Copy();
-
                                             if (createNewIds)
+                                            {
                                                 destAAS.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                                         Options.Curr.TemplateIdAas);
+
+                                                if (destAAS.AssetInformation != null)
+                                                {
+                                                    destAAS.AssetInformation.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(
+                                                                Options.Curr.TemplateIdAsset))});
+                                                }
+                                            }
 
                                             env.AssetAdministrationShells.Add(destAAS);
                                             this.AddDiaryEntry(destAAS, new DiaryEntryStructChange(
@@ -472,8 +444,7 @@ namespace AasxPackageLogic
                                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
 
                                                         // make a new ref
-                                                        var reference = dstSub.GetReference();
-                                                        var dstRef = new Reference(reference.Type, new List<Key>(reference.Keys));
+                                                        var dstRef = dstSub.GetModelReference().Copy();
 
                                                         // formally add this to active environment and AAS
                                                         env.Submodels.Add(dstSub);
@@ -536,7 +507,6 @@ namespace AasxPackageLogic
                 }
 
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.Shells
-                    || ve.theItemType == VisualElementEnvironmentItem.ItemType.Assets
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
@@ -571,27 +541,6 @@ namespace AasxPackageLogic
                                         aasold.Remove(itaas);
                                         this.AddDiaryEntry(itaas,
                                             new DiaryEntryStructChange(StructuralChangeReason.Delete));
-                                    }
-                                }
-                                else
-                                if (cpiid.entity is AssetInformation itasset)
-                                {
-                                    // new 
-                                    var asset = itasset.Copy();
-                                    //TODO:jtikekar support Asset
-                                    //env.Assets.Add(asset);
-                                    //this.AddDiaryEntry(asset, new DiaryEntryStructChange(
-                                    //    StructuralChangeReason.Create));
-                                    res = asset;
-
-                                    // delete
-                                    if (del && cpiid.parentContainer is List<AssetInformation> assetold
-                                        && assetold.Contains(itasset))
-                                    {
-                                        assetold.Remove(itasset);
-                                        //TODO:jtikekar support asset
-                                        //this.AddDiaryEntry(itasset,
-                                        //    new DiaryEntryStructChange(StructuralChangeReason.Delete));
                                     }
                                 }
                                 else
@@ -896,12 +845,6 @@ namespace AasxPackageLogic
                             "There are no AssetAdministrationShell entities in the environment. " +
                                 "Select the 'Administration Shells' item on the middle panel and " +
                                 "select 'Add AAS' to add a new entity."),
-                        //TODO:jtikekar support asset
-                        //new HintCheck(
-                        //    () => { return env.Assets.Count < 1; },
-                        //    "There are no AssetInformation entities in the environment. " +
-                        //        "Select the 'Assets' item on the middle panel and " +
-                        //        "select 'Add asset' to add a new entity."),
                         new HintCheck(
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
@@ -919,8 +862,6 @@ namespace AasxPackageLogic
                 this.AddSmallLabelTo(
                     g, 1, 0, content: String.Format("#admin shells: {0}.", env.AssetAdministrationShells.Count),
                     margin: new AnyUiThickness(0, 5, 0, 0));
-                //TODO:jtikekar support asset
-                //this.AddSmallLabelTo(g, 2, 0, content: String.Format("#assets: {0}.", env.Assets.Count));
                 this.AddSmallLabelTo(g, 3, 0, content: String.Format("#submodels: {0}.", env.Submodels.Count));
                 this.AddSmallLabelTo(
                     g, 4, 0, content: String.Format("#concept descriptions: {0}.", env.ConceptDescriptions.Count));
@@ -1003,7 +944,7 @@ namespace AasxPackageLogic
             AssetAdministrationShell aas,
             bool editMode, AnyUiStackPanel stack, bool hintMode = false)
         {
-            this.AddGroup(stack, "AssetInformation Administration Shell", this.levelColors.MainSection);
+            this.AddGroup(stack, "Asset Administration Shell", this.levelColors.MainSection);
             if (aas == null)
                 return;
 
@@ -1019,7 +960,7 @@ namespace AasxPackageLogic
                 // Cut, copy, paste within list of AASes
                 this.DispPlainIdentifiableCutCopyPasteHelper<AssetAdministrationShell>(
                     stack, repo, this.theCopyPaste,
-                    env.AssetAdministrationShells, aas, (o) => { return o.Copy(); },
+                    env.AssetAdministrationShells, aas, (o) => { return (o as AssetAdministrationShell).Copy(); },
                     label: "Buffer:",
                     checkPasteInfo: (cpb) => cpb?.Items?.AllOfElementType<CopyPasteItemSubmodel>() == true,
                     doPasteInto: (cpi, del) =>
@@ -1035,7 +976,7 @@ namespace AasxPackageLogic
                                 return null;
 
                         // add 
-                        var newsmr = new Reference(item.smref.Type, new List<Key>(item.smref.Keys));
+                        var newsmr = item.smref.Copy();
                         aas.Submodels.Add(newsmr);
 
                         // special case: Submodel does not exist, as pasting was from external
@@ -1073,7 +1014,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });// adding submodels
                 this.AddAction(
-                    stack, "Reference:",
+                    stack, "SubmodelRef:",
                     new[] {
                         "Reference to existing Submodel",
                         "Create new Submodel of kind Template",
@@ -1122,7 +1063,6 @@ namespace AasxPackageLogic
                             env.Submodels.Add(submodel);
 
                             // directly create identification, as we need it!
-                            //submodel.identification.idType = Identification.IRI;
                             if (buttonNdx == 1)
                             {
                                 submodel.Id = AdminShellUtil.GenerateIdAccordingTemplate(
@@ -1134,7 +1074,7 @@ namespace AasxPackageLogic
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
-                            var smr = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, submodel.Id) });
+                            var smr = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, submodel.Id)});
                             aas.Submodels.Add(smr);
 
                             // event for AAS
@@ -1163,7 +1103,7 @@ namespace AasxPackageLogic
                         {
                             var rve = this.SmartSelectAasEntityVisualElement(
                                 packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                "Reference") as VisualElementSubmodelRef;
+                                "SubmodelRef") as VisualElementSubmodelRef;
 
                             if (rve != null)
                             {
@@ -1208,8 +1148,7 @@ namespace AasxPackageLogic
                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
 
                                         // make a new ref
-                                        var reference = dstSub.GetReference();
-                                        var dstRef = new Reference(reference.Type, new List<Key>(reference.Keys));
+                                        var dstRef = dstSub.GetModelReference().Copy();
 
                                         // formally add this to active environment 
                                         env.Submodels.Add(dstSub);
@@ -1230,36 +1169,20 @@ namespace AasxPackageLogic
 
                         return new AnyUiLambdaActionNone();
                     });
-
-                // let the user control the number of entities
-                //No more views
-                //this.AddAction(stack, "Entities:", new[] { "Add View" }, repo, (buttonNdx) =>
-                //{
-                //    if (buttonNdx == 0)
-                //    {
-                //        var view = new View();
-                //        aas.AddView(view);
-                //        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
-                //        return new AnyUiLambdaActionRedrawAllElements(nextFocus: view);
-                //    }
-
-                //    return new AnyUiLambdaActionNone();
-                //});
             }
 
-            // IReferable
+            // Referable
             this.DisplayOrEditEntityReferable(stack, aas, categoryUsual: false);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.DataSpecifications,
-                (ds) => { aas.DataSpecifications = ds.DataSpecifications; }, relatedReferable: aas);
+                (ds) => { aas.DataSpecifications = ds; }, relatedReferable: aas);
 
             // Identifiable
-            this.DisplayOrEditEntityIdentifiable<AssetAdministrationShell>(
-                env, stack, aas,
+            this.DisplayOrEditEntityIdentifiable(
+                stack, aas,
                 Options.Curr.TemplateIdAas,
-                null,
-                checkForIri: true);
+                null);
 
             // use some asset reference
             var asset = aas.AssetInformation;
@@ -1269,7 +1192,7 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () =>
                     {
-                        return asset != null && asset?.AssetKind != null && asset.AssetKind == AssetKind.Instance &&
+                        return asset != null && asset.AssetKind != null && asset.AssetKind== AssetKind.Instance &&
                             ( aas.DerivedFrom == null || aas.DerivedFrom.Keys.Count < 1);
                     },
                     "You have decided to create an AAS for kind = 'Instance'. " +
@@ -1285,7 +1208,6 @@ namespace AasxPackageLogic
                 stack, repo, aas.DerivedFrom, "derivedFrom:", "Create data element!",
                 v =>
                 {
-                    //aas.DerivedFrom = new AssetAdministrationShellRef();
                     aas.DerivedFrom = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.AssetAdministrationShell, "")});
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
@@ -1305,47 +1227,28 @@ namespace AasxPackageLogic
                     jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
             }
 
-            // assetRef
+            //
+            // Asset linked with AAS
+            //
 
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck(
-                    () => { return asset == null; },
-                    "No asset is associated with this Administration Shell. " +
-                        "This might be, because some identification changed. " +
-                        "Use 'Add existing' to assign the Administration Shell with an existing asset " +
-                        "in the AAS environment or use 'Add blank' to create an arbitray reference."),
-            });
+            // show group only if no AssetInformation is available because
+            // else DisplayOrEditAasEntityAsset will do
+            if (aas.AssetInformation == null)
+                this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
+
             if (this.SafeguardAccess(
-                stack, repo, aas.AssetInformation, "assetRef:", "Create data element!",
+                stack, repo, aas.AssetInformation, "AssetInformation:", "Create data element!",
                 v =>
                 {
-                    aas.AssetInformation = new AssetInformation(AssetKind.Instance);
+                    aas.AssetInformation = new AssetInformation(AssetKind.Type);
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.AddGroup(stack, "AssetInformation Reference", this.levelColors.SubSection);
-
-                Func<List<Key>, AnyUiLambdaActionBase> lambda = (kl) =>
-                {
-                    return new AnyUiLambdaActionNavigateTo(
-                        new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)), translateAssetToAAS: false);
-                };
-
-                //TODO:jtikekar support asset
-                //this.AddKeyListKeys(stack, "assetRef", aas.assetRef.Keys, repo,
-                //    packages, PackageCentral.PackageCentral.Selector.Main, "AssetInformation",
-                //    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
-            }
-
-            //
-            // AssetInformation linked with AAS
-            //
-
-            if (asset != null)
-            {
                 DisplayOrEditAasEntityAsset(
-                    packages, env, asset, editMode, repo, stack, hintMode: hintMode);
+                    packages, env, aas, aas.AssetInformation,
+                    preferredNextFocus: aas,
+                    editMode: editMode, repo: repo, stack: stack, hintMode: hintMode);
             }
         }
 
@@ -1679,8 +1582,8 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
                 // Identifiable
-                this.DisplayOrEditEntityIdentifiable<Submodel>(
-                    env, stack, submodel,
+                this.DisplayOrEditEntityIdentifiable(
+                    stack, submodel,
                     (submodel.Kind == ModelingKind.Template)
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
@@ -1733,8 +1636,8 @@ namespace AasxPackageLogic
                                 }
                             }
                             return new AnyUiLambdaActionNone();
-                        }),
-                    checkForIri: submodel.Kind != null && submodel.Kind == ModelingKind.Instance);
+                        }));
+                //checkForIri: submodel.Kind != null && submodel.Kind == ModelingKind.Instance);
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
@@ -1765,7 +1668,7 @@ namespace AasxPackageLogic
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.DataSpecifications,
-                    (ds) => { submodel.DataSpecifications = ds.DataSpecifications; },
+                    (ds) => { submodel.DataSpecifications = ds; },
                     relatedReferable: submodel);
 
             }
@@ -1823,14 +1726,14 @@ namespace AasxPackageLogic
                         if ((int)v != 0)
                             return la;
 
-                        //TODO:jtikekar Temporarily removed
-                        //var ds = cd.GetIEC61360();
-                        //if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
-                        //{
-                        //    ds.shortName = new LangStringSetIEC61360("EN?", cd.IdShort);
-                        //    this.AddDiaryEntry(cd, new DiaryEntryStructChange());
-                        //    la = new AnyUiLambdaActionRedrawEntity();
-                        //}
+                        var ds = cd.GetIEC61360();
+                        if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
+                        {
+                            ds.shortName = new LangStringSetIEC61360();
+                            ds.shortName.Add(new LangString("EN?", cd.IdShort));
+                            this.AddDiaryEntry(cd, new DiaryEntryStructChange());
+                            la = new AnyUiLambdaActionRedrawEntity();
+                        }
 
                         if (parentContainer != null & parentContainer is ISubmodelElement)
                         {
@@ -1848,8 +1751,8 @@ namespace AasxPackageLogic
 
             // Identifiable
 
-            this.DisplayOrEditEntityIdentifiable<ConceptDescription>(
-                env, stack, cd,
+            this.DisplayOrEditEntityIdentifiable(
+                stack, cd,
                 Options.Curr.TemplateIdConceptDescription,
                 new DispEditHelperModules.DispEditInjectAction(
                 new[] { "Rename" },
@@ -1900,8 +1803,8 @@ namespace AasxPackageLogic
                         }
                     }
                     return new AnyUiLambdaActionNone();
-                }),
-                checkForIri: false);
+                }));
+            //checkForIri: false);
 
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
@@ -1911,57 +1814,55 @@ namespace AasxPackageLogic
             // joint header for data spec ref and content
             this.AddGroup(stack, "HasDataSpecification:", this.levelColors.SubSection);
 
-            //TODO: jtikekar Temporarily removed
             // check, if there is a IEC61360 content amd, subsequently, also a according data specification
-            //var esc = cd.IEC61360DataSpec;
-            //this.AddHintBubble(
-            //    stack, hintMode,
-            //    new[] {
-            //        new HintCheck(
-            //            () => { return esc != null && (esc.dataSpecification == null
-            //                || !esc.dataSpecification.MatchesExactlyOneKey(
-            //                    DataSpecificationIEC61360.GetKey())); },
-            //            "IEC61360 content present, but data specification missing. Please add according reference.",
-            //            breakIfTrue: true),
-            //    });
+            var esc = cd.EmbeddedDataSpecification?.IEC61360;
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return esc != null && (esc.DataSpecification == null
+                            || !esc.DataSpecification.Matches(
+                                DataSpecificationIEC61360.GetIdentifier())); },
+                        "IEC61360 content present, but data specification missing. Please add according reference.",
+                        breakIfTrue: true),
+                });
 
-            //TODO: jtikekar Temporarily removed
+            //TODO:jtikekar cd.dataspecifications vs embeddedDS
             // use the normal module to edit ALL data specifications
-            //this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.embeddedDataSpecification,
-            //    (ds) => { cd.embeddedDataSpecification = ds; },
-            //    addPresetNames: new[] { "IEC61360" },
-            //    addPresetKeyLists: new[] {
-            //        List<Key>.CreateNew( DataSpecificationIEC61360.GetKey() )},
-            //    dataSpecRefsAreUsual: true, relatedReferable: cd);
+            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecification,
+                (ds) => { cd.EmbeddedDataSpecification = ds; },
+                addPresetNames: new[] { "IEC61360" },
+                addPresetKeyLists: new[] {
+                    new List<Key>(){ new Key(KeyTypes.GlobalReference, DataSpecificationIEC61360.GetIdentifier()) } },
+                dataSpecRefsAreUsual: true, relatedReferable: cd);
 
             // the IEC61360 Content
 
             // TODO (MIHO, 2020-09-01): extend the lines below to cover also data spec. for units
 
-            //TODO:jtikekar Temporarily removed
-            //this.AddHintBubble(
-            //    stack, hintMode,
-            //    new[] {
-            //        new HintCheck(
-            //            () => { return cd.IEC61360Content == null; },
-            //            "Providing an embeddedDataSpecification with IEC61360 data specification content " +
-            //                "is mandatory. This holds the descriptive information " +
-            //                "of an concept and allows for an off-line understanding of the meaning " +
-            //                "of an concept/ ISubmodelElement. Please create this data element.",
-            //            breakIfTrue: true),
-            //    });
-            //if (this.SafeguardAccess(
-            //        stack, repo, cd.IEC61360Content, "embeddedDataSpecification:",
-            //        "Create IEC61360 data specification content",
-            //        v =>
-            //        {
-            //            cd.IEC61360Content = new DataSpecificationIEC61360();
-            //            this.AddDiaryEntry(cd, new DiaryEntryStructChange());
-            //            return new AnyUiLambdaActionRedrawEntity();
-            //        }))
-            //{
-            //    this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.IEC61360Content, relatedReferable: cd);
-            //}
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return cd.EmbeddedDataSpecification.IEC61360Content == null; },
+                        "Providing an embeddedDataSpecification with IEC61360 data specification content " +
+                            "is mandatory. This holds the descriptive information " +
+                            "of an concept and allows for an off-line understanding of the meaning " +
+                            "of an concept/ ISubmodelElement. Please create this data element.",
+                        breakIfTrue: true),
+                });
+            if (this.SafeguardAccess(
+                    stack, repo, cd.EmbeddedDataSpecification?.IEC61360Content, "embeddedDataSpecification:",
+                    "Create IEC61360 data specification content",
+                    v =>
+                    {
+                        cd.EmbeddedDataSpecification.IEC61360Content = new DataSpecificationIEC61360();
+                        this.AddDiaryEntry(cd, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.EmbeddedDataSpecification.IEC61360Content, relatedReferable: cd);
+            }
         }
 
         //
@@ -2235,7 +2136,7 @@ namespace AasxPackageLogic
                         nextFocus: wrapper, sendUpdateEvent: evTemplate);
 
                 // refactor?
-                if (parentContainer != null && parentContainer is ISubmodelElement)
+                if (parentContainer != null && parentContainer is IReferable)
                     this.AddAction(
                         horizStack, "Refactoring:",
                         new[] { "Refactor" }, repo,
@@ -2321,9 +2222,8 @@ namespace AasxPackageLogic
                                 if ((sme.IdShort == null || sme.IdShort.Trim() == "") && cd != null)
                                 {
                                     sme.IdShort = "" + cd.IdShort;
-                                    //TODO:jtikekar Temporarily removed
-                                    //if (sme.IdShort == "")
-                                    //    sme.IdShort = cd.GetDefaultShortName();
+                                    if (sme.IdShort == "")
+                                        sme.IdShort = cd.GetDefaultShortName();
                                 }
 
                                 // can set kind?
@@ -2397,9 +2297,8 @@ namespace AasxPackageLogic
 
                                 // if empty take over shortName
                                 var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
-                                //TODO:jtikekar Temporarily removed
-                                //if ((sme.IdShort == null || sme.IdShort.Trim() == "") && cd != null)
-                                //    sme.IdShort = cd.GetDefaultShortName();
+                                if ((sme.IdShort == null || sme.IdShort.Trim() == "") && cd != null)
+                                    sme.IdShort = cd.GetDefaultShortName();
 
                                 // can set kind?
                                 if (parentKind != null && sme.Kind == null)
@@ -2586,18 +2485,32 @@ namespace AasxPackageLogic
                     var dir = (
                         new[]
                         {
-                            OperationVariable.Direction.In,
-                            OperationVariable.Direction.Out,
-                            OperationVariable.Direction.InOut
+                            OperationVariableDirection.In,
+                            OperationVariableDirection.Out,
+                            OperationVariableDirection.InOut
                         })[dirNdx];
 
                     this.AddGroup(substack, "OperationVariables " + names, this.levelColors.SubSection);
+
+                    List<OperationVariable> operationVariables = null;
+                    if(dir == OperationVariableDirection.In)
+                    {
+                        operationVariables = smo.InputVariables;
+                    }
+                    else if(dir == OperationVariableDirection.Out)
+                    {
+                        operationVariables = smo.OutputVariables;
+                    }
+                    else if(dir == OperationVariableDirection.InOut)
+                    {
+                        operationVariables = smo.InoutputVariables;
+                    }
 
                     this.AddHintBubble(
                         substack, hintMode,
                         new[] {
                             new HintCheck(
-                                () => { return smo[dir] == null || smo[dir].Count < 1; },
+                                () => { return operationVariables == null || operationVariables.Count < 1; },
                                 "This collection of OperationVariables currently has no elements, yet. " +
                                     "Please check, which in- and out-variables are required.",
                                 severityLevel: HintCheck.Severity.Notice)
@@ -2609,9 +2522,8 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                             {
                                 var ov = new OperationVariable(null); //TODO: jtikekar not a good solution to add null SME
-                                if (smo[dir] == null)
-                                    smo[dir] = new List<OperationVariable>();
-                                smo[dir].Add(ov);
+                                operationVariables ??= new List<OperationVariable>();
+                                operationVariables.Add(ov);  //TODO:jtikekar test if get assigned to corresponding in, out inOut variables in actual operation
 
                                 // emit event
                                 this.AddDiaryEntry(smo, new DiaryEntryStructChange());
@@ -2638,12 +2550,11 @@ namespace AasxPackageLogic
 
                                     var smw2 = item.sme.Copy();
 
-                                    if (smo is IEnumerateChildren smeec)
-                                        businessObj = smeec.AddChild(smw2,
-                                            new Operation.EnumerationPlacmentOperationVariable()
-                                            {
-                                                Direction = dir
-                                            });
+                                    businessObj = smo.AddChild(smw2,
+                                        new EnumerationPlacmentOperationVariable()
+                                        {
+                                            Direction = dir
+                                        });
 
                                     // may delete original
                                     if (!this.theCopyPaste.Duplicate)
@@ -2692,10 +2603,23 @@ namespace AasxPackageLogic
                                     {
                                         var clone = (mdo as OperationVariable).Copy();
 
-                                        if (smo[dir] == null)
-                                            smo[dir] = new List<OperationVariable>();
+                                        List<OperationVariable> opVars = null;
+                                        if(dir == OperationVariableDirection.In)
+                                        {
+                                            opVars = smo.InputVariables;
+                                        }
+                                        else if(dir == OperationVariableDirection.Out)
+                                        {
+                                            opVars = smo.OutputVariables;
+                                        }
+                                        else if(dir == OperationVariableDirection.InOut)
+                                        {
+                                            opVars = smo.InoutputVariables;
+                                        }
 
-                                        smo[dir].Add(clone);
+                                        opVars ??= new List<OperationVariable>();
+
+                                        opVars.Add(clone);
 
                                         // emit event
                                         this.AddDiaryEntry(smo, new DiaryEntryStructChange());
@@ -2837,11 +2761,15 @@ namespace AasxPackageLogic
                                     if (cd.IdShort == null || cd.IdShort.Trim() == "")
                                         cd.IdShort = sme.IdShort;
 
-                                    //TODO:jtikekar Temporarily removed
-                                    //var ds = cd.IEC61360Content;
-                                    //if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
-                                    //    ds.shortName = new LangStringSetIEC61360("EN?", sme.IdShort);
-
+                                    var ds = cd.EmbeddedDataSpecification.IEC61360Content;
+                                    if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
+                                    {
+                                        ds.shortName = new LangStringSetIEC61360
+                                        {
+                                            new LangString("EN?", sme.IdShort)
+                                        };
+                                    }
+                                        
                                     return new AnyUiLambdaActionRedrawEntity();
                                 }
                             }
@@ -2895,7 +2823,7 @@ namespace AasxPackageLogic
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.DataSpecifications,
-                (ds) => { sme.DataSpecifications = ds.DataSpecifications; }, relatedReferable: sme);
+                (ds) => { sme.DataSpecifications = ds; }, relatedReferable: sme);
 
                 //
                 // ConceptDescription <- via semantic ID ?!

@@ -14,10 +14,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
 using Aml.Engine.CAEX;
 using Extenstions;
+using Newtonsoft.Json.Linq;
 
 namespace AasxAmlImExport
 {
@@ -341,7 +344,7 @@ namespace AasxAmlImExport
                         {
                             if (res == null)
                                 res = new List<Reference>(); //default initilization
-                            //TODO: jtikekar Temporarily removed
+                            //TODO: jtikekar Temporarily removed, cannot be added, as it may reflect in the other places, like AssetAdministrationShell does not contain EmbeddedDS
                             //res.Add(new EmbeddedDataSpecification(r));
                             res.Add(r);
                         }
@@ -926,42 +929,40 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            //TODO: jtikekar temporarily removed
-            //private DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
-            //    AttributeSequence aseq)
-            //{
-            //    // finally, create the entity
-            //    var ds = new DataSpecificationIEC61360();
+            private DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
+                AttributeSequence aseq)
+            {
+                // finally, create the entity
+                var ds = new DataSpecificationIEC61360();
 
-            //    // populate
-            //    var pn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_PreferredName);
-            //    if (pn != null)
-            //        ds.preferredName = LangStringSetIEC61360.CreateFrom(pn);
+                // populate
+                var pn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_PreferredName);
+                if (pn != null)
+                    ds.preferredName = LangStringSetIEC61360.CreateFrom(pn);
 
-            //    var sn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_ShortName);
-            //    if (sn != null)
-            //        ds.shortName = LangStringSetIEC61360.CreateFrom(sn);
+                var sn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_ShortName);
+                if (sn != null)
+                    ds.shortName = LangStringSetIEC61360.CreateFrom(sn);
 
-            //    ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
+                ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-            //    ds.unitId = UnitId.CreateNew(
-            //        ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)));
+                ds.unitId = ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)).Copy();
 
-            //    ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
+                ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
-            //    ds.sourceOfDefinition = FindAttributeValueByRefSemantic(
-            //        aseq, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
+                ds.sourceOfDefinition = FindAttributeValueByRefSemantic(
+                    aseq, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
 
-            //    ds.symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
-            //    ds.dataType = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType);
+                ds.symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
+                ds.dataType = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType);
 
-            //    var def = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_Definition);
-            //    if (def != null)
-            //        ds.definition = LangStringSetIEC61360.CreateFrom(def);
+                var def = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_Definition);
+                if (def != null)
+                    ds.definition = LangStringSetIEC61360.CreateFrom(def);
 
-            //    // done, without further checks
-            //    return ds;
-            //}
+                // done, without further checks
+                return ds;
+            }
 
             /// <summary>
             /// Returns a valid AdminShell value type for an AML data type
@@ -1460,14 +1461,16 @@ namespace AasxAmlImExport
                                             AmlConst.Classes.DataSpecificationContent61360)
                                     {
                                         // (inner) Data Spec
-                                        //TODO jtikekar temporarily removed
-                                        //var ds61360 = TryParseDataSpecificationContentIEC61360(ie2.Attribute);
-                                        //if (ds61360 != null)
-                                        //{
-                                            // embedded data spec for the SDK
-                                            
-                                            //var eds = new EmbeddedDataSpecification();
-                                            //cd.IEC61360DataSpec = eds;
+                                        var ds61360 = TryParseDataSpecificationContentIEC61360(ie2.Attribute);
+                                        if (ds61360 != null)
+                                        {
+                                            //embedded data spec for the SDK
+
+
+                                           var eds = new EmbeddedDataSpecification();
+                                            // add embeddedDataSpecification first?
+                                            cd.EmbeddedDataSpecification ??= new HasDataSpecification();
+                                            cd.EmbeddedDataSpecification.IEC61360 = eds;
 
                                             /*
                                              TODO (Michael Hoffmeister, 2020-08-01): fill out 
@@ -1475,18 +1478,15 @@ namespace AasxAmlImExport
                                             */
                                             var hds = FindAttributeValueByRefSemantic(
                                                 ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
-                                            //TODO:jtikekar Temporarily removed
-                                            //if (hds != null)
-                                            //eds.dataSpecification = DataSpecificationRef.CreateNew(
-                                            //    ParseAmlReference(hds));
+                                            if (hds != null)
+                                                eds.DataSpecification = ParseAmlReference(hds).Copy();
 
                                             // make 61360 data
-                                            //TODO:jtikekar Temporarily removed
-                                            //eds.dataSpecificationContent = new DataSpecificationContent()
-                                            //{
-                                            //    dataSpecificationIEC61360 = ds61360
-                                            //};
-                                        //}
+                                            eds.DataSpecificationContent = new AasCore.Aas3_0_RC02.HasDataSpecification.DataSpecificationContent()
+                                            {
+                                                DataSpecificationIEC61360 = ds61360
+                                            };
+                                        }
                                     }
                         }
                     }

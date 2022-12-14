@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AdminShellNS;
 using Microsoft.IdentityModel.Tokens;
 
@@ -502,10 +503,9 @@ namespace AasxPackageLogic
             var res = new ConceptDescription("");
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
-            //TODO:jtikekar Temporarily Removed
-            //var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
-            //res.IEC61360DataSpec = eds;
-            //var ds = eds.GetIEC61360();
+            var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
+            res.EmbeddedDataSpecification.IEC61360 = eds;
+            var ds = eds.DataSpecificationContent.DataSpecificationIEC61360;
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)
@@ -541,8 +541,10 @@ namespace AasxPackageLogic
                     // short name -> TBD in future
                     FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        //TODO jtikekar Temporarily Removed
-                        //ds.shortName = new LangStringSetIEC61360("EN?", ls.Text);
+                        ds.shortName = new LangStringSetIEC61360
+                        {
+                            new LangString("EN?", ls.Text)
+                        };
                         res.IdShort = ls.Text;
                     });
 
@@ -554,12 +556,11 @@ namespace AasxPackageLogic
                         if (ndt != null)
                         {
                             // try find a match
-                            //TODO:jtikekar Temporarily removed
-                            //foreach (var dtn in DataSpecificationIEC61360.DataTypeNames)
-                            //    if (ndt.ToLower().Trim().Contains(dtn.ToLower().Trim()))
-                            //    {
-                            //        ds.dataType = dtn;
-                            //    }
+                            foreach (var dtn in DataSpecificationIEC61360.DataTypeNames)
+                                if (ndt.ToLower().Trim().Contains(dtn.ToLower().Trim()))
+                                {
+                                    ds.dataType = dtn;
+                                }
                         }
                     }
 
@@ -576,11 +577,8 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            //TODO:jtikekar Temporarily removed
-                                            //ds.unitId = UnitId.CreateNew(
-                                            //    "GlobalReference", false,
-                                            //    Identification.IRDI, urefIrdi.Trim());
-                                            //ds.unit = xiun.InnerText.Trim();
+                                            ds.unitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.unit = xiun.InnerText.Trim();
                                         }
                                 }
                         }
@@ -590,26 +588,20 @@ namespace AasxPackageLogic
                 // all have language texts
                 FindChildLangStrings(node, "preferred_name", "label", "language_code", (ls) =>
                 {
-                    //TODO: jtikekar Temporarily Removed
-                    //if (ds.preferredName == null)
-                    //    ds.preferredName = new LangStringSetIEC61360();
+                    if (ds.preferredName == null)
+                        ds.preferredName = new LangStringSetIEC61360();
 
-                    //// ReSharper disable PossibleNullReferenceException -- ignore a false positive
-                    //if (!ds.preferredName.ContainsLang(ls?.Language))
-                    //    ds.preferredName.Add(ls);
-                    // ReSharper enable PossibleNullReferenceException
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    ds.preferredName.Add(ls);
                 });
 
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
                 {
-                    //TODO:jtikekar Temporarily Removed
-                    //if (ds.definition == null)
-                    //    ds.definition = new LangStringSetIEC61360();
+                    if (ds.definition == null)
+                        ds.definition = new LangStringSetIEC61360();
 
-                    //// ReSharper disable PossibleNullReferenceException -- ignore a false positive
-                    //if (!ds.definition.ContainsLang(ls?.Language))
-                    //    ds.definition.Add(ls);
-                    // ReSharper enable PossibleNullReferenceException
+                    // ReSharper disable PossibleNullReferenceException -- ignore a false positive
+                    ds.definition.Add(ls);
                 });
 
             }
@@ -619,38 +611,40 @@ namespace AasxPackageLogic
 
             try
             {
-                //TODO: jtikekar Temporarily Removed
-                //if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
-                //{
-                //    if (ds.preferredName != null && !ds.preferredName.IsEmpty)
-                //    {
-                //        var found = false;
-                //        foreach (var pn in ds.preferredName)
-                //        {
-                //            // let have "en" always have precedence!
-                //            if (found && !pn.Language.ToLower().Trim().Contains("en"))
-                //                continue;
-                //            // ok
-                //            found = true;
-                //            // Array of words
-                //            var words = pn.Text.Split(
-                //                new[] { ' ', '\t', '-', '_' },
-                //                StringSplitOptions.RemoveEmptyEntries);
-                //            var sn = "";
-                //            foreach (var w in words)
-                //            {
-                //                var part = w.ToLower().Trim();
-                //                if (part.Length > 3)
-                //                    part = part.Substring(0, 3);
-                //                if (part.Length > 0)
-                //                    part = Char.ToUpperInvariant(part[0]) + part.Substring(1);
-                //                sn += part;
-                //            }
-                //            // set it
-                //            ds.shortName = new LangStringSetIEC61360("EN?", sn);
-                //        }
-                //    }
-                //}
+                if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
+                {
+                    if (ds.preferredName != null && !(ds.preferredName.Count < 1))
+                    {
+                        var found = false;
+                        foreach (var pn in ds.preferredName)
+                        {
+                            // let have "en" always have precedence!
+                            if (found && !pn.Language.ToLower().Trim().Contains("en"))
+                                continue;
+                            // ok
+                            found = true;
+                            // Array of words
+                            var words = pn.Text.Split(
+                                new[] { ' ', '\t', '-', '_' },
+                                StringSplitOptions.RemoveEmptyEntries);
+                            var sn = "";
+                            foreach (var w in words)
+                            {
+                                var part = w.ToLower().Trim();
+                                if (part.Length > 3)
+                                    part = part.Substring(0, 3);
+                                if (part.Length > 0)
+                                    part = Char.ToUpperInvariant(part[0]) + part.Substring(1);
+                                sn += part;
+                            }
+                            // set it
+                            ds.shortName = new LangStringSetIEC61360
+                            {
+                                new LangString("EN?", sn)
+                            };
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {

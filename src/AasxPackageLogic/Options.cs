@@ -278,6 +278,14 @@ namespace AasxPackageLogic
             Cmd = "-qualifiers", Arg = "<path>")]
         public string QualifiersFile = null;
 
+        [OptionDescription(Description = "Path to JSON file defining IdentifierKeyValuePair presets.",
+            Cmd = "-idpairs", Arg = "<path>")]
+        public string IdentifierKeyValuePairsFile = null;
+
+        [OptionDescription(Description = "Path to JSON file defining Referable.extension presets.",
+            Cmd = "-extpreset", Arg = "<path>")]
+        public string ExtensionsPresetFile = null;
+
         [OptionDescription(Description = "Path to a JSON, defining a set of AasxPackage-Files, which serve as " +
             "repository",
             Cmd = "-aasxrepo", Arg = "<path>")]
@@ -361,11 +369,6 @@ namespace AasxPackageLogic
             "If not null points to the dir, where plugins are (recursively) searched",
             Cmd = "-plugin-dir")]
         public string PluginDir = null;
-
-        [OptionDescription(Description =
-            "Plugin usage prefernces, e.g. WPF or ANYUI",
-            Cmd = "-plugin-prefer")]
-        public string PluginPrefer = null;
 
         [OptionDescription(Description =
             "For such operations as query repository, do load a new AASX file without " +

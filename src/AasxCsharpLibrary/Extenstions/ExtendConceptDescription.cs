@@ -1,8 +1,11 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0_RC02.HasDataSpecification;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,19 +15,70 @@ namespace Extenstions
     {
         #region AasxPackageExplorer
 
+        public static string GetDefaultPreferredName(this ConceptDescription conceptDescription,string defaultLang = null)
+        {
+            return "" +
+                conceptDescription.GetIEC61360()?
+                    .preferredName?.GetDefaultString(defaultLang);
+        }
+
+        public static void SetIEC61360Spec(this ConceptDescription conceptDescription,
+                string[] preferredNames = null,
+                string shortName = "",
+                string unit = "",
+                Reference unitId = null,
+                string valueFormat = null,
+                string sourceOfDefinition = null,
+                string symbol = null,
+                string dataType = "",
+                string[] definition = null
+            )
+        {
+            var eds = new EmbeddedDataSpecification(new Reference(ReferenceTypes.GlobalReference, new List<Key>()), new AasCore.Aas3_0_RC02.HasDataSpecification.DataSpecificationContent());
+            eds.DataSpecification.Keys.Add(
+                new Key(KeyTypes.GlobalReference, DataSpecificationIEC61360.GetIdentifier()));
+            eds.DataSpecificationContent.DataSpecificationIEC61360 =
+                DataSpecificationIEC61360.CreateNew(
+                    preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
+                    dataType, definition);
+
+            conceptDescription.EmbeddedDataSpecification = new HasDataSpecification();
+            conceptDescription.EmbeddedDataSpecification.Add(eds);
+            conceptDescription.IsCaseOf ??= new List<Reference>();
+            conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
+        }
+
+        public static DataSpecificationIEC61360 CreateDataSpecWithContentIec61360(this ConceptDescription conceptDescription)
+        {
+            var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
+            conceptDescription.EmbeddedDataSpecification ??= new HasDataSpecification();
+            conceptDescription.EmbeddedDataSpecification.Add(eds);
+            return eds.DataSpecificationContent?.DataSpecificationIEC61360;
+        }
+
         public static Tuple<string, string> ToCaptionInfo(this ConceptDescription conceptDescription)
         {
             var caption = "";
-            if (string.IsNullOrEmpty(conceptDescription.IdShort))
+            if (!string.IsNullOrEmpty(conceptDescription.IdShort))
                 caption = $"\"{conceptDescription.IdShort.Trim()}\"";
             if (conceptDescription.Id != null)
                 caption = (caption + " " + conceptDescription.Id).Trim();
 
-            //TODO:jtikekar temporarily removed
-            //var info = "" + GetDefaultShortName();
-            var info = "";
+            var info = "" + conceptDescription.GetDefaultShortName();
 
             return Tuple.Create(caption, info);
+        }
+
+        public static string GetDefaultShortName(this ConceptDescription conceptDescription, string defaultLang = null)
+        {
+            return "" +
+                    conceptDescription.GetIEC61360()?
+                        .shortName?.GetDefaultString(defaultLang);
+        }
+
+        public static DataSpecificationIEC61360 GetIEC61360(this ConceptDescription conceptDescription)
+        {
+            return conceptDescription.EmbeddedDataSpecification?.IEC61360Content;
         }
 
         public static IEnumerable<Reference> FindAllReferences(this ConceptDescription conceptDescription)

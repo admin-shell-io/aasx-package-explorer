@@ -9,6 +9,7 @@ using System.Collections.Generic;  // can't alias
 using Aas = AasCore.Aas3_0_RC02;
 using System;
 using Newtonsoft.Json;
+using AdminShellNS.DiaryData;
 
 namespace AasCore.Aas3_0_RC02
 {
@@ -311,7 +312,7 @@ namespace AasCore.Aas3_0_RC02
     /// This ID is not globally unique.
     /// This ID is unique within the name space of the element.
     /// </remarks>
-    public interface IReferable : IHasExtensions
+    public interface IReferable : IHasExtensions, IDiaryData
     {
         /// <summary>
         /// The category is a value that gives further meta information
@@ -1045,6 +1046,12 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        [JsonIgnore]
+        private DiaryDataDef _diaryData = new DiaryDataDef();
+
+        [JsonIgnore]
+        public DiaryDataDef DiaryData { get { return _diaryData; } }
         #endregion
 
         /// <summary>
@@ -1945,6 +1952,8 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
+
         #endregion
 
         /// <summary>
@@ -2447,6 +2456,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -2947,6 +2958,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -3423,6 +3436,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -3929,6 +3944,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -4399,6 +4416,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -4880,6 +4899,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -5320,6 +5341,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -5786,6 +5809,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -6234,6 +6259,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -6680,6 +6707,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -7201,6 +7230,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -8000,6 +8031,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -8461,6 +8494,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -9049,6 +9084,8 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -9457,6 +9494,11 @@ namespace AasCore.Aas3_0_RC02
         public DateTime TimeStampCreate { get; set; }
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
+
+        //TODO:jtikekar added manually as per old implementation. However, support DotAAS-1 vs Swagger Hub metamodel schema
+        public HasDataSpecification.HasDataSpecification EmbeddedDataSpecification { get; set; }
+
+        public DiaryDataDef DiaryData => throw new NotImplementedException();
         #endregion
 
         /// <summary>
@@ -11263,7 +11305,7 @@ namespace AasCore.Aas3_0_RC02
     /// files the contained elements are split. If the file is split then there
     /// shall be no element with the same identifier in two different files.
     /// </remarks>
-    public class Environment : IClass
+    public class Environment : IClass, IDiaryData
     {
         /// <summary>
         /// Asset administration shell
@@ -11284,6 +11326,12 @@ namespace AasCore.Aas3_0_RC02
         /// Data specification
         /// </summary>
         public List<DataSpecification>? DataSpecifications { get; set; }
+
+        [JsonIgnore]
+        private DiaryDataDef _diaryData = new DiaryDataDef();
+
+        [JsonIgnore]
+        public DiaryDataDef DiaryData { get { return _diaryData; } }
 
         /// <summary>
         /// Iterate over AssetAdministrationShells, if set, and otherwise return an empty enumerable.

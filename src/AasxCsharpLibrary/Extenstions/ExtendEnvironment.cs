@@ -15,6 +15,19 @@ namespace Extenstions
     {
         #region Environment
 
+        #region AasxPackageExplorer
+
+        public static void RecurseOnReferables(this AasCore.Aas3_0_RC02.Environment environment,
+                object state, Func<object, List<IReferable>, IReferable, bool> lambda, bool includeThis = false)
+        {
+            // includeThis does not make sense, as no Referable
+            // just use the others
+            foreach (var idf in environment.FindAllReferable(onlyIdentifiables: true))
+                idf?.RecurseOnReferables(state, lambda, includeThis);
+        }
+
+        #endregion
+
         public static AasValidationRecordList ValidateAll(this AasCore.Aas3_0_RC02.Environment environment)
         {
             // collect results

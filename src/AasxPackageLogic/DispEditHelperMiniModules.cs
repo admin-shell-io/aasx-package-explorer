@@ -244,8 +244,13 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
+                    List<string> keys = new();
+                    foreach (var key in qual.SemanticId.Keys)
+                    {
+                        keys.Add(key.Value);
+                    }
                     AddKeyListOfIdentifier(
-                        substack, "semanticId", qual.SemanticId.Value, repo,
+                        substack, "semanticId", keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: "All",
                         addEclassIrdi: true,
@@ -283,7 +288,12 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListOfIdentifier(substack, "valueId", qual.ValueId.GetAsExactlyOneKey().Value, repo,
+                    List<string> keys = new();
+                    foreach (var key in qual.ValueId.Keys)
+                    {
+                        keys.Add(key.Value);
+                    }
+                    AddKeyListOfIdentifier(substack, "valueId", keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All",
                         relatedReferable: relatedReferable);
                 }
@@ -298,18 +308,18 @@ namespace AasxPackageLogic
 
         private bool PasteIKVPTextIntoExisting(
             string jsonInput,
-            IdentifierKeyValuePair qCurr)
+            SpecificAssetId qCurr)
         {
-            var qIn = JsonConvert.DeserializeObject<IdentifierKeyValuePair>(jsonInput);
+            var qIn = JsonConvert.DeserializeObject<SpecificAssetId>(jsonInput);
             if (qCurr != null && qIn != null)
             {
-                qCurr.key = qIn.key;
+                qCurr.Name = qIn.Name;
                 qCurr.Value = qIn.Value;
-                if (qIn.externalSubjectId != null)
-                    qCurr.externalSubjectId = qIn.externalSubjectId;
+                if (qIn.ExternalSubjectId != null)
+                    qCurr.ExternalSubjectId = qIn.ExternalSubjectId;
                 if (qIn.SemanticId != null)
                     qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("IdentifierKeyValuePair data taken from clipboard.");
+                Log.Singleton.Info("SpecificAssetId data taken from clipboard.");
                 return true;
             }
             return false;
@@ -323,12 +333,12 @@ namespace AasxPackageLogic
         public class IdentifierKeyValuePairPreset
         {
             public string name = "";
-            public IdentifierKeyValuePair pair = new IdentifierKeyValuePair();
+            public SpecificAssetId pair = new("", "", null);
         }
 
         public void IdentifierKeyValuePairHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
-            ListOfIdentifierKeyValuePair pairs,
+            List<SpecificAssetId> pairs,
             string key = "IdentifierKeyValuePairs",
             IReferable relatedReferable = null)
         {
@@ -343,7 +353,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                         {
-                            pairs.Add(new IdentifierKeyValuePair());
+                            pairs.Add(new SpecificAssetId("", "", null));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
@@ -353,7 +363,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !System.IO.File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    "JSON file for IdentifierKeyValuePair presets not defined nor existing ({pfn}).");
+                                    "JSON file for SpecificAssetId presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -379,7 +389,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show IdentifierKeyValuePair presets ({pfn})");
+                                    ex, $"While show SpecificAssetId presets ({pfn})");
                             }
                         }
 
@@ -387,7 +397,7 @@ namespace AasxPackageLogic
                         {
                             try
                             {
-                                var pNew = new IdentifierKeyValuePair();
+                                var pNew = new SpecificAssetId("", "", null);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (PasteIKVPTextIntoExisting(jsonInput, pNew))
                                 {
@@ -397,7 +407,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing IdentifierKeyValuePair data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing SpecificAssetId data in clipboard");
                             }
                         }
 
@@ -437,7 +447,7 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var res = this.MoveElementInListUpwards<IdentifierKeyValuePair>(
+                                    var res = this.MoveElementInListUpwards<SpecificAssetId>(
                                         pairs, pairs[storedI]);
                                     if (res > -1)
                                     {
@@ -450,7 +460,7 @@ namespace AasxPackageLogic
                                 case 3:
                                     var jsonStr = JsonConvert.SerializeObject(pairs[storedI], Formatting.Indented);
                                     this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
-                                    Log.Singleton.Info("IdentifierKeyValuePair serialized to clipboard.");
+                                    Log.Singleton.Info("SpecificAssetId serialized to clipboard.");
                                     break;
                                 case 4:
                                     try
@@ -461,7 +471,7 @@ namespace AasxPackageLogic
                                     catch (Exception ex)
                                     {
                                         Log.Singleton.Error(ex,
-                                            "while accessing IdentifierKeyValuePair data in clipboard");
+                                            "while accessing SpecificAssetId data in clipboard");
                                     }
                                     break;
 
@@ -481,7 +491,7 @@ namespace AasxPackageLogic
                     substack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => pair.SemanticId?.IsValid != true,
+                            () => pair.SemanticId?.IsValid() != true,
                             "Check, if a semanticId can be given in addition the key!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -494,8 +504,13 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
+                    List<string> keys = new ();
+                    foreach(var semKey in pair.SemanticId.Keys)
+                    {
+                        keys.Add(semKey.Value);
+                    }
                     AddKeyListOfIdentifier(
-                        substack, "semanticId", pair.SemanticId.Value, repo,
+                        substack, "semanticId", keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: "All",
                         addEclassIrdi: true,
@@ -506,37 +521,47 @@ namespace AasxPackageLogic
                     substack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => !pair.key.HasContent(),
+                            () => !pair.Name.HasContent(),
                             "A key string specification shall be given!")
                     });
+                var name = pair.Name;
                 AddKeyValueRef(
-                    substack, "key", pair, ref pair.key, null, repo,
+                    substack, "key", pair, ref name, null, repo,
                     v =>
                     {
-                        pair.key = v as string;
+                        name = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
+                pair.Name = name;
 
+                var value = pair.Value;
                 AddKeyValueRef(
-                    substack, "value", pair, ref pair.Value, null, repo,
+                    substack, "value", pair, ref value, null, repo,
                     v =>
                     {
-                        pair.Value = v as string;
+                        value = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
+                pair.Value = value;
 
                 if (SafeguardAccess(
-                        substack, repo, pair.externalSubjectId, "externalSubjectId:", "Create data element!",
+                        substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
                         v =>
                         {
-                            pair.externalSubjectId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            pair.ExternalSubjectId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    AddKeyListOfIdentifier(substack, "externalSubjectId", pair.externalSubjectId.Value, repo,
+                    //TODO: jtikekar: Test 
+                    List<string> keys = new();
+                    foreach(var extSubIdKey in pair.ExternalSubjectId.Keys)
+                    {
+                        keys.Add(extSubIdKey.Value);
+                    }
+                    AddKeyListOfIdentifier(substack, "externalSubjectId", keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All",
                         relatedReferable: relatedReferable);
                 }
@@ -744,8 +769,13 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
+                    List<string> keys = new();
+                    foreach (var semKey in extension.SemanticId.Keys)
+                    {
+                        keys.Add(semKey.Value);
+                    }
                     AddKeyListOfIdentifier(
-                        substack, "semanticId", extension.SemanticId.Value, repo,
+                        substack, "semanticId", keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: "All",
                         addEclassIrdi: true,
@@ -775,7 +805,17 @@ namespace AasxPackageLogic
                 AddKeyValueRef(
                     substack, "valueType", extension, ref valType, null, repo,
                     comboBoxIsEditable: editMode,
-                    comboBoxItems: DataElement.ValueTypeItems,
+                    //comboBoxItems: DataElement.ValueTypeItems,
+                    //TODO:jtikekar change
+                    comboBoxItems: new string[] {
+                    "anyURI", "base64Binary",
+                    "boolean", "date", "dateTime",
+                    "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                    "positiveInteger",
+                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
+                    "nonPositiveInteger", "negativeInteger",
+                    "double", "duration",
+                    "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
                     setValue: v =>
                     {
                         extension.ValueType = Stringification.DataTypeDefXsdFromString((string)v);
@@ -801,8 +841,8 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Extension '{"" + extension.name}'",
-                                                mimeType: extension.ValueType,
+                                                caption: $"Edit Extension '{"" + extension.Name}'",
+                                                mimeType: Stringification.ToString(extension.ValueType),
                                                 text: extension.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {

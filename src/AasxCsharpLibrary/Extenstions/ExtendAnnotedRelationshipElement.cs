@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,46 @@ namespace Extenstions
 {
     public static class ExtendAnnotedRelationshipElement
     {
+        #region AasxPackageExplorer
+
+        public static void Add(this AnnotatedRelationshipElement annotatedRelationshipElement, ISubmodelElement submodelElement)
+        {
+            if (annotatedRelationshipElement != null)
+            {
+                annotatedRelationshipElement.Annotations ??= new();
+
+                submodelElement.Parent = annotatedRelationshipElement;
+
+                annotatedRelationshipElement.Annotations.Add((IDataElement)submodelElement);
+            }
+        }
+
+        public static void Remove(this AnnotatedRelationshipElement annotatedRelationshipElement, ISubmodelElement submodelElement)
+        {
+            if(annotatedRelationshipElement != null)
+            {
+                if(annotatedRelationshipElement.Annotations != null)
+                {
+                    annotatedRelationshipElement.Annotations.Remove((IDataElement)submodelElement);
+                }
+            }
+        }
+
+        public static object AddChild(this AnnotatedRelationshipElement annotatedRelationshipElement, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        {
+            if (childSubmodelElement == null || childSubmodelElement is not IDataElement)
+                return null;
+
+            annotatedRelationshipElement.Annotations ??= new ();
+
+            if (childSubmodelElement != null)
+                childSubmodelElement.Parent = annotatedRelationshipElement;
+
+            annotatedRelationshipElement.Annotations.Add((IDataElement)childSubmodelElement);
+            return childSubmodelElement;
+        }
+
+        #endregion
         public static AnnotatedRelationshipElement ConvertAnnotationsFromV20(this AnnotatedRelationshipElement annotatedRelationshipElement, AasxCompatibilityModels.AdminShellV20.AnnotatedRelationshipElement sourceAnnotedRelElement)
         {
             if (sourceAnnotedRelElement == null)

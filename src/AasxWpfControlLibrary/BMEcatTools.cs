@@ -15,7 +15,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxPackageExplorer
 {
@@ -35,8 +37,8 @@ namespace AasxPackageExplorer
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
         public static void ImportBMEcatToSubModel(
-            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm,
-            AdminShell.SubmodelRef smref)
+            string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
+            Reference smref)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File
@@ -45,7 +47,7 @@ namespace AasxPackageExplorer
             Boolean isPublication = false;
 
             XmlTextReader reader = new XmlTextReader(inputFn);
-            StreamWriter sw = File.CreateText(inputFn + ".log.txt");
+            StreamWriter sw = System.IO.File.CreateText(inputFn + ".log.txt");
 
             // BMEcat or Publication?
             while (reader.Read())
@@ -89,7 +91,7 @@ namespace AasxPackageExplorer
             Boolean is_attribute = false;
             Boolean is_attribute_label = false;
             Boolean is_attribute_value = false;
-            AdminShell.SubmodelElementCollection[] propGroup = new AdminShell.SubmodelElementCollection[10];
+            SubmodelElementCollection[] propGroup = new SubmodelElementCollection[10];
 
             // GWIS XML Publication
             if (isPublication)
@@ -133,7 +135,7 @@ namespace AasxPackageExplorer
                             {
                                 if (subheadline != "")
                                 {
-                                    propGroup[0] = AdminShell.SubmodelElementCollection.CreateNew(subheadline);
+                                    propGroup[0] = new SubmodelElementCollection(idShort:subheadline);
                                     sm.Add(propGroup[0]);
                                 }
                             }
@@ -142,8 +144,9 @@ namespace AasxPackageExplorer
                                 if (attribute_label_id != "" && attribute_value != "")
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
-                                    using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                        "" + attribute_label_id, AdminShell.Identification.IRDI, FT_ID))
+                                    //using (var cd = ConceptDescription.CreateNew(
+                                    //    "" + attribute_label_id, Identification.IRDI, FT_ID))
+                                    var cd = new ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -154,9 +157,10 @@ namespace AasxPackageExplorer
                                             definition: new[] { "EN", attribute_label_id }
                                         );
 
-                                        var p = AdminShell.Property.CreateNew(
-                                            cd.GetDefaultShortName(), "PARAMETER",
-                                            AdminShell.Key.GetFromRef(cd.GetCdReference()));
+                                        //var p = Property.CreateNew(
+                                        //    cd.GetDefaultShortName(), "PARAMETER",
+                                        //    Key.GetFromRef(cd.GetCdReference()));
+                                        var p = new Property(DataTypeDefXsd.String, category: "PARAMETER", idShort:"", semanticId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id)}));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -165,8 +169,8 @@ namespace AasxPackageExplorer
                                         {
                                             sm.Add(p);
                                         }
-                                        p.valueType = "string";
-                                        p.value = attribute_value;
+                                        p.ValueType = DataTypeDefXsd.String;
+                                        p.Value = attribute_value;
                                     }
 
                                 }
@@ -314,8 +318,9 @@ namespace AasxPackageExplorer
                                                 extendedname += " " + names_LEVELTYPE[k]; // MIN, MAX, ...
                                             }
 
-                                            using (var cd = AdminShell.ConceptDescription.CreateNew(
-                                               "" + extendedname, AdminShell.Identification.IRDI, FT_ID))
+                                            //using (var cd = ConceptDescription.CreateNew(
+                                            //   "" + extendedname, Identification.IRDI, FT_ID))
+                                            var cd = new ConceptDescription(FT_ID, idShort: "" + extendedname);
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
@@ -326,11 +331,11 @@ namespace AasxPackageExplorer
                                                     definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
-                                                var p = AdminShell.Property.CreateNew(
-                                                    cd.GetDefaultShortName(), "PARAMETER",
-                                                    AdminShell.Key.GetFromRef(cd.GetCdReference()));
-                                                p.valueType = "double";
-                                                p.value = FVALUE[k];
+                                                //var p = Property.CreateNew(
+                                                //    cd.GetDefaultShortName(), "PARAMETER",
+                                                //    Key.GetFromRef(cd.GetCdReference()));
+                                                var p = new Property(DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id) }));
+                                                p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell
                                                 {
@@ -357,7 +362,7 @@ namespace AasxPackageExplorer
                                         if (StackPointer_FID == 0) // oberste Collection
                                         {
                                             Stack_FID[0] = FID;
-                                            propGroup[0] = AdminShell.SubmodelElementCollection.CreateNew(FT_NAME);
+                                            propGroup[0] = new SubmodelElementCollection(idShort:FT_NAME);
                                             sm.Add(propGroup[0]);
                                             StackPointer_FID++; // nächste Ebene
                                         }
@@ -369,8 +374,7 @@ namespace AasxPackageExplorer
                                                 {
                                                     StackPointer_FID = j + 1;
                                                     Stack_FID[StackPointer_FID] = FID;
-                                                    propGroup[StackPointer_FID] =
-                                                        AdminShell.SubmodelElementCollection.CreateNew(FT_NAME);
+                                                    propGroup[StackPointer_FID] = new SubmodelElementCollection(idShort: FT_NAME);
                                                     propGroup[StackPointer_FID - 1].Add(propGroup[StackPointer_FID]);
                                                     StackPointer_FID++; // nächste Ebene
                                                     break;

@@ -13,7 +13,7 @@ namespace Extenstions
 
         public static Tuple<string, string> ToCaptionInfo(this AssetInformation assetInformation)
         {
-            //TODO:jtikekar support 
+            //TODO:jtikekar support KeyType.AssetInformation
             //var caption = Key.AssetInformation;
             var caption = "AssetInformation";
             var info = "" + assetInformation.GlobalAssetId.ToStringExtended();

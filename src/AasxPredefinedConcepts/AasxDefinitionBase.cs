@@ -15,7 +15,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
+using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -151,11 +153,11 @@ namespace AasxPredefinedConcepts
 
             // create CD
             var cd = new ConceptDescription(id, idShort:idShort);
-            //TODO: jtikekar Temporarily removed
-            //var dsiec = cd.CreateDataSpecWithContentIec61360();
-            //dsiec.preferredName = new LangStringSetIEC61360(lang, "" + idShort);
-            //dsiec.definition = new LangStringSetIEC61360(lang,
-            //    "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString));
+            var dsiec = cd.CreateDataSpecWithContentIec61360();
+            dsiec.preferredName = new LangStringSetIEC61360();
+            dsiec.preferredName.Add(new LangString(lang, "" + idShort));
+            dsiec.definition = new LangStringSetIEC61360();
+            dsiec.definition.Add(new LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
 
             // options
             if (isCaseOf != null)

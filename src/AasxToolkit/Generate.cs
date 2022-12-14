@@ -133,7 +133,7 @@ namespace AasxToolkit
                 var subCad = CreateSubmodelCad(prefs, repo, aasenv1);
 
                 // Test Hashing
-                //TODO:jtikekar Uncomment
+                //TODO:jtikekar Uncomment ComputeHashcode
                 //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
                 //subCad.Category += "!";
                 //Log.WriteLine(2, "Hash for submodel CAD = " + subCad.ComputeHashcode());
@@ -235,38 +235,35 @@ namespace AasxToolkit
             // CONCEPTS
             var cdGroup = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item Group"), idShort: "CadItem");
             aasenv.ConceptDescriptions.Add(cdGroup);
-            //TODO:jtikekar Temporarily Commented
-            //cdGroup.SetIEC61360Spec(
-            //    preferredNames: new[] { "de", "CAD Dateieinheit", "en", "CAD file item" },
-            //    shortName: "CadItem",
-            //    unit: "",
-            //    definition: new[] {
-            //        "de", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
-            //        "en", "Collection of properties, which make a file for a CAD system accessible." }
-            //);
+            cdGroup.SetIEC61360Spec(
+                preferredNames: new[] { "de", "CAD Dateieinheit", "en", "CAD file item" },
+                shortName: "CadItem",
+                unit: "",
+                definition: new[] {
+                    "de", "Gruppe von Merkmalen, die Zugriff gibt auf eine Datei für ein CAD System.",
+                    "en", "Collection of properties, which make a file for a CAD system accessible." }
+            );
 
             var cdFile = new ConceptDescription(repo.CreateOrRetrieveIri("Example Submodel Cad Item File Elem"), idShort:"File");
             aasenv.ConceptDescriptions.Add(cdFile);
-            //TODO:jtikekar Temporarily Commented
-            //cdFile.SetIEC61360Spec(
-            //    preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
-            //    shortName: "File",
-            //    unit: "",
-            //    definition: new[] {
-            //        "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
-            //);
+            cdFile.SetIEC61360Spec(
+                preferredNames: new[] { "de", "Enthaltene CAD Datei", "en", "Embedded CAD file" },
+                shortName: "File",
+                unit: "",
+                definition: new[] {
+                    "de", "Verweis auf enthaltene CAD Datei.", "en", "Reference to embedded CAD file." }
+            );
 
             var cdFormat = new ConceptDescription("0173-1#02-ZAA120#007", idShort:"FileFormat");
             aasenv.ConceptDescriptions.Add(cdFormat);
-            //TODO:jtikekar Temporarily Removed
-            //cdFormat.SetIEC61360Spec(
-            //    preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
-            //    shortName: "FileFormat",
-            //    unit: "",
-            //    definition: new[] {
-            //        "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
-            //        "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
-            //);
+            cdFormat.SetIEC61360Spec(
+                preferredNames: new[] { "de", "Filetype CAD", "en", "Filetype CAD" },
+                shortName: "FileFormat",
+                unit: "",
+                definition: new[] {
+                    "de", "Eindeutige Kennung Format der eingebetteten CAD Datei im ECLASS Standard.",
+                    "en", "Unambigous ID of format of embedded CAD file in ECLASS standard." }
+            );
 
             // SUB MODEL
             var sub1 = new Submodel(repo.CreateOneTimeId());
@@ -335,9 +332,7 @@ namespace AasxToolkit
 
                     // DOCUMENT ID
                     cd = preDefs.CD_VDI2770_DocumentId;
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
-                    //var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
-                    var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                    var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p.Value = "" + args.GetHashCode();
                         p0.Add(p);
@@ -345,10 +340,7 @@ namespace AasxToolkit
 
                     // Is Primary
                     cd = preDefs.CD_VDI2770_IsPrimaryDocumentId;
-                    //using (var p = Property.CreateNew(
-                    //    cd.GetDefaultPreferredName(), "CONSTANT", Key.GetFromRef(cd.GetReference())))
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
-                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                    p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p.ValueType = DataTypeDefXsd.Boolean;
                         p.Value = "true";
@@ -357,10 +349,7 @@ namespace AasxToolkit
 
                     // DOCUMENT CLASS ID
                     cd = preDefs.CD_VDI2770_DocumentClassId;
-                    //using (var p = Property.CreateNew(
-                    //    cd.GetDefaultPreferredName(), "CONSTANT", Key.GetFromRef(cd.GetReference())))
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
-                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                    p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p.Value = "" + args[0];
                         p.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, args[2])});
@@ -369,8 +358,7 @@ namespace AasxToolkit
 
                     // DOCUMENT CLASS NAME
                     cd = preDefs.CD_VDI2770_DocumentClassName;
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
-                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                    p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p.Value = "" + args[1];
                         p0.Add(p);
@@ -378,8 +366,7 @@ namespace AasxToolkit
 
                     // CLASS SYS
                     cd = preDefs.CD_VDI2770_DocumentClassificationSystem;
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
-                    p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                    p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                     {
                         p0.Add(p);
                         p.Value = "VDI2770:2018";
@@ -388,9 +375,6 @@ namespace AasxToolkit
                     // Document version
 
                     cd = preDefs.CD_VDI2770_DocumentVersion;
-                    //using (var p1 = SubmodelElementCollection.CreateNew($"DocumentVersion01",
-                    //                    "CONSTANT", Key.GetFromRef(cd.GetCdReference())))
-                    //TODO:jtikekar support cd.GetDefaultPreferredName()
                     var p1 = new SubmodelElementCollection(idShort: "DocumentVersion01", category:"CONSTANT", semanticId: cd.GetCdReference());
                     {
                         p0.Add(p1);
@@ -400,11 +384,7 @@ namespace AasxToolkit
                         var lngs = args[4].Split(',');
                         for (int i = 0; i < lngs.Length; i++)
                         {
-                            //using (var prop = Property.CreateNew(
-                            //    cd.GetDefaultPreferredName() + $"{i + 1:00}", "CONSTANT",
-                            //    Key.GetFromRef(cd.GetReference())))
-                            //TODO:jtikekar support cd.GetDefaultPreferredName()
-                            var prop2 = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                            var prop2 = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(prop2);
                                 prop2.Value = "" + lngs[i];
@@ -417,8 +397,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                            //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        var prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        var prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.Value = "" + args[5];
@@ -429,8 +408,7 @@ namespace AasxToolkit
                         //using (var mlp = MultiLanguageProperty.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        var mlp = new MultiLanguageProperty(idShort:"", category:"CONSTANT", semanticId: cd.GetReference());
+                        var mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category:"CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
                             if(mlp.Value.LangStrings == null)
@@ -447,8 +425,7 @@ namespace AasxToolkit
                         //using (var p = MultiLanguageProperty.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        mlp = new MultiLanguageProperty(idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(p);
                             mlp.Value.LangStrings.Add(new LangString("en", "Summary for: " + args[3]));
@@ -461,8 +438,7 @@ namespace AasxToolkit
                         //using (var mlp = MultiLanguageProperty.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        mlp = new MultiLanguageProperty(idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
                             mlp.Value.LangStrings.Add(new LangString("en", "Keywords for: " + args[3]));
@@ -475,8 +451,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.ValueType = DataTypeDefXsd.Date;
@@ -488,8 +463,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.Value = "Released";
@@ -500,8 +474,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.Value = "Author";
@@ -512,8 +485,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.Value = "Example company";
@@ -524,8 +496,7 @@ namespace AasxToolkit
                         //using (var prop = Property.CreateNew(
                         //    cd.GetDefaultPreferredName(), "CONSTANT",
                         //    Key.GetFromRef(cd.GetReference())))
-                        //TODO:jtikekar support cd.GetDefaultPreferredName()
-                        prop = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                        prop = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(prop);
                             prop.Value = "Example company Ltd.";
@@ -539,8 +510,7 @@ namespace AasxToolkit
                             //using (var file = File.CreateNew(
                             //    cd.GetDefaultPreferredName(), "CONSTANT",
                             //    Key.GetFromRef(cd.GetReference())))
-                            //TODO:jtikekar support cd.GetDefaultPreferredName()
-                            var file = new AasCore.Aas3_0_RC02.File("", idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                            var file = new AasCore.Aas3_0_RC02.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
                                 file.ContentType = AdminShellPackageEnv.GuessMimeType(fn);
@@ -554,8 +524,7 @@ namespace AasxToolkit
                             //using (var p = File.CreateNew(
                             //    cd.GetDefaultPreferredName(), "CONSTANT",
                             //    Key.GetFromRef(cd.GetReference())))
-                            //TODO:jtikekar support cd.GetDefaultPreferredName()
-                            var file = new AasCore.Aas3_0_RC02.File("", idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                            var file = new AasCore.Aas3_0_RC02.File("", idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                             {
                                 p1.Add(file);
                                 file.ContentType = AdminShellPackageEnv.GuessMimeType(url);
@@ -612,21 +581,17 @@ namespace AasxToolkit
             var cd = new ConceptDescription("0173-1#02-AAO677#001", idShort: "Manufacturer");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] { "de", "TBD", "en", "Manufacturer name" },
-                //    shortName: "Manufacturer",
-                //    definition: new[] { "de", "TBD",
-                //    "en",
-                //    "legally valid designation of the natural or judicial person which is directly " +
-                //        "responsible for the design, production, packaging and labeling of a product in respect " +
-                //        "to its being brought into circulation" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] { "de", "TBD", "en", "Manufacturer name" },
+                    shortName: "Manufacturer",
+                    definition: new[] { "de", "TBD",
+                    "en",
+                    "legally valid designation of the natural or judicial person which is directly " +
+                        "responsible for the design, production, packaging and labeling of a product in respect " +
+                        "to its being brought into circulation" }
+                );
 
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
-                //var p = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
 
                 sub1.Add(p);
                 p.Value = "Example company Ltd.";
@@ -638,25 +603,21 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-BAF016#005", idShort: "Width");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO jtikekar temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] { "de", "Breite", "en", "Width" },
-                //    shortName: "Width",
-                //    unit: "mm",
-                //    valueFormat: "REAL_MEASURE",
-                //    definition: new[] {
-                //        "de",
-                //        "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
-                //        "rechtwinklig zur längsten Symmetrieachse",
-                //        "en",
-                //        "for objects with orientation in preferred position during use the dimension " +
-                //        "perpendicular to height/ length/depth" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] { "de", "Breite", "en", "Width" },
+                    shortName: "Width",
+                    unit: "mm",
+                    valueFormat: "REAL_MEASURE",
+                    definition: new[] {
+                        "de",
+                        "bei eher rechtwinkeligen Körpern die orthogonal zu Höhe/Länge/Tiefe stehende Ausdehnung " +
+                        "rechtwinklig zur längsten Symmetrieachse",
+                        "en",
+                        "for objects with orientation in preferred position during use the dimension " +
+                        "perpendicular to height/ length/depth" }
+                );
 
-                //var p = Property.CreateNew(
-                //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "CONSTANT", semanticId: cd.GetReference());
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.ValueType = DataTypeDefXsd.Double;
                 p.Value = "48";
@@ -668,26 +629,24 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-BAA020#008", idShort: "Height");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO jtikekar temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] { "de", "Höhe", "en", "Height" },
-                //    shortName: "Height",
-                //    unit: "mm",
-                //    valueFormat: "REAL_MEASURE",
-                //    definition: new[] {
-                //        "de",
-                //        "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
-                //        "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
-                //        "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
-                //        "en",
-                //        "for objects with orientation in preferred position during use the dimension " +
-                //        "perpendicular to diameter/length/width/depth" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] { "de", "Höhe", "en", "Height" },
+                    shortName: "Height",
+                    unit: "mm",
+                    valueFormat: "REAL_MEASURE",
+                    definition: new[] {
+                        "de",
+                        "bei eher rechtwinkeligen Körpern die orthogonal zu Länge/Breite/Tiefe stehende " +
+                        "Ausdehnung - bei Gegenständen mit fester Orientierung oder in bevorzugter "+
+                        "Gebrauchslage der parallel zur Schwerkraft gemessenen Abstand zwischen Ober- und Unterkante",
+                        "en",
+                        "for objects with orientation in preferred position during use the dimension " +
+                        "perpendicular to diameter/length/width/depth" }
+                );
 
                 //var p = Property.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.ValueType = DataTypeDefXsd.Double;
                 p.Value = "56";
@@ -699,25 +658,23 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-BAB577#007", idShort: "Depth");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] { "de", "Tiefe", "en", "Depth" },
-                //    shortName: "Depth",
-                //    unit: "mm",
-                //    valueFormat: "REAL_MEASURE",
-                //    definition: new[] {
-                //        "de",
-                //        "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
-                //        "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
-                //        "en",
-                //        "for objects with fixed orientation or in preferred utilization position, " +
-                //        "the rear , generally away from the observer expansion is described as depth" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] { "de", "Tiefe", "en", "Depth" },
+                    shortName: "Depth",
+                    unit: "mm",
+                    valueFormat: "REAL_MEASURE",
+                    definition: new[] {
+                        "de",
+                        "bei Gegenständen mit fester Orientierung oder in bevorzugter Gebrauchslage wird die " +
+                        "nach hinten, im Allgemeinen vom Betrachter weg verlaufende Ausdehnung als Tiefe bezeichnet",
+                        "en",
+                        "for objects with fixed orientation or in preferred utilization position, " +
+                        "the rear , generally away from the observer expansion is described as depth" }
+                );
 
                 //var p = Property.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.ValueType = DataTypeDefXsd.Double;
                 p.Value = "11.9";
@@ -729,22 +686,20 @@ namespace AasxToolkit
                 cd = new ConceptDescription("0173-1#02-AAS627#001", idShort:"Weight");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Gewicht der Artikeleinzelverpackung", "en", "Weight of the individual packaging" },
-                //    shortName: "Weight",
-                //    unit: "g",
-                //    valueFormat: "REAL_MEASURE",
-                //    definition: new[] { "de", "Masse der Einzelverpackung eines Artikels",
-                //    "en", "Mass of the individual packaging of an article" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Gewicht der Artikeleinzelverpackung", "en", "Weight of the individual packaging" },
+                    shortName: "Weight",
+                    unit: "g",
+                    valueFormat: "REAL_MEASURE",
+                    definition: new[] { "de", "Masse der Einzelverpackung eines Artikels",
+                    "en", "Mass of the individual packaging of an article" }
+                );
 
                 // as designed
                 //var p = Property.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value:"SPEC", semanticId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF579") })) };
                 //p.AddQualifier("life cycle qual", "SPEC",
@@ -760,8 +715,7 @@ namespace AasxToolkit
                 // as produced
                 //var p2 = Property.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p2 = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p2 = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p2);
                 p.Qualifiers = new List<Qualifier>() { new Qualifier("life cycle qual", DataTypeDefXsd.String, value: "BUILT", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF575") }), valueId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "0112/2///61360_4#AAF573") })) };
                 p2.ValueType = DataTypeDefXsd.Double;
@@ -772,21 +726,19 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-BAB577#007", idShort: "Material");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO: jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] { "de", "Werkstoff", "en", "Material" },
-                //    shortName: "Material",
-                //    definition: new[] { "de", "TBD",
-                //    "en",
-                //    "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
-                //    "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
-                //    "Schweißen usw. in die endgültige Form gebracht werden" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] { "de", "Werkstoff", "en", "Material" },
+                    shortName: "Material",
+                    definition: new[] { "de", "TBD",
+                    "en",
+                    "Materialzusammensetzung, aus der ein einzelnes Bauteil hergestellt ist, als Ergebnis " +
+                    "eines Herstellungsprozesses, in dem der/die Rohstoff(e) durch Extrusion, Verformung, " +
+                    "Schweißen usw. in die endgültige Form gebracht werden" }
+                );
 
                 //var p = ReferenceElement.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER", Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new ReferenceElement(idShort:"",category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new ReferenceElement(idShort:cd.GetDefaultPreferredName(),category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 //p.Value = p.Value = Reference.CreateNew(
                 //    Key.CreateNew(
@@ -814,22 +766,20 @@ namespace AasxToolkit
             var cd = new ConceptDescription("0173-1#02-ZZZ991#001", idShort: "DocuName");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei ECLASS
-                //        "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
-                //    shortName: "DocuName",                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "legally valid designation of the natural or judicial person..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Name Dokument in Landessprache",    // wechseln Sie die Sprache bei ECLASS
+                        "en", "Name of document in national language" },   // um die Sprach-Texte aufzufinden
+                    shortName: "DocuName",                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: "STRING",                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "legally valid designation of the natural or judicial person..." }
+                );
 
                 //var p = MultiLanguageProperty.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                 //            Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new MultiLanguageProperty(idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 if(p.Value.LangStrings == null)
                 {
@@ -848,22 +798,20 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-ZZZ992#001", idShort: "VoltageRange");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei ECLASS
-                //        "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
-                //    shortName: "VoltageRange",                                // kurzer, sprechender Name
-                //    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited voltage range..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Betriebsspannungsbereich",    // wechseln Sie die Sprache bei ECLASS
+                        "en", "Range operational voltage" },   // um die Sprach-Texte aufzufinden
+                    shortName: "VoltageRange",                                // kurzer, sprechender Name
+                    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited voltage range..." }
+                );
 
                 //var p = Range.CreateNew(cd.GetDefaultPreferredName(), "PARAMETER",
                 //            Key.GetFromRef(cd.GetReference()));
-                //TODO:jtikekar support cd.GetDefaultPreferredName()
-                var p = new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
                 p.Min = "11.5";
                 p.Max = "13.8";
@@ -878,22 +826,21 @@ namespace AasxToolkit
                 cd = new ConceptDescription("0173-1#02-XXX992#001", idShort: "VerConn");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO: jtikekar Trmporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Verbindung",    // wechseln Sie die Sprache bei ECLASS 
-                //        "en", "Connection" },   // um die Sprach-Texte aufzufinden
-                //    shortName: "VerConn",                                // kurzer, sprechender Name
-                //    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely defined electrical connection..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Verbindung",    // wechseln Sie die Sprache bei ECLASS 
+                        "en", "Connection" },   // um die Sprach-Texte aufzufinden
+                    shortName: "VerConn",                                // kurzer, sprechender Name
+                    unit: "V",                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: "REAL",                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely defined electrical connection..." }
+                );
 
                 //var ar = AnnotatedRelationshipElement.CreateNew(
                 //    cd.GetDefaultPreferredName(), "PARAMETER",
                 //    Key.GetFromRef(cd.GetReference()));
-                var ar = new AnnotatedRelationshipElement(sme1.GetModelReference(), sme2.GetModelReference(), idShort:"", category:"PARAMETER", semanticId:cd.GetReference());
+                var ar = new AnnotatedRelationshipElement(sme1.GetModelReference(), sme2.GetModelReference(), idShort:cd.GetDefaultPreferredName(), category:"PARAMETER", semanticId:cd.GetReference());
                 sub1.Add(ar);
 
                 ar.Annotations = new List<IDataElement>();
@@ -927,17 +874,16 @@ namespace AasxToolkit
             {
                 cdRelEPlan = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "en", "Electrical plan",    // wechseln Sie die Sprache bei ECLASS
-                //        "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
-                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited language constructs..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "en", "Electrical plan",    // wechseln Sie die Sprache bei ECLASS
+                        "de", "Stromlaufplan" },   // um die Sprach-Texte aufzufinden
+                    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
+                );
             }
 
             //using (var cd = ConceptDescription.CreateNew(
@@ -948,17 +894,16 @@ namespace AasxToolkit
             {
                 cdRelElCon = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei ECLASS
-                //        "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
-                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited language constructs..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "en", "single pole electrical connection",    // wechseln Sie die Sprache bei ECLASS
+                        "de", "einpolig elektrische Verbindung" },   // um die Sprach-Texte aufzufinden
+                    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
+                );
             }
 
             //using (var cd = ConceptDescription.CreateNew(
@@ -969,17 +914,16 @@ namespace AasxToolkit
             {
                 cdContact1 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "en", "Contact point 1",    // wechseln Sie die Sprache bei ECLASS
-                //        "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
-                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited language constructs..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "en", "Contact point 1",    // wechseln Sie die Sprache bei ECLASS
+                        "de", "Kontaktpunkt 1" },   // um die Sprach-Texte aufzufinden
+                    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
+                );
             }
 
             //using (var cd = ConceptDescription.CreateNew(
@@ -990,17 +934,16 @@ namespace AasxToolkit
             {
                 cdContact2 = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "en", "Contact point 2",    // wechseln Sie die Sprache bei ECLASS
-                //        "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
-                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited language constructs..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "en", "Contact point 2",    // wechseln Sie die Sprache bei ECLASS
+                        "de", "Kontaktpunkt 2" },   // um die Sprach-Texte aufzufinden
+                    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
+                );
             }
 
             // ENTITIES
@@ -1073,17 +1016,16 @@ namespace AasxToolkit
             {
                 cdIsPartOf = cd;
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "en", "Is part of",    // wechseln Sie die Sprache bei ECLASS
-                //        "de", "Teil von" },   // um die Sprach-Texte aufzufinden
-                //    shortName: cd.IdShort,                                // kurzer, sprechender Name
-                //    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
-                //    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
-                //    definition: new[] { "de", "TBD",
-                //    "en", "very precisely limited language constructs..." }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "en", "Is part of",    // wechseln Sie die Sprache bei ECLASS
+                        "de", "Teil von" },   // um die Sprach-Texte aufzufinden
+                    shortName: cd.IdShort,                                // kurzer, sprechender Name
+                    unit: null,                                          // Gewicht als SI Einheit ohne Klammern
+                    valueFormat: null,                        // REAL oder INT_MEASURE oder STRING
+                    definition: new[] { "de", "TBD",
+                    "en", "very precisely limited language constructs..." }
+                );
             }
 
             // ENTITIES
@@ -1138,15 +1080,14 @@ namespace AasxToolkit
             var cd = new ConceptDescription("0173-1#02-AAS999#001", idShort: "SetMode");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Setze Energiespare-Modus",
-                //        "en", "Set energy saving mode" },
-                //    shortName: "SetMode",
-                //    definition: new[] { "de", "Setze Energiemodus 1..4",
-                //    "en", "Set energy saving mode 1..4" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Setze Energiespare-Modus",
+                        "en", "Set energy saving mode" },
+                    shortName: "SetMode",
+                    definition: new[] { "de", "Setze Energiemodus 1..4",
+                    "en", "Set energy saving mode 1..4" }
+                );
 
                 theOp.IdShort = "setmode";
                 sub1.Add(theOp);
@@ -1156,18 +1097,17 @@ namespace AasxToolkit
             cd = new ConceptDescription("0173-1#02-AAX777#002", idShort: "mode");
             {
                 aasenv.ConceptDescriptions.Add(cd);
-                //TODO:jtikekar Temporarily Removed
-                //cd.SetIEC61360Spec(
-                //    preferredNames: new[] {
-                //        "de", "Energiesparemodus-Vorgabe",
-                //        "en", "Preset of energy saving mode" },
-                //    shortName: "mode",
-                //    valueFormat: "INT",
-                //    definition: new[] { "de", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
-                //    "en", "Preset in optimal case for the energy saving mode" }
-                //);
+                cd.SetIEC61360Spec(
+                    preferredNames: new[] {
+                        "de", "Energiesparemodus-Vorgabe",
+                        "en", "Preset of energy saving mode" },
+                    shortName: "mode",
+                    valueFormat: "INT",
+                    definition: new[] { "de", "Vorgabe für den Energiesparmodus für optimalen Betrieb",
+                    "en", "Preset in optimal case for the energy saving mode" }
+                );
 
-                var p = new Property(DataTypeDefXsd.String, idShort: "", category: "PARAMETER", semanticId: cd.GetReference());
+                var p = new Property(DataTypeDefXsd.String, idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
 
                 var ovp = new OperationVariable(p);
                 if(theOp.InputVariables == null)

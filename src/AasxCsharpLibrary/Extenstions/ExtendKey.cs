@@ -3,6 +3,7 @@ using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Extenstions
 {
@@ -162,6 +163,30 @@ namespace Extenstions
                     return false;
 
                 if (!otherKeyList[i].Matches(keyList[i]))
+                    return false;
+            }
+
+            // ok!
+            return true;
+        }
+
+        public static bool StartsWith(this List<Key> keyList,List<Key> head, bool emptyIsTrue = false,
+                MatchMode matchMode = MatchMode.Relaxed)
+        {
+            // access
+            if (head == null)
+                return false;
+            if (head.Count == 0)
+                return emptyIsTrue;
+
+            // simply test element-wise
+            for (int i = 0; i < head.Count; i++)
+            {
+                // does head have more elements than this list?
+                if (i >= keyList.Count)
+                    return false;
+
+                if (!head[i].Matches(keyList[i], matchMode))
                     return false;
             }
 

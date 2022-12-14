@@ -1,16 +1,44 @@
 ﻿
 using AasCore.Aas3_0_RC02;
 using AasxCompatibilityModels;
+using AdminShellNS.Display;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Extenstions
 {
     public static class ExtendISubmodelElement
     {
         #region AasxPackageExplorer
+
+        public static object AddChild(this ISubmodelElement submodelElement, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        {
+            if (submodelElement is AnnotatedRelationshipElement annotatedRelationshipElement)
+            {
+                return annotatedRelationshipElement.AddChild(childSubmodelElement, placement);
+            }
+            else if (submodelElement is SubmodelElementCollection submodelElementCollection)
+            {
+                return submodelElementCollection.AddChild(childSubmodelElement, placement);
+            }
+            else if (submodelElement is SubmodelElementList submodelElementList)
+            {
+                return submodelElementList.AddChild(childSubmodelElement, placement);
+            }
+            else if (submodelElement is Operation operation)
+            {
+                return operation.AddChild(childSubmodelElement, placement);
+            }
+            else if (submodelElement is Entity entity)
+            {
+                return entity.AddChild(childSubmodelElement, placement);
+            }
+            else
+                return childSubmodelElement;
+        }
 
         public static Tuple<string, string> ToCaptionInfo(this ISubmodelElement submodelElement)
         {

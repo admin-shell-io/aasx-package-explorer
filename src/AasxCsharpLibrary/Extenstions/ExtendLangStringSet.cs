@@ -6,6 +6,19 @@ namespace Extenstions
 {
     public static class ExtendLangStringSet
     {
+        #region AasxPackageExplorer
+
+        public static bool IsValid(this LangStringSet langStringSet)
+        {
+            if(langStringSet != null && langStringSet.LangStrings != null && langStringSet.LangStrings.Count >=1)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        #endregion
         public static bool IsEmpty(this LangStringSet langStringSet)
         {
             if (langStringSet == null || langStringSet.LangStrings == null || langStringSet.LangStrings.Count == 0)

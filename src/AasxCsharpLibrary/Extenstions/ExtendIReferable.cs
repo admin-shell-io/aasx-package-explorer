@@ -1,5 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +14,88 @@ namespace Extenstions
     public static class ExtendIReferable
     {
         #region AasxPackageExplorer
+
+        public static void RecurseOnReferables(this IReferable referable,
+                object state, Func<object, List<IReferable>, IReferable, bool> lambda,
+                bool includeThis = false)
+        {
+            if(referable is Submodel submodel)
+            {
+                submodel.RecurseOnReferables(state, lambda, includeThis);
+            }
+            else if(referable is SubmodelElementCollection submodelElementCollection)
+            {
+                submodelElementCollection.RecurseOnReferables(state, lambda, includeThis);
+            }
+            else if(referable is SubmodelElementList submodelElementList)
+            {
+                submodelElementList.RecurseOnReferables(state, lambda, includeThis);
+            }
+            else if (includeThis)
+                lambda(state, null, referable);
+        }
+
+        public static void Remove(this IReferable referable, ISubmodelElement submodelElement)
+        {
+            if(referable is Submodel submodel)
+            {
+                submodel.Remove(submodelElement);
+            }
+            else if(referable is AnnotatedRelationshipElement annotatedRelationshipElement)
+            {
+                annotatedRelationshipElement.Remove(submodelElement);
+            }
+            else if(referable is SubmodelElementCollection submodelElementCollection)
+            {
+                submodelElementCollection.Remove(submodelElement);
+            }
+            else if(referable is SubmodelElementList submodelElementList)
+            {
+                submodelElementList.Remove(submodelElement);
+            }
+            else if(referable is Entity entity)
+            {
+                entity.Remove(submodelElement);
+            }
+        }
+        
+        public static void Add(this IReferable referable, ISubmodelElement submodelElement)
+        {
+            if(referable is Submodel submodel)
+            {
+                submodel.Add(submodelElement);
+            }
+            else if(referable is AnnotatedRelationshipElement annotatedRelationshipElement)
+            {
+                annotatedRelationshipElement.Add(submodelElement);
+            }
+            else if(referable is SubmodelElementCollection submodelElementCollection)
+            {
+                submodelElementCollection.Add(submodelElement);
+            }
+            else if(referable is SubmodelElementList submodelElementList)
+            {
+                submodelElementList.Add(submodelElement);
+            }
+            else if(referable is Entity entity)
+            {
+                entity.Add(submodelElement);
+            }
+        }
+
+        #region Display
+
+        public static EnumerationPlacmentBase GetChildrenPlacement(this IReferable referable, ISubmodelElement submodelElement)
+        {
+            if(referable is Operation operation)
+            {
+                return operation.GetChildrenPlacement(submodelElement);
+            }
+
+            return null;
+        }
+
+        #endregion
 
         public static IIdentifiable FindParentFirstIdentifiable(this IReferable referable)
         {

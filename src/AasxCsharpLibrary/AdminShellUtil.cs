@@ -746,5 +746,27 @@ namespace AdminShellNS
             return id;
         }
 
+        public static string RemoveNewLinesAndLimit(string input, int maxLength = -1, string ellipsis = "..")
+        {
+            // access
+            if (input == null)
+                return null;
+
+            // maybe do a generouse limit first
+            if (maxLength >= 1 && input.Length > 2 * maxLength)
+                input = input.Substring(0, 2 * maxLength);
+
+            // now do expensive operations
+            input = input.Replace('\r', ' ');
+            input = input.Replace('\n', ' ');
+            input = Regex.Replace(input, @"\s+", " ", RegexOptions.Compiled);
+
+            // now apply exact limit
+            if (maxLength >= 1 && input.Length > maxLength)
+                input = input.Substring(0, maxLength) + ellipsis;
+
+            // ok
+            return input;
+        }
     }
 }

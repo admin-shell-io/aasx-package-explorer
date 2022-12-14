@@ -13,6 +13,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;
@@ -29,7 +30,7 @@ namespace AasxPackageExplorer
     public class QualifierPreset
     {
         public string name = "";
-        public AdminShell.Qualifier qualifier = new AdminShell.Qualifier();
+        public Qualifier qualifier = new Qualifier("", DataTypeDefXsd.String);
     }
 
     // ReSharper enable ClassNeverInstantiated.Global
@@ -49,7 +50,7 @@ namespace AasxPackageExplorer
 
             try
             {
-                var init = File.ReadAllText(presetFn);
+                var init = System.IO.File.ReadAllText(presetFn);
                 thePresets = JsonConvert.DeserializeObject<List<QualifierPreset>>(init);
             }
             catch (Exception ex)

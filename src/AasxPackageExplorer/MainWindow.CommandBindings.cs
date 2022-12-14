@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Xml.Serialization;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -34,7 +35,9 @@ using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 // OZOZ using AasxSignature;
 // OZOZ using AasxUANodesetImExport;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
 using AnyUi;
+using Extenstions;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -464,24 +467,24 @@ namespace AasxPackageExplorer
                     && ((el != null && el.theEnv != null && el.theSubmodel != null)
                             || (els != null && els.theEnv != null && els.theWrapper != null)))
                 {
-                    AdminShell.Submodel sm = null;
-                    AdminShell.SubmodelElementCollection smc = null;
-                    AdminShell.SubmodelElementCollection smcp = null;
+                    Submodel sm = null;
+                    SubmodelElementCollection smc = null;
+                    SubmodelElementCollection smcp = null;
                     if (el != null)
                     {
                         sm = el.theSubmodel;
                     }
                     if (els != null)
                     {
-                        var smee = els.theWrapper.submodelElement;
-                        if (smee is AdminShell.SubmodelElementCollection)
+                        var smee = els.theWrapper;
+                        if (smee is SubmodelElementCollection)
                         {
-                            smc = smee as AdminShell.SubmodelElementCollection;
-                            var p = smee.parent;
-                            if (p is AdminShell.Submodel)
-                                sm = p as AdminShell.Submodel;
-                            if (p is AdminShell.SubmodelElementCollection)
-                                smcp = p as AdminShell.SubmodelElementCollection;
+                            smc = smee as SubmodelElementCollection;
+                            var p = smee.Parent;
+                            if (p is Submodel)
+                                sm = p as Submodel;
+                            if (p is SubmodelElementCollection)
+                                smcp = p as SubmodelElementCollection;
                         }
                     }
                     if (sm == null && smcp == null)
@@ -491,37 +494,37 @@ namespace AasxPackageExplorer
                         "Use X509 (yes) or Verifiable Credential (No)?",
                         "X509 or VerifiableCredential", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
 
-                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
+                    List<SubmodelElementCollection> existing = new List<SubmodelElementCollection>();
                     if (smc == null)
                     {
-                        for (int i = 0; i < sm.submodelElements.Count; i++)
+                        for (int i = 0; i < sm.SubmodelElements.Count; i++)
                         {
-                            var sme = sm.submodelElements[i];
+                            var sme = sm.SubmodelElements[i];
                             var len = "signature".Length;
-                            var idShort = sme.submodelElement.idShort;
-                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                            var idShort = sme.IdShort;
+                            if (sme is SubmodelElementCollection &&
                                     idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
-                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
-                                sm.Remove(sme.submodelElement);
+                                existing.Add(sme as SubmodelElementCollection);
+                                sm.Remove(sme);
                                 i--; // check next
                             }
                         }
                     }
                     else
                     {
-                        for (int i = 0; i < smc.value.Count; i++)
+                        for (int i = 0; i < smc.Value.Count; i++)
                         {
-                            var sme = smc.value[i];
+                            var sme = smc.Value[i];
                             var len = "signature".Length;
-                            var idShort = sme.submodelElement.idShort;
-                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                            var idShort = sme.IdShort;
+                            if (sme is SubmodelElementCollection &&
                                     idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
-                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
-                                smc.Remove(sme.submodelElement);
+                                existing.Add(sme as SubmodelElementCollection);
+                                smc.Remove(sme);
                                 i--; // check next
                             }
                         }
@@ -529,14 +532,14 @@ namespace AasxPackageExplorer
 
                     if (useX509)
                     {
-                        AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
-                        AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
-                        AdminShell.Property canonical = AdminShellV20.Property.CreateNew("submodelJsonCanonical");
-                        AdminShell.Property subject = AdminShellV20.Property.CreateNew("subject");
-                        AdminShell.SubmodelElementCollection x5c = AdminShell.SubmodelElementCollection.CreateNew("x5c");
-                        AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
-                        AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
-                        AdminShell.Property signature = AdminShellV20.Property.CreateNew("signature");
+                        SubmodelElementCollection smec = new SubmodelElementCollection(idShort:"signature");
+                        Property json = new Property(DataTypeDefXsd.String,idShort:"submodelJson");
+                        Property canonical = new Property(DataTypeDefXsd.String, idShort:"submodelJsonCanonical");
+                        Property subject = new Property(DataTypeDefXsd.String, idShort: "subject");
+                        SubmodelElementCollection x5c = new SubmodelElementCollection(idShort:"x5c");
+                        Property algorithm = new Property(DataTypeDefXsd.String, idShort: "algorithm");
+                        Property sigT = new Property(DataTypeDefXsd.String, idShort: "sigT");
+                        Property signature = new Property(DataTypeDefXsd.String, idShort: "signature");
                         smec.Add(json);
                         smec.Add(canonical);
                         smec.Add(subject);
@@ -553,11 +556,11 @@ namespace AasxPackageExplorer
                         {
                             s = JsonConvert.SerializeObject(smc, Formatting.Indented);
                         }
-                        json.value = s;
+                        json.Value = s;
                         // OZOZ JsonCanonicalizer jsonCanonicalizer = new JsonCanonicalizer(s);
                         // OZOZ string result = jsonCanonicalizer.GetEncodedString();
                         string result = "";
-                        canonical.value = result;
+                        canonical.Value = result;
                         if (smc == null)
                         {
                             foreach (var e in existing)
@@ -589,7 +592,7 @@ namespace AasxPackageExplorer
                         if (scollection.Count != 0)
                         {
                             var certificate = scollection[0];
-                            subject.value = certificate.Subject;
+                            subject.Value = certificate.Subject;
 
                             X509Chain ch = new X509Chain();
                             ch.Build(certificate);
@@ -599,8 +602,8 @@ namespace AasxPackageExplorer
                             int j = 1;
                             foreach (X509ChainElement element in ch.ChainElements)
                             {
-                                AdminShell.Property c = AdminShellV20.Property.CreateNew("certificate_" + j++);
-                                c.value = Convert.ToBase64String(element.Certificate.GetRawCertData());
+                                Property c = new Property(DataTypeDefXsd.String,idShort:"certificate_" + j++);
+                                c.Value = Convert.ToBase64String(element.Certificate.GetRawCertData());
                                 x5c.Add(c);
                             }
 
@@ -608,11 +611,11 @@ namespace AasxPackageExplorer
                             {
                                 using (RSA rsa = certificate.GetRSAPrivateKey())
                                 {
-                                    algorithm.value = "RS256";
+                                    algorithm.Value = "RS256";
                                     byte[] data = Encoding.UTF8.GetBytes(result);
                                     byte[] signed = rsa.SignData(data, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-                                    signature.value = Convert.ToBase64String(signed);
-                                    sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                                    signature.Value = Convert.ToBase64String(signed);
+                                    sigT.Value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                                 }
                             }
                             // ReSharper disable EmptyGeneralCatchClause
@@ -624,14 +627,14 @@ namespace AasxPackageExplorer
                     }
                     else // Verifiable Credential
                     {
-                        AdminShell.SubmodelElementCollection smec = AdminShell.SubmodelElementCollection.CreateNew("signature");
-                        AdminShell.Property json = AdminShellV20.Property.CreateNew("submodelJson");
-                        AdminShell.Property jsonld = AdminShellV20.Property.CreateNew("submodelJsonLD");
-                        AdminShell.Property vc = AdminShellV20.Property.CreateNew("vc");
-                        AdminShell.Property epvc = AdminShellV20.Property.CreateNew("endpointVC");
-                        AdminShell.Property algorithm = AdminShellV20.Property.CreateNew("algorithm");
-                        AdminShell.Property sigT = AdminShellV20.Property.CreateNew("sigT");
-                        AdminShell.Property proof = AdminShellV20.Property.CreateNew("proof");
+                        SubmodelElementCollection smec = new SubmodelElementCollection(idShort: "signature");
+                        Property json = new Property(DataTypeDefXsd.String, idShort: "submodelJson");
+                        Property jsonld = new Property(DataTypeDefXsd.String, idShort: "submodelJsonLD");
+                        Property vc = new Property(DataTypeDefXsd.String, idShort: "vc");
+                        Property epvc = new Property(DataTypeDefXsd.String, idShort: "endpointVC");
+                        Property algorithm = new Property(DataTypeDefXsd.String, idShort: "algorithm");
+                        Property sigT = new Property(DataTypeDefXsd.String, idShort: "sigT");
+                        Property proof = new Property(DataTypeDefXsd.String, idShort: "proof");
                         smec.Add(json);
                         smec.Add(jsonld);
                         smec.Add(vc);
@@ -648,9 +651,9 @@ namespace AasxPackageExplorer
                         {
                             s = JsonConvert.SerializeObject(smc, Formatting.Indented);
                         }
-                        json.value = s;
+                        json.Value = s;
                         s = makeJsonLD(s, 0);
-                        jsonld.value = s;
+                        jsonld.Value = s;
 
                         if (smc == null)
                         {
@@ -671,8 +674,8 @@ namespace AasxPackageExplorer
 
                         if (s != null && s != "")
                         {
-                            epvc.value = "https://nameplate.h2894164.stratoserver.net";
-                            string requestPath = epvc.value + "/demo/sign?create_as_verifiable_presentation=false";
+                            epvc.Value = "https://nameplate.h2894164.stratoserver.net";
+                            string requestPath = epvc.Value + "/demo/sign?create_as_verifiable_presentation=false";
 
                             var handler = new HttpClientHandler();
                             handler.DefaultProxyCredentials = CredentialCache.DefaultCredentials;
@@ -700,7 +703,7 @@ namespace AasxPackageExplorer
                             if (!error)
                             {
                                 s = response.Content.ReadAsStringAsync().Result;
-                                vc.value = s;
+                                vc.Value = s;
 
                                 var parsed = JObject.Parse(s);
 
@@ -708,7 +711,7 @@ namespace AasxPackageExplorer
                                 {
                                     var p = parsed.SelectToken("proof").Value<JObject>();
                                     if (p != null)
-                                        proof.value = JsonConvert.SerializeObject(p, Formatting.Indented);
+                                        proof.Value = JsonConvert.SerializeObject(p, Formatting.Indented);
                                 }
                                 catch
                                 {
@@ -724,8 +727,8 @@ namespace AasxPackageExplorer
                                 Console.WriteLine(r);
                                 s = r;
                             }
-                            algorithm.value = "VC";
-                            sigT.value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+                            algorithm.Value = "VC";
+                            sigT.Value = DateTime.UtcNow.ToString("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
                         }
                     }
                     RedrawAllAasxElements();
@@ -737,11 +740,11 @@ namespace AasxPackageExplorer
                     && ((el != null && el.theEnv != null && el.theSubmodel != null)
                             || (els != null && els.theEnv != null && els.theWrapper != null)))
                 {
-                    List<AdminShell.SubmodelElementCollection> existing = new List<AdminShellV20.SubmodelElementCollection>();
-                    List<AdminShell.SubmodelElementCollection> validate = new List<AdminShellV20.SubmodelElementCollection>();
-                    AdminShell.Submodel sm = null;
-                    AdminShell.SubmodelElementCollection smc = null;
-                    AdminShell.SubmodelElementCollection smcp = null;
+                    List<SubmodelElementCollection> existing = new List<SubmodelElementCollection>();
+                    List<SubmodelElementCollection> validate = new List<SubmodelElementCollection>();
+                    Submodel sm = null;
+                    SubmodelElementCollection smc = null;
+                    SubmodelElementCollection smcp = null;
                     bool smcIsSignature = false;
                     if (el != null)
                     {
@@ -749,22 +752,22 @@ namespace AasxPackageExplorer
                     }
                     if (els != null)
                     {
-                        var smee = els.theWrapper.submodelElement;
-                        if (smee is AdminShell.SubmodelElementCollection)
+                        var smee = els.theWrapper;
+                        if (smee is SubmodelElementCollection)
                         {
-                            smc = smee as AdminShell.SubmodelElementCollection;
+                            smc = smee as SubmodelElementCollection;
                             var len = "signature".Length;
-                            var idShort = smc.idShort;
+                            var idShort = smc.IdShort;
                             if (idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
                                 smcIsSignature = true;
                             }
-                            var p = smc.parent;
-                            if (smcIsSignature && p is AdminShell.Submodel)
-                                sm = p as AdminShell.Submodel;
-                            if (smcIsSignature && p is AdminShell.SubmodelElementCollection)
-                                smcp = p as AdminShell.SubmodelElementCollection;
+                            var p = smc.Parent;
+                            if (smcIsSignature && p is Submodel)
+                                sm = p as Submodel;
+                            if (smcIsSignature && p is SubmodelElementCollection)
+                                smcp = p as SubmodelElementCollection;
                             if (!smcIsSignature)
                                 smcp = smc;
                         }
@@ -774,30 +777,30 @@ namespace AasxPackageExplorer
 
                     if (sm != null)
                     {
-                        foreach (var sme in sm.submodelElements)
+                        foreach (var sme in sm.SubmodelElements)
                         {
-                            var smee = sme.submodelElement;
+                            var smee = sme;
                             var len = "signature".Length;
-                            var idShort = smee.idShort;
-                            if (smee is AdminShell.SubmodelElementCollection &&
+                            var idShort = smee.IdShort;
+                            if (smee is SubmodelElementCollection &&
                                     idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
-                                existing.Add(smee as AdminShell.SubmodelElementCollection);
+                                existing.Add(smee as SubmodelElementCollection);
                             }
                         }
                     }
                     if (smcp != null)
                     {
-                        foreach (var sme in smcp.value)
+                        foreach (var sme in smcp.Value)
                         {
                             var len = "signature".Length;
-                            var idShort = sme.submodelElement.idShort;
-                            if (sme.submodelElement is AdminShell.SubmodelElementCollection &&
+                            var idShort = sme.IdShort;
+                            if (sme is SubmodelElementCollection &&
                                     idShort.Length >= len &&
                                     idShort.Substring(0, len).ToLower() == "signature")
                             {
-                                existing.Add(sme.submodelElement as AdminShell.SubmodelElementCollection);
+                                existing.Add(sme as SubmodelElementCollection);
                             }
                         }
                     }
@@ -858,32 +861,32 @@ namespace AasxPackageExplorer
                         }
                         foreach (var smec in validate)
                         {
-                            AdminShell.SubmodelElementCollection x5c = null;
-                            AdminShell.Property subject = null;
-                            AdminShell.Property algorithm = null;
-                            AdminShell.Property digest = null; // legacy
-                            AdminShell.Property signature = null;
+                            SubmodelElementCollection x5c = null;
+                            Property subject = null;
+                            Property algorithm = null;
+                            Property digest = null; // legacy
+                            Property signature = null;
 
-                            foreach (var sme in smec.value)
+                            foreach (var sme in smec.Value)
                             {
-                                var smee = sme.submodelElement;
-                                switch (smee.idShort)
+                                var smee = sme;
+                                switch (smee.IdShort)
                                 {
                                     case "x5c":
-                                        if (smee is AdminShell.SubmodelElementCollection)
-                                            x5c = smee as AdminShell.SubmodelElementCollection;
+                                        if (smee is SubmodelElementCollection)
+                                            x5c = smee as SubmodelElementCollection;
                                         break;
                                     case "subject":
-                                        subject = smee as AdminShell.Property;
+                                        subject = smee as Property;
                                         break;
                                     case "algorithm":
-                                        algorithm = smee as AdminShell.Property;
+                                        algorithm = smee as Property;
                                         break;
                                     case "digest":
-                                        digest = smee as AdminShell.Property;
+                                        digest = smee as Property;
                                         break;
                                     case "signature":
-                                        signature = smee as AdminShell.Property;
+                                        signature = smee as Property;
                                         break;
                                 }
                             }
@@ -911,10 +914,10 @@ namespace AasxPackageExplorer
 
                                 try
                                 {
-                                    for (int i = 0; i < x5c.value.Count; i++)
+                                    for (int i = 0; i < x5c.Value.Count; i++)
                                     {
-                                        var p = x5c.value[i].submodelElement as AdminShell.Property;
-                                        var cert = new X509Certificate2(Convert.FromBase64String(p.value));
+                                        var p = x5c.Value[i] as Property;
+                                        var cert = new X509Certificate2(Convert.FromBase64String(p.Value));
                                         if (i == 0)
                                         {
                                             x509 = cert;
@@ -961,14 +964,14 @@ namespace AasxPackageExplorer
                                 if (!valid)
                                 {
                                     System.Windows.MessageBox.Show(
-                                        this, "Invalid certificate chain: " + subject.value, "Check " + smec.idShort,
+                                        this, "Invalid certificate chain: " + subject.Value, "Check " + smec.IdShort,
                                         MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 }
                                 if (valid)
                                 {
                                     valid = false;
 
-                                    if (algorithm.value == "RS256")
+                                    if (algorithm.Value == "RS256")
                                     {
                                         try
                                         {
@@ -976,9 +979,9 @@ namespace AasxPackageExplorer
                                             {
                                                 string value = null;
                                                 if (signature != null)
-                                                    value = signature.value;
+                                                    value = signature.Value;
                                                 if (digest != null)
-                                                    value = digest.value;
+                                                    value = digest.Value;
                                                 byte[] data = Encoding.UTF8.GetBytes(result);
                                                 byte[] h = Convert.FromBase64String(value);
                                                 valid = rsa.VerifyData(data, h, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -991,13 +994,13 @@ namespace AasxPackageExplorer
                                         if (!valid)
                                         {
                                             System.Windows.MessageBox.Show(
-                                                this, "Invalid signature: " + subject.value, "Check " + smec.idShort,
+                                                this, "Invalid signature: " + subject.Value, "Check " + smec.IdShort,
                                                 MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                         }
                                         if (valid)
                                         {
                                             System.Windows.MessageBox.Show(
-                                                this, "Signature is valid: " + subject.value, "Check " + smec.idShort,
+                                                this, "Signature is valid: " + subject.Value, "Check " + smec.IdShort,
                                                 MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                         }
                                     }
@@ -1067,7 +1070,7 @@ namespace AasxPackageExplorer
                                 X509Certificate2 x509 = new X509Certificate2(dlg2.FileName);
                                 var publicKey = x509.GetRSAPublicKey();
 
-                                Byte[] binaryFile = File.ReadAllBytes(dlg.FileName);
+                                Byte[] binaryFile = System.IO.File.ReadAllBytes(dlg.FileName);
                                 string binaryBase64 = Convert.ToBase64String(binaryFile);
 
                                 string payload = "{ \"file\" : \" " + binaryBase64 + " \" }";
@@ -1085,7 +1088,7 @@ namespace AasxPackageExplorer
 
                                 if (res == true)
                                 {
-                                    File.WriteAllBytes(dlg3.FileName, fileBytes);
+                                    System.IO.File.WriteAllBytes(dlg3.FileName, fileBytes);
                                 }
                             }
                             catch
@@ -1123,7 +1126,7 @@ namespace AasxPackageExplorer
                                 X509Certificate2 x509 = new X509Certificate2(dlg2.FileName, "i40");
                                 var privateKey = x509.GetRSAPrivateKey();
 
-                                Byte[] binaryFile = File.ReadAllBytes(dlg.FileName);
+                                Byte[] binaryFile = System.IO.File.ReadAllBytes(dlg.FileName);
                                 string fileString = System.Text.Encoding.UTF8.GetString(binaryFile);
 
                                 string fileString2 = Jose.JWT.Decode(
@@ -1141,7 +1144,7 @@ namespace AasxPackageExplorer
                                 if (Options.Curr.UseFlyovers) this.CloseFlyover();
                                 if (res == true)
                                 {
-                                    File.WriteAllBytes(dlg4.FileName, fileBytes2);
+                                    System.IO.File.WriteAllBytes(dlg4.FileName, fileBytes2);
                                 }
                             }
                             catch
@@ -1824,7 +1827,7 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_PrintAsset()
         {
-            AdminShell.Asset asset = null;
+            AssetInformation asset = null;
             if (DisplayElements.SelectedItem != null && DisplayElements.SelectedItem is VisualElementAsset)
             {
                 var ve = DisplayElements.SelectedItem as VisualElementAsset;
@@ -1845,9 +1848,11 @@ namespace AasxPackageExplorer
 
             try
             {
-                if (asset.identification != null)
+                var id = asset.GlobalAssetId.GetAsIdentifier();
+                if (id != null)
                 {
-                    AasxPrintFunctions.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                    //AasxPrintFunctions.PrintSingleAssetCodeSheet(id, asset.fakeIdShort); //TODO:jtikekar fakeIdShort?
+                    AasxPrintFunctions.PrintSingleAssetCodeSheet(id, "AssetInformation");
                 }
             }
             catch (Exception ex)
@@ -1953,11 +1958,11 @@ namespace AasxPackageExplorer
                 try
                 {
                     // potentially expensive .. get more context for the event source
-                    AdminShell.ReferableRootInfo foundRI = null;
+                    ReferableRootInfo foundRI = null;
                     if (_packageCentral != null && ev.Source?.Keys != null)
                         foreach (var pck in _packageCentral.GetAllPackageEnv())
                         {
-                            var ri = new AdminShell.ReferableRootInfo();
+                            var ri = new ReferableRootInfo();
                             var res = pck?.AasEnv?.FindReferableByReference(ev.Source.Keys, rootInfo: ri);
                             if (res != null && ri.IsValid)
                                 foundRI = ri;
@@ -2341,7 +2346,7 @@ namespace AasxPackageExplorer
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.FileName = "Submodel_" + obj.idShort + ".json";
+            dlg.FileName = "Submodel_" + obj.IdShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -2378,17 +2383,17 @@ namespace AasxPackageExplorer
 
             var dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
-            dlg.FileName = "Submodel_" + obj.idShort + ".json";
+            dlg.FileName = "Submodel_" + obj.IdShort + ".json";
             dlg.Filter = "JSON files (*.JSON)|*.json|All files (*.*)|*.*";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
 
             if (res == true)
             {
-                var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
+                var aas = _packageCentral.Main.AasEnv.FindAasWithSubmodelId(obj.Id);
 
                 // de-serialize Submodel
-                AdminShell.Submodel submodel = null;
+                Submodel submodel = null;
 
                 try
                 {
@@ -2399,7 +2404,7 @@ namespace AasxPackageExplorer
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.TraceWriter = tw;
                         serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                        submodel = (AdminShell.Submodel)serializer.Deserialize(file, typeof(AdminShell.Submodel));
+                        submodel = (Submodel)serializer.Deserialize(file, typeof(Submodel));
                     }
                 }
                 catch (Exception)
@@ -2411,7 +2416,7 @@ namespace AasxPackageExplorer
                 }
 
                 // need id for idempotent behaviour
-                if (submodel == null || submodel.identification == null)
+                if (submodel == null || submodel.Id == null)
                 {
                     MessageBoxFlyoutShow(
                         "Identification of SubModel is (null).", "Submodel Read",
@@ -2420,7 +2425,7 @@ namespace AasxPackageExplorer
                 }
 
                 // datastructure update
-                if (_packageCentral.Main?.AasEnv?.Assets == null)
+                if (_packageCentral.Main?.AasEnv?.AssetAdministrationShells == null)
                 {
                     MessageBoxFlyoutShow(
                         "Error accessing internal data structures.", "Submodel Read",
@@ -2428,20 +2433,21 @@ namespace AasxPackageExplorer
                     return;
                 }
 
+
                 // add Submodel
-                var existingSm = _packageCentral.Main.AasEnv.FindSubmodel(submodel.identification);
+                var existingSm = _packageCentral.Main.AasEnv.FindSubmodelById(submodel.Id);
                 if (existingSm != null)
                     _packageCentral.Main.AasEnv.Submodels.Remove(existingSm);
                 _packageCentral.Main.AasEnv.Submodels.Add(submodel);
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
-                var existsmr = aas.HasSubmodelRef(newsmr);
+                var newsmr = new Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(KeyTypes.Submodel, submodel.Id)});
+
+                var existsmr = aas.HasSubmodelReference(newsmr);
                 if (!existsmr)
                 {
-                    aas.AddSubmodelRef(newsmr);
+                    aas.AddSubmodelReference(newsmr);
                 }
                 RedrawAllAasxElements();
                 RedrawElementView();
@@ -2537,7 +2543,7 @@ namespace AasxPackageExplorer
             try
             {
                 var client = new AasxRestServerLibrary.AasxRestClient(GETURL);
-                sm = client.GetSubmodel(obj.idShort);
+                sm = client.GetSubmodel(obj.IdShort);
             }
             catch (Exception ex)
             {
@@ -2548,7 +2554,7 @@ namespace AasxPackageExplorer
                 var aas = _packageCentral.Main.AasEnv.FindAASwithSubmodel(obj.identification);
 
                 // de-serialize Submodel
-                AdminShell.Submodel submodel = null;
+                Submodel submodel = null;
 
                 try
                 {
@@ -2556,7 +2562,7 @@ namespace AasxPackageExplorer
                     {
                         JsonSerializer serializer = new JsonSerializer();
                         serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                        submodel = (AdminShell.Submodel)serializer.Deserialize(reader, typeof(AdminShell.Submodel));
+                        submodel = (Submodel)serializer.Deserialize(reader, typeof(Submodel));
                     }
                 }
                 catch (Exception)
@@ -2593,8 +2599,8 @@ namespace AasxPackageExplorer
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = AdminShell.SubmodelRef.CreateNew(
-                    "Submodel", true, submodel.identification.idType, submodel.identification.id);
+                var newsmr = SubmodelRef.CreateNew(
+                    "Submodel", true, submodel.identification.idType, submodel.identification.Id);
                 var existsmr = aas.HasSubmodelRef(newsmr);
                 if (!existsmr)
                 {
@@ -2627,7 +2633,7 @@ namespace AasxPackageExplorer
 
                     // Durch das Submodel iterieren
                     {
-                        int count = ve1.theSubmodel.qualifiers.Count;
+                        int count = ve1.theSubmodel.Qualifiers.Count;
                         if (count != 0)
                         {
                             int stopTimeout = Timeout.Infinite;
@@ -2644,38 +2650,38 @@ namespace AasxPackageExplorer
 
                             while (i < 5 && i < count) // URL, Username, Password, Namespace, Path
                             {
-                                var p = ve1.theSubmodel.qualifiers[i];
+                                var p = ve1.theSubmodel.Qualifiers[i];
 
                                 switch (i)
                                 {
                                     case 0: // URL
-                                        if (p.type == "OPCURL")
+                                        if (p.Type == "OPCURL")
                                         {
-                                            URL = p.value;
+                                            URL = p.Value;
                                         }
                                         break;
                                     case 1: // Username
-                                        if (p.type == "OPCUsername")
+                                        if (p.Type == "OPCUsername")
                                         {
-                                            Username = p.value;
+                                            Username = p.Value;
                                         }
                                         break;
                                     case 2: // Password
-                                        if (p.type == "OPCPassword")
+                                        if (p.Type == "OPCPassword")
                                         {
-                                            Password = p.value;
+                                            Password = p.Value;
                                         }
                                         break;
                                     case 3: // Namespace
-                                        if (p.type == "OPCNamespace")
+                                        if (p.Type == "OPCNamespace")
                                         {
-                                            Namespace = int.Parse(p.value);
+                                            Namespace = int.Parse(p.Value);
                                         }
                                         break;
                                     case 4: // Path
-                                        if (p.type == "OPCPath")
+                                        if (p.Type == "OPCPath")
                                         {
-                                            Path = p.value;
+                                            Path = p.Value;
                                         }
                                         break;
                                 }
@@ -2712,15 +2718,15 @@ namespace AasxPackageExplorer
                             }
 
                             // over all SMEs
-                            count = ve1.theSubmodel.submodelElements.Count;
+                            count = ve1.theSubmodel.SubmodelElements.Count;
                             i = 0;
                             while (i < count)
                             {
-                                if (ve1.theSubmodel.submodelElements[i].submodelElement is AdminShell.Property)
+                                if (ve1.theSubmodel.SubmodelElements[i] is Property)
                                 {
                                     // access data
-                                    var p = ve1.theSubmodel.submodelElements[i].submodelElement as AdminShell.Property;
-                                    var nodeName = "" + Path + p?.idShort;
+                                    var p = ve1.theSubmodel.SubmodelElements[i] as Property;
+                                    var nodeName = "" + Path + p?.IdShort;
 
                                     // do read() via plug-in
                                     var resValue = pi.InvokeAction(
@@ -2731,7 +2737,7 @@ namespace AasxPackageExplorer
                                     if (resValue != null && resValue.obj != null && resValue.obj is string)
                                     {
                                         var value = (string)resValue.obj;
-                                        p?.Set(p.valueType, value);
+                                        p.Value = value;
                                     }
                                 }
                                 i++;
@@ -2753,8 +2759,8 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportSubmodel()
         {
-            AdminShell.AdministrationShellEnv env = _packageCentral.Main.AasEnv;
-            AdminShell.AdministrationShell aas = null;
+            AasCore.Aas3_0_RC02.Environment env = _packageCentral.Main.AasEnv;
+            AssetAdministrationShell aas = null;
             if (DisplayElements.SelectedItem != null)
             {
                 if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
@@ -2800,8 +2806,8 @@ namespace AasxPackageExplorer
 
         public void CommandBinding_ImportSubmodelElements()
         {
-            AdminShell.AdministrationShellEnv env = null;
-            AdminShell.Submodel submodel = null;
+            AasCore.Aas3_0_RC02.Environment env = null;
+            Submodel submodel = null;
             if (DisplayElements.SelectedItem is VisualElementSubmodel ves)
             {
                 env = ves.theEnv;
@@ -2990,10 +2996,8 @@ namespace AasxPackageExplorer
                 || ve is VisualElementAdminShell
                 || ve is VisualElementAsset
                 || ve is VisualElementOperationVariable
-                || ve is VisualElementReference
                 || ve is VisualElementSubmodel
-                || ve is VisualElementSubmodelRef
-                || ve is VisualElementView))
+                || ve is VisualElementSubmodelRef))
                 ve = null;
 
             // need to have business object
@@ -3147,12 +3151,12 @@ namespace AasxPackageExplorer
             }
 
             // a Referable shall be exported
-            AdminShell.Referable rf = null;
+            IReferable rf = null;
             object bo = null;
             if (DisplayElements.SelectedItem != null)
             {
                 bo = DisplayElements.SelectedItem.GetMainDataObject();
-                rf = DisplayElements.SelectedItem.GetDereferencedMainDataObject() as AdminShell.Referable;
+                rf = DisplayElements.SelectedItem.GetDereferencedMainDataObject() as IReferable;
             }
 
             if (rf == null)
@@ -3280,7 +3284,7 @@ namespace AasxPackageExplorer
 
             var dlg = new Microsoft.Win32.SaveFileDialog();
             dlg.InitialDirectory = DetermineInitialDirectory(_packageCentral.MainItem.Filename);
-            dlg.FileName = "Submodel_" + obj.idShort + ".jsonld";
+            dlg.FileName = "Submodel_" + obj.IdShort + ".jsonld";
             dlg.Filter = "JSON files (*.JSONLD)|*.jsonld";
             if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
             var res = dlg.ShowDialog();
@@ -3387,14 +3391,14 @@ namespace AasxPackageExplorer
                 }
 
                 // try to invoke plugin to get submodel
-                AdminShell.Submodel smres = null;
-                AdminShell.ListOfConceptDescriptions cdres = null;
+                Submodel smres = null;
+                List<ConceptDescription> cdres = null;
                 try
                 {
                     var res = lpi.InvokeAction("generate-submodel", smname) as AasxPluginResultBase;
                     if (res is AasxPluginResultBaseObject rbo)
                     {
-                        smres = rbo.obj as AdminShell.Submodel;
+                        smres = rbo.obj as Submodel;
                     }
                     if (res is AasxPluginResultGenerateSubmodel rgsm)
                     {
@@ -3419,17 +3423,17 @@ namespace AasxPackageExplorer
                 try
                 {
                     // Submodel needs an identification
-                    smres.identification = new AdminShell.Identification("IRI", "");
-                    if (smres.kind == null || smres.kind.IsInstance)
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                    smres.Id = "";
+                    if (smres.Kind == null || smres.Kind == ModelingKind.Instance)
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
-                        smres.identification.id = AdminShellUtil.GenerateIdAccordingTemplate(
+                        smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
                     // add Submodel
-                    var smref = new AdminShell.SubmodelRef(smres.GetReference());
-                    ve1.theAas.AddSubmodelRef(smref);
+                    var smref = smres.GetReference().Copy();
+                    ve1.theAas.Submodels.Add(smref);
                     _packageCentral.Main.AasEnv.Submodels.Add(smres);
 
                     // add ConceptDescriptions?
@@ -3438,18 +3442,18 @@ namespace AasxPackageExplorer
                         int nr = 0;
                         foreach (var cd in cdres)
                         {
-                            if (cd == null || cd.identification == null)
+                            if (cd == null || cd.Id == null)
                                 continue;
-                            var cdFound = ve1.theEnv.FindConceptDescription(cd.identification);
+                            var cdFound = ve1.theEnv.FindConceptDescriptionById(cd.Id);
                             if (cdFound != null)
                                 continue;
                             // ok, add
-                            var newCd = new AdminShell.ConceptDescription(cd);
+                            var newCd = cd.Copy();
                             ve1.theEnv.ConceptDescriptions.Add(newCd);
                             nr++;
                         }
                         Log.Singleton.Info(
-                            $"added {nr} ConceptDescritions for Submodel {smres.idShort}.");
+                            $"added {nr} ConceptDescritions for Submodel {smres.IdShort}.");
                     }
 
                     // redisplay
@@ -3556,9 +3560,9 @@ namespace AasxPackageExplorer
 
                 UANodeSetExport.root = InformationModel.Items.ToList();
 
-                foreach (AdminShellV20.Asset ass in _packageCentral.Main.AasEnv.Assets)
+                foreach (Asset ass in _packageCentral.Main.AasEnv.Assets)
                 {
-                    UANodeSetExport.CreateAAS(ass.idShort, _packageCentral.Main.AasEnv);
+                    UANodeSetExport.CreateAAS(ass.IdShort, _packageCentral.Main.AasEnv);
                 }
 
                 InformationModel.Items = UANodeSetExport.root.ToArray();

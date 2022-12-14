@@ -19,6 +19,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using AnyUi;
 using Extenstions;
 using Newtonsoft.Json;
@@ -118,7 +119,7 @@ namespace AasxPackageLogic
 
         public void Animate(
             Property prop,
-            Action<Property/*, IAasDiaryEntry*/> emitEvent) //TODO: jtikekar IAasDiaryEntry
+            Action<Property, IAasDiaryEntry> emitEvent) 
         {
             // prop needs to exists and have qualifiers
             var q = prop.FindQualifierOfType("Animate.Args");
@@ -196,12 +197,10 @@ namespace AasxPackageLogic
                     evi.FoundReferable = prop;
 
                     // add 
-                    //TODO: jtikekar comment and support
-                    //DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
+                    DiaryDataDef.AddAndSetTimestamps(prop, evi, isCreate: false);
 
                     // kick lambda
-                    //TODO: jtikekar comment and support
-                    //emitEvent.Invoke(prop, evi);
+                    emitEvent.Invoke(prop, evi);
                 }
             }
         }

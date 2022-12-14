@@ -21,19 +21,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AasxPackageLogic;
 using AdminShellNS;
+using Extenstions;
 
 namespace AasxPackageExplorer
 {
     public class VisualElementHistoryItem
     {
         public VisualElementGeneric VisualElement = null;
-        public AdminShell.Identification ReferableAasId = null;
-        public AdminShell.Reference ReferableReference = null;
+        public string ReferableAasId = null;
+        public Reference ReferableReference = null;
 
         public VisualElementHistoryItem(VisualElementGeneric VisualElement,
-            AdminShell.Identification ReferableAasId = null, AdminShell.Reference ReferableReference = null)
+            string ReferableAasId = null, Reference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
             this.ReferableAasId = ReferableAasId;
@@ -85,24 +87,24 @@ namespace AasxPackageExplorer
             var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; },
                 includeThis: true).FirstOrDefault();
 
-            // for ve, find the Referable to be ve or superordinate ..
+            // for ve, find the IReferable to be ve or superordinate ..
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
-                // success implies AdminShell.IGetReference as well
-                return derefdo is AdminShell.Referable;
+                // success implies IGetReference as well
+                return derefdo is IReferable;
             }, includeThis: true).FirstOrDefault();
 
-            // check, if ve can identify a Referable, to which a symbolic link can be done ..
-            AdminShell.Identification aasid = null;
-            AdminShell.Reference refref = null;
+            // check, if ve can identify a IReferable, to which a symbolic link can be done ..
+            string aasid = null;
+            Reference refref = null;
 
             if (veAas != null && veRef != null)
             {
-                aasid = (veAas as VisualElementAdminShell)?.theAas?.identification;
+                aasid = (veAas as VisualElementAdminShell)?.theAas?.Id;
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
-                refref = (derefdo as AdminShell.IGetReference)?.GetReference();
+                refref = (derefdo as IReferable)?.GetReference();
             }
 
             // some more special cases
@@ -116,8 +118,7 @@ namespace AasxPackageExplorer
             // in case of plug in, make it more specific
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
-                refref += new AdminShell.Key(AdminShell.Key.FragmentReference, false,
-                    AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag);
+                refref = new Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
             }
 
             // add, only if not already there

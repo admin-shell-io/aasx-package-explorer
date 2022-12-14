@@ -14,6 +14,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
+using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extenstions;
@@ -442,9 +443,24 @@ namespace AasxPackageLogic
             if (item.parentContainer is Operation pcop && item.wrapper != null)
             {
                 var placement = pcop.GetChildrenPlacement(item.sme) as
-                    Operation.EnumerationPlacmentOperationVariable;
+                    EnumerationPlacmentOperationVariable;
                 if (placement != null)
-                    pcop[placement.Direction].Remove(placement.OperationVariable);
+                    //pcop[placement.Direction].Remove(placement.OperationVariable);
+                {
+                    if(placement.Direction == OperationVariableDirection.In)
+                    {
+                        pcop.InputVariables.Remove(placement.OperationVariable);
+                    }
+                    else if(placement.Direction == OperationVariableDirection.Out)
+                    {
+                        pcop.OutputVariables.Remove(placement.OperationVariable);
+                    }
+                    else if(placement.Direction == OperationVariableDirection.InOut)
+                    {
+                        pcop.InoutputVariables.Remove(placement.OperationVariable);
+                    }
+                }
+                   
             }
         }
 
@@ -477,8 +493,8 @@ namespace AasxPackageLogic
                         cpbInternal.Valid = true;
                         cpbInternal.Duplicate = buttonNdx == 1;
                         EnumerationPlacmentBase placement = null;
-                        if (parentContainer is IEnumerateChildren enc)
-                            placement = enc.GetChildrenPlacement(sme);
+                        //if (parentContainer is IEnumerateChildren enc) //No IEnumerateChildren in V3
+                            placement = parentContainer.GetChildrenPlacement(sme);
                         cpbInternal.Items = new ListOfCopyPasteItem(
                             new CopyPasteItemSME(env, parentContainer, wrapper, sme, placement));
                         cpbInternal.CopyToClipboard(context, cpbInternal.Watermark);
@@ -579,12 +595,25 @@ namespace AasxPackageLogic
                                 if (parentContainer is Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
-                                        Operation.EnumerationPlacmentOperationVariable;
+                                        EnumerationPlacmentOperationVariable;
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
+                                        List<OperationVariable> opVariables = new();
+                                        if(place.Direction == OperationVariableDirection.In)
+                                        {
+                                            opVariables = pcop.InputVariables;
+                                        }
+                                        else if(place.Direction == OperationVariableDirection.Out)
+                                        {
+                                            opVariables = pcop.OutputVariables;
+                                        }
+                                        else if(place.Direction == OperationVariableDirection.InOut)
+                                        {
+                                            opVariables = pcop.InoutputVariables;
+                                        }
                                         createAtIndex = this.AddElementInListBefore<OperationVariable>(
-                                            pcop[place.Direction], op, place.OperationVariable);
+                                            opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
                                 }
@@ -620,12 +649,25 @@ namespace AasxPackageLogic
                                 if (parentContainer is Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
-                                        Operation.EnumerationPlacmentOperationVariable;
+                                        EnumerationPlacmentOperationVariable;
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
+                                        List<OperationVariable> opVariables = new();
+                                        if (place.Direction == OperationVariableDirection.In)
+                                        {
+                                            opVariables = pcop.InputVariables;
+                                        }
+                                        else if (place.Direction == OperationVariableDirection.Out)
+                                        {
+                                            opVariables = pcop.OutputVariables;
+                                        }
+                                        else if (place.Direction == OperationVariableDirection.InOut)
+                                        {
+                                            opVariables = pcop.InoutputVariables;
+                                        }
                                         createAtIndex = this.AddElementInListAfter<OperationVariable>(
-                                            pcop[place.Direction], op, place.OperationVariable);
+                                            opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
                                     }
                                 }
@@ -635,8 +677,9 @@ namespace AasxPackageLogic
                             {
                                 // aprent set automatically
                                 // TODO (MIHO, 2021-08-18): createAtIndex missing here
-                                if (sme is IEnumerateChildren smeec)
-                                    smeec.AddChild(smw2, item.Placement);
+                                //if (sme is IEnumerateChildren smeec)
+                                //    smeec.AddChild(smw2, item.Placement);
+                                sme.AddChild(smw2, item.Placement);
                             }
 
                             // emit event
@@ -677,7 +720,7 @@ namespace AasxPackageLogic
             Submodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
-            Action<CopyPasteItemBase> extraAction = null) where T : new()
+            Action<CopyPasteItemBase> extraAction = null) /*where T : new()*/ //TODO:jtikekar Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || sm == null || cloneEntity == null)
@@ -864,8 +907,10 @@ namespace AasxPackageLogic
                             var smw2 = item.sme.Copy();
                             nextBusObj = smw2;
 
-                            if (sm is IEnumerateChildren smeec)
-                                smeec.AddChild(smw2);
+                            //if (sm is IEnumerateChildren smeec)
+                            //    smeec.AddChild(smw2);
+                            
+                            sm.AddChild(smw2);
 
                             // emit event
                             this.AddDiaryEntry(item.sme, new DiaryEntryStructChange(StructuralChangeReason.Create));
@@ -902,7 +947,7 @@ namespace AasxPackageLogic
             string label = "Buffer:",
             Func<CopyPasteBuffer, bool> checkPasteInfo = null,
             Func<CopyPasteItemBase, bool, object> doPasteInto = null)
-                where T : IIdentifiable, new()
+                where T : IIdentifiable/*, new()*/ //TODO:jtikekar Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || entity == null || cloneEntity == null)
@@ -1078,7 +1123,7 @@ namespace AasxPackageLogic
             CopyPasteBuffer cpbInternal,
             string label = "Buffer:",
             Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null)
-                where T : IIdentifiable, new()
+                where T : IIdentifiable/*, new()*/   //TODO: jtikekar test
         {
             // access
             if (cpbInternal == null || lambdaPasteInto == null)

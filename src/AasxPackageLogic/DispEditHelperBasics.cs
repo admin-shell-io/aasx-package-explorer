@@ -18,6 +18,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extenstions;
@@ -380,6 +381,7 @@ namespace AasxPackageLogic
             return (inner);
         }
 
+
         public void AddKeyValueRef(
             AnyUiStackPanel view, string key, object containingObject, ref string value, string nullValue = null,
             ModifyRepo repo = null, Func<object, AnyUiLambdaActionBase> setValue = null,
@@ -388,15 +390,16 @@ namespace AasxPackageLogic
             string auxButtonToolTip = null,
             string[] auxButtonTitles = null,
             string[] auxButtonToolTips = null,
-            AnyUiLambdaActionBase takeOverLambdaAction = null)
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
+            bool limitToOneRowForNoEdit = false)
         {
             AddKeyValue(
                 view, key, value, nullValue, repo, setValue, comboBoxItems, comboBoxIsEditable,
                 auxButtonTitle, auxButtonLambda, auxButtonToolTip,
                 auxButtonTitles, auxButtonToolTips, takeOverLambdaAction,
-                (value == null) ? 0 : value.GetHashCode(), containingObject: containingObject);
+                (value == null) ? 0 : value.GetHashCode(), containingObject: containingObject,
+                limitToOneRowForNoEdit: limitToOneRowForNoEdit);
         }
-
 
         public void AddKeyValue(
             AnyUiStackPanel view, string key, string value, string nullValue = null,
@@ -407,7 +410,8 @@ namespace AasxPackageLogic
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Nullable<int> valueHash = null,
-            object containingObject = null)
+            object containingObject = null,
+            bool limitToOneRowForNoEdit = false)
         {
             // draw anyway?
             if (repo != null && value == null)
@@ -458,13 +462,13 @@ namespace AasxPackageLogic
                 }
 
             // Label for key
-            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0),
-                setNoWrap: true,
-                content: "" + key + ":");
+            AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: "" + key + ":");
 
             // Label / TextBox for value
             if (repo == null)
             {
+                if (limitToOneRowForNoEdit)
+                    value = AdminShellUtil.RemoveNewLinesAndLimit("" + value, 120, ellipsis: "\u2026");
                 AddSmallLabelTo(g, 0, 1, padding: new AnyUiThickness(2, 0, 0, 0), content: "" + value);
             }
             else if (comboBoxItems != null)
@@ -524,7 +528,7 @@ namespace AasxPackageLogic
                             margin: new AnyUiThickness(2, 2, 2, 2),
                             padding: new AnyUiThickness(5, 0, 5, 0),
                             content: intButtonTitles[i]),
-                        lmb);
+                        lmb) as AnyUiButton;
                     if (i < intButtonToolTips.Count)
                         b.ToolTip = intButtonToolTips[i];
                 }
@@ -532,6 +536,8 @@ namespace AasxPackageLogic
             // in total
             view.Children.Add(g);
         }
+
+
 
         public void AddKeyDropTarget(
             AnyUiStackPanel view, string key, string value, string nullValue = null,
@@ -2804,9 +2810,8 @@ namespace AasxPackageLogic
                     attachRf = explicitParent;
 
                 // add 
-                //TODO: jtikekar uncomment and support
-                //DiaryDataDef.AddAndSetTimestamps(attachRf, evi,
-                //    isCreate: desc.Reason == StructuralChangeReason.Create);
+                DiaryDataDef.AddAndSetTimestamps(attachRf, evi,
+                    isCreate: desc.Reason == StructuralChangeReason.Create);
             }
 
             // update value?
@@ -2832,8 +2837,7 @@ namespace AasxPackageLogic
                     evi.Value = new[] { rng.Min, rng.Max };
 
                 // add 
-                //TODO: jtikekar Uncomment and support
-                //DiaryDataDef.AddAndSetTimestamps(rf, evi, isCreate: false);
+                DiaryDataDef.AddAndSetTimestamps(rf, evi, isCreate: false);
             }
 
         }

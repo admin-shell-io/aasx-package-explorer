@@ -1,5 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,51 @@ namespace Extenstions
     public static class ExtendSubmodel
     {
         #region AasxPackageExplorer
+
+        /// <summary>
+        /// Recurses on all Submodel elements of a Submodel or SME, which allows children.
+        /// The <c>state</c> object will be passed to the lambda function in order to provide
+        /// stateful approaches. Include this element, as well. 
+        /// </summary>
+        /// <param name="state">State object to be provided to lambda. Could be <c>null.</c></param>
+        /// <param name="lambda">The lambda function as <c>(state, parents, SME)</c>
+        /// The lambda shall return <c>TRUE</c> in order to deep into recursion.</param>
+        /// <param name="includeThis">Include this element as well. <c>parents</c> will then 
+        /// include this element as well!</param>
+        public static void RecurseOnReferables(this Submodel submodel,
+            object state, Func<object, List<IReferable>, IReferable, bool> lambda,
+            bool includeThis = false)
+        {
+            var parents = new List<IReferable>();
+            if (includeThis)
+            {
+                lambda(state, null, submodel);
+                parents.Add(submodel);
+            }
+            submodel.SubmodelElements?.RecurseOnReferables(state, parents, lambda);
+        }
+
+        public static void Remove(this Submodel submodel, ISubmodelElement submodelElement)
+        {
+            if(submodel != null)
+            {
+                if(submodel.SubmodelElements != null)
+                {
+                    submodel.SubmodelElements.Remove(submodelElement);
+                }
+            }
+        }
+
+        public static object AddChild(this Submodel submodel,ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        {
+            if (childSubmodelElement == null)
+                return null;
+            submodel.SubmodelElements ??= new ();
+            if (childSubmodelElement != null)
+                childSubmodelElement.Parent = submodel;
+            submodel.SubmodelElements.Add(childSubmodelElement);
+            return childSubmodelElement;
+        }
 
         public static Tuple<string, string> ToCaptionInfo(this Submodel submodel)
         {

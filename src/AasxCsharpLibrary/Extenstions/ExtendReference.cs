@@ -13,6 +13,11 @@ namespace Extenstions
     {
         #region AasxPackageExplorer
 
+        public static AasElementSelfDescription GetSelfDescription(this Reference reference)
+        {
+            return new AasElementSelfDescription("Reference", "Rfc");
+        }
+
         public static bool IsValid(this Reference reference)
         {
             return reference.Keys == null || reference.Keys.IsEmpty();

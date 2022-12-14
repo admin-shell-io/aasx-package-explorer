@@ -883,14 +883,14 @@ namespace AasxAmlImExport
                 AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
 
             // which data spec as reference
-            //TODO:jtikekar Temporarily removed
-            //if (cd.embeddedDataSpecification != null)
-            //    foreach (var eds in cd.embeddedDataSpecification)
-            //        if (eds.dataSpecification != null)
-            //            AppendAttributeNameAndRole(
-            //                aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
-            //                ToAmlReference(eds.dataSpecification));
-            
+            if (cd.EmbeddedDataSpecification != null)
+                foreach (var eds in cd.EmbeddedDataSpecification)
+                    if (eds.DataSpecification != null)
+                        AppendAttributeNameAndRole(
+                            aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
+                            ToAmlReference(eds.DataSpecification));
+
+            //jtikekar:Added as üet DotAAS-1
             if (cd.DataSpecifications != null)
                 foreach (var ds in cd.DataSpecifications)
                     if (ds != null)
@@ -899,9 +899,7 @@ namespace AasxAmlImExport
                             ToAmlReference(ds));
 
             // which data spec to take as source?
-            //TODO: jtikekar temporarily removed
-            //var source61360 = cd.embeddedDataSpecification?.IEC61360Content;
-            object source61360 = null;
+            var source61360 = cd.EmbeddedDataSpecification?.IEC61360Content;
             // TODO (Michael Hoffmeister, 2020-08-01): If further data specifications exist (in future), add here
 
             // decide which approach to take (1 or 2 IE)
@@ -936,45 +934,44 @@ namespace AasxAmlImExport
             }
 
             // set attributes of 61360
-            //TODO: jtikekar temporarily removed, as no IEC61360 content defined in data model
-            //if (source61360 != null && dest61360 != null)
-            //{
-            //    // better name?
-            //    if (source61360.shortName != null && source61360.shortName.Count > 0)
-            //        name = source61360.shortName.GetDefaultStr();
+            if (source61360 != null && dest61360 != null)
+            {
+                // better name?
+                if (source61360.shortName != null && source61360.shortName.Count > 0)
+                    name = source61360.shortName.GetDefaultString();
 
-            //    // specific data
-            //    SetLangStr(
-            //        dest61360, source61360.preferredName, "preferredName",
-            //        AmlConst.Attributes.CD_DSC61360_PreferredName);
-            //    SetLangStr(
-            //        dest61360, source61360.shortName, "shortName",
-            //        AmlConst.Attributes.CD_DSC61360_ShortName);
-            //    if (source61360.unit != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "unit", AmlConst.Attributes.CD_DSC61360_Unit, source61360.unit);
-            //    if (source61360.unitId != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "unitId", AmlConst.Attributes.CD_DSC61360_UnitId,
-            //            ToAmlReference(Reference.CreateNew(source61360.unitId.Keys)));
-            //    if (source61360.valueFormat != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "valueFormat", AmlConst.Attributes.CD_DSC61360_ValueFormat,
-            //            source61360.valueFormat);
-            //    if (source61360.sourceOfDefinition != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "sourceOfDefinition", AmlConst.Attributes.CD_DSC61360_SourceOfDefinition,
-            //            source61360.sourceOfDefinition);
-            //    if (source61360.symbol != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "symbol", AmlConst.Attributes.CD_DSC61360_Symbol, source61360.symbol);
-            //    if (source61360.dataType != null)
-            //        AppendAttributeNameAndRole(
-            //            dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, source61360.dataType);
-            //    SetLangStr(
-            //        dest61360, source61360.definition, "definition",
-            //        AmlConst.Attributes.CD_DSC61360_Definition);
-            //}
+                // specific data
+                SetLangStr(
+                    dest61360, source61360.preferredName, "preferredName",
+                    AmlConst.Attributes.CD_DSC61360_PreferredName);
+                SetLangStr(
+                    dest61360, source61360.shortName, "shortName",
+                    AmlConst.Attributes.CD_DSC61360_ShortName);
+                if (source61360.unit != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "unit", AmlConst.Attributes.CD_DSC61360_Unit, source61360.unit);
+                if (source61360.unitId != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "unitId", AmlConst.Attributes.CD_DSC61360_UnitId,
+                        ToAmlReference(new Reference(ReferenceTypes.GlobalReference, source61360.unitId.Keys)));
+                if (source61360.valueFormat != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "valueFormat", AmlConst.Attributes.CD_DSC61360_ValueFormat,
+                        source61360.valueFormat);
+                if (source61360.sourceOfDefinition != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "sourceOfDefinition", AmlConst.Attributes.CD_DSC61360_SourceOfDefinition,
+                        source61360.sourceOfDefinition);
+                if (source61360.symbol != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "symbol", AmlConst.Attributes.CD_DSC61360_Symbol, source61360.symbol);
+                if (source61360.dataType != null)
+                    AppendAttributeNameAndRole(
+                        dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, source61360.dataType);
+                SetLangStr(
+                    dest61360, source61360.definition, "definition",
+                    AmlConst.Attributes.CD_DSC61360_Definition);
+            }
         }
 
 

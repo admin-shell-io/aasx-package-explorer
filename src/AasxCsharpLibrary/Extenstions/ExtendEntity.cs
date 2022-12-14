@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AdminShellNS.Display;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,44 @@ namespace Extenstions
 {
     public static class ExtendEntity
     {
+        #region AasxPackageExplorer
+
+        public static void Add(this Entity entity, ISubmodelElement submodelElement)
+        {
+            if (entity != null)
+            {
+                entity.Statements ??= new();
+
+                submodelElement.Parent = entity;
+
+                entity.Statements.Add((IDataElement)submodelElement);
+            }
+        }
+
+        public static void Remove(this Entity entity, ISubmodelElement submodelElement)
+        {
+            if(entity != null)
+            {
+                if(entity.Statements != null)
+                {
+                    entity.Statements.Remove(submodelElement);
+                }
+            }
+        }
+
+        public static object AddChild(this Entity entity, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
+        {
+            if (childSubmodelElement == null)
+                return null;
+            if (entity.Statements == null)
+                entity.Statements = new ();
+            if (childSubmodelElement != null)
+                childSubmodelElement.Parent = entity;
+            entity.Statements.Add(childSubmodelElement);
+            return childSubmodelElement;
+        }
+
+        #endregion
         public static Entity ConvertFromV20(this Entity entity, AasxCompatibilityModels.AdminShellV20.Entity sourceEntity)
         {
             if (sourceEntity == null)

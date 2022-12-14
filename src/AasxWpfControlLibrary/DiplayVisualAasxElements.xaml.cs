@@ -24,13 +24,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Extenstions;
 using JetBrains.Annotations;
+using Key = System.Windows.Input.Key;
 
 namespace AasxPackageExplorer
 {
@@ -476,14 +479,14 @@ namespace AasxPackageExplorer
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
-                if (mdo != null && mdo is AdminShell.Referable)
+                if (mdo != null && mdo is IReferable)
                 {
-                    var mdoen = (mdo as AdminShell.Referable).GetElementName().Trim().ToLower();
+                    var mdoen = (mdo as IReferable).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
-                if (mdo != null && mdo is AdminShell.Reference)
+                if (mdo != null && mdo is Reference)
                 {
-                    var mdoen = (mdo as AdminShell.Reference).GetElementName().Trim().ToLower();
+                    var mdoen = (mdo as Reference).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
                 return !isIn;

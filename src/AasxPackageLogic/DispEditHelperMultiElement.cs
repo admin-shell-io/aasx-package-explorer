@@ -19,6 +19,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AdminShellNS.Display;
 using AnyUi;
 using Extenstions;
 
@@ -65,8 +66,8 @@ namespace AasxPackageLogic
                             {
                                 var sme = vesme.theWrapper;
                                 EnumerationPlacmentBase placement = null;
-                                if (parentContainer is IEnumerateChildren enc)
-                                    placement = enc.GetChildrenPlacement(sme);
+                                //if (parentContainer is IEnumerateChildren enc)
+                                    placement = pcref.GetChildrenPlacement(sme);
                                 cpb.Items.Add(new CopyPasteItemSME(env, pcref,
                                     vesme.theWrapper, sme, placement));
                             }
@@ -490,8 +491,21 @@ namespace AasxPackageLogic
                     {
                         var bos = entities.GetListOfMapResults<OperationVariable,
                            VisualElementOperationVariable>((ve) => ve?.theOpVar);
+                        List<OperationVariable> operationVariables = new ();
+                        if(opv.theDir == OperationVariableDirection.In)
+                        {
+                            operationVariables = oppa.InputVariables;
+                        }
+                        else if(opv.theDir == OperationVariableDirection.Out)
+                        {
+                            operationVariables = oppa.OutputVariables;
+                        }
+                        else if(opv.theDir == OperationVariableDirection.InOut)
+                        {
+                            operationVariables = oppa.InoutputVariables;
+                        }
                         EntityListMultipleUpDownDeleteHelper(stack, repo,
-                            oppa[opv.theDir], bos, indexInfo, reFocus: true,
+                            operationVariables, bos, indexInfo, reFocus: true,
                             alternativeFocus: oppa);
                     }
 

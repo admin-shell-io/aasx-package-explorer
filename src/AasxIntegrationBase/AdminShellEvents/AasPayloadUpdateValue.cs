@@ -20,6 +20,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -32,7 +33,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// single payloads.
     /// </summary>
     [DisplayName("AasPayloadUpdateValueItem")]
-    public class AasPayloadUpdateValueItem : IAasPayloadItem /*, IAasDiaryEntry*/ //TODO:jtikekar Need to check the purpose
+    public class AasPayloadUpdateValueItem : IAasPayloadItem, IAasDiaryEntry
     {
         /// <summary>
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of

@@ -16,7 +16,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extenstions;
 using Microsoft.VisualBasic.FileIO;
 
 namespace AasxPackageExplorer
@@ -24,9 +26,9 @@ namespace AasxPackageExplorer
     public static class CSVTools
     {
         public static void ImportCSVtoSubModel(
-            string inputFn, AdminShell.AdministrationShellEnv env, AdminShell.Submodel sm, AdminShell.SubmodelRef smref)
+            string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm, Reference smref)
         {
-            AdminShell.SubmodelElementCollection[] propGroup = new AdminShell.SubmodelElementCollection[10];
+            SubmodelElementCollection[] propGroup = new SubmodelElementCollection[10];
             int i_propGroup = 0;
 
             var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(inputFn);
@@ -54,7 +56,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            sm.idShort = inputFn.Split('\\').Last().Replace(".csv", "");
+            sm.IdShort = inputFn.Split('\\').Last().Replace(".csv", "");
 
             while (!parser.EndOfData)
             {
@@ -69,17 +71,15 @@ namespace AasxPackageExplorer
                 switch (rows[0])
                 {
                     case "SubmodelElementCollection":
-                        propGroup[i_propGroup] = AdminShell.SubmodelElementCollection.CreateNew(rows[1]);
+                        propGroup[i_propGroup] = new SubmodelElementCollection(idShort:rows[1]);
                         if (i_propGroup == 0)
                         {
                             sm.Add(propGroup[0]);
                             if (rows.Length > 3)
                             {
-                                if (rows[7] != "") propGroup[0].semanticId = new AdminShellV20.SemanticId(
-                                     AdminShell.Reference.CreateNew(
-                                         "ConceptDescription", false, "IRI", rows[7]));
+                                if (rows[7] != "") propGroup[0].SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, rows[7])});
                             }
-                            propGroup[0].kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            propGroup[0].Kind = ModelingKind.Instance;
                         }
                         else
                         {
@@ -92,19 +92,17 @@ namespace AasxPackageExplorer
                             i_propGroup--;
                         break;
                     case "Property":
-                        var p = AdminShell.Property.CreateNew(rows[1].Replace("-", "_"));
-                        p.value = rows[2];
+                        var p = new Property(DataTypeDefXsd.String,idShort:rows[1].Replace("-", "_"));
+                        p.Value = rows[2];
                         if (rows.Length > 3)
                         {
-                            p.valueType = rows[3];
-                            p.category = rows[4];
+                            p.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(rows[3]);
+                            p.Category = rows[4];
                             if (rows[5] != "") p.AddDescription("en", rows[5]);
                             if (rows[6] != "") p.AddDescription("de", rows[6]);
-                            p.kind = AdminShellV20.ModelingKind.CreateAsInstance();
+                            p.Kind = ModelingKind.Instance;
                             if (rows[7] != "")
-                                p.semanticId = new AdminShell.SemanticId(
-                                    AdminShell.Reference.CreateNew(
-                                        "ConceptDescription", false, "IRI", rows[7]));
+                                p.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, rows[7])});
                         }
                         if (i_propGroup == 0)
                         {

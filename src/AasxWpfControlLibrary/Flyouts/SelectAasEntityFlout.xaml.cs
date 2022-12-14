@@ -22,11 +22,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AdminShellNS;
+using Extenstions;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer
@@ -59,7 +61,7 @@ namespace AasxPackageExplorer
 
             // fill combo box
             ComboBoxFilter.Items.Add("All");
-            foreach (var x in AdminShell.Key.KeyElements)
+            foreach (var x in Enum.GetNames(typeof(KeyTypes)))
                 ComboBoxFilter.Items.Add(x);
 
             // select an item
@@ -115,17 +117,17 @@ namespace AasxPackageExplorer
             DiaData.ResultVisualElement = si;
 
             //
-            // Referable
+            // IReferable
             //
-            if (siMdo is AdminShell.Referable dataRef)
+            if (siMdo is IReferable dataRef)
             {
                 // check if a valuable item was selected
                 // new special case: "GlobalReference" allows to select all (2021-09-11)
                 var skip = DiaData.Filter != null &&
-                    DiaData.Filter.Trim().ToLower() == AdminShell.Key.GlobalReference.Trim().ToLower();
+                    DiaData.Filter.Trim().ToLower() == Stringification.ToString(KeyTypes.GlobalReference).Trim().ToLower();
                 if (!skip)
                 {
-                    var elemname = dataRef.GetElementName();
+                    var elemname = dataRef.GetSelfDescription().AasElementName;
                     var fullFilter = ApplyFullFilterString(DiaData.Filter);
                     if (fullFilter != null && !(fullFilter.IndexOf(elemname + " ", StringComparison.Ordinal) >= 0))
                         return false;
@@ -139,12 +141,12 @@ namespace AasxPackageExplorer
             //
             // other special cases
             //
-            if (siMdo is AdminShell.SubmodelRef smref &&
+            if (siMdo is Reference smref &&
                     (DiaData.Filter == null ||
                         ApplyFullFilterString(DiaData.Filter)
                             .ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0))
             {
-                DiaData.ResultKeys = new AdminShell.KeyList();
+                DiaData.ResultKeys = new List<AasCore.Aas3_0_RC02.Key>();
                 DiaData.ResultKeys.AddRange(smref.Keys);
                 return true;
             }
@@ -160,8 +162,7 @@ namespace AasxPackageExplorer
                     DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
-                    DiaData.ResultKeys.Add(new AdminShell.Key(AdminShell.Key.FragmentReference, true,
-                        AdminShell.Key.Custom, "Plugin:" + vepe.theExt.Tag));
+                    DiaData.ResultKeys.Add(new AasCore.Aas3_0_RC02.Key(KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
 
                     // ok
                     return true;
@@ -187,7 +188,7 @@ namespace AasxPackageExplorer
                 return null;
             var res = filter;
             if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in AdminShell.Key.SubmodelElements)
+                foreach (var s in Enum.GetNames(typeof(AasSubmodelElements)))
                     res += " " + s + " ";
             return " " + res + " ";
         }

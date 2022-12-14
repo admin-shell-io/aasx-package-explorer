@@ -72,11 +72,11 @@ namespace BlazorUI.Data
 
             return FindItems(this, (it) =>
             {
-                return it?.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid;
+                return it?.Referable is Submodel sm && sm?.identification?.id == smid;
             }).FirstOrDefault();
         }
 
-        public Item FindReferable(AdminShell.Referable rf, string pluginTag)
+        public Item FindReferable(Referable rf, string pluginTag)
         {
             // access
             if (rf == null)

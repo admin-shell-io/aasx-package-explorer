@@ -17,6 +17,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
+using AdminShellNS.Display;
 using AnyUi;
 using Extenstions;
 
@@ -498,12 +499,12 @@ namespace AasxPackageLogic
     {
         public enum ItemType
         {
-            Env = 0, Shells, Assets, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
+            Env = 0, Shells, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
             EmptySet, DummyNode
         };
 
         public static string[] ItemTypeNames = new string[] {
-            "Environment", "AdministrationShells", "Assets", "ConceptDescriptions", "Package", "Orphan Submodels",
+            "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "Orphan Submodels",
             "All Submodels", "Supplementary files", "Empty", "Dummy" };
 
         public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
@@ -636,16 +637,18 @@ namespace AasxPackageLogic
     public class VisualElementAsset : VisualElementGeneric
     {
         public AasCore.Aas3_0_RC02.Environment theEnv = null;
+        public AssetAdministrationShell theAas = null;
         public AssetInformation theAsset = null;
 
         public VisualElementAsset(
             VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AssetInformation asset)
+            AssetAdministrationShell aas, AssetInformation asset)
             : base()
         {
             this.Parent = parent;
             this.Cache = cache;
             this.theEnv = env;
+            this.theAas = aas;
             this.theAsset = asset;
 
             this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
@@ -653,7 +656,7 @@ namespace AasxPackageLogic
             this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
             this.TagFg = AnyUiColors.White;
 
-            this.TagString = "AssetInformation";
+            this.TagString = "Asset";
             RefreshFromMainData();
             RestoreFromCache();
         }
@@ -883,13 +886,12 @@ namespace AasxPackageLogic
                         if (this._cachedCD == null)
                             this._cachedCD = this.theEnv.FindConceptDescriptionByReference(sme.SemanticId);
 
-                        //TODO:jtikekar Temporarily Removed
-                        //var iecprop = this._cachedCD?.GetIEC61360();
-                        //if (iecprop != null)
-                        //{
-                        //    if (iecprop.unit != null && iecprop.unit != "")
-                        //        this.Info += " [" + iecprop.unit + "]";
-                        //}
+                        var iecprop = this._cachedCD?.GetIEC61360();
+                        if (iecprop != null)
+                        {
+                            if (iecprop.unit != null && iecprop.unit != "")
+                                this.Info += " [" + iecprop.unit + "]";
+                        }
                     }
                 }
 
@@ -919,12 +921,12 @@ namespace AasxPackageLogic
         public AasCore.Aas3_0_RC02.Environment theEnv = null;
         public IReferable theContainer = null;
         public OperationVariable theOpVar = null;
-        public OperationVariable.Direction theDir = OperationVariable.Direction.In;
+        public OperationVariableDirection theDir = OperationVariableDirection.In;
 
         public VisualElementOperationVariable(
             VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
             IReferable parentContainer, OperationVariable opvar,
-            OperationVariable.Direction dir)
+            OperationVariableDirection dir)
             : base()
         {
             this.Parent = parent;
@@ -940,9 +942,9 @@ namespace AasxPackageLogic
             this.TagFg = AnyUiColors.White;
 
             this.TagString = "In";
-            if (this.theDir == OperationVariable.Direction.Out)
+            if (this.theDir == OperationVariableDirection.Out)
                 this.TagString = "Out";
-            if (this.theDir == OperationVariable.Direction.InOut)
+            if (this.theDir == OperationVariableDirection.InOut)
                 this.TagString = "InOut";
 
             RefreshFromMainData();
@@ -1313,18 +1315,18 @@ namespace AasxPackageLogic
                     foreach (var vin in elo.InputVariables)
                         ti.Members.Add(
                             new VisualElementOperationVariable(
-                                ti, cache, env, el, vin, OperationVariable.Direction.In));
+                                ti, cache, env, el, vin, OperationVariableDirection.In));
                 if (elo.OutputVariables != null)
                     foreach (var vout in elo.OutputVariables)
                         ti.Members.Add(
                             new VisualElementOperationVariable(
-                                ti, cache, env, el, vout, OperationVariable.Direction.Out));
+                                ti, cache, env, el, vout, OperationVariableDirection.Out));
                 if (elo.InoutputVariables != null)
                     foreach (var vout in elo.InoutputVariables)
                         ti.Members.Add(
                             new VisualElementOperationVariable(
                                 ti, cache, env, el, vout,
-                                OperationVariable.Direction.InOut));
+                                OperationVariableDirection.InOut));
             }
 
             // Recurse: AnnotatedRelationshipElement
@@ -1599,7 +1601,8 @@ namespace AasxPackageLogic
                     // note: will be added later to the overall tree
                     tiCDs = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
-                        mainDataObject: (IClass)env.ConceptDescriptions);
+                        //mainDataObject: (IClass)env.ConceptDescriptions); //TODO: jtikekar uncomment and support
+                        mainDataObject: null); 
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
 
                     // the selected sort order may cause disabling of lazy loading for this class!
@@ -1615,11 +1618,6 @@ namespace AasxPackageLogic
                     tiShells.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiShells);
 
-                    // assets
-                    tiAssets = new VisualElementEnvironmentItem(
-                        tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.Assets);
-                    tiAssets.SetIsExpandedIfNotTouched(expandMode > 0);
-                    tiEnv.Members.Add(tiAssets);
                 }
 
                 // over all Admin shells
@@ -1661,7 +1659,8 @@ namespace AasxPackageLogic
                     //
                     var tiAllSubmodels = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels,
-                        mainDataObject: (IClass)env.Submodels);
+                        //mainDataObject: (IClass)env.Submodels);//TODO:jtikekar uncomment and support
+                        mainDataObject: null);
                     tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAllSubmodels);
 
@@ -2237,8 +2236,8 @@ namespace AasxPackageLogic
                     return true;
                 }
                 else
-                if (data.ParentElem is IManageSubmodelElements parentMgr
-                    && data.ParentElem is IEnumerateChildren parentEnum
+                if (data.ParentElem is IReferable parentMgr
+                    //&& data.ParentElem is IEnumerateChildren parentEnum
                     && data.ThisElem is ISubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables
@@ -2250,7 +2249,7 @@ namespace AasxPackageLogic
 
                         // try find wrapper for sme 
                         ISubmodelElement foundSmw = null;
-                        foreach (var smw in parentEnum.EnumerateChildren())
+                        foreach (var smw in parentMgr.EnumerateChildren())
                             if (smw == thisSme2)
                             {
                                 foundSmw = smw;
@@ -2286,7 +2285,7 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.Delete)
             {
-                if (data.ParentElem is IManageSubmodelElements parentMgr
+                if (data.ParentElem is IReferable parentMgr
                     && data.ThisElem is ISubmodelElement sme)
                 {
                     return 0 < UpdateByEventTryDeleteGenericVE(data);
@@ -2331,7 +2330,7 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.MoveToIndex)
             {
-                if (data.ParentElem is IManageSubmodelElements parentMgr
+                if (data.ParentElem is IReferable parentMgr
                     && data.ThisElem is ISubmodelElement sme)
                 {
                     return 0 < UpdateByEventTryMoveGenericVE(data);

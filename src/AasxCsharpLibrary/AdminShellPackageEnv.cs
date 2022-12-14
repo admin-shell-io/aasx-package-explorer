@@ -142,7 +142,7 @@ namespace AdminShellNS
                     "http://www.admin-shell.io/aas/1/0");
                 var v10 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV10.AdministrationShellEnv;
                 //res = new AdministrationShellEnv(v10);
-                res = new AasCore.Aas3_0_RC02.Environment();
+                res = new AasCore.Aas3_0_RC02.Environment(new List<AssetAdministrationShell>(), new List<Submodel>(), new List<ConceptDescription>());
                 res.ConvertFromV10(v10);
                 return res;
 #else
@@ -159,7 +159,7 @@ namespace AdminShellNS
                     "http://www.admin-shell.io/aas/2/0");
                 var v20 = serializer.Deserialize(s) as AasxCompatibilityModels.AdminShellV20.AdministrationShellEnv;
                 //res = new AdministrationShellEnv(v20);
-                res = new AasCore.Aas3_0_RC02.Environment();
+                res = new AasCore.Aas3_0_RC02.Environment(new List<AssetAdministrationShell>(), new List<Submodel>(), new List<ConceptDescription>());
                 res.ConvertFromV20(v20);
                 return res;
 #else
@@ -242,7 +242,7 @@ namespace AdminShellNS
 
         private string _tempFn = null;
 
-        private AasCore.Aas3_0_RC02.Environment _aasEnv = new AasCore.Aas3_0_RC02.Environment();
+        private AasCore.Aas3_0_RC02.Environment _aasEnv = new AasCore.Aas3_0_RC02.Environment(new List<AssetAdministrationShell>(), new List<Submodel>(), new List<ConceptDescription>());
         private Package _openPackage = null;
         private readonly ListOfAasSupplementaryFile _pendingFilesToAdd = new ListOfAasSupplementaryFile();
         private readonly ListOfAasSupplementaryFile _pendingFilesToDelete = new ListOfAasSupplementaryFile();

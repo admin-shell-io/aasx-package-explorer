@@ -21,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
@@ -29,7 +30,10 @@ using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
+using AdminShellNS.Extenstions;
 using AnyUi;
+using Extenstions;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
@@ -141,7 +145,7 @@ namespace AasxPackageExplorer
             // focus info
             var focusMdo = DisplayElements.SelectedItem?.GetDereferencedMainDataObject();
 
-            var t = "AASX Package Explorer";
+            var t = "AASX Package Explorer V3RC02";  //TODO:jtikekar remove V3RC02
             if (_packageCentral.MainAvailable)
                 t += " - " + _packageCentral.MainItem.ToString();
             if (_packageCentral.AuxAvailable)
@@ -425,14 +429,14 @@ namespace AasxPackageExplorer
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
-                var navTo = sm?.submodelElements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetReference(),
-                    AdminShell.Key.MatchMode.Relaxed);
-                if (navTo?.value == null)
+                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<ReferenceElement>(
+                    AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
+                    MatchMode.Relaxed);
+                if (navTo?.Value == null)
                     continue;
 
                 // remember some further supplementary search information
-                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.value);
+                var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(navTo.Value);
 
                 // lookup business objects
                 var bo = _packageCentral.Main?.AasEnv.FindReferableByReference(sri.CleanReference);
@@ -549,11 +553,11 @@ namespace AasxPackageExplorer
 
             // some entities require special handling
             if (entities?.ExactlyOne == true && entities.First() is VisualElementSubmodelElement sme &&
-                sme?.theWrapper?.submodelElement is AdminShell.File file)
+                sme?.theWrapper is AasCore.Aas3_0_RC02.File file)
             {
                 ShowContent.IsEnabled = true;
-                this.showContentPackageUri = file.value;
-                this.showContentPackageMime = file.mimeType;
+                this.showContentPackageUri = file.Value;
+                this.showContentPackageMime = file.ContentType;
                 DragSource.Foreground = Brushes.Black;
             }
 
@@ -580,19 +584,19 @@ namespace AasxPackageExplorer
 
                 // what is AAS specific?
                 this.AasId.Text = WpfStringAddWrapChars(
-                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.identification.id, "<id missing!>"));
+                    AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.Id, "<id missing!>"));
 
                 // what is asset specific?
                 this.AssetPic.Source = null;
                 this.AssetId.Text = "<id missing!>";
-                var asset = tvlaas.theEnv.FindAsset(tvlaas.theAas.assetRef);
+                var asset = tvlaas.theAas.AssetInformation;
                 if (asset != null)
                 {
 
                     // text id
-                    if (asset.identification != null)
+                    if (asset.GlobalAssetId != null)
                         this.AssetId.Text = WpfStringAddWrapChars(
-                            AdminShellUtil.EvalToNonNullString("{0}", asset.identification.id));
+                            AdminShellUtil.EvalToNonNullString("{0}", asset.GlobalAssetId.GetAsIdentifier()));
 
                     // asset thumbnail
                     try
@@ -736,7 +740,7 @@ namespace AasxPackageExplorer
             var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
             try
             {
-                if (File.Exists(lruFn))
+                if (System.IO.File.Exists(lruFn))
                 {
                     var lru = PackageContainerListLastRecentlyUsed.Load<PackageContainerListLastRecentlyUsed>(lruFn);
                     _packageCentral?.Repositories.Add(lru);
@@ -1095,21 +1099,21 @@ namespace AasxPackageExplorer
             if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
             {
                 // do some more adoptions
-                var rf = new AdminShell.Reference(tempNavTo.targetReference);
+                var rf = tempNavTo.targetReference.Copy();
 
                 if (tempNavTo.translateAssetToAAS
-                    && rf.Count == 1
-                    && rf.First.IsType(AdminShell.Key.Asset))
+                    && rf.Keys.Count == 1
+                    && rf.Keys.First().Type == KeyTypes.GlobalReference) //TODO:jtikekar KeyType.AssetInformation
                 {
                     // try to find possible environments containg the asset and try making
                     // replacement
                     foreach (var pe in _packageCentral.GetAllPackageEnv())
                     {
-                        if (pe?.AasEnv?.AdministrationShells == null)
+                        if (pe?.AasEnv?.AssetAdministrationShells == null)
                             continue;
 
-                        foreach (var aas in pe.AasEnv.AdministrationShells)
-                            if (aas.assetRef?.Matches(rf, AdminShellV20.Key.MatchMode.Relaxed) == true)
+                        foreach (var aas in pe.AasEnv.AssetAdministrationShells)
+                            if (aas.AssetInformation?.GlobalAssetId.Matches(rf, MatchMode.Relaxed) == true)
                             {
                                 rf = aas.GetReference();
                                 break;
@@ -1205,8 +1209,8 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AdminShell.Referable> LoadFromFileRepository(PackageContainerRepoItem fi,
-            AdminShell.Reference requireReferable = null)
+        private async Task<IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
+            Reference requireReferable = null)
         {
             // access single file repo
             var fileRepo = _packageCentral.Repositories.FindRepository(fi);
@@ -1241,7 +1245,7 @@ namespace AasxPackageExplorer
             if (container != null)
             {
                 // .. try find business object!
-                AdminShell.Referable bo = null;
+                IReferable bo = null;
                 if (requireReferable != null)
                     bo = container.Env?.AasEnv.FindReferableByReference(requireReferable);
 
@@ -1322,16 +1326,16 @@ namespace AasxPackageExplorer
         }
 
         private async Task UiHandleNavigateTo(
-            AdminShell.Reference targetReference,
+            Reference targetReference,
             bool alsoDereferenceObjects = true)
         {
             // access
-            if (targetReference == null || targetReference.Count < 1)
+            if (targetReference == null || targetReference.Keys.Count < 1)
                 return;
 
             // make a copy of the Reference for searching
             VisualElementGeneric veFound = null;
-            var work = new AdminShell.Reference(targetReference);
+            var work = targetReference.Copy();
 
             try
             {
@@ -1344,10 +1348,10 @@ namespace AasxPackageExplorer
                 this.DisplayElements.ExpandAllItems();
 
                 // incrementally make it unprecise
-                while (work.Count > 0)
+                while (work.Keys.Count > 0)
                 {
                     // try to find a business object in the package
-                    AdminShell.Referable bo = null;
+                    IReferable bo = null;
                     if (_packageCentral.MainAvailable && _packageCentral.Main.AasEnv != null)
                         bo = _packageCentral.Main.AasEnv.FindReferableByReference(work);
 
@@ -1360,10 +1364,10 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work[0].type.Trim().ToLower() == AdminShell.Key.Asset.ToLower())
-                            fi = _packageCentral.Repositories.FindByAssetId(work[0].value.Trim());
-                        if (work[0].type.Trim().ToLower() == AdminShell.Key.AAS.ToLower())
-                            fi = _packageCentral.Repositories.FindByAasId(work[0].value.Trim());
+                        if (work.Keys[0].Type == KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
+                            fi = _packageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
+                        if (work.Keys[0].Type == KeyTypes.AssetAdministrationShell)
+                            fi = _packageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
 
                         bo = await LoadFromFileRepository(fi, work);
                     }
@@ -1385,7 +1389,7 @@ namespace AasxPackageExplorer
                     }
 
                     // make it more unprecice
-                    work.Keys.RemoveAt(work.Count - 1);
+                    work.Keys.RemoveAt(work.Keys.Count - 1);
                 }
             }
             catch (Exception ex)
@@ -1430,7 +1434,7 @@ namespace AasxPackageExplorer
                 //============
 
                 if (evt is AasxIntegrationBase.AasxPluginResultEventNavigateToReference evtNavTo
-                    && evtNavTo.targetReference != null && evtNavTo.targetReference.Count > 0)
+                    && evtNavTo.targetReference != null && evtNavTo.targetReference.Keys.Count > 0)
                 {
                     await UiHandleNavigateTo(evtNavTo.targetReference);
                 }
@@ -1625,7 +1629,7 @@ namespace AasxPackageExplorer
 
         private void MainTimer_CheckAnimationElements(
             double deltaSecs,
-            AdminShell.AdministrationShellEnv env,
+            AasCore.Aas3_0_RC02.Environment env,
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
@@ -1636,14 +1640,14 @@ namespace AasxPackageExplorer
             foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.QualifiedAnimation))
             {
                 // valid?
-                if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)
                     continue;
 
                 // which SME?
-                if (rec.LiveObject is AdminShell.Property prop)
+                if (rec.LiveObject is Property prop)
                 {
                     _mainTimer_AnimateDemoValues.Animate(prop,
-                        emitEvent: (prop2, evi2) =>
+                        emitEvent: (prop2, evi2) =>   
                         {
                             // Animate the event visually; create a change event for this.
                             // Note: this might by not ideal, final state
@@ -1657,18 +1661,20 @@ namespace AasxPackageExplorer
                                     Container = _packageCentral.MainItem.Container,
                                     Reason = PackCntChangeEventReason.ValueUpdateSingle,
                                     ThisElem = prop2,
-                                    ParentElem = prop2?.parent,
+                                    ParentElem = prop2?.Parent,
                                     Info = "Animated value update"
                                 }
                             });
                         });
                 }
+
+
             }
         }
 
         private void MainTimer_CheckDiaryDateToEmitEvents(
             DateTime lastTime,
-            AdminShell.AdministrationShellEnv env,
+            AasCore.Aas3_0_RC02.Environment env,
             IndexOfSignificantAasElements significantElems,
             bool directEmit)
         {
@@ -1688,19 +1694,19 @@ namespace AasxPackageExplorer
                 foreach (var rec in significantElems.Retrieve(env, see))
                 {
                     // valid?
-                    if (rec?.Reference == null || rec.Reference.Count < 1 || rec.LiveObject == null)
+                    if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)
                         continue;
-                    var refEv = rec.LiveObject as AdminShell.BasicEvent;
+                    var refEv = rec.LiveObject as BasicEventElement;
                     if (refEv == null)
                         continue;
 
                     // now, find the observable (with timestamping!)
-                    var observable = (AdminShell.IDiaryData)env.FindReferableByReference(refEv.observed);
+                    var observable = (IDiaryData)env.FindReferableByReference(refEv.Observed);  
 
                     // some special cases
-                    if (true == refEv.observed?.Matches(
-                            AdminShell.Key.GlobalReference, false, AdminShell.Key.Custom, "AASENV",
-                            AdminShell.Key.MatchMode.Relaxed))
+                    if (true == refEv.Observed?.Matches(
+                            KeyTypes.GlobalReference, "AASENV",
+                            MatchMode.Relaxed))
                     {
                         observable = env;
                     }
@@ -1711,10 +1717,10 @@ namespace AasxPackageExplorer
 
                     // get the flags
                     var newCreate = observable.DiaryData
-                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create] >= lastTime;
+                        .TimeStamp[(int)DiaryDataDef.TimeStampKind.Create] >= lastTime;
 
                     var newUpdate = observable.DiaryData
-                        .TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update] >= lastTime;
+                        .TimeStamp[(int)DiaryDataDef.TimeStampKind.Update] >= lastTime;
 
                     // first check
                     if (!newCreate && !newUpdate)
@@ -1730,24 +1736,74 @@ namespace AasxPackageExplorer
                         // closure logic
                         var storedI = i;
 
-                        if (observable is AdminShell.IRecurseOnReferables recurse)
-                            recurse.RecurseOnReferables(null,
+                        //if (observable is IRecurseOnReferables recurse)
+                        if (observable is IReferable referable)
+                            referable.RecurseOnReferables(null,
                                 includeThis: true,
                                 lambda: (o, parents, rf) =>
                                 {
                                     // further interest?
                                     if (rf == null || rf.DiaryData == null ||
-                                    ((rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Create]
+                                    ((rf.DiaryData.TimeStamp[(int)DiaryDataDef.TimeStampKind.Create]
                                        < lastTime)
                                       &&
-                                      (rf.DiaryData.TimeStamp[(int)AdminShell.DiaryDataDef.TimeStampKind.Update]
+                                      (rf.DiaryData.TimeStamp[(int)DiaryDataDef.TimeStampKind.Update]
                                        < lastTime)))
                                         return false;
 
                                     // yes, inspect further and also go deeper
                                     if (rf.DiaryData.Entries != null)
                                     {
-                                        var todel = new List<AdminShell.IAasDiaryEntry>();
+                                        var todel = new List<IAasDiaryEntry>();
+                                        foreach (var de in rf.DiaryData.Entries)
+                                        {
+                                            if (storedI == 0 && de is AasPayloadStructuralChangeItem sci)
+                                            {
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
+
+                                                // queue event
+                                                plStruct.Changes.Add(sci);
+
+                                                // delete
+                                                todel.Add(de);
+                                            }
+
+                                            if (storedI == 1 && de is AasPayloadUpdateValueItem uvi)
+                                            {
+                                                // TODO (MIHO, 2021-10-09): prepare path to be relative
+
+                                                // queue event
+                                                plUpdate.Values.Add(uvi);
+
+                                                // delete
+                                                todel.Add(de);
+                                            }
+                                        }
+                                        foreach (var de in todel)
+                                            rf.DiaryData.Entries.Remove(de);
+                                    }
+
+                                    // deeper
+                                    return true;
+                                });
+                        if (observable is AasCore.Aas3_0_RC02.Environment environment)
+                            environment.RecurseOnReferables(null,
+                                includeThis: true,
+                                lambda: (o, parents, rf) =>
+                                {
+                                    // further interest?
+                                    if (rf == null || rf.DiaryData == null ||
+                                    ((rf.DiaryData.TimeStamp[(int)DiaryDataDef.TimeStampKind.Create]
+                                       < lastTime)
+                                      &&
+                                      (rf.DiaryData.TimeStamp[(int)DiaryDataDef.TimeStampKind.Update]
+                                       < lastTime)))
+                                        return false;
+
+                                    // yes, inspect further and also go deeper
+                                    if (rf.DiaryData.Entries != null)
+                                    {
+                                        var todel = new List<IAasDiaryEntry>();
                                         foreach (var de in rf.DiaryData.Entries)
                                         {
                                             if (storedI == 0 && de is AasPayloadStructuralChangeItem sci)
@@ -1789,9 +1845,10 @@ namespace AasxPackageExplorer
                     var ev = new AasEventMsgEnvelope(
                         DateTime.UtcNow,
                         source: refEv.GetReference(),
-                        sourceSemanticId: refEv.semanticId,
-                        observableReference: refEv.observed,
-                        observableSemanticId: (observable as AdminShell.IGetSemanticId)?.GetSemanticId());
+                        sourceSemanticId: refEv.SemanticId,
+                        observableReference: refEv.Observed,
+                        //observableSemanticId: (observable as IGetSemanticId)?.GetSemanticId());
+                        observableSemanticId: null); // TODO:jtikekar IDiaryData support
 
                     if (plStruct.Changes.Count >= 1)
                         ev.PayloadItems.Add(plStruct);
@@ -1853,19 +1910,19 @@ namespace AasxPackageExplorer
                         rootSm.SetAllParents();
 
                         // check, if the Submodel has interesting events
-                        foreach (var ev in smrSel.theSubmodel.FindDeep<AdminShell.BasicEvent>((x) =>
-                            (true == x?.semanticId?.Matches(
-                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards,
-                                AdminShellV20.Key.MatchMode.Relaxed))))
+                        foreach (var ev in smrSel.theSubmodel.SubmodelElements.FindDeep<BasicEventElement>((x) =>
+                            (true == x?.SemanticId?.Matches(
+                                AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.Id
+                                ))))
                         {
                             // Submodel defines an events for outgoing value updates -> does the observed scope
                             // lie in the selection?
-                            var klObserved = ev.observed?.Keys;
+                            var klObserved = ev.Observed?.Keys;
                             var klSelected = veSubject.BuildKeyListToTop(includeAas: false);
                             // no, klSelected shall lie in klObserved
                             if (klObserved != null && klSelected != null &&
                                 klSelected.StartsWith(klObserved,
-                                emptyIsTrue: false, matchMode: AdminShellV20.Key.MatchMode.Relaxed))
+                                emptyIsTrue: false, matchMode: MatchMode.Relaxed))
                             {
                                 // take a shortcut
                                 if (_packageCentral?.MainItem?.Container is PackageContainerNetworkHttpFile cntHttp
@@ -1879,7 +1936,7 @@ namespace AasxPackageExplorer
                                                 connRest.SimulateUpdateValuesEventByGetAsync(
                                                     smrSel.theSubmodel,
                                                     ev,
-                                                    veSubject.GetDereferencedMainDataObject() as AdminShell.Referable,
+                                                    veSubject.GetDereferencedMainDataObject() as IReferable,
                                                     timestamp: DateTime.Now,
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
@@ -2001,7 +2058,7 @@ namespace AasxPackageExplorer
                 // Update values?
                 //
                 var changedSomething = false;
-                if (foundObservable is AdminShell.Submodel || foundObservable is AdminShell.SubmodelElement)
+                if (foundObservable is Submodel || foundObservable is ISubmodelElement)
                     foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                     {
                         changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
@@ -2118,17 +2175,17 @@ namespace AasxPackageExplorer
                 }
 
                 // no? .. is there a way to another file?
-                if (_packageCentral.Repositories != null && hi?.ReferableAasId?.id != null
+                if (_packageCentral.Repositories != null && hi?.ReferableAasId != null
                     && hi.ReferableReference != null)
                 {
                     ;
 
                     // try lookup file in file repository
-                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.id.Trim());
+                    var fi = _packageCentral.Repositories.FindByAasId(hi.ReferableAasId.Trim());
                     if (fi == null)
                     {
                         Log.Singleton.Error(
-                            $"Cannot lookup aas id {hi.ReferableAasId.id} in file repository.");
+                            $"Cannot lookup aas id {hi.ReferableAasId} in file repository.");
                         return;
                     }
 
@@ -2136,7 +2193,7 @@ namespace AasxPackageExplorer
                     var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
-                    AdminShell.Referable bo = null;
+                    IReferable bo = null;
                     try
                     {
                         bo = await LoadFromFileRepository(fi, sri.CleanReference);
@@ -2144,7 +2201,7 @@ namespace AasxPackageExplorer
                     catch (Exception ex)
                     {
                         Log.Singleton.Error(
-                            ex, $"While retrieving file for {hi.ReferableAasId.id} from file repository");
+                            ex, $"While retrieving file for {hi.ReferableAasId} from file repository");
                     }
 
                     // still proceed?
@@ -2409,18 +2466,18 @@ namespace AasxPackageExplorer
                 {
                     var viselem = this.currentEntityForUpdate as VisualElementSubmodelElement;
                     if (viselem != null && viselem.theEnv != null &&
-                        viselem.theContainer != null && viselem.theContainer is AdminShell.Submodel &&
-                        viselem.theWrapper != null && viselem.theWrapper.submodelElement != null &&
-                        viselem.theWrapper.submodelElement is AdminShell.Property)
+                        viselem.theContainer != null && viselem.theContainer is Submodel &&
+                        viselem.theWrapper != null && viselem.theWrapper != null &&
+                        viselem.theWrapper is Property)
                     {
                         // access a valid property
-                        var p = viselem.theWrapper.submodelElement as AdminShell.Property;
+                        var p = viselem.theWrapper as Property;
                         if (p != null)
                         {
                             // use online connection
                             var x = this.theOnlineConnection.UpdatePropertyValue(
-                                viselem.theEnv, viselem.theContainer as AdminShell.Submodel, p);
-                            p.value = x;
+                                viselem.theEnv, viselem.theContainer as Submodel, p);
+                            p.Value = x;
 
                             // refresh
                             var y = DisplayElements.SelectedItem;
@@ -2474,7 +2531,7 @@ namespace AasxPackageExplorer
 
         private void mainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if ((e.Key == Key.OemPlus || e.Key == Key.Add) && Keyboard.Modifiers == ModifierKeys.Control)
+            if ((e.Key == System.Windows.Input.Key.OemPlus || e.Key == System.Windows.Input.Key.Add) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel += 0.25;
@@ -2482,7 +2539,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            if ((e.Key == Key.OemMinus || e.Key == Key.Subtract) && Keyboard.Modifiers == ModifierKeys.Control)
+            if ((e.Key == System.Windows.Input.Key.OemMinus || e.Key == System.Windows.Input.Key.Subtract) && Keyboard.Modifiers == ModifierKeys.Control)
             {
                 if (theContentBrowser != null)
                     theContentBrowser.ZoomLevel -= 0.25;
@@ -2497,7 +2554,7 @@ namespace AasxPackageExplorer
 
             DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
 
-            if (e.Key == Key.T
+            if (e.Key == System.Windows.Input.Key.T
                 && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
             {
                 var ve = DisplayElements?.FindAllVisualElement()?.FirstOrDefault();

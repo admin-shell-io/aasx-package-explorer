@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -354,12 +355,13 @@ namespace AasxPackageExplorer
                 else if (entity is VisualElementAsset veas)
                 {
                     _helper.DisplayOrEditAasEntityAsset(
-                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
+                        packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
+                        editMode, repo, stack, hintMode: hintMode);
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
                     // data
-                    AdminShell.AdministrationShell aas = null;
+                    AssetAdministrationShell aas = null;
                     if (vesmref.Parent is VisualElementAdminShell xpaas)
                         aas = xpaas.theAas;
 
@@ -377,7 +379,7 @@ namespace AasxPackageExplorer
                 else if (entity is VisualElementSubmodelElement vesme)
                 {
                     _helper.DisplayOrEditAasEntitySubmodelElement(
-                        packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper.submodelElement,
+                        packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper,
                         editMode,
                         repo, stack, hintMode: hintMode,
                         nestedCds: cdSortOrder.HasValue &&
@@ -396,24 +398,6 @@ namespace AasxPackageExplorer
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
                 }
-                else if (entity is VisualElementView vevw)
-                {
-                    if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
-                        _helper.DisplayOrEditAasEntityView(
-                            packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
-                            hintMode: hintMode);
-                    else
-                        _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
-                }
-                else if (entity is VisualElementReference verf)
-                {
-                    if (verf.Parent != null && verf.Parent is VisualElementView xpev)
-                        _helper.DisplayOrEditAasEntityViewReference(
-                            packages, verf.theEnv, xpev.theView, (AdminShell.ContainedElementRef)verf.theReference,
-                            editMode, stack);
-                    else
-                        _helper.AddGroup(stack, "Reference is corrupted!", _helper.levelColors.MainSection);
-                }
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {
@@ -421,104 +405,45 @@ namespace AasxPackageExplorer
                 }
                 else if (entity is VisualElementPluginExtension vepe)
                 {
-                    // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
-                    var approach = 0;
-                    var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
-                    var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
+                    // create controls
+                    object result = null;
 
-                    if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
-                        approach = 1;
-
-                    if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
-                        approach = 2;
-
-                    if (approach == 0 && hasAnyUi)
-                        approach = 2;
-
-                    if (approach == 0 && hasWpf)
-                        approach = 1;
-
-                    // NEW: Differentiate behaviour ..
-                    if (approach == 2)
+                    try
                     {
-                        //
-                        // Render panel via ANY UI !!
-                        //
+                        // replace at top level
+                        theMasterPanel.Children.Clear();
+                        if (vepe.thePlugin != null)
+                            result = vepe.thePlugin.InvokeAction(
+                                "fill-panel-visual-extension", vepe.thePackage, vepe.theReferable, theMasterPanel);
+                    }
+                    catch (Exception ex)
+                    {
+                        AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                    }
 
-                        try
-                        {
-                            var opContext = new PluginOperationContextBase()
-                            {
-                                DisplayMode = (editMode)
-                                            ? PluginOperationDisplayMode.MayAddEdit
-                                            : PluginOperationDisplayMode.JustDisplay
-                            };
+                    // add?
+                    if (result == null)
+                    {
+                        // re-init display!
+#if MONOUI
+                    stack = ClearDisplayDefautlStack();
+#else
+                        stack = new AnyUiStackPanel();
+#endif
 
-                            vepe.thePlugin?.InvokeAction(
-                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                                stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
-                                opContext);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(ex,
-                                $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
-                        }
-
-                        // show no panel nor scroll
-                        renderHints.scrollingPanel = false;
-                        renderHints.showDataPanel = false;
-                        renderHints.useInnerGrid = true;
+                        // helping message
+                        _helper.AddGroup(
+                            stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
                     }
                     else
                     {
-                        //
-                        // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
-                        //
-
-                        // create controls
-                        object result = null;
-
-                        if (approach == 1)
-                            try
-                            {
-                                // replace at top level
-                                theMasterPanel.Children.Clear();
-                                if (vepe.thePlugin != null)
-                                    result = vepe.thePlugin.InvokeAction(
-                                        "fill-panel-visual-extension",
-                                        vepe.thePackage, vepe.theReferable, theMasterPanel);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(ex,
-                                    $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
-                            }
-
-                        // add?
-                        if (result == null)
-                        {
-                            // re-init display!
-#if MONOUI
-                        stack = ClearDisplayDefautlStack();
-#else
-                            stack = new AnyUiStackPanel();
-#endif
-
-                            // helping message
-                            _helper.AddGroup(
-                                stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
-                        }
-                        else
-                        {
-                            // this is natively done; do NOT render Any UI to WPF
-                            inhibitRenderStackToPanel = true;
-                        }
-
-                        // show no panel nor scroll
-                        renderHints.scrollingPanel = false;
-                        renderHints.showDataPanel = false;
+                        // this is natively done; do NOT render Any UI to WPF
+                        inhibitRenderStackToPanel = true;
                     }
+
+                    // show no panel nor scroll
+                    renderHints.scrollingPanel = false;
+                    renderHints.showDataPanel = false;
 
                 }
                 else
@@ -614,43 +539,43 @@ namespace AasxPackageExplorer
                 if (num > 0)
                 {
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, Key.Up,
+                        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Up,
                         "Move current AAS element up by one position.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, Key.Down,
+                        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Down,
                         "Move current AAS element down by one position.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, Key.Home,
+                        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Home,
                         "Move current AAS element to the first position of the respective list.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, Key.End,
+                        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.End,
                         "Move current AAS element to the last position of the respective list.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, Key.Delete,
+                        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Delete,
                         "Delete current AAS element in the respective list. Shift key skips dialogue.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, Key.X,
+                        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.X,
                         "Transfers current AAS element into paste buffer and deletes in respective list.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, Key.C,
+                        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.C,
                         "Copies current AAS element into paste buffer for later pasting.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, Key.V,
+                        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.V,
                         "Copy existing paste buffer into the child list of the current AAS element.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, Key.W,
+                        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.W,
                         "Copy existing paste buffer above the current AAS element in the same list.");
 
                     _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, Key.Y,
+                        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Y,
                         "Copy existing paste buffer below the current AAS element in the same list.");
 
                 }
@@ -732,7 +657,7 @@ namespace AasxPackageExplorer
 
                 // rename to html file
                 var htmlfn = tmpfn.Replace(".tmp", ".html");
-                File.Move(tmpfn, htmlfn);
+                System.IO.File.Move(tmpfn, htmlfn);
 
                 // create html content as string
                 var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
@@ -773,7 +698,7 @@ namespace AasxPackageExplorer
 
                 var html = "";
 
-                html += "<h3>Keyboard shortcuts</h3>" + Environment.NewLine;
+                html += "<h3>Keyboard shortcuts</h3>" + System.Environment.NewLine;
 
                 html += AdminShellUtil.CleanHereStringWithNewlines(
                     @"<table style=""width:100%"">

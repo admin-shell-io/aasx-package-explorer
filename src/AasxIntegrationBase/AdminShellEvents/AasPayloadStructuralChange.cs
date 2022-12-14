@@ -20,6 +20,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.MiniMarkup;
 using AdminShellNS;
+using AdminShellNS.DiaryData;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -36,7 +37,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     /// Single item of a structural change payload
     /// </summary>
     [DisplayName("AasPayloadStructuralChangeItem")]
-    public class AasPayloadStructuralChangeItem : IAasPayloadItem/*, IAasDiaryEntry*/ //TODO:jtikekar Need to check the purpose
+    public class AasPayloadStructuralChangeItem : IAasPayloadItem, IAasDiaryEntry 
     {
         /// <summary>
         /// Reason for the change. According to CRUD principle.

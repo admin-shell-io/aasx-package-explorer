@@ -16,7 +16,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
+using Extenstions;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,90 +29,90 @@ namespace AasxPackageExplorer
 {
     public static class TDJsonExport
     {
-        public static JObject createForms(AdminShell.SubmodelElement formsSem)
+        public static JObject createForms(ISubmodelElement formsSem)
         {
             List<JObject> forms = new List<JObject>();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(formsSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)formsSem.Copy();
+            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
                 JObject formJObject = new JObject();
-                AdminShell.SubmodelElement form = _tempChild.submodelElement;
-                foreach (AdminShell.Qualifier smQualifier in form.qualifiers)
+                ISubmodelElement form = _tempChild;
+                foreach (Qualifier smQualifier in form.Qualifiers)
                 {
-                    formJObject[smQualifier.type] = smQualifier.value;
+                    formJObject[smQualifier.Type] = smQualifier.Value;
                 }
-                AdminShell.SubmodelElementCollection _formElementCollection =
-                                    new AdminShell.SubmodelElementCollection(form);
-                foreach (AdminShell.SubmodelElementWrapper _tempformElement in
+                SubmodelElementCollection _formElementCollection = (SubmodelElementCollection)form.Copy();
+                foreach (ISubmodelElement _tempformElement in
                         _formElementCollection.EnumerateChildren())
                 {
-                    AdminShell.SubmodelElement _formElement = _tempformElement.submodelElement;
-                    if (_formElement.idShort == "security")
+                    ISubmodelElement _formElement = _tempformElement;
+                    if (_formElement.IdShort == "security")
                     {
                         List<string> securityList = new List<string>();
-                        foreach (AdminShell.Qualifier _secQual in _formElement.qualifiers)
+                        foreach (Qualifier _secQual in _formElement.Qualifiers)
                         {
-                            securityList.Add(_secQual.value);
+                            securityList.Add(_secQual.Value);
                         }
                         formJObject["security"] = JToken.FromObject(securityList);
                     }
-                    else if (_formElement.idShort == "scopes")
+                    else if (_formElement.IdShort == "scopes")
                     {
-                        AdminShell.SubmodelElementCollection _scopesCollection =
-                                    new AdminShell.SubmodelElementCollection(_formElement, false);
+                        SubmodelElementCollection _scopesCollection =
+                                    (SubmodelElementCollection)_formElement.Copy();
                         List<string> scopesList = new List<string>();
-                        foreach (AdminShell.Qualifier _scopeQual in _scopesCollection.qualifiers)
+                        foreach (Qualifier _scopeQual in _scopesCollection.Qualifiers)
                         {
-                            scopesList.Add(_scopeQual.value);
+                            scopesList.Add(_scopeQual.Value);
                         }
                         formJObject["scopes"] = JToken.FromObject(scopesList);
                     }
-                    else if (_formElement.idShort == "response")
+                    else if (_formElement.IdShort == "response")
                     {
-                        AdminShell.SubmodelElementCollection _response =
-                            new AdminShell.SubmodelElementCollection(_formElement, false);
-                        foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
+                        SubmodelElementCollection _response =
+                            (SubmodelElementCollection)_formElement.Copy();
+                        foreach (ISubmodelElement _tempResponse in _response.EnumerateChildren())
                         {
                             JObject contentTypeObject = new JObject();
-                            contentTypeObject["contentType"] = (_tempResponse.submodelElement).ValueAsText();
+                            contentTypeObject["contentType"] = (_tempResponse).ValueAsText();
                             formJObject["response"] = contentTypeObject;
                         }
                     }
-                    else if (_formElement.idShort == "additionalResponses")
+                    else if (_formElement.IdShort == "additionalResponses")
                     {
-                        AdminShell.SubmodelElementCollection _response =
-                            new AdminShell.SubmodelElementCollection(_formElement, false);
+                        SubmodelElementCollection _response =
+                            (SubmodelElementCollection)_formElement.Copy();
                         JObject arJObject = new JObject();
-                        foreach (AdminShell.SubmodelElementWrapper _tempResponse in _response.EnumerateChildren())
+                        foreach (ISubmodelElement _tempResponse in _response.EnumerateChildren())
                         {
-                            if (_tempResponse.submodelElement.idShort == "success")
+                            if (_tempResponse.IdShort == "success")
                             {
-                                arJObject["success"] = Convert.ToBoolean((_tempResponse.submodelElement).ValueAsText());
+                                arJObject["success"] = Convert.ToBoolean((_tempResponse).ValueAsText());
 
                             }
                             else
                             {
-                                arJObject[_tempResponse.submodelElement.idShort] =
-                                    (_tempResponse.submodelElement).ValueAsText();
+                                arJObject[_tempResponse.IdShort] =
+                                    (_tempResponse).ValueAsText();
 
                             }
                         }
                     }
-                    else if (_formElement.idShort == "op")
+                    else if (_formElement.IdShort == "op")
                     {
-                        AdminShell.SubmodelElementCollection _opCollection =
-                            new AdminShell.SubmodelElementCollection(_formElement, false);
+                        SubmodelElementCollection _opCollection =
+                            (SubmodelElementCollection)_formElement.Copy();
                         List<string> opList = new List<string>();
-                        foreach (AdminShell.Qualifier _opQual in _opCollection.qualifiers)
+                        foreach (Qualifier _opQual in _opCollection.Qualifiers)
                         {
-                            opList.Add(_opQual.value);
+                            opList.Add(_opQual.Value);
                         }
                         formJObject["op"] = JToken.FromObject(opList);
                     }
                     else
                     {
-                        formJObject[_formElement.idShort] =
-                            _tempformElement.GetAs<AdminShell.Property>().value.ToString();
+                        //formJObject[_formElement.IdShort] =
+                        //    _tempformElement.GetAs<Property>().Value.ToString();
+                        formJObject[_formElement.IdShort] = (_tempformElement as Property).Value.ToString();
                     }
                 }
                 forms.Add(formJObject);
@@ -118,31 +121,31 @@ namespace AasxPackageExplorer
             formsjObject["forms"] = JToken.FromObject(forms);
             return formsjObject;
         }
-        public static JObject createuriVariables(AdminShell.SubmodelElement uriSem)
+        public static JObject createuriVariables(ISubmodelElement uriSem)
         {
             JObject uriVarJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(uriSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempuriVarElement in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)uriSem.Copy();
+            foreach (ISubmodelElement _tempuriVarElement in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement _uriVariable = _tempuriVarElement.submodelElement;
-                uriVarJObject[_uriVariable.idShort] = JToken.FromObject(createDataSchema(_uriVariable));
+                ISubmodelElement _uriVariable = _tempuriVarElement;
+                uriVarJObject[_uriVariable.IdShort] = JToken.FromObject(createDataSchema(_uriVariable));
             }
             return uriVarJObject;
         }
-        public static JObject createArraySchema(AdminShell.SubmodelElement sem)
+        public static JObject createArraySchema(ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
-            foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
+            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
-                if (dsElement.idShort == "items")
+                ISubmodelElement dsElement = _tempChild;
+                if (dsElement.IdShort == "items")
                 {
-                    AdminShell.SubmodelElementCollection _items = new AdminShell.SubmodelElementCollection(dsElement);
+                    SubmodelElementCollection _items = (SubmodelElementCollection)dsElement.Copy();
                     List<JObject> itemsJObject = new List<JObject>();
-                    foreach (AdminShell.SubmodelElementWrapper _itemTemp in _items.EnumerateChildren())
+                    foreach (ISubmodelElement _itemTemp in _items.EnumerateChildren())
                     {
-                        AdminShell.SubmodelElement item = _itemTemp.submodelElement;
+                        ISubmodelElement item = _itemTemp;
                         JObject dsJObject = createDataSchema(item);
                         itemsJObject.Add(dsJObject);
                     }
@@ -159,32 +162,32 @@ namespace AasxPackageExplorer
             }
             return semJObject;
         }
-        public static JObject createObjectSchema(AdminShell.SubmodelElement sem)
+        public static JObject createObjectSchema(ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
-            foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
+            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
-                if (dsElement.idShort == "properties")
+                ISubmodelElement dsElement = _tempChild;
+                if (dsElement.IdShort == "properties")
                 {
-                    AdminShell.SubmodelElementCollection _properties =
-                        new AdminShell.SubmodelElementCollection(dsElement);
+                    SubmodelElementCollection _properties =
+                        (SubmodelElementCollection)dsElement.Copy();
                     JObject propertiesJObject = new JObject();
-                    foreach (AdminShell.SubmodelElementWrapper _itemTemp in _properties.EnumerateChildren())
+                    foreach (ISubmodelElement _itemTemp in _properties.EnumerateChildren())
                     {
-                        AdminShell.SubmodelElement item = _itemTemp.submodelElement;
+                        ISubmodelElement item = _itemTemp;
                         JObject dsJObject = createDataSchema(item);
-                        propertiesJObject[item.idShort] = JToken.FromObject(dsJObject);
+                        propertiesJObject[item.IdShort] = JToken.FromObject(dsJObject);
                     }
                     semJObject["properties"] = JToken.FromObject(propertiesJObject);
                 }
-                if (dsElement.idShort == "required")
+                if (dsElement.IdShort == "required")
                 {
                     List<string> requiredList = new List<string>();
-                    foreach (AdminShell.Qualifier _requiredQual in dsElement.qualifiers)
+                    foreach (Qualifier _requiredQual in dsElement.Qualifiers)
                     {
-                        requiredList.Add(_requiredQual.value);
+                        requiredList.Add(_requiredQual.Value);
                     }
                     semJObject["required"] = JToken.FromObject(requiredList);
                 }
@@ -192,117 +195,117 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static List<JToken> enumELement(AdminShell.QualifierCollection qualCollection)
+        public static List<JToken> enumELement(List<Qualifier> qualCollection)
         {
 
             List<JToken> enums = new List<JToken>();
-            foreach (AdminShell.Qualifier _enumQual in qualCollection)
+            foreach (Qualifier _enumQual in qualCollection)
             {
-                if (int.TryParse(_enumQual.value, out int numericValue))
+                if (int.TryParse(_enumQual.Value, out int numericValue))
                 {
                     enums.Add(numericValue);
                 }
-                else if (float.TryParse(_enumQual.value, out float floatValue))
+                else if (float.TryParse(_enumQual.Value, out float floatValue))
                 {
                     enums.Add(floatValue);
                 }
-                else if (double.TryParse(_enumQual.value, out double doubleValue))
+                else if (double.TryParse(_enumQual.Value, out double doubleValue))
                 {
                     enums.Add(doubleValue);
                 }
-                else if (bool.TryParse(_enumQual.value, out bool boolValue))
+                else if (bool.TryParse(_enumQual.Value, out bool boolValue))
                 {
                     enums.Add(boolValue);
                 }
                 else
                 {
-                    enums.Add(_enumQual.value);
+                    enums.Add(_enumQual.Value);
                 }
             }
             return enums;
         }
-        public static JObject createDataSchema(AdminShell.SubmodelElement sem)
+        public static JObject createDataSchema(ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
             string dschemaType = "";
-            foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
+            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
-                if (dsElement.idShort == "titles")
+                ISubmodelElement dsElement = _tempChild;
+                if (dsElement.IdShort == "titles")
                 {
                     JObject _titlesJObject = new JObject();
-                    AdminShell.MultiLanguageProperty mlp = new AdminShell.MultiLanguageProperty(dsElement);
-                    AdminShell.LangStringSet _titles = new AdminShell.LangStringSet(mlp.value);
-                    foreach (AdminShell.LangStr _title in _titles.langString)
+                    MultiLanguageProperty mlp = (MultiLanguageProperty)dsElement.Copy();
+                    LangStringSet _titles = mlp.Value.Copy();
+                    foreach (LangString _title in _titles.LangStrings)
                     {
-                        _titlesJObject[_title.lang] = _title.str;
+                        _titlesJObject[_title.Language] = _title.Text;
                     }
                     semJObject["titles"] = _titlesJObject;
                 }
-                if (dsElement.idShort == "oneOf")
+                if (dsElement.IdShort == "oneOf")
                 {
                     List<JObject> oneOfJObjects = new List<JObject>();
-                    AdminShell.SubmodelElementCollection _enumCOllection =
-                        new AdminShell.SubmodelElementCollection(dsElement);
-                    foreach (AdminShell.SubmodelElementWrapper _temponeOf in _enumCOllection.EnumerateChildren())
+                    SubmodelElementCollection _enumCOllection =
+                        (SubmodelElementCollection)dsElement.Copy();
+                    foreach (ISubmodelElement _temponeOf in _enumCOllection.EnumerateChildren())
                     {
-                        AdminShell.SubmodelElement _oneOf = _temponeOf.submodelElement;
+                        ISubmodelElement _oneOf = _temponeOf;
                         oneOfJObjects.Add(createDataSchema(_oneOf));
                     }
                     semJObject["oneOf"] = JToken.FromObject(oneOfJObjects);
                 }
-                if (dsElement.idShort == "enum")
+                if (dsElement.IdShort == "enum")
                 {
-                    semJObject["enum"] = JToken.FromObject(enumELement(dsElement.qualifiers));
+                    semJObject["enum"] = JToken.FromObject(enumELement(dsElement.Qualifiers));
                 }
             }
-            if (sem.description != null)
+            if (sem.Description != null)
             {
-                AdminShell.ListOfLangStr tdDescription = sem.description.langString;
+                List<LangString> tdDescription = sem.Description.LangStrings;
                 if (tdDescription.Count != 1)
                 {
-                    semJObject["description"] = tdDescription[0].str;
+                    semJObject["description"] = tdDescription[0].Text;
                     int index = 1;
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        AdminShell.LangStr desc = tdDescription[index];
-                        descriptions[desc.lang] = desc.str;
+                        LangString desc = tdDescription[index];
+                        descriptions[desc.Language] = desc.Text;
                     }
                     semJObject["descriptions"] = JToken.FromObject(descriptions);
                 }
                 else
                 {
-                    semJObject["description"] = tdDescription[0].str;
+                    semJObject["description"] = tdDescription[0].Text;
                 }
             }
-            foreach (AdminShell.Qualifier smQualifier in sem.qualifiers)
+            foreach (Qualifier smQualifier in sem.Qualifiers)
             {
-                if (smQualifier.type == "readOnly" || smQualifier.type == "writeOnly")
+                if (smQualifier.Type == "readOnly" || smQualifier.Type == "writeOnly")
                 {
-                    semJObject[smQualifier.type] = Convert.ToBoolean(smQualifier.value);
+                    semJObject[smQualifier.Type] = Convert.ToBoolean(smQualifier.Value);
                 }
-                else if (smQualifier.type == "minItems" || smQualifier.type == "maxItems" ||
-                    smQualifier.type == "minLength" || smQualifier.type == "maxLength")
+                else if (smQualifier.Type == "minItems" || smQualifier.Type == "maxItems" ||
+                    smQualifier.Type == "minLength" || smQualifier.Type == "maxLength")
                 {
-                    semJObject[smQualifier.type] = Convert.ToUInt32(smQualifier.value);
+                    semJObject[smQualifier.Type] = Convert.ToUInt32(smQualifier.Value);
                 }
-                else if (smQualifier.type == "data1.type" || smQualifier.type == "type")
+                else if (smQualifier.Type == "data1.Type" || smQualifier.Type == "type")
                 {
-                    if (smQualifier.type == "type")
+                    if (smQualifier.Type == "type")
                     {
-                        semJObject[smQualifier.type] = smQualifier.value;
+                        semJObject[smQualifier.Type] = smQualifier.Value;
                     }
-                    if (smQualifier.type == "data1.type")
+                    if (smQualifier.Type == "data1.Type")
                     {
-                        semJObject["data1"] = JToken.FromObject(new JObject { ["type"] = smQualifier.value });
+                        semJObject["data1"] = JToken.FromObject(new JObject { ["type"] = smQualifier.Value });
                     }
-                    dschemaType = smQualifier.value;
+                    dschemaType = smQualifier.Value;
                 }
                 else
                 {
-                    semJObject[smQualifier.type] = smQualifier.value;
+                    semJObject[smQualifier.Type] = smQualifier.Value;
                 }
             }
             if (dschemaType == "array")
@@ -331,11 +334,11 @@ namespace AasxPackageExplorer
                     "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in integerSchema)
                 {
-                    foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                    foreach (Qualifier semQual in sem.Qualifiers)
                     {
-                        if (elem == semQual.type)
+                        if (elem == semQual.Type)
                         {
-                            semJObject[semQual.type] = (int)Convert.ToDouble(semQual.value);
+                            semJObject[semQual.Type] = (int)Convert.ToDouble(semQual.Value);
                         }
                     }
                 }
@@ -346,11 +349,11 @@ namespace AasxPackageExplorer
                     "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in numberSchema)
                 {
-                    foreach (AdminShell.Qualifier semQual in sem.qualifiers)
+                    foreach (Qualifier semQual in sem.Qualifiers)
                     {
-                        if (elem == semQual.type)
+                        if (elem == semQual.Type)
                         {
-                            semJObject[semQual.type] = Convert.ToDecimal(semQual.value.ToString());
+                            semJObject[semQual.Type] = Convert.ToDecimal(semQual.Value.ToString());
                         }
                     }
                 }
@@ -360,18 +363,18 @@ namespace AasxPackageExplorer
 
             return semJObject;
         }
-        public static JObject createInteractionAvoidance(AdminShell.SubmodelElement sem)
+        public static JObject createInteractionAvoidance(ISubmodelElement sem)
         {
             JObject semJObject = createDataSchema(sem);
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sem);
-            foreach (AdminShell.SubmodelElementWrapper _tempChild in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
+            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement dsElement = _tempChild.submodelElement;
-                if (dsElement.idShort == "forms")
+                ISubmodelElement dsElement = _tempChild;
+                if (dsElement.IdShort == "forms")
                 {
                     semJObject["forms"] = createForms(dsElement)["forms"];
                 }
-                if (dsElement.idShort == "uriVariables")
+                if (dsElement.IdShort == "uriVariables")
                 {
                     createuriVariables(dsElement);
                     semJObject["uriVariables"] = createuriVariables(dsElement);
@@ -380,97 +383,97 @@ namespace AasxPackageExplorer
 
             return semJObject;
         }
-        public static JObject createTDProperties(AdminShell.SubmodelElement propertiesSem)
+        public static JObject createTDProperties(ISubmodelElement propertiesSem)
         {
             JObject propertiesJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection =
-                new AdminShell.SubmodelElementCollection(propertiesSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempProperty in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection =
+                (SubmodelElementCollection)propertiesSem.Copy();
+            foreach (ISubmodelElement _tempProperty in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement _propoerty = _tempProperty.submodelElement;
+                ISubmodelElement _propoerty = _tempProperty;
                 JObject propetyJObject = createInteractionAvoidance(_propoerty);
                 if (propetyJObject.ContainsKey("observable"))
                 {
                     propetyJObject["observable"] = Convert.ToBoolean(propetyJObject["observable"]);
                 }
-                propertiesJObject[_propoerty.idShort] = propetyJObject;
+                propertiesJObject[_propoerty.IdShort] = propetyJObject;
             }
             return propertiesJObject;
         }
-        public static JObject createTDActions(AdminShell.SubmodelElement actionsSem)
+        public static JObject createTDActions(ISubmodelElement actionsSem)
         {
             JObject actionsJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(actionsSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempAction in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)actionsSem.Copy();
+            foreach (ISubmodelElement _tempAction in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement _action = _tempAction.submodelElement;
+                ISubmodelElement _action = _tempAction;
                 JObject actionJObject = createInteractionAvoidance(_action);
-                AdminShell.SubmodelElementCollection _actionItems = new AdminShell.SubmodelElementCollection(_action);
-                foreach (AdminShell.SubmodelElementWrapper _tempActionItem in _actionItems.EnumerateChildren())
+                SubmodelElementCollection _actionItems = (SubmodelElementCollection)_action.Copy();
+                foreach (ISubmodelElement _tempActionItem in _actionItems.EnumerateChildren())
                 {
-                    AdminShell.SubmodelElement _actionItem = _tempActionItem.submodelElement;
-                    if (_actionItem.idShort == "input")
+                    ISubmodelElement _actionItem = _tempActionItem;
+                    if (_actionItem.IdShort == "input")
                     {
                         actionJObject["input"] = JToken.FromObject(createDataSchema(_actionItem));
                     }
-                    if (_actionItem.idShort == "output")
+                    if (_actionItem.IdShort == "output")
                     {
                         actionJObject["output"] = JToken.FromObject(createDataSchema(_actionItem));
                     }
                 }
-                foreach (AdminShell.Qualifier actionQual in _action.qualifiers)
+                foreach (Qualifier actionQual in _action.Qualifiers)
                 {
-                    if (actionQual.type == "safe" || actionQual.type == "idempotent")
+                    if (actionQual.Type == "safe" || actionQual.Type == "idempotent")
                     {
-                        actionJObject[actionQual.type] = Convert.ToBoolean(actionQual.value);
+                        actionJObject[actionQual.Type] = Convert.ToBoolean(actionQual.Value);
                     }
                 }
-                actionsJObject[_action.idShort] = JToken.FromObject(actionJObject);
+                actionsJObject[_action.IdShort] = JToken.FromObject(actionJObject);
             }
             return actionsJObject;
         }
-        public static JObject createTDEvents(AdminShell.SubmodelElement eventsSem)
+        public static JObject createTDEvents(ISubmodelElement eventsSem)
         {
             JObject eventsJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection =
-                new AdminShell.SubmodelElementCollection(eventsSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempEvent in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection =
+                (SubmodelElementCollection)eventsSem.Copy();
+            foreach (ISubmodelElement _tempEvent in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement _event = _tempEvent.submodelElement;
+                ISubmodelElement _event = _tempEvent;
                 JObject actionJObject = createInteractionAvoidance(_event);
-                AdminShell.SubmodelElementCollection _eventItems =
-                    new AdminShell.SubmodelElementCollection(_event);
-                foreach (AdminShell.SubmodelElementWrapper _tempEventItem in _eventItems.EnumerateChildren())
+                SubmodelElementCollection _eventItems =
+                    (SubmodelElementCollection)_event.Copy();
+                foreach (ISubmodelElement _tempEventItem in _eventItems.EnumerateChildren())
                 {
-                    AdminShell.SubmodelElement _eventItem = _tempEventItem.submodelElement;
-                    if (_eventItem.idShort == "subscription")
+                    ISubmodelElement _eventItem = _tempEventItem;
+                    if (_eventItem.IdShort == "subscription")
                     {
                         actionJObject["subscription"] = JToken.FromObject(createDataSchema(_eventItem));
                     }
-                    if (_eventItem.idShort == "data")
+                    if (_eventItem.IdShort == "data")
                     {
                         actionJObject["data"] = JToken.FromObject(createDataSchema(_eventItem));
                     }
-                    if (_eventItem.idShort == "cancellation")
+                    if (_eventItem.IdShort == "cancellation")
                     {
                         actionJObject["cancellation"] = JToken.FromObject(createDataSchema(_eventItem));
                     }
                 }
-                eventsJObject[_event.idShort] = JToken.FromObject(actionJObject);
+                eventsJObject[_event.IdShort] = JToken.FromObject(actionJObject);
             }
             return eventsJObject;
         }
-        public static JObject createTDLinks(AdminShell.SubmodelElement linksSem)
+        public static JObject createTDLinks(ISubmodelElement linksSem)
         {
             List<JObject> links = new List<JObject>();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(linksSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempLink in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)linksSem.Copy();
+            foreach (ISubmodelElement _tempLink in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement link = _tempLink.submodelElement;
+                ISubmodelElement link = _tempLink;
                 JObject jObject = new JObject();
-                foreach (AdminShell.Qualifier linkItem in link.qualifiers)
+                foreach (Qualifier linkItem in link.Qualifiers)
                 {
-                    jObject[linkItem.type] = linkItem.value;
+                    jObject[linkItem.Type] = linkItem.Value;
                 }
                 links.Add(jObject);
             }
@@ -478,61 +481,61 @@ namespace AasxPackageExplorer
             linksJObject["links"] = JToken.FromObject(links);
             return linksJObject;
         }
-        public static JObject createTDSecurity(AdminShell.SubmodelElement securitySem)
+        public static JObject createTDSecurity(ISubmodelElement securitySem)
         {
-            AdminShell.SubmodelElementCollection _tempCollection =
-                new AdminShell.SubmodelElementCollection(securitySem);
+            SubmodelElementCollection _tempCollection =
+                (SubmodelElementCollection)securitySem.Copy();
             List<string> securityList = new List<string>();
-            foreach (AdminShell.Qualifier _security in _tempCollection.qualifiers)
+            foreach (Qualifier _security in _tempCollection.Qualifiers)
             {
-                securityList.Add(_security.value);
+                securityList.Add(_security.Value);
             }
             JObject securityJObject = new JObject();
             securityJObject["security"] = JToken.FromObject(securityList);
             return securityJObject;
         }
 
-        public static JObject createSecurityScheme(AdminShell.SubmodelElement sschemaSem)
+        public static JObject createSecurityScheme(ISubmodelElement sschemaSem)
         {
             JObject sschemaJOBject = new JObject();
-            foreach (AdminShell.Qualifier smQualifier in sschemaSem.qualifiers)
+            foreach (Qualifier smQualifier in sschemaSem.Qualifiers)
             {
-                sschemaJOBject[smQualifier.type] = smQualifier.value;
+                sschemaJOBject[smQualifier.Type] = smQualifier.Value;
             }
-            if (sschemaSem.description != null)
+            if (sschemaSem.Description != null)
             {
-                AdminShell.ListOfLangStr tdDescription = sschemaSem.description.langString;
+                List<LangString> tdDescription = sschemaSem.Description.LangStrings;
                 if (tdDescription.Count != 1)
                 {
-                    sschemaJOBject["description"] = tdDescription[0].str;
+                    sschemaJOBject["description"] = tdDescription[0].Text;
                     int index = 1;
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        AdminShell.LangStr desc = tdDescription[index];
-                        descriptions[desc.lang] = desc.str;
+                        LangString desc = tdDescription[index];
+                        descriptions[desc.Language] = desc.Text;
                     }
                     sschemaJOBject["descriptions"] = descriptions;
                 }
                 else
                 {
-                    sschemaJOBject["description"] = tdDescription[0].str;
+                    sschemaJOBject["description"] = tdDescription[0].Text;
                 }
 
             }
 
             return sschemaJOBject;
         }
-        public static JObject createTDSecurityDefinitions(AdminShell.SubmodelElement sdSem)
+        public static JObject createTDSecurityDefinitions(ISubmodelElement sdSem)
         {
             JObject securityDefinitionsJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection = new AdminShell.SubmodelElementCollection(sdSem);
-            foreach (AdminShell.SubmodelElementWrapper _tempSD in _tempCollection.EnumerateChildren())
+            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sdSem.Copy();
+            foreach (ISubmodelElement _tempSD in _tempCollection.EnumerateChildren())
             {
-                AdminShell.SubmodelElement _securityDefinition = _tempSD.submodelElement;
+                ISubmodelElement _securityDefinition = _tempSD;
                 JObject securityJObject = createSecurityScheme(_securityDefinition);
-                AdminShell.SubmodelElementCollection _securityDItems =
-                    new AdminShell.SubmodelElementCollection(_securityDefinition);
+                SubmodelElementCollection _securityDItems =
+                    (SubmodelElementCollection)_securityDefinition.Copy();
                 foreach (var temp in (JToken)securityJObject)
                 {
                     JProperty secObject = (JProperty)temp;
@@ -542,111 +545,111 @@ namespace AasxPackageExplorer
                         string securityScheme = (secObject.Value).ToString();
                         if (securityScheme == "combo")
                         {
-                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in
+                            foreach (ISubmodelElement _temp_combosecurityDItems in
                                 _securityDItems.EnumerateChildren())
                             {
-                                AdminShell.SubmodelElementCollection csdItem =
-                                    new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                SubmodelElementCollection csdItem =
+                                    (SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
-                                foreach (AdminShell.Qualifier _csdQual in csdItem.qualifiers)
+                                foreach (Qualifier _csdQual in csdItem.Qualifiers)
                                 {
-                                    csdItemList.Add(_csdQual.value);
+                                    csdItemList.Add(_csdQual.Value);
                                 }
-                                securityJObject[csdItem.idShort] = JToken.FromObject(csdItemList);
+                                securityJObject[csdItem.IdShort] = JToken.FromObject(csdItemList);
 
                             }
-                            securityDefinitionsJObject[_securityDefinition.idShort] =
+                            securityDefinitionsJObject[_securityDefinition.IdShort] =
                                 JToken.FromObject(securityJObject);
                         }
                         if (securityScheme == "oauth2")
                         {
-                            foreach (AdminShell.SubmodelElementWrapper _temp_combosecurityDItems in
+                            foreach (ISubmodelElement _temp_combosecurityDItems in
                                 _securityDItems.EnumerateChildren())
                             {
-                                AdminShell.SubmodelElementCollection oauth2SDItem =
-                                    new AdminShell.SubmodelElementCollection(_temp_combosecurityDItems.submodelElement);
+                                SubmodelElementCollection oauth2SDItem =
+                                    (SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
-                                foreach (AdminShell.Qualifier _csdQual in oauth2SDItem.qualifiers)
+                                foreach (Qualifier _csdQual in oauth2SDItem.Qualifiers)
                                 {
-                                    csdItemList.Add(_csdQual.value);
+                                    csdItemList.Add(_csdQual.Value);
                                 }
-                                securityJObject[oauth2SDItem.idShort] = JToken.FromObject(csdItemList);
+                                securityJObject[oauth2SDItem.IdShort] = JToken.FromObject(csdItemList);
                             }
-                            securityDefinitionsJObject[_securityDefinition.idShort] =
+                            securityDefinitionsJObject[_securityDefinition.IdShort] =
                                 JToken.FromObject(securityJObject);
                         }
                     }
                 }
-                securityDefinitionsJObject[_securityDefinition.idShort] = securityJObject;
+                securityDefinitionsJObject[_securityDefinition.IdShort] = securityJObject;
             }
             return securityDefinitionsJObject;
         }
-        public static JObject createTDProfile(AdminShell.SubmodelElement profileSem)
+        public static JObject createTDProfile(ISubmodelElement profileSem)
         {
             JObject profileJObject = new JObject();
-            AdminShell.SubmodelElementCollection _tempCollection =
-                new AdminShell.SubmodelElementCollection(profileSem);
+            SubmodelElementCollection _tempCollection =
+                (SubmodelElementCollection)profileSem.Copy();
             List<string> profileList = new List<string>();
-            foreach (AdminShell.Qualifier _profileQual in _tempCollection.qualifiers)
+            foreach (Qualifier _profileQual in _tempCollection.Qualifiers)
             {
-                profileList.Add(_profileQual.value);
+                profileList.Add(_profileQual.Value);
             }
             profileJObject["profile"] = JToken.FromObject(profileList);
             return profileJObject;
         }
-        public static JObject createTDSchemaDefinitions(AdminShell.SubmodelElement sem)
+        public static JObject createTDSchemaDefinitions(ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
             return semJObject;
         }
 
-        public static JObject ExportSMtoJson(AdminShell.Submodel sm)
+        public static JObject ExportSMtoJson(Submodel sm)
         {
             JObject exportData = new JObject();
             try
             {
                 JObject TDJson = new JObject();
-                if (sm.qualifiers != null)
+                if (sm.Qualifiers != null)
                 {
-                    foreach (AdminShell.Qualifier smQualifier in sm.qualifiers)
+                    foreach (Qualifier smQualifier in sm.Qualifiers)
                     {
-                        TDJson[smQualifier.type] = smQualifier.value.ToString();
+                        TDJson[smQualifier.Type] = smQualifier.Value.ToString();
                     }
                 }
 
                 // description
-                if (sm.description != null)
+                if (sm.Description != null)
                 {
-                    AdminShell.ListOfLangStr tdDescription = sm.description.langString;
+                    List<LangString> tdDescription = sm.Description.LangStrings;
                     if (tdDescription.Count != 1)
                     {
-                        TDJson["description"] = tdDescription[0].str;
+                        TDJson["description"] = tdDescription[0].Text;
                         int index = 1;
                         JObject descriptions = new JObject();
                         for (index = 1; index < tdDescription.Count; index++)
                         {
-                            AdminShell.LangStr desc = tdDescription[index];
-                            descriptions[desc.lang] = desc.str;
+                            LangString desc = tdDescription[index];
+                            descriptions[desc.Language] = desc.Text;
                         }
                         TDJson["descriptions"] = descriptions;
                     }
                     else
                     {
-                        TDJson["description"] = tdDescription[0].str;
+                        TDJson["description"] = tdDescription[0].Text;
                     }
                 }
                 //version
-                if (sm.administration != null)
+                if (sm.Administration != null)
                 {
                     JObject versionInfo = new JObject();
-                    AdminShell.Administration adm = sm.administration;
-                    if (adm.version != "")
+                    AdministrativeInformation adm = sm.Administration;
+                    if (adm.Version != "")
                     {
-                        versionInfo["instance"] = adm.version;
+                        versionInfo["instance"] = adm.Version;
                     }
-                    if (adm.revision != "")
+                    if (adm.Revision != "")
                     {
-                        versionInfo["model"] = adm.version;
+                        versionInfo["model"] = adm.Version;
                     }
                     if (versionInfo.Count != 0)
                     {
@@ -654,46 +657,46 @@ namespace AasxPackageExplorer
                     }
                 }
                 // id
-                TDJson["id"] = sm.identification.id;
-                if (sm.submodelElements != null)
+                TDJson["id"] = sm.Id;
+                if (sm.SubmodelElements != null)
                 {
-                    foreach (AdminShell.SubmodelElementWrapper tdElementWrapper in sm.submodelElements)
+                    foreach (ISubmodelElement tdElementWrapper in sm.SubmodelElements)
                     {
-                        AdminShell.SubmodelElement tdElement = tdElementWrapper.submodelElement;
-                        if (tdElement.idShort == "@type")
+                        ISubmodelElement tdElement = tdElementWrapper;
+                        if (tdElement.IdShort == "@type")
                         {
                             List<object> typeList = new List<object>();
-                            foreach (AdminShell.Qualifier _typeQual in tdElement.qualifiers)
+                            foreach (Qualifier _typeQual in tdElement.Qualifiers)
                             {
-                                typeList.Add((_typeQual.value));
+                                typeList.Add((_typeQual.Value));
 
                             }
                             TDJson["@type"] = JToken.FromObject(typeList);
                         }
-                        if (tdElement.idShort == "titles")
+                        if (tdElement.IdShort == "titles")
                         {
                             JObject _titlesJObject = new JObject();
-                            AdminShell.MultiLanguageProperty mlp = new AdminShell.MultiLanguageProperty(tdElement);
-                            AdminShell.LangStringSet _titles = new AdminShell.LangStringSet(mlp.value);
-                            foreach (AdminShell.LangStr _title in _titles.langString)
+                            MultiLanguageProperty mlp = (MultiLanguageProperty)tdElement.Copy();
+                            LangStringSet _titles = mlp.Value.Copy();
+                            foreach (LangString _title in _titles.LangStrings)
                             {
-                                _titlesJObject[_title.lang] = _title.str;
+                                _titlesJObject[_title.Language] = _title.Text;
                             }
                             TDJson["titles"] = _titlesJObject;
                         }
-                        if (tdElement.idShort == "@context")
+                        if (tdElement.IdShort == "@context")
                         {
                             List<object> contextList = new List<object>();
                             JObject _conSemantic = new JObject();
-                            foreach (AdminShell.Qualifier _con in tdElement.qualifiers)
+                            foreach (Qualifier _con in tdElement.Qualifiers)
                             {
-                                if (_con.type == "@context")
+                                if (_con.Type == "@context")
                                 {
-                                    contextList.Add((_con.value));
+                                    contextList.Add((_con.Value));
                                 }
                                 else
                                 {
-                                    _conSemantic[_con.type] = _con.value;
+                                    _conSemantic[_con.Type] = _con.Value;
 
                                 }
                             }
@@ -703,39 +706,39 @@ namespace AasxPackageExplorer
                             }
                             TDJson["@context"] = JToken.FromObject(contextList);
                         }
-                        if (tdElement.idShort == "properties")
+                        if (tdElement.IdShort == "properties")
                         {
                             TDJson["properties"] = createTDProperties(tdElement);
                         }
-                        else if (tdElement.idShort == "actions")
+                        else if (tdElement.IdShort == "actions")
                         {
                             TDJson["actions"] = createTDActions(tdElement);
                         }
-                        else if (tdElement.idShort == "events")
+                        else if (tdElement.IdShort == "events")
                         {
                             TDJson["events"] = createTDEvents(tdElement);
                         }
-                        else if (tdElement.idShort == "links")
+                        else if (tdElement.IdShort == "links")
                         {
                             TDJson["links"] = createTDLinks(tdElement)["links"];
                         }
-                        else if (tdElement.idShort == "forms")
+                        else if (tdElement.IdShort == "forms")
                         {
                             TDJson["forms"] = createForms(tdElement)["forms"];
                         }
-                        else if (tdElement.idShort == "security")
+                        else if (tdElement.IdShort == "security")
                         {
                             TDJson["security"] = createTDSecurity(tdElement)["security"];
                         }
-                        else if (tdElement.idShort == "securityDefinitions")
+                        else if (tdElement.IdShort == "securityDefinitions")
                         {
                             TDJson["securityDefinitions"] = createTDSecurityDefinitions(tdElement);
                         }
-                        else if (tdElement.idShort == "profile")
+                        else if (tdElement.IdShort == "profile")
                         {
                             TDJson["profile"] = createTDProfile(tdElement);
                         }
-                        else if (tdElement.idShort == "schemaDefinitions")
+                        else if (tdElement.IdShort == "schemaDefinitions")
                         {
                             TDJson["schemaDefinitions"] = createTDSchemaDefinitions(tdElement);
                         }
