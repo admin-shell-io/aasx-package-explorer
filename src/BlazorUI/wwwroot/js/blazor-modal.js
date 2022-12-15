@@ -1,4 +1,4 @@
-// resharper disable all
+// ReSharper disable All
 
 function blazorInitializeModal(dialog, reference) {
     dialog.addEventListener("close", async e => {
