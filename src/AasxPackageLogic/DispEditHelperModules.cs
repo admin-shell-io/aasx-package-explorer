@@ -128,7 +128,7 @@ namespace AasxPackageLogic
                 v =>
                 {
                     var dr = new DiaryReference(referable);
-                    idShort = v as string;
+                    referable.IdShort = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
                     return new AnyUiLambdaActionNone();
                 },
@@ -136,7 +136,6 @@ namespace AasxPackageLogic
                 auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
                 auxButtonLambda: injectToIdShort?.auxLambda
                 );
-            referable.IdShort = idShort;
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -175,12 +174,11 @@ namespace AasxPackageLogic
                 stack, "category", referable, ref category, null, repo,
                 v =>
                 {
-                    category = v as string;
+                    referable.Category = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
                 comboBoxItems: new string[] {"CONSTANT, PARAMETER, VARIABLE"}, comboBoxIsEditable: true);
-            referable.Category = category;
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -226,7 +224,7 @@ namespace AasxPackageLogic
                 v =>
                 {
                     var dr = new DiaryReference(referable);
-                    checksum = v as string;
+                    referable.Checksum = v as string;
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
                     return new AnyUiLambdaActionNone();
                 },
@@ -244,7 +242,6 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 }
                 );
-            referable.Checksum = checksum;
 
             // Extensions (at the end to make them not so much impressive!)
 
@@ -435,7 +432,7 @@ namespace AasxPackageLogic
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
-                        id = v as string;
+                        identifiable.Id = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                         return new AnyUiLambdaActionNone();
                     },
@@ -457,7 +454,6 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
-                identifiable.Id = id;
             }
 
             this.AddHintBubble(stack, hintMode, new[] {
@@ -491,11 +487,10 @@ namespace AasxPackageLogic
                     null, repo,
                     v =>
                     {
-                        version = v as string;
+                        identifiable.Administration.Version = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                identifiable.Administration.Version = version;
 
                 var revision = identifiable.Administration.Revision;
                 this.AddKeyValueRef(
@@ -503,11 +498,10 @@ namespace AasxPackageLogic
                     null, repo,
                     v =>
                     {
-                        revision = v as string;
+                        identifiable.Administration.Revision = v as string;
                         this.AddDiaryEntry(identifiable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                identifiable.Administration.Revision = revision;
             }
         }
 
@@ -766,7 +760,6 @@ namespace AasxPackageLogic
                     },
                     Enum.GetNames(typeof(AssetKind)));
 
-            kind = (AssetKind)Stringification.AssetKindFromString(varKind);
         }
 
         public void DisplayOrEditEntityModelingKind(AnyUiStackPanel stack,
@@ -812,7 +805,6 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     },
                     Enum.GetNames(typeof(ModelingKind)));
-            kind = Stringification.ModelingKindFromString(varKind);
         }
 
         //

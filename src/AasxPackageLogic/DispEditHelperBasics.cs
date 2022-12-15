@@ -2414,7 +2414,6 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                qual.Type = qualType;
 
                 var qualValue = qual.Value;
                 AddKeyValueRef(
@@ -2425,7 +2424,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                qual.Value = qualValue;
 
                 if (SafeguardAccess(
                         substack, repo, qual.ValueId, "valueId:", "Create data element!",

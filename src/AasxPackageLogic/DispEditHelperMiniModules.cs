@@ -266,7 +266,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                qual.Type = type;
 
                 var value = qual.Value;
                 AddKeyValueRef(
@@ -277,7 +276,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                qual.Value = value;
 
                 if (SafeguardAccess(
                         substack, repo, qual.ValueId, "valueId:", "Create data element!",
@@ -529,22 +527,20 @@ namespace AasxPackageLogic
                     substack, "key", pair, ref name, null, repo,
                     v =>
                     {
-                        name = v as string;
+                        pair.Name = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                pair.Name = name;
 
                 var value = pair.Value;
                 AddKeyValueRef(
                     substack, "value", pair, ref value, null, repo,
                     v =>
                     {
-                        value = v as string;
+                        pair.Value = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                pair.Value = value;
 
                 if (SafeguardAccess(
                         substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
@@ -799,7 +795,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                extension.Name = name;
 
                 var valType = Stringification.ToString(extension.ValueType);
                 AddKeyValueRef(
@@ -822,7 +817,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                extension.ValueType = Stringification.DataTypeDefXsdFromString(valType);
 
                 var value = extension.Value;
                 AddKeyValueRef(
@@ -853,7 +847,6 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
-                extension.Value = value;
 
                 // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!
                 this.AddHintBubble(substack, hintMode, new[] {

@@ -2878,7 +2878,6 @@ namespace AasxPackageLogic
                     },
                     comboBoxIsEditable: editMode,
                     comboBoxItems: Enum.GetNames(typeof(DataTypeDefXsd)));
-                p.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(valType);
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -2925,7 +2924,6 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
-                p.Value = val;
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3030,7 +3028,6 @@ namespace AasxPackageLogic
                     },
                     comboBoxIsEditable: true,
                     comboBoxItems: Enum.GetNames(typeof(DataTypeDefXsd)));
-                rng.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(valueType);
 
                 var mine = rng.Min == null || rng.Min.Trim().Length < 1;
                 var maxe = rng.Max == null || rng.Max.Trim().Length < 1;
@@ -3060,7 +3057,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                rng.Min = min;
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3083,7 +3079,6 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
-                rng.Max = max;
             }
             else if (sme is AasCore.Aas3_0_RC02.File fl)
             {
@@ -3112,7 +3107,6 @@ namespace AasxPackageLogic
                     },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
-                fl.ContentType = contentType;
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3161,7 +3155,6 @@ namespace AasxPackageLogic
 
                         return new AnyUiLambdaActionNone();
                     });
-                fl.Value = flValue;
 
                 if (editMode && uploadAssistance != null && packages.Main != null)
                 {
@@ -3466,7 +3459,6 @@ namespace AasxPackageLogic
                     },
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
-                blb.ContentType = blbContentType;   
 
                 var blbValue = Encoding.Default.GetString(blb.Value);
                 this.AddKeyValueRef(
@@ -3496,7 +3488,6 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
-                blb.Value = Encoding.Default.GetBytes(blbValue);
             }
             else if (sme is ReferenceElement rfe)
             {
@@ -3679,7 +3670,6 @@ namespace AasxPackageLogic
                     },
                     comboBoxItems: Enum.GetNames(typeof(EntityType)),
                     comboBoxIsEditable: true);
-                ent.EntityType = (EntityType)Stringification.EntityTypeFromString(entType);
 
                 this.AddHintBubble(
                     stack, hintMode,
