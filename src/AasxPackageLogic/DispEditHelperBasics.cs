@@ -1007,12 +1007,20 @@ namespace AasxPackageLogic
         /// </summary>
         public AdminShell.SubmodelElementWrapper.AdequateElementEnum SelectAdequateEnum(
             string caption, AdminShell.SubmodelElementWrapper.AdequateElementEnum[] excludeValues = null,
-            AdminShell.SubmodelElementWrapper.AdequateElementEnum[] includeValues = null)
+            AdminShell.SubmodelElementWrapper.AdequateElementEnum[] includeValues = null,
+            AasxMenuActionTicket ticket = null)
         {
             // prepare a list
             var fol = new List<AnyUiDialogueListItem>();
             foreach (var en in AdminShell.SubmodelElementWrapper.GetAdequateEnums(excludeValues, includeValues))
                 fol.Add(new AnyUiDialogueListItem(AdminShell.SubmodelElementWrapper.GetAdequateName(en), en));
+
+            // argument in ticket?
+            var arg = ticket?["Kind"] as string;
+            if (arg != null)
+                foreach (var foli in fol)
+                    if (foli.Text.Trim().ToLower() == arg.Trim().ToLower())
+                        return (AdminShell.SubmodelElementWrapper.AdequateElementEnum) foli.Tag;
 
             // prompt for this list
             var uc = new AnyUiDialogueDataSelectFromList(
@@ -1787,7 +1795,7 @@ namespace AasxPackageLogic
                     repo: repo, 
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("qualifier-blank", "Add blink",
+                        .AddAction("qualifier-blank", "Add blank",
                             "Adds an empty qualifier.")
                         .AddAction("qualifier-preset", "Add preset",
                             "Adds an qualifier given from the list of presets.")

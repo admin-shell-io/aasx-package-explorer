@@ -382,7 +382,8 @@ namespace AasxPackageLogic
             Action<AdminShell.HasDataSpecification> setOutput,
             string[] addPresetNames = null, AdminShell.KeyList[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
-            AdminShell.Referable relatedReferable = null)
+            AdminShell.Referable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -410,10 +411,15 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    AddAction(
                         stack, "Specifications:",
-                        new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to a data specification.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
@@ -454,7 +460,8 @@ namespace AasxPackageLogic
             Action<List<AdminShell.Reference>> setOutput,
             string entityName,
             string[] addPresetNames = null, AdminShell.Key[] addPresetKeys = null,
-            AdminShell.Referable relatedReferable = null)
+            AdminShell.Referable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -474,9 +481,15 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
-                        stack, $"{entityName}:", new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                    AddAction(
+                        stack, $"{entityName}:",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to the list.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                                 references.Add(new AdminShell.Reference());

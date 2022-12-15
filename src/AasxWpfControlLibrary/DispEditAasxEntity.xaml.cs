@@ -346,17 +346,20 @@ namespace AasxPackageExplorer
                 if (entity is VisualElementEnvironmentItem veei)
                 {
                     _helper.DisplayOrEditAasEntityAasEnv(
-                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
+                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementAdminShell veaas)
                 {
                     _helper.DisplayOrEditAasEntityAas(
-                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
+                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementAsset veas)
                 {
                     _helper.DisplayOrEditAasEntityAsset(
-                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode);
+                        packages, veas.theEnv, veas.theAsset, editMode, repo, stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
@@ -389,12 +392,13 @@ namespace AasxPackageExplorer
                 {
                     _helper.DisplayOrEditAasEntityOperationVariable(
                         packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
-                        stack, hintMode: hintMode);
+                        stack, hintMode: hintMode, superMenu: superMenu);
                 }
                 else if (entity is VisualElementConceptDescription vecd)
                 {
                     _helper.DisplayOrEditAasEntityConceptDescription(
                         packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
+                        superMenu: superMenu,
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
                 }
@@ -403,7 +407,7 @@ namespace AasxPackageExplorer
                     if (vevw.Parent != null && vevw.Parent is VisualElementAdminShell xpaas)
                         _helper.DisplayOrEditAasEntityView(
                             packages, vevw.theEnv, xpaas.theAas, vevw.theView, editMode, stack,
-                            hintMode: hintMode);
+                            hintMode: hintMode, superMenu: superMenu);
                     else
                         _helper.AddGroup(stack, "View is corrupted!", _helper.levelColors.MainSection);
                 }
@@ -419,7 +423,8 @@ namespace AasxPackageExplorer
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {
-                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack);
+                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementPluginExtension vepe)
                 {
@@ -531,7 +536,8 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder);
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder, 
+                    superMenu: superMenu);
             }
 
             // now render master stack

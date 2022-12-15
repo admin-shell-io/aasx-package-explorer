@@ -35,18 +35,25 @@ namespace AasxPackageLogic
             AdminShell.IAasElement parentContainer,
             CopyPasteBuffer cpb,
             ListOfVisualElementBasic entities,
-            string label = "Buffer:")
+            string label = "Buffer:",
+            AasxMenu superMenu = null)
         {
             // access
             if (parentContainer == null || cpb == null || entities == null)
                 return;
 
             // use an action
-            this.AddAction(
+            AddAction(
                 stack, label,
-                new[] { "Cut", "Copy" }, repo,
-                actionTags: new[] { "aas-multi-elem-cut", "aas-multi-elem-copy" },
-                action: (buttonNdx) =>
+                repo: repo, superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-multi-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-multi-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+C"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -125,7 +132,8 @@ namespace AasxPackageLogic
             AnyUiPanel stack, ModifyRepo repo,
             List<T> list, List<T> entities, ListOfVisualElementBasic.IndexInfo indexInfo,
             object alternativeFocus = null, string label = "Entities:",
-            PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false, bool reFocus = false)
+            PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false, bool reFocus = false,
+            AasxMenu superMenu = null)
         {
             // access
             if (entities == null || indexInfo == null || list == null)
@@ -134,11 +142,25 @@ namespace AasxPackageLogic
             // ask
             AddAction(
                 stack, label,
-                new[] { "Move up", "Move down", "Move top", "Move end", "Delete" },
-                actionTags: new[] { "aas-elem-move-up", "aas-elem-move-down",
-                    "aas-elem-move-top", "aas-elem-move-end", "aas-elem-delete" },
                 repo: repo,
-                action: (buttonNdx) =>
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-multi-elem-move-up", "Move up",
+                        "Moves the currently selected element up in containing collection.",
+                        inputGesture: "Shift+Ctrl+Up")
+                    .AddAction("aas-multi-elem-move-down", "Move down",
+                        "Moves the currently selected element down in containing collection.",
+                        inputGesture: "Shift+Ctrl+Down")
+                    .AddAction("aas-multi-elem-move-top", "Move top",
+                        "Moves the currently selected element to the top in containing collection.",
+                        inputGesture: "Shift+Ctrl+Home")
+                    .AddAction("aas-multi-elem-move-end", "Move end",
+                        "Moves the currently selected element to the end in containing collection.",
+                        inputGesture: "Shift+Ctrl+End")
+                    .AddAction("aas-multi-elem-delete", "Delete",
+                        "Deletes the currently selected element.",
+                        inputGesture: "Delete"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)
                     {
@@ -324,7 +346,8 @@ namespace AasxPackageLogic
         public void EntityListSupplementaryFileHelper(
             AnyUiPanel stack, ModifyRepo repo,
             ListOfVisualElementBasic entities,
-            object alternativeFocus = null, string label = "Entities:")
+            object alternativeFocus = null, string label = "Entities:",
+            AasxMenu superMenu = null)
         {
             // access
             if (entities == null)
@@ -333,10 +356,12 @@ namespace AasxPackageLogic
             // ask
             AddAction(
                 stack, label,
-                new[] { "Delete" },
-                actionTags: new[] { "aas-elem-delete" },
-                repo: repo,
-                action: (buttonNdx) =>
+                repo: repo, superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-multi-elem-del", "Delete",
+                        "Deletes currently selected element(s).",
+                        inputGesture: "Delete"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0)
 
@@ -380,7 +405,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages,
             ListOfVisualElementBasic entities,
             bool editMode, AnyUiStackPanel stack,
-            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null)
+            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
+            AasxMenu superMenu = null)
         {
             //
             // View
@@ -436,10 +462,11 @@ namespace AasxPackageLogic
                     // up down delete
                     var bos = entities.GetListOfBusinessObjects<AdminShell.Submodel>();
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true);
+                        vesm.theEnv?.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, entities);
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesm.theEnv, parent, this.theCopyPaste, entities,
+                        superMenu: superMenu);
                 }
 
                 if (first is VisualElementSubmodelRef vesmr && parent is AdminShell.AdministrationShell aas
@@ -449,10 +476,11 @@ namespace AasxPackageLogic
                     var bos = entities.GetListOfMapResults<AdminShell.SubmodelRef,
                        VisualElementSubmodelRef>((ve) => ve?.theSubmodelRef);
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
-                        aas.submodelRefs, bos, indexInfo, reFocus: true);
+                        aas.submodelRefs, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, entities);
+                    DispMultiElementCutCopyPasteHelper(stack, repo, vesmr.theEnv, parent, this.theCopyPaste, entities,
+                        superMenu: superMenu);
                 }
 
                 if (first is VisualElementSubmodelElement sme)
@@ -463,13 +491,14 @@ namespace AasxPackageLogic
 
                     if (bos.Count > 0 && parent is AdminShell.Submodel sm)
                         EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
-                            sm.submodelElements, bos, indexInfo, reFocus: true);
+                            sm.submodelElements, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     if (bos.Count > 0 && parent is AdminShell.SubmodelElementCollection smec)
                         EntityListMultipleUpDownDeleteHelper<AdminShell.SubmodelElementWrapper>(stack, repo,
-                            smec.value, bos, indexInfo, reFocus: true);
+                            smec.value, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
-                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, entities);
+                    DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, entities,
+                        superMenu: superMenu);
                 }
 
                 if (first is VisualElementOperationVariable opv && parent is AdminShell.Operation oppa)
@@ -488,11 +517,12 @@ namespace AasxPackageLogic
                            VisualElementOperationVariable>((ve) => ve?.theOpVar);
                         EntityListMultipleUpDownDeleteHelper(stack, repo,
                             oppa[opv.theDir], bos, indexInfo, reFocus: true,
-                            alternativeFocus: oppa);
+                            alternativeFocus: oppa, superMenu: superMenu);
                     }
 
                     // cut copy
-                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, entities);
+                    DispMultiElementCutCopyPasteHelper(stack, repo, opv.theEnv, parent, this.theCopyPaste, entities,
+                        superMenu: superMenu);
                 }
 
                 if (first is VisualElementConceptDescription vecd)
@@ -502,6 +532,7 @@ namespace AasxPackageLogic
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         vecd.theEnv?.ConceptDescriptions, bos, indexInfo,
+                        superMenu: superMenu,
                         preventMove: cdSortOrder.HasValue
                             && cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None,
                         sendUpdateEvent: new PackCntChangeEventData()
@@ -513,7 +544,7 @@ namespace AasxPackageLogic
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, vecd.theEnv?.ConceptDescriptions,
-                        this.theCopyPaste, entities);
+                        this.theCopyPaste, entities, superMenu: superMenu);
                 }
 
                 if (first is VisualElementAsset veass)
@@ -523,6 +554,7 @@ namespace AasxPackageLogic
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         veass.theEnv?.Assets, bos, indexInfo,
+                        superMenu: superMenu,
                         sendUpdateEvent: new PackCntChangeEventData()
                         {
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veass.theEnv)
@@ -532,7 +564,7 @@ namespace AasxPackageLogic
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, veass.theEnv, veass.theEnv?.Assets,
-                        this.theCopyPaste, entities);
+                        this.theCopyPaste, entities, superMenu: superMenu);
                 }
 
                 if (first is VisualElementAdminShell veaas)
@@ -542,6 +574,7 @@ namespace AasxPackageLogic
 
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         veaas.theEnv?.AdministrationShells, bos, indexInfo,
+                        superMenu: superMenu,
                         sendUpdateEvent: new PackCntChangeEventData()
                         {
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == veaas.theEnv)
@@ -551,7 +584,7 @@ namespace AasxPackageLogic
 
                     // cut copy paste
                     DispMultiElementCutCopyPasteHelper(stack, repo, veaas.theEnv, veaas.theEnv?.AdministrationShells,
-                        this.theCopyPaste, entities);
+                        this.theCopyPaste, entities, superMenu: superMenu);
                 }
 
                 //
@@ -562,24 +595,29 @@ namespace AasxPackageLogic
                     if (bos.Count > 0 &&
                         !(first is VisualElementSupplementalFile))
                     {
-                        this.AddAction(stack, "Actions:", new[] { "Change attribute .." }, repo, (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0)
+                        AddAction(stack, "Actions:",
+                            repo: repo, superMenu: superMenu,
+                            ticketMenu: new AasxMenu()
+                                .AddAction("aas-elem-cut", "Change attribute ..",
+                                    "Changes common attributes of multiple selected elements."),
+                            ticketAction: (buttonNdx, ticket) =>
                             {
-                                var uc = new AnyUiDialogueDataChangeElementAttributes();
-                                if (this.context.StartFlyoverModal(uc))
+                                if (buttonNdx == 0)
                                 {
-                                    object nf = null;
-                                    foreach (var bo in bos)
+                                    var uc = new AnyUiDialogueDataChangeElementAttributes();
+                                    if (this.context.StartFlyoverModal(uc))
                                     {
-                                        ChangeElementAttributes(bo, uc);
-                                        nf = bo;
+                                        object nf = null;
+                                        foreach (var bo in bos)
+                                        {
+                                            ChangeElementAttributes(bo, uc);
+                                            nf = bo;
+                                        }
+                                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
                                     }
-                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: nf);
                                 }
-                            }
-                            return new AnyUiLambdaActionNone();
-                        });
+                                return new AnyUiLambdaActionNone();
+                            });
                     }
                 }
 
@@ -590,6 +628,7 @@ namespace AasxPackageLogic
                 {
                     // Delete
                     EntityListSupplementaryFileHelper(stack, repo, entities,
+                        superMenu: superMenu,
                         alternativeFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
                                 VisualElementEnvironmentItem.ItemType.SupplFiles));
                 }
