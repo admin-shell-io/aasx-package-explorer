@@ -214,7 +214,7 @@ namespace Extensions
             {
                 return new AasElementSelfDescription("Blob", "Blob");
             }
-            else if(referable is System.IO.File)
+            else if(referable is AasCore.Aas3_0_RC02.File)
             {
                 return new AasElementSelfDescription("File", "File");
             }

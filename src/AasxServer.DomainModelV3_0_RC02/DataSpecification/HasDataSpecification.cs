@@ -19,15 +19,16 @@ namespace AasCore.Aas3_0_RC02.HasDataSpecification
                 {
                     if (eds?.DataSpecificationContent?.DataSpecificationIEC61360 != null)
                     {
+                        return eds;
+                    }
 
-                        //parallel logic to: eds?.DataSpecification?.Matches(DataSpecificationIEC61360.GetIdentifier(), Key.MatchMode.Identification) == true
-                        if (eds.DataSpecification.Keys?.Count == 1)
+                    //parallel logic to: eds?.DataSpecification?.Matches(DataSpecificationIEC61360.GetIdentifier(), Key.MatchMode.Identification) == true
+                    if (eds.DataSpecification.Keys?.Count == 1)
+                    {
+                        var key = eds.DataSpecification.Keys[0];
+                        if (key != null && key.Value.Equals(DataSpecificationIEC61360.GetIdentifier()))
                         {
-                            var key = eds.DataSpecification.Keys[0];
-                            if(key != null && key.Value.Equals(DataSpecificationIEC61360.GetIdentifier()))
-                            {
-                                return eds;
-                            }
+                            return eds;
                         }
                     }
                 }
