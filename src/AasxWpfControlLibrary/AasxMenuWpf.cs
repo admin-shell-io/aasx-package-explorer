@@ -152,6 +152,8 @@ namespace AasxWpfControlLibrary
 
             foreach (var mi in Menu.FindAll<AasxMenuItemHotkeyed>())
             {
+                if (mi.InputGesture == null)
+                    continue;
                 var g = kgConv.ConvertFromInvariantString(mi.InputGesture) as KeyGesture;
                 if (g != null 
                     && g.Key == e.Key
