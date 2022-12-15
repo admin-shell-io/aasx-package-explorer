@@ -31,7 +31,7 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using JetBrains.Annotations;
 using Key = System.Windows.Input.Key;
 

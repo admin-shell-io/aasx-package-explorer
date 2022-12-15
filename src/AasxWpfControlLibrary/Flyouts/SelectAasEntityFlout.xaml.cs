@@ -28,7 +28,7 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPackageExplorer

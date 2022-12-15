@@ -37,7 +37,7 @@ using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
 using AdminShellNS;
 using AdminShellNS.Extenstions;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

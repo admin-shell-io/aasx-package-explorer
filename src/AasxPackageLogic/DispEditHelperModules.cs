@@ -22,7 +22,7 @@ using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
-using Extenstions;
+using Extensions;
 
 namespace AasxPackageLogic
 {

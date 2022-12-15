@@ -17,7 +17,7 @@ using AdminShellNS;
 using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

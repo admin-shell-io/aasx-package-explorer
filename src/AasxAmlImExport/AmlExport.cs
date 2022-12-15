@@ -19,7 +19,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using Aml.Engine.AmlObjects;
 using Aml.Engine.CAEX;
-using Extenstions;
+using Extensions;
 
 namespace AasxAmlImExport
 {

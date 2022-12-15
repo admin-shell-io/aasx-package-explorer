@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 
 #nullable enable
 

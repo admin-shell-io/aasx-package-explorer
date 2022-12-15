@@ -21,7 +21,7 @@ using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AdminShellNS.DiaryData;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 // ReSharper disable UnassignedField.Global

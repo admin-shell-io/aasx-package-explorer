@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 using IO.Swagger.Api;
 using IO.Swagger.Client;
 using Microsoft.AspNetCore.Http;

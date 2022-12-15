@@ -20,7 +20,7 @@ using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic

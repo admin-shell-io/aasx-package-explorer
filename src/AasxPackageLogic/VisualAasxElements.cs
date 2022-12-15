@@ -19,7 +19,7 @@ using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AdminShellNS.Display;
 using AnyUi;
-using Extenstions;
+using Extensions;
 
 // ReSharper disable VirtualMemberCallInConstructor
 

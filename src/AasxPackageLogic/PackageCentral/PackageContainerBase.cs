@@ -18,7 +18,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic.PackageCentral

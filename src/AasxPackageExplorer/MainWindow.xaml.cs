@@ -33,7 +33,7 @@ using AdminShellNS;
 using AdminShellNS.DiaryData;
 using AdminShellNS.Extenstions;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;

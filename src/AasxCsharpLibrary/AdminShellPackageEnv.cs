@@ -17,7 +17,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

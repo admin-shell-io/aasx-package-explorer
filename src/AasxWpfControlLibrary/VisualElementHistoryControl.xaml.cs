@@ -24,7 +24,7 @@ using System.Windows.Shapes;
 using AasCore.Aas3_0_RC02;
 using AasxPackageLogic;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 
 namespace AasxPackageExplorer
 {

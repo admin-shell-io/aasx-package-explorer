@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 
 namespace AasxPackageExplorer
 {

@@ -24,7 +24,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 using IdentityModel.Client;
 using IO.Swagger.Api;
 using IO.Swagger.Client;

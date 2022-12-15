@@ -13,7 +13,7 @@ using System.IO;
 using AasCore.Aas3_0_RC02;
 using AasxPredefinedConcepts;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 using NJsonSchema.Validation;
 using Environment = AasCore.Aas3_0_RC02.Environment;

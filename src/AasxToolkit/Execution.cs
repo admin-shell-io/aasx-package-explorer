@@ -8,7 +8,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AasCore.Aas3_0_RC02;
-using Extenstions;
+using Extensions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using AasFormUtils = AasxIntegrationBase.AasForms.AasFormUtils;

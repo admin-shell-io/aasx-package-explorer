@@ -21,7 +21,7 @@ using AdminShellNS;
 using AdminShellNS.DiaryData;
 using AdminShellNS.Extenstions;
 using AnyUi;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic

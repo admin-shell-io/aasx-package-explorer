@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 
 namespace AasxPredefinedConcepts.ConceptModel
 {

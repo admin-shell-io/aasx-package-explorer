@@ -19,7 +19,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using AdminShellNS.Extenstions;
 using Aml.Engine.CAEX;
-using Extenstions;
+using Extensions;
 using Newtonsoft.Json.Linq;
 
 namespace AasxAmlImExport

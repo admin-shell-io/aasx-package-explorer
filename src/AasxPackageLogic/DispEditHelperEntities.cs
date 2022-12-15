@@ -25,7 +25,7 @@ using AdminShellNS;
 using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
-using Extenstions;
+using Extensions;
 
 namespace AasxPackageLogic
 {

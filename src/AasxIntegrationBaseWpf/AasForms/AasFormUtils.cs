@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using Extenstions;
+using Extensions;
 
 namespace AasxIntegrationBase.AasForms
 {
