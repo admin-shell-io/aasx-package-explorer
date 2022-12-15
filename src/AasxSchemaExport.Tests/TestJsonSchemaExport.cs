@@ -66,7 +66,7 @@ namespace AasxSchemaExport.Tests
             var definitionRef = FindObjectInArrayWithProperty(
                 schema.SelectToken($"{Tokens.AllOf}"),
                 $"{Tokens.Ref}",
-                "aas.json#/definitions/Submodel");
+                $"{Constants.MetaModelSchemaUrl}{Constants.MetaModelSubmodelDefinitionPath}");
 
             Assert.NotNull(
                 definitionRef,
