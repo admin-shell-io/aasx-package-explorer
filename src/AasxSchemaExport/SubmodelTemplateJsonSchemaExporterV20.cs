@@ -56,7 +56,6 @@ namespace AasxSchemaExport
             schema[Tokens.Schema] = "https://json-schema.org/draft/2019-09/schema";
             schema[Tokens.Title] = $"AssetAdministrationShell{submodel.idShort}";
             schema[Tokens.Type] = "object";
-            schema[Tokens.UnevaluatedProperties] = false;
             schema[Tokens.AllOf] = new JArray();
             schema[Tokens.Definitions] = new JObject();
         }

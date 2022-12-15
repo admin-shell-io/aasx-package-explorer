@@ -59,17 +59,6 @@ namespace AasxSchemaExport.Tests
         }
 
         [Test]
-        public void Test_unevaluated_properties_should_be_set_to_false()
-        {
-            var schema = ExportSchema();
-
-            Assert.AreEqual(schema.GetValue<bool>(
-                "unevaluatedProperties"),
-                false,
-                "The value of unevaluatedProperties must be set to false.");
-        }
-
-        [Test]
         public void Test_submodel_reference()
         {
             var schema = ExportSchema();
