@@ -16,9 +16,6 @@ namespace AasxSchemaExport
 {
     public class SubmodelTemplateJsonSchemaExporterV20 : ISchemaExporter
     {
-        private const string MetaModelSchemaUrl = "https://admin-shell-io.com/schemas/v2/aas.json";
-        private const string MetaModelSubmodelDefinitionPath = "#/definitions/Submodel";
-
         private List<Func<SubmodelElementDefinitionContext, bool>> _submodelElementDefinitionSuppliers;
 
         public string ExportSchema(AdminShellV20.Submodel submodel)
@@ -53,17 +50,16 @@ namespace AasxSchemaExport
 
         private void AddRootData(JObject schema, AdminShellV20.Submodel submodel)
         {
-            schema[Tokens.Schema] = "https://json-schema.org/draft/2019-09/schema";
+            schema[Tokens.Schema] = Constants.JsonSchemaDraftVersion;
             schema[Tokens.Title] = $"AssetAdministrationShell{submodel.idShort}";
             schema[Tokens.Type] = "object";
-            schema[Tokens.UnevaluatedProperties] = false;
             schema[Tokens.AllOf] = new JArray();
             schema[Tokens.Definitions] = new JObject();
         }
 
         private void AddSubmodelReference(JObject schema)
         {
-            var reference = $"{MetaModelSchemaUrl}{MetaModelSubmodelDefinitionPath}";
+            var reference = $"{Constants.MetaModelSchemaUrl}{Constants.MetaModelSubmodelDefinitionPath}";
             AddReferenceToArray(schema, GetRootAllOf, reference);
         }
 
@@ -103,7 +99,7 @@ namespace AasxSchemaExport
 
             var targetAllOf = SelectToken<JArray>(
                 schema,
-                $"$.{Tokens.Definitions}.{Tokens.Elements}.properties.submodelElements.allOf");
+                $"$.{Tokens.Definitions}.{Tokens.Elements}.{Tokens.Properties}.{Tokens.SubmodelElements}.{Tokens.AllOf}");
             var submodelElements = submodel.submodelElements.Select(item => item.submodelElement);
 
             AddDefinitionsForSubmodelElements(schema, targetAllOf, submodelElements);
