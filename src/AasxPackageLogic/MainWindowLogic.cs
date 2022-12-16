@@ -1062,7 +1062,7 @@ namespace AasxPackageExplorer
                 // need id for idempotent behaviour
                 if (submodel == null || submodel.identification == null)
                 {
-                    LogErrorToTicket(ticket, 
+                    LogErrorToTicket(ticket,
                         "Submodel Read: Identification of SubModel is (null).");
                     return;
                 }

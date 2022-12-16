@@ -56,9 +56,9 @@ namespace AdminShellNS
         public T2 Get2(T1 key1) => _forward[key1];
         public T1 Get1(T2 key2) => _backward[key2];
 
-        public T2 Get2OrDefault(T1 key1) 
+        public T2 Get2OrDefault(T1 key1)
             => (key1 != null && _forward.ContainsKey(key1)) ? _forward[key1] : default(T2);
-        public T1 Get1OrDefault(T2 key2) 
+        public T1 Get1OrDefault(T2 key2)
             => (key2 != null && _backward.ContainsKey(key2)) ? _backward[key2] : default(T1);
 
         public void Clear() { _forward.Clear(); _backward.Clear(); }

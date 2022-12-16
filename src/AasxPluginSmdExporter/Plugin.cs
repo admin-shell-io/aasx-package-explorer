@@ -36,7 +36,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // To work five arguments are needed
                 if (args[0] is AasxIntegrationBase.IFlyoutProvider fop
                     && fop != null
-                    && args[1] is Queue<string> 
+                    && args[1] is Queue<string>
                     && args[2] is string
                     && args[3] is string
                     && args[4] is AasxMenuActionTicket ticket)

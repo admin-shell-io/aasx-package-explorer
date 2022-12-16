@@ -71,7 +71,7 @@ namespace AasxPackageLogic
             //
             // Dispatch (Sign and Validate either on Submodel / AAS level)
             //
-            
+
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt"))
             {
                 if (cmd == "sign"
@@ -98,7 +98,7 @@ namespace AasxPackageLogic
                     {
                         LogErrorToTicket(ticket, ex, "Signing Submodel/ SME");
                     }
-                    
+
                     // important to return here!
                     return;
                 }
@@ -424,7 +424,7 @@ namespace AasxPackageLogic
             if (cmd == "submodeltdexport")
             {
                 // arguments
-                if (ticket.Submodel == null || 
+                if (ticket.Submodel == null ||
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
@@ -485,7 +485,7 @@ namespace AasxPackageLogic
             if (cmd == "importaml")
             {
                 // arguments
-                if (ticket.Env == null || ticket.Env == null 
+                if (ticket.Env == null || ticket.Env == null
                     || ticket.Submodel != null || ticket.SubmodelElement != null ||
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
@@ -606,7 +606,7 @@ namespace AasxPackageLogic
                 try
                 {
                     UANodeSet InformationModel = UANodeSetExport.getInformationModel(fn);
-                    
+
                     ticket.PostResults = new Dictionary<string, object>();
                     ticket.PostResults.Add("TakeOver", UANodeSetImport.Import(InformationModel));
 
@@ -622,7 +622,7 @@ namespace AasxPackageLogic
             {
                 // arguments
                 if (ticket.Env == null || ticket.Env == null
-                    || ticket.Submodel == null 
+                    || ticket.Submodel == null
                     || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
@@ -645,7 +645,7 @@ namespace AasxPackageLogic
             if (cmd == "exportpredefineconcepts")
             {
                 // arguments
-                if (ticket.Env == null 
+                if (ticket.Env == null
                     || ticket.Submodel == null
                     || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
@@ -668,7 +668,7 @@ namespace AasxPackageLogic
             if (cmd == "exporttable" || cmd == "importtable")
             {
                 // arguments
-                if (ticket.Env == null 
+                if (ticket.Env == null
                 || ticket.Submodel == null
                 || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
@@ -924,7 +924,7 @@ namespace AasxPackageLogic
                     Log.Singleton.Error(ex, "when adding Submodel to AAS");
                 }
             }
-            
+
             if (cmd == "convertelement")
             {
                 // arguments
@@ -972,7 +972,7 @@ namespace AasxPackageLogic
             }
         }
 
-        public Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord> 
+        public Tuple<List<ImportExportTableRecord>, ExportUmlRecord, ImportTimeSeriesRecord>
             GetImportExportTablePreset()
         {
             // try to get presets from the plugin
@@ -988,7 +988,8 @@ namespace AasxPackageLogic
                         presets[1] as ExportUmlRecord,
                         presets[2] as ImportTimeSeriesRecord
                     );
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 LogInternally.That.SilentlyIgnoredError(ex);
             }

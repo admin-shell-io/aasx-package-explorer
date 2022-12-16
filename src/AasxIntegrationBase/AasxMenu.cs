@@ -36,11 +36,12 @@ namespace AasxIntegrationBase
     /// <summary>
     /// Special information requirement to an AASX menu item
     /// </summary>
-    public enum AasxMenuArgReqInfo { 
+    public enum AasxMenuArgReqInfo
+    {
         None = 0x00,
-        AAS = 0x01, 
-        Submodel = 0x02, 
-        SubmodelRef = 0x04, 
+        AAS = 0x01,
+        Submodel = 0x02,
+        SubmodelRef = 0x04,
         SME = 0x08,
         SmSmrSme = 0x02 | 0x04 | 0x08
     };
@@ -95,7 +96,7 @@ namespace AasxIntegrationBase
         public AasxMenuListOfArgDefs Add(
             string name, string help, bool hidden = false)
         {
-            this.Add(new AasxMenuArgDef() { Name = name, Help = help, Hidden = hidden }); 
+            this.Add(new AasxMenuArgDef() { Name = name, Help = help, Hidden = hidden });
             return this;
         }
 
@@ -153,7 +154,7 @@ namespace AasxIntegrationBase
                     var name = f.Name;
                     if (!name.HasContent())
                         name = t.Name;
-                    
+
                     foreach (var ad in this)
                         if (ad.Key?.Name?.Trim().ToLower() == name.ToLower())
                         {
@@ -173,7 +174,7 @@ namespace AasxIntegrationBase
     /// </summary>
     /// <param name="nameLower">Name of menu item in lower case</param>
     public delegate void AasxMenuActionDelegate(
-        string nameLower, 
+        string nameLower,
         AasxMenuItemBase item,
         AasxMenuActionTicket ticket);
 
@@ -182,7 +183,7 @@ namespace AasxIntegrationBase
     /// </summary>
     /// <param name="nameLower">Name of menu item in lower case</param>
     public delegate Task AasxMenuActionAsyncDelegate(
-        string nameLower, 
+        string nameLower,
         AasxMenuItemBase item,
         AasxMenuActionTicket ticket);
 
@@ -312,7 +313,7 @@ namespace AasxIntegrationBase
         public AasxMenuItem()
         {
         }
-        
+
         //
         // more
         //
@@ -320,7 +321,7 @@ namespace AasxIntegrationBase
         public void Add(AasxMenuItemBase item)
         {
             Childs.Add(item);
-        }        
+        }
     }
 
 
@@ -528,7 +529,7 @@ namespace AasxIntegrationBase
             }
         }
 
-        public IEnumerable<T> FindAll<T>(Func<AasxMenuItemBase, bool> pred = null) 
+        public IEnumerable<T> FindAll<T>(Func<AasxMenuItemBase, bool> pred = null)
             where T : AasxMenuItemBase
         {
             foreach (var ch in this)
@@ -681,7 +682,7 @@ namespace AasxIntegrationBase
                         if (av.Key?.Name?.Trim().ToLower() == name?.Trim().ToLower())
                             return av.Value;
                 return null;
-            }        
+            }
             set
             {
                 if (ArgValue != null)

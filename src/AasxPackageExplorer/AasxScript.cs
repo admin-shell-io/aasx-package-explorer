@@ -70,12 +70,12 @@ namespace AasxPackageExplorer
                 Console.WriteLine($"Execute {cmd} " + string.Join(",", args));
             }
 
-            public static void Flex(int a=0, int b=0, int c=0)
+            public static void Flex(int a = 0, int b = 0, int c = 0)
             {
                 Console.WriteLine($"Flex a {a} b {b} c{c}");
             }
         }
-        
+
         public class ScriptInvokableBase : IInvokable
         {
             protected AasxScript _script = null;
@@ -95,7 +95,7 @@ namespace AasxPackageExplorer
 
         public class Script_WriteLine : ScriptInvokableBase
         {
-            public Script_WriteLine(AasxScript script) : base(script) 
+            public Script_WriteLine(AasxScript script) : base(script)
             {
                 script?.AddHelpInfo("WriteLine",
                     "Outputs all arguments to script log messages and starts new line.",
@@ -112,7 +112,7 @@ namespace AasxPackageExplorer
 
         public class Script_Sleep : ScriptInvokableBase
         {
-            public Script_Sleep(AasxScript script) : base(script) 
+            public Script_Sleep(AasxScript script) : base(script)
             {
                 script?.AddHelpInfo("Sleep",
                     "Pauses the execution for a number of given milli seconds.",
@@ -256,7 +256,7 @@ namespace AasxPackageExplorer
                 // debug
                 if (_script._logLevel >= 2)
                     Console.WriteLine($"Execute Select " + string.Join(",", args));
-               
+
                 // invoke action
                 // https://stackoverflow.com/questions/39438441/
                 var x = Application.Current.Dispatcher.Invoke(() =>
@@ -265,7 +265,7 @@ namespace AasxPackageExplorer
                 });
                 if (x != null)
                     Log.Singleton.Silent("" + x.idShort);
-                
+
                 // done
                 return x;
             }
@@ -273,7 +273,7 @@ namespace AasxPackageExplorer
 
         public class Script_Location : ScriptInvokableBase
         {
-            public Script_Location(AasxScript script) : base(script) 
+            public Script_Location(AasxScript script) : base(script)
             {
                 script?.AddHelpInfo("Location",
                     "Stores (\"Push\") or retrieves (\"Pop\") the currently selected item from a stack.",
@@ -291,7 +291,7 @@ namespace AasxPackageExplorer
                 {
                     _script.ScriptLog?.Error("Script: Location: Command is missing!");
                     return -1;
-                }   
+                }
 
                 // check for allowed commands
                 var cmdtl = cmd.Trim().ToLower();
@@ -320,7 +320,7 @@ namespace AasxPackageExplorer
 
         public class Script_System : ScriptInvokableBase
         {
-            public Script_System(AasxScript script) : base(script) 
+            public Script_System(AasxScript script) : base(script)
             {
                 script?.AddHelpInfo("System",
                     "Executes a command-line given by the arguments on the operating system prompt.",
@@ -362,7 +362,7 @@ namespace AasxPackageExplorer
                 p.Start();
                 // Do not wait for the child process to exit before
                 // reading to the end of its redirected stream.
-                // p.WaitForExit();
+                //// p.WaitForExit();
                 // Read the output stream first and then wait.
                 string stdout = p.StandardOutput.ReadToEnd();
                 string stderr = p.StandardError.ReadToEnd();
@@ -388,14 +388,14 @@ namespace AasxPackageExplorer
             foreach (var nt in root.GetNestedTypes())
                 if (nt.GetInterfaces().Contains(typeof(IInvokable)))
                 {
-                    var x = Activator.CreateInstance(nt,this);
+                    var x = Activator.CreateInstance(nt, this);
                 }
         }
 
         public void StartEnginBackground(
-            string script, 
+            string script,
             int logLevel,
-            AasxMenu rootMenu, 
+            AasxMenu rootMenu,
             IAasxScriptRemoteInterface remote)
         {
             // access
@@ -453,8 +453,9 @@ namespace AasxPackageExplorer
                     s.Execute();
                     if (_logLevel >= 2)
                         Log.Singleton.Info("Script: .. execution ended.");
-                } 
-                catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     Log.Singleton.Error(ex, "Script: ");
                 }
             };

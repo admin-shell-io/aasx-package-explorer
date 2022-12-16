@@ -30,14 +30,14 @@ namespace AasxWpfControlLibrary
         protected DoubleSidedDict<string, AasxMenuItem> _menuItems
             = new DoubleSidedDict<string, AasxMenuItem>();
 
-        protected DoubleSidedDict<AasxMenuItem, System.Windows.Controls.MenuItem> _wpfItems 
-            = new DoubleSidedDict<AasxMenuItem, System.Windows.Controls.MenuItem>(); 
+        protected DoubleSidedDict<AasxMenuItem, System.Windows.Controls.MenuItem> _wpfItems
+            = new DoubleSidedDict<AasxMenuItem, System.Windows.Controls.MenuItem>();
 
         public AasxMenu Menu { get => _menu; }
         private AasxMenu _menu = new AasxMenu();
 
         private void RenderItemCollection(
-            AasxMenu topMenu, AasxMenu menuItems, 
+            AasxMenu topMenu, AasxMenu menuItems,
             System.Windows.Controls.ItemCollection wpfItems,
             CommandBindingCollection cmdBindings = null,
             InputBindingCollection inputBindings = null,
@@ -68,17 +68,12 @@ namespace AasxWpfControlLibrary
 
                     // creat cmd and bind
                     cmd = new RoutedUICommand(mi.Name, mi.Name, typeof(string));
-                    cmdBindings.Add(new CommandBinding(cmd, (s3, e3) => {
-                        //// decode
-                        //var ruic = e3?.Command as RoutedUICommand;
-                        //if (ruic == null)
-                        //    return;
-                        //var cmdname = ruic.Text?.Trim().ToLower();
-
+                    cmdBindings.Add(new CommandBinding(cmd, (s3, e3) =>
+                    {
                         // activate
-                        var ticket = new AasxMenuActionTicket() 
-                        { 
-                            MenuItem = m_mii 
+                        var ticket = new AasxMenuActionTicket()
+                        {
+                            MenuItem = m_mii
                         };
                         topMenu?.ActivateAction(m_mii, ticket);
                     }));
@@ -155,7 +150,7 @@ namespace AasxWpfControlLibrary
                 if (mi.InputGesture == null)
                     continue;
                 var g = kgConv.ConvertFromInvariantString(mi.InputGesture) as KeyGesture;
-                if (g != null 
+                if (g != null
                     && g.Key == e.Key
                     && g.Modifiers == Keyboard.Modifiers)
                 {
@@ -169,7 +164,7 @@ namespace AasxWpfControlLibrary
         }
 
         public void LoadAndRender(
-            AasxMenu menuInfo, 
+            AasxMenu menuInfo,
             System.Windows.Controls.Menu wpfMenu,
             CommandBindingCollection cmdBindings = null,
             InputBindingCollection inputBindings = null)
@@ -187,7 +182,7 @@ namespace AasxWpfControlLibrary
         public bool IsChecked(string name)
         {
             var wpf = _wpfItems.Get2OrDefault(_menuItems.Get2OrDefault(name?.Trim().ToLower()));
-            if (wpf !=null) 
+            if (wpf != null)
                 return wpf.IsChecked;
             return false;
         }

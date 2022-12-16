@@ -73,7 +73,7 @@ namespace AasxPackageLogic
             }
 
             // print code sheet
-            AddAction(stack, "Actions:", 
+            AddAction(stack, "Actions:",
                 repo: repo,
                 superMenu: superMenu,
                 ticketMenu: new AasxMenu()
@@ -81,22 +81,22 @@ namespace AasxPackageLogic
                         "Prints an sheet with 2D codes for the asset id."),
                 ticketAction: (buttonNdx, ticket) =>
                 {
-                if (buttonNdx == 0)
-                {
-                    var uc = new AnyUiDialogueDataEmpty();
-                    this.context?.StartFlyover(uc);
-                    try
+                    if (buttonNdx == 0)
                     {
-                        this.context?.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                        var uc = new AnyUiDialogueDataEmpty();
+                        this.context?.StartFlyover(uc);
+                        try
+                        {
+                            this.context?.PrintSingleAssetCodeSheet(asset.identification.id, asset.idShort);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Singleton.Error(ex, "When printing, an error occurred");
+                        }
+                        this.context?.CloseFlyover();
                     }
-                    catch (Exception ex)
-                    {
-                        Log.Singleton.Error(ex, "When printing, an error occurred");
-                    }
-                    this.context?.CloseFlyover();
-                }
-                return new AnyUiLambdaActionNone();
-            });
+                    return new AnyUiLambdaActionNone();
+                });
 
             // Referable
             this.DisplayOrEditEntityReferable(stack, asset, categoryUsual: false);
@@ -2648,7 +2648,7 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
-                }
+            }
 
             if (editMode && sme is AdminShell.Operation smo)
             {

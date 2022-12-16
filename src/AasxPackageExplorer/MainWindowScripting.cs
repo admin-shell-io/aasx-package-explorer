@@ -114,7 +114,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Info("Copied JSON to clipboard.");
                     }
                 };
-                
+
                 // execute
                 this.StartFlyoverModal(uc);
                 _currentScriptText = uc.DiaData.Text;
@@ -138,8 +138,8 @@ namespace AasxPackageExplorer
                 }
             }
 
-            for (int i=0;i<9; i++)
-                if (cmd == $"launchscript{i}" 
+            for (int i = 0; i < 9; i++)
+                if (cmd == $"launchscript{i}"
                     && Options.Curr.ScriptPresets != null)
                 {
                     // order in human sense
@@ -165,7 +165,7 @@ namespace AasxPackageExplorer
                     {
                         if (AnyUiMessageBoxResult.Yes != MessageBoxFlyoutShow(
                             $"Executing script preset #{1 + scriptIndex} " +
-                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?", 
+                            $"'{Options.Curr.ScriptPresets[scriptIndex].Name}'. \nContinue?",
                             "Question", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Question))
                             return;
                     }
@@ -221,7 +221,7 @@ namespace AasxPackageExplorer
 
             // available elements in the environment
             var firstAas = pm.AdministrationShells.FirstOrDefault();
-            
+
             AdminShell.Submodel firstSm = null;
             if (firstAas != null && firstAas.submodelRefs != null && firstAas.submodelRefs.Count > 0)
                 firstSm = pm.FindSubmodel(firstAas.submodelRefs[0]);
@@ -249,7 +249,7 @@ namespace AasxPackageExplorer
             {
                 // just return as Referable
                 return new Tuple<AdminShell.Referable, object>(
-                    siThis?.GetDereferencedMainDataObject() as AdminShell.Referable, 
+                    siThis?.GetDereferencedMainDataObject() as AdminShell.Referable,
                     siThis?.GetMainDataObject()
                 );
             }
@@ -323,7 +323,7 @@ namespace AasxPackageExplorer
                 if (refType == ScriptSelectRefType.AAS)
                 {
                     var idx = pm?.AdministrationShells?.IndexOf(siAAS?.theAas);
-                    if (siAAS?.theAas == null || idx == null 
+                    if (siAAS?.theAas == null || idx == null
                         || idx.Value < 0 || idx.Value >= pm.AdministrationShells.Count - 1)
                     {
                         Log.Singleton.Error("Script: For next AAS, the selected AAS is unknown " +
@@ -337,7 +337,7 @@ namespace AasxPackageExplorer
                 if (refType == ScriptSelectRefType.SM)
                 {
                     var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
-                    if (siAAS?.theAas?.submodelRefs == null 
+                    if (siAAS?.theAas?.submodelRefs == null
                         || siSM?.theSubmodel == null
                         || siSM?.theSubmodelRef == null
                         || idx == null
@@ -480,13 +480,13 @@ namespace AasxPackageExplorer
                 DisplayElements.ClearSelection();
                 DisplayElements.TrySelectMainDataObject(selEval.Item2, wishExpanded: true);
                 return selEval.Item1;
-            }            
+            }
 
             // nothing found
             return null;
         }
 
-            
+
         public async Task<int> Tool(object[] args)
         {
             if (args == null || args.Length < 1 || !(args[0] is string toolName))

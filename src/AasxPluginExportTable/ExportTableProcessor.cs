@@ -823,7 +823,7 @@ namespace AasxPluginExportTable
         public bool ExportExcel(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (Record?.IsValid() != true 
+            if (Record?.IsValid() != true
                 || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
                 return false;
 

@@ -204,7 +204,7 @@ namespace AasxPackageExplorer
                 PrepareResult();
 
                 // show
-                cm.Start(sender as Button, ContextMenuAction); 
+                cm.Start(sender as Button, ContextMenuAction);
             }
         }
 
@@ -214,8 +214,8 @@ namespace AasxPackageExplorer
 
         private void ComboBoxPreset_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender == ComboBoxPreset 
-                && DiaData.Presets !=null
+            if (sender == ComboBoxPreset
+                && DiaData.Presets != null
                 && ComboBoxPreset.SelectedIndex >= 0
                 && ComboBoxPreset.SelectedIndex < DiaData.Presets.Count)
             {

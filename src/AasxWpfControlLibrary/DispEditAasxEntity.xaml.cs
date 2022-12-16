@@ -536,7 +536,7 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder, 
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder,
                     superMenu: superMenu);
             }
 

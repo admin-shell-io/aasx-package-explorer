@@ -170,7 +170,7 @@ namespace AnyUi
 
         public string MimeType = "application/text";
         public string Text = "";
-        public List<Preset> Presets;        
+        public List<Preset> Presets;
 
         public AnyUiDialogueDataTextEditor(
             string caption = "",

@@ -18,37 +18,21 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Xml.Serialization;
-using AasxDictionaryImport;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxPackageLogic.PackageCentral.AasxFileServerInterface;
-using AasxSignature;
 using AasxUANodesetImExport;
 using AdminShellNS;
 using AnyUi;
 using Jose;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-// using NPOI.SS.Formula.Functions;
-//using NPOI.HSSF.Record;
-//using NPOI.SS.Formula.Functions;
-using Org.BouncyCastle.Crypto;
-using Org.Webpki.JsonCanonicalizer;
-// using static System.Net.WebRequestMethods;
-using static AasxFormatCst.CstPropertyRecord;
-using static AasxToolkit.Cli;
-using static QRCoder.PayloadGenerator;
 
 namespace AasxPackageExplorer
 {
@@ -82,10 +66,10 @@ namespace AasxPackageExplorer
             // File
             //
 
-            menu.AddMenu(header: "File", 
+            menu.AddMenu(header: "File",
                 childs: (new AasxMenu())
                 .AddWpf(name: "New", header: "_New …")
-                .AddWpf(name: "Open", header: "_Open …", inputGesture: "Ctrl+O", 
+                .AddWpf(name: "Open", header: "_Open …", inputGesture: "Ctrl+O",
                     help: "Open existing AASX package.",
                     args: new AasxMenuListOfArgDefs()
                         .Add("File", "Source filename including a path and extension."))
@@ -146,7 +130,7 @@ namespace AasxPackageExplorer
                     .AddSeparator()
                     .AddWpf(name: "FileRepoQuery", header: "Query open repositories …", inputGesture: "F12",
                         help: "Selects and repository item (AASX) from the open AASX file repositories.",
-                        args: new AasxMenuListOfArgDefs() 
+                        args: new AasxMenuListOfArgDefs()
                             .Add("Index", "Zero-based integer index to the list of all open repos.")
                             .Add("AAS", "String with AAS-Id")
                             .Add("Asset", "String with Asset-Id.")))
@@ -224,7 +208,7 @@ namespace AasxPackageExplorer
                         help: "Export OPC UA Nodeset2.xml format as i4aas-nodeset.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "OPC UA Nodeset2.xml file to write."))
-                    .AddWpf(name: "OpcUaExportNodeSetUaPlugin", 
+                    .AddWpf(name: "OpcUaExportNodeSetUaPlugin",
                         header: "Export OPC UA Nodeset2.xml (via UA server plug-in) …",
                         help: "Export OPC UA Nodeset2.xml format by starting OPC UA server in plugin and " +
                             "execute a post-process command.",
@@ -244,7 +228,7 @@ namespace AasxPackageExplorer
                         args: new AasxMenuListOfArgDefs()
                             .Add("Machine", "Designation of the machine/ equipment.")
                             .Add("Model", "Model type, either 'Physical' or 'Signal'."))
-                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table …", 
+                    .AddWpf(name: "ExportTable", header: "Export SubmodelElements as Table …",
                         help: "Export table(s) for sets of SubmodelElements in multiple common formats.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Filename and path of file to exported.")
@@ -276,11 +260,11 @@ namespace AasxPackageExplorer
 
             menu.AddMenu(header: "Workspace",
                 childs: (new AasxMenu())
-                .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E", 
+                .AddWpf(name: "EditMenu", header: "_Edit", inputGesture: "Ctrl+E",
                     onlyDisplay: true, isCheckable: true,
                     args: new AasxMenuListOfArgDefs()
                             .Add("Mode", "'True' to activate edit mode, 'False' to turn off."))
-                .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H", 
+                .AddWpf(name: "HintsMenu", header: "_Hints", inputGesture: "Ctrl+H",
                     onlyDisplay: true, isCheckable: true, isChecked: true,
                     args: new AasxMenuListOfArgDefs()
                         .Add("Mode", "'True' to activate hints mode, 'False' to turn off."))
@@ -459,7 +443,7 @@ namespace AasxPackageExplorer
                 ticket.Submodel = vesmr.theSubmodel;
                 ticket.SubmodelRef = vesmr.theSubmodelRef;
             }
-            
+
             if (DisplayElements.SelectedItem is VisualElementSubmodel vesm)
             {
                 ticket.Package = _packageCentral?.Main;
@@ -477,7 +461,7 @@ namespace AasxPackageExplorer
         }
 
         private async Task CommandBinding_GeneralDispatch(
-            string cmd, 
+            string cmd,
             AasxMenuItemBase menuItem,
             AasxMenuActionTicket ticket)
         {
@@ -557,7 +541,7 @@ namespace AasxPackageExplorer
                         break;
                     default:
                         throw new InvalidOperationException($"Unexpected {nameof(cmd)}: {cmd}");
-                }                
+                }
             }
 
             if (cmd == "save")
@@ -685,7 +669,7 @@ namespace AasxPackageExplorer
                                 System.IO.Path.GetFullPath(Options.Curr.BackupDir),
                                 Options.Curr.BackupFiles,
                                 PackageContainerBase.BackupType.FullCopy);
-                        
+
                     // as saving changes the structure of pending supplementary files, re-display
                     RedrawAllAasxElements();
                 }
@@ -749,7 +733,7 @@ namespace AasxPackageExplorer
                     else
                         useX509 = (AnyUiMessageBoxResult.Yes == MessageBoxFlyoutShow(
                             "Use X509 (yes) or Verifiable Credential (No)?",
-                            "X509 or VerifiableCredential", 
+                            "X509 or VerifiableCredential",
                             AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Hand));
                     ticket["UseX509"] = useX509;
 
@@ -1467,7 +1451,7 @@ namespace AasxPackageExplorer
                 // access
                 if (_packageCentral.Repositories == null || _packageCentral.Repositories.Count < 1)
                 {
-                    _logic?.LogErrorToTicket(ticket, 
+                    _logic?.LogErrorToTicket(ticket,
                         "AASX File Repository: No repository currently available! Please open.");
                     return;
                 }
@@ -1557,7 +1541,7 @@ namespace AasxPackageExplorer
 
             if (cmd == "filerepocreatelru")
             {
-                if (ticket.ScriptMode != true &&  AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
+                if (ticket.ScriptMode != true && AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
                         "Create new (empty) \"Last Recently Used (LRU)\" list? " +
                         "It will be added to list of repos on the lower/ left of the screen. " +
                         "It will be saved under \"last-recently-used.json\" in the binaries folder. " +
@@ -1583,7 +1567,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, 
+                    _logic?.LogErrorToTicket(ticket, ex,
                         $"while initializing last recently used file in {lruFn}.");
                 }
             }
@@ -1713,7 +1697,7 @@ namespace AasxPackageExplorer
 
             if (ticket.Asset?.identification == null)
             {
-                _logic?.LogErrorToTicket(ticket, 
+                _logic?.LogErrorToTicket(ticket,
                     "No asset selected or no asset identification for printing code sheet.");
                 return;
             }
@@ -2174,7 +2158,7 @@ namespace AasxPackageExplorer
         /// </summary>
         /// <returns>Success</returns>
         public bool MenuSelectEnvSubmodel(
-            AasxMenuActionTicket ticket, 
+            AasxMenuActionTicket ticket,
             out AdminShell.AdministrationShellEnv env,
             out AdminShell.Submodel sm,
             out AdminShell.SubmodelRef smr,
@@ -2231,7 +2215,7 @@ namespace AasxPackageExplorer
                     dlg.FileName = proposeFn;
                 if (filter != null)
                     dlg.Filter = filter;
-                
+
                 if (Options.Curr.UseFlyovers) this.StartFlyover(new EmptyFlyout());
                 if (true == dlg.ShowDialog())
                     sourceFn = dlg.FileName;
@@ -2329,7 +2313,7 @@ namespace AasxPackageExplorer
             string msg,
             string argFilterIndex = null)
         {
-            if (MenuSelectSaveFilename(ticket, argName, caption, proposeFn, filter, 
+            if (MenuSelectSaveFilename(ticket, argName, caption, proposeFn, filter,
                     out var targetFn, out var filterIndex, msg))
             {
                 RememberForInitialDirectory(targetFn);
@@ -2424,7 +2408,7 @@ namespace AasxPackageExplorer
 
                     RedrawAllAasxElements();
                     RedrawElementView();
-                } 
+                }
                 catch (Exception ex)
                 {
                     _logic?.LogErrorToTicket(ticket, ex, "Submodel Read");
@@ -2564,7 +2548,7 @@ namespace AasxPackageExplorer
                 }
 #endif
             }
-            
+
             if (cmd == "importdictsubmodelelements")
             {
                 // start
@@ -2599,7 +2583,7 @@ namespace AasxPackageExplorer
             }
         }
 
-       
+
         public void CommandBinding_ImportExportAML(
             string cmd,
             AasxMenuActionTicket ticket = null)
@@ -2692,7 +2676,7 @@ namespace AasxPackageExplorer
                 }
                 catch (Exception ex)
                 {
-                    _logic?.LogErrorToTicket(ticket, ex, 
+                    _logic?.LogErrorToTicket(ticket, ex,
                         "When importing, an error occurred");
                 }
             }
@@ -2821,7 +2805,7 @@ namespace AasxPackageExplorer
                 if (uc.DiaData.ResultItem != null)
                     ticket["Record"] = uc.DiaData.ResultItem.Tag;
             }
-                    
+
             // pass on
             try
             {
@@ -3031,7 +3015,7 @@ namespace AasxPackageExplorer
                         dlgFilter =
                             "Tab separated file (*.txt)|*.txt|Tab separated file (*.tsf)|*.tsf|All files (*.*)|*.*";
                     }
-                    
+
                     // ask now for a filename
                     if (!MenuSelectOpenFilenameToTicket(
                         ticket, "File",
@@ -3051,7 +3035,7 @@ namespace AasxPackageExplorer
                 {
                     _logic?.LogErrorToTicket(ticket, ex, "Import time series: passing on.");
                 }
-            }         
+            }
 
             // redraw
             CommandExecution_RedrawAll();
@@ -3314,11 +3298,11 @@ namespace AasxPackageExplorer
                 {
                     _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
 
-                    // TODO (MIHO, 2022-11-17) notvery elegant
+                    // TODO (MIHO, 2022-11-17): not very elegant
                     if (ticket.PostResults != null && ticket.PostResults.ContainsKey("TakeOver")
                         && ticket.PostResults["TakeOver"] is AdminShellPackageEnv pe)
                         _packageCentral.MainItem.TakeOver(pe);
-                    
+
                     RestartUIafterNewPackage();
                 }
                 catch (Exception ex)
@@ -3352,7 +3336,7 @@ namespace AasxPackageExplorer
             var pi = Plugins.FindPluginInstance(pluginName);
             if (pi == null || !pi.HasAction(actionName))
             {
-                _logic?.LogErrorToTicket(ticket, 
+                _logic?.LogErrorToTicket(ticket,
                     $"This function requires a binary plug-in file named '{pluginName}', " +
                     $"which needs to be added to the command line, with an action named '{actionName}'.");
                 return;

@@ -29,7 +29,7 @@ namespace AasxPackageExplorer
             FlowDocViewer.Document = new FlowDocument();
 
             ButtonToggleWrap.IsChecked = false;
-            SetWordWrapping(false);            
+            SetWordWrapping(false);
 
             foreach (var sp in storedPrints)
             {
@@ -40,9 +40,9 @@ namespace AasxPackageExplorer
 #endif
                 // Add to flow document
                 AasxWpfBaseUtils.StoredPrintToFloqDoc(
-                    FlowDocViewer.Document, sp, AasxWpfBaseUtils.DarkPrintColors, 
+                    FlowDocViewer.Document, sp, AasxWpfBaseUtils.DarkPrintColors,
                     linkClickHandler: link_Click);
-            }            
+            }
         }
 
         protected ScrollViewer FindScrollViewer(FlowDocumentScrollViewer flowDocumentScrollViewer)

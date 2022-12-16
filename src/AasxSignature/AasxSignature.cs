@@ -37,7 +37,7 @@ namespace AasxSignature
         /// therefore easy to detect during verification.        
         /// </summary>
         public static bool SignAll(
-            string packagePath, 
+            string packagePath,
             string certFn,
             string storeName = "My",
             AnyUiMinimalInvokeMessageDelegate invokeMessage = null)
@@ -110,6 +110,9 @@ namespace AasxSignature
                 // Sign() will prompt the user to select a Certificate to sign with.
                 try
                 {
+                    // TODO (MIHO, 2022-12-16): check if this code is required 
+                    // might been converted due to AasxScript refactoring
+#if UNCLEAR
                     //var dlg = new OpenFileDialog();
                     //try
                     //{
@@ -121,7 +124,7 @@ namespace AasxSignature
                     //}
                     //dlg.Filter = ".pfx files (*.pfx)|*.pfx";
                     //dlg.ShowDialog();
-
+#endif
                     X509Certificate2 x509 = new X509Certificate2(certFn, "i40");
                     X509Certificate2Collection scollection = new X509Certificate2Collection(x509);
                     dsm.Sign(toSign, scollection[0], relationshipSelectors);
@@ -148,7 +151,7 @@ namespace AasxSignature
         /// verification status of the certificates)</param>
         /// <returns></returns>
         private static VerifyResult VerifySignatures(
-            string packagePath, 
+            string packagePath,
             out Dictionary<string, X509ChainStatusFlags> certificatesStatus)
         {
             VerifyResult vResult;
@@ -206,7 +209,7 @@ namespace AasxSignature
                     certRes += res.Key + ": " + res.Value.ToString() + "\n";
                 }
 
-                invokeMessage?.Invoke(false, 
+                invokeMessage?.Invoke(false,
                     "Validate: Certificate status: \n" + certRes);
 
                 if (verifyResult == VerifyResult.Success)
@@ -234,7 +237,7 @@ namespace AasxSignature
             catch (Exception e)
             {
                 invokeMessage?.Invoke(true,
-                    "Validate: failed because of: "+e.Message);
+                    "Validate: failed because of: " + e.Message);
             }
 
             return true;

@@ -442,7 +442,7 @@ namespace AasxPackageExplorer
                 {
                     var sri = TheSearchResults.foundResults[CurrentResultIndex];
                     var fwd = sender == ButtonToolsReplaceForward;
-                    
+
                     DoReplace(sri, TheSearchOptions.ReplaceText);
                     Log.Singleton.Info("In {0}, replaced »{1}« with »{2}« and {3}.",
                         sri?.ToString(),

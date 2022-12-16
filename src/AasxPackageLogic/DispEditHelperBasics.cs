@@ -709,11 +709,12 @@ namespace AasxPackageLogic
             // an re-route lambdas
             if (superMenu != null && ticketMenu != null && ticketAction != null)
             {
-                for (int i=0; i<ticketMenu.Count; i++)
+                for (int i = 0; i < ticketMenu.Count; i++)
                 {
                     var tmi = ticketMenu[i];
                     var currentI = i;
-                    tmi.Action = (name, item, ticket) => {
+                    tmi.Action = (name, item, ticket) =>
+                    {
                         if (ticket != null)
                             ticket.UiLambdaAction = ticketAction(currentI, ticket);
                     };
@@ -776,15 +777,15 @@ namespace AasxPackageLogic
                         // button # as argument!
                         return (ticketAction != null)
                             ? ticketAction(currentI, null)
-                            : action(currentI); 
+                            : action(currentI);
                     });
 
                 if (actionTags != null && i < actionTags.Length)
                     AnyUiUIElement.NameControl(b, actionTags[i]);
 
                 // can set a tool tip?
-                if (ticketMenu != null && ticketMenu.Count > i 
-                    && ticketMenu[i] is AasxMenuItem mii 
+                if (ticketMenu != null && ticketMenu.Count > i
+                    && ticketMenu[i] is AasxMenuItem mii
                     && mii.HelpText?.HasContent() == true)
                     b.ToolTip = mii.HelpText;
             }
@@ -1020,7 +1021,7 @@ namespace AasxPackageLogic
             if (arg != null)
                 foreach (var foli in fol)
                     if (foli.Text.Trim().ToLower() == arg.Trim().ToLower())
-                        return (AdminShell.SubmodelElementWrapper.AdequateElementEnum) foli.Tag;
+                        return (AdminShell.SubmodelElementWrapper.AdequateElementEnum)foli.Tag;
 
             // prompt for this list
             var uc = new AnyUiDialogueDataSelectFromList(
@@ -1681,7 +1682,7 @@ namespace AasxPackageLogic
                 repo: repo,
                 superMenu: superMenu,
                 ticketMenu: new AasxMenu()
-                    .AddAction("aas-elem-move-up", "Move up", 
+                    .AddAction("aas-elem-move-up", "Move up",
                         "Moves the currently selected element up in containing collection.",
                         inputGesture: "Shift+Ctrl+Up")
                     .AddAction("aas-elem-move-down", "Move down",
@@ -1792,7 +1793,7 @@ namespace AasxPackageLogic
                 // let the user control the number of references
                 AddAction(
                     stack, "Qualifier entities:",
-                    repo: repo, 
+                    repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("qualifier-blank", "Add blank",

@@ -415,7 +415,7 @@ namespace AasxPackageLogic
         [OptionDescription(Description = "Preset shown in the file repo connect to AAS repository dialogue")]
         public string DefaultConnectRepositoryLocation = "";
 
-        [OptionDescription(Description ="List of tuples (Name, Text) with presets for available scripts.")]
+        [OptionDescription(Description = "List of tuples (Name, Text) with presets for available scripts.")]
         public List<AnyUiDialogueDataTextEditor.Preset> ScriptPresets;
 
         [OptionDescription(Description = "Verbosity level for script execution (0=silent, 2=very verbose).")]

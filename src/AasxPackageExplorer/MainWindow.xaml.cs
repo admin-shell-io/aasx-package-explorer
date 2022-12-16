@@ -696,7 +696,8 @@ namespace AasxPackageExplorer
 
             var cmd = new RoutedUICommand("Test", "NameOfTest", typeof(string));
 
-            this.CommandBindings.Add(new CommandBinding(cmd, (s3, e3) => {
+            this.CommandBindings.Add(new CommandBinding(cmd, (s3, e3) =>
+            {
                 // decode
                 var ruic = e3?.Command as RoutedUICommand;
                 if (ruic == null)
@@ -994,7 +995,7 @@ namespace AasxPackageExplorer
                     _aasxScript.StartEnginBackground(
                         script, Options.Curr.ScriptLoglevel,
                         _mainMenu?.Menu, this);
-                } 
+                }
                 catch (Exception ex)
                 {
                     Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptFn}");
@@ -2605,7 +2606,7 @@ namespace AasxPackageExplorer
 
             // DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
 
-            var la = _dynamicMenu?.HandleGlobalKeyDown(e, preview: true);            
+            var la = _dynamicMenu?.HandleGlobalKeyDown(e, preview: true);
             if (la != null && !(la is AnyUiLambdaActionNone))
             {
                 // add to "normal" event quoue
@@ -2623,7 +2624,7 @@ namespace AasxPackageExplorer
             }
         }
 
-#region Modal Flyovers
+        #region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -2865,7 +2866,7 @@ namespace AasxPackageExplorer
                 return AnyUiMessageBoxResult.OK;
             }
             else
-                return MessageBoxFlyoutShow(message, caption, buttons, image); 
+                return MessageBoxFlyoutShow(message, caption, buttons, image);
         }
 
         public Window GetWin32Window()
@@ -2873,8 +2874,8 @@ namespace AasxPackageExplorer
             return this;
         }
 
-#endregion
-#region Drag&Drop
+        #endregion
+        #region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2964,7 +2965,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-#endregion
+        #endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
