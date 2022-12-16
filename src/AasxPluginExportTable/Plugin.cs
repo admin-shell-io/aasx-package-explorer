@@ -145,8 +145,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[1] is string fn
                     && args[2] is AdminShell.AdministrationShellEnv env
                     && args[3] is AdminShell.Submodel sm
-                    && args[4] is AasxMenuActionTicket ticket
-                    && fn != null && env != null && sm != null)
+                    && args[4] is AasxMenuActionTicket ticket)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -165,8 +164,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[0] is ExportUmlRecord record
                     && args[1] is string fn
                     && args[2] is AdminShell.AdministrationShellEnv env
-                    && args[3] is AdminShell.Submodel sm
-                    && fn != null && env != null && sm != null)
+                    && args[3] is AdminShell.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -185,8 +183,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[0] is ImportTimeSeriesRecord record
                     && args[1] is string fn
                     && args[1] is AdminShell.AdministrationShellEnv env
-                    && args[2] is AdminShell.Submodel sm
-                    && fn != null && env != null && sm != null)
+                    && args[2] is AdminShell.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();

@@ -307,14 +307,6 @@ namespace AasxIntegrationBase
         public AasxMenu Childs = null;
 
         //
-        // Constructors
-        //
-
-        public AasxMenuItem()
-        {
-        }
-
-        //
         // more
         //
 
@@ -546,7 +538,7 @@ namespace AasxIntegrationBase
         public AasxMenuItemBase FindName(string name)
         {
             return FindAll((i) => i?.Name?.Trim().ToLower() == name?.Trim().ToLower())
-                .FirstOrDefault(); ;
+                .FirstOrDefault();
         }
     }
 

@@ -152,7 +152,7 @@ namespace AasxPackageExplorer
                     catch (Exception ex)
                     {
                         if (_script != null && _script._logLevel >= 2)
-                            Log.Singleton.Error($"when reading text contents of {fn}");
+                            Log.Singleton.Error(ex, $"when reading text contents of {fn}");
                     }
                 return null;
             }
@@ -180,7 +180,7 @@ namespace AasxPackageExplorer
                     catch (Exception ex)
                     {
                         if (_script != null && _script._logLevel >= 2)
-                            Log.Singleton.Error($"when check existence of {fn}");
+                            Log.Singleton.Error(ex, $"when check existence of {fn}");
                     }
                 return false;
             }
@@ -217,7 +217,9 @@ namespace AasxPackageExplorer
                 // https://stackoverflow.com/questions/39438441/
                 var x = Application.Current.Dispatcher.Invoke(async () =>
                 {
-                    return await _script.Remote?.Tool(args);
+                    if (_script?.Remote == null)
+                        return -1;
+                    return await _script?.Remote?.Tool(args);
                 });
                 if (x != null)
                     Log.Singleton.Silent("" + x);
@@ -295,11 +297,13 @@ namespace AasxPackageExplorer
 
                 // check for allowed commands
                 var cmdtl = cmd.Trim().ToLower();
+                // ReSharper disable StringIndexOfIsCultureSpecific.1
                 if (" push pop ".IndexOf(" " + cmdtl + " ") < 0)
                 {
                     _script.ScriptLog?.Error("Script: Location: Command is unknown!");
                     return -1;
                 }
+                // ReSharper enable StringIndexOfIsCultureSpecific.1
 
                 // debug
                 if (_script._logLevel >= 2)
@@ -334,7 +338,7 @@ namespace AasxPackageExplorer
                 if (_script == null)
                     return -1;
 
-                if (args == null || args.Length < 1 || !(args[0] is string cmd))
+                if (args == null || args.Length < 1 || !(args[0] is string))
                 {
                     _script.ScriptLog?.Error("Script: System: Command is missing!");
                     return -1;
@@ -388,7 +392,7 @@ namespace AasxPackageExplorer
             foreach (var nt in root.GetNestedTypes())
                 if (nt.GetInterfaces().Contains(typeof(IInvokable)))
                 {
-                    var x = Activator.CreateInstance(nt, this);
+                    Activator.CreateInstance(nt, this);
                 }
         }
 

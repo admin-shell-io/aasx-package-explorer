@@ -70,11 +70,8 @@ namespace AasxPackageExplorer
             if (ticket?.ScriptMode != true)
                 return;
 
-            if (ticket != null)
-            {
-                ticket.Exception = message;
-                ticket.Success = false;
-            }
+            ticket.Exception = message;
+            ticket.Success = false;
 
             Log.Singleton.Error(message);
         }
@@ -845,7 +842,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                LogErrorToTicket(ticket, $"encrypting AASX file {sourceFn} with certificate {certFn}");
+                LogErrorToTicket(ticket, ex, $"encrypting AASX file {sourceFn} with certificate {certFn}");
                 return false;
             }
 
@@ -886,7 +883,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                LogErrorToTicket(ticket, $"decrypting AASX2 file {sourceFn} with certificate {certFn}");
+                LogErrorToTicket(ticket, ex, $"decrypting AASX2 file {sourceFn} with certificate {certFn}");
                 return false;
             }
 
@@ -1093,7 +1090,6 @@ namespace AasxPackageExplorer
             {
                 LogErrorToTicket(ticket, ex,
                     "Submodel Read: Can not read SubModel.");
-                return;
             }
         }
 
@@ -1125,7 +1121,6 @@ namespace AasxPackageExplorer
             {
                 LogErrorToTicket(ticket, ex,
                     "Submodel Read: Can not read SubModel.");
-                return;
             }
         }
 
@@ -1155,7 +1150,6 @@ namespace AasxPackageExplorer
             {
                 LogErrorToTicket(ticket, ex,
                     $"Submodel Put: Can not put SubModel to url '{url}'.");
-                return;
             }
         }
 

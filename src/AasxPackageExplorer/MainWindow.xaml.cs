@@ -693,27 +693,6 @@ namespace AasxPackageExplorer
             _mainMenu = new AasxMenuWpf();
             _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain, this.CommandBindings, this.InputBindings);
 
-
-            var cmd = new RoutedUICommand("Test", "NameOfTest", typeof(string));
-
-            this.CommandBindings.Add(new CommandBinding(cmd, (s3, e3) =>
-            {
-                // decode
-                var ruic = e3?.Command as RoutedUICommand;
-                if (ruic == null)
-                    return;
-                var cmdname = ruic.Text?.Trim().ToLower();
-            }));
-
-            var kb = new KeyBinding()
-            {
-                //Key = Key.K,
-                //Modifiers = ModifierKeys.Control,
-                Gesture = (new KeyGestureConverter()).ConvertFromInvariantString("Ctrl+K") as KeyGesture,
-                Command = cmd
-            };
-            this.InputBindings.Add(kb);
-
             // display elements has a cache
             DisplayElements.ActivateElementStateCache();
 
@@ -1703,7 +1682,7 @@ namespace AasxPackageExplorer
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significantElems == null || !(_mainMenu?.IsChecked("AnimateElements") == true))
+            if (env == null || significantElems == null || _mainMenu?.IsChecked("AnimateElements") != true)
                 return;
 
             // find elements?
@@ -1747,7 +1726,7 @@ namespace AasxPackageExplorer
             bool directEmit)
         {
             // trivial
-            if (env == null || significantElems == null || !(_mainMenu?.IsChecked("ObserveEvents") == true))
+            if (env == null || significantElems == null || _mainMenu?.IsChecked("ObserveEvents") != true)
                 return;
 
             // do this twice
@@ -2116,7 +2095,7 @@ namespace AasxPackageExplorer
                     _mainTimer_LastCheckForDiaryEvents,
                     _packageCentral.MainItem.Container.Env?.AasEnv,
                     _packageCentral.MainItem.Container.SignificantElements,
-                    directEmit: !(_mainMenu?.IsChecked("CompressEvents") == true));
+                    directEmit: !_mainMenu?.IsChecked("CompressEvents") != true);
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?
@@ -3078,6 +3057,8 @@ namespace AasxPackageExplorer
                 // Menu command
                 //
 
+                // ReSharper disable AccessToModifiedClosure
+
                 Action<AasxMenu> lambdaMenu = (menu) =>
                 {
 
@@ -3143,6 +3124,8 @@ namespace AasxPackageExplorer
                     html.Append(AdminShellUtil.CleanHereStringWithNewlines(
                         @"</table>"));
                 };
+
+                // ReSharper enable AccessToModifiedClosure
 
                 html.AppendLine("<h3>Menu and script commands</h3>");
                 lambdaMenu(_mainMenu.Menu);

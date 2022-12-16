@@ -158,6 +158,9 @@ namespace AnyUi
         }
     }
 
+    // resharper disable ClassNeverInstantiated.Global
+    // resharper disable UnassignedField.Global
+
     public class AnyUiDialogueDataTextEditor : AnyUiDialogueDataBase
     {
         public class Preset
@@ -185,6 +188,9 @@ namespace AnyUi
                 Text = text;
         }
     }
+
+    // resharper enable ClassNeverInstantiated.Global
+    // resharper enable UnassignedField.Global
 
     public class AnyUiDialogueDataSelectEclassEntity : AnyUiDialogueDataBase
     {

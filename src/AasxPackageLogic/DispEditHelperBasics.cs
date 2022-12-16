@@ -777,7 +777,7 @@ namespace AasxPackageLogic
                         // button # as argument!
                         return (ticketAction != null)
                             ? ticketAction(currentI, null)
-                            : action(currentI);
+                            : action?.Invoke(currentI);
                     });
 
                 if (actionTags != null && i < actionTags.Length)

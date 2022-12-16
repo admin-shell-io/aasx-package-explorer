@@ -120,6 +120,7 @@
                     -->
 
                     <!-- TODO: move this to separate xaml file -->
+                    <!--
                     <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
                         <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                             <Grid VerticalAlignment="Center">
@@ -173,6 +174,7 @@
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
+                    -->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -204,8 +206,8 @@
     </Window.InputBindings>
     -->
 
+    <!--
     <Window.CommandBindings>
-        <!--
 		<CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Open}" Executed="CommandBinding_Executed"/>
@@ -292,8 +294,8 @@
         <CommandBinding Command="{StaticResource FileRepoLoadWoPrompt}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
-        -->
     </Window.CommandBindings>
+    -->
 
     <Grid x:Name="OuterGrid">
 

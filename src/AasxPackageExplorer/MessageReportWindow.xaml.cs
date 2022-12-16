@@ -54,10 +54,6 @@ namespace AasxPackageExplorer
 
             // Border is the first child of first child of a ScrolldocumentViewer
             DependencyObject firstChild = VisualTreeHelper.GetChild(flowDocumentScrollViewer, 0);
-            if (firstChild == null)
-            {
-                return null;
-            }
 
             Decorator border = VisualTreeHelper.GetChild(firstChild, 0) as Decorator;
 

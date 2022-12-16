@@ -213,11 +213,10 @@ namespace AasxPackageExplorer
             // something to select
             var pm = _packageCentral?.Main?.AasEnv;
             if (pm == null)
-                if (adrMode == ScriptSelectAdressMode.None)
-                {
-                    Log.Singleton.Error("Script: Select: No main package environment available!");
-                    return null;
-                }
+            {
+                Log.Singleton.Error("Script: Select: No main package AAS environment available!");
+                return null;
+            }
 
             // available elements in the environment
             var firstAas = pm.AdministrationShells.FirstOrDefault();
@@ -230,16 +229,20 @@ namespace AasxPackageExplorer
             if (firstSm != null && firstSm.submodelElements != null && firstSm.submodelElements.Count > 0)
                 firstSme = firstSm.submodelElements[0]?.submodelElement;
 
+            // TODO (MIHO, 2022-12-16): Some cases are not implemented
+
             // selected items by user
             var siThis = DisplayElements.SelectedItem;
-            var siSME = siThis?.FindFirstParent(
-                    (ve) => ve is VisualElementSubmodelElement, includeThis: true);
             var siSM = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementSubmodelRef, includeThis: true) as VisualElementSubmodelRef;
             var siAAS = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementAdminShell, includeThis: true) as VisualElementAdminShell;
+#if later
+            var siSME = siThis?.FindFirstParent(
+                    (ve) => ve is VisualElementSubmodelElement, includeThis: true);
             var siCD = siThis?.FindFirstParent(
                     (ve) => ve is VisualElementConceptDescription, includeThis: true);
+#endif
 
             //
             // This
@@ -336,7 +339,7 @@ namespace AasxPackageExplorer
 
                 if (refType == ScriptSelectRefType.SM)
                 {
-                    var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
+                    var idx = siAAS?.theAas?.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
                     if (siAAS?.theAas?.submodelRefs == null
                         || siSM?.theSubmodel == null
                         || siSM?.theSubmodelRef == null
@@ -388,7 +391,7 @@ namespace AasxPackageExplorer
 
                 if (refType == ScriptSelectRefType.SM)
                 {
-                    var idx = siAAS?.theAas.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
+                    var idx = siAAS?.theAas?.submodelRefs?.IndexOf(siSM?.theSubmodelRef);
                     if (siAAS?.theAas?.submodelRefs == null
                         || siSM?.theSubmodel == null
                         || siSM?.theSubmodelRef == null
@@ -503,8 +506,7 @@ namespace AasxPackageExplorer
                 foundMenu = _dynamicMenu.Menu;
                 mi = foundMenu.FindName(toolName);
             }
-
-            if (foundMenu == null || mi == null)
+            if (mi == null)
             {
                 Log.Singleton.Error($"Script: Invoke Tool: Toolname invalid: {toolName}");
                 return -1;

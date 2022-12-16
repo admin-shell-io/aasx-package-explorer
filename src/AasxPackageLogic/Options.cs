@@ -18,6 +18,8 @@ using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 
+// ReSharper disable UnassignedField.Global
+
 namespace AasxPackageLogic
 {
     /// <summary>

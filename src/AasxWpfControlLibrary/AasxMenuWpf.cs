@@ -50,7 +50,7 @@ namespace AasxWpfControlLibrary
                 if (mi == null)
                     continue;
 
-                if (mi is AasxMenuSeparator mis)
+                if (mi is AasxMenuSeparator)
                 {
                     // add separator
                     wpfItems.Add(new System.Windows.Controls.Separator());

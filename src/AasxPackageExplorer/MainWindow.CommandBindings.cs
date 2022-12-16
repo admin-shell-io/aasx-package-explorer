@@ -472,7 +472,7 @@ namespace AasxPackageExplorer
             if (cmd == null || ticket == null)
                 return;
 
-            var scriptmode = ticket.ScriptMode == true;
+            var scriptmode = ticket.ScriptMode;
 
             FillSelectedItem(ticket);
 
@@ -625,7 +625,7 @@ namespace AasxPackageExplorer
                 try
                 {
                     // if not local, do a bit of voodoo ..
-                    if (!isLocalFile)
+                    if (!isLocalFile && _packageCentral.MainItem.Container != null)
                     {
                         // establish local
                         if (!await _packageCentral.MainItem.Container.SaveLocalCopyAsync(
@@ -823,32 +823,29 @@ namespace AasxPackageExplorer
                 ticket.StartExec();
 
                 // filename source
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                     ticket, "Source",
                     "Select source encrypted AASX file to be processed",
                     null,
                     "AASX2 encrypted package files (*.aasx2)|*.aasx2",
-                    out var sourceFn,
                     "For package decrypt: No valid filename for source given!"))
                     return;
 
                 // filename cert
-                if (!MenuSelectOpenFilename(
+                if (!MenuSelectOpenFilenameToTicket(
                     ticket, "Certificate",
                     "Select source AASX file to be processed",
                     null,
                     ".pfx files (*.pfx)|*.pfx",
-                    out var certFn,
                     "For package decrypt: No valid filename for certificate given!"))
                     return;
 
                 // ask also for target fn
-                if (!MenuSelectSaveFilename(
+                if (!MenuSelectSaveFilenameToTicket(
                     ticket, "Target",
                     "Write decoded AASX package file",
                     null,
                     "AASX package files (*.aasx)|*.aasx",
-                    out var targetFn, out var filterIndex,
                     "For package decrypt: No valid filename for target given!"))
                     return;
 
@@ -950,13 +947,13 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "editkey")
-                _mainMenu?.SetChecked("EditMenu", !(_mainMenu?.IsChecked("EditMenu") == true));
+                _mainMenu?.SetChecked("EditMenu", _mainMenu?.IsChecked("EditMenu") != true);
 
             if (cmd == "hintskey")
-                _mainMenu?.SetChecked("HintsMenu", !(_mainMenu?.IsChecked("HintsMenu") == true));
+                _mainMenu?.SetChecked("HintsMenu", _mainMenu?.IsChecked("HintsMenu") != true);
 
             if (cmd == "showirikey")
-                _mainMenu?.SetChecked("ShowIriMenu", !(_mainMenu?.IsChecked("ShowIriMenu") == true));
+                _mainMenu?.SetChecked("ShowIriMenu", _mainMenu?.IsChecked("ShowIriMenu") != true);
 
             if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
@@ -1214,7 +1211,7 @@ namespace AasxPackageExplorer
             }
 
             if (cmd == "eventsshowlogkey")
-                _mainMenu?.SetChecked("EventsShowLogMenu", !(_mainMenu?.IsChecked("EventsShowLogMenu") == true));
+                _mainMenu?.SetChecked("EventsShowLogMenu", _mainMenu?.IsChecked("EventsShowLogMenu") != true);
 
             if (cmd == "eventsshowlogkey" || cmd == "eventsshowlogmenu")
             {
@@ -2555,11 +2552,13 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // current Submodel
+                // ReSharper disable UnusedVariable
                 if (!MenuSelectEnvSubmodel(
                     ticket,
                     out var env, out var sm, out var smr,
                     "Dictionary import: No valid Submodel selected."))
                     return;
+                // ReSharper enable UnusedVariable
 
 #if !DoNotUseAasxDictionaryImport
                 var dataChanged = false;
@@ -2689,6 +2688,7 @@ namespace AasxPackageExplorer
             if (cmd == "opcuaexportnodesetuaplugin")
             {
                 // filename
+                // ReSharper disable UnusedVariable
                 if (!MenuSelectSaveFilename(
                     ticket, "File",
                     "Select Nodeset2.XML file to be exported",
@@ -2697,7 +2697,7 @@ namespace AasxPackageExplorer
                     out var targetFn, out var filterIndex,
                     "Export OPC UA Nodeset2 via plugin: No valid filename."))
                     return;
-
+                // ReSharper enable UnusedVariable
                 try
                 {
                     RememberForInitialDirectory(targetFn);
@@ -2752,7 +2752,7 @@ namespace AasxPackageExplorer
             var jsonStr = JsonConvert.SerializeObject(mdo, Formatting.Indented, settings);
 
             // copy to clipboard
-            if (jsonStr != null && jsonStr != "")
+            if (jsonStr != "")
             {
                 System.Windows.Clipboard.SetText(jsonStr);
                 Log.Singleton.Info("Copied selected element to clipboard.");
@@ -3247,13 +3247,10 @@ namespace AasxPackageExplorer
                 ticket.StartExec();
 
                 // try to access I4AAS export information
-                UANodeSet InformationModel = null;
                 try
                 {
                     var xstream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
                         "AasxPackageExplorer.Resources.i4AASCS.xml");
-
-                    InformationModel = UANodeSetExport.getInformationModel(xstream);
                 }
                 catch (Exception ex)
                 {

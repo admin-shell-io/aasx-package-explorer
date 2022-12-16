@@ -35,6 +35,8 @@ using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
+// ReSharper disable MethodHasAsyncOverload
+
 namespace AasxPackageLogic
 {
     /// <summary>
@@ -55,6 +57,9 @@ namespace AasxPackageLogic
             return AnyUiMessageBoxResult.Cancel;
         }
 
+#pragma warning disable CS1998
+        // ReSharper disable CSharpWarnings::CS1998
+
         public async Task CommandBinding_GeneralDispatch(
             string cmd,
             AasxMenuActionTicket ticket)
@@ -65,8 +70,6 @@ namespace AasxPackageLogic
 
             if (cmd == null || ticket == null)
                 return;
-
-            var scriptmode = ticket.ScriptMode == true;
 
             //
             // Dispatch (Sign and Validate either on Submodel / AAS level)
