@@ -436,11 +436,13 @@ namespace AasxPackageLogic
 
         public OptionsInformation()
         {
-            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFCBD8EBu);
-            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFF88A6D2u);
-            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF4370B3u);
-            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFD42044u);
-            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFD42044u);
+            // lightes blue to light: 0xFFf2f5ffu
+            // IDTA red to light: 0xFFFE4F10u; 
+            AccentColors[ColorNames.LightAccentColor] = new AnyUiColor(0xFFDBE2FFu);
+            AccentColors[ColorNames.DarkAccentColor] = new AnyUiColor(0xFFc0ccffu);
+            AccentColors[ColorNames.DarkestAccentColor] = new AnyUiColor(0xFF0128CBu);
+            AccentColors[ColorNames.FocusErrorBrush] = new AnyUiColor(0xFFe53d01u);
+            AccentColors[ColorNames.FocusErrorColor] = new AnyUiColor(0xFFe53d01u);
         }
 
         public class PluginDllInfo

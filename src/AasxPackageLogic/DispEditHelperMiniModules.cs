@@ -257,9 +257,8 @@ namespace AasxPackageLogic
                         relatedReferable: relatedReferable);
                 }
 
-                var type = qual.Type;
-                AddKeyValueRef(
-                    substack, "type", qual, ref type, null, repo,
+                AddKeyValueExRef(
+                    substack, "type", qual, qual.Type, null, repo,
                     v =>
                     {
                         qual.Type = v as string;
@@ -267,9 +266,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                var value = qual.Value;
-                AddKeyValueRef(
-                    substack, "value", qual, ref value, null, repo,
+                AddKeyValueExRef(
+                    substack, "value", qual, qual.Value, null, repo,
                     v =>
                     {
                         qual.Value = v as string;
@@ -522,9 +520,8 @@ namespace AasxPackageLogic
                             () => !pair.Name.HasContent(),
                             "A key string specification shall be given!")
                     });
-                var name = pair.Name;
-                AddKeyValueRef(
-                    substack, "key", pair, ref name, null, repo,
+                AddKeyValueExRef(
+                    substack, "key", pair, pair.Name, null, repo,
                     v =>
                     {
                         pair.Name = v as string;
@@ -532,9 +529,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                var value = pair.Value;
-                AddKeyValueRef(
-                    substack, "value", pair, ref value, null, repo,
+                AddKeyValueExRef(
+                    substack, "value", pair, pair.Value, null, repo,
                     v =>
                     {
                         pair.Value = v as string;
@@ -600,8 +596,14 @@ namespace AasxPackageLogic
         public void ExtensionHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<Extension> extensions,
+            Action<List<Extension>> setOutput,
             IReferable relatedReferable = null)
         {
+            // access
+            if (extensions == null)
+                return;
+
+            // header
             if (editMode)
             {
                 // let the user control the number of elements
@@ -671,8 +673,13 @@ namespace AasxPackageLogic
                             }
                         }
 
-                        if (buttonNdx == 3 && extensions.Count > 0)
-                            extensions.RemoveAt(extensions.Count - 1);
+                        if (buttonNdx == 3)
+                        {
+                            if (extensions.Count > 0)
+                                extensions.RemoveAt(extensions.Count - 1);
+                            else
+                                setOutput?.Invoke(null);
+                        }
 
                         return new AnyUiLambdaActionRedrawEntity();
                     });
@@ -753,8 +760,25 @@ namespace AasxPackageLogic
                     substack, hintMode,
                     new[] {
                         new HintCheck(
+                            () => !extension.Name.HasContent(),
+                            "A name specification shall be given and unqiue within this list!")
+                    });
+                AddKeyValueExRef(
+                    substack, "name", extension, extension.Name, null, repo,
+                    v =>
+                    {
+                        extension.Name = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+                
+                AddHintBubble(
+                    substack, hintMode,
+                    new[] {
+                        new HintCheck(
                             () => extension.SemanticId?.IsValid() != true,
-                            "Check, if a semanticId can be given in addition the key!")
+                            "Check, if a semanticId can be given in addition the key!",
+                            severityLevel: HintCheck.Severity.Notice)
                     });
                 if (SafeguardAccess(
                         substack, repo, extension.SemanticId, "semanticId:", "Create data element!",
@@ -765,62 +789,56 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    List<string> keys = new();
-                    foreach (var semKey in extension.SemanticId.Keys)
-                    {
-                        keys.Add(semKey.Value);
-                    }
-                    AddKeyListOfIdentifier(
-                        substack, "semanticId", keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        addExistingEntities: "All",
+                    AddVerticalSpace(substack);
+                    AddKeyReference(
+                        substack, "semanticId", extension.SemanticId, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAux,
+                        showRefSemId: false,
+                        addExistingEntities: "All", addFromKnown: true,
                         addEclassIrdi: true,
-                        relatedReferable: relatedReferable);
+                        relatedReferable: relatedReferable,
+                        auxContextHeader: new[] { "\u2573", "Delete semanticId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                extension.SemanticId = null;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
+                    AddVerticalSpace(substack);
                 }
 
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => !extension.Name.HasContent(),
-                            "A name specification shall be given!")
-                    });
 
-                var name = extension.Name;
-                AddKeyValueRef(
-                    substack, "name", extension, ref name, null, repo,
-                    v =>
-                    {
-                        extension.Name = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                var valType = Stringification.ToString(extension.ValueType);
-                AddKeyValueRef(
-                    substack, "valueType", extension, ref valType, null, repo,
+                AddKeyValueExRef(
+                    substack, "valueType", extension, Stringification.ToString(extension.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
                     //comboBoxItems: DataElement.ValueTypeItems,
                     //TODO:jtikekar change
-                    comboBoxItems: new string[] {
-                    "anyURI", "base64Binary",
-                    "boolean", "date", "dateTime",
-                    "dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
-                    "positiveInteger",
-                    "unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
-                    "nonPositiveInteger", "negativeInteger",
-                    "double", "duration",
-                    "dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
+                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
+                    comboBoxMinWidth: 190,
+                    //new string[] {
+                    //"anyURI", "base64Binary",
+                    //"boolean", "date", "dateTime",
+                    //"dateTimeStamp", "decimal", "integer", "long", "int", "short", "byte", "nonNegativeInteger",
+                    //"positiveInteger",
+                    //"unsignedLong", "unsignedInt", "unsignedShort", "unsignedByte",
+                    //"nonPositiveInteger", "negativeInteger",
+                    //"double", "duration",
+                    //"dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
                     setValue: v =>
                     {
-                        extension.ValueType = Stringification.DataTypeDefXsdFromString((string)v);
+                        var vt = Stringification.DataTypeDefXsdFromString((string)v);
+                        if (vt.HasValue)
+                            extension.ValueType = vt.Value;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     });
 
-                var value = extension.Value;
-                AddKeyValueRef(
-                    substack, "value", extension, ref value, null, repo,
+                AddKeyValueExRef(
+                    substack, "value", extension, extension.Value, null, repo,
                     v =>
                     {
                         extension.Value = v as string;
@@ -851,8 +869,8 @@ namespace AasxPackageLogic
                 // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!
                 this.AddHintBubble(substack, hintMode, new[] {
                 new HintCheck(
-                    () => false,
-                    "Check if a refersTo specification is appropriate here.",
+                    () => extension.RefersTo?.IsValid() == true,
+                    "Currently, AAS croe allows only for 0..1 refersTo references.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice) });
                 if (this.SafeguardAccess(
@@ -872,33 +890,170 @@ namespace AasxPackageLogic
                             new[] { "Add Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
                             {
-                                if (buttonNdx == 0)
+                                if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
                                     extension.RefersTo = new Reference(ReferenceTypes.ModelReference, new List<Key>());
 
-                                //if (buttonNdx == 1 && extension.RefersTo.Count > 0)
-                                //    extension.RefersTo.RemoveAt(
-                                //        extension.RefersTo.Count - 1);
+                                if (buttonNdx == 1 && extension.RefersTo != null)
+                                    extension.RefersTo = null;
 
                                 this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
 
-                    // now use the normal mechanism to deal with editMode or not ..
-                    //if (extension.RefersTo != null && extension.RefersTo.Count > 0)
-                    //{
-                    //    for (int ki = 0; ki < extension.RefersTo.Count; ki++)
-                    //        if (extension.RefersTo[ki] != null)
-                    //            this.AddKeyListKeys(
-                    //                substack, String.Format("refersTo[{0}]", ki),
-                    //                extension.RefersTo[ki]?.Keys,
-                    //                repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    //                addExistingEntities: null /* "All" */);
-                    //}
+                    // now use the normal mechanism to deal with editMode or not..
+                    if (extension.RefersTo != null && extension.RefersTo != null)
+                    {
+                        //for (int ki = 0; ki < extension.RefersTo.Count; ki++)
+                        //    if (extension.RefersTo[ki] != null)
+                        this.AddKeyReference(
+                            substack, String.Format("refersTo[{0}]", 0),
+                            extension.RefersTo,
+                            repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            addExistingEntities: "All", addFromKnown: true,
+                            addEclassIrdi: true,
+                            showRefSemId: false);
+                    }
                 }
 
             }
 
+        }
+
+        //
+        // References
+        //
+
+        public void AddKeyReference(
+        AnyUiStackPanel view, string key,
+        Reference refkeys,
+        ModifyRepo repo = null,
+        PackageCentral.PackageCentral packages = null,
+        PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
+        string addExistingEntities = null,
+        bool addEclassIrdi = false,
+        bool addFromKnown = false,
+        string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
+        Func<List<Key>, AnyUiLambdaActionBase> jumpLambda = null,
+        AnyUiLambdaActionBase takeOverLambdaAction = null,
+        Func<List<Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
+        IReferable relatedReferable = null,
+        Action<IReferable> emitCustomEvent = null,
+        bool showRefSemId = true,
+        string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
+        {
+            //
+            // extended Front panel
+            //
+
+            var frontPanel = AddSmallGrid(1, 3, new[] { "#", "#", "*" });
+
+            AnyUiUIElement.RegisterControl(
+                AddSmallComboBoxTo(
+                    frontPanel, 0, 0,
+                    margin: new AnyUiThickness(4, 2, 2, 2),
+                    padding: new AnyUiThickness(2, -1, 0, -1),
+                    text: "" + Stringification.ToString(refkeys.Type),
+                    minWidth: 100,
+                    items: Enum.GetValues(typeof(ReferenceTypes)).OfType<ReferenceTypes>().Select((rt) => Stringification.ToString(rt)).ToArray(),
+                    isEditable: false,
+                    verticalContentAlignment: AnyUiVerticalAlignment.Center),
+                (o) =>
+                {
+                    if (o is string os)
+                        refkeys.Type = Stringification.ReferenceTypesFromString(os).Value;
+                    return new AnyUiLambdaActionNone();
+                },
+                takeOverLambda: takeOverLambdaAction);
+
+            AnyUiUIElement.RegisterControl(
+                        AddSmallButtonTo(
+                            frontPanel, 0, 1,
+                            margin: new AnyUiThickness(2, 2, 2, 2),
+                            padding: new AnyUiThickness(5, 0, 5, 0),
+                            content: "\u21bb"),
+                        (o) =>
+                        {
+                            refkeys.Type = refkeys.GuessType();
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        );
+
+            //
+            // referredSemanticId?
+            //
+
+            AnyUiStackPanel footerPanel = null;
+            if (showRefSemId)
+            {
+                footerPanel = new AnyUiStackPanel() { 
+                    Margin = new AnyUiThickness(2, 2, 0, 0),
+                    Background = AnyUiBrushes.LightGray
+                };
+                
+                if (refkeys.ReferredSemanticId == null)
+                {
+                    if (repo != null)
+                    {
+                        var gx = AddSmallGrid(1, 3, new[] { "*", "#", "*" }, margin: new AnyUiThickness(2, 2, 0, 0));
+                        footerPanel.Add(gx);
+
+                        AddSmallBasicLabelTo(gx, 0, 0, content: "referredSemanticId:", verticalAlignment: AnyUiVerticalAlignment.Center);
+
+                        AnyUiUIElement.RegisterControl(
+                            AddSmallButtonTo(gx, 0, 1, content: "+",  // content: "\u25be",
+                            margin: new AnyUiThickness(1),
+                            padding: new AnyUiThickness(2, -2, 2, -2)),
+                            (o) =>
+                            {
+                                refkeys.ReferredSemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            });
+                    }
+                }
+                else
+                {
+                    // careful! Full recursion of edit function
+                    AddKeyReference(
+                        footerPanel, "referredSem.Id", refkeys.ReferredSemanticId, repo,
+                        showRefSemId: false,
+                        addEclassIrdi: true,
+                        addFromKnown: true,
+                        auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                refkeys.ReferredSemanticId = null;
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
+                }
+            }
+
+            //
+            // refer further
+            //
+
+            AddKeyListKeys(
+                view, key, refkeys.Keys, repo, packages, selector, 
+                addExistingEntities, addEclassIrdi, addFromKnown, addPresetNames, addPresetKeyLists, 
+                jumpLambda, takeOverLambdaAction, noEditJumpLambda, 
+                relatedReferable, 
+                frontPanel: frontPanel,
+                topContextMenu: true,
+                footerPanel: footerPanel,
+                auxContextHeader: auxContextHeader,
+                auxContextLambda: auxContextLambda,
+                emitCustomEvent: (o) =>
+                {
+                    // use the custom event as event for fired when changed keys
+                    refkeys.Type = refkeys.GuessType();
+
+                    // pass on
+                    emitCustomEvent?.Invoke(o);
+                });
         }
 
     }

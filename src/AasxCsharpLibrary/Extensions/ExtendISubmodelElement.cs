@@ -532,6 +532,11 @@ namespace Extensions
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
                     {
+                        // DECISION: After phone call with Birgit, set all CD to GlobalReference
+                        // assuming it is always a external concept
+                        if (keyType == KeyTypes.ConceptDescription)
+                            keyType = KeyTypes.GlobalReference;
+
                         keyList.Add(new Key((KeyTypes)keyType, refKey.value));
                     }
                     else

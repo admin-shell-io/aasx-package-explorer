@@ -1952,7 +1952,7 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        public DiaryDataDef DiaryData { get; set; }
 
         #endregion
 
@@ -3437,7 +3437,7 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        public DiaryDataDef DiaryData { get; set; }
         #endregion
 
         /// <summary>
@@ -3945,7 +3945,8 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        // TODO MIHO: check
+        public DiaryDataDef DiaryData { get; set; }
         #endregion
 
         /// <summary>
@@ -4417,7 +4418,7 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        public DiaryDataDef DiaryData { get; set; }
         #endregion
 
         /// <summary>
@@ -6260,7 +6261,7 @@ namespace AasCore.Aas3_0_RC02
         [JsonIgnore]
         public DateTime TimeStamp { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        public DiaryDataDef DiaryData { get; set; }
         #endregion
 
         /// <summary>
@@ -9498,7 +9499,7 @@ namespace AasCore.Aas3_0_RC02
         //TODO:jtikekar added manually as per old implementation. However, support DotAAS-1 vs Swagger Hub metamodel schema
         public HasDataSpecification.HasDataSpecification EmbeddedDataSpecification { get; set; }
 
-        public DiaryDataDef DiaryData => throw new NotImplementedException();
+        public DiaryDataDef DiaryData { get; set; }
         #endregion
 
         /// <summary>

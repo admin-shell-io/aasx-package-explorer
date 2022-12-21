@@ -67,6 +67,9 @@ namespace AasxPackageLogic.PackageCentral
         public ShowMessageDelegate ShowMesssageBox;
     }
 
+    /// <summary>
+    /// Reason why a Package Change event was released
+    /// </summary>
     public enum PackCntChangeEventReason
     {
         /// <summary>
@@ -119,6 +122,23 @@ namespace AasxPackageLogic.PackageCentral
     }
 
     /// <summary>
+    /// In particular cases, the given element in a change event is not specific
+    /// enough and needs to be refined.
+    /// </summary>
+    public enum PackCntChangeEventLocation
+    {
+        /// <summary>
+        /// No further information beyond element ist available
+        /// </summary>
+        NoFurtherInformation,
+
+        /// <summary>
+        /// For a AAS environment, specifically the list of CDs was affected
+        /// </summary>
+        ListOfConceptDescriptions
+    }
+
+    /// <summary>
     /// Simplified change event data, which is emitted by Package Container logic to the rest of the main application in
     /// order to report on changes.. of container / AAS contents.
     /// </summary>
@@ -138,6 +158,11 @@ namespace AasxPackageLogic.PackageCentral
         /// Changed AAS element itself (typically a IReferable, but could also be a SubmodelRef)
         /// </summary>
         public IClass ThisElem;
+
+        /// <summary>
+        /// Further information to <c>ThisElem</c>.
+        /// </summary>
+        public PackCntChangeEventLocation ThisElemLocation;
 
         /// <summary>
         /// Parent object/ structure of the changed AAS element. Often a IReferable, but could also be a SubmodelRef.

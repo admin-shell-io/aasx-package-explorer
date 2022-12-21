@@ -20,7 +20,7 @@ namespace Extensions
 
         public static bool IsValid(this Reference reference)
         {
-            return reference.Keys == null || reference.Keys.IsEmpty();
+            return reference.Keys != null && !reference.Keys.IsEmpty();
         }
 
         //This is alternative for operator overloding method +, as operator overloading cannot be done in extension classes
@@ -150,6 +150,19 @@ namespace Extensions
             return reference.Keys.ToStringExtended(delimiter);
         }
 
+
+        public static ReferenceTypes GuessType(this Reference reference)
+        {
+            var setAasRefs = ExtendKey.GetAllKeyTypesForAasReferables();
+            var allAasRefs = true;
+            foreach (var k in reference.Keys)
+                if (!k.MatchesSetOfTypes(setAasRefs))
+                    allAasRefs = false;
+            if (allAasRefs)
+                return ReferenceTypes.ModelReference;
+            else
+                return ReferenceTypes.GlobalReference;
+        }
 
     }
 

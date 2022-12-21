@@ -3,7 +3,9 @@ using AdminShellNS;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace Extensions
 {
@@ -53,6 +55,13 @@ namespace Extensions
             return false;
         }
 
+        public static bool MatchesSetOfTypes(this Key key, IEnumerable<KeyTypes> set)
+        {
+            foreach (var kt in set)
+                if (key.Type == kt)
+                    return true;
+            return false;
+        }
        
 
         public static AasValidationAction Validate(this Key key, AasValidationRecordList results, IReferable container)
@@ -120,6 +129,7 @@ namespace Extensions
 
 
 
+        // -------------------------------------------------------------------------------------------------------------
         #region KeyList
 
         public static bool IsEmpty(this List<Key> keys)
@@ -219,6 +229,56 @@ namespace Extensions
                 idx++;
             }
         }
+
+        public static bool MatchesSetOfTypes(this List<Key> key, IEnumerable<KeyTypes> set)
+        {
+            var res = true;
+            foreach (var kt in key)
+                if (!key.MatchesSetOfTypes(set))
+                    res = false;
+            return res;
+        }
+
         #endregion
+
+        // -------------------------------------------------------------------------------------------------------------
+        #region Handling with enums for KeyTypes
+
+        // see: https://stackoverflow.com/questions/27372816/how-to-read-the-value-for-an-enummember-attribute
+        public static string? GetEnumMemberValue<T>(this T value)
+            where T : Enum
+        {
+            return typeof(T)
+                .GetTypeInfo()
+                .DeclaredMembers
+                .SingleOrDefault(x => x.Name == value.ToString())
+                ?.GetCustomAttribute<EnumMemberAttribute>(false)
+                ?.Value;
+        }
+
+        public static KeyTypes? MapFrom(AasReferables input)
+        {
+            var st = input.GetEnumMemberValue();
+            var res = Stringification.KeyTypesFromString(st);
+            return res;
+        }
+
+        public static List<KeyTypes> MapFrom(IEnumerable<AasReferables> input)
+        {
+            List<KeyTypes> res = new();
+            foreach (var i in input)
+            {
+                var x = MapFrom(i);
+                if (x.HasValue)
+                    res.Add(x.Value);
+            }
+            return res;
+        }
+
+        public static List<KeyTypes> GetAllKeyTypesForAasReferables()
+            => ExtendKey.MapFrom(Enum.GetValues(typeof(AasReferables)).OfType<AasReferables>());
+
+        #endregion
+
     }
 }

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:AasxPackageExplorer"
         mc:Ignorable="d"
         x:Name="splashScreen"
-        Title="AASX Package Explorer Splash Screen" Width="650" Height="350" Background="White" WindowStyle="None"
+        Title="AASX Package Explorer Splash Screen" Width="550" Height="350" Background="White" WindowStyle="None"
         WindowStartupLocation="CenterScreen" Topmost="True" MouseDown="Window_MouseDown">
     <!--
     Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
@@ -55,8 +55,8 @@
                 </ScrollViewer>
 
                 <StackPanel Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" Orientation="Vertical">
-                    <Viewbox Stretch="Uniform" Width="200">
-                        <Image Source="/AasxPackageExplorer;component/icon-set/Icon_AASX_256x256_W.bmp"/>
+                    <Viewbox Stretch="Uniform" Width="150" Margin="0,0,10,0">
+                        <Image Source="/AasxPackageExplorer;component/Resources/IDTA_AAS-Logo_312x281_RGB.png"/>
                     </Viewbox>
                     <TextBlock x:Name="TextBlockVersion">Unknown version</TextBlock>
                     <TextBlock x:Name="TextBlockBuildDate">Unknown build date!</TextBlock>

@@ -697,8 +697,8 @@ namespace AasxPackageLogic
             this.theSubmodelRef = smr;
             this.theSubmodel = sm;
 
-            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
-            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkAccentColor);
             this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
             this.TagFg = AnyUiColors.White;
 
@@ -797,8 +797,8 @@ namespace AasxPackageLogic
             this.theContainer = parentContainer;
             this.theWrapper = wrap;
 
-            this.Background = AnyUiColors.White;
-            this.Border = AnyUiColors.White;
+            this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
+            this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
             this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
             this.TagFg = AnyUiColors.White;
 
@@ -1418,6 +1418,15 @@ namespace AasxPackageLogic
             var tiAas = new VisualElementAdminShell(null, cache, package, env, aas);
             tiAas.SetIsExpandedIfNotTouched(OptionExpandMode > 0);
 
+            // add asset as well (visual legacy of V2.0)
+            var asset = aas.AssetInformation;
+            if (asset != null)
+            {
+                // item
+                var tiAsset = new VisualElementAsset(tiAas, cache, env, aas, asset);
+                tiAas.Members.Add(tiAsset);
+            }
+
             // have submodels?
             if (aas.Submodels != null)
                 foreach (var smr in aas.Submodels)
@@ -1834,6 +1843,17 @@ namespace AasxPackageLogic
             foreach (var e in this.FindAllVisualElement())
                 if (p(e))
                     yield return e;
+        }
+
+        public IEnumerable<T> FindAllVisualElementOf<T>(Predicate<T> p)
+            where T : VisualElementGeneric
+        {
+            if (p == null)
+                yield break;
+
+            foreach (var e in this.FindAllVisualElement())
+                if (e is T te && p(te))
+                    yield return te;
         }
 
         public bool ContainsDeep(VisualElementGeneric ve)
@@ -2297,7 +2317,7 @@ namespace AasxPackageLogic
                     return 0 < UpdateByEventTryDeleteGenericVE(data);
                 }
 
-                if (data.ParentElem is List<ConceptDescription>
+                if (data.ParentElem is AasCore.Aas3_0_RC02.Environment
                     && data.ThisElem is ConceptDescription cd)
                 {
                     // as the CD might be rendered below mayn different elements (SME, SM, LoCD, ..)
@@ -2378,19 +2398,28 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.StructuralUpdate)
             {
-                if (data.ThisElem is List<ConceptDescription> lcds)
+                if (data.ThisElem is AasCore.Aas3_0_RC02.Environment 
+                    && data.ThisElemLocation == PackCntChangeEventLocation.ListOfConceptDescriptions)
                 {
-                    // find the correct parent(s)
-                    foreach (var ve in FindAllVisualElementOnMainDataObject(
-                        data.ThisElem, alsoDereferenceObjects: false))
-                        if (ve is VisualElementEnvironmentItem veit
-                            && veit.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions
-                            && veit.theEnv != null)
-                        {
-                            // rebuild
-                            veit.Members.Clear();
-                            GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
-                        }
+                    //// find the correct parent(s)
+                    //foreach (var ve in FindAllVisualElementOnMainDataObject(
+                    //    data.ThisElem, alsoDereferenceObjects: false))
+                    //    if (ve is VisualElementEnvironmentItem veit
+                    //        && veit.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions
+                    //        && veit.theEnv != null)
+                    //    {
+                    //        // rebuild
+                    //        veit.Members.Clear();
+                    //        GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
+                    //    }
+                    foreach (var veit in FindAllVisualElementOf<VisualElementEnvironmentItem>(
+                        (vex) => vex.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions
+                                 && vex.theEnv == data.ThisElem))
+                    {
+                        // rebuild
+                        veit.Members.Clear();
+                        GenerateInnerElementsForConceptDescriptions(cache, veit.theEnv, veit, veit);
+                    }
                 }
             }
 

@@ -169,6 +169,13 @@ namespace AasxPackageExplorer
                 }
             }
 
+            if (si is VisualElementSupplementalFile vesf && vesf.theFile != null)
+            {
+                // prepare data
+                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
+
             // uups
             return false;
         }

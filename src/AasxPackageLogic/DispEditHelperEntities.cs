@@ -26,6 +26,7 @@ using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
+using swagger = IO.Swagger.Model;
 
 namespace AasxPackageLogic
 {
@@ -38,12 +39,6 @@ namespace AasxPackageLogic
 
         public DispEditHelperCopyPaste.CopyPasteBuffer theCopyPaste = new DispEditHelperCopyPaste.CopyPasteBuffer();
 
-        public class UploadAssistance
-        {
-            public string SourcePath = "";
-            public string TargetPath = "/aasx/files";
-        }
-        public UploadAssistance uploadAssistance = new UploadAssistance();
 
         //
         //
@@ -213,13 +208,13 @@ namespace AasxPackageLogic
             // on [0..1] and let the existing functions work on this. This could give better copy/ paste
             // and more. The serialization would then materialize (via getter/setters) this as "File" [0..1].
 
-            this.AddGroup(stack, "DefaultThumbnail: File element", this.levelColors.SubSection,
+            this.AddGroup(stack, "DefaultThumbnail: Resource element", this.levelColors.SubSection,
                 auxButtonTitle: (asset.DefaultThumbnail == null) ? null : "Delete",
                 auxButtonLambda: (o) =>
                 {
                     if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                               "Delete Fiel element? This operation can not be reverted!",
-                               "ConceptDescriptions",
+                               "Delete Resource element for thumbnail? This operation can not be reverted!",
+                               "AssetInformation",
                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                     {
                         asset.DefaultThumbnail = null;
@@ -231,7 +226,7 @@ namespace AasxPackageLogic
                 });
 
             if (this.SafeguardAccess(
-                stack, repo, asset.DefaultThumbnail, $"defaultThumbnail:", $"Create empty File element!",
+                stack, repo, asset.DefaultThumbnail, $"defaultThumbnail:", $"Create empty Resource element!",
                 v =>
                 {
                     asset.DefaultThumbnail = new Resource(""); //File replaced by resource in V3
@@ -242,10 +237,18 @@ namespace AasxPackageLogic
                 var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                 // Note: parentContainer = null effectively seems to disable "unwanted" functionality
-                DisplayOrEditAasEntitySubmodelElement(
-                    packages: packages, env: env, parentContainer: null, wrapper: null,
-                    sme: (ISubmodelElement)asset.DefaultThumbnail,
-                    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
+                // DisplayOrEditAasEntitySubmodelElement(
+                //    packages: packages, env: env, parentContainer: null, wrapper: null,
+                //    sme: (ISubmodelElement)asset.DefaultThumbnail,
+                //    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
+                DisplayOrEditEntityFileResource(
+                    substack, aas, 
+                    asset.DefaultThumbnail.Path, asset.DefaultThumbnail.ContentType, 
+                    (fn, ct) => {
+                        asset.DefaultThumbnail.Path = fn;
+                        asset.DefaultThumbnail.ContentType = ct;
+                    }, 
+                    relatedReferable: aas);
             }
 
         }
@@ -849,7 +852,7 @@ namespace AasxPackageLogic
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
                                 "It is a good practive to have those. Select or add an AssetAdministrationShell, " +
-                                "Submodel and ISubmodelElement and add a ConceptDescription.",
+                                "Submodel and SubmodelElement and add a ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice),
                     });
 
@@ -1382,7 +1385,7 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "ISubmodelElement:",
+                    stack, "SubmodelElement:",
                     new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
                     repo,
                     (buttonNdx) =>
@@ -1473,9 +1476,10 @@ namespace AasxPackageLogic
 
                 // create ConceptDescriptions for ECLASS
                 var targets = new List<ISubmodelElement>();
-                this.IdentifyTargetsForEclassImportOfCDs(
-                    env, new List<ISubmodelElement>(submodel.SubmodelElements),
-                    ref targets);
+                if (submodel.SubmodelElements != null)
+                    this.IdentifyTargetsForEclassImportOfCDs(
+                        env, new List<ISubmodelElement>(submodel.SubmodelElements),
+                        ref targets);
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -1641,7 +1645,7 @@ namespace AasxPackageLogic
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
-                    stack, (ModelingKind)submodel.Kind,
+                    stack, submodel.Kind,
                     (k) => { submodel.Kind = k; },
                     instanceExceptionStatement:
                         "Exception: if you want to declare a Submodel, which is been standardised " +
@@ -1649,8 +1653,7 @@ namespace AasxPackageLogic
                     relatedReferable: submodel);
 
                 // HasSemanticId
-                this.DisplayOrEditEntitySemanticId(stack, submodel.SemanticId,
-                    (o) => { submodel.SemanticId = o; },
+                this.DisplayOrEditEntitySemanticId(stack, submodel,
                     "The semanticId may be either a reference to a submodel " +
                     "with kind=Type (within the same or another Administration Shell) or " +
                     "it can be an external reference to an external standard " +
@@ -1696,7 +1699,9 @@ namespace AasxPackageLogic
                 {
                     Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == env).FirstOrDefault(),
                     ThisElem = cd,
-                    ParentElem = (IClass)env.ConceptDescriptions
+                    // TODO (MIHO, 2022-12-19): parent changed from env.ConceptDescriptions to env.
+                    // Check, if rest of code will still run.
+                    ParentElem = env
                 };
 
                 this.EntityListUpDownDeleteHelper<ConceptDescription>(
@@ -1845,7 +1850,7 @@ namespace AasxPackageLogic
                 new[] {
                     new HintCheck(
                         () => { return cd.EmbeddedDataSpecification.IEC61360Content == null; },
-                        "Providing an embeddedDataSpecification with IEC61360 data specification content " +
+                        "Providing an embeddedDataSpecification, e.g. IEC61360 data specification content, " +
                             "is mandatory. This holds the descriptive information " +
                             "of an concept and allows for an off-line understanding of the meaning " +
                             "of an concept/ ISubmodelElement. Please create this data element.",
@@ -2120,19 +2125,19 @@ namespace AasxPackageLogic
                 if (parentContainer != null && parentContainer is Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as Submodel).SubmodelElements, wrapper, env,
-                        "ISubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate);
+                        "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate);
 
                 if (parentContainer != null && parentContainer is SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as SubmodelElementCollection).Value,
-                        wrapper, env, "ISubmodelElement:",
+                        wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate);
 
                 if (parentContainer != null && parentContainer is Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as Entity).Statements,
-                        wrapper, env, "ISubmodelElement:",
+                        wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate);
 
                 // refactor?
@@ -2363,7 +2368,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
-                    stack, "ISubmodelElement:",
+                    stack, "SubmodelElement:",
                     new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
                     repo,
                     (buttonNdx) =>
@@ -2802,8 +2807,7 @@ namespace AasxPackageLogic
                     relatedReferable: sme);
 
                 // HasSemanticId
-                this.DisplayOrEditEntitySemanticId(stack, sme.SemanticId,
-                    (sid) => { sme.SemanticId = sid; },
+                this.DisplayOrEditEntitySemanticId(stack, sme,
                     "The use of semanticId for SubmodelElements is mandatory! " +
                     "Only by this means, an automatic system can identify and " +
                     "understand the meaning of the SubmodelElements and, for example, " +
@@ -2867,17 +2871,20 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
-                var valType = Stringification.ToString(p.ValueType);
-                this.AddKeyValueRef(
-                    stack, "valueType", p, ref valType, null, repo,
+                AddKeyValueExRef(
+                    stack, "valueType", p, Stringification.ToString(p.ValueType), null, repo,
                     v =>
                     {
-                        p.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefFromString((string)v);
+                        var vt = Stringification.DataTypeDefXsdFromString((string)v);
+                        if (vt.HasValue)
+                            p.ValueType = vt.Value;
                         this.AddDiaryEntry(p, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
+                    comboBoxMinWidth: 190,
                     comboBoxIsEditable: editMode,
-                    comboBoxItems: Enum.GetNames(typeof(DataTypeDefXsd)));
+                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray() // Enum.GetNames(typeof(DataTypeDefXsd))
+                    );
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -2886,7 +2893,8 @@ namespace AasxPackageLogic
                             () => { return p.Value == null || p.Value.Trim().Length < 1; },
                             "The value of the Property. " +
                                 "Please provide a string representation " +
-                                "(without quotes, '.' as decimal separator, in XML number representation).",
+                                "(in case of numbers: without quotes, '.' as decimal separator, " +
+                                "in XML number representation).",
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
@@ -2897,9 +2905,8 @@ namespace AasxPackageLogic
 
                     });
 
-                var val = p.Value;
-                this.AddKeyValueRef(
-                    stack, "value", p, ref val, null, repo,
+                AddKeyValueExRef(
+                    stack, "value", p, p.Value, null, repo,
                     v =>
                     {
                         p.Value = v as string;
@@ -3017,9 +3024,8 @@ namespace AasxPackageLogic
                                 "Value types are provided by built-in types of XML Schema Definition 1.1.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                var valueType = Stringification.ToString(rng.ValueType);
-                this.AddKeyValueRef(
-                    stack, "valueType", rng, ref valueType, null, repo,
+                AddKeyValueExRef(
+                    stack, "valueType", rng, Stringification.ToString(rng.ValueType), null, repo,
                     v =>
                     {
                         rng.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString((string)v);
@@ -3048,9 +3054,9 @@ namespace AasxPackageLogic
                                 "If the min value is missing then the value is assumed to be negative infinite.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                var min = rng.Min;
-                this.AddKeyValueRef(
-                    stack, "min", rng, ref min, null, repo,
+                
+                AddKeyValueExRef(
+                    stack, "min", rng, rng.Min, null, repo,
                     v =>
                     {
                         rng.Min = v as string;
@@ -3070,9 +3076,8 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
-                var max = rng.Max;
-                this.AddKeyValueRef(
-                    stack, "max", rng, ref max, null, repo,
+                AddKeyValueExRef(
+                    stack, "max", rng, rng.Max, null, repo,
                     v =>
                     {
                         rng.Max = v as string;
@@ -3084,354 +3089,12 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "File", this.levelColors.MainSection);
 
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () =>
-                            {
-                                return fl.ContentType == null || fl.ContentType.Trim().Length < 1 ||
-                                    fl.ContentType.IndexOf('/') < 1 || fl.ContentType.EndsWith("/");
-                            },
-                            "The mime-type of the file. Mandatory information. See RFC2046.")
-                    });
-
-                var contentType = fl.ContentType;
-                this.AddKeyValueRef(
-                    stack, "mimeType", fl, ref contentType, null, repo,
-                    v =>
-                    {
-                        fl.ContentType = v as string;
-                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    },
-                    comboBoxIsEditable: true,
-                    comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
-
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => { return fl.Value == null || fl.Value.Trim().Length < 1; },
-                            "The path to an external file or a file relative the AASX package root('/'). " +
-                                "Files are typically relative to '/aasx/' or sub-directories of it. " +
-                                "External files typically comply to an URL, e.g. starting with 'https://..'.",
-                            breakIfTrue: true),
-                        new HintCheck(
-                            () => { return fl.Value.IndexOf('\\') >= 0; },
-                            "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
-                            severityLevel: HintCheck.Severity.Notice)
-                    });
-
-                var flValue = fl.Value;
-                this.AddKeyValueRef(
-                    stack, "value", fl, ref flValue, null, repo,
-                    v =>
-                    {
-                        fl.Value = v as string;
-                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    },
-                    auxButtonTitles: new[] { "Choose supplementary file", },
-                    auxButtonToolTips: new[] { "Select existing supplementary files" },
-                    auxButtonLambda: (bi) =>
-                    {
-                        if (bi == 0)
-                        {
-                            // Select
-                            var ve = this.SmartSelectAasEntityVisualElement(
-                                        packages, PackageCentral.PackageCentral.Selector.Main, "File");
-                            if (ve != null)
-                            {
-                                var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
-                                if (sf != null)
-                                {
-                                    fl.Value = sf.Uri.ToString();
-                                    this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                                    return new AnyUiLambdaActionRedrawEntity();
-                                }
-                            }
-                        }
-
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                if (editMode && uploadAssistance != null && packages.Main != null)
-                {
-                    // More file actions
-                    this.AddAction(
-                        stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
-                        repo,
-                        (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0 && fl.Value.HasContent())
-                            {
-                                if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                    "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
-                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                                {
-                                    try
-                                    {
-                                        // try find ..
-                                        var psfs = packages.Main.GetListOfSupplementaryFiles();
-                                        var psf = psfs?.FindByUri(fl.Value);
-                                        if (psf == null)
-                                        {
-                                            Log.Singleton.Error(
-                                                $"Not able to locate supplmentary file {fl.Value} for removal! " +
-                                                $"Aborting!");
-                                        }
-                                        else
-                                        {
-                                            Log.Singleton.Info($"Removing file {fl.Value} ..");
-                                            packages.Main.DeleteSupplementaryFile(psf);
-                                            Log.Singleton.Info(
-                                                $"Added {fl.Value} to pending package items to be deleted. " +
-                                                "A save-operation might be required.");
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Singleton.Error(
-                                            ex, $"Removing file {fl.Value} in package");
-                                    }
-
-                                    // clear value
-                                    fl.Value = "";
-
-                                    // value event
-                                    this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
-
-                                    // show empty
-                                    return new AnyUiLambdaActionRedrawEntity();
-                                }
-                            }
-
-                            if (buttonNdx == 1)
-                            {
-                                // ask for a name
-                                var uc = new AnyUiDialogueDataTextBox(
-                                    "Name of text file to create",
-                                    symbol: AnyUiMessageBoxImage.Question,
-                                    maxWidth: 1400,
-                                    text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
-
-                                if (!uc.Result)
-                                {
-                                    return new AnyUiLambdaActionNone();
-                                }
-
-                                var ptd = "/aasx/";
-                                var ptfn = uc.Text.Trim();
-                                packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
-
-                                // make sure the name is not already existing
-                                var psfs = packages.Main.GetListOfSupplementaryFiles();
-                                var psf = psfs?.FindByUri(ptd + ptfn);
-                                if (psf != null)
-                                {
-                                    this.context?.MessageBoxFlyoutShow(
-                                        $"The supplementary file {ptd + ptfn} is already existing in the " +
-                                        "package. Please re-try with a different file name.", "Create text file",
-                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
-                                    return new AnyUiLambdaActionNone();
-                                }
-
-                                // try execute
-                                try
-                                {
-                                    // make temp file
-                                    var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".txt");
-                                    System.IO.File.WriteAllText(tempFn, "");
-
-                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
-
-                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
-                                        tempFn, ptd, ptfn,
-                                        embedAsThumb: false, useMimeType: mimeType);
-
-                                    if (targetPath == null)
-                                    {
-                                        Log.Singleton.Error(
-                                            $"Error creating text-file {ptd + ptfn} within package");
-                                    }
-                                    else
-                                    {
-                                        Log.Singleton.Info(
-                                            $"Added empty text-file {ptd + ptfn} to pending package items. " +
-                                            $"A save-operation is required.");
-                                        fl.ContentType = mimeType;
-                                        fl.Value = targetPath;
-
-                                        // value + struct event
-                                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                                        this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Singleton.Error(
-                                        ex, $"Creating text-file {ptd + ptfn} within package");
-                                }
-                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: sme);
-                            }
-
-                            if (buttonNdx == 2)
-                            {
-                                try
-                                {
-                                    // try find ..
-                                    var psfs = packages.Main.GetListOfSupplementaryFiles();
-                                    var psf = psfs?.FindByUri(fl.Value);
-                                    if (psf == null)
-                                    {
-                                        Log.Singleton.Error(
-                                            $"Not able to locate supplmentary file {fl.Value} for edit. " +
-                                            $"Aborting!");
-                                        return new AnyUiLambdaActionNone();
-                                    }
-
-                                    // try read ..
-                                    Log.Singleton.Info($"Reading text-file {fl.Value} ..");
-                                    string contents;
-                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(fl.Value))
-                                    {
-                                        using (var sr = new StreamReader(stream))
-                                        {
-                                            // read contents
-                                            contents = sr.ReadToEnd();
-                                        }
-                                    }
-
-                                    // test
-                                    if (contents == null)
-                                    {
-                                        Log.Singleton.Error(
-                                            $"Not able to read contents from  supplmentary file {fl.Value} " +
-                                            $"for edit. Aborting!");
-                                        return new AnyUiLambdaActionNone();
-                                    }
-
-                                    // edit
-                                    var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit text-file '{fl.Value}'",
-                                                mimeType: fl.ContentType,
-                                                text: contents);
-                                    if (!this.context.StartFlyoverModal(uc))
-                                        return new AnyUiLambdaActionNone();
-
-                                    // save
-                                    using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
-                                        fl.Value, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                                    {
-                                        using (var sw = new StreamWriter(stream))
-                                        {
-                                            // write contents
-                                            sw.Write(uc.Text);
-                                        }
-                                    }
-
-                                    // value event
-                                    this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Singleton.Error(
-                                        ex, $"Edit text-file {fl.Value} in package.");
-                                }
-
-                                // reshow
-                                return new AnyUiLambdaActionRedrawEntity();
-                            }
-
-                            return new AnyUiLambdaActionNone();
-                        });
-
-                    // Further file assistance
-                    this.AddGroup(stack, "Supplementary file assistance", this.levelColors.SubSection);
-
-                    this.AddKeyValueRef(
-                        stack, "Target path", this.uploadAssistance, ref this.uploadAssistance.TargetPath, null, repo,
-                        v =>
-                        {
-                            this.uploadAssistance.TargetPath = v as string;
-                            return new AnyUiLambdaActionNone();
-                        });
-
-                    this.AddKeyDropTarget(
-                        stack, "Source file to add",
-                        !(this.uploadAssistance.SourcePath.HasContent())
-                            ? "(Please drop a file to set source file to add)"
-                            : this.uploadAssistance.SourcePath,
-                        null, repo,
-                        v =>
-                        {
-                            this.uploadAssistance.SourcePath = v as string;
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }, minHeight: 40);
-
-                    this.AddAction(
-                    stack, "Action", new[] { "Select source file", "Add or update to AASX" },
-                        repo,
-                        (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0)
-                            {
-                                var uc = new AnyUiDialogueDataOpenFile(
-                                message: "Select a supplementary file to add..");
-                                this.context?.StartFlyoverModal(uc);
-                                if (uc.Result && uc.FileName != null)
-                                {
-                                    this.uploadAssistance.SourcePath = uc.FileName;
-                                    return new AnyUiLambdaActionRedrawEntity();
-                                }
-                            }
-
-                            if (buttonNdx == 1)
-                            {
-                                try
-                                {
-                                    var ptd = uploadAssistance.TargetPath.Trim();
-                                    var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
-                                    packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
-
-                                    var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
-
-                                    var targetPath = packages.Main.AddSupplementaryFileToStore(
-                                        uploadAssistance.SourcePath, ptd, ptfn,
-                                        embedAsThumb: false, useMimeType: mimeType);
-
-                                    if (targetPath == null)
-                                    {
-                                        Log.Singleton.Error(
-                                            $"Error adding file {uploadAssistance.SourcePath} to package");
-                                    }
-                                    else
-                                    {
-                                        Log.Singleton.Info(
-                                            $"Added {ptfn} to pending package items. A save-operation is required.");
-                                        fl.ContentType = mimeType;
-                                        fl.Value = targetPath;
-
-                                        // value + struct event
-                                        this.AddDiaryEntry(fl, new DiaryEntryStructChange());
-                                        this.AddDiaryEntry(fl, new DiaryEntryUpdateValue());
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Log.Singleton.Error(
-                                        ex, $"Adding file {uploadAssistance.SourcePath} to package");
-                                }
-
-                                // refresh dialogue
-                                uploadAssistance.SourcePath = "";
-                                return new AnyUiLambdaActionRedrawEntity();
-                            }
-
-                            return new AnyUiLambdaActionNone();
-                        });
-                }
+                // refer to mini-module
+                DisplayOrEditEntityFileResource(stack, fl, fl.Value, fl.ContentType, 
+                    (fn, ct) => {
+                        fl.Value = fn;
+                        fl.ContentType = ct;
+                    }, fl);
             }
             else if (sme is Blob blb)
             {
@@ -3448,9 +3111,8 @@ namespace AasxPackageLogic
                             "The mime-type of the file. Mandatory information. See RFC2046.")
                     });
 
-                var blbContentType = blb.ContentType;
-                this.AddKeyValueRef(
-                    stack, "mimeType", blb, ref blbContentType, null, repo,
+                AddKeyValueExRef(
+                    stack, "mimeType", blb, blb.ContentType, null, repo,
                     v =>
                     {
                         blb.ContentType = v as string;
@@ -3460,9 +3122,8 @@ namespace AasxPackageLogic
                     comboBoxIsEditable: true,
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
 
-                var blbValue = Encoding.Default.GetString(blb.Value);
-                this.AddKeyValueRef(
-                    stack, "value", blb, ref blbValue, null, repo,
+                AddKeyValueExRef(
+                    stack, "value", blb, Encoding.Default.GetString(blb.Value), null, repo,
                     v =>
                     {
                         blb.Value = Encoding.Default.GetBytes((string)v);
@@ -3478,7 +3139,7 @@ namespace AasxPackageLogic
                             var uc = new AnyUiDialogueDataTextEditor(
                                                 caption: $"Edit Blob '{"" + blb.IdShort}'",
                                                 mimeType: blb.ContentType,
-                                                text: blbValue);
+                                                text: Encoding.Default.GetString(blb.Value));
                             if (this.context.StartFlyoverModal(uc))
                             {
                                 blb.Value = Encoding.Default.GetBytes(uc.Text);
@@ -3659,9 +3320,8 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.High)
                     });
 
-                var entType = Stringification.ToString(ent.EntityType);
-                this.AddKeyValueRef(
-                    stack, "entityType", ent, ref entType, null, repo,
+                AddKeyValueExRef(
+                    stack, "entityType", ent, Stringification.ToString(ent.EntityType), null, repo,
                     v =>
                     {
                         ent.EntityType = (EntityType)Stringification.EntityTypeFromString((string)v);

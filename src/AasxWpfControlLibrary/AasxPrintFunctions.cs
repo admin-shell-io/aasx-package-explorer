@@ -135,13 +135,13 @@ namespace AasxPackageExplorer
                 Bitmap bmp = null;
                 if (csi.code.Trim().ToLower() == "dmc")
                 {
-                    // DMC
-                    var barcodeWriter = new BarcodeWriter<Bitmap>();
+                    var barcodeWriter = new BarcodeWriter<Bitmap>()
+                    {
+                        Format = BarcodeFormat.DATA_MATRIX,
+                        Renderer = new ZXing.Windows.Compatibility.BitmapRenderer()
+                    };
 
-                    // set the barcode format
-                    barcodeWriter.Format = BarcodeFormat.DATA_MATRIX;
-
-                    // write text and generate a 2-D barcode as a bitmap
+                    //// write text and generate a 2-D barcode as a bitmap
                     bmp = barcodeWriter.Write(csi.id);
                 }
                 else
@@ -157,6 +157,7 @@ namespace AasxPackageExplorer
                         IntPtr.Zero,
                         System.Windows.Int32Rect.Empty,
                         BitmapSizeOptions.FromWidthAndHeight(bmp.Width, bmp.Height));
+                
                 var img = new System.Windows.Controls.Image();
                 img.Source = imgsrc;
                 img.Height = 200 * csi.normSize;
@@ -271,7 +272,7 @@ namespace AasxPackageExplorer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("" + ex.Message, "Disappointment");
+                Log.Singleton.Error(ex, "when printing Code Sheet");
                 return false;
             }
             return true;

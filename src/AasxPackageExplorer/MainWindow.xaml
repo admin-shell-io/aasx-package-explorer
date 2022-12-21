@@ -201,7 +201,7 @@
     </Window.InputBindings>
 
     <Window.CommandBindings>
-		<CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
+        <CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Open}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource Save}" Executed="CommandBinding_Executed"/>
@@ -306,16 +306,16 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <!-- Initially, the concurrent activities (events, plugins) are initially hidden -->
-                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" /> <!-- Set to 150 to see events in XAML -->
+                <RowDefinition Height="0" x:Name="RowDefinitionConcurrent" />
+                <!-- Set to 150 to see events in XAML -->
                 <RowDefinition Height="28" />
             </Grid.RowDefinitions>
 
             <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
-                          ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
+                          ResizeBehavior="PreviousAndNext" Height="4" Background="White"/>
 
             <!-- Menu area -->
-
-            <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Background="{DynamicResource DarkestAccentColor}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30" />
                 </Grid.RowDefinitions>
@@ -326,122 +326,123 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" Background="Transparent">
+                <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" 
+                      Background="Transparent" Foreground="White">
                     <MenuItem Header="_File" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem Header="_New .." Command="{StaticResource New}"/>
-                        <MenuItem Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
-                        <MenuItem Header="Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectIntegrated}"/>
-                        <MenuItem Header="_Save" InputGestureText="Ctrl+S" Command="{StaticResource Save}"/>
-                        <MenuItem Header="_Save as .." Command="{StaticResource SaveAs}"/>
-                        <MenuItem Header="_Close .." Command="{StaticResource Close}"/>
-                        <MenuItem Header="Check, validate and fix .." Command="{StaticResource CheckAndFix}"/>
-                        <MenuItem Header="Security ..">
-                            <MenuItem Header="_Sign .." Command="{StaticResource Sign}"/>
-                            <MenuItem Header="_Validate .." Command="{StaticResource ValidateCertificate}"/>
-                            <MenuItem Header="_Encrypt .." Command="{StaticResource Encrypt}"/>
-                            <MenuItem Header="_Decrypt .." Command="{StaticResource Decrypt}"/>
+                        <MenuItem Foreground="Black" Header="_New .." Command="{StaticResource New}"/>
+                        <MenuItem Foreground="Black" Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
+                        <MenuItem Foreground="Black" Header="Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectIntegrated}"/>
+                        <MenuItem Foreground="Black" Header="_Save" InputGestureText="Ctrl+S" Command="{StaticResource Save}"/>
+                        <MenuItem Foreground="Black" Header="_Save as .." Command="{StaticResource SaveAs}"/>
+                        <MenuItem Foreground="Black" Header="_Close .." Command="{StaticResource Close}"/>
+                        <MenuItem Foreground="Black" Header="Check, validate and fix .." Command="{StaticResource CheckAndFix}"/>
+                        <MenuItem Foreground="Black" Header="Security ..">
+                            <MenuItem Foreground="Black" Header="_Sign .." Command="{StaticResource Sign}"/>
+                            <MenuItem Foreground="Black" Header="_Validate .." Command="{StaticResource ValidateCertificate}"/>
+                            <MenuItem Foreground="Black" Header="_Encrypt .." Command="{StaticResource Encrypt}"/>
+                            <MenuItem Foreground="Black" Header="_Decrypt .." Command="{StaticResource Decrypt}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Open Au_xiliary AAS .." InputGestureText="Ctrl+X" Command="{StaticResource OpenAux}"/>
-                        <MenuItem Header="Close Auxiliary AAS" Command="{StaticResource CloseAux}"/>
+                        <MenuItem Foreground="Black" Header="Open Au_xiliary AAS .." InputGestureText="Ctrl+X" Command="{StaticResource OpenAux}"/>
+                        <MenuItem Foreground="Black" Header="Close Auxiliary AAS" Command="{StaticResource CloseAux}"/>
                         <Separator/>
-                        <MenuItem Header="Further connect options ..">
-                            <MenuItem Header="Secure Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectSecure}"/>
-                            <MenuItem Header="Connect via OPC-UA .." Command="{StaticResource ConnectOpcUa}"/>
-                            <MenuItem Header="Connect via REST .." InputGestureText="F6" Command="{StaticResource ConnectRest}"/>
+                        <MenuItem Foreground="Black" Header="Further connect options ..">
+                            <MenuItem Foreground="Black" Header="Secure Connect .." InputGestureText="Ctrl+Shift+O" Command="{StaticResource ConnectSecure}"/>
+                            <MenuItem Foreground="Black" Header="Connect via OPC-UA .." Command="{StaticResource ConnectOpcUa}"/>
+                            <MenuItem Foreground="Black" Header="Connect via REST .." InputGestureText="F6" Command="{StaticResource ConnectRest}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="AASX File Repository ..">
-                            <MenuItem Header="New (local) repository.." Command="{StaticResource FileRepoNew}"/>
-                            <MenuItem Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
-                            <MenuItem Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
-                            <MenuItem Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
+                        <MenuItem Foreground="Black" Header="AASX File Repository ..">
+                            <MenuItem Foreground="Black" Header="New (local) repository.." Command="{StaticResource FileRepoNew}"/>
+                            <MenuItem Foreground="Black" Header="Open (local) repository .." Command="{StaticResource FileRepoOpen}"/>
+                            <MenuItem Foreground="Black" Header="Connect HTTP/REST repository .." Command="{StaticResource FileRepoConnectRepository}"/>
+                            <MenuItem Foreground="Black" Header="Query HTTP/REST registry .." Command="{StaticResource FileRepoConnectRegistry}"/>
                             <Separator/>
-                            <MenuItem Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
+                            <MenuItem Foreground="Black" Header="Create last recently used list .." Command="{StaticResource FileRepoCreateLRU}"/>
                             <Separator/>
-                            <MenuItem Header="Query open repositories .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
+                            <MenuItem Foreground="Black" Header="Query open repositories .." InputGestureText="F12" Command="{StaticResource FileRepoQuery}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Import ..">
-                            <MenuItem Header="Import AutomationML into AASX .." Command="{StaticResource ImportAML}"/>
-                            <MenuItem Header="Import Submodel from JSON .." Command="{StaticResource SubmodelRead}"/>
-                            <MenuItem Header="GET Submodel from URL .." Command="{StaticResource SubmodelGet}"/>
-                            <MenuItem Header="Import Submodel from Dictionary .." Command="{StaticResource ImportSubmodel}"/>
-                            <MenuItem Header="Import Submodel Elements from Dictionary .." Command="{StaticResource ImportSubmodelElements}"/>
-                            <MenuItem Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
-                            <MenuItem Header="Import Thing Description JSON LD document into SubModel .." Command="{StaticResource TDImport}"/>
-                            
-                            <MenuItem Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
-                            <MenuItem Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
-                            <MenuItem Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
-                            <MenuItem Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
-                            <MenuItem Header="Import BAMM RDF into AASX .." Command="{StaticResource RDFRead}"/>
-                            <MenuItem Header="Read time series values into SubModel .." Command="{StaticResource ImportTimeSeries}"/>
-                            <MenuItem Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
+                        <MenuItem Foreground="Black" Header="Import ..">
+                            <MenuItem Foreground="Black" Header="Import AutomationML into AASX .." Command="{StaticResource ImportAML}"/>
+                            <MenuItem Foreground="Black" Header="Import Submodel from JSON .." Command="{StaticResource SubmodelRead}"/>
+                            <MenuItem Foreground="Black" Header="GET Submodel from URL .." Command="{StaticResource SubmodelGet}"/>
+                            <MenuItem Foreground="Black" Header="Import Submodel from Dictionary .." Command="{StaticResource ImportSubmodel}"/>
+                            <MenuItem Foreground="Black" Header="Import Submodel Elements from Dictionary .." Command="{StaticResource ImportSubmodelElements}"/>
+                            <MenuItem Foreground="Black" Header="Import BMEcat-file into SubModel .." Command="{StaticResource BMEcatImport}"/>
+                            <MenuItem Foreground="Black" Header="Import Thing Description JSON LD document into SubModel .." Command="{StaticResource TDImport}"/>
+
+                            <MenuItem Foreground="Black" Header="Import CSV-file into SubModel .." Command="{StaticResource CSVImport}"/>
+                            <MenuItem Foreground="Black" Header="Import AAS from i4aas-nodeset .." Command="{StaticResource OPCUAi4aasImport}"/>
+                            <MenuItem Foreground="Black" Header="Import OPC UA nodeset.xml as Submodel .." Command="{StaticResource OpcUaImportNodeSet}"/>
+                            <MenuItem Foreground="Black" Header="Read OPC values into SubModel .." Command="{StaticResource OPCRead}"/>
+                            <MenuItem Foreground="Black" Header="Import BAMM RDF into AASX .." Command="{StaticResource RDFRead}"/>
+                            <MenuItem Foreground="Black" Header="Read time series values into SubModel .." Command="{StaticResource ImportTimeSeries}"/>
+                            <MenuItem Foreground="Black" Header="Import SubmodelElements from Table .." Command="{StaticResource ImportTable}"/>
                         </MenuItem>
-                        <MenuItem Header="Export ..">
-                            <MenuItem Header="Export AutomationML .." Command="{StaticResource ExportAML}"/>
-                            <MenuItem Header="Export Submodel to JSON .." Command="{StaticResource SubmodelWrite}"/>
-                            <MenuItem Header="PUT Submodel to URL .." Command="{StaticResource SubmodelPut}"/>
-                            <MenuItem Header="Export AAS as i4aas-nodeset .." Command="{StaticResource OPCUAi4aasExport}"/>
-                            <MenuItem Header="Export OPC UA Nodeset2.xml (via UA server plug-in) .." Command="{StaticResource OpcUaExportNodeSetUaPlugin}"/>
-                            <MenuItem Header="Copy selected element JSON to clipboard" InputGestureText="Shift+Ctrl+C" Command="{StaticResource CopyClipboardElementJson}"/>
-                            <MenuItem Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
-                            <MenuItem Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
-                            <MenuItem Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
-                            <MenuItem Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
-							              <MenuItem Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
-                            <MenuItem Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
-                            <MenuItem Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
+                        <MenuItem Foreground="Black" Header="Export ..">
+                            <MenuItem Foreground="Black" Header="Export AutomationML .." Command="{StaticResource ExportAML}"/>
+                            <MenuItem Foreground="Black" Header="Export Submodel to JSON .." Command="{StaticResource SubmodelWrite}"/>
+                            <MenuItem Foreground="Black" Header="PUT Submodel to URL .." Command="{StaticResource SubmodelPut}"/>
+                            <MenuItem Foreground="Black" Header="Export AAS as i4aas-nodeset .." Command="{StaticResource OPCUAi4aasExport}"/>
+                            <MenuItem Foreground="Black" Header="Export OPC UA Nodeset2.xml (via UA server plug-in) .." Command="{StaticResource OpcUaExportNodeSetUaPlugin}"/>
+                            <MenuItem Foreground="Black" Header="Copy selected element JSON to clipboard" InputGestureText="Shift+Ctrl+C" Command="{StaticResource CopyClipboardElementJson}"/>
+                            <MenuItem Foreground="Black" Header="Export Submodel as options for GenericForms .." Command="{StaticResource ExportGenericForms}"/>
+                            <MenuItem Foreground="Black" Header="Export Submodel as snippet for PredefinedConcepts .." Command="{StaticResource ExportPredefineConcepts}"/>
+                            <MenuItem Foreground="Black" Header="Export Submodel as Thing Description JSON LD document" Command="{StaticResource SubmodelTDExport}"/>
+                            <MenuItem Foreground="Black" Header="Print Asset as code sheet .." Command="{StaticResource PrintAsset}"/>
+                            <MenuItem Foreground="Black" Header="Export TeDZ Simulation Model Description (SMD) .." Command="{StaticResource ExportSMD}"/>
+                            <MenuItem Foreground="Black" Header="Export SubmodelElements as Table .." Command="{StaticResource ExportTable}"/>
+                            <MenuItem Foreground="Black" Header="Export SubmodelElements as UML .." Command="{StaticResource ExportUml}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Server ..">
-                            <MenuItem Header="Serve AAS as REST .." InputGestureText="Shift+F6" Command="{StaticResource ServerRest}"/>
-                            <MenuItem Header="Publish AAS via MQTT .." Command="{StaticResource MQTTPub}"/>
+                        <MenuItem Foreground="Black" Header="Server ..">
+                            <MenuItem Foreground="Black" Header="Serve AAS as REST .." InputGestureText="Shift+F6" Command="{StaticResource ServerRest}"/>
+                            <MenuItem Foreground="Black" Header="Publish AAS via MQTT .." Command="{StaticResource MQTTPub}"/>
                             <Separator/>
-                            <MenuItem Header="Plugin: Empty Sample .." Command="{StaticResource ServerPluginEmptySample}"/>
-                            <MenuItem Header="Plugin: OPC UA .." Command="{StaticResource ServerPluginOPCUA}"/>
-                            <MenuItem Header="Plugin: MQTT .." Command="{StaticResource ServerPluginMQTT}"/>
+                            <MenuItem Foreground="Black" Header="Plugin: Empty Sample .." Command="{StaticResource ServerPluginEmptySample}"/>
+                            <MenuItem Foreground="Black" Header="Plugin: OPC UA .." Command="{StaticResource ServerPluginOPCUA}"/>
+                            <MenuItem Foreground="Black" Header="Plugin: MQTT .." Command="{StaticResource ServerPluginMQTT}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="_Exit" InputGestureText="Alt+F4" Command="{StaticResource Exit}"/>
+                        <MenuItem Foreground="Black" Header="_Exit" InputGestureText="Alt+F4" Command="{StaticResource Exit}"/>
                     </MenuItem>
                     <MenuItem Header="Workspace" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem x:Name="MenuItemWorkspaceEdit" Header="_Edit" InputGestureText="Ctrl+E" IsCheckable="True" Command="{StaticResource EditMenu}"/>
-                        <MenuItem x:Name="MenuItemWorkspaceHints" Header="_Hints" InputGestureText="Ctrl+H" IsCheckable="True" IsChecked="True" Command="{StaticResource HintsMenu}"/>
-                        <MenuItem x:Name="MenuItemTest" Header="Test" Command="{StaticResource Test}"/>
+                        <MenuItem x:Name="MenuItemWorkspaceEdit" Foreground="Black" Header="_Edit" InputGestureText="Ctrl+E" IsCheckable="True" Command="{StaticResource EditMenu}"/>
+                        <MenuItem x:Name="MenuItemWorkspaceHints" Foreground="Black" Header="_Hints" InputGestureText="Ctrl+H" IsCheckable="True" IsChecked="True" Command="{StaticResource HintsMenu}"/>
+                        <MenuItem x:Name="MenuItemTest" Foreground="Black" Header="Test" Command="{StaticResource Test}"/>
                         <Separator/>
-                        <MenuItem x:Name="MenuItemFind" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
+                        <MenuItem x:Name="MenuItemFind" Foreground="Black" Header="Find ..." Command="{StaticResource ToolsFindText}"/>
                         <Separator/>
-                        <MenuItem Header="Plugins ..">
-                            <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Header="New Submodel" InputGestureText="Ctrl+Shift+M" Command="{StaticResource NewSubmodelFromPlugin}"/>
+                        <MenuItem Foreground="Black" Header="Plugins ..">
+                            <MenuItem x:Name="MenuItemWorkspaceNewSubmodelFromPlugin" Foreground="Black" Header="New Submodel" InputGestureText="Ctrl+Shift+M" Command="{StaticResource NewSubmodelFromPlugin}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem x:Name="MenuItemWorkspacConvertElement" Header="Convert .." Command="{StaticResource ConvertElement}"/>
+                        <MenuItem x:Name="MenuItemWorkspacConvertElement" Foreground="Black" Header="Convert .." Command="{StaticResource ConvertElement}"/>
                         <Separator/>
-                        <MenuItem Header="Buffer ..">
-                            <MenuItem x:Name="MenuItemWorkspaceBufferClear" Header="Clear internal paste buffer" Command="{StaticResource BufferClear}"/>
+                        <MenuItem Foreground="Black" Header="Buffer ..">
+                            <MenuItem x:Name="MenuItemWorkspaceBufferClear" Foreground="Black" Header="Clear internal paste buffer" Command="{StaticResource BufferClear}"/>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Events ..">
-                            <MenuItem x:Name="MenuItemWorkspaceEventsShowLog" Header="_Event log" InputGestureText="Ctrl+L" IsCheckable="True" Command="{StaticResource EventsShowLogMenu}"/>
-                            <MenuItem x:Name="MenuItemWorkspaceEventsResetLocks" Header="Reset interlocking" Command="{StaticResource EventsResetLocks}"/>
+                        <MenuItem Foreground="Black" Header="Events ..">
+                            <MenuItem x:Name="MenuItemWorkspaceEventsShowLog" Foreground="Black" Header="_Event log" InputGestureText="Ctrl+L" IsCheckable="True" Command="{StaticResource EventsShowLogMenu}"/>
+                            <MenuItem x:Name="MenuItemWorkspaceEventsResetLocks" Foreground="Black" Header="Reset interlocking" Command="{StaticResource EventsResetLocks}"/>
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="_Options"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem x:Name="MenuItemOptionsShowIri" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
-                        <MenuItem x:Name="MenuItemOptionsVerboseConnect" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
-                        <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
-                        <MenuItem x:Name="MenuItemOptionsAnimateElems" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
-                        <MenuItem x:Name="MenuItemOptionsObserveEvents" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
-                        <MenuItem x:Name="MenuItemOptionsCompressEvents" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
+                        <MenuItem x:Name="MenuItemOptionsShowIri" Foreground="Black" Header="Show id as IRI" InputGestureText="Ctrl+I" IsCheckable="True" IsChecked="False" Command="{StaticResource ShowIriMenu}"/>
+                        <MenuItem x:Name="MenuItemOptionsVerboseConnect" Foreground="Black" Header="Verbose connect" IsCheckable="True" IsChecked="False" Command="{StaticResource VerboseConnect}"/>
+                        <MenuItem x:Name="MenuItemOptionsLoadWoPrompt" Foreground="Black" Header="Load without prompt" IsCheckable="True" IsChecked="False" Command="{StaticResource FileRepoLoadWoPrompt}"/>
+                        <MenuItem x:Name="MenuItemOptionsAnimateElems" Foreground="Black" Header="Animate elements" IsCheckable="True" IsChecked="False" Command="{StaticResource AnimateElements}"/>
+                        <MenuItem x:Name="MenuItemOptionsObserveEvents" Foreground="Black" Header="ObserveEvents" IsCheckable="True" IsChecked="False" Command="{StaticResource ObserveEvents}"/>
+                        <MenuItem x:Name="MenuItemOptionsCompressEvents" Foreground="Black" Header="Compress events" IsCheckable="True" IsChecked="False" Command="{StaticResource CompressEvents}"/>
                     </MenuItem>
                     <MenuItem Header="_Help"  Template="{DynamicResource MenuItemControlTemplateDropShadow}">
-                        <MenuItem x:Name="MenuItemAbout" Header="About .." Command="{StaticResource About}"/>
-                        <MenuItem x:Name="MenuItemHelpGithub" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
-                        <MenuItem x:Name="MenuItemFaqGithub" Header="FAQ on Github .." Command="{StaticResource FaqGithub}"/>
-                        <MenuItem x:Name="MenuItemFaqIssues" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
-                        <MenuItem x:Name="MenuItemGenerateOptionInfo" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
+                        <MenuItem x:Name="MenuItemAbout" Foreground="Black" Header="About .." Command="{StaticResource About}"/>
+                        <MenuItem x:Name="MenuItemHelpGithub" Foreground="Black" Header="Help on Github .." Command="{StaticResource HelpGithub}"/>
+                        <MenuItem x:Name="MenuItemFaqGithub" Foreground="Black" Header="FAQ on Github .." Command="{StaticResource FaqGithub}"/>
+                        <MenuItem x:Name="MenuItemFaqIssues" Foreground="Black" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
+                        <MenuItem x:Name="MenuItemGenerateOptionInfo" Foreground="Black" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
                 </Menu>
 
@@ -497,7 +498,7 @@
 
             <Grid x:Name="MainSpaceGrid" Grid.Row="2" Grid.ColumnSpan="2">
                 <Grid.Background>
-                    <SolidColorBrush Color="#FFE0E0E0"/>
+                    <SolidColorBrush Color="White"/>
                 </Grid.Background>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -514,13 +515,13 @@
                       VerticalAlignment="Stretch"
                       Grid.Column="1" ResizeBehavior="PreviousAndNext"
                       Grid.Row="0"
-                      Width="5" Background="#FFBCBCBC"/>
+                      Width="4" Background="White"/>
 
                 <GridSplitter HorizontalAlignment="Right"
                       VerticalAlignment="Stretch"
                       Grid.Column="3" ResizeBehavior="PreviousAndNext"
                       Grid.Row="0"
-                      Width="5" Background="#FFBCBCBC"/>
+                      Width="4" Background="White"/>
 
                 <!-- the leftmost column is the interactive picture of the AAS and (possible) repo view -->
                 <Grid x:Name="ColumnAasRepoGrid" Grid.Row="0" Grid.Column="0">
@@ -539,106 +540,130 @@
                       VerticalAlignment="Top"
                       Grid.Row="1" Grid.Column="0"
                       ResizeBehavior="PreviousAndNext"
-                      Height="5" Background="#FFBCBCBC"/>
+                      Height="4" Background="White"/>
 
-                    <Viewbox Grid.Row="0" Grid.Column="0">
-                        <Canvas  VerticalAlignment="Center" Width="200" Height="340" Margin="10">
-                            <Path Data="M0,10 L9.5,-0.5 189.5,-0.5 199.5,9.5 199.75063,179.81347 184.71301,179.81347 184.71303,139.68809 174.68797,129.65674 24.31203,129.65674 14.286967,139.68809 14.286735,184.82915 -0.75087814,184.82915 z" Fill="{DynamicResource DarkAccentColor}" HorizontalAlignment="Left" Height="186.25" Margin="-0.75,-0.5,0,0" Stretch="Fill" Stroke="{DynamicResource DarkestAccentColor}" VerticalAlignment="Top" Width="201.5" StrokeThickness="1.5"/>
-                            <Path Data="M34.499849,79.5 L24.499838,89.5 24.750674,270.54721 175.25251,270.54721 174.5,89.5 C174.5,89.5 164.49999,79.5 164.49999,79.5 L34.78413,79.748947" Fill="#FFD9D9D9" HorizontalAlignment="Left" Height="191.748" Margin="24,149.002,0,-40.75" Stretch="Fill" Stroke="#FF7F7F7F" VerticalAlignment="Top" Width="151.75" StrokeThickness="1.5"/>
-                            <Rectangle Fill="{DynamicResource LightAccentColor}" HorizontalAlignment="Left" Height="20" Margin="10,40,0,0" Stroke="{DynamicResource DarkestAccentColor}" StrokeThickness="1.5" VerticalAlignment="Top" Width="180"/>
-                            <Label Content="Submodel" HorizontalAlignment="Left" Height="25" Margin="10,37.332,0,0" VerticalAlignment="Top" Width="180" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
-                            <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,70,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
-                            <Label Content="Submodel element" HorizontalAlignment="Left" Height="25" Margin="30,66.998,0,0" VerticalAlignment="Top" Width="160" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
-                            <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,100,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
-                            <Label Content="Submodel element" HorizontalAlignment="Left" Height="25" Margin="30,96.968,0,0" VerticalAlignment="Top" Width="160" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
-                            <TextBlock x:Name="AasId" HorizontalAlignment="Left" Height="39" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Width="180" FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="10" Canvas.Top="8"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
-                            <TextBlock x:Name="AssetId" HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="35" Canvas.Top="157"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
-                            <Image x:Name="AssetPic" HorizontalAlignment="Left" Height="130" VerticalAlignment="Top" Width="130" Canvas.Left="35" Canvas.Top="200"/>
-                        </Canvas>
-                    </Viewbox>
+                    <Border Grid.Row="0" Grid.Column="0"
+                            BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" Margin="2,2,0,0">
+                        <Viewbox>
+                            <Canvas  VerticalAlignment="Center" Width="200" Height="340" Margin="10">
+                                <Path Data="M0,10 L9.5,-0.5 189.5,-0.5 199.5,9.5 199.75063,179.81347 184.71301,179.81347 184.71303,139.68809 174.68797,129.65674 24.31203,129.65674 14.286967,139.68809 14.286735,184.82915 -0.75087814,184.82915 z" 
+                                      Fill="{DynamicResource DarkestAccentColor}" HorizontalAlignment="Left" Height="186.25" Margin="-0.75,-0.5,0,0" 
+                                      Stretch="Fill" Stroke="{DynamicResource DarkestAccentColor}" VerticalAlignment="Top" Width="201.5" StrokeThickness="1.5"/>
+                                <TextBlock Text="   0 &#x25cf;    " FontFamily="Consolas"  Foreground="White" FontSize="8" Canvas.Left="145" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="10" FontWeight="UltraBold"/>
+                                <TextBlock Text=" &#x25cf; 1 &#x25cf; 0 &#x25cf;" FontFamily="Consolas" Foreground="White" FontSize="8" Canvas.Left="145" HorizontalAlignment="Left" VerticalAlignment="Top" Canvas.Top="21"/>
+                                <Path Data="M34.499849,79.5 L24.499838,89.5 24.750674,270.54721 175.25251,270.54721 174.5,89.5 C174.5,89.5 164.49999,79.5 164.49999,79.5 L34.78413,79.748947" Fill="#FFD9D9D9" HorizontalAlignment="Left" Height="191.748" Margin="24,149.002,0,-40.75" Stretch="Fill" Stroke="#FF7F7F7F" VerticalAlignment="Top" Width="151.75" StrokeThickness="1.5"/>
+                                <Rectangle Fill="{DynamicResource DarkAccentColor}" HorizontalAlignment="Left" Height="20" Margin="10,40,0,0" Stroke="{DynamicResource DarkestAccentColor}" StrokeThickness="1.5" VerticalAlignment="Top" Width="180"/>
+                                <Label Content="Submodel" HorizontalAlignment="Left" Height="25" Margin="10,37.332,0,0" VerticalAlignment="Top" Width="180" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                                <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,70,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
+                                <Label Content="Submodel element" HorizontalAlignment="Left" Height="25" Margin="30,66.998,0,0" VerticalAlignment="Top" Width="160" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                                <Rectangle Fill="White" HorizontalAlignment="Left" Height="20" Margin="30,100,0,0" StrokeThickness="1.5" VerticalAlignment="Top" Width="160"/>
+                                <Label Content="Submodel element" HorizontalAlignment="Left" Height="25" Margin="30,96.968,0,0" VerticalAlignment="Top" Width="160" FontSize="10" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                                <TextBlock x:Name="AasId" HorizontalAlignment="Left" Height="39" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" 
+                                           FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="10" Canvas.Top="8"
+                                           Foreground="White">
+                                    <Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
+                                <TextBlock x:Name="AssetId" HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" VerticalAlignment="Top" Width="130" FontSize="9" TextTrimming="CharacterEllipsis" Canvas.Left="35" Canvas.Top="157"><Run Text="www.festo.com/wewdcwschdscbj"/><Run Text=" "/><Run Text="hbcdshjbchjds"/><Run Text=" "/><Run Text="bhjcbdshcbjhsdbchjdsbhcdsbhjcbdshjcbjdsbchbscdh"/></TextBlock>
+                                <Image x:Name="AssetPic" HorizontalAlignment="Center" Height="130" VerticalAlignment="Top" Width="130" Canvas.Left="35" Canvas.Top="200"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
 
                     <!--
                     <repo:AasxFileRepoControl x:Name="RepoControl" Grid.Row="2" Grid.Column="0">
                     </repo:AasxFileRepoControl>
                     -->
 
-                    <repo:PackageContainerListOfListControl x:Name="RepoListControl" Grid.Row="2" Grid.Column="0">
-                    </repo:PackageContainerListOfListControl>
+                    <Border Grid.Row="2" Grid.Column="0"
+                            BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" 
+                            Margin="2,0,0,0" Padding="2">
+                        <repo:PackageContainerListOfListControl x:Name="RepoListControl" >
+                        </repo:PackageContainerListOfListControl>
+                    </Border>
 
                 </Grid>
 
 
                 <!-- MIHO1 -->
-                <local:DiplayVisualAasxElements Grid.Row="0" Grid.Column="2" x:Name="DisplayElements" SelectedItemChanged="DisplayElements_SelectedItemChanged" MouseDoubleClick="DisplayElements_MouseDoubleClick">
-                </local:DiplayVisualAasxElements>
-               
-                <TabControl x:Name="ElementTabControl" Grid.Column="4" MinWidth="320">
-                    <TabItem x:Name="elementTabItem" Header="Element">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition x:Name="RowContentPanels" Height="48"/>
-                            </Grid.RowDefinitions>
+                <Border Grid.Row="0" Grid.Column="2" 
+                        BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" 
+                        Margin="0,2,0,0" Padding="2">
+                    <local:DiplayVisualAasxElements x:Name="DisplayElements" SelectedItemChanged="DisplayElements_SelectedItemChanged" MouseDoubleClick="DisplayElements_MouseDoubleClick">
+                    </local:DiplayVisualAasxElements>
+                </Border>
 
-                            <ScrollViewer x:Name="ScrollViewerElement" Grid.Row="0" VerticalScrollBarVisibility="Auto"
+                <Border Grid.Row="0" Grid.Column="4" 
+                        BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" 
+                        Margin="0,2,2,0" Padding="2">
+                    <TabControl x:Name="ElementTabControl" MinWidth="320" BorderBrush="White">
+                        <TabItem x:Name="elementTabItem" Header="Element" BorderThickness="0.0" 
+                                 Background="{DynamicResource LightAccentColor}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition x:Name="RowContentPanels" Height="48"/>
+                                </Grid.RowDefinitions>
+
+                                <ScrollViewer x:Name="ScrollViewerElement" Grid.Row="0" VerticalScrollBarVisibility="Auto"
                                           Padding="1,1,5,1">
-                                <local:DispEditAasxEntity x:Name="DispEditEntityPanel">
-                                </local:DispEditAasxEntity>
-                            </ScrollViewer>
+                                    <local:DispEditAasxEntity x:Name="DispEditEntityPanel">
+                                    </local:DispEditAasxEntity>
+                                </ScrollViewer>
 
-                            <Grid Grid.Row="1" x:Name="ContentPanelNoEdit" Visibility="Visible">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Row="1" x:Name="ContentPanelNoEdit" Visibility="Visible">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                                <Button x:Name="UpdateContent" Grid.Row="0" Grid.Column="0" Margin="4" Click="UpdateContent_Click">
-                                    <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Reload</TextBlock>
-                                </Button>
-                                <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" Margin="4" BorderBrush="#ddd" BorderThickness="1" Background="{DynamicResource LightAccentColor}">
-                                    <Border VerticalAlignment="Center">
-                                        <TextBlock x:Name="DragSource" TextWrapping="Wrap" TextAlignment="Center" PreviewMouseMove="DragSource_PreviewMouseMove" PreviewMouseLeftButtonDown="DragSource_PreviewMouseLeftButtonDown" >Drag from here!</TextBlock>
+                                    <Button x:Name="UpdateContent" Grid.Row="0" Grid.Column="0" Margin="4" Click="UpdateContent_Click">
+                                        <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Reload</TextBlock>
+                                    </Button>
+                                    <Border Grid.Row="0" Grid.Column="1" VerticalAlignment="Stretch" Margin="4" BorderBrush="#ddd" BorderThickness="1" Background="{DynamicResource LightAccentColor}">
+                                        <Border VerticalAlignment="Center">
+                                            <TextBlock x:Name="DragSource" TextWrapping="Wrap" TextAlignment="Center" PreviewMouseMove="DragSource_PreviewMouseMove" PreviewMouseLeftButtonDown="DragSource_PreviewMouseLeftButtonDown" >Drag from here!</TextBlock>
+                                        </Border>
                                     </Border>
+                                    <Button x:Name="ShowContent" Grid.Row="0" Grid.Column="2" Margin="4" Click="ShowContent_Click">
+                                        <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Show Content</TextBlock>
+                                    </Button>
+                                </Grid>
+
+                                <Grid Grid.Row="1" x:Name="ContentPanelEdit" Visibility="Hidden">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button x:Name="ContentTakeOver" Grid.Row="0" Grid.Column="0" Margin="4" Click="ContentTakeOver_Click">
+                                        <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Take over changes</TextBlock>
+                                    </Button>
+                                    <Button x:Name="ContentUndo" Grid.Row="0" Grid.Column="2" Margin="4" Click="ContentUndo_Click">
+                                        <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Undo changes</TextBlock>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+
+                        </TabItem>
+
+                        <TabItem Header="Content" x:Name="elementTabContent" BorderThickness="0.0" 
+                                 Background="{DynamicResource LightAccentColor}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Border x:Name="CefContainer">
+
                                 </Border>
-                                <Button x:Name="ShowContent" Grid.Row="0" Grid.Column="2" Margin="4" Click="ShowContent_Click">
-                                    <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Show Content</TextBlock>
-                                </Button>
-                            </Grid>
-
-                            <Grid Grid.Row="1" x:Name="ContentPanelEdit" Visibility="Hidden">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Button x:Name="ContentTakeOver" Grid.Row="0" Grid.Column="0" Margin="4" Click="ContentTakeOver_Click">
-                                    <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Take over changes</TextBlock>
-                                </Button>
-                                <Button x:Name="ContentUndo" Grid.Row="0" Grid.Column="2" Margin="4" Click="ContentUndo_Click">
-                                    <TextBlock Height="Auto" TextWrapping="Wrap" TextAlignment="Center">Undo changes</TextBlock>
-                                </Button>
-                            </Grid>
-                        </Grid>
-
-                    </TabItem>
-
-                    <TabItem Header="Content" x:Name="elementTabContent">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Border x:Name="CefContainer">
-
-                            </Border>
-                            <!--
+                                <!--
                             xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
                             <cefSharp:ChromiumWebBrowser x:Name="theBrowser" Grid.Row="0" Address="https://github.com/admin-shell/io/blob/master/README.md" />
                             -->
-                        </Grid>
-                    </TabItem>
-                </TabControl>
+                            </Grid>
+                        </TabItem>
+                    </TabControl>
+                </Border>
 
                 <!--
                 <Border x:Name="ShowKeys" Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="0" Margin="0" CornerRadius="2">
@@ -648,7 +673,11 @@
 
                 <Button x:Name="ButtonKeyboard" Grid.Column="4" 
                         HorizontalAlignment="Right" VerticalAlignment="Top" 
-                        Height="17" Foreground="DarkGray" BorderBrush="DarkGray" Padding="4,-3,4,0" Margin="5,3,5,0" Content="&#x2328;" FontSize="15"
+                        Background="White"
+                        Height="17" 
+                        Foreground="{DynamicResource DarkestAccentColor}" 
+                        BorderBrush="{DynamicResource DarkestAccentColor}" 
+                        Padding="4,-3,4,0" Margin="5,6,5,0" Content="&#x2328;" FontSize="15"
                         Click="ButtonKeyboard_Click">
                     <Button.Resources>
                         <Style TargetType="Border">
@@ -671,25 +700,32 @@
 
             <!-- concurrent activities: Events / Plugins / .. -->
 
-            <Grid Grid.Row="4">
+            <Border Grid.Row="4" 
+                        BorderThickness="1.0" BorderBrush="{DynamicResource DarkestAccentColor}" CornerRadius="6" 
+                        Margin="2,0,2,2" Padding="2">
+                <Grid >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                
-                <TabControl x:Name="TabControlConcurrent" TabStripPlacement="Left">
-                    <TabItem Header="Events" x:Name="TabItemConcurrentEvents">
-                        <events:AasEventCollectionViewer x:Name="UserContrlEventCollection" />
-                    </TabItem>
-                    <TabItem Header="Agents" x:Name="TabItemConcurrentAgents">
-                        <main:MainWindowAgentsView x:Name="UserControlAgentsView" Background="#c0000020"/>
-                    </TabItem>
-                </TabControl>
-            </Grid>
-            
+                    <TabControl x:Name="TabControlConcurrent" TabStripPlacement="Left" BorderThickness="0">
+                        <TabItem Header="Events" x:Name="TabItemConcurrentEvents" BorderThickness="0.0" 
+                                 Background="{DynamicResource LightAccentColor}">
+                            <Border BorderBrush="DarkGray" BorderThickness="1" Margin="-1,-2,0,0">
+                                <events:AasEventCollectionViewer x:Name="UserContrlEventCollection" />
+                            </Border>
+                        </TabItem>
+                        <TabItem Header="Agents" x:Name="TabItemConcurrentAgents" BorderThickness="0.0" 
+                                 Background="{DynamicResource LightAccentColor}">
+                            <main:MainWindowAgentsView x:Name="UserControlAgentsView" Background="#c0000977"/>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </Border>
+
             <!-- Footer area -->
 
             <DockPanel Grid.Row="5" Margin="0,2,0,0">
@@ -729,7 +765,7 @@
         -->
 
 
-        <Grid x:Name="GridFlyover" Grid.Row="0" Grid.Column="0" Visibility="Hidden" Background="#c0000020">
+        <Grid x:Name="GridFlyover" Grid.Row="0" Grid.Column="0" Visibility="Hidden" Background="#c0000977">
             <!--
             <local:SelectFromRepository Grid.Row="0" Grid.Column="0" Width="Auto" Height="Auto" Margin="10">
 

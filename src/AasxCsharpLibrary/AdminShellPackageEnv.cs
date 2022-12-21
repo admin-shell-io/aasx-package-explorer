@@ -175,6 +175,14 @@ namespace AdminShellNS
                 //res = serializer.Deserialize(s) as AasCore.Aas3_0_RC02.Environment;
 
                 XmlReader xmlReader = XmlReader.Create(s);
+
+                // MIHO: Deserialize does not work as expected, play around
+                while (xmlReader.NodeType == XmlNodeType.XmlDeclaration ||
+                    xmlReader.NodeType == XmlNodeType.Whitespace ||
+                    xmlReader.NodeType == XmlNodeType.Comment ||
+                    xmlReader.NodeType == XmlNodeType.None)
+                    xmlReader.Read();
+
                 res = Xmlization.Deserialize.EnvironmentFrom(xmlReader, "http://www.admin-shell.io/aas/3/0");
                 return res;
             }
@@ -542,9 +550,18 @@ namespace AdminShellNS
                     try
                     {
                         // TODO (Michael Hoffmeister, 2020-08-01): use a unified function to create a serializer
-                        var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
-                        var nss = GetXmlDefaultNamespaces();
-                        serializer.Serialize(s, _aasEnv, nss);
+                        //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
+                        //var nss = GetXmlDefaultNamespaces();
+                        //serializer.Serialize(s, _aasEnv, nss);
+
+                        var settings = new XmlWriterSettings();
+                        settings.Indent = true;
+                        var writer = XmlWriter.Create(s, settings);
+                        Xmlization.Serialize.To(
+                            _aasEnv, writer,
+                            prefix: "aas", ns: "http://www.admin-shell.io/aas/3/0");
+                        writer.Flush();
+                        writer.Close();
                         s.Flush();
                     }
                     finally
@@ -767,9 +784,12 @@ namespace AdminShellNS
                     {
                         using (var s = specPart.GetStream(FileMode.Create))
                         {
-                            var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
-                            var nss = GetXmlDefaultNamespaces();
-                            serializer.Serialize(s, _aasEnv, nss);
+                            //var serializer = new XmlSerializer(typeof(AasCore.Aas3_0_RC02.Environment));
+                            //var nss = GetXmlDefaultNamespaces();
+                            //serializer.Serialize(s, _aasEnv, nss);
+
+                            var writer = XmlWriter.Create(s);
+                            Xmlization.Serialize.To(_aasEnv, writer);
                         }
                     }
 

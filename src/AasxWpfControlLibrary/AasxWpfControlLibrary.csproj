@@ -7,6 +7,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\IDTA_AAS-Logo_80x72_RGB.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
@@ -25,6 +28,7 @@
     </EmbeddedResource>
     <Resource Include="Resources\Icon_AASX_32x32_2_W.bmp" />
     <Resource Include="Resources\Icon_AASX_40x40_W.bmp" />
+    <Resource Include="Resources\IDTA_AAS-Logo_80x72_RGB.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CountryFlag.Wpf" Version="1.0.0" />
@@ -34,9 +38,15 @@
     <PackageReference Include="NPOI" Version="2.5.6" />
     <PackageReference Include="QRCoder" Version="1.4.3" />
     <PackageReference Include="ZXing.Net" Version="0.16.8" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />
   </ItemGroup>
   <ItemGroup>
     <Page Remove="Dictionary1.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="PI40_and_IDTA.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

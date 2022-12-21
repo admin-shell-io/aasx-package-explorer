@@ -16,6 +16,15 @@ namespace Extensions
             if(sourceEmbeddedSpec != null)
             {
                 embeddedDataSpecification.DataSpecification = ExtensionsUtil.ConvertReferenceFromV20(sourceEmbeddedSpec.dataSpecification, ReferenceTypes.GlobalReference);
+
+                // TODO (MIHO, 2022-19-12): check again, see questions
+                var oldid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";
+                var newid = "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0";
+                if (sourceEmbeddedSpec.dataSpecification?.Matches("", false, "IRI", oldid, 
+                    AasxCompatibilityModels.AdminShellV20.Key.MatchMode.Identification) == true)
+                {
+                    embeddedDataSpecification.DataSpecification.Keys[0].Value = newid;
+                }
             }
 
             if(sourceEmbeddedSpec.dataSpecificationContent != null)

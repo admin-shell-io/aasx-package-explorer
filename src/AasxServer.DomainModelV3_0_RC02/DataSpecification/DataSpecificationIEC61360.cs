@@ -73,7 +73,8 @@ namespace AasCore.Aas3_0_RC02.HasDataSpecification
 
         public static string GetIdentifier()
         {
-            return "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0";
+            // TODO (MIHO, 2022-12-19): changed back to /2/0
+            return "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/2/0";
         }
 
         public static DataSpecificationIEC61360 CreateNew(

@@ -625,7 +625,7 @@ namespace AnyUi
         /// </summary>
         /// <param name="cntl">User control (passed thru)</param>
         /// <param name="setValue">Lambda called, whenever the value is changed</param>
-        /// <param name="takeOverLambda">Lamnda called at the end of a modification</param>
+        /// <param name="takeOverLambda">Lambda called at the end of a modification</param>
         /// <returns>Passes thru the user control</returns>
         public static T RegisterControl<T>(
             T cntl, Func<object, AnyUiLambdaActionBase> setValue,

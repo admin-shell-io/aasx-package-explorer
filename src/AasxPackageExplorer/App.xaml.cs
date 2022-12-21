@@ -15,6 +15,8 @@ using System.Windows;
 using AasxPackageLogic;
 using AnyUi;
 
+// [assembly: System.Windows.Media.DisableDpiAwareness]
+
 namespace AasxPackageExplorer
 {
     public partial class App : Application
@@ -92,6 +94,9 @@ namespace AasxPackageExplorer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            // MIHO: This does not work
+            // WinPInvokeHelpers.SetProcessDPIAware(WinPInvokeHelpers.PROCESS_DPI_AWARENESS.Process_DPI_Unaware);
+
             // allow long term logging (for report box)
             Log.Singleton.EnableLongTermStore();
 
@@ -166,6 +171,7 @@ namespace AasxPackageExplorer
                 }
             }
 
+            // preferences
             Pref pref = Pref.Read();
 
             // show splash (required for licenses of open source)

@@ -78,6 +78,9 @@
 
   <ItemGroup>
     <Folder Include="Flyout\" />
+    <None Update="IDTA_and_PI40_t.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="options-debug.MIHO.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -97,6 +100,7 @@
     <None Update="qualifier-presets.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Resource Include="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
     <Resource Include="Resources\USB_Hexagon_offen.jpeg" />
     <Resource Include="Resources\Festo_t.png" />
     <Resource Include="Resources\round_down.png" />
@@ -117,6 +121,7 @@
     </None>
     <Compile Remove="Flyout\MqttPublisherFlyout.xaml.cs" />
     <None Remove="i4AASCS.xml" />
+    <None Remove="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
     <Page Remove="Flyout\MqttPublisherFlyout.xaml" />
     <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">

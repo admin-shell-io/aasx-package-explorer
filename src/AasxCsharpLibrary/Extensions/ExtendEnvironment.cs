@@ -525,7 +525,7 @@ namespace Extensions
                 return null;
             }
 
-            var conceptDescription = environment.ConceptDescriptions.Where(c => c.Id.Equals(conceptDescriptionId)).First();
+            var conceptDescription = environment.ConceptDescriptions.Where(c => c.Id.Equals(conceptDescriptionId)).FirstOrDefault();
             return conceptDescription;
         }
 

@@ -141,6 +141,11 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "AasxPackageExplorerSetup", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasCore.Aas3_0_RC02", "AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj", "{63711642-8F7F-4740-886A-BDE6BBACC31D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projektmappenelemente", "Projektmappenelemente", "{087C80D2-F815-401C-96ED-3BD61A768FF3}"
+	ProjectSection(SolutionItems) = preProject
+		Notes_V3.md = Notes_V3.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

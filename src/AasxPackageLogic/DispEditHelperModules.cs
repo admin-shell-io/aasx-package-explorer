@@ -11,8 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,6 +25,7 @@ using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
 using Extensions;
+using static AasxPackageLogic.DispEditHelperEntities;
 
 namespace AasxPackageLogic
 {
@@ -33,6 +36,17 @@ namespace AasxPackageLogic
     //public class DispEditHelperModules : DispEditHelperCopyPaste
     public class DispEditHelperModules : DispEditHelperMiniModules
     {
+        //
+        // Members
+        //
+
+        public class UploadAssistance
+        {
+            public string SourcePath = "";
+            public string TargetPath = "/aasx/files";
+        }
+        public UploadAssistance uploadAssistance = new UploadAssistance();
+
         //
         // Inject a number of customised function in modules
         //
@@ -122,9 +136,8 @@ namespace AasxPackageLogic
                     "to keep it unqiue because of an operation such a copy/ paste.",
                     severityLevel: HintCheck.Severity.Notice)
             });
-            var idShort = referable.IdShort;
-            this.AddKeyValueRef(
-                stack, "idShort", referable, ref idShort, null, repo,
+            AddKeyValueExRef(
+                stack, "idShort", referable, referable.IdShort, null, repo,
                 v =>
                 {
                     var dr = new DiaryReference(referable);
@@ -168,10 +181,15 @@ namespace AasxPackageLogic
                     new HintCheck(() => { return referable.Category != null && referable.Category.Trim().Length >= 1; },
                     "The use of category is unusual here.", severityLevel: HintCheck.Severity.Notice));
 
-            this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
-            var category = referable.Category;
-            this.AddKeyValueRef(
-                stack, "category", referable, ref category, null, repo,
+            this.AddHintBubble(stack, hintMode, 
+                this.ConcatHintChecks(new[] {
+                    new HintCheck(
+                        () => referable.Category?.HasContent() == true,
+                        "The Category is deprecated. Do not plan to use this information in new developments.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice) }, addHintsCategory));
+            AddKeyValueExRef(
+                stack, "category", referable, referable.Category, null, repo,
                 v =>
                 {
                     referable.Category = v as string;
@@ -218,9 +236,14 @@ namespace AasxPackageLogic
             }
 
             // Checksum
-            var checksum = referable.Checksum;
-            this.AddKeyValueRef(
-                stack, "checksum", referable, ref checksum, null, repo,
+            this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck(
+                        () => referable.Checksum?.HasContent() == true,
+                        "The Checksum is deprecated. Do not plan to use this information in new developments.",
+                        breakIfTrue: true,
+                        severityLevel: HintCheck.Severity.Notice) });
+            AddKeyValueExRef(
+                stack, "checksum", referable, referable.Checksum, null, repo,
                 v =>
                 {
                     var dr = new DiaryReference(referable);
@@ -276,118 +299,10 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.ExtensionHelper(stack, repo, extensions, relatedReferable: relatedReferable);
+                this.ExtensionHelper(stack, repo, extensions, setOutput, relatedReferable: relatedReferable);
             }
 
         }
-
-        //public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
-        //    IReferable referable,
-        //    DispEditInjectAction injectToIdShort = null,
-        //    HintCheck[] addHintsCategory = null,
-        //    bool categoryUsual = false)
-        //{
-        //    // access
-        //    if (stack == null || referable == null)
-        //        return;
-
-        //    // members
-        //    this.AddGroup(stack, "IReferable:", levelColors.SubSection);
-
-        //    // members
-        //    this.AddHintBubble(stack, hintMode, new[] {
-        //        new HintCheck( () => { return referable.IdShort == null || referable.IdShort.Length < 1; },
-        //            "The idShort is meanwhile mandatory for all Referables. It is a short, " +
-        //                "unique identifier that is unique just in its context, its name space. ", breakIfTrue: true),
-        //        new HintCheck(
-        //            () => {
-        //                if (referable.IdShort == null) return false;
-        //                return !AdminShellUtil.ComplyIdShort(referable.IdShort);
-        //            },
-        //            "The idShort shall only feature letters, digits, underscore ('_'); " +
-        //            "starting mandatory with a letter."),
-        //        new HintCheck(
-        //            () => {
-        //                return true == referable.IdShort?.Contains("---");
-        //            },
-        //            "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
-        //            "to keep it unqiue because of an operation such a copy/ paste.",
-        //            severityLevel: HintCheck.Severity.Notice)
-        //    });
-
-        //    var refIdShort = referable.IdShort;
-        //    this.AddKeyValueRef(
-        //        stack, "idShort", referable, ref refIdShort, null, repo,
-        //        v =>
-        //        {
-        //            var dr = new DiaryReference(referable);
-        //            referable.IdShort = v as string;
-        //            this.AddDiaryEntry(referable, new DiaryEntryStructChange(), diaryReference: dr);
-        //            return new AnyUiLambdaActionNone();
-        //        },
-        //        auxButtonTitles: DispEditInjectAction.GetTitles(null, injectToIdShort),
-        //        auxButtonToolTips: DispEditInjectAction.GetToolTips(null, injectToIdShort),
-        //        auxButtonLambda: injectToIdShort?.auxLambda
-        //        );
-        //    referable.IdShort = refIdShort;
-
-        //    if (!categoryUsual)
-        //        this.AddHintBubble(
-        //            stack, hintMode,
-        //            new HintCheck(() => { return referable.Category != null && referable.Category.Trim().Length >= 1; },
-        //            "The use of category is unusual here.", severityLevel: HintCheck.Severity.Notice));
-
-        //    this.AddHintBubble(stack, hintMode, this.ConcatHintChecks(null, addHintsCategory));
-
-        //    var category = referable.Category;
-        //    this.AddKeyValueRef(
-        //        stack, "category", referable, ref category, null, repo,
-        //        v =>
-        //        {
-        //            referable.Category = v as string;
-        //            this.AddDiaryEntry(referable, new DiaryEntryStructChange());
-        //            return new AnyUiLambdaActionNone();
-        //        },
-        //        comboBoxItems: new string[] { "CONSTANT", "PARAMETER", "VARIABLE" }, comboBoxIsEditable: true);
-        //    referable.Category = category;
-
-        //    this.AddHintBubble(
-        //        stack, hintMode,
-        //        new[] {
-        //            new HintCheck(
-        //                () => {
-        //                    return referable.Description == null || referable.Description.LangStrings == null ||
-        //                        referable.Description.LangStrings.Count < 1;
-        //                },
-        //                "The use of an description is recommended to allow the consumer of an IReferable " +
-        //                    "to understand the nature of it.",
-        //                breakIfTrue: true,
-        //                severityLevel: HintCheck.Severity.Notice),
-        //            new HintCheck(
-        //                () => { return referable.Description.LangStrings.Count < 2; },
-        //                "Consider having description in multiple langauges.",
-        //                severityLevel: HintCheck.Severity.Notice)
-        //    });
-        //    if (this.SafeguardAccess(stack, repo, referable.Description, "description:", "Create data element!", v =>
-        //    {
-        //        referable.Description = new LangStringSet(new List<LangString>());
-        //        return new AnyUiLambdaActionRedrawEntity();
-        //    }))
-        //    {
-        //        this.AddHintBubble(
-        //            stack, hintMode,
-        //            new HintCheck(
-        //                () =>
-        //                {
-        //                    return referable.Description.LangStrings == null
-        //                    || referable.Description.LangStrings.Count < 1;
-        //                },
-        //                "Please add some descriptions in your main languages here to help consumers " +
-        //                    "of your Administration shell to understand your intentions."));
-        //        this.AddKeyListLangStr(stack, "description", referable.Description.LangStrings,
-        //            repo, relatedReferable: referable);
-        //    }
-        //}
 
         //
         // Identifiable
@@ -418,7 +333,7 @@ namespace AasxPackageLogic
 
             });
             if (this.SafeguardAccess(
-                    stack, repo, identifiable.Id, "identification:", "Create data element!",
+                    stack, repo, identifiable.Id, "id:", "Create data element!",
                     v =>
                     {
                         identifiable.Id = "";
@@ -426,9 +341,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                var id = identifiable.Id;
-                this.AddKeyValueRef(
-                    stack, "id", identifiable, ref id, null, repo,
+                AddKeyValueExRef(
+                    stack, "id", identifiable, identifiable.Id, null, repo,
                     v =>
                     {
                         var dr = new DiaryReference(identifiable);
@@ -442,7 +356,7 @@ namespace AasxPackageLogic
                         if (i == 0)
                         {
                             var dr = new DiaryReference(identifiable);
-                            id = AdminShellUtil.GenerateIdAccordingTemplate(
+                            identifiable.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 templateForIdString);
                             this.AddDiaryEntry(identifiable, new DiaryEntryStructChange(), diaryReference: dr);
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: identifiable);
@@ -460,7 +374,7 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () => { return identifiable.Administration == null; },
                     "Check if providing admistrative information on version/ revision would be useful. " +
-                        "This allows for better version management.",
+                        "This allows for better life-cycle management.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice),
                 new HintCheck(
@@ -481,9 +395,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                var version = identifiable.Administration.Version;
-                this.AddKeyValueRef(
-                    stack, "version", identifiable.Administration, ref version,
+                AddKeyValueExRef(
+                    stack, "version", identifiable.Administration, identifiable.Administration.Version,
                     null, repo,
                     v =>
                     {
@@ -492,9 +405,8 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                var revision = identifiable.Administration.Revision;
-                this.AddKeyValueRef(
-                    stack, "revision", identifiable.Administration, ref revision,
+                AddKeyValueExRef(
+                    stack, "revision", identifiable.Administration, identifiable.Administration.Revision,
                     null, repo,
                     v =>
                     {
@@ -524,7 +436,8 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () => { return !dataSpecRefsAreUsual && references != null
                         && references.Count > 0; },
-                    "Check if a data specification is appropriate here.",
+                    "Check if a data specification is appropriate here. " +
+                    "This is only required in a minority of cases.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice) });
             if (this.SafeguardAccess(
@@ -546,9 +459,13 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                                 references.Add(new Reference(ReferenceTypes.GlobalReference, new List<Key>()));
 
-                            if (buttonNdx == 1 && references.Count > 0)
-                                references.RemoveAt(
-                                    references.Count - 1);
+                            if (buttonNdx == 1)
+                            {
+                                if (references.Count > 0)
+                                    references.RemoveAt(references.Count - 1);
+                                else
+                                    setOutput?.Invoke(null);
+                            }
 
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
@@ -559,12 +476,23 @@ namespace AasxPackageLogic
                 if (references != null && references.Count > 0)
                 {
                     for (int i = 0; i < references.Count; i++)
-                        this.AddKeyListKeys(
-                            stack, String.Format("ModelRef[{0}]", i), references[i].Keys, repo,
+                    {
+                        this.AddHintBubble(stack, hintMode, new[] {
+                            new HintCheck(
+                                () => references[i]?.IsValid() != true,
+                                "A Reference without Keys makes no sense.")});
+                        
+                        this.AddKeyReference(
+                            stack, String.Format("dataSpec.[{0}]", i), references[i], repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
                             "All",
                             addEclassIrdi: true,
-                            relatedReferable: relatedReferable);
+                            relatedReferable: relatedReferable,
+                            showRefSemId: false);
+                        
+                        if (i < references.Count - 1)
+                            AddVerticalSpace(stack);
+                    }
                 }
             }
         } 
@@ -586,6 +514,13 @@ namespace AasxPackageLogic
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => dataSpecRefsAreUsual && (hasDataSpecification == null
+                        || hasDataSpecification.Count < 1),
+                    "Check if a data specification is appropriate here. " +
+                    "A ConceptDescription typically goes along with a data specification, e.g. " +
+                    "according IEC61360.",
+                    severityLevel: HintCheck.Severity.Notice),
                 new HintCheck(
                     () => { return !dataSpecRefsAreUsual && hasDataSpecification != null
                         && hasDataSpecification.Count > 0; },
@@ -613,9 +548,13 @@ namespace AasxPackageLogic
                                     new EmbeddedDataSpecification(
                                         new Reference(ReferenceTypes.GlobalReference, new List<Key>())));
 
-                            if (buttonNdx == 1 && hasDataSpecification.Count > 0)
-                                hasDataSpecification.RemoveAt(
-                                    hasDataSpecification.Count - 1);
+                            if (buttonNdx == 1)
+                            {
+                                if (hasDataSpecification.Count > 0)
+                                    hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);
+                                else
+                                    setOutput?.Invoke(null);
+                            }
 
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
@@ -626,39 +565,65 @@ namespace AasxPackageLogic
                 if (hasDataSpecification != null && hasDataSpecification.Count > 0)
                 {
                     //TODO:jtikekar: refactor
-                    List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
-                    for (int j = 0; j < addPresetKeyLists.Length; j++)
-                    {
-                        List<string> keys = new List<string>();
-                        foreach(var key in addPresetKeyLists[j])
-                        {
-                            keys.Add(key.Value);
-                        }
-                        presetKeys[j] = keys;
-                    }
+                    // MIHO: is this at all required?
+                    //List<string>[] presetKeys = new List<string>[addPresetKeyLists.Length];
+                    //for (int j = 0; j < addPresetKeyLists.Length; j++)
+                    //{
+                    //    List<string> keys = new List<string>();
+                    //    foreach(var key in addPresetKeyLists[j])
+                    //    {
+                    //        keys.Add(key.Value);
+                    //    }
+                    //    presetKeys[j] = keys;
+                    //}
+                    
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                     {
-                        List<string> keys = new List<string>();
-                        foreach (var key in hasDataSpecification[i].DataSpecification.Keys)
+                        //List<string> keys = new List<string>();
+                        //foreach (var key in hasDataSpecification[i].DataSpecification.Keys)
+                        //{
+                        //    keys.Add(key.Value);
+                        //}
+                        // if (hasDataSpecification[i].DataSpecification != null)
+
+                        int currentI = i;
+                        if (this.SafeguardAccess(
+                            stack, this.repo, hasDataSpecification[i].DataSpecification,
+                                "DataSpecification:", "Create (inner) data element!",
+                            v =>
+                            {
+                                hasDataSpecification[currentI].DataSpecification =
+                                new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }))
                         {
-                            keys.Add(key.Value);
+                            this.AddKeyReference(
+                            stack, String.Format("dataSpec.[{0}]", i),
+                            hasDataSpecification[i].DataSpecification,
+                            repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            addExistingEntities: null /* "All" */,
+                            addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
+                            relatedReferable: relatedReferable,
+                            showRefSemId: false,
+                            auxContextHeader: new[] { "\u2573", "Delete this dataSpec." },
+                            auxContextLambda: (choice) =>
+                            {
+                                if (choice == 0)
+                                {
+                                    if (currentI >= 0 && currentI <= hasDataSpecification.Count)
+                                        hasDataSpecification.RemoveAt(currentI);
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                                return new AnyUiLambdaActionNone();
+                            });
                         }
-                        if (hasDataSpecification[i].DataSpecification != null)
-                            this.AddKeyListOfIdentifier(
-                                stack, String.Format("reference[{0}]", i),
-                                keys,
-                                repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                addExistingEntities: null /* "All" */,
-                                addPresetNames: addPresetNames, addPresetKeyLists: presetKeys,
-                                relatedReferable: relatedReferable);
                     }
-                        
                 }
             }
         }
 
         //
-        // List of References
+        // List of References (used for isCaseOf..)
         //
 
         public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
@@ -704,12 +669,13 @@ namespace AasxPackageLogic
                 if (references != null && references.Count > 0)
                 {
                     for (int i = 0; i < references.Count; i++)
-                        this.AddKeyListKeys(
-                            stack, String.Format("reference[{0}]", i), references[i].Keys, repo,
+                        this.AddKeyReference(
+                            stack, String.Format("reference[{0}]", i), references[i], repo,
                             packages, PackageCentral.PackageCentral.Selector.MainAux,
                             "All",
                             addEclassIrdi: true,
-                            relatedReferable: relatedReferable);
+                            relatedReferable: relatedReferable,
+                            showRefSemId: false);
                 }
             }
         }
@@ -732,34 +698,28 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
-                    () => { return kind == null; },
-                    "Providing kind information is mandatory. Typically you want to model instances. " +
-                        "A manufacturer would define types of assets, as well.",
-                    breakIfTrue: true),
-                new HintCheck(
                     () => { return kind != AssetKind.Instance; },
                     "Check for kind setting. 'Instance' is the usual choice.",
                     severityLevel: HintCheck.Severity.Notice )
             });
-            var varKind = Stringification.ToString(kind);
-            if (this.SafeguardAccess(
-                    stack, repo, kind, "kind:", "Create data element!",
+            if (SafeguardAccess(
+                stack, repo, kind, "kind:", "Create data element!",
+                v =>
+                {
+                    setOutput?.Invoke(new AssetKind());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                AddKeyValueExRef(
+                    stack, "kind", kind, Stringification.ToString(kind), null, repo,
                     v =>
                     {
-                        setOutput?.Invoke(new AssetKind());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }))
-
-                this.AddKeyValueRef(
-                    stack, "kind", kind, ref varKind, null, repo,
-                    v =>
-                    {
-                        kind = (AssetKind)Stringification.AssetKindFromString((string)v);
+                        setOutput?.Invoke((AssetKind)Stringification.AssetKindFromString((string)v));
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
                     Enum.GetNames(typeof(AssetKind)));
-
+            }
         }
 
         public void DisplayOrEditEntityModelingKind(AnyUiStackPanel stack,
@@ -787,24 +747,25 @@ namespace AasxPackageLogic
                     severityLevel: HintCheck.Severity.Notice )
             });
 
-            var varKind = Stringification.ToString(kind);
             if (this.SafeguardAccess(
-                    stack, repo, kind, "kind:", "Create data element!",
+                stack, repo, kind, "kind:", "Create data element!",
+                v =>
+                {
+                    setOutput?.Invoke(new ModelingKind());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }
+                ))
+            {
+                AddKeyValueExRef(
+                    stack, "kind", kind, Stringification.ToString(kind), null, repo,
                     v =>
                     {
-                        setOutput?.Invoke(new ModelingKind());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }
-                    ))
-                this.AddKeyValueRef(
-                    stack, "kind", kind, ref varKind, null, repo,
-                    v =>
-                    {
-                        kind = (ModelingKind)Stringification.ModelingKindFromString((string)v);
+                        setOutput?.Invoke((ModelingKind)Stringification.ModelingKindFromString((string)v));
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
                     Enum.GetNames(typeof(ModelingKind)));
+            }
         }
 
         //
@@ -812,8 +773,7 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
-            Reference semanticId,
-            Action<Reference> setOutput,
+            IHasSemantics semElem,
             string statement = null,
             bool checkForCD = false,
             string addExistingEntities = null,
@@ -821,10 +781,13 @@ namespace AasxPackageLogic
             IReferable relatedReferable = null)
         {
             // access
-            if (stack == null)
+            if (stack == null || semElem == null)
                 return;
 
-            // members
+            //
+            // SemanticId
+            //
+
             this.AddGroup(stack, "Semantic ID:", levelColors.SubSection);
 
             // hint
@@ -832,15 +795,17 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return semanticId == null || semanticId.IsEmpty(); },
-                            "Check if you want to add a semantic reference. " + statement,
+                            () => { return semElem.SemanticId == null 
+                                || semElem.SemanticId.IsEmpty(); },
+                            "Check if you want to add a semantic reference to an external " +
+                            "concept repository entry. " + statement,
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
                                 () => { return checkForCD &&
-                                    semanticId.Keys[0].Type != KeyTypes.ConceptDescription; },
-                                "The semanticId usually refers to a ConceptDescription " +
-                                    "within the respective repository.",
+                                    semElem.SemanticId.Keys[0].Type != KeyTypes.GlobalReference; },
+                                "The semanticId usually features a GlobalReference to a concept " +
+                                "within a respective concept repository.",
                                 severityLevel: HintCheck.Severity.Notice)
                     });
 
@@ -849,17 +814,18 @@ namespace AasxPackageLogic
 
             // add the keys
             if (this.SafeguardAccess(
-                    stack, repo, semanticId, "semanticId:", "Create data element!",
+                    stack, repo, semElem.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new Reference(ReferenceTypes.GlobalReference, new List<Key>())); 
+                        semElem.SemanticId =  new Reference(ReferenceTypes.GlobalReference, new List<Key>()); 
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListKeys(
-                    stack, "semanticId", semanticId.Keys, repo,
+                AddKeyReference(
+                    stack, "semanticId", semElem.SemanticId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    addExistingEntities: addExistingEntities, addFromPool: true,
+                    showRefSemId: false,
+                    addExistingEntities: addExistingEntities, addFromKnown: true,
                     addEclassIrdi: true,
                     addPresetNames: bufferKeys.Item1,
                     addPresetKeyLists: bufferKeys.Item2,
@@ -867,7 +833,107 @@ namespace AasxPackageLogic
                     {
                         return new AnyUiLambdaActionNavigateTo(new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)));
                     },
-                    relatedReferable: relatedReferable);
+                    relatedReferable: relatedReferable,
+                    auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
+                    auxContextLambda: (i) =>
+                    {
+                        if (i == 0)
+                        {
+                            semElem.SemanticId = null;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
+
+            //
+            // Supplemenatal SemanticId
+            //
+
+            this.AddGroup(stack, "Supplemental Semantic IDs:", levelColors.SubSection);
+
+            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(
+                    () => semElem.SupplementalSemanticIds == null 
+                        || semElem.SupplementalSemanticIds.Count < 1,
+                    "Check if a supplemental semanticId is appropriate here. This only make sense, when " +
+                    "the primary semanticId does not semantically identifies all relevant aspects of the " +
+                    "AAS element.",
+                    breakIfTrue: true,
+                    severityLevel: HintCheck.Severity.Notice) });
+            if (this.SafeguardAccess(
+                    stack, this.repo, semElem.SupplementalSemanticIds, "supplementalSemanticId:", "Create data element!",
+                    v =>
+                    {
+                        semElem.SupplementalSemanticIds = new List<Reference>();
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                if (editMode)
+                {
+                    // let the user control the number of references
+                    this.AddAction(
+                        stack, "Suppl.Sem.Id:",
+                        new[] { "Add", "Delete last" }, repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                                semElem.SupplementalSemanticIds.Add(
+                                    new Reference(ReferenceTypes.GlobalReference, new List<Key>()));
+
+                            if (buttonNdx == 1)
+                            {
+                                if (semElem.SupplementalSemanticIds.Count > 0)
+                                    semElem.SupplementalSemanticIds.RemoveAt(
+                                        semElem.SupplementalSemanticIds.Count - 1);
+                                else
+                                    semElem.SupplementalSemanticIds = null;
+                            }
+
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
+
+                // now use the normal mechanism to deal with editMode or not ..
+                if (semElem.SupplementalSemanticIds != null 
+                    && semElem.SupplementalSemanticIds.Count > 0)
+                {
+                    for (int i = 0; i < semElem.SupplementalSemanticIds.Count; i++)
+                    {
+                        AddKeyReference(
+                            stack, String.Format("Suppl.Sem.Id[{0}]", i),
+                            semElem.SupplementalSemanticIds[i], repo,
+                            packages, PackageCentral.PackageCentral.Selector.MainAux,
+                            showRefSemId: false,
+                            addExistingEntities: addExistingEntities, addFromKnown: true,
+                            addEclassIrdi: true,
+                            addPresetNames: bufferKeys.Item1,
+                            addPresetKeyLists: bufferKeys.Item2,
+                            jumpLambda: (kl) =>
+                            {
+                                return new AnyUiLambdaActionNavigateTo(new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)));
+                            },
+                            relatedReferable: relatedReferable,
+                            auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
+                            auxContextLambda: (i) =>
+                            {
+                                if (i == 0)
+                                {
+                                    semElem.SemanticId = null;
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }
+                                return new AnyUiLambdaActionNone();
+                            });
+
+                        // small vertical space
+                        if (i < semElem.SupplementalSemanticIds.Count - 1)
+                            AddVerticalSpace(stack);
+                    }
+                }
+            }
         }
 
         //
@@ -1012,8 +1078,8 @@ namespace AasxPackageLogic
                                 "Usage of SI-based units is encouraged.",
                             severityLevel: HintCheck.Severity.Notice)
             });
-            this.AddKeyValueRef(
-                stack, "unit", dsiec, ref dsiec.unit, null, repo,
+            AddKeyValueExRef(
+                stack, "unit", dsiec, dsiec.unit, null, repo,
                 v =>
                 {
                     dsiec.unit = v as string;
@@ -1055,8 +1121,8 @@ namespace AasxPackageLogic
                     relatedReferable: relatedReferable);
             }
 
-            this.AddKeyValueRef(
-                stack, "valueFormat", dsiec, ref dsiec.valueFormat, null, repo,
+            AddKeyValueExRef(
+                stack, "valueFormat", dsiec, dsiec.valueFormat, null, repo,
                 v =>
                 {
                     dsiec.valueFormat = v as string;
@@ -1076,8 +1142,8 @@ namespace AasxPackageLogic
                                 "This could be an informal link to a document, glossary item etc.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            this.AddKeyValueRef(
-                stack, "sourceOfDef.", dsiec, ref dsiec.sourceOfDefinition, null, repo,
+            AddKeyValueExRef(
+                stack, "sourceOfDef.", dsiec, dsiec.sourceOfDefinition, null, repo,
                 v =>
                 {
                     dsiec.sourceOfDefinition = v as string;
@@ -1093,8 +1159,8 @@ namespace AasxPackageLogic
                             "Please check, if you can provide formulaic character for the concept.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            this.AddKeyValueRef(
-                stack, "symbol", dsiec, ref dsiec.symbol, null, repo,
+            AddKeyValueExRef(
+                stack, "symbol", dsiec, dsiec.symbol, null, repo,
                 v =>
                 {
                     dsiec.symbol = v as string;
@@ -1110,8 +1176,8 @@ namespace AasxPackageLogic
                             "Please provide data type for the concept. " +
                                 "Data types are provided by the IEC 61360.")
                 });
-            this.AddKeyValueRef(
-                stack, "dataType", dsiec, ref dsiec.dataType, null, repo,
+            AddKeyValueExRef(
+                stack, "dataType", dsiec, dsiec.dataType, null, repo,
                 v =>
                 {
                     dsiec.dataType = v as string;
@@ -1185,6 +1251,379 @@ namespace AasxPackageLogic
                     repo, packages, PackageCentral.PackageCentral.Selector.Main, "Submodel",
                     relatedReferable: relatedReferable);
             }
+        }
+
+        //
+        // File / Resource attributes
+        // 
+
+        public void DisplayOrEditEntityFileResource(AnyUiStackPanel stack,
+            IReferable containingObject,
+            string valuePath,
+            string valueContent,
+            Action<string, string> setOutput,
+            IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () =>
+                            {
+                                return valueContent == null || valueContent.Trim().Length < 1 ||
+                                    valueContent.IndexOf('/') < 1 || valueContent.EndsWith("/");
+                            },
+                            "The content type of the file. Former known as MIME type. This is " +
+                            "mandatory information. See RFC2046.")
+                });
+
+            AddKeyValueExRef(
+                stack, "contentType", containingObject, valueContent, null, repo,
+                v =>
+                {
+                    valueContent = v as string;
+                    setOutput?.Invoke(valuePath, valueContent);
+                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                },
+                comboBoxIsEditable: true,
+                comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return valuePath == null || valuePath.Trim().Length < 1; },
+                            "The path to an external file or a file relative the AASX package root('/'). " +
+                                "Files are typically relative to '/aasx/' or sub-directories of it. " +
+                                "External files typically comply to an URL, e.g. starting with 'https://..'.",
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return valuePath.IndexOf('\\') >= 0; },
+                            "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+
+            AddKeyValueExRef(
+                stack, "value", containingObject, valuePath, null, repo,
+                v =>
+                {
+                    valuePath = v as string;
+                    setOutput?.Invoke(valuePath, valueContent);
+                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Choose supplementary file", },
+                auxButtonToolTips: new[] { "Select existing supplementary files" },
+                auxButtonLambda: (bi) =>
+                {
+                    if (bi == 0)
+                    {
+                        // Select
+                        var ve = this.SmartSelectAasEntityVisualElement(
+                                    packages, PackageCentral.PackageCentral.Selector.Main, "File");
+                        if (ve != null)
+                        {
+                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
+                            if (sf != null)
+                            {
+                                valuePath = sf.Uri.ToString();
+                                setOutput?.Invoke(valuePath, valueContent);
+                                this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                });
+
+            if (editMode && uploadAssistance != null && packages.Main != null)
+            {
+                // More file actions
+                this.AddAction(
+                    stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
+                    repo,
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0 && valuePath.HasContent())
+                        {
+                            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            {
+                                try
+                                {
+                                    // try find ..
+                                    var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                    var psf = psfs?.FindByUri(valuePath);
+                                    if (psf == null)
+                                    {
+                                        Log.Singleton.Error(
+                                            $"Not able to locate supplmentary file {valuePath} for removal! " +
+                                            $"Aborting!");
+                                    }
+                                    else
+                                    {
+                                        Log.Singleton.Info($"Removing file {valuePath} ..");
+                                        packages.Main.DeleteSupplementaryFile(psf);
+                                        Log.Singleton.Info(
+                                            $"Added {valuePath} to pending package items to be deleted. " +
+                                            "A save-operation might be required.");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(
+                                        ex, $"Removing file {valuePath} in package");
+                                }
+
+                                // clear value
+                                valuePath = "";
+
+                                // value event
+                                setOutput?.Invoke(valuePath, valueContent);
+                                this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+
+                                // show empty
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+
+                        if (buttonNdx == 1)
+                        {
+                            // ask for a name
+                            var uc = new AnyUiDialogueDataTextBox(
+                                "Name of text file to create",
+                                symbol: AnyUiMessageBoxImage.Question,
+                                maxWidth: 1400,
+                                text: "Textfile_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt");
+                            this.context?.StartFlyoverModal(uc);
+                            if (!uc.Result)
+                            {
+                                return new AnyUiLambdaActionNone();
+                            }
+
+                            var ptd = "/aasx/";
+                            var ptfn = uc.Text.Trim();
+                            packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                            // make sure the name is not already existing
+                            var psfs = packages.Main.GetListOfSupplementaryFiles();
+                            var psf = psfs?.FindByUri(ptd + ptfn);
+                            if (psf != null)
+                            {
+                                this.context?.MessageBoxFlyoutShow(
+                                    $"The supplementary file {ptd + ptfn} is already existing in the " +
+                                    "package. Please re-try with a different file name.", "Create text file",
+                                    AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                                return new AnyUiLambdaActionNone();
+                            }
+
+                            // try execute
+                            try
+                            {
+                                // make temp file
+                                var tempFn = System.IO.Path.GetTempFileName().Replace(".tmp", ".txt");
+                                System.IO.File.WriteAllText(tempFn, "");
+
+                                var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                    tempFn, ptd, ptfn,
+                                    embedAsThumb: false, useMimeType: mimeType);
+
+                                if (targetPath == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Error creating text-file {ptd + ptfn} within package");
+                                }
+                                else
+                                {
+                                    Log.Singleton.Info(
+                                        $"Added empty text-file {ptd + ptfn} to pending package items. " +
+                                        $"A save-operation is required.");
+                                    valueContent = mimeType;
+                                    valuePath = targetPath;
+                                    setOutput?.Invoke(valuePath, valueContent);
+
+                                    // value + struct event
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"Creating text-file {ptd + ptfn} within package");
+                            }
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: containingObject);
+                        }
+
+                        if (buttonNdx == 2)
+                        {
+                            try
+                            {
+                                // try find ..
+                                var psfs = packages.Main.GetListOfSupplementaryFiles();
+                                var psf = psfs?.FindByUri(valuePath);
+                                if (psf == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Not able to locate supplmentary file {valuePath} for edit. " +
+                                        $"Aborting!");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                // try read ..
+                                Log.Singleton.Info($"Reading text-file {valuePath} ..");
+                                string contents;
+                                using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(valuePath))
+                                {
+                                    using (var sr = new StreamReader(stream))
+                                    {
+                                        // read contents
+                                        contents = sr.ReadToEnd();
+                                    }
+                                }
+
+                                // test
+                                if (contents == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Not able to read contents from  supplmentary file {valuePath} " +
+                                        $"for edit. Aborting!");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                // edit
+                                var uc = new AnyUiDialogueDataTextEditor(
+                                            caption: $"Edit text-file '{valuePath}'",
+                                            mimeType: valueContent,
+                                            text: contents);
+                                if (!this.context.StartFlyoverModal(uc))
+                                    return new AnyUiLambdaActionNone();
+
+                                // save
+                                using (var stream = packages.Main.GetStreamFromUriOrLocalPackage(
+                                    valuePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                                {
+                                    using (var sw = new StreamWriter(stream))
+                                    {
+                                        // write contents
+                                        sw.Write(uc.Text);
+                                    }
+                                }
+
+                                // value event
+                                this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"Edit text-file {valuePath} in package.");
+                            }
+
+                            // reshow
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // Further file assistance
+                this.AddGroup(stack, "Supplementary file assistance", this.levelColors.SubSection);
+
+                AddKeyValueExRef(
+                    stack, "Target path", this.uploadAssistance, this.uploadAssistance.TargetPath, null, repo,
+                    v =>
+                    {
+                        this.uploadAssistance.TargetPath = v as string;
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                this.AddKeyDropTarget(
+                    stack, "Source file to add",
+                    !(this.uploadAssistance.SourcePath.HasContent())
+                        ? "(Please drop a file to set source file to add)"
+                        : this.uploadAssistance.SourcePath,
+                    null, repo,
+                    v =>
+                    {
+                        this.uploadAssistance.SourcePath = v as string;
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }, minHeight: 40);
+
+                this.AddAction(
+                stack, "Action", new[] { "Select source file", "Add or update to AASX" },
+                    repo,
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new AnyUiDialogueDataOpenFile(
+                            message: "Select a supplementary file to add..");
+                            this.context?.StartFlyoverModal(uc);
+                            if (uc.Result && uc.FileName != null)
+                            {
+                                this.uploadAssistance.SourcePath = uc.FileName;
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+
+                        if (buttonNdx == 1)
+                        {
+                            try
+                            {
+                                var ptd = uploadAssistance.TargetPath.Trim();
+                                var ptfn = System.IO.Path.GetFileName(uploadAssistance.SourcePath);
+                                packages.Main.PrepareSupplementaryFileParameters(ref ptd, ref ptfn);
+
+                                var mimeType = AdminShellPackageEnv.GuessMimeType(ptfn);
+
+                                var targetPath = packages.Main.AddSupplementaryFileToStore(
+                                    uploadAssistance.SourcePath, ptd, ptfn,
+                                    embedAsThumb: false, useMimeType: mimeType);
+
+                                if (targetPath == null)
+                                {
+                                    Log.Singleton.Error(
+                                        $"Error adding file {uploadAssistance.SourcePath} to package");
+                                }
+                                else
+                                {
+                                    Log.Singleton.Info(
+                                        $"Added {ptfn} to pending package items. A save-operation is required.");
+                                    valueContent = mimeType;
+                                    valuePath = targetPath;
+                                    setOutput?.Invoke(valuePath, valueContent);
+
+                                    // value + struct event
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                    this.AddDiaryEntry(containingObject, new DiaryEntryUpdateValue());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(
+                                    ex, $"Adding file {uploadAssistance.SourcePath} to package");
+                            }
+
+                            // refresh dialogue
+                            uploadAssistance.SourcePath = "";
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+
+                        return new AnyUiLambdaActionNone();
+                    });
+            }
+
+
         }
     }
 }

@@ -31,11 +31,23 @@
     <!-- ZVEI Publication Colors -->
     <!-- please notice: the source of truth is now stored in the 
      AasxPackageLogic.OptionsInformation.AccentColors;
-     the hereby defined ressources will get overridden! -->
+     the hereby defined ressources will get overridden! 
     <SolidColorBrush x:Key="LightAccentColor" Color="#FFCBD8EB"/>
     <SolidColorBrush x:Key="DarkAccentColor" Color="#FF88A6D2"/>
     <SolidColorBrush x:Key="DarkestAccentColor" Color="#FF4370B3"/>
     <SolidColorBrush x:Key="FocusErrorBrush" Color="#FFD42044"/>
     <Color x:Key="FocusErrorColor">#FFD42044</Color>
+    -->
+
+    <!-- IDTA Colors -->
+    <!-- please notice: the source of truth is now stored in the 
+     AasxPackageLogic.OptionsInformation.AccentColors;
+     the hereby defined ressources will get overridden! -->
+    <SolidColorBrush x:Key="LightAccentColor" Color="#FFf2f5ff"/>
+    <SolidColorBrush x:Key="DarkAccentColor" Color="#FFc0ccff"/>
+    <SolidColorBrush x:Key="DarkestAccentColor" Color="#FF0128CB"/>
+    <SolidColorBrush x:Key="FocusErrorBrush" Color="#FFe53d01"/>
+    <Color x:Key="FocusErrorColor">#FFe53d01</Color>
+
 
 </ResourceDictionary>

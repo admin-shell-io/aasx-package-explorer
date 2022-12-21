@@ -518,7 +518,8 @@ namespace AasxPackageLogic
                     // up down delete
                     var bos = entities.GetListOfBusinessObjects<ConceptDescription>();
 
-                    EntityListMultipleUpDownDeleteHelper(stack, repo,
+                    EntityListMultipleUpDownDeleteHelper(
+                        stack, repo,
                         vecd.theEnv?.ConceptDescriptions, bos, indexInfo,
                         preventMove: cdSortOrder.HasValue
                             && cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None,
@@ -526,11 +527,13 @@ namespace AasxPackageLogic
                         {
                             Container = packages?.GetAllContainer((cnr) => cnr?.Env?.AasEnv == vecd.theEnv)
                                                  .FirstOrDefault(),
-                            ThisElem = (IClass)(vecd.theEnv?.ConceptDescriptions)
+                            ThisElem = vecd.theEnv,
+                            ThisElemLocation = PackCntChangeEventLocation.ListOfConceptDescriptions
                         });
 
                     // cut copy paste
-                    DispMultiElementCutCopyPasteHelper(stack, repo, vecd.theEnv, (IClass)(vecd.theEnv?.ConceptDescriptions),
+                    DispMultiElementCutCopyPasteHelper(
+                        stack, repo, vecd.theEnv, vecd.theEnv,
                         this.theCopyPaste, entities);
                 }
 

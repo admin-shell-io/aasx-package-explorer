@@ -17,7 +17,7 @@
     This source code may use other Open Source software components (see LICENSE.txt).
     -->
 
-    <Grid Background="#e0e0e0">
+    <Grid Background="White">
         <Grid.RowDefinitions>
             <RowDefinition Height="24"/>
             <RowDefinition Height="2*"/>
@@ -25,8 +25,9 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Grid.Column="0" Background="LightBlue">
-            <Label DockPanel.Dock="Left" FontWeight="Bold" Foreground="DarkBlue" Margin="2,-2,4,-2" VerticalAlignment="Center">
+        <DockPanel Grid.Row="0" Grid.Column="0" Background="White">
+            <Label DockPanel.Dock="Left" FontWeight="Bold" 
+                   Foreground="{DynamicResource DarkestAccentColor}" Margin="2,-2,4,-2" VerticalAlignment="Center">
                 AAS event messages (in-bound, out-bound from editor, connections and servers ..)</Label>
             <WrapPanel DockPanel.Dock="Right" VerticalAlignment="Center">
                 <Button x:Name="ButtonOptions" Content=" &#8942; " FontWeight="Bold" Click="Button_Click"/>
@@ -69,7 +70,7 @@
         </DataGrid>
 
         <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
-                          ResizeBehavior="PreviousAndNext" Height="5" Background="#FFBCBCBC"/>
+                          ResizeBehavior="PreviousAndNext" Height="4" Background="#FFBCBCBC"/>
 
         <TabControl x:Name="TabControlDetail" Grid.Row="3" TabStripPlacement="Right" 
                     BorderThickness="0" Padding="0">

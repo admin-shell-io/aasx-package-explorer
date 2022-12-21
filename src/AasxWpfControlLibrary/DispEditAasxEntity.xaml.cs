@@ -157,37 +157,6 @@ namespace AasxPackageExplorer
             public bool useInnerGrid = false;
         }
 
-        // TODO (MIHO, 2020-12-24): check if required
-        private DispLevelColors GetLevelColorsFromResources()
-        {
-            // ReSharper disable CoVariantArrayConversion            
-            var res = new DispLevelColors()
-            {
-                MainSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]),
-                    AnyUiBrushes.White),
-                SubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                SubSubSection = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiBrushes.Black),
-                HintSeverityHigh = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["FocusErrorBrush"]),
-                    AnyUiBrushes.White),
-                HintSeverityNotice = new AnyUiBrushTuple(
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["LightAccentColor"]),
-                    AnyUiDisplayContextWpf.GetAnyUiBrush((SolidColorBrush)
-                        System.Windows.Application.Current.Resources["DarkestAccentColor"]))
-            };
-            // ReSharper enable CoVariantArrayConversion
-            return res;
-        }
 
 #if _not_needed
         public DisplayRenderHints DisplayMessage(string message)
@@ -450,6 +419,7 @@ namespace AasxPackageExplorer
                     _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
             }
             else
+            if (entities.Count > 1)
             {
                 //
                 // Dispatch: MULTIPLE items

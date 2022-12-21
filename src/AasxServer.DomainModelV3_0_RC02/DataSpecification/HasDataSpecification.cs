@@ -68,11 +68,14 @@ namespace AasCore.Aas3_0_RC02.HasDataSpecification
                 if (eds != null)
                 {
                     // replace this
+                    if (eds.DataSpecificationContent == null)
+                        eds.DataSpecificationContent = new DataSpecificationContent();
                     eds.DataSpecificationContent.DataSpecificationIEC61360 = value;
                     return;
                 }
                 // no? .. add!
                 var edsnew = new EmbeddedDataSpecification();
+                edsnew.DataSpecificationContent = new DataSpecificationContent();
                 edsnew.DataSpecificationContent.DataSpecificationIEC61360 = value;
                 this.Add(edsnew);
             }
