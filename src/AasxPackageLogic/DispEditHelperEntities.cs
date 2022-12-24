@@ -1495,7 +1495,7 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "Copy from existing ISubmodelElement:",
+                    stack, "Copy from existing SubmodelElement:",
                     new[] { "Copy single entity", "Copy recursively" }, repo,
                     (buttonNdx) =>
                     {
@@ -1503,7 +1503,7 @@ namespace AasxPackageLogic
                         {
                             var rve = this.SmartSelectAasEntityVisualElement(
                                 packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                "ISubmodelElement") as VisualElementSubmodelElement;
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null && env != null)
                             {
@@ -2106,7 +2106,7 @@ namespace AasxPackageLogic
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                         this.AddAction(
-                            stack, "Copy from existing ISubmodelElement:",
+                            stack, "Copy from existing SubmodelElement:",
                             new[] { "Copy single", "Copy recursively" }, repo,
                             (buttonNdx) =>
                             {
@@ -2114,7 +2114,7 @@ namespace AasxPackageLogic
                                 {
                                     var rve = this.SmartSelectAasEntityVisualElement(
                                         packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                        "ISubmodelElement") as VisualElementSubmodelElement;
+                                        "SubmodelElement") as VisualElementSubmodelElement;
 
                                     if (rve != null)
                                     {
@@ -2499,14 +2499,14 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "Copy from existing ISubmodelElement:", new[] { "Copy single", "Copy recursively" }, repo,
+                    stack, "Copy from existing SubmodelElement:", new[] { "Copy single", "Copy recursively" }, repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
                             var rve = this.SmartSelectAasEntityVisualElement(
                                 packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                "ISubmodelElement") as VisualElementSubmodelElement;
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null)
                             {

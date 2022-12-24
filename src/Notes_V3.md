@@ -23,8 +23,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 ## Todo
 
 * CDs below SME?
-* Refactor MLP does not work
 * CD below MLP does not work
+* make unique only when required (PR 550)
 
 ## Feature Requests to AAS core
 
@@ -72,3 +72,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * AssetInfo / defaultThumbnail/ Create empty File element does not work!
   => solved, have DisplayOrEditEntityFileResource()
 * Asset below AAS? => done
+* Refactoring of SMEs re-implemented completely new
