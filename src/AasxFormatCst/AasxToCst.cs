@@ -147,13 +147,13 @@ namespace AasxFormatCst
                         // more info
                         if (cd != null)
                         {
-                            var ds61360 = cd.EmbeddedDataSpecification?.IEC61360Content;
+                            var ds61360 = cd.EmbeddedDataSpecifications?.GetIEC61360Content();
                             if (ds61360 != null)
                             {
-                                if (ds61360.definition != null)
-                                    tmpPd.Definition = ds61360.definition.GetDefaultString("en");
+                                if (ds61360.Definition != null)
+                                    tmpPd.Definition = ds61360.Definition.GetDefaultString("en");
 
-                                var dst = ds61360.dataType?.Trim().ToUpper();
+                                var dst = Stringification.ToString(ds61360.DataType)?.ToUpper();
                                 if (ds61360 == null && dst != null)
                                 {
                                     tmpDt = dst;
@@ -291,7 +291,7 @@ namespace AasxFormatCst
             if (cdReferables != null)
                 foreach (var rf in cdReferables)
                     if (rf is ConceptDescription cd)
-                        env?.AasEnv.ConceptDescriptions.AddConceptDescription(cd);
+                        env?.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(cd);
 
             // Step 2: make up a list of used semantic references and write to default file
             var tmpIdStore = new CstIdStore();

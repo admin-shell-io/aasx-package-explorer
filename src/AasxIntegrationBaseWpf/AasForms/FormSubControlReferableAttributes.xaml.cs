@@ -131,8 +131,8 @@ namespace AasxIntegrationBase.AasForms
             if (visiDescription)
             {
                 int row = 2;
-                if (dc.rf.Description != null && dc.rf.Description.LangStrings != null)
-                    foreach (var ls in dc.rf.Description.LangStrings)
+                if (dc.rf.Description != null && dc.rf.Description != null)
+                    foreach (var ls in dc.rf.Description)
                     {
                         // another row
                         rd = new RowDefinition();
@@ -186,11 +186,11 @@ namespace AasxIntegrationBase.AasForms
                         var lsToDel = ls;
                         bt.Click += (object sender3, RoutedEventArgs e3) =>
                         {
-                            if (dc.rf?.Description?.LangStrings != null)
-                                if (dc.rf.Description.LangStrings.Contains(lsToDel))
+                            if (dc.rf?.Description != null)
+                                if (dc.rf.Description.Contains(lsToDel))
                                 {
                                     dc.instance.Touch();
-                                    dc.rf.Description.LangStrings.Remove(lsToDel);
+                                    dc.rf.Description.Remove(lsToDel);
                                     UpdateDisplay();
                                 }
                         };
@@ -222,10 +222,10 @@ namespace AasxIntegrationBase.AasForms
             {
                 // add
                 if (dc.rf.Description == null)
-                    dc.rf.Description = new LangStringSet(new List<LangString>());
+                    dc.rf.Description = new List<LangString>();
 
                 dc.instance.Touch();
-                dc.rf.Description.LangStrings.Add(new LangString("", ""));
+                dc.rf.Description.Add(new LangString("", ""));
 
                 // show
                 UpdateDisplay();

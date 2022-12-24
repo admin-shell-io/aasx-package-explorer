@@ -14,7 +14,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AdminShellNS.Extenstions;
@@ -282,14 +281,14 @@ namespace AasxAmlImExport
                 return res;
             }
 
-            public LangStringSet TryParseDescriptionFromAttributes(
+            public List<LangString> TryParseDescriptionFromAttributes(
                 AttributeSequence aseq, string correspondingAttributePath)
             {
                 var ls = TryParseListOfLangStrFromAttributes(aseq, correspondingAttributePath);
                 if (ls == null)
                     return null;
 
-                var res = new LangStringSet( ls );
+                var res = new List<LangString>( ls );
                 return res;
             }
 
@@ -416,7 +415,7 @@ namespace AasxAmlImExport
                     if (desc != null)
                         aas.Description = desc;
                     if (ds != null)
-                        aas.DataSpecifications = ds;
+                        aas.EmbeddedDataSpecifications = ds.Select((dsi) => new EmbeddedDataSpecification(dsi, null)).ToList();
                     if (derivedfrom != null)
                     {
                         var derivedFromRef = ParseAmlReference(derivedfrom);
@@ -598,7 +597,7 @@ namespace AasxAmlImExport
                     if (qualifiers != null)
                         sm.Qualifiers = qualifiers;
                     if (ds != null)
-                        sm.DataSpecifications = ds;
+                        sm.EmbeddedDataSpecifications = ds.Select((dsi) => new EmbeddedDataSpecification(dsi, null)).ToList();
 
                     // result
                     return sm;
@@ -640,7 +639,7 @@ namespace AasxAmlImExport
                     if (qualifiers != null)
                         smec.Qualifiers = qualifiers;
                     if (ds != null)
-                        smec.DataSpecifications = ds;
+                        smec.EmbeddedDataSpecifications = ds.Select((dsi) => new EmbeddedDataSpecification(dsi, null)).ToList();
 
                     // result
                     return smec;
@@ -745,7 +744,7 @@ namespace AasxAmlImExport
                     if (qualifiers != null)
                         sme.Qualifiers = qualifiers;
                     if (ds != null)
-                        sme.DataSpecifications = ds;
+                        sme.EmbeddedDataSpecifications = ds.Select((dsi) => new EmbeddedDataSpecification(dsi, null)).ToList();
 
                     // and also special attributes for each adequate type
                     if (sme is Property p)
@@ -792,8 +791,8 @@ namespace AasxAmlImExport
                         var valueId = FindAttributeValueByRefSemantic(
                             ie.Attribute, AmlConst.Attributes.MultiLanguageProperty_ValueId);
 
-                        if (value.LangStrings != null)
-                            mlp.Value = new LangStringSet(value.LangStrings);
+                        if (value != null)
+                            mlp.Value = value.Copy();
                         if (valueId != null)
                             mlp.ValueId = ParseAmlReference(valueId);
                     }
@@ -929,36 +928,37 @@ namespace AasxAmlImExport
                     return null;
             }
 
-            private DataSpecificationIEC61360 TryParseDataSpecificationContentIEC61360(
+            private DataSpecificationIec61360 TryParseDataSpecificationContentIEC61360(
                 AttributeSequence aseq)
             {
                 // finally, create the entity
-                var ds = new DataSpecificationIEC61360();
+                var ds = new DataSpecificationIec61360(null);
 
                 // populate
                 var pn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_PreferredName);
                 if (pn != null)
-                    ds.preferredName = LangStringSetIEC61360.CreateFrom(pn);
+                    ds.PreferredName = new List<LangString>(pn);
 
                 var sn = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_ShortName);
                 if (sn != null)
-                    ds.shortName = LangStringSetIEC61360.CreateFrom(sn);
+                    ds.ShortName = new List<LangString>(sn);
 
-                ds.unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
+                ds.Unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-                ds.unitId = ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)).Copy();
+                ds.UnitId = ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)).Copy();
 
-                ds.valueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
+                ds.ValueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
-                ds.sourceOfDefinition = FindAttributeValueByRefSemantic(
+                ds.SourceOfDefinition = FindAttributeValueByRefSemantic(
                     aseq, AmlConst.Attributes.CD_DSC61360_SourceOfDefinition);
 
-                ds.symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
-                ds.dataType = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType);
+                ds.Symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
+                ds.DataType = Stringification.DataTypeIec61360FromString(
+                    FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType));
 
                 var def = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_Definition);
                 if (def != null)
-                    ds.definition = LangStringSetIEC61360.CreateFrom(def);
+                    ds.Definition = new List<LangString>(def);
 
                 // done, without further checks
                 return ds;
@@ -1228,12 +1228,14 @@ namespace AasxAmlImExport
                                     Value = a.Value,
                                     ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(ParseAmlDataType(a.AttributeDataType)),
                                     Qualifiers = TryParseQualifiersFromAttributes(a.Attribute),
-                                    DataSpecifications = TryParseDataSpecificationFromAttributes(ie.Attribute)
+                                    EmbeddedDataSpecifications = TryParseDataSpecificationFromAttributes(ie.Attribute)?
+                                        .Select((dsi) => new EmbeddedDataSpecification(dsi, null)).ToList()
                                 };
 
                                 // gather information
                                 var semid = FindAttributeValueByRefSemantic(
                                     a.Attribute, AmlConst.Attributes.SemanticId);
+
                                 if (semid != null)
                                 {
                                     p.SemanticId = new Reference(ReferenceTypes.ModelReference, ParseAmlReference(semid)?.Keys);
@@ -1465,27 +1467,20 @@ namespace AasxAmlImExport
                                         if (ds61360 != null)
                                         {
                                             //embedded data spec for the SDK
-
-
-                                           var eds = new EmbeddedDataSpecification();
-                                            // add embeddedDataSpecification first?
-                                            cd.EmbeddedDataSpecification ??= new HasDataSpecification();
-                                            cd.EmbeddedDataSpecification.IEC61360 = eds;
-
                                             /*
                                              TODO (Michael Hoffmeister, 2020-08-01): fill out 
                                              eds.hasDataSpecification by using outer attributes
                                             */
+
+                                            var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent(ds61360);
+
                                             var hds = FindAttributeValueByRefSemantic(
                                                 ie.Attribute, AmlConst.Attributes.CD_DataSpecificationRef);
                                             if (hds != null)
                                                 eds.DataSpecification = ParseAmlReference(hds).Copy();
 
-                                            // make 61360 data
-                                            eds.DataSpecificationContent = new AasCore.Aas3_0_RC02.HasDataSpecification.DataSpecificationContent()
-                                            {
-                                                DataSpecificationIEC61360 = ds61360
-                                            };
+                                            cd.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+                                            cd.EmbeddedDataSpecifications.Add(eds);
                                         }
                                     }
                         }

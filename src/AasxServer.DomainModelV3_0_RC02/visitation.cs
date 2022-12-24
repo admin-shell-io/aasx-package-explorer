@@ -41,10 +41,12 @@ namespace AasCore.Aas3_0_RC02
             public void Visit(Reference that);
             public void Visit(Key that);
             public void Visit(LangString that);
-            public void Visit(LangStringSet that);
-            public void Visit(DataSpecificationContent that);
-            public void Visit(DataSpecification that);
             public void Visit(Environment that);
+            public void Visit(EmbeddedDataSpecification that);
+            public void Visit(ValueReferencePair that);
+            public void Visit(ValueList that);
+            public void Visit(DataSpecificationIec61360 that);
+            public void Visit(DataSpecificationPhysicalUnit that);
         }  // public interface IVisitor
 
         /// <summary>
@@ -314,34 +316,52 @@ namespace AasCore.Aas3_0_RC02
                 }
             }
 
-            public virtual void Visit(LangStringSet that)
-            {
-                // Just descend through, do nothing with <c>that</c>
-                foreach (var something in that.DescendOnce())
-                {
-                    Visit(something);
-                }
-            }
-
-            public virtual void Visit(DataSpecificationContent that)
-            {
-                // Just descend through, do nothing with <c>that</c>
-                foreach (var something in that.DescendOnce())
-                {
-                    Visit(something);
-                }
-            }
-
-            public virtual void Visit(DataSpecification that)
-            {
-                // Just descend through, do nothing with <c>that</c>
-                foreach (var something in that.DescendOnce())
-                {
-                    Visit(something);
-                }
-            }
-
             public virtual void Visit(Environment that)
+            {
+                // Just descend through, do nothing with <c>that</c>
+                foreach (var something in that.DescendOnce())
+                {
+                    Visit(something);
+                }
+            }
+
+            public virtual void Visit(EmbeddedDataSpecification that)
+            {
+                // Just descend through, do nothing with <c>that</c>
+                foreach (var something in that.DescendOnce())
+                {
+                    Visit(something);
+                }
+            }
+
+            public virtual void Visit(ValueReferencePair that)
+            {
+                // Just descend through, do nothing with <c>that</c>
+                foreach (var something in that.DescendOnce())
+                {
+                    Visit(something);
+                }
+            }
+
+            public virtual void Visit(ValueList that)
+            {
+                // Just descend through, do nothing with <c>that</c>
+                foreach (var something in that.DescendOnce())
+                {
+                    Visit(something);
+                }
+            }
+
+            public virtual void Visit(DataSpecificationIec61360 that)
+            {
+                // Just descend through, do nothing with <c>that</c>
+                foreach (var something in that.DescendOnce())
+                {
+                    Visit(something);
+                }
+            }
+
+            public virtual void Visit(DataSpecificationPhysicalUnit that)
             {
                 // Just descend through, do nothing with <c>that</c>
                 foreach (var something in that.DescendOnce())
@@ -388,10 +408,12 @@ namespace AasCore.Aas3_0_RC02
             public abstract void Visit(Reference that);
             public abstract void Visit(Key that);
             public abstract void Visit(LangString that);
-            public abstract void Visit(LangStringSet that);
-            public abstract void Visit(DataSpecificationContent that);
-            public abstract void Visit(DataSpecification that);
             public abstract void Visit(Environment that);
+            public abstract void Visit(EmbeddedDataSpecification that);
+            public abstract void Visit(ValueReferencePair that);
+            public abstract void Visit(ValueList that);
+            public abstract void Visit(DataSpecificationIec61360 that);
+            public abstract void Visit(DataSpecificationPhysicalUnit that);
         }  // public abstract class AbstractVisitor
 
         /// <summary>
@@ -429,10 +451,12 @@ namespace AasCore.Aas3_0_RC02
             public void Visit(Reference that, TContext context);
             public void Visit(Key that, TContext context);
             public void Visit(LangString that, TContext context);
-            public void Visit(LangStringSet that, TContext context);
-            public void Visit(DataSpecificationContent that, TContext context);
-            public void Visit(DataSpecification that, TContext context);
             public void Visit(Environment that, TContext context);
+            public void Visit(EmbeddedDataSpecification that, TContext context);
+            public void Visit(ValueReferencePair that, TContext context);
+            public void Visit(ValueList that, TContext context);
+            public void Visit(DataSpecificationIec61360 that, TContext context);
+            public void Visit(DataSpecificationPhysicalUnit that, TContext context);
         }  // public interface IVisitorWithContext
 
         /// <summary>
@@ -475,10 +499,12 @@ namespace AasCore.Aas3_0_RC02
             public abstract void Visit(Reference that, TContext context);
             public abstract void Visit(Key that, TContext context);
             public abstract void Visit(LangString that, TContext context);
-            public abstract void Visit(LangStringSet that, TContext context);
-            public abstract void Visit(DataSpecificationContent that, TContext context);
-            public abstract void Visit(DataSpecification that, TContext context);
             public abstract void Visit(Environment that, TContext context);
+            public abstract void Visit(EmbeddedDataSpecification that, TContext context);
+            public abstract void Visit(ValueReferencePair that, TContext context);
+            public abstract void Visit(ValueList that, TContext context);
+            public abstract void Visit(DataSpecificationIec61360 that, TContext context);
+            public abstract void Visit(DataSpecificationPhysicalUnit that, TContext context);
         }  // public abstract class AbstractVisitorWithContext
 
         /// <summary>
@@ -517,10 +543,12 @@ namespace AasCore.Aas3_0_RC02
             public T Transform(Reference that);
             public T Transform(Key that);
             public T Transform(LangString that);
-            public T Transform(LangStringSet that);
-            public T Transform(DataSpecificationContent that);
-            public T Transform(DataSpecification that);
             public T Transform(Environment that);
+            public T Transform(EmbeddedDataSpecification that);
+            public T Transform(ValueReferencePair that);
+            public T Transform(ValueList that);
+            public T Transform(DataSpecificationIec61360 that);
+            public T Transform(DataSpecificationPhysicalUnit that);
         }  // public interface ITransformer
 
         /// <summary>
@@ -591,13 +619,17 @@ namespace AasCore.Aas3_0_RC02
 
             public abstract T Transform(LangString that);
 
-            public abstract T Transform(LangStringSet that);
-
-            public abstract T Transform(DataSpecificationContent that);
-
-            public abstract T Transform(DataSpecification that);
-
             public abstract T Transform(Environment that);
+
+            public abstract T Transform(EmbeddedDataSpecification that);
+
+            public abstract T Transform(ValueReferencePair that);
+
+            public abstract T Transform(ValueList that);
+
+            public abstract T Transform(DataSpecificationIec61360 that);
+
+            public abstract T Transform(DataSpecificationPhysicalUnit that);
         }  // public abstract class AbstractTransformer
 
         /// <summary>
@@ -637,10 +669,12 @@ namespace AasCore.Aas3_0_RC02
             public T Transform(Reference that, TContext context);
             public T Transform(Key that, TContext context);
             public T Transform(LangString that, TContext context);
-            public T Transform(LangStringSet that, TContext context);
-            public T Transform(DataSpecificationContent that, TContext context);
-            public T Transform(DataSpecification that, TContext context);
             public T Transform(Environment that, TContext context);
+            public T Transform(EmbeddedDataSpecification that, TContext context);
+            public T Transform(ValueReferencePair that, TContext context);
+            public T Transform(ValueList that, TContext context);
+            public T Transform(DataSpecificationIec61360 that, TContext context);
+            public T Transform(DataSpecificationPhysicalUnit that, TContext context);
         }  // public interface ITransformerWithContext
 
         /// <summary>
@@ -713,13 +747,17 @@ namespace AasCore.Aas3_0_RC02
 
             public abstract T Transform(LangString that, TContext context);
 
-            public abstract T Transform(LangStringSet that, TContext context);
-
-            public abstract T Transform(DataSpecificationContent that, TContext context);
-
-            public abstract T Transform(DataSpecification that, TContext context);
-
             public abstract T Transform(Environment that, TContext context);
+
+            public abstract T Transform(EmbeddedDataSpecification that, TContext context);
+
+            public abstract T Transform(ValueReferencePair that, TContext context);
+
+            public abstract T Transform(ValueList that, TContext context);
+
+            public abstract T Transform(DataSpecificationIec61360 that, TContext context);
+
+            public abstract T Transform(DataSpecificationPhysicalUnit that, TContext context);
         }  // public abstract class AbstractTransformerWithContext
     }  // public static class Visitation
 }  // namespace AasCore.Aas3_0_RC02

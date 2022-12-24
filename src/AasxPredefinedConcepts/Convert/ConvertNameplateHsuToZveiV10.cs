@@ -94,7 +94,14 @@ namespace AasxPredefinedConcepts.Convert
             if (addNewCDs)
                 foreach (var rf in defsV10.GetAllReferables())
                     if (rf is ConceptDescription conceptDescription)
-                        package.AasEnv.ConceptDescriptions.AddConceptDescription(new ConceptDescription(conceptDescription.Id, conceptDescription.Extensions, conceptDescription.Category, conceptDescription.IdShort, conceptDescription.DisplayName, conceptDescription.Description, conceptDescription.Checksum, conceptDescription.Administration, conceptDescription.DataSpecifications, conceptDescription.IsCaseOf));
+                        package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
+                            new ConceptDescription(
+                                conceptDescription.Id, conceptDescription.Extensions, 
+                                conceptDescription.Category, conceptDescription.IdShort, 
+                                conceptDescription.DisplayName, conceptDescription.Description, 
+                                conceptDescription.Checksum, conceptDescription.Administration, 
+                                conceptDescription.EmbeddedDataSpecifications, 
+                                conceptDescription.IsCaseOf));
 
             // Submodel level
 

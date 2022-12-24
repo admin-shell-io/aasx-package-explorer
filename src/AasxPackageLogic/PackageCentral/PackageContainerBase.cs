@@ -411,7 +411,7 @@ namespace AasxPackageLogic.PackageCentral
 
             if (smeToModify is MultiLanguageProperty mlp)
             {
-                if (vl.Value is LangStringSet lss)
+                if (vl.Value is List<LangString> lss)
                     mlp.Value = lss;
                 if (vl.ValueId != null)
                     mlp.ValueId = vl.ValueId;

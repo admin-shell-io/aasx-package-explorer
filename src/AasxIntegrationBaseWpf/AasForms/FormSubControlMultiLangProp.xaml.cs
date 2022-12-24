@@ -106,8 +106,8 @@ namespace AasxIntegrationBase.AasForms
 
             // build up net grid
             int row = 1;
-            if (dc.prop.Value != null && dc.prop.Value.LangStrings != null)
-                foreach (var ls in dc.prop.Value.LangStrings)
+            if (dc.prop.Value != null && dc.prop.Value != null)
+                foreach (var ls in dc.prop.Value)
                 {
                     // another row
                     rd = new RowDefinition();
@@ -161,11 +161,11 @@ namespace AasxIntegrationBase.AasForms
                     var lsToDel = ls;
                     bt.Click += (object sender3, RoutedEventArgs e3) =>
                     {
-                        if (dc.prop?.Value?.LangStrings != null)
-                            if (dc.prop.Value.LangStrings.Contains(lsToDel))
+                        if (dc.prop?.Value != null)
+                            if (dc.prop.Value.Contains(lsToDel))
                             {
                                 dc.instance.Touch();
-                                dc.prop.Value.LangStrings.Remove(lsToDel);
+                                dc.prop.Value.Remove(lsToDel);
                                 UpdateDisplay();
                             }
                     };
@@ -195,10 +195,10 @@ namespace AasxIntegrationBase.AasForms
             {
                 // add
                 if (dc.prop.Value == null)
-                    dc.prop.Value = new LangStringSet(new List<LangString>());
+                    dc.prop.Value = new List<LangString>();
 
                 dc.instance.Touch();
-                dc.prop.Value.LangStrings.Add(new LangString("", ""));
+                dc.prop.Value.Add(new LangString("", ""));
 
                 // show
                 UpdateDisplay();

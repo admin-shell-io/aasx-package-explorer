@@ -247,7 +247,7 @@ namespace AasxPackageExplorer
             _multiLanguageProperty.Kind = ModelingKind.Instance;
             foreach (var text in texts)
             {
-                _multiLanguageProperty.Value.LangStrings.Add(text);
+                _multiLanguageProperty.Value.Add(text);
             }
             _multiLanguageProperty.AddDescription("en", description);
             return _multiLanguageProperty;

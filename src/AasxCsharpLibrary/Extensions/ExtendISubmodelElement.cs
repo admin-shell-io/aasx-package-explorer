@@ -2,6 +2,7 @@
 using AasCore.Aas3_0_RC02;
 using AasxCompatibilityModels;
 using AdminShellNS.Display;
+using AdminShellNS.Extenstions;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -375,13 +376,16 @@ namespace Extensions
             if (sourceSubmodelElement.hasDataSpecification != null)
             {
                 //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
-                if (submodelElement.DataSpecifications == null)
+                if (submodelElement.EmbeddedDataSpecifications == null)
                 {
-                    submodelElement.DataSpecifications = new List<Reference>();
+                    submodelElement.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
                 }
                 foreach (var dataSpecification in sourceSubmodelElement.hasDataSpecification.reference)
                 {
-                    submodelElement.DataSpecifications.Add(ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.GlobalReference));
+                    submodelElement.EmbeddedDataSpecifications.Add(
+                        new EmbeddedDataSpecification(
+                            ExtensionsUtil.ConvertReferenceFromV10(dataSpecification, ReferenceTypes.GlobalReference),
+                            null));
                 }
             }
         }
@@ -577,15 +581,18 @@ namespace Extensions
             if (sourceSubmodelElement.hasDataSpecification != null)
             {
                 //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
-                if (submodelElement.DataSpecifications == null)
+                if (submodelElement.EmbeddedDataSpecifications == null)
                 {
-                    submodelElement.DataSpecifications = new List<Reference>();
+                    submodelElement.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
                 }
 
                 //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceSubmodelElement.hasDataSpecification)
                 {
-                    submodelElement.DataSpecifications.Add(ExtensionsUtil.ConvertReferenceFromV20(sourceDataSpec.dataSpecification, ReferenceTypes.GlobalReference));
+                    submodelElement.EmbeddedDataSpecifications.Add(
+                        new EmbeddedDataSpecification(
+                            ExtensionsUtil.ConvertReferenceFromV20(sourceDataSpec.dataSpecification, ReferenceTypes.GlobalReference),
+                            null));
                 }
             }
         }
@@ -845,7 +852,7 @@ namespace Extensions
                 var res = submodelElements.CreateSMEForCD<T>(createDefault, idShort: idShort, addSme: addSme);
                 if (res is MultiLanguageProperty mlp)
                 {
-                    mlp.Value = new LangStringSet(new List<LangString>() { new LangString("EN?", srcProp.Value) });
+                    mlp.Value = new List<LangString>() { new LangString("EN?", srcProp.Value) };
                     mlp.ValueId = srcProp.ValueId;
                     return res;
                 }
@@ -1241,6 +1248,38 @@ namespace Extensions
 
         #endregion
 
+        public static ISubmodelElement UpdateFrom(this ISubmodelElement elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            // IReferable
+            elem.Category = source.Category;
+            elem.IdShort = source.IdShort;
+            elem.DisplayName = source.DisplayName?.Copy();
+            elem.Description = source.Description?.Copy();
+            elem.Checksum = source.Checksum;
+            
+            // IHasKind
+            if (source.Kind.HasValue)
+                elem.Kind = source.Kind.Value;
+
+            // IHasSemantics
+            if (source.SemanticId != null)
+                elem.SemanticId = source.SemanticId.Copy();
+            if (source.SupplementalSemanticIds != null)
+                elem.SupplementalSemanticIds = source.SupplementalSemanticIds.Copy();
+
+            // IQualifiable
+            if (source.Qualifiers != null)
+                elem.Qualifiers = source.Qualifiers.Copy();
+
+            // IHasDataSpecification
+            if (source.EmbeddedDataSpecifications != null)
+                elem.EmbeddedDataSpecifications = source.EmbeddedDataSpecifications.Copy();
+
+            return elem;
+        }
 
 
 

@@ -1,14 +1,15 @@
-﻿using AasCore.Aas3_0_RC02;
-using AdminShellNS.Display;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
+using AdminShellNS.Display;
 
 namespace Extensions
 {
-    public static class ExtendAnnotedRelationshipElement
+    public static class ExtendAnnotatedRelationshipElement
     {
         #region AasxPackageExplorer
 
@@ -87,5 +88,29 @@ namespace Extensions
 
             return default;
         }
+
+        public static AnnotatedRelationshipElement UpdateFrom(
+            this AnnotatedRelationshipElement elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is ReferenceElement srcRef)
+            {
+                if (srcRef.Value != null)
+                    elem.First = srcRef.Value.Copy();
+            }
+
+            if (source is RelationshipElement srcRel)
+            {
+                if (srcRel.First != null)
+                    elem.First = srcRel.First.Copy();
+            }
+
+            return elem;
+        }
+
     }
 }

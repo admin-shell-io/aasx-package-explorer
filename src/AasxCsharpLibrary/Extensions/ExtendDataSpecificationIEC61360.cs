@@ -1,5 +1,4 @@
 ﻿using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Extensions
 {
     public static class ExtendDataSpecificationIEC61360
     {
-        public static DataSpecificationIEC61360 ConvertFromV20(this DataSpecificationIEC61360 dataSpecificationIEC61360, AasxCompatibilityModels.AdminShellV20.DataSpecificationIEC61360 sourceDataSpecIEC61360)
+        public static DataSpecificationIec61360 ConvertFromV20(this DataSpecificationIec61360 dataSpecificationIEC61360, AasxCompatibilityModels.AdminShellV20.DataSpecificationIEC61360 sourceDataSpecIEC61360)
         {
             if (sourceDataSpecIEC61360.preferredName != null)
             {
@@ -20,7 +19,7 @@ namespace Extensions
                 {
                     preferredNames.Add(new LangString(srcPrefName.lang, srcPrefName.str));
                 }
-                dataSpecificationIEC61360.preferredName = LangStringSetIEC61360.CreateFrom(preferredNames);
+                dataSpecificationIEC61360.PreferredName = preferredNames;
             }
             
             if (sourceDataSpecIEC61360.preferredName != null)
@@ -31,18 +30,18 @@ namespace Extensions
                 {
                     shortNames.Add(new LangString(srcShortName.lang, srcShortName.str));
                 }
-                dataSpecificationIEC61360.shortName = LangStringSetIEC61360.CreateFrom(shortNames);
+                dataSpecificationIEC61360.ShortName = shortNames;
             }
                 
-            dataSpecificationIEC61360.unit = sourceDataSpecIEC61360.unit;
+            dataSpecificationIEC61360.Unit = sourceDataSpecIEC61360.unit;
             if (sourceDataSpecIEC61360.unitId != null)
             {
-                dataSpecificationIEC61360.unitId =  ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(sourceDataSpecIEC61360.unitId.keys), ReferenceTypes.GlobalReference);
+                dataSpecificationIEC61360.UnitId =  ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(sourceDataSpecIEC61360.unitId.keys), ReferenceTypes.GlobalReference);
             }
-            dataSpecificationIEC61360.valueFormat = sourceDataSpecIEC61360.valueFormat;
-            dataSpecificationIEC61360.sourceOfDefinition = sourceDataSpecIEC61360.sourceOfDefinition;
-            dataSpecificationIEC61360.symbol = sourceDataSpecIEC61360.symbol;
-            dataSpecificationIEC61360.dataType = sourceDataSpecIEC61360.dataType;
+            dataSpecificationIEC61360.ValueFormat = sourceDataSpecIEC61360.valueFormat;
+            dataSpecificationIEC61360.SourceOfDefinition = sourceDataSpecIEC61360.sourceOfDefinition;
+            dataSpecificationIEC61360.Symbol = sourceDataSpecIEC61360.symbol;
+            dataSpecificationIEC61360.DataType = Stringification.DataTypeIec61360FromString(sourceDataSpecIEC61360.dataType);
             if (sourceDataSpecIEC61360.definition != null)
             {
                 //TODO:jtikekar performance impact
@@ -51,7 +50,7 @@ namespace Extensions
                 {
                     definitions.Add(new LangString(srcDefinition.lang, srcDefinition.str));
                 }
-                dataSpecificationIEC61360.definition = LangStringSetIEC61360.CreateFrom(definitions);
+                dataSpecificationIEC61360.Definition = definitions;
             }
             return dataSpecificationIEC61360;
         }

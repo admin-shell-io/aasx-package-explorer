@@ -17,7 +17,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
@@ -318,7 +317,8 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var aas = new AssetAdministrationShell("", null, submodels:new List<Reference>()); //TODO:jtikekar refere an Asset
-                            this.MakeNewIdentifiableUnique(aas);
+                            aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                Options.Curr.TemplateIdAas);
                             env.AssetAdministrationShells.Add(aas);
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange(
                                 StructuralChangeReason.Create));
@@ -328,7 +328,8 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1)
                         {
                             var cd = new ConceptDescription("");
-                            this.MakeNewIdentifiableUnique(cd);
+                            cd.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                Options.Curr.TemplateIdConceptDescription);
                             env.ConceptDescriptions.Add(cd);
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange(
                                 StructuralChangeReason.Create));
@@ -612,6 +613,10 @@ namespace AasxPackageLogic
 
                 if (ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
+                    //
+                    // Copy / import
+                    //
+
                     this.AddGroup(stack, "Import of ConceptDescriptions", this.levelColors.MainSection);
 
                     // Copy
@@ -657,7 +662,8 @@ namespace AasxPackageLogic
 
                     this.AddGroup(stack, "Dynamic rendering of ConceptDescriptions", this.levelColors.MainSection);
 
-                    var g1 = this.AddSubGrid(stack, "Dynamic order:", 1, 2, new[] { "#", "#" });
+                    var g1 = this.AddSubGrid(stack, "Dynamic order:", 1, 2, new[] { "#", "#" },
+                        minWidthFirstCol: this.standardFirstColWidth);
                     AnyUiComboBox cb1 = null;
                     cb1 = AnyUiUIElement.RegisterControl(
                         this.AddSmallComboBoxTo(g1, 0, 0,
@@ -703,7 +709,8 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
-                    var g2 = this.AddSubGrid(stack, "Entities:", 1, 1, new[] { "#" });
+                    var g2 = this.AddSubGrid(stack, "Entities:", 1, 1, new[] { "#" },
+                        minWidthFirstCol: this.standardFirstColWidth);
                     AnyUiUIElement.RegisterControl(
                         this.AddSmallButtonTo(g2, 0, 0, content: "Sort according above order",
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0)),
@@ -742,6 +749,60 @@ namespace AasxPackageLogic
                                        "Cannot apply selected sort order!",
                                        "ConceptDescriptions",
                                        AnyUiMessageBoxButton.OK, AnyUiMessageBoxImage.Warning);
+                            }
+
+                            return new AnyUiLambdaActionNone();
+                        });
+
+                    //
+                    // various "repairs" of CDs
+                    //
+
+                    this.AddGroup(stack, "Maintenance of ConceptDescriptions (CDs)", this.levelColors.MainSection);
+
+                    this.AddAction(
+                        stack, "Fix:",
+                        new[] { "Fix data specs wrt. content" }, repo,
+                        actionToolTips: new[]
+                        {
+                            "For data specifications of CDs, fix References according stored contents."
+                        },
+                        action: (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                            {
+                                if (AnyUi.AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                    "Fix data specification References according known types of " +
+                                    "data specification content? " +
+                                    "This operation cannot be reverted!",
+                                    "ConceptDescriptions",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                    return new AnyUiLambdaActionNone();
+
+                                // use the same order as displayed
+                                Log.Singleton.Info("ConceptDescriptions: Fix data specification References " +
+                                    "according known types.");
+
+                                if (env?.ConceptDescriptions == null)
+                                {
+                                    Log.Singleton.Info(".. no ConceptDescription!");
+                                    return new AnyUiLambdaActionNone();
+                                }
+
+                                foreach (var cd in env.ConceptDescriptions)
+                                {
+                                    var change = false;
+                                    if (cd.EmbeddedDataSpecifications != null)
+                                        foreach (var esd in cd.EmbeddedDataSpecifications)
+                                            change = change || ExtendEmbeddedDataSpecification
+                                                .FixReferenceWrtContent(esd);
+
+                                    if (change)
+                                        Log.Singleton.Info(".. change: " + cd.ToCaptionInfo()?.Item1);
+                                }
+
+                                return new AnyUiLambdaActionRedrawAllElements(
+                                    nextFocus: env?.ConceptDescriptions);
                             }
 
                             return new AnyUiLambdaActionNone();
@@ -1060,7 +1121,9 @@ namespace AasxPackageLogic
                         {
                             // create new submodel
                             var submodel = new Submodel("");
-                            this.MakeNewIdentifiableUnique(submodel);
+                            aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
+                                (buttonNdx == 1) ? Options.Curr.TemplateIdSubmodelTemplate
+                                : Options.Curr.TemplateIdSubmodelInstance);
                             this.AddDiaryEntry(submodel,
                                     new DiaryEntryStructChange(StructuralChangeReason.Create));
                             env.Submodels.Add(submodel);
@@ -1178,8 +1241,8 @@ namespace AasxPackageLogic
             this.DisplayOrEditEntityReferable(stack, aas, categoryUsual: false);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.DataSpecifications,
-                (ds) => { aas.DataSpecifications = ds; }, relatedReferable: aas);
+            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.EmbeddedDataSpecifications,
+                (ds) => { aas.EmbeddedDataSpecifications = ds; }, relatedReferable: aas);
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
@@ -1670,8 +1733,8 @@ namespace AasxPackageLogic
                     relatedReferable: submodel);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-                this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.DataSpecifications,
-                    (ds) => { submodel.DataSpecifications = ds; },
+                this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.EmbeddedDataSpecifications,
+                    (ds) => { submodel.EmbeddedDataSpecifications = ds; },
                     relatedReferable: submodel);
 
             }
@@ -1732,10 +1795,10 @@ namespace AasxPackageLogic
                             return la;
 
                         var ds = cd.GetIEC61360();
-                        if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
+                        if (ds != null && (ds.ShortName == null || ds.ShortName.Count < 1))
                         {
-                            ds.shortName = new LangStringSetIEC61360();
-                            ds.shortName.Add(new LangString("EN?", cd.IdShort));
+                            ds.ShortName = new List<LangString>();
+                            ds.ShortName.Add(new LangString("EN?", cd.IdShort));
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
                         }
@@ -1816,29 +1879,32 @@ namespace AasxPackageLogic
                 (ico) => { cd.IsCaseOf = ico; },
                 "isCaseOf", relatedReferable: cd);
 
+
+#if OLD
             // joint header for data spec ref and content
             this.AddGroup(stack, "HasDataSpecification:", this.levelColors.SubSection);
 
             // check, if there is a IEC61360 content amd, subsequently, also a according data specification
-            var esc = cd.EmbeddedDataSpecification?.IEC61360;
+            var esc = cd.EmbeddedDataSpecifications?.FindFirstIEC61360Spec();
             this.AddHintBubble(
                 stack, hintMode,
                 new[] {
                     new HintCheck(
                         () => { return esc != null && (esc.DataSpecification == null
-                            || !esc.DataSpecification.Matches(
-                                DataSpecificationIEC61360.GetIdentifier())); },
+                            || !esc.DataSpecification.MatchesExactlyOneKey(
+                                ExtendListOfEmbeddedDataSpecification.GetKeyForIec61360())); },
                         "IEC61360 content present, but data specification missing. Please add according reference.",
                         breakIfTrue: true),
                 });
 
             //TODO:jtikekar cd.dataspecifications vs embeddedDS
             // use the normal module to edit ALL data specifications
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecification,
-                (ds) => { cd.EmbeddedDataSpecification = ds; },
+            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, cd.EmbeddedDataSpecifications,
+                (ds) => { cd.EmbeddedDataSpecifications = ds; },
                 addPresetNames: new[] { "IEC61360" },
                 addPresetKeyLists: new[] {
-                    new List<Key>(){ new Key(KeyTypes.GlobalReference, DataSpecificationIEC61360.GetIdentifier()) } },
+                    new List<Key>(){ 
+                        ExtendListOfEmbeddedDataSpecification.GetKeyForIec61360() } },
                 dataSpecRefsAreUsual: true, relatedReferable: cd);
 
             // the IEC61360 Content
@@ -1849,25 +1915,38 @@ namespace AasxPackageLogic
                 stack, hintMode,
                 new[] {
                     new HintCheck(
-                        () => { return cd.EmbeddedDataSpecification.IEC61360Content == null; },
+                        () => { return cd.EmbeddedDataSpecifications?.GetIEC61360Content() == null; },
                         "Providing an embeddedDataSpecification, e.g. IEC61360 data specification content, " +
                             "is mandatory. This holds the descriptive information " +
                             "of an concept and allows for an off-line understanding of the meaning " +
                             "of an concept/ ISubmodelElement. Please create this data element.",
                         breakIfTrue: true),
                 });
+            var Iec61360spec = cd.EmbeddedDataSpecifications.FindFirstIEC61360Spec();
             if (this.SafeguardAccess(
-                    stack, repo, cd.EmbeddedDataSpecification?.IEC61360Content, "embeddedDataSpecification:",
+                    stack, repo, Iec61360spec.DataSpecificationContent, "embeddedDataSpecification:",
                     "Create IEC61360 data specification content",
-                    v =>
-                    {
-                        cd.EmbeddedDataSpecification.IEC61360Content = new DataSpecificationIEC61360();
-                        this.AddDiaryEntry(cd, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionRedrawEntity();
-                    }))
+                    c))
             {
-                this.DisplayOrEditEntityDataSpecificationIEC61360(stack, cd.EmbeddedDataSpecification.IEC61360Content, relatedReferable: cd);
+                this.DisplayOrEditEntityDataSpecificationIEC61360(
+                    stack, Iec61360spec.DataSpecificationContent as DataSpecificationIec61360, 
+                    relatedReferable: cd);
             }
+
+#else
+
+            // new apprpoach: model distinct sections with [Reference + Content]
+            DisplayOrEditEntityHasEmbeddedSpecification(
+                stack, cd.EmbeddedDataSpecifications, 
+                (v) => { cd.EmbeddedDataSpecifications = v; },
+                addPresetNames: new[] { "IEC61360", "Physical Unit" },
+                addPresetKeyLists: new[] {
+                    new List<Key>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() },
+                    new List<Key>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() }
+                },
+                relatedReferable: cd);
+
+#endif
         }
 
         //
@@ -2151,7 +2230,7 @@ namespace AasxPackageLogic
                             {
                                 // which?
                                 var refactorSme = this.SmartRefactorSme(sme);
-                                var parMgr = (parentContainer as ISubmodelElement);
+                                var parMgr = (parentContainer as IReferable);
 
                                 // ok?
                                 if (refactorSme != null && parMgr != null)
@@ -2189,9 +2268,11 @@ namespace AasxPackageLogic
                 // guess kind or instances
                 ModelingKind? parentKind = ModelingKind.Template;
                 if (parentContainer != null && parentContainer is Submodel)
-                    parentKind = (ModelingKind)(parentContainer as Submodel).Kind;
+                    parentKind = (parentContainer as Submodel).Kind;
                 if (parentContainer != null && parentContainer is SubmodelElementCollection)
-                    parentKind = (ModelingKind)(parentContainer as SubmodelElementCollection).Kind;
+                    parentKind = (parentContainer as SubmodelElementCollection).Kind;
+                if (parentContainer != null && parentContainer is SubmodelElementList)
+                    parentKind = (parentContainer as SubmodelElementList).Kind;
 
                 // relating to CDs
                 this.AddHintBubble(
@@ -2345,21 +2426,24 @@ namespace AasxPackageLogic
 
             }
 
-            if (editMode && (sme is SubmodelElementCollection || sme is Entity))
+            if (editMode && (sme is SubmodelElementCollection 
+                || sme is SubmodelElementList || sme is Entity))
             {
                 this.AddGroup(stack, "Editing of sub-ordinate entities", this.levelColors.MainSection);
 
-                List<ISubmodelElement> listOfSMEW = null;
+                List<ISubmodelElement> listOfSME = null;
                 if (sme is SubmodelElementCollection)
-                    listOfSMEW = (sme as SubmodelElementCollection).Value;
+                    listOfSME = (sme as SubmodelElementCollection).Value;
+                if (sme is SubmodelElementList)
+                    listOfSME = (sme as SubmodelElementList).Value;
                 if (sme is Entity)
-                    listOfSMEW = (sme as Entity).Statements;
+                    listOfSME = (sme as Entity).Statements;
 
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return listOfSMEW == null || listOfSMEW.Count < 1; },
+                            () => { return listOfSME == null || listOfSME.Count < 1; },
                             "This element currently has no SubmodelElements, yet. " +
                                 "These are the actual carriers of information. " +
                                 "You could create them by clicking the 'Add ..' buttons below. " +
@@ -2394,16 +2478,7 @@ namespace AasxPackageLogic
                                     AdminShellUtil.CreateSubmodelElementFromEnum(en);
 
                                 // add
-                                if (sme is SubmodelElementCollection smesmc)
-                                    smesmc.Add(sme2);
-                                if (sme is Entity smeent)
-                                {
-                                    if(smeent.Statements == null)
-                                    {
-                                        smeent.Statements = new List<ISubmodelElement>();
-                                    }
-                                    smeent.Statements.Add(sme);
-                                }
+                                sme.Add(sme2);
 
                                 // notify event
                                 this.AddDiaryEntry(sme2, new DiaryEntryStructChange(StructuralChangeReason.Create));
@@ -2766,10 +2841,10 @@ namespace AasxPackageLogic
                                     if (cd.IdShort == null || cd.IdShort.Trim() == "")
                                         cd.IdShort = sme.IdShort;
 
-                                    var ds = cd.EmbeddedDataSpecification.IEC61360Content;
-                                    if (ds != null && (ds.shortName == null || ds.shortName.Count < 1))
+                                    var ds = cd.EmbeddedDataSpecifications.GetIEC61360Content();
+                                    if (ds != null && (ds.ShortName == null || ds.ShortName.Count < 1))
                                     {
-                                        ds.shortName = new LangStringSetIEC61360
+                                        ds.ShortName = new List<LangString>
                                         {
                                             new LangString("EN?", sme.IdShort)
                                         };
@@ -2782,22 +2857,8 @@ namespace AasxPackageLogic
                         }),
                     addHintsCategory: new[] {
                         new HintCheck(
-                            () =>
-                            {
-                                return sme is Property &&
-                                    (sme.Category == null || sme.Category.Trim().Length < 1);
-                            },
-                            "The use of category is strongly recommended for SubmodelElements which are properties! " +
-                                "Please check which pre-defined category fits most " +
-                                "to the application of the ISubmodelElement. \r\n" +
-                                "CONSTANT => A constant property is a property with a value that " +
-                                "does not change over time. " +
-                                "In ECLASS this kind of category has the category 'Coded Value'. \r\n" +
-                                "PARAMETER => A parameter property is a property that is once set and " +
-                                "then typically does not change over time. " +
-                                "This is for example the case for configuration parameters. \r\n" +
-                                "VARIABLE => A variable property is a property that is calculated during runtime, " +
-                                "i.e. its value is a runtime value. ",
+                            () => sme.Category?.HasContent() != true,
+                            "The use of category is deprecated. ",
                            severityLevel: HintCheck.Severity.Notice)
                     });
 
@@ -2826,8 +2887,8 @@ namespace AasxPackageLogic
                     (q) => { sme.Qualifiers = q; }, relatedReferable: sme);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-                this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.DataSpecifications,
-                (ds) => { sme.DataSpecifications = ds; }, relatedReferable: sme);
+                this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.EmbeddedDataSpecifications,
+                (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme);
 
                 //
                 // ConceptDescription <- via semantic ID ?!
@@ -2974,11 +3035,11 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return mlp.Value == null || mlp.Value.LangStrings.Count < 1; },
+                            () => { return mlp.Value == null || mlp.Value.Count < 1; },
                             "Please add a string value, defined in multiple languages.",
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return mlp.Value.LangStrings.Count <2; },
+                            () => { return mlp.Value.Count <2; },
                             "Please add multiple languanges.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -2986,11 +3047,11 @@ namespace AasxPackageLogic
                         stack, repo, mlp.Value, "value:", "Create data element!",
                         v =>
                         {
-                            mlp.Value = new LangStringSet(new List<LangString>());
+                            mlp.Value = new List<LangString>();
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
-                    this.AddKeyListLangStr(stack, "value", mlp.Value.LangStrings, repo);
+                    this.AddKeyListLangStr(stack, "value", mlp.Value, repo);
 
                 if (this.SafeguardAccess(
                         stack, repo, mlp.ValueId, "valueId:", "Create data element!",
@@ -3285,6 +3346,14 @@ namespace AasxPackageLogic
                 else
                     this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
             }
+            else if (sme is SubmodelElementList sml)
+            {
+                this.AddGroup(stack, "SubmodelElementList", this.levelColors.MainSection);
+                if (sml.Value != null)
+                    this.AddKeyValue(stack, "# of values", "" + sml.Value.Count);
+                else
+                    this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+            }
             else if (sme is Operation)
             {
                 var p = sme as Operation;
@@ -3462,7 +3531,7 @@ namespace AasxPackageLogic
                     });
             }
             else
-                this.AddGroup(stack, "Submodel Element is unknown!", this.levelColors.MainSection);
+                this.AddGroup(stack, "SubmodelElement is unknown!", this.levelColors.MainSection);
         }
 
         //

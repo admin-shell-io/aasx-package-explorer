@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,35 @@ namespace Extensions
             return file;
         }
 
+        public static File UpdateFrom(this File elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is Property srcProp)
+            {
+                elem.Value = srcProp.Value;
+            }
+
+            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            {
+                elem.Value = srcRng.Min;
+            }
+
+            if (source is MultiLanguageProperty srcMlp)
+            {
+                elem.Value = "" + srcMlp.Value?.GetDefaultString();
+            }
+
+            if (source is File srcFile)
+            {
+                elem.Value = "" + srcFile.Value;
+            }
+
+            return elem;
+        }
 
     }
 }

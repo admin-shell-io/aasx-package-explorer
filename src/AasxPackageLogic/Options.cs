@@ -259,6 +259,10 @@ namespace AasxPackageLogic
             Cmd = "-id-cd", Arg = "<string>")]
         public string TemplateIdConceptDescription = "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD";
 
+        [OptionDescription(Description = "Link ConceptDescriptions by ModelReferences",
+            Cmd = "-model-ref-cd")]
+        public bool ModelRefCd = false;
+
         [OptionDescription(Description = "Path to ECLASS files",
             Cmd = "-eclass", Arg = "<path>")]
         public string EclassDir = null;
@@ -308,8 +312,8 @@ namespace AasxPackageLogic
             Cmd = "-intbrowse")]
         public bool InternalBrowser = false;
 
-        [OptionDescription(Description = "If true, apply second search operation to join multi-language " +
-            "information.",
+        [OptionDescription(Description = "If true, apply second search operation in ECLASS " +
+            "to join multi-language information.",
             Cmd = "-twopass")]
         public bool EclassTwoPass = false;
 

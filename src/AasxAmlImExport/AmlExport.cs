@@ -136,13 +136,13 @@ namespace AasxAmlImExport
                 AppendAttributeNameAndRole(aseq, "idShort", AmlConst.Attributes.Referable_IdShort, rf.IdShort);
             if (rf.Category != null)
                 AppendAttributeNameAndRole(aseq, "category", AmlConst.Attributes.Referable_Category, rf.Category);
-            SetLangStr(aseq, rf.Description?.LangStrings, "description", AmlConst.Attributes.Referable_Description);
+            SetLangStr(aseq, rf.Description, "description", AmlConst.Attributes.Referable_Description);
         }
 
         private static void SetAssetKind(
             AttributeSequence aseq, AssetKind kind, string attributeRole = null)
         {
-            if (aseq == null || kind == null || kind == null)
+            if (aseq == null)
                 return;
             if (attributeRole == null)
                 attributeRole = AmlConst.Attributes.HasKind_Kind;
@@ -211,14 +211,14 @@ namespace AasxAmlImExport
             AppendAttributeNameAndRole(aseq, "semanticId", AmlConst.Attributes.SemanticId, ToAmlSemanticId(semid));
         }
 
-        private static void SetHasDataSpecification(AttributeSequence aseq, List<Reference> ds)
+        private static void SetHasDataSpecification(AttributeSequence aseq, List<EmbeddedDataSpecification> ds)
         {
-            if (aseq == null || ds == null /*|| ds.Count < 1*/) //TODO: jtikekar DataSpec is list of EmbeddedDataSpecification in older version
+            if (aseq == null || ds == null || ds.Count < 1) 
                 return;
             foreach (var r in ds)
                 AppendAttributeNameAndRole(
                     aseq, "dataSpecification", AmlConst.Attributes.DataSpecificationRef,
-                    ToAmlReference(r));
+                    ToAmlReference(r.DataSpecification));
         }
 
         private static void SetQualifiers(
@@ -361,7 +361,7 @@ namespace AasxAmlImExport
                     SetReferable(a.Attribute, sme);
                     SetModelingKind(a.Attribute, (ModelingKind)sme.Kind);
                     SetSemanticId(a.Attribute, sme.SemanticId);
-                    SetHasDataSpecification(a.Attribute, sme.DataSpecifications);
+                    SetHasDataSpecification(a.Attribute, sme.EmbeddedDataSpecifications);
 
                     // Property specific
                     a.AttributeDataType = "xs:" + Stringification.ToString(smep.ValueType).Trim();
@@ -387,7 +387,7 @@ namespace AasxAmlImExport
                     SetReferable(ie.Attribute, sme);
                     SetModelingKind(ie.Attribute, (ModelingKind)sme.Kind);
                     SetSemanticId(ie.Attribute, sme.SemanticId);
-                    SetHasDataSpecification(ie.Attribute, sme.DataSpecifications);
+                    SetHasDataSpecification(ie.Attribute, sme.EmbeddedDataSpecifications);
 
                     // depends on type
                     if (smep != null)
@@ -408,9 +408,9 @@ namespace AasxAmlImExport
                     {
                         case MultiLanguageProperty mlp:
                             // value
-                            if (mlp.Value?.LangStrings != null)
+                            if (mlp.Value != null)
                             {
-                                SetLangStr(ie.Attribute, mlp.Value.LangStrings, "value",
+                                SetLangStr(ie.Attribute, mlp.Value, "value",
                                     AmlConst.Attributes.MultiLanguageProperty_Value);
                             }
 
@@ -613,7 +613,7 @@ namespace AasxAmlImExport
             SetReferable(parent.Attribute, sm);
             SetModelingKind(parent.Attribute, (ModelingKind)sm.Kind);
             SetSemanticId(parent.Attribute, sm.SemanticId);
-            SetHasDataSpecification(parent.Attribute, sm.DataSpecifications);
+            SetHasDataSpecification(parent.Attribute, sm.EmbeddedDataSpecifications);
             SetQualifiers(null, parent.Attribute, sm.Qualifiers, parentAsInternalElements: false);
 
             // properties
@@ -751,7 +751,7 @@ namespace AasxAmlImExport
             SetIdentification(aasIE.Attribute, aas.Id);
             SetAdministration(aasIE.Attribute, aas.Administration);
             SetReferable(aasIE.Attribute, aas);
-            SetHasDataSpecification(aasIE.Attribute, aas.DataSpecifications);
+            SetHasDataSpecification(aasIE.Attribute, aas.EmbeddedDataSpecifications);
 
             if (aas.DerivedFrom != null)
                 AppendAttributeNameAndRole(
@@ -800,7 +800,7 @@ namespace AasxAmlImExport
                     SetIdentification(aasSUC.Attribute, aas.Id);
                     SetAdministration(aasSUC.Attribute, aas.Administration);
                     SetReferable(aasSUC.Attribute, aas);
-                    SetHasDataSpecification(aasSUC.Attribute, aas.DataSpecifications);
+                    SetHasDataSpecification(aasSUC.Attribute, aas.EmbeddedDataSpecifications);
 
                     // use normal function to export Submodel data into the SUC element
                     ExportSubmodelIntoElement(matcher, internalLinksToCreate, smSUC, env, sm, tryUseCompactProperties);
@@ -883,23 +883,24 @@ namespace AasxAmlImExport
                 AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
 
             // which data spec as reference
-            if (cd.EmbeddedDataSpecification != null)
-                foreach (var eds in cd.EmbeddedDataSpecification)
+            if (cd.EmbeddedDataSpecifications != null)
+                foreach (var eds in cd.EmbeddedDataSpecifications)
                     if (eds.DataSpecification != null)
                         AppendAttributeNameAndRole(
                             aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
                             ToAmlReference(eds.DataSpecification));
 
             //jtikekar:Added as üet DotAAS-1
-            if (cd.DataSpecifications != null)
-                foreach (var ds in cd.DataSpecifications)
+            // TODO (MIHO, 2022-12-21): do not understand this duplication?!
+            if (cd.EmbeddedDataSpecifications != null)
+                foreach (var ds in cd.EmbeddedDataSpecifications)
                     if (ds != null)
                         AppendAttributeNameAndRole(
                             aseqOuter, "dataSpecification", AmlConst.Attributes.CD_DataSpecificationRef,
-                            ToAmlReference(ds));
+                            ToAmlReference(ds.DataSpecification));
 
             // which data spec to take as source?
-            var source61360 = cd.EmbeddedDataSpecification?.IEC61360Content;
+            var source61360 = cd.EmbeddedDataSpecifications?.GetIEC61360Content();
             // TODO (Michael Hoffmeister, 2020-08-01): If further data specifications exist (in future), add here
 
             // decide which approach to take (1 or 2 IE)
@@ -909,7 +910,7 @@ namespace AasxAmlImExport
                 // we will pack the attribute under an embedded data spec attribute branch
                 // now, to the embedded data spec
                 //if (cd.embeddedDataSpecification != null)
-                if (cd.DataSpecifications != null)
+                if (cd.EmbeddedDataSpecifications != null)
                 {
                     var eds = AppendAttributeNameAndRole(
                         aseqOuter, "dataSpecification", AmlConst.Attributes.CD_EmbeddedDataSpecification);
@@ -937,39 +938,40 @@ namespace AasxAmlImExport
             if (source61360 != null && dest61360 != null)
             {
                 // better name?
-                if (source61360.shortName != null && source61360.shortName.Count > 0)
-                    name = source61360.shortName.GetDefaultString();
+                if (source61360.ShortName != null && source61360.ShortName.Count > 0)
+                    name = source61360.ShortName.GetDefaultString();
 
                 // specific data
                 SetLangStr(
-                    dest61360, source61360.preferredName, "preferredName",
+                    dest61360, source61360.PreferredName, "preferredName",
                     AmlConst.Attributes.CD_DSC61360_PreferredName);
                 SetLangStr(
-                    dest61360, source61360.shortName, "shortName",
+                    dest61360, source61360.ShortName, "shortName",
                     AmlConst.Attributes.CD_DSC61360_ShortName);
-                if (source61360.unit != null)
+                if (source61360.Unit != null)
                     AppendAttributeNameAndRole(
-                        dest61360, "unit", AmlConst.Attributes.CD_DSC61360_Unit, source61360.unit);
-                if (source61360.unitId != null)
+                        dest61360, "unit", AmlConst.Attributes.CD_DSC61360_Unit, source61360.Unit);
+                if (source61360.UnitId != null)
                     AppendAttributeNameAndRole(
                         dest61360, "unitId", AmlConst.Attributes.CD_DSC61360_UnitId,
-                        ToAmlReference(new Reference(ReferenceTypes.GlobalReference, source61360.unitId.Keys)));
-                if (source61360.valueFormat != null)
+                        ToAmlReference(new Reference(ReferenceTypes.GlobalReference, source61360.UnitId.Keys)));
+                if (source61360.ValueFormat != null)
                     AppendAttributeNameAndRole(
                         dest61360, "valueFormat", AmlConst.Attributes.CD_DSC61360_ValueFormat,
-                        source61360.valueFormat);
-                if (source61360.sourceOfDefinition != null)
+                        source61360.ValueFormat);
+                if (source61360.SourceOfDefinition != null)
                     AppendAttributeNameAndRole(
                         dest61360, "sourceOfDefinition", AmlConst.Attributes.CD_DSC61360_SourceOfDefinition,
-                        source61360.sourceOfDefinition);
-                if (source61360.symbol != null)
+                        source61360.SourceOfDefinition);
+                if (source61360.Symbol != null)
                     AppendAttributeNameAndRole(
-                        dest61360, "symbol", AmlConst.Attributes.CD_DSC61360_Symbol, source61360.symbol);
-                if (source61360.dataType != null)
+                        dest61360, "symbol", AmlConst.Attributes.CD_DSC61360_Symbol, source61360.Symbol);
+                if (source61360.DataType != null)
                     AppendAttributeNameAndRole(
-                        dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, source61360.dataType);
+                        dest61360, "dataType", AmlConst.Attributes.CD_DSC61360_DataType, 
+                        Stringification.ToString(source61360.DataType));
                 SetLangStr(
-                    dest61360, source61360.definition, "definition",
+                    dest61360, source61360.Definition, "definition",
                     AmlConst.Attributes.CD_DSC61360_Definition);
             }
         }

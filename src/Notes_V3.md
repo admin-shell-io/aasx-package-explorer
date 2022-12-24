@@ -23,10 +23,22 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 ## Todo
 
 * CDs below SME?
+* Refactor MLP does not work
+* CD below MLP does not work
+
+## Feature Requests to AAS core
+
+* GetSelfDescription() per Element
+* Attribute per IClass : Name, ShortName
+* Attribute per Member : meta model name
+* Constructors for SME taking over attributes from other SMEs (different subtypes!)
+* Factory for SubmodelElements
+* Constructors without mandatory init parameters ("Bevormundung war letztes Jahrhundert")
 
 ## Decisions
 
-* After phone call with Birgit, when importing a V20, set all Keys with ConceptDescription to GlobalReference assuming it is always a external concept
+* After phone call with Birgit, when importing a V20, set all Keys with ConceptDescription 
+  to **GlobalReference** assuming it is always a external concept
 * for "PackCntChangeEventData.ThisElem" and such: use AAS env as containing object for CDs, as
   List<CD> does not fulfill IClass => this will get tricky in the future for event handling 
   - Rethink?
@@ -45,13 +57,17 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * worked over isCaseOf dialogue
 * checked AssetKind
   - see question: AssetKind.NotApplicable is curently not in the AAS core
-  - rework was required; as pointer/class was changed to simple enum (which is fantastic)
+  - rework was required; as pointer/class was changed to simple 
+  enum (which is fantastic)
 * worked over ModelKind
-* "Print asset code sheet" does not work! => solved, new version of ZXing required renderer!
+* "Print asset code sheet" does not work! => solved, new version 
+  of ZXing required renderer!
 * DispEdit shows key: "Editing of entities" / "ISubmodelElement:"
   => changed to "SubmodelElement:" (use wording of DotAAS)
-* Delete of CD does not refresh tree => solved, see decision for PackCntChangeEventLocation.ListOfConceptDescriptions
-* Multi-select of CD leads to exception => solved, see decision for PackCntChangeEventLocation.ListOfConceptDescriptions
+* Delete of CD does not refresh tree => solved, see decision 
+  for PackCntChangeEventLocation.ListOfConceptDescriptions
+* Multi-select of CD leads to exception => solved, see decision 
+  for PackCntChangeEventLocation.ListOfConceptDescriptions
 * Create AAS from scratch fails! => solved by checking Count of entities
 * AssetInfo / defaultThumbnail/ Create empty File element does not work!
   => solved, have DisplayOrEditEntityFileResource()

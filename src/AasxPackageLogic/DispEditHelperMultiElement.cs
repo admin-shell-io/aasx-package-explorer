@@ -302,13 +302,13 @@ namespace AasxPackageLogic
                 el is IReferable rf2)
             {
                 //var input = (rf2.Description?.LangStrings == null) ? "" : rf2.Description.LangStrings[dia.AttributeLang];
-                var rf2LangString = rf2.Description.LangStrings.Where(s => s.Language.Equals(dia.AttributeLang)).First();
-                var input = (rf2.Description?.LangStrings == null) ? "" : rf2LangString.Text;
+                var rf2LangString = rf2.Description.Where(s => s.Language.Equals(dia.AttributeLang)).First();
+                var input = (rf2.Description == null) ? "" : rf2LangString.Text;
                 var nd = PerformWildcardReplace(input, dia.Pattern);
                 if (nd != null)
                 {
-                    if (rf2.Description?.LangStrings == null)
-                        rf2.Description = new LangStringSet(new List<LangString>());
+                    if (rf2.Description == null)
+                        rf2.Description = new List<LangString>();
                     rf2LangString.Text = nd;
                 }
             }

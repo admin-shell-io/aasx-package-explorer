@@ -1,5 +1,4 @@
 ﻿using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AasxCompatibilityModels;
 using AdminShellNS;
 using System;
@@ -19,7 +18,7 @@ namespace Extensions
         {
             return "" +
                 conceptDescription.GetIEC61360()?
-                    .preferredName?.GetDefaultString(defaultLang);
+                    .PreferredName?.GetDefaultString(defaultLang);
         }
 
         public static void SetIEC61360Spec(this ConceptDescription conceptDescription,
@@ -34,27 +33,38 @@ namespace Extensions
                 string[] definition = null
             )
         {
-            var eds = new EmbeddedDataSpecification(new Reference(ReferenceTypes.GlobalReference, new List<Key>()), new AasCore.Aas3_0_RC02.HasDataSpecification.DataSpecificationContent());
-            eds.DataSpecification.Keys.Add(
-                new Key(KeyTypes.GlobalReference, DataSpecificationIEC61360.GetIdentifier()));
-            eds.DataSpecificationContent.DataSpecificationIEC61360 =
-                DataSpecificationIEC61360.CreateNew(
-                    preferredNames, shortName, unit, unitId, valueFormat, sourceOfDefinition, symbol,
-                    dataType, definition);
+            var eds = new EmbeddedDataSpecification(
+                new Reference(ReferenceTypes.GlobalReference, 
+                new List<Key> { ExtendIDataSpecificationContent.GetKeyForIec61360() }), 
+                new DataSpecificationIec61360(
+                        ExtendLangStringSet.CreateManyFromStringArray(preferredNames),
+                        new List<LangString> { new LangString("EN?", shortName)},
+                        unit,
+                        unitId,
+                        sourceOfDefinition,
+                        symbol,
+                        Stringification.DataTypeIec61360FromString(dataType),
+                        ExtendLangStringSet.CreateManyFromStringArray(definition)
+                    ));
 
-            conceptDescription.EmbeddedDataSpecification = new HasDataSpecification();
-            conceptDescription.EmbeddedDataSpecification.Add(eds);
-            conceptDescription.IsCaseOf ??= new List<Reference>();
-            conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
+            conceptDescription.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification> { eds };
+
+            // TODO (MIHO, 2022-12-22): Check, but I think it makes no sense
+            // conceptDescription.IsCaseOf ??= new List<Reference>();
+            // conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
         }
 
-        public static DataSpecificationIEC61360 CreateDataSpecWithContentIec61360(this ConceptDescription conceptDescription)
+        /*
+
+        public static DataSpecificationIec61360 CreateDataSpecWithContentIec61360(this ConceptDescription conceptDescription)
         {
             var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
             conceptDescription.EmbeddedDataSpecification ??= new HasDataSpecification();
             conceptDescription.EmbeddedDataSpecification.Add(eds);
             return eds.DataSpecificationContent?.DataSpecificationIEC61360;
         }
+
+        */
 
         public static Tuple<string, string> ToCaptionInfo(this ConceptDescription conceptDescription)
         {
@@ -73,12 +83,12 @@ namespace Extensions
         {
             return "" +
                     conceptDescription.GetIEC61360()?
-                        .shortName?.GetDefaultString(defaultLang);
+                        .ShortName?.GetDefaultString(defaultLang);
         }
 
-        public static DataSpecificationIEC61360 GetIEC61360(this ConceptDescription conceptDescription)
+        public static DataSpecificationIec61360 GetIEC61360(this ConceptDescription conceptDescription)
         {
-            return conceptDescription.EmbeddedDataSpecification?.IEC61360Content;
+            return conceptDescription.EmbeddedDataSpecifications?.GetIEC61360Content();
         }
 
         public static IEnumerable<Reference> FindAllReferences(this ConceptDescription conceptDescription)
@@ -88,7 +98,7 @@ namespace Extensions
 
         #endregion
         #region ListOfConceptDescription
-        public static ConceptDescription AddConceptDescription(this List<ConceptDescription> conceptDescriptions, ConceptDescription newConceptDescription)
+        public static ConceptDescription AddConceptDescriptionOrReturnExisting(this List<ConceptDescription> conceptDescriptions, ConceptDescription newConceptDescription)
         {
             if(newConceptDescription == null)
             {
@@ -248,12 +258,27 @@ namespace Extensions
             //jtikekar:as per old implementation
             if(sourceConceptDescription.embeddedDataSpecification != null)
             {
-                var newEmbeddedDataSpecification = new HasDataSpecification();
-                newEmbeddedDataSpecification.ConvertFromV20(sourceConceptDescription.embeddedDataSpecification);
-                conceptDescription.EmbeddedDataSpecification = newEmbeddedDataSpecification;
+                foreach (var sourceEsd in sourceConceptDescription.embeddedDataSpecification)
+                {
+                    var esd = new EmbeddedDataSpecification(null, null);
+                    esd.ConvertFromV20(sourceEsd);
+                    conceptDescription.AddEmbeddedDataSpecification(esd);
+                }
             }
 
             return conceptDescription;
+        }
+
+        public static EmbeddedDataSpecification AddEmbeddedDataSpecification(this ConceptDescription cd, EmbeddedDataSpecification eds)
+        {
+            if (cd == null)
+                return null;
+            if (cd.EmbeddedDataSpecifications == null)
+                cd.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+            if (eds == null)
+                return null;
+            cd.EmbeddedDataSpecifications.Add(eds);
+            return eds;
         }
 
         public static Reference GetCdReference(this ConceptDescription conceptDescription)

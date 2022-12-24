@@ -856,7 +856,7 @@ namespace AasxIntegrationBase.AasForms
                     rows: 2
                         + (editIdShort ? 1 : 0)
                         + (editDesc ? 1 : 0)
-                        + (editDesc && rf.Description?.LangStrings != null ? rf.Description.LangStrings.Count : 0),
+                        + (editDesc && rf.Description != null ? rf.Description.Count : 0),
                     cols: 6,
                     colWidths: new[] { "2:", "60:", "60:", "*", "22:", "2:" }));
 
@@ -898,7 +898,7 @@ namespace AasxIntegrationBase.AasForms
                     content: "Description:");
 
                 // info text only, if now langauges
-                if (rf.Description?.LangStrings == null || rf.Description.LangStrings.Count < 1)
+                if (rf.Description == null || rf.Description.Count < 1)
                     uitk.AddSmallBasicLabelTo(g, row, 2, colSpan: 2,
                         foreground: AnyUiBrushes.DarkGray, fontSize: 0.8f,
                         verticalAlignment: AnyUiVerticalAlignment.Center,
@@ -924,8 +924,8 @@ namespace AasxIntegrationBase.AasForms
                 row++;
 
                 // list single languages
-                if (rf.Description?.LangStrings != null)
-                    foreach (var ls in rf.Description.LangStrings)
+                if (rf.Description != null)
+                    foreach (var ls in rf.Description)
                     {
                         // lang
                         AnyUiUIElement.RegisterControl(
@@ -962,8 +962,8 @@ namespace AasxIntegrationBase.AasForms
                                     content: "\u2796"),
                                 (o) =>
                                 {
-                                    if (rf.Description.LangStrings.Contains(storedLs))
-                                        rf.Description.LangStrings.Remove(storedLs);
+                                    if (rf.Description.Contains(storedLs))
+                                        rf.Description.Remove(storedLs);
                                     touch?.Invoke();
                                     return FormInstanceBase.NewLambdaUpdateUi(current);
                                 });
@@ -1025,9 +1025,9 @@ namespace AasxIntegrationBase.AasForms
                 sm.IdShort = source.IdShort;
             sm.Category = desc.PresetCategory;
             if (desc.PresetDescription != null)
-                sm.Description = new LangStringSet(desc.PresetDescription);
+                sm.Description = desc.PresetDescription.Copy();
             if (source?.Description != null)
-                sm.Description = new LangStringSet(source.Description.LangStrings);
+                sm.Description = source.Description.Copy();
 
             if (desc.KeySemanticId != null)
                 sm.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId });
@@ -1067,7 +1067,7 @@ namespace AasxIntegrationBase.AasForms
                 if (this.sm.IdShort != null)
                     this.sourceSM.IdShort = "" + this.sm.IdShort;
                 if (this.sm.Description != null)
-                    this.sourceSM.Description = new LangStringSet(this.sm.Description.LangStrings);
+                    this.sourceSM.Description = this.sm.Description.Copy();
             }
 
             // SM as a set of elements
@@ -1150,9 +1150,9 @@ namespace AasxIntegrationBase.AasForms
                 sme.IdShort = source.IdShort;
             sme.Category = desc.PresetCategory;
             if (desc.PresetDescription != null)
-                sme.Description = new LangStringSet(desc.PresetDescription);
+                sme.Description = desc.PresetDescription.Copy();
             if (source?.Description != null)
-                sme.Description = new LangStringSet(source.Description.LangStrings);
+                sme.Description = source.Description.Copy();
 
             if (desc.KeySemanticId != null)
                 sme.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId});
@@ -1172,7 +1172,7 @@ namespace AasxIntegrationBase.AasForms
                 if (this.sme.IdShort != null)
                     this.sourceSme.IdShort = "" + this.sme.IdShort;
                 if (this.sme.Description != null)
-                    this.sourceSme.Description = new LangStringSet(this.sme.Description.LangStrings);
+                    this.sourceSme.Description = this.sme.Description.Copy();
             }
             return false;
         }
@@ -1596,7 +1596,7 @@ namespace AasxIntegrationBase.AasForms
             if (mlpSource != null)
             {
                 // take over
-                mlp.Value = new LangStringSet(mlpSource.Value.LangStrings);
+                mlp.Value = new List<LangString>(mlpSource.Value);
             }
 
             // create user control
@@ -1624,7 +1624,7 @@ namespace AasxIntegrationBase.AasForms
             var mlpSource = this.sourceSme as MultiLanguageProperty;
             if (mlp != null && Touched && mlpSource != null && editSource)
             {
-                mlpSource.Value = new LangStringSet(mlp.Value.LangStrings);
+                mlpSource.Value = new List<LangString>(mlp.Value);
                 return false;
             }
             return true;
@@ -1649,7 +1649,7 @@ namespace AasxIntegrationBase.AasForms
             //   LANG2 VAL2        [-]
 
             var g = view.Add(
-                uitk.AddSmallGrid(rows: 1 + mlp.Value.LangStrings.Count, cols: 5,
+                uitk.AddSmallGrid(rows: 1 + mlp.Value.Count, cols: 5,
                     colWidths: new[] { "2:", "60:", "*", "23:", "2:" }));
 
             // Label in 1st row
@@ -1666,15 +1666,15 @@ namespace AasxIntegrationBase.AasForms
                         content: "\u2795"),
                         (o) =>
                         {
-                            if (mlp.Value?.LangStrings == null)
-                                mlp.Value = new LangStringSet(new List<LangString>());
-                            mlp.Value.LangStrings.Add(new LangString("",""));
+                            if (mlp.Value == null)
+                                mlp.Value = new List<LangString>();
+                            mlp.Value.Add(new LangString("",""));
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
 
             // no content? .. info on 1st row
-            if (mlp.Value?.LangStrings == null || mlp.Value.LangStrings.Count < 1)
+            if (mlp.Value == null || mlp.Value.Count < 1)
             {
                 uitk.AddSmallBasicLabelTo(g, 0, 2,
                     foreground: AnyUiBrushes.MiddleGray, fontSize: 0.8f,
@@ -1686,7 +1686,7 @@ namespace AasxIntegrationBase.AasForms
             // simply render the langStrs
 
             int row = 0;
-            foreach (var ls in mlp.Value.LangStrings)
+            foreach (var ls in mlp.Value)
             {
                 // row by row
                 row++;
@@ -1726,8 +1726,8 @@ namespace AasxIntegrationBase.AasForms
                             content: "\u2796"),
                         (o) =>
                         {
-                            if (mlp.Value.LangStrings.Contains(storedLs))
-                                mlp.Value.LangStrings.Remove(storedLs);
+                            if (mlp.Value.Contains(storedLs))
+                                mlp.Value.Remove(storedLs);
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });

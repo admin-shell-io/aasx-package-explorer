@@ -134,7 +134,7 @@ namespace AasxIntegrationBase.AasForms
             rf.IdShort = this.PresetIdShort;
             rf.Category = this.PresetCategory;
             if (this.PresetDescription != null)
-                rf.Description = new LangStringSet(this.PresetDescription);
+                rf.Description = new List<LangString>(this.PresetDescription);
         }
 
     }

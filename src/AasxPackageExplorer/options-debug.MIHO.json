@@ -33,7 +33,7 @@
   "QualifiersFile": "qualifier-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
-  "SplashTime": 1000,
+  "SplashTime": 0,
   "InternalBrowser": false,
   "EclassTwoPass": true,
   "BackupDir": ".\\backup",

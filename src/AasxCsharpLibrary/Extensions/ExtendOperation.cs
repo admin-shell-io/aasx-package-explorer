@@ -1,5 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Display;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,5 +91,30 @@ namespace Extensions
             };
         }
         #endregion
+
+        public static Operation UpdateFrom(
+            this Operation elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is SubmodelElementCollection srcColl)
+            {
+                if (srcColl.Value != null)
+                    elem.InputVariables = srcColl.Value.Copy().Select(
+                        (isme) => new OperationVariable(isme)).ToList();
+            }
+
+            if (source is SubmodelElementCollection srcList)
+            {
+                if (srcList.Value != null)
+                    elem.InputVariables = srcList.Value.Copy().Select(
+                        (isme) => new OperationVariable(isme)).ToList();
+            }
+
+            return elem;
+        }
     }
 }

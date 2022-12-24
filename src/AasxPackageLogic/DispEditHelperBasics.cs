@@ -140,6 +140,7 @@ namespace AasxPackageLogic
         public DispLevelColors levelColors = null;
 
         public int standardFirstColWidth = 96;
+        public int smallFirstColWidth = 96 / 2;
 
         public bool editMode = false;
         public bool hintMode = false;
@@ -371,9 +372,14 @@ namespace AasxPackageLogic
         /// <param name="view">Panel to be added to</param>
         /// <param name="caption">Caption</param>
         /// <returns>Sub-panel, to which can be added</returns>
-        public AnyUiStackPanel AddSubStackPanel(AnyUiStackPanel view, string caption)
+        public AnyUiStackPanel AddSubStackPanel(AnyUiStackPanel view, string caption,
+            int minWidthFirstCol = -1)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+
+            if (minWidthFirstCol > -1)
+                g.ColumnDefinitions[0].MinWidth = minWidthFirstCol;
+
             AddSmallLabelTo(g, 0, 0, content: caption);
             var sp = AddSmallStackPanelTo(g, 0, 1, setVertical: true);
 
@@ -385,9 +391,14 @@ namespace AasxPackageLogic
         }
 
         public AnyUiGrid AddSubGrid(AnyUiStackPanel view, string caption,
-            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null)
+            int rows, int cols, string[] colWidths = null, AnyUiThickness margin = null,
+            int minWidthFirstCol = -1)
         {
             var g = AddSmallGrid(1, 2, new[] { "#", "*" });
+
+            if (minWidthFirstCol > -1)
+                g.ColumnDefinitions[0].MinWidth = minWidthFirstCol;
+
             AddSmallLabelTo(g, 0, 0, content: caption);
             var inner = AddSmallGridTo(g, 0, 1, rows, cols, colWidths, margin: margin);
 
@@ -781,10 +792,12 @@ namespace AasxPackageLogic
             panel.Children.Add(g);
         }
 
-        public void AddAction(AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,
-                Func<int, AnyUiLambdaActionBase> action = null,
-                string[] actionTags = null,
-                bool[] addWoEdit = null)
+        public void AddAction(
+            AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,            
+            Func<int, AnyUiLambdaActionBase> action = null,
+            string[] actionTags = null,
+            bool[] addWoEdit = null,
+            string[] actionToolTips = null)
         {
             // access 
             if (action == null || actionStr == null)
@@ -837,6 +850,8 @@ namespace AasxPackageLogic
                 int currentI = i;
                 var b = new AnyUiButton();
                 b.Content = "" + actionStr[i];
+                if (actionToolTips != null && actionToolTips.Length > i)
+                    b.ToolTip = actionToolTips[i];
                 b.Margin = new AnyUiThickness(0, 2, 4, 2);
                 b.Padding = new AnyUiThickness(5, 0, 5, 0);
                 wp.Children.Add(b);
@@ -1847,6 +1862,12 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             var k2 = SmartSelectAasEntityKeys(packages, selector, addExistingEntities);
+
+                            // some special cases
+                            if (!Options.Curr.ModelRefCd && k2 != null && k2.Count == 1
+                                && k2[0].Type == KeyTypes.ConceptDescription)
+                                k2[0].Type = KeyTypes.GlobalReference;
+
                             if (k2 != null)
                                 keys.AddRange(k2);
 
@@ -2357,225 +2378,6 @@ namespace AasxPackageLogic
 
                     return new AnyUiLambdaActionNone();
                 });
-        }
-
-        private bool PasteQualifierTextIntoExisting(
-            string jsonInput,
-            Qualifier qCurr)
-        {
-            var qIn = JsonConvert.DeserializeObject<Qualifier>(jsonInput);
-            if (qCurr != null && qIn != null)
-            {
-                qCurr.Type = qIn.Type;
-                qCurr.Value = qIn.Value;
-                qCurr.ValueType = qIn.ValueType;
-                if (qIn.ValueId != null)
-                    qCurr.ValueId = qIn.ValueId;
-                if (qIn.SemanticId != null)
-                    qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("Qualifier data taken from clipboard.");
-                return true;
-            }
-            return false;
-        }
-
-        public void QualifierHelper(
-            AnyUiStackPanel stack, ModifyRepo repo,
-            List<Qualifier> qualifiers,
-            IReferable relatedReferable = null)
-        {
-            if (editMode)
-            {
-                // let the user control the number of references
-                AddAction(
-                    stack, "Qualifier entities:",
-                    new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
-                    repo,
-                    (buttonNdx) =>
-                    {
-                        if (buttonNdx == 0)
-                        {
-                            qualifiers.Add(new Qualifier("", DataTypeDefXsd.String));
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        }
-
-                        if (buttonNdx == 1)
-                        {
-                            if (Options.Curr.QualifiersFile == null)
-                                return new AnyUiLambdaActionNone();
-                            try
-                            {
-                                var uc = new AnyUiDialogueDataSelectQualifierPreset();
-                                this.context.StartFlyoverModal(uc);
-                                if (uc.Result && uc.ResultQualifier != null)
-                                    qualifiers.Add(uc.ResultQualifier);
-                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(
-                                    ex, $"While show qualifier presets ({Options.Curr.QualifiersFile})");
-                            }
-                        }
-
-                        if (buttonNdx == 2)
-                        {
-                            try
-                            {
-                                var qNew = new Qualifier("", DataTypeDefXsd.String);
-                                var jsonInput = this.context?.ClipboardGet()?.Text;
-                                if (PasteQualifierTextIntoExisting(jsonInput, qNew))
-                                {
-                                    qualifiers.Add(qNew);
-                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                                    Log.Singleton.Info("Qualifier taken from clipboard.");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
-                            }
-                        }
-
-                        if (buttonNdx == 3 && qualifiers.Count > 0)
-                            qualifiers.RemoveAt(qualifiers.Count - 1);
-
-                        return new AnyUiLambdaActionRedrawEntity();
-                    });
-            }
-
-            for (int i = 0; i < qualifiers.Count; i++)
-            {
-                var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
-
-                int storedI = i;
-                AddGroup(
-                    substack, $"Qualifier {1 + i}",
-                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
-                    contextMenuText: "\u22ee",
-                    menuHeaders: new[] {
-                        "\u2702", "Delete",
-                        "\u25b2", "Move Up",
-                        "\u25bc", "Move Down",
-                        "\u29c9", "Copy to clipboard",
-                        "\u2398", "Paste from clipboard",
-                    },
-                    menuItemLambda: (o) =>
-                    {
-                        var action = false;
-
-                        if (o is int ti)
-                            switch (ti)
-                            {
-                                case 0:
-                                    qualifiers.Remove(qual);
-                                    action = true;
-                                    break;
-                                case 1:
-                                    var res = this.MoveElementInListUpwards<Qualifier>(
-                                        qualifiers, qualifiers[storedI]);
-                                    if (res > -1)
-                                    {
-                                        action = true;
-                                    }
-                                    break;
-                                case 2:
-                                    action = true;
-                                    break;
-                                case 3:
-                                    var jsonStr = JsonConvert.SerializeObject(
-                                        qualifiers[storedI], Formatting.Indented);
-                                    this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
-                                    Log.Singleton.Info("Qualified serialized to clipboard.");
-                                    break;
-                                case 4:
-                                    try
-                                    {
-                                        var jsonInput = this.context?.ClipboardGet()?.Text;
-                                        action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
-                                        if (action)
-                                            Log.Singleton.Info("Qualifier taken from clipboard.");
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
-                                    }
-                                    break;
-
-                            }
-
-                        if (action)
-                        {
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }
-                        return new AnyUiLambdaActionNone();
-                    },
-                    margin: new AnyUiThickness(2, 2, 2, 2),
-                    padding: new AnyUiThickness(5, 0, 5, 0));
-
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => {
-                                return (qual.SemanticId == null || qual.SemanticId.IsEmpty()) &&
-                                    (qual.Type == null || qual.Type.Trim() == "");
-                            },
-                            "Either a semanticId or a type string specification shall be given!")
-                    });
-                if (SafeguardAccess(
-                        substack, repo, qual.SemanticId, "semanticId:", "Create data element!",
-                        v =>
-                        {
-                            qual.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    AddKeyListKeys(
-                        substack, "semanticId", qual.SemanticId.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        addExistingEntities: "All",
-                        addEclassIrdi: true,
-                        relatedReferable: relatedReferable);
-                }
-
-                AddKeyValueExRef(
-                    substack, "type", qual, qual.Type, null, repo,
-                    v =>
-                    {
-                        qual.Type = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                AddKeyValueExRef(
-                    substack, "value", qual, qual.Value, null, repo,
-                    v =>
-                    {
-                        qual.Value = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                if (SafeguardAccess(
-                        substack, repo, qual.ValueId, "valueId:", "Create data element!",
-                        v =>
-                        {
-                            qual.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    AddKeyListKeys(substack, "valueId", qual.ValueId.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All",
-                        relatedReferable: relatedReferable);
-                }
-
-            }
-
         }
 
         //

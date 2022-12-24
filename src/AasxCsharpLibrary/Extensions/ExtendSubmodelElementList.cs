@@ -1,5 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Display;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,42 @@ namespace Extensions
             }
 
             return default;
+        }
+
+        public static SubmodelElementList UpdateFrom(
+            this SubmodelElementList elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is SubmodelElementCollection srcColl)
+            {
+                if (srcColl.Value != null)
+                    elem.Value = srcColl.Value.Copy();
+            }
+
+            if (source is Operation srcOp)
+            {
+                Action<List<ISubmodelElement>, List<OperationVariable>> appov = (dst, src) =>
+                {
+                    if (src == null)
+                        return;
+                    foreach (var ov in src)
+                        if (ov.Value != null)
+                            dst.Append(ov.Value.Copy());
+                };
+
+                elem.Value = new();
+                appov(elem.Value, srcOp.InputVariables);
+                appov(elem.Value, srcOp.InoutputVariables);
+                appov(elem.Value, srcOp.OutputVariables);
+                if (elem.Value.Count < 1)
+                    elem.Value = null;
+            }
+
+            return elem;
         }
     }
 }

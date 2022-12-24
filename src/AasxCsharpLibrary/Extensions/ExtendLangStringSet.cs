@@ -1,6 +1,7 @@
 ﻿using AasCore.Aas3_0_RC02;
 using System;
 using System.Collections.Generic;
+using static AasxCompatibilityModels.AdminShellV20;
 
 namespace Extensions
 {
@@ -8,9 +9,9 @@ namespace Extensions
     {
         #region AasxPackageExplorer
 
-        public static bool IsValid(this LangStringSet langStringSet)
+        public static bool IsValid(this List<LangString> langStringSet)
         {
-            if(langStringSet != null && langStringSet.LangStrings != null && langStringSet.LangStrings.Count >=1)
+            if(langStringSet != null && langStringSet.Count >=1)
             {
                 return true;
             }
@@ -19,16 +20,16 @@ namespace Extensions
         }
 
         #endregion
-        public static bool IsEmpty(this LangStringSet langStringSet)
+        public static bool IsEmpty(this List<LangString> langStringSet)
         {
-            if (langStringSet == null || langStringSet.LangStrings == null || langStringSet.LangStrings.Count == 0)
+            if (langStringSet == null || langStringSet.Count == 0)
             {
                 return true;
             }
 
             return false;
         }
-        public static string GetDefaultString(this LangStringSet langStringSet, string defaultLang = null)
+        public static string GetDefaultString(this List<LangString> langStringSet, string defaultLang = null)
         {
             // start
             if (defaultLang == null)
@@ -37,28 +38,42 @@ namespace Extensions
             string res = null;
 
             // search
-            foreach (var langString in langStringSet.LangStrings)
+            foreach (var langString in langStringSet)
                 if (langString.Language.Equals(defaultLang, StringComparison.OrdinalIgnoreCase))
                     res = langString.Text;
 
-            if (res == null && langStringSet.LangStrings.Count > 0)
-                res = langStringSet.LangStrings[0].Text;
+            if (res == null && langStringSet.Count > 0)
+                res = langStringSet[0].Text;
 
             // found?
             return res;
         }
 
-        public static LangStringSet ConvertFromV20(this LangStringSet langStringSet, AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
+        public static List<LangString> CreateManyFromStringArray(string[] s)
+        {
+            if (s == null)
+                return null;
+            var r = new List<LangString>();
+            var i = 0;
+            while ((i + 1) < s.Length)
+            {
+                r.Add(new LangString(s[i], s[i + 1]));
+                i += 2;
+            }
+            return r;
+        }
+
+        public static List<LangString> ConvertFromV20(this List<LangString> langStringSet, AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
         {
 
             //if (!sourceLangStrings.langString.IsNullOrEmpty())
             if (sourceLangStrings.langString!= null && sourceLangStrings.langString.Count != 0)
             {
-                langStringSet.LangStrings = new List<LangString>();
+                langStringSet = new List<LangString>();
                 foreach (var sourceLangString in sourceLangStrings.langString)
                 {
                     var langString = new LangString(sourceLangString.lang, sourceLangString.str);
-                    langStringSet.LangStrings.Add(langString);
+                    langStringSet.Add(langString);
                 }
             }
             return langStringSet;

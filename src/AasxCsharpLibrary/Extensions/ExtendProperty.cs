@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -112,6 +113,47 @@ namespace Extensions
             return property;
         }
 
+        public static Property UpdateFrom(this Property elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is Property srcProp)
+            {
+                elem.ValueType = srcProp.ValueType;
+                elem.Value = srcProp.Value;
+                if (srcProp.ValueId != null)
+                    elem.ValueId = srcProp.ValueId.Copy();
+            }
+
+            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            {
+                elem.ValueType = srcRng.ValueType;
+                elem.Value = srcRng.Min;
+            }
+
+            if (source is MultiLanguageProperty srcMlp)
+            {
+                elem.ValueType = DataTypeDefXsd.String;
+                elem.Value = "" + srcMlp.Value?.GetDefaultString();
+                if (srcMlp.ValueId != null)
+                    elem.ValueId = srcMlp.ValueId.Copy();
+            }
+
+            if (source is File srcFile)
+            {
+                elem.ValueType = DataTypeDefXsd.String;
+                elem.Value = "" + srcFile.Value;
+            }
+
+            return elem;
+        }
+
+        // MIHO: Jui, why was this required?
+#if OLD
+
         public static void UpdatePropertyFrom(this Property property, Property sourceProperty)
         {
             if (sourceProperty.Extensions != null)
@@ -154,11 +196,11 @@ namespace Extensions
             {
                 property.Qualifiers = sourceProperty.Qualifiers;
             }
-            if (sourceProperty.DataSpecifications != null)
+            if (sourceProperty.EmbeddedDataSpecifications != null)
             {
-                property.DataSpecifications = sourceProperty.DataSpecifications;
+                property.EmbeddedDataSpecifications = sourceProperty.EmbeddedDataSpecifications;
             }
-            if (sourceProperty.ValueType != null)
+            if (true)
             {
                 property.ValueType = sourceProperty.ValueType;
             }
@@ -171,5 +213,6 @@ namespace Extensions
                 property.Value = sourceProperty.Value;
             }
         }
+#endif
     }
 }

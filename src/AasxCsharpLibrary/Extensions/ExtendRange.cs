@@ -1,9 +1,10 @@
-﻿using AasCore.Aas3_0_RC02;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AAS = AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
 
 namespace Extensions
 {
@@ -21,10 +22,10 @@ namespace Extensions
                 return null;
             }
 
-            var propertyType = Stringification.DataTypeDefXsdFromString("xs:" + sourceRange.valueType);
+            var propertyType = AAS.Stringification.DataTypeDefXsdFromString("xs:" + sourceRange.valueType);
             if (propertyType != null)
             {
-                range.ValueType = (DataTypeDefXsd)propertyType;
+                range.ValueType = (AAS.DataTypeDefXsd)propertyType;
             }
             else
             {
@@ -35,6 +36,37 @@ namespace Extensions
             range.Min = sourceRange.min;
 
             return range;
+        }
+
+        public static AAS.Range UpdateFrom(this AAS.Range elem, AAS.ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((AAS.ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is AAS.Property srcProp)
+            {
+                elem.ValueType = srcProp.ValueType;
+                elem.Min = srcProp.Value;
+                elem.Max = elem.Min;
+            }
+
+            if (source is AAS.MultiLanguageProperty srcMlp)
+            {
+                elem.ValueType = AAS.DataTypeDefXsd.String;
+                elem.Min = "" + srcMlp.Value?.GetDefaultString();
+                elem.Max = elem.Min;
+            }
+
+            if (source is AAS.File srcFile)
+            {
+                elem.ValueType = AAS.DataTypeDefXsd.String;
+                elem.Min = "" + srcFile.Value;
+                elem.Max = elem.Min;
+            }
+
+            return elem;
         }
     }
 }

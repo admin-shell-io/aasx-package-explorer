@@ -61,23 +61,23 @@ namespace Extensions
         
         public static void Add(this IReferable referable, ISubmodelElement submodelElement)
         {
-            if(referable is Submodel submodel)
+            if (referable is Submodel submodel)
             {
                 submodel.Add(submodelElement);
             }
-            else if(referable is AnnotatedRelationshipElement annotatedRelationshipElement)
+            else if (referable is AnnotatedRelationshipElement annotatedRelationshipElement)
             {
                 annotatedRelationshipElement.Add(submodelElement);
             }
-            else if(referable is SubmodelElementCollection submodelElementCollection)
+            else if (referable is SubmodelElementCollection submodelElementCollection)
             {
                 submodelElementCollection.Add(submodelElement);
             }
-            else if(referable is SubmodelElementList submodelElementList)
+            else if (referable is SubmodelElementList submodelElementList)
             {
                 submodelElementList.Add(submodelElement);
             }
-            else if(referable is Entity entity)
+            else if (referable is Entity entity)
             {
                 entity.Add(submodelElement);
             }
@@ -173,8 +173,7 @@ namespace Extensions
                         referable.IdShort = "TO_FIX";
                     }));
 
-            if (referable.Description != null && (referable.Description.LangStrings == null
-                || referable.Description.LangStrings.Count < 1))
+            if (referable.Description != null && (referable.Description.Count < 1))
                 results.Add(new AasValidationRecord(
                     AasValidationSeverity.SchemaViolation, referable,
                     "Referable: existing description with missing langString",
@@ -429,8 +428,8 @@ namespace Extensions
         public static void AddDescription(this IReferable referable,string language, string Text)
         {
             if (referable.Description == null)
-                referable.Description = new LangStringSet(new List<LangString>());
-            referable.Description.LangStrings.Add(new LangString(language, Text));
+                referable.Description = new List<LangString>();
+            referable.Description.Add(new LangString(language, Text));
         }
     }
 }

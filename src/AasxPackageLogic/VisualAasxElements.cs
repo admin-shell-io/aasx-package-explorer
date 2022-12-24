@@ -348,7 +348,7 @@ namespace AasxPackageLogic
                     // a Identifiable will terminate the list of keys
                     res.Insert(
                         0,
-                        new Key((KeyTypes)Stringification.KeyTypesFromString(iddata.GetSelfDescription().AasElementName), iddata.IdShort));
+                        new Key((KeyTypes)Stringification.KeyTypesFromString(iddata.GetSelfDescription().AasElementName), iddata.Id));
                     break;
                 }
                 else
@@ -513,14 +513,14 @@ namespace AasxPackageLogic
         public AdminShellPackageEnv thePackage = null;
         public AasCore.Aas3_0_RC02.Environment theEnv = null;
         public ItemType theItemType = ItemType.Env;
-        private IClass _mainDataObject;
+        private object _mainDataObject;
         private static ConceptDescSortOrder _cdSortOrder = ConceptDescSortOrder.None;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
             AasCore.Aas3_0_RC02.Environment env, ItemType itemType,
             string packageSourceFn = null,
-            IClass mainDataObject = null)
+            object mainDataObject = null)
         : base()
         {
             this.Parent = parent;
@@ -562,7 +562,8 @@ namespace AasxPackageLogic
             return ItemTypeNames[(int)t];
         }
 
-        public IClass MainDataObject { set { _mainDataObject = value; } }
+        // MIHO: not needed?
+        // public IClass MainDataObject { set { _mainDataObject = value; } }
 
         public override object GetMainDataObject()
         {
@@ -629,7 +630,7 @@ namespace AasxPackageLogic
                 this.Info = ci.Item2;
                 var asset = theAas.AssetInformation;
                 if (asset != null)
-                    this.Info += $" of [{asset.GlobalAssetId.GetAsIdentifier()}, {asset.AssetKind}]";
+                    this.Info += $" of [{asset.GlobalAssetId?.GetAsIdentifier()}, {asset.AssetKind}]";
             }
         }
     }
@@ -889,8 +890,8 @@ namespace AasxPackageLogic
                         var iecprop = this._cachedCD?.GetIEC61360();
                         if (iecprop != null)
                         {
-                            if (iecprop.unit != null && iecprop.unit != "")
-                                this.Info += " [" + iecprop.unit + "]";
+                            if (iecprop.Unit != null && iecprop.Unit != "")
+                                this.Info += " [" + iecprop.Unit + "]";
                         }
                     }
                 }
@@ -1301,6 +1302,11 @@ namespace AasxPackageLogic
                 foreach (var elcc in elc.Value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, elc, elcc);
 
+            // Recurse: SML
+            if (el is SubmodelElementList ell && ell.Value != null)
+                foreach (var elll in ell.Value)
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ell, elll);
+
             // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
             if (el is Entity ele && ele.Statements != null)
@@ -1610,8 +1616,7 @@ namespace AasxPackageLogic
                     // note: will be added later to the overall tree
                     tiCDs = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.ConceptDescriptions,
-                        //mainDataObject: (IClass)env.ConceptDescriptions); //TODO: jtikekar uncomment and support
-                        mainDataObject: null); 
+                        mainDataObject: env.ConceptDescriptions); 
                     tiCDs.SetIsExpandedIfNotTouched(expandMode > 0);
 
                     // the selected sort order may cause disabling of lazy loading for this class!
@@ -1668,8 +1673,7 @@ namespace AasxPackageLogic
                     //
                     var tiAllSubmodels = new VisualElementEnvironmentItem(
                         tiEnv, cache, package, env, VisualElementEnvironmentItem.ItemType.AllSubmodels,
-                        //mainDataObject: (IClass)env.Submodels);//TODO:jtikekar uncomment and support
-                        mainDataObject: null);
+                        mainDataObject: env.Submodels);
                     tiAllSubmodels.SetIsExpandedIfNotTouched(expandMode > 0);
                     tiEnv.Members.Add(tiAllSubmodels);
 

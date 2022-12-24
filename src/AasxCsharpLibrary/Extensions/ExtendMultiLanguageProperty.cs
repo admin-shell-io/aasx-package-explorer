@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,15 @@ using System.Threading.Tasks;
 
 namespace Extensions
 {
-    public static class ExtendMultiLamguageProperty
+    public static class ExtendMultiLanguageProperty
     {
         #region AasxPackageExplorer
 
         public static void ValueFromText(this MultiLanguageProperty multiLanguageProperty, string text, string defaultLang)
         {
-            multiLanguageProperty.Value ??= new LangStringSet(new List<LangString>());
+            multiLanguageProperty.Value ??= new List<LangString>();
 
-            multiLanguageProperty.Value.LangStrings.Add(new LangString(defaultLang == null? "en" : defaultLang, text));
+            multiLanguageProperty.Value.Add(new LangString(defaultLang == null? "en" : defaultLang, text));
         }
 
         #endregion
@@ -55,12 +56,49 @@ namespace Extensions
 
             var newLangStrings = new List<LangString>();
 
-            LangStringSet newLangStringSet = new(newLangStrings);
+            List<LangString> newLangStringSet = new(newLangStrings);
 
             property.Value = newLangStringSet.ConvertFromV20(sourceProperty.value);
 
             return property;
 
+        }
+
+        public static MultiLanguageProperty UpdateFrom(
+            this MultiLanguageProperty elem, ISubmodelElement source)
+        {
+            if (source == null)
+                return elem;
+
+            ((ISubmodelElement)elem).UpdateFrom(source);
+
+            if (source is Property srcProp)
+            {
+                elem.Value = new List<LangString> { new LangString("EN?", srcProp.Value) };
+                if (srcProp.ValueId != null)
+                    elem.ValueId = srcProp.ValueId.Copy();
+            }
+
+            if (source is MultiLanguageProperty srcMlp)
+            {
+                if (srcMlp.Value != null)
+                    elem.Value = srcMlp.Value.Copy();
+                if (srcMlp.ValueId != null)
+                    elem.ValueId = srcMlp.ValueId.Copy();
+            }
+
+            if (source is AasCore.Aas3_0_RC02.Range srcRng)
+            {
+                if (srcRng.Min != null)
+                    elem.Value = new List<LangString> { new LangString("EN?", srcRng.Min) };
+            }
+
+            if (source is File srcFile)
+            {
+                elem.Value = new List<LangString> { new LangString("EN?", srcFile.Value) };
+            }
+
+            return elem;
         }
     }
 }

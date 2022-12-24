@@ -183,7 +183,7 @@ namespace AdminShellNS
                     xmlReader.NodeType == XmlNodeType.None)
                     xmlReader.Read();
 
-                res = Xmlization.Deserialize.EnvironmentFrom(xmlReader, "http://www.admin-shell.io/aas/3/0");
+                res = Xmlization.Deserialize.EnvironmentFrom(xmlReader);
                 return res;
             }
 
@@ -558,8 +558,7 @@ namespace AdminShellNS
                         settings.Indent = true;
                         var writer = XmlWriter.Create(s, settings);
                         Xmlization.Serialize.To(
-                            _aasEnv, writer,
-                            prefix: "aas", ns: "http://www.admin-shell.io/aas/3/0");
+                            _aasEnv, writer);
                         writer.Flush();
                         writer.Close();
                         s.Flush();

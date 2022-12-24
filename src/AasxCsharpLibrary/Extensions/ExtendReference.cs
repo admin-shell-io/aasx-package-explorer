@@ -150,10 +150,9 @@ namespace Extensions
             return reference.Keys.ToStringExtended(delimiter);
         }
 
-
         public static ReferenceTypes GuessType(this Reference reference)
         {
-            var setAasRefs = ExtendKey.GetAllKeyTypesForAasReferables();
+            var setAasRefs = Constants.AasReferables.Where((kt) => kt != null).Select(kt => kt.Value).ToArray();
             var allAasRefs = true;
             foreach (var k in reference.Keys)
                 if (!k.MatchesSetOfTypes(setAasRefs))

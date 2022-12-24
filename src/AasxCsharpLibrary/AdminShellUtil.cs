@@ -9,6 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using AasCore.Aas3_0_RC02;
 using AdminShellNS.Extenstions;
+using Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,11 +20,28 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static AasxCompatibilityModels.AdminShellV20.SubmodelElementWrapper;
+using static Extensions.ExtendIDataSpecificationContent;
 
 namespace AdminShellNS
 {
     public static class AdminShellUtil
     {
+
+        #region Various utilities
+        // ------------------------------------------------------------------------------------
+
+        public static T[] GetEnumValues<T>() where T : Enum
+            => (T[])Enum.GetValues(typeof(T));
+
+        public static IEnumerable<T> GetEnumValues<T>(T[] excludes) where T : Enum
+        {
+            foreach (var v in (T[])Enum.GetValues(typeof(T)))
+                if (!excludes.Contains(v))
+                    yield return v;
+        }
+
+        #endregion
+
         #region V3 Methods
 
         public static string[] GetPopularMimeTypes()
@@ -66,43 +84,39 @@ namespace AdminShellNS
 
         public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
         {
-            if(sourceSme != null)
-            {
-                return sourceSme.Copy();
-            }
             switch(smeEnum)
             {
                 case AasSubmodelElements.Property:
                     {
-                        return new Property(DataTypeDefXsd.String);
+                        return new Property(DataTypeDefXsd.String).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.MultiLanguageProperty:
                     {
-                        return new MultiLanguageProperty();
+                        return new MultiLanguageProperty().UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Range:
                     {
-                        return new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String);
+                        return new AasCore.Aas3_0_RC02.Range(DataTypeDefXsd.String).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.File:
                     {
-                        return new AasCore.Aas3_0_RC02.File("");
+                        return new AasCore.Aas3_0_RC02.File("").UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Blob:
                     {
-                        return new Blob("");
+                        return new Blob("").UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.ReferenceElement:
                     {
-                        return new ReferenceElement();
+                        return new ReferenceElement().UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.RelationshipElement:
                     {
-                        return new RelationshipElement(null, null);
+                        return new RelationshipElement(null, null).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.AnnotatedRelationshipElement:
                     {
-                        return new AnnotatedRelationshipElement(null, null);
+                        return new AnnotatedRelationshipElement(null, null).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Capability:
                     {
@@ -110,15 +124,15 @@ namespace AdminShellNS
                     }
                 case AasSubmodelElements.SubmodelElementCollection:
                     {
-                        return new SubmodelElementCollection();
+                        return new SubmodelElementCollection().UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.SubmodelElementList:
                     {
-                        return new SubmodelElementList(AasSubmodelElements.SubmodelElement);
+                        return new SubmodelElementList(AasSubmodelElements.SubmodelElement).UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.Operation:
                     {
-                        return new Operation();
+                        return new Operation().UpdateFrom(sourceSme);
                     }
                 case AasSubmodelElements.BasicEventElement:
                     {
@@ -768,5 +782,7 @@ namespace AdminShellNS
             // ok
             return input;
         }
+
+
     }
 }

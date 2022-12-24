@@ -265,7 +265,7 @@ namespace AasxPackageLogic.PackageCentral
                     foreach (var id in fi.AasIds)
                     {
                         var aas = new AssetAdministrationShell("", new AssetInformation(AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                        aas.Description = new LangStringSet(new List<LangString>() { new LangString("en?", "" + fi.Description) });
+                        aas.Description = new List<LangString>() { new LangString("en?", "" + fi.Description) };
                         aas.Id = id;
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
                     }

@@ -16,7 +16,7 @@ namespace Extensions
             //TODO:jtikekar support KeyType.AssetInformation
             //var caption = Key.AssetInformation;
             var caption = "AssetInformation";
-            var info = "" + assetInformation.GlobalAssetId.ToStringExtended();
+            var info = "" + assetInformation.GlobalAssetId?.ToStringExtended();
             return Tuple.Create(caption, info);
         }
 

@@ -183,15 +183,20 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var res = this.MoveElementInListUpwards<Qualifier>(
+                                    var resu = this.MoveElementInListUpwards<Qualifier>(
                                         qualifiers, qualifiers[storedI]);
-                                    if (res > -1)
+                                    if (resu > -1)
                                     {
                                         action = true;
                                     }
                                     break;
                                 case 2:
-                                    action = true;
+                                    var resd = this.MoveElementInListDownwards<Qualifier>(
+                                        qualifiers, qualifiers[storedI]);
+                                    if (resd > -1)
+                                    {
+                                        action = true;
+                                    }
                                     break;
                                 case 3:
                                     var jsonStr = JsonConvert.SerializeObject(
@@ -443,15 +448,20 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var res = this.MoveElementInListUpwards<SpecificAssetId>(
+                                    var resu = this.MoveElementInListUpwards<SpecificAssetId>(
                                         pairs, pairs[storedI]);
-                                    if (res > -1)
+                                    if (resu > -1)
                                     {
                                         action = true;
                                     }
                                     break;
                                 case 2:
-                                    action = true;
+                                    var resd = this.MoveElementInListDownwards<SpecificAssetId>(
+                                        pairs, pairs[storedI]);
+                                    if (resd > -1)
+                                    {
+                                        action = true;
+                                    }
                                     break;
                                 case 3:
                                     var jsonStr = JsonConvert.SerializeObject(pairs[storedI], Formatting.Indented);
@@ -714,15 +724,20 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var res = this.MoveElementInListUpwards<Extension>(
+                                    var resu = this.MoveElementInListUpwards<Extension>(
                                         extensions, extensions[storedI]);
-                                    if (res > -1)
+                                    if (resu > -1)
                                     {
                                         action = true;
                                     }
                                     break;
                                 case 2:
-                                    action = true;
+                                    var resd = this.MoveElementInListDownwards<Extension>(
+                                        extensions, extensions[storedI]);
+                                    if (resd > -1)
+                                    {
+                                        action = true;
+                                    }
                                     break;
                                 case 3:
                                     var jsonStr = JsonConvert.SerializeObject(
@@ -1054,6 +1069,121 @@ namespace AasxPackageLogic
                     // pass on
                     emitCustomEvent?.Invoke(o);
                 });
+        }
+
+        //
+        // ValueList of CD
+        //
+
+        public void ValueListHelper(
+            AnyUiStackPanel stack, ModifyRepo repo, string key,
+            List<ValueReferencePair> valuePairs,
+            IReferable relatedReferable = null)
+        {
+            if (editMode)
+            {
+                // let the user control the number of pairs
+                AddAction(
+                    stack, $"{key}:",
+                    new[] { "Add blank", "Delete last" },
+                    repo,
+                    (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            valuePairs.Add(new ValueReferencePair("", null));
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        }
+
+                        if (buttonNdx == 1 && valuePairs.Count > 0)
+                            valuePairs.RemoveAt(valuePairs.Count - 1);
+
+                        return new AnyUiLambdaActionRedrawEntity();
+                    });
+            }
+
+            for (int i = 0; i < valuePairs.Count; i++)
+            {
+                var vp = valuePairs[i];
+                var substack = AddSubStackPanel(stack, "", minWidthFirstCol: this.smallFirstColWidth); 
+
+                int storedI = i;
+                AddGroup(
+                    substack, $"Pair {1 + i}",
+                    levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
+                    contextMenuText: "\u22ee",
+                    menuHeaders: new[] {
+                        "\u2702", "Delete",
+                        "\u25b2", "Move Up",
+                        "\u25bc", "Move Down"
+                    },
+                    menuItemLambda: (o) =>
+                    {
+                        var action = false;
+
+                        if (o is int ti)
+                            switch (ti)
+                            {
+                                case 0:
+                                    valuePairs.Remove(vp);
+                                    action = true;
+                                    break;
+                                case 1:
+                                    var resu = this.MoveElementInListUpwards<ValueReferencePair>(
+                                        valuePairs, valuePairs[storedI]);
+                                    if (resu > -1)
+                                    {
+                                        action = true;
+                                    }
+                                    break;
+                                case 2:
+                                    var resd = this.MoveElementInListDownwards<ValueReferencePair>(
+                                        valuePairs, valuePairs[storedI]);
+                                    if (resd > -1)
+                                    {
+                                        action = true;
+                                    }
+                                    break;
+
+                            }
+
+                        if (action)
+                        {
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    },
+                    margin: new AnyUiThickness(2, 2, 2, 2),
+                    padding: new AnyUiThickness(5, 0, 5, 0));
+
+                AddKeyValueExRef(
+                    substack, "value", vp, vp.Value, null, repo,
+                    v =>
+                    {
+                        vp.Value = v as string;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                if (SafeguardAccess(
+                        substack, repo, vp.ValueId, "valueId:", "Create data element!",
+                        v =>
+                        {
+                            vp.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                {
+                    AddKeyReference(substack, "valueId", vp.ValueId, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        addExistingEntities: Stringification.ToString(KeyTypes.ConceptDescription),
+                        addFromKnown: true, showRefSemId: false,
+                        relatedReferable: relatedReferable);
+                }
+
+            }
+
         }
 
     }

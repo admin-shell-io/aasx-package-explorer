@@ -152,7 +152,11 @@ namespace AasxIntegrationBase.AasForms
                             if (copyCd == null)
                             {
                                 // add clone
-                                cds.Add(new ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, masterCd.IdShort, masterCd.DisplayName, masterCd.Description, masterCd.Checksum, masterCd.Administration, masterCd.DataSpecifications, masterCd.IsCaseOf));
+                                cds.Add(
+                                    new ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
+                                        masterCd.IdShort, masterCd.DisplayName, masterCd.Description, 
+                                        masterCd.Checksum, masterCd.Administration, 
+                                        masterCd.EmbeddedDataSpecifications, masterCd.IsCaseOf));
                             }
                         }
                     }

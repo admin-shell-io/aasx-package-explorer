@@ -15,8 +15,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 using AdminShellNS;
+using Extensions;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AasxPackageLogic
@@ -503,9 +503,10 @@ namespace AasxPackageLogic
             var res = new ConceptDescription("");
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
-            var eds = EmbeddedDataSpecification.CreateIEC61360WithContent();
-            res.EmbeddedDataSpecification.IEC61360 = eds;
-            var ds = eds.DataSpecificationContent.DataSpecificationIEC61360;
+            var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
+            res.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+            res.EmbeddedDataSpecifications.Add(eds);
+            var ds = eds.DataSpecificationContent as DataSpecificationIec61360;
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)
@@ -541,7 +542,7 @@ namespace AasxPackageLogic
                     // short name -> TBD in future
                     FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.shortName = new LangStringSetIEC61360
+                        ds.ShortName = new List<LangString>
                         {
                             new LangString("EN?", ls.Text)
                         };
@@ -556,11 +557,7 @@ namespace AasxPackageLogic
                         if (ndt != null)
                         {
                             // try find a match
-                            foreach (var dtn in DataSpecificationIEC61360.DataTypeNames)
-                                if (ndt.ToLower().Trim().Contains(dtn.ToLower().Trim()))
-                                {
-                                    ds.dataType = dtn;
-                                }
+                            ds.DataType = Stringification.DataTypeIec61360FromString(ndt);
                         }
                     }
 
@@ -577,8 +574,8 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.unitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, urefIrdi.Trim()) });
-                                            ds.unit = xiun.InnerText.Trim();
+                                            ds.UnitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.Unit = xiun.InnerText.Trim();
                                         }
                                 }
                         }
@@ -588,20 +585,20 @@ namespace AasxPackageLogic
                 // all have language texts
                 FindChildLangStrings(node, "preferred_name", "label", "language_code", (ls) =>
                 {
-                    if (ds.preferredName == null)
-                        ds.preferredName = new LangStringSetIEC61360();
+                    if (ds.PreferredName == null)
+                        ds.PreferredName = new List<LangString>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
-                    ds.preferredName.Add(ls);
+                    ds.PreferredName.Add(ls);
                 });
 
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
                 {
-                    if (ds.definition == null)
-                        ds.definition = new LangStringSetIEC61360();
+                    if (ds.Definition == null)
+                        ds.PreferredName = new List<LangString>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
-                    ds.definition.Add(ls);
+                    ds.Definition.Add(ls);
                 });
 
             }
@@ -611,12 +608,12 @@ namespace AasxPackageLogic
 
             try
             {
-                if (ds.shortName == null || ds.shortName.Count < 1) // TBD: multi-language short name?!
+                if (ds.ShortName == null || ds.ShortName.Count < 1) // TBD: multi-language short name?!
                 {
-                    if (ds.preferredName != null && !(ds.preferredName.Count < 1))
+                    if (ds.PreferredName != null && !(ds.PreferredName.Count < 1))
                     {
                         var found = false;
-                        foreach (var pn in ds.preferredName)
+                        foreach (var pn in ds.PreferredName)
                         {
                             // let have "en" always have precedence!
                             if (found && !pn.Language.ToLower().Trim().Contains("en"))
@@ -638,7 +635,7 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.shortName = new LangStringSetIEC61360
+                            ds.ShortName = new List<LangString>
                             {
                                 new LangString("EN?", sn)
                             };

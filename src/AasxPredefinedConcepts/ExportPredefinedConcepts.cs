@@ -57,7 +57,7 @@ namespace AasxPredefinedConcepts
                     // name?
                     var ids = cd.IdShort;
                     if ((ids == null || ids == "") && cd.GetIEC61360() != null)
-                        ids = cd.GetIEC61360().shortName?.GetDefaultString();
+                        ids = cd.GetIEC61360().ShortName?.GetDefaultString();
                     if (ids == null || ids == "")
                         continue;
                     ids = "CD_" + ids;

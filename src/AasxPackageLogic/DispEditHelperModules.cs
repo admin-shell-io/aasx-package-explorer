@@ -19,7 +19,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
-using AasCore.Aas3_0_RC02.HasDataSpecification;
 //using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AdminShellNS;
@@ -160,26 +159,26 @@ namespace AasxPackageLogic
                         breakIfTrue: true,
                         severityLevel: HintCheck.Severity.Notice),
                     new HintCheck(
-                        () => { return referable.DisplayName.LangStrings.Count < 2; },
+                        () => { return referable.DisplayName.Count < 2; },
                         "Consider having Display name in multiple langauges.",
                         severityLevel: HintCheck.Severity.Notice)
             });
             if (this.SafeguardAccess(stack, repo, referable.DisplayName, "displayName:", "Create data element!", v =>
             {
-                referable.DisplayName = new LangStringSet(new List<LangString>());
+                referable.DisplayName = new List<LangString>(new List<LangString>());
                 this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                 return new AnyUiLambdaActionRedrawEntity();
             }))
             {
-                this.AddKeyListLangStr(stack, "displayName", referable.DisplayName.LangStrings,
+                this.AddKeyListLangStr(stack, "displayName", referable.DisplayName,
                     repo, relatedReferable: referable);
             }
 
             if (!categoryUsual)
                 this.AddHintBubble(
                     stack, hintMode,
-                    new HintCheck(() => { return referable.Category != null && referable.Category.Trim().Length >= 1; },
-                    "The use of category is unusual here.", severityLevel: HintCheck.Severity.Notice));
+                    new HintCheck(() => referable.Category?.HasContent() == true,
+                    "The use of category is deprecated.", severityLevel: HintCheck.Severity.Notice));
 
             this.AddHintBubble(stack, hintMode, 
                 this.ConcatHintChecks(new[] {
@@ -203,21 +202,21 @@ namespace AasxPackageLogic
                 new[] {
                     new HintCheck(
                         () => {
-                            return referable.Description == null || referable.Description.LangStrings == null ||
-                                referable.Description.LangStrings.Count < 1;
+                            return referable.Description == null || referable.Description == null ||
+                                referable.Description.Count < 1;
                         },
                         "The use of an description is recommended to allow the consumer of an Referable " +
                             "to understand the nature of it.",
                         breakIfTrue: true,
                         severityLevel: HintCheck.Severity.Notice),
                     new HintCheck(
-                        () => { return referable.Description.LangStrings.Count < 2; },
+                        () => { return referable.Description.Count < 2; },
                         "Consider having description in multiple langauges.",
                         severityLevel: HintCheck.Severity.Notice)
             });
             if (this.SafeguardAccess(stack, repo, referable.Description, "description:", "Create data element!", v =>
             {
-                referable.Description = new LangStringSet(new List<LangString>());
+                referable.Description = new List<LangString>();
                 return new AnyUiLambdaActionRedrawEntity();
             }))
             {
@@ -226,12 +225,12 @@ namespace AasxPackageLogic
                     new HintCheck(
                         () =>
                         {
-                            return referable.Description.LangStrings == null
-                            || referable.Description.LangStrings.Count < 1;
+                            return referable.Description == null
+                            || referable.Description.Count < 1;
                         },
                         "Please add some descriptions in your main languages here to help consumers " +
                             "of your Administration shell to understand your intentions."));
-                this.AddKeyListLangStr(stack, "description", referable.Description.LangStrings,
+                this.AddKeyListLangStr(stack, "description", referable.Description,
                     repo, relatedReferable: referable);
             }
 
@@ -499,8 +498,8 @@ namespace AasxPackageLogic
 
         //Added this method only to support embeddedDS from ConceptDescriptions
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
-            HasDataSpecification hasDataSpecification,
-            Action<HasDataSpecification> setOutput,
+            List<EmbeddedDataSpecification>? hasDataSpecification,
+            Action<List<EmbeddedDataSpecification>> setOutput,
             string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
             IReferable relatedReferable = null)
@@ -516,7 +515,7 @@ namespace AasxPackageLogic
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () => dataSpecRefsAreUsual && (hasDataSpecification == null
-                        || hasDataSpecification.Count < 1),
+                        ||  hasDataSpecification.Count < 1),
                     "Check if a data specification is appropriate here. " +
                     "A ConceptDescription typically goes along with a data specification, e.g. " +
                     "according IEC61360.",
@@ -531,7 +530,7 @@ namespace AasxPackageLogic
                     stack, this.repo, hasDataSpecification, "DataSpecification:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new HasDataSpecification());
+                        setOutput?.Invoke(new List<EmbeddedDataSpecification>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -546,7 +545,8 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new EmbeddedDataSpecification(
-                                        new Reference(ReferenceTypes.GlobalReference, new List<Key>())));
+                                        new Reference(ReferenceTypes.GlobalReference, new List<Key>()),
+                                        null));
 
                             if (buttonNdx == 1)
                             {
@@ -622,6 +622,183 @@ namespace AasxPackageLogic
             }
         }
 
+        public void DisplayOrEditEntityHasEmbeddedSpecification(
+            AnyUiStackPanel stack,
+            List<EmbeddedDataSpecification> hasDataSpecification,
+            Action<List<EmbeddedDataSpecification>> setOutput,
+            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
+            IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, "HasDataSpecification (records of embedded data specification):", levelColors.MainSection);
+
+            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return hasDataSpecification == null ||
+                            hasDataSpecification.Count < 1; },
+                        "For ConceptDescriptions, the main data carrier lies in the embedded data specification. " +
+                        "In these elements, a Reference to a data specification is combined with content " +
+                        "attributes, which are attached to the ConceptDescription. These attributes hold the " +
+                        "descriptive information on a concept and thus allow for an off-line understanding of " +
+                        "the meaning of a concept/ SubmodelElement. Multiple data specifications " +
+                        "could be possible. The most used is the IEC61360, which is also used by ECLASS. " +
+                        "Please create this data element.",
+                        breakIfTrue: true),
+                });
+            if (this.SafeguardAccess(
+                    stack, this.repo, hasDataSpecification, "Specifications:", "Create data element!",
+                    v =>
+                    {
+                        setOutput?.Invoke(new List<EmbeddedDataSpecification>());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                // head control
+                if (editMode)
+                {
+                    // let the user control the number of references
+                    this.AddAction(
+                        stack, "Spec. records:",
+                        new[] { "Add record", "Delete last record" }, repo,
+                        (buttonNdx) =>
+                        {
+                            if (buttonNdx == 0)
+                                hasDataSpecification.Add(
+                                    new EmbeddedDataSpecification(
+                                        new Reference(ReferenceTypes.GlobalReference, new List<Key>()),
+                                        null));
+
+                            if (buttonNdx == 1)
+                            {
+                                if (hasDataSpecification.Count > 0)
+                                    hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);
+                                else
+                                    setOutput?.Invoke(null);
+                            }
+
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
+
+                // now use the normal mechanism to deal with editMode or not ..
+                if (hasDataSpecification != null && hasDataSpecification.Count > 0)
+                {
+                    for (int i = 0; i < hasDataSpecification.Count; i++)
+                    {
+                        // indicate
+                        this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
+
+                        // Reference
+                        int currentI = i;
+                        if (SafeguardAccess(
+                            stack, this.repo, hasDataSpecification[i].DataSpecification,
+                                "DataSpecification:", "Create (inner) data element!",
+                            v =>
+                            {
+                                hasDataSpecification[currentI].DataSpecification =
+                                    new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }))
+                        {
+                            AddKeyReference(
+                                stack, String.Format("dataSpec.[{0}]", i),
+                                hasDataSpecification[i].DataSpecification,
+                                repo, packages, PackageCentral.PackageCentral.Selector.MainAux,
+                                addExistingEntities: null /* "All" */,
+                                addPresetNames: addPresetNames, addPresetKeyLists: addPresetKeyLists,
+                                relatedReferable: relatedReferable,
+                                showRefSemId: false,
+                                auxContextHeader: new[] { "\u2573", "Delete this dataSpec." },
+                                auxContextLambda: (choice) =>
+                                {
+                                    if (choice == 0)
+                                    {
+                                        if (currentI >= 0 && currentI <= hasDataSpecification.Count)
+                                            hasDataSpecification.RemoveAt(currentI);
+                                        return new AnyUiLambdaActionRedrawEntity();
+                                    }
+                                    return new AnyUiLambdaActionNone();
+                                });
+                        }
+
+                        // which content is possible?
+                        var cntByDs = ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                        hasDataSpecification[i].DataSpecification);
+
+                        AddHintBubble(
+                            stack, hintMode, new[] {
+                            new HintCheck(
+                                () => cntByDs == ExtendIDataSpecificationContent.ContentTypes.NoInfo,
+                                "No valid data specification Reference could be identified. Thus, no content " +
+                                "attributes could be provided. Check the Reference.")
+                            });
+
+                        // indicate new section
+                        AddGroup(stack, $"dataSpec.[{i}] / Content:", levelColors.SubSection);
+
+                        // edit content?
+                        if (cntByDs != ExtendIDataSpecificationContent.ContentTypes.NoInfo)
+                        {
+                            var cntNone = hasDataSpecification[i].DataSpecificationContent == null;
+                            var cntMismatch = ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                            hasDataSpecification[i].DataSpecificationContent) !=
+                                                ExtendIDataSpecificationContent.ContentTypes.NoInfo
+                                            && ExtendIDataSpecificationContent.GuessContentTypeFor(
+                                            hasDataSpecification[i].DataSpecificationContent) != cntByDs;
+
+                            this.AddHintBubble(
+                                stack, hintMode,
+                                new[] {
+                                new HintCheck(
+                                    () => cntNone,
+                                    "No data specification content is available for this record. " +
+                                    "Create content in order to create this important descriptinve " +
+                                    "information.",
+                                    breakIfTrue: true),
+                                new HintCheck(
+                                    () => cntMismatch,
+                                    "Mismatch between data specification Reference and stored content " +
+                                    "of data specification.")
+                                });
+
+                            if (SafeguardAccess(
+                                stack, this.repo, (cntNone || cntMismatch) ? null : "NotNull",
+                                    "Content:", "Create (reset) content data element!",
+                                v =>
+                                {
+                                    hasDataSpecification[currentI].DataSpecificationContent =
+                                        ExtendIDataSpecificationContent.ContentFactoryFor(cntByDs);
+    
+                                    return new AnyUiLambdaActionRedrawEntity();
+                                }))
+                            {
+                                if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.Iec61360)
+                                    this.DisplayOrEditEntityDataSpecificationIec61360(
+                                        stack, 
+                                        hasDataSpecification[i].DataSpecificationContent 
+                                            as DataSpecificationIec61360,
+                                        relatedReferable: relatedReferable);
+
+                                if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.PhysicalUnit)
+                                    this.DisplayOrEditEntityDataSpecificationPhysicalUnit(
+                                        stack,
+                                        hasDataSpecification[i].DataSpecificationContent
+                                            as DataSpecificationPhysicalUnit,
+                                        relatedReferable: relatedReferable);
+                            }
+                        }
+                    }
+                }
+            }
+        }
         //
         // List of References (used for isCaseOf..)
         //
@@ -751,7 +928,7 @@ namespace AasxPackageLogic
                 stack, repo, kind, "kind:", "Create data element!",
                 v =>
                 {
-                    setOutput?.Invoke(new ModelingKind());
+                    setOutput?.Invoke(ModelingKind.Instance);
                     return new AnyUiLambdaActionRedrawEntity();
                 }
                 ))
@@ -1004,8 +1181,8 @@ namespace AasxPackageLogic
         //
 
 
-        public void DisplayOrEditEntityDataSpecificationIEC61360(AnyUiStackPanel stack,
-            DataSpecificationIEC61360 dsiec,
+        public void DisplayOrEditEntityDataSpecificationIec61360(AnyUiStackPanel stack,
+            DataSpecificationIec61360 dsiec,
             IReferable relatedReferable = null)
         {
             // access
@@ -1016,62 +1193,63 @@ namespace AasxPackageLogic
             this.AddGroup(
                         stack, "Data Specification Content IEC61360:", levelColors.SubSection);
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.preferredName == null || dsiec.preferredName.Count < 1; },
+                            () => { return dsiec.PreferredName == null || dsiec.PreferredName.Count < 1; },
                             "Please add a preferred name, which could be used on user interfaces " +
                                 "to identify the concept to a human person.",
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.preferredName.Count <2; },
-                            "Please add multiple languanges.")
+                            () => { return dsiec.PreferredName.Count <2; },
+                            "Please add multiple languanges.",
+                            severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.preferredName, "preferredName:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.PreferredName, "preferredName:", "Create data element!",
                     v =>
                     {
-                        dsiec.preferredName = new LangStringSetIEC61360();
+                        dsiec.PreferredName = new List<LangString>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "preferredName", dsiec.preferredName,
+                AddKeyListLangStr(stack, "preferredName", dsiec.PreferredName,
                     repo, relatedReferable: relatedReferable);
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.shortName == null || dsiec.shortName.Count < 1; },
+                            () => { return dsiec.ShortName == null || dsiec.ShortName.Count < 1; },
                             "Please check if you can add a short name, which is a reduced, even symbolic version of " +
                                 "the preferred name. IEC 61360 defines some symbolic rules " +
                                 "(e.g. greek characters) for this name.",
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.shortName.Count <2; },
+                            () => { return dsiec.ShortName.Count <2; },
                             "Please add multiple languanges.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.shortName, "shortName:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.ShortName, "shortName:", "Create data element!",
                     v =>
                     {
-                        dsiec.shortName = new LangStringSetIEC61360();
+                        dsiec.ShortName = new List<LangString>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "shortName", dsiec.shortName,
+                AddKeyListLangStr(stack, "shortName", dsiec.ShortName,
                     repo, relatedReferable: relatedReferable);
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () => {
-                                return (dsiec.unitId == null || dsiec.unitId.Keys.Count < 1) &&
-                                    ( dsiec.unit == null || dsiec.unit.Trim().Length < 1);
+                                return (dsiec.UnitId == null || dsiec.UnitId.Keys.Count < 1) &&
+                                    ( dsiec.Unit == null || dsiec.Unit.Trim().Length < 1);
                             },
                             "Please check, if you can provide a unit or a unitId, " +
                                 "in which the concept is being measured. " +
@@ -1079,38 +1257,38 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
             });
             AddKeyValueExRef(
-                stack, "unit", dsiec, dsiec.unit, null, repo,
+                stack, "unit", dsiec, dsiec.Unit, null, repo,
                 v =>
                 {
-                    dsiec.unit = v as string;
+                    dsiec.Unit = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () => {
-                                return ( dsiec.unit == null || dsiec.unit.Trim().Length < 1) &&
-                                    ( dsiec.unitId == null || dsiec.unitId.Keys.Count < 1);
+                                return ( dsiec.Unit == null || dsiec.Unit.Trim().Length < 1) &&
+                                    ( dsiec.UnitId == null || dsiec.UnitId.Keys.Count < 1);
                             },
                             "Please check, if you can provide a unit or a unitId, " +
                                 "in which the concept is being measured. " +
                                 "Usage of SI-based units is encouraged.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.unitId, "unitId:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.UnitId, "unitId:", "Create data element!",
                     v =>
                     {
-                        dsiec.unitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        dsiec.UnitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 List<string> keys = new();
-                foreach (var key in dsiec.unitId.Keys)
+                foreach (var key in dsiec.UnitId.Keys)
                 {
                     keys.Add(key.Value);
                 }
@@ -1121,96 +1299,403 @@ namespace AasxPackageLogic
                     relatedReferable: relatedReferable);
             }
 
-            AddKeyValueExRef(
-                stack, "valueFormat", dsiec, dsiec.valueFormat, null, repo,
-                v =>
-                {
-                    dsiec.valueFormat = v as string;
-                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone();
-                });
-
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
                             () =>
                             {
-                                return dsiec.sourceOfDefinition == null || dsiec.sourceOfDefinition.Length < 1;
+                                return dsiec.SourceOfDefinition == null || dsiec.SourceOfDefinition.Length < 1;
                             },
                             "Please check, if you can provide a source of definition for the concepts. " +
                                 "This could be an informal link to a document, glossary item etc.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             AddKeyValueExRef(
-                stack, "sourceOfDef.", dsiec, dsiec.sourceOfDefinition, null, repo,
+                stack, "sourceOfDef.", dsiec, dsiec.SourceOfDefinition, null, repo,
                 v =>
                 {
-                    dsiec.sourceOfDefinition = v as string;
+                    dsiec.SourceOfDefinition = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.symbol == null || dsiec.symbol.Trim().Length < 1; },
+                            () => { return dsiec.Symbol == null || dsiec.Symbol.Trim().Length < 1; },
                             "Please check, if you can provide formulaic character for the concept.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             AddKeyValueExRef(
-                stack, "symbol", dsiec, dsiec.symbol, null, repo,
+                stack, "symbol", dsiec, dsiec.Symbol, null, repo,
                 v =>
                 {
-                    dsiec.symbol = v as string;
+                    dsiec.Symbol = v as string;
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.dataType == null || dsiec.dataType.Trim().Length < 1; },
-                            "Please provide data type for the concept. " +
+                            () => { return dsiec.DataType == null; },
+                            "Please provide a data type for the concept. " +
                                 "Data types are provided by the IEC 61360.")
                 });
             AddKeyValueExRef(
-                stack, "dataType", dsiec, dsiec.dataType, null, repo,
+                stack, "dataType", dsiec, Stringification.ToString(dsiec.DataType), null, repo,
                 v =>
                 {
-                    dsiec.dataType = v as string;
+                    dsiec.DataType = Stringification.DataTypeIec61360FromString(v as string);
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
                 comboBoxIsEditable: true,
-                comboBoxItems: DataSpecificationIEC61360.DataTypeNames);
+                comboBoxMinWidth: 190,
+                comboBoxItems: Constants.DataTypeIec61360ForPropertyOrValue.Select(
+                    (dt) => Stringification.ToString(dt)).ToArray());
 
-            this.AddHintBubble(
+            AddHintBubble(
                 stack, hintMode,
                 new[] {
                         new HintCheck(
-                            () => { return dsiec.definition == null || dsiec.definition.Count < 1; },
+                            () => { return dsiec.Definition == null || dsiec.Definition.Count < 1; },
                             "Please check, if you can add a definition, which could be used to describe exactly, " +
                                 "how to establish a value/ measurement for the concept.",
                             severityLevel: HintCheck.Severity.Notice,
                             breakIfTrue: true),
                         new HintCheck(
-                            () => { return dsiec.definition.Count <2; },
+                            () => { return dsiec.Definition.Count <2; },
                             "Please add multiple languanges.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-            if (this.SafeguardAccess(
-                    stack, repo, dsiec.definition, "definition:", "Create data element!",
+            if (SafeguardAccess(
+                    stack, repo, dsiec.Definition, "definition:", "Create data element!",
                     v =>
                     {
-                        dsiec.definition = new LangStringSetIEC61360();
+                        dsiec.Definition = new List<LangString>();
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                this.AddKeyListLangStr(stack, "definition", dsiec.definition,
+                this.AddKeyListLangStr(stack, "definition", dsiec.Definition,
                     repo, relatedReferable: relatedReferable);
+
+            AddKeyValueExRef(
+                stack, "valueFormat", dsiec, dsiec.ValueFormat, null, repo,
+                v =>
+                {
+                    dsiec.ValueFormat = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return dsiec.ValueList == null 
+                                || dsiec.ValueList.ValueReferencePairs == null
+                                || dsiec.ValueList.ValueReferencePairs.Count < 1; },
+                            "If the concept features multiple possible discrete values (enumeration), " +
+                            "please check, if you can add pairs of name and References to concepts " +
+                            "representing the single values.",
+                            severityLevel: HintCheck.Severity.Notice,
+                            breakIfTrue: true),
+                        new HintCheck(
+                            () => { return dsiec.ValueList.ValueReferencePairs.Count < 2; },
+                            "Please add multiple pairs of name and Reference.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            if (SafeguardAccess(
+                    stack, repo, dsiec.ValueList?.ValueReferencePairs, "valueList:", "Create data element!",
+                    v =>
+                    {
+                        dsiec.ValueList ??= new ValueList(null);
+                        dsiec.ValueList.ValueReferencePairs = new();
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+                ValueListHelper(stack, repo, "valueList",
+                    dsiec.ValueList.ValueReferencePairs,
+                    relatedReferable: relatedReferable);
+        }
+
+        //
+        // DataSpecificationIEC61360
+        //
+
+
+        public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
+            AnyUiStackPanel stack,
+            DataSpecificationPhysicalUnit dspu,
+            IReferable relatedReferable = null)
+        {
+            // access
+            if (stack == null || dspu == null)
+                return;
+
+            // members
+            AddGroup(
+                stack, "Data Specification Content Physical Unit:", levelColors.SubSection);
+
+            // UnitName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.UnitName.HasContent() != true,
+                        "Please name the phyiscal unit. This is mandatory information.")
+                });
+            AddKeyValueExRef(
+                stack, "unitName", dspu, dspu.UnitName, null, repo,
+                v =>
+                {
+                    dspu.UnitName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // UnitSymbol
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.UnitSymbol.HasContent() != true,
+                        "Please provide a symbol representation to the phyiscal unit. " +
+                        "This is mandatory information, if available.")
+                });
+            AddKeyValueExRef(
+                stack, "unitSymbol", dspu, dspu.UnitSymbol, null, repo,
+                v =>
+                {
+                    dspu.UnitSymbol = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // Definition
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => { return dspu.Definition == null || dspu.Definition.Count < 1; },
+                        "Please check, if you can add a definition, which could be used to describe exactly, " +
+                            "how to the unit is defined or measured concept.",
+                        severityLevel: HintCheck.Severity.Notice,
+                        breakIfTrue: true),
+                    new HintCheck(
+                        () => { return dspu.Definition.Count <2; },
+                        "Please add multiple languanges for the definition.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            if (this.SafeguardAccess(
+                    stack, repo, dspu.Definition, "definition:", "Create data element!",
+                    v =>
+                    {
+                        dspu.Definition = new List<LangString>();
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+                this.AddKeyListLangStr(stack, "definition", dspu.Definition,
+                    repo, relatedReferable: relatedReferable);
+
+            // SiNotation
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SiNotation.HasContent() != true,
+                        "Please check, if you can provide a notation according to SI.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "SI notation", dspu, dspu.SiNotation, null, repo,
+                v =>
+                {
+                    dspu.SiNotation = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // SiName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SiName.HasContent() != true,
+                        "Please check, if you can provide a name according to SI.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "SI name", dspu, dspu.SiName, null, repo,
+                v =>
+                {
+                    dspu.SiName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // DinNotation
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.DinNotation.HasContent() != true,
+                        "Please check, if you can provide a notation according to DIN.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "DIN notation", dspu, dspu.DinNotation, null, repo,
+                v =>
+                {
+                    dspu.DinNotation = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // EceName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.EceName.HasContent() != true,
+                        "Please check, if you can provide a name according to ECE.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "ECE name", dspu, dspu.EceName, null, repo,
+                v =>
+                {
+                    dspu.EceName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // EceCode
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.EceCode.HasContent() != true,
+                        "Please check, if you can provide a code according to DIN.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "ECE code", dspu, dspu.EceCode, null, repo,
+                v =>
+                {
+                    dspu.EceCode = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // NistName
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.NistName.HasContent() != true,
+                        "Please check, if you can provide a name according to NIST.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "NIST name", dspu, dspu.NistName, null, repo,
+                v =>
+                {
+                    dspu.EceName = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // source of definition
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.SourceOfDefinition.HasContent() != true,
+                        "Please check, if you can provide a source of definition for the unit. " +
+                        "This could be an informal link to a document, glossary item etc.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "sourceOfDef.", dspu, dspu.SourceOfDefinition, null, repo,
+                v =>
+                {
+                    dspu.SourceOfDefinition = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // conversion factor
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.ConversionFactor.HasContent() != true,
+                        "Please check, if you can provide a conversion factor. " +
+                        "Example could be: 1.0/60 .",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "conversionFac.", dspu, dspu.ConversionFactor, null, repo,
+                v =>
+                {
+                    dspu.ConversionFactor = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // registration authority id
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.RegistrationAuthorityId.HasContent() != true,
+                        "Please check, if you can provide a registration authority id.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "regAuthId.", dspu, dspu.RegistrationAuthorityId, null, repo,
+                v =>
+                {
+                    dspu.RegistrationAuthorityId = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // Supplier
+
+            this.AddHintBubble(
+                stack, hintMode,
+                new[] {
+                    new HintCheck(
+                        () => dspu.Supplier.HasContent() != true,
+                        "Please check, if you can provide a supplier.",
+                        severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "supplier", dspu, dspu.Supplier, null, repo,
+                v =>
+                {
+                    dspu.Supplier = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
         }
 
         //

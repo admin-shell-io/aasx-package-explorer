@@ -135,6 +135,7 @@ namespace AasxPackageExplorer
 
                 // ok, prepare list of keys
                 DiaData.ResultKeys = si.BuildKeyListToTop();
+
                 return true;
             }
 

@@ -236,8 +236,8 @@ namespace AasxPackageExplorer
                 {
                     JObject _titlesJObject = new JObject();
                     MultiLanguageProperty mlp = (MultiLanguageProperty)dsElement.Copy();
-                    LangStringSet _titles = mlp.Value.Copy();
-                    foreach (LangString _title in _titles.LangStrings)
+                    var _titles = mlp.Value.Copy();
+                    foreach (LangString _title in _titles)
                     {
                         _titlesJObject[_title.Language] = _title.Text;
                     }
@@ -262,7 +262,7 @@ namespace AasxPackageExplorer
             }
             if (sem.Description != null)
             {
-                List<LangString> tdDescription = sem.Description.LangStrings;
+                List<LangString> tdDescription = sem.Description;
                 if (tdDescription.Count != 1)
                 {
                     semJObject["description"] = tdDescription[0].Text;
@@ -504,7 +504,7 @@ namespace AasxPackageExplorer
             }
             if (sschemaSem.Description != null)
             {
-                List<LangString> tdDescription = sschemaSem.Description.LangStrings;
+                List<LangString> tdDescription = sschemaSem.Description;
                 if (tdDescription.Count != 1)
                 {
                     sschemaJOBject["description"] = tdDescription[0].Text;
@@ -620,7 +620,7 @@ namespace AasxPackageExplorer
                 // description
                 if (sm.Description != null)
                 {
-                    List<LangString> tdDescription = sm.Description.LangStrings;
+                    List<LangString> tdDescription = sm.Description;
                     if (tdDescription.Count != 1)
                     {
                         TDJson["description"] = tdDescription[0].Text;
@@ -677,8 +677,8 @@ namespace AasxPackageExplorer
                         {
                             JObject _titlesJObject = new JObject();
                             MultiLanguageProperty mlp = (MultiLanguageProperty)tdElement.Copy();
-                            LangStringSet _titles = mlp.Value.Copy();
-                            foreach (LangString _title in _titles.LangStrings)
+                            var _titles = mlp.Value.Copy();
+                            foreach (LangString _title in _titles)
                             {
                                 _titlesJObject[_title.Language] = _title.Text;
                             }

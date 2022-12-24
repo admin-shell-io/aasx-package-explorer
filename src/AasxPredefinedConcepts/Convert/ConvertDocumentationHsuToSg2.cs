@@ -96,8 +96,14 @@ namespace AasxPredefinedConcepts.Convert
                 foreach (var rf in defsSg2.GetAllReferables())
                     if (rf is ConceptDescription conceptDescription)
                     {
-                        package.AasEnv.ConceptDescriptions.AddConceptDescription(
-                                new ConceptDescription(conceptDescription.Id, conceptDescription.Extensions, conceptDescription.Category, conceptDescription.IdShort, conceptDescription.DisplayName, conceptDescription.Description, conceptDescription.Checksum, conceptDescription.Administration, conceptDescription.DataSpecifications, conceptDescription.IsCaseOf));
+                        package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
+                                new ConceptDescription(
+                                    conceptDescription.Id, conceptDescription.Extensions, 
+                                    conceptDescription.Category, conceptDescription.IdShort, 
+                                    conceptDescription.DisplayName, conceptDescription.Description, 
+                                    conceptDescription.Checksum, conceptDescription.Administration, 
+                                    conceptDescription.EmbeddedDataSpecifications, 
+                                    conceptDescription.IsCaseOf));
                     }
 
             // ok, go thru the old == HSU records
@@ -224,7 +230,7 @@ namespace AasxPredefinedConcepts.Convert
                                 cdSrc[i].GetSingleKey());
                         if (asProp != null)
                         {
-                            target.Value = new LangStringSet(new List<LangString>() { new LangString("en?", "" + asProp.Value) });
+                            target.Value = new List<LangString>() { new LangString("en?", "" + asProp.Value) };
                         }
 
                         var asMLP = smcSource.Value.FindFirstSemanticIdAs<MultiLanguageProperty>(

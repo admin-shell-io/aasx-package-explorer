@@ -315,7 +315,16 @@ namespace AasxToolkit
                     aasenv.ConceptDescriptions.Add(rf as ConceptDescription);
 
             // SUB MODEL
-            var sub1 = new Submodel(preDefs.SM_VDI2770_Documentation.Id, preDefs.SM_VDI2770_Documentation.Extensions, preDefs.SM_VDI2770_Documentation.Category, preDefs.SM_VDI2770_Documentation.IdShort, preDefs.SM_VDI2770_Documentation.DisplayName, preDefs.SM_VDI2770_Documentation.Description, preDefs.SM_VDI2770_Documentation.Checksum, preDefs.SM_VDI2770_Documentation.Administration, preDefs.SM_VDI2770_Documentation.Kind, preDefs.SM_VDI2770_Documentation.SemanticId, preDefs.SM_VDI2770_Documentation.SupplementalSemanticIds, preDefs.SM_VDI2770_Documentation.Qualifiers, preDefs.SM_VDI2770_Documentation.DataSpecifications, preDefs.SM_VDI2770_Documentation.SubmodelElements);
+            var sub1 = new Submodel(
+                preDefs.SM_VDI2770_Documentation.Id, preDefs.SM_VDI2770_Documentation.Extensions, 
+                preDefs.SM_VDI2770_Documentation.Category, preDefs.SM_VDI2770_Documentation.IdShort, 
+                preDefs.SM_VDI2770_Documentation.DisplayName, preDefs.SM_VDI2770_Documentation.Description, 
+                preDefs.SM_VDI2770_Documentation.Checksum, preDefs.SM_VDI2770_Documentation.Administration, 
+                preDefs.SM_VDI2770_Documentation.Kind, preDefs.SM_VDI2770_Documentation.SemanticId, 
+                preDefs.SM_VDI2770_Documentation.SupplementalSemanticIds, 
+                preDefs.SM_VDI2770_Documentation.Qualifiers, 
+                preDefs.SM_VDI2770_Documentation.EmbeddedDataSpecifications, 
+                preDefs.SM_VDI2770_Documentation.SubmodelElements);
             sub1.Id = repo.CreateOneTimeId();
             aasenv.Submodels.Add(sub1);
 
@@ -411,13 +420,13 @@ namespace AasxToolkit
                         var mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category:"CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
-                            if(mlp.Value.LangStrings == null)
+                            if(mlp.Value == null)
                             {
-                                mlp.Value.LangStrings = new List<LangString>();
+                                mlp.Value = new List<LangString>();
                             }
-                            mlp.Value.LangStrings.Add(new LangString("en", args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("de", "Deutsche Übersetzung von: " + args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("FR", "Traduction française de: " + args[3]));
+                            mlp.Value.Add(new LangString("en", args[3]));
+                            mlp.Value.Add(new LangString("de", "Deutsche Übersetzung von: " + args[3]));
+                            mlp.Value.Add(new LangString("FR", "Traduction française de: " + args[3]));
                         }
 
                         // SUMMARY
@@ -428,9 +437,9 @@ namespace AasxToolkit
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(p);
-                            mlp.Value.LangStrings.Add(new LangString("en", "Summary for: " + args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("de", "Zusammenfassung von: " + args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("FR", "Résumé de: " + args[3]));
+                            mlp.Value.Add(new LangString("en", "Summary for: " + args[3]));
+                            mlp.Value.Add(new LangString("de", "Zusammenfassung von: " + args[3]));
+                            mlp.Value.Add(new LangString("FR", "Résumé de: " + args[3]));
                         }
 
                         // TITLE
@@ -441,9 +450,9 @@ namespace AasxToolkit
                         mlp = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "CONSTANT", semanticId: cd.GetReference());
                         {
                             p1.Add(mlp);
-                            mlp.Value.LangStrings.Add(new LangString("en", "Keywords for: " + args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("de", "Stichwörter für: " + args[3]));
-                            mlp.Value.LangStrings.Add(new LangString("FR", "Repèrs par: " + args[3]));
+                            mlp.Value.Add(new LangString("en", "Keywords for: " + args[3]));
+                            mlp.Value.Add(new LangString("de", "Stichwörter für: " + args[3]));
+                            mlp.Value.Add(new LangString("FR", "Repèrs par: " + args[3]));
                         }
 
                         // SET DATE
@@ -781,12 +790,12 @@ namespace AasxToolkit
                 //            Key.GetFromRef(cd.GetReference()));
                 var p = new MultiLanguageProperty(idShort: cd.GetDefaultPreferredName(), category: "PARAMETER", semanticId: cd.GetReference());
                 sub1.Add(p);
-                if(p.Value.LangStrings == null)
+                if(p.Value == null)
                 {
-                    p.Value.LangStrings = new List<LangString>();
+                    p.Value = new List<LangString>();
                 }
-                p.Value.LangStrings.Add(new LangString("en", "An english value."));
-                p.Value.LangStrings.Add(new LangString("de", "Ein deutscher Wert."));
+                p.Value.Add(new LangString("en", "An english value."));
+                p.Value.Add(new LangString("de", "Ein deutscher Wert."));
                 sme1 = p;
             }
 
