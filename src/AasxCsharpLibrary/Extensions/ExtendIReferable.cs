@@ -311,6 +311,12 @@ namespace Extensions
             while (newReferable != null);
         }
 
+        public static bool EnumeratesChildren(this ISubmodelElement elem)
+        {
+            var num = elem.EnumerateChildren().Count();
+            return (num > 0);
+        }
+
         public static IEnumerable<ISubmodelElement> EnumerateChildren(this IReferable referable)
         {
             if (referable is Submodel submodel && submodel.SubmodelElements != null)

@@ -666,7 +666,7 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddAction(
                         stack, "Spec. records:",
-                        new[] { "Add record", "Delete last record" }, repo,
+                        new[] { "Add record", "Add IEC61360", "Delete last record" }, repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
@@ -676,6 +676,16 @@ namespace AasxPackageLogic
                                         null));
 
                             if (buttonNdx == 1)
+                                hasDataSpecification.Add(
+                                    new EmbeddedDataSpecification(
+                                        new Reference(ReferenceTypes.GlobalReference, new List<Key> { 
+                                            ExtendIDataSpecificationContent.GetKeyForIec61360() 
+                                        }),
+                                        new DataSpecificationIec61360(new List<LangString>() { 
+                                            new LangString("EN?", "")
+                                        })));
+
+                            if (buttonNdx == 2)
                             {
                                 if (hasDataSpecification.Count > 0)
                                     hasDataSpecification.RemoveAt(hasDataSpecification.Count - 1);

@@ -558,9 +558,13 @@ namespace AasxPackageLogic
                             nextBusObj = smw2;
                             var createAtIndex = -1;
 
+#if old
                             // make this unique (e.g. for event following)
                             if (cpb.Duplicate || cpb.ExternalSource)
                                 this.MakeNewReferableUnique(smw2);
+#endif
+                            // make this unique later (e.g. for event following)
+                            var makeUnique = (cpb.Duplicate || cpb.ExternalSource);
 
                             // insertation depends on parent container
                             if (buttonNdx == 2)
@@ -569,25 +573,25 @@ namespace AasxPackageLogic
                                 smw2.Parent = parentContainer;
 
                                 if (parentContainer is Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
                                         pcsm.SubmodelElements, smw2, wrapper);
 
                                 if (parentContainer is SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<ISubmodelElement>(
-                                        pcsmc.Value, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                        pcsmc.Value, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is Entity pcent &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListBefore<ISubmodelElement>(
-                                        pcent.Statements, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                        pcent.Statements, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
                                 {
                                     var annotations = new List<ISubmodelElement>(pcarel.Annotations);
-                                    createAtIndex = this.AddElementInListBefore<ISubmodelElement>(
-                                        annotations, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                        annotations, smw2, wrapper, makeUnique);
                                 }
                                     
 
@@ -599,19 +603,7 @@ namespace AasxPackageLogic
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
-                                        List<OperationVariable> opVariables = new();
-                                        if(place.Direction == OperationVariableDirection.In)
-                                        {
-                                            opVariables = pcop.InputVariables;
-                                        }
-                                        else if(place.Direction == OperationVariableDirection.Out)
-                                        {
-                                            opVariables = pcop.OutputVariables;
-                                        }
-                                        else if(place.Direction == OperationVariableDirection.InOut)
-                                        {
-                                            opVariables = pcop.InoutputVariables;
-                                        }
+                                        var opVariables = pcop.GetChildrenFor(place.Direction);
                                         createAtIndex = this.AddElementInListBefore<OperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
@@ -625,24 +617,24 @@ namespace AasxPackageLogic
                                 smw2.Parent = parentContainer;
 
                                 if (parentContainer is Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<ISubmodelElement>(
-                                        pcsm.SubmodelElements, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                        pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<ISubmodelElement>(
-                                        pcsmc.Value, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                        pcsmc.Value, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is Entity pcent && wrapper != null)
-                                    createAtIndex = this.AddElementInListAfter<ISubmodelElement>(
-                                        pcent.Statements, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                        pcent.Statements, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
                                 {
                                     var annotations = new List<ISubmodelElement>(pcarel.Annotations);
-                                    createAtIndex = this.AddElementInListAfter<ISubmodelElement>(
-                                        annotations, smw2, wrapper);
+                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                        annotations, smw2, wrapper, makeUnique);
                                 }
 
                                 // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
@@ -653,19 +645,7 @@ namespace AasxPackageLogic
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
-                                        List<OperationVariable> opVariables = new();
-                                        if (place.Direction == OperationVariableDirection.In)
-                                        {
-                                            opVariables = pcop.InputVariables;
-                                        }
-                                        else if (place.Direction == OperationVariableDirection.Out)
-                                        {
-                                            opVariables = pcop.OutputVariables;
-                                        }
-                                        else if (place.Direction == OperationVariableDirection.InOut)
-                                        {
-                                            opVariables = pcop.InoutputVariables;
-                                        }
+                                        var opVariables = pcop.GetChildrenFor(place.Direction);
                                         createAtIndex = this.AddElementInListAfter<OperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
@@ -675,6 +655,16 @@ namespace AasxPackageLogic
 
                             if (buttonNdx == 4)
                             {
+                                if (makeUnique)
+                                {
+                                    var found = false;
+                                    foreach (var ch in sme.DescendOnce().OfType<ISubmodelElement>())
+                                        if (ch?.IdShort?.Trim() == smw2?.IdShort?.Trim())
+                                            found = true;
+                                    if (found)
+                                        this.MakeNewReferableUnique(smw2);
+                                }
+
                                 // aprent set automatically
                                 // TODO (MIHO, 2021-08-18): createAtIndex missing here
                                 //if (sme is IEnumerateChildren smeec)

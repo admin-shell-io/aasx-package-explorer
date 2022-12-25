@@ -34,6 +34,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Constructors for SME taking over attributes from other SMEs (different subtypes!)
 * Factory for SubmodelElements
 * Constructors without mandatory init parameters ("Bevormundung war letztes Jahrhundert")
+* have an attribute telling if there are children (Descend().OfType<ISubmodelElement> .., IEnumerateChildren) or not
 
 ## Decisions
 
@@ -44,6 +45,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   - Rethink?
   - VisualAasxElements.UpdateByEvent() was using this -> changed
   - see: ThisElemLocation = PackCntChangeEventLocation.ListOfConceptDescriptions
+
+## PRs integrated
+
+* PR550 (backup, make unique)
 
 ## Done
 

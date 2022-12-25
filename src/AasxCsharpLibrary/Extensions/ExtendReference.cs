@@ -163,6 +163,11 @@ namespace Extensions
                 return ReferenceTypes.GlobalReference;
         }
 
+        public static int Count(this Reference rf)
+        {
+            return rf.Keys.Count;
+        }
+
     }
 
 }

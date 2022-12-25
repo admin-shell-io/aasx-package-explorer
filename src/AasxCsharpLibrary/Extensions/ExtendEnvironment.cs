@@ -715,7 +715,7 @@ namespace Extensions
                 // seems fine
                 return res;
             }
-
+            else
             if (typeof(T) == typeof(Submodel))
             {
                 // check, if exist or not exist
@@ -744,7 +744,23 @@ namespace Extensions
                 // seems fine
                 return res;
             }
+            else
+            if (typeof(T) == typeof(AssetAdministrationShell))
+            {
+                // check, if exist or not exist
+                var aasOld = environment.FindAasById(oldId);
+                if (aasOld == null || environment.FindAasById(newId) != null)
+                    return null;
 
+                // recurse? -> no?
+
+                // rename old Asset
+                aasOld.Id = newId;
+
+                // seems fine
+                return res;
+            }
+            else
             //TODO:jtikekar support asset
             if (typeof(T) == typeof(AssetInformation))
             {

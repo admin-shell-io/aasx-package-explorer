@@ -11,6 +11,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -2291,6 +2292,48 @@ namespace AasxPackageLogic
         }
 
         //
+        // manipulations for list of SME wrappers
+        //
+
+        public int AddElementInSmeListBefore<T>(
+            List<T> list,
+            T entity, T existing,
+            bool makeUniqueIfNeeded = false)
+            where T : ISubmodelElement
+        {
+            // access
+            if (list == null || list.Count < 1 || entity == null)
+                return -1;
+
+            // make unqiue
+            if (makeUniqueIfNeeded && !(list as List<ISubmodelElement>)
+                .CheckIdShortIsUnique(entity.IdShort))
+                    this.MakeNewReferableUnique(entity);
+
+            // delegate
+            return AddElementInListBefore<T>(list, entity, existing);
+        }
+
+        public int AddElementInSmeListAfter<T>(
+            List<T> list,
+            T entity, T existing,
+            bool makeUniqueIfNeeded = false)
+            where T : ISubmodelElement
+        {
+            // access
+            if (list == null || list.Count < 1 || entity == null)
+                return -1;
+
+            // make unqiue
+            if (makeUniqueIfNeeded && !(list as List<ISubmodelElement>)
+                .CheckIdShortIsUnique(entity.IdShort))
+                    this.MakeNewReferableUnique(entity);
+
+            // delegate
+            return AddElementInListAfter<T>(list, entity, existing);
+        }
+
+        //
         // Helper
         //
 
@@ -2493,6 +2536,113 @@ namespace AasxPackageLogic
 
             // ok
             return true;
+        }
+
+        /// <summary>
+        /// Creates CDs depending on semanticId of SM or SME.
+        /// </summary>
+        /// <param name="env">Environment</param>
+        /// <param name="root">Submodel or SME</param>
+        /// <param name="recurseChilds">Recurse on child elements</param>
+        /// <param name="repairSemIds">Will check if the type/ local of the semanticId of
+        /// the source SMEs shall be adopted.</param>
+        /// <returns>Tuple (#no valid id, #already present, #added) </returns>
+        public Tuple<int, int, int> ImportCDsFromSmSme(
+            AasCore.Aas3_0_RC02.Environment env,
+            IReferable root,
+            bool recurseChilds = false,
+            bool repairSemIds = false)
+        {
+            // access
+            var noValidId = 0;
+            var alreadyPresent = 0;
+            var added = 0;
+
+            if (env == null || root == null)
+                return new Tuple<int, int, int>(noValidId, alreadyPresent, added);
+
+            //
+            // Part 0 : define a lambda
+            //
+
+            Action<Reference, IReferable> actionAddCD = (newid, rf) =>
+            {
+                if (newid == null || newid.Count() < 1)
+                {
+                    noValidId++;
+                }
+                else
+                {
+                    // repair semanticId
+                    if (repairSemIds)
+                    {
+                        if (rf is Submodel rfsm && rfsm.SemanticId != null
+                            && rfsm.SemanticId.Count() >= 1)
+                        {
+                            rfsm.SemanticId.Keys[0].Type = KeyTypes.Submodel;
+                        }
+
+                        if (rf is ISubmodelElement rfsme && rfsme.SemanticId != null
+                            && rfsme.SemanticId.Count() >= 1)
+                        {
+                            rfsme.SemanticId.Keys[0].Type = KeyTypes.ConceptDescription;
+                        }
+                    }
+
+                    // ok?
+                    if (newid.Keys.Count != 1)
+                        return;
+
+                    // id of new CD
+                    var cdid = newid.Keys[0].Value;
+
+                    // check if existing
+                    var exCd = env.FindConceptDescriptionById(cdid);
+                    if (exCd != null)
+                    {
+                        alreadyPresent++;
+                    }
+                    else
+                    {
+                        // create such CD
+                        var cd = new ConceptDescription(cdid);
+                        if (rf != null)
+                        {
+                            cd.IdShort = rf.IdShort;
+                            if (rf.Description != null)
+                                cd.Description = rf.Description.Copy();
+                        }
+
+                        // store in AAS enviroment
+                        env.ConceptDescriptions.Add(cd);
+
+                        // count and emit event
+                        added++;
+                        this.AddDiaryEntry(root, new DiaryEntryStructChange());
+                    }
+                }
+            };
+
+            //
+            // Part 1 : semanticId of root
+            //
+
+
+            if (root is IHasSemantics rsmid)
+                actionAddCD(rsmid.SemanticId, root as IReferable);
+
+
+            //
+            // Part 2 : semanticId of all children
+            //
+
+            if (recurseChilds)
+                foreach (var child in root.Descend().OfType<ISubmodelElement>())
+                    if (child is IHasSemantics rsmid2)
+                        actionAddCD(rsmid2.SemanticId, child);
+
+            // done
+            return new Tuple<int, int, int>(noValidId, alreadyPresent, added);
         }
 
         //

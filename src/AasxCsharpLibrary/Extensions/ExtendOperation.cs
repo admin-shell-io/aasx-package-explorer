@@ -90,6 +90,16 @@ namespace Extensions
                 OperationVariable = opvar
             };
         }
+
+        public static List<OperationVariable> GetChildrenFor(this Operation op, OperationVariableDirection dir)
+        {
+            if (dir == OperationVariableDirection.In)
+                return op.InputVariables;
+            if (dir == OperationVariableDirection.Out)
+                return op.OutputVariables;
+            return op.InoutputVariables;
+        }
+
         #endregion
 
         public static Operation UpdateFrom(

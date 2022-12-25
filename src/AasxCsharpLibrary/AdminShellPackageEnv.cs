@@ -209,12 +209,16 @@ namespace AdminShellNS
 
         public static T DeserializeFromJSON<T>(string data) where T : IReferable
         {
-            using (var tr = new StringReader(data))
-            {
-                var serializer = BuildDefaultAasxJsonSerializer();
-                var rf = (T)serializer.Deserialize(tr, typeof(T));
-                return rf;
-            }
+            //using (var tr = new StringReader(data))
+            //{
+                //var serializer = BuildDefaultAasxJsonSerializer();
+                //var rf = (T)serializer.Deserialize(tr, typeof(T));
+
+                var node = System.Text.Json.Nodes.JsonNode.Parse(data);
+                var rf = Jsonization.Deserialize.IReferableFrom(node);
+
+                return (T)rf;
+            //}
         }
 
         public static T DeserializeFromJSON<T>(JToken obj) where T : IReferable
