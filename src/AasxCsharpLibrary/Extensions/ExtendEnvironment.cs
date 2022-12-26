@@ -387,24 +387,24 @@ namespace Extensions
             return cd;
         }
 
-        public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0_RC02.Environment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
-        {
-            streamWriter.AutoFlush = true;
+        //public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0_RC02.Environment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
+        //{
+        //    streamWriter.AutoFlush = true;
 
-            JsonSerializer serializer = new JsonSerializer()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                Formatting = Newtonsoft.Json.Formatting.Indented
-            };
+        //    JsonSerializer serializer = new JsonSerializer()
+        //    {
+        //        NullValueHandling = NullValueHandling.Ignore,
+        //        ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+        //        Formatting = Newtonsoft.Json.Formatting.Indented
+        //    };
 
-            JsonWriter writer = new JsonTextWriter(streamWriter);
-            serializer.Serialize(writer, environment);
-            if (leaveJsonWriterOpen)
-                return writer;
-            writer.Close();
-            return null;
-        }
+        //    JsonWriter writer = new JsonTextWriter(streamWriter);
+        //    serializer.Serialize(writer, environment);
+        //    if (leaveJsonWriterOpen)
+        //        return writer;
+        //    writer.Close();
+        //    return null;
+        //}
 
 
         #endregion

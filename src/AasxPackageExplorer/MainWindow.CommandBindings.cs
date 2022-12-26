@@ -2398,13 +2398,16 @@ namespace AasxPackageExplorer
                 try
                 {
                     RememberForInitialDirectory(dlg.FileName);
-                    using (StreamReader file = System.IO.File.OpenText(dlg.FileName))
+                    using (Stream file = System.IO.File.Open(dlg.FileName, FileMode.Open, FileAccess.Read))
                     {
-                        ITraceWriter tw = new MemoryTraceWriter();
-                        JsonSerializer serializer = new JsonSerializer();
-                        serializer.TraceWriter = tw;
-                        serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
-                        submodel = (Submodel)serializer.Deserialize(file, typeof(Submodel));
+                        //ITraceWriter tw = new MemoryTraceWriter();
+                        //JsonSerializer serializer = new JsonSerializer();
+                        //serializer.TraceWriter = tw;
+                        //serializer.Converters.Add(new AdminShellConverters.JsonAasxConverter("modelType", "name"));
+                        //submodel = (Submodel)serializer.Deserialize(file, typeof(Submodel));
+
+                        var node = System.Text.Json.Nodes.JsonNode.Parse(file);
+                        submodel = Jsonization.Deserialize.SubmodelFrom(node);
                     }
                 }
                 catch (Exception)

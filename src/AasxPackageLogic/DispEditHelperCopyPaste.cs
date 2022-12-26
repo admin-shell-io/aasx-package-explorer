@@ -275,6 +275,7 @@ namespace AasxPackageLogic
 
             private string PrepareClipboadString()
             {
+#if V20
                 // make a pure array of objects
                 // (absolutely no unnecessary stuff to the public)
                 var oar = new List<object>();
@@ -297,6 +298,23 @@ namespace AasxPackageLogic
                 settings.TypeNameHandling = TypeNameHandling.None;
                 settings.Formatting = Formatting.Indented;
                 var json = JsonConvert.SerializeObject(objToSerialize, settings);
+#else
+                var oar = new List<IClass>();
+                if (Items != null)
+                    foreach (var it in Items)
+                    {
+                        var o = it.GetMainDataObject();
+                        if (o is IClass oir)
+                            oar.Add(oir);
+                    }
+
+                var nodes = ExtendIReferable.ToJsonObject(oar);
+                var json = nodes.ToJsonString(
+                    new System.Text.Json.JsonSerializerOptions()
+                    {
+                        WriteIndented = true
+                    });
+#endif
 
                 // ok
                 return json;
@@ -358,8 +376,10 @@ namespace AasxPackageLogic
                     if (isArrayObject)
                     {
                         // make array of object
-                        var objarr = AdminShellSerializationHelper
-                            .DeserializePureObjectFromJSON<List<IReferable>>(cps);
+                        //var objarr = AdminShellSerializationHelper
+                        //    .DeserializePureObjectFromJSON<List<IReferable>>(cps);
+                        var node = System.Text.Json.Nodes.JsonNode.Parse(cps);
+                        var objarr = ExtendIReferable.ListOfIReferableFrom(node);
                         if (objarr != null)
                         {
                             // overall structure

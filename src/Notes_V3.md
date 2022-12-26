@@ -40,6 +40,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Constructors without mandatory init parameters ("Bevormundung war letztes Jahrhundert")
 * have an attribute telling if there are children (Descend().OfType<ISubmodelElement> .., IEnumerateChildren) or not
 * LevelType needs powers of 2 in order to have enum with multiple bits!!
+* still xmlns="https://admin-shell.io/aas/3/0/RC02" -> changed to /3/0
+* .NET NS also still RC02
 
 ## Decisions
 
@@ -87,3 +89,5 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * new handling of EmbeddedDataSpecification
 * physical units implemented
 * valuelist for iec61360
+* first serializations converted
+* copy/paste via clipboard

@@ -19,7 +19,7 @@ namespace AasCore.Aas3_0_RC02
         /// The XML namespace of the meta-model
         [CodeAnalysis.SuppressMessage("ReSharper", "InconsistentNaming")]
         public static readonly string NS = (
-            "https://admin-shell.io/aas/3/0/RC02");
+            "https://admin-shell.io/aas/3/0");
 
         /// <summary>
         /// Implement the deserialization of meta-model classes from XML.

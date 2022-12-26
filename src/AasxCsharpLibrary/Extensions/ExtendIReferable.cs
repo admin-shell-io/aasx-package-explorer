@@ -437,5 +437,29 @@ namespace Extensions
                 referable.Description = new List<LangString>();
             referable.Description.Add(new LangString(language, Text));
         }
+
+        public static List<IReferable> ListOfIReferableFrom(
+                System.Text.Json.Nodes.JsonNode node)
+        {
+            var res = new List<IReferable>();
+            if (node == null)
+                return res;
+            var array = node.AsArray();
+            foreach (var it in array)
+            {
+                var ir = Jsonization.Deserialize.IReferableFrom(it);
+                res.Add(ir);
+            }
+            return res;
+        }
+
+        public static System.Text.Json.Nodes.JsonNode ToJsonObject(List<IClass> classes)
+        {
+            var jar = new System.Text.Json.Nodes.JsonArray();
+            if (classes != null)
+                foreach (var c in classes)
+                    jar.Add(Jsonization.Serialize.ToJsonObject(c));
+            return jar;
+        }
     }
 }
