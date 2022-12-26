@@ -377,6 +377,16 @@ namespace Extensions
             }
         }
 
+        public static ConceptDescription Add(this AasCore.Aas3_0_RC02.Environment env, ConceptDescription cd)
+        {
+            if (cd == null)
+                return null;
+            if (env.ConceptDescriptions == null)
+                env.ConceptDescriptions = new();
+            env.ConceptDescriptions.Add(cd);
+            return cd;
+        }
+
         public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0_RC02.Environment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
         {
             streamWriter.AutoFlush = true;

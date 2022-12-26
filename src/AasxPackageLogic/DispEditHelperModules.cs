@@ -623,7 +623,7 @@ namespace AasxPackageLogic
         }
 
         public void DisplayOrEditEntityHasEmbeddedSpecification(
-            AnyUiStackPanel stack,
+            AasCore.Aas3_0_RC02.Environment env, AnyUiStackPanel stack,
             List<EmbeddedDataSpecification> hasDataSpecification,
             Action<List<EmbeddedDataSpecification>> setOutput,
             string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
@@ -792,7 +792,7 @@ namespace AasxPackageLogic
                             {
                                 if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.Iec61360)
                                     this.DisplayOrEditEntityDataSpecificationIec61360(
-                                        stack, 
+                                        env, stack, 
                                         hasDataSpecification[i].DataSpecificationContent 
                                             as DataSpecificationIec61360,
                                         relatedReferable: relatedReferable);
@@ -1191,7 +1191,9 @@ namespace AasxPackageLogic
         //
 
 
-        public void DisplayOrEditEntityDataSpecificationIec61360(AnyUiStackPanel stack,
+        public void DisplayOrEditEntityDataSpecificationIec61360(
+            AasCore.Aas3_0_RC02.Environment env,
+            AnyUiStackPanel stack,
             DataSpecificationIec61360 dsiec,
             IReferable relatedReferable = null)
         {
@@ -1202,6 +1204,8 @@ namespace AasxPackageLogic
             // members
             this.AddGroup(
                         stack, "Data Specification Content IEC61360:", levelColors.SubSection);
+
+            // PreferredName
 
             AddHintBubble(
                 stack, hintMode,
@@ -1227,6 +1231,8 @@ namespace AasxPackageLogic
                 AddKeyListLangStr(stack, "preferredName", dsiec.PreferredName,
                     repo, relatedReferable: relatedReferable);
 
+            // ShortName
+
             AddHintBubble(
                 stack, hintMode,
                 new[] {
@@ -1240,7 +1246,12 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return dsiec.ShortName.Count <2; },
                             "Please add multiple languanges.",
-                            severityLevel: HintCheck.Severity.Notice)
+                            severityLevel: HintCheck.Severity.Notice),
+                        new HintCheck(
+                            () => { return dsiec.ShortName
+                                .Select((ls) => ls.Text != null && ls.Text.Length > 18)
+                                .Any((c) => c == true); },
+                            "ShortNameTypeIEC61360 only allows 1..18 characters.")
                 });
             if (SafeguardAccess(
                     stack, repo, dsiec.ShortName, "shortName:", "Create data element!",
@@ -1252,6 +1263,8 @@ namespace AasxPackageLogic
                     }))
                 AddKeyListLangStr(stack, "shortName", dsiec.ShortName,
                     repo, relatedReferable: relatedReferable);
+
+            // Unit
 
             AddHintBubble(
                 stack, hintMode,
@@ -1274,6 +1287,8 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
+
+            // UnitId
 
             AddHintBubble(
                 stack, hintMode,
@@ -1302,12 +1317,15 @@ namespace AasxPackageLogic
                 {
                     keys.Add(key.Value);
                 }
-                this.AddKeyListOfIdentifier(
-                    stack, "unitId", keys, repo,
+                this.AddKeyReference(
+                    stack, "unitId", dsiec.UnitId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    Stringification.ToString(KeyTypes.GlobalReference), addEclassIrdi: true,
+                    addExistingEntities: Stringification.ToString(KeyTypes.GlobalReference), 
+                    addEclassIrdi: true, 
                     relatedReferable: relatedReferable);
             }
+
+            // source of definition
 
             AddHintBubble(
                 stack, hintMode,
@@ -1330,6 +1348,8 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 });
 
+            // Symbol
+
             AddHintBubble(
                 stack, hintMode,
                 new[] {
@@ -1346,6 +1366,8 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
+
+            // DataType
 
             AddHintBubble(
                 stack, hintMode,
@@ -1367,6 +1389,8 @@ namespace AasxPackageLogic
                 comboBoxMinWidth: 190,
                 comboBoxItems: Constants.DataTypeIec61360ForPropertyOrValue.Select(
                     (dt) => Stringification.ToString(dt)).ToArray());
+
+            // Definition
 
             AddHintBubble(
                 stack, hintMode,
@@ -1393,6 +1417,8 @@ namespace AasxPackageLogic
                 this.AddKeyListLangStr(stack, "definition", dsiec.Definition,
                     repo, relatedReferable: relatedReferable);
 
+            // ValueFormat
+
             AddKeyValueExRef(
                 stack, "valueFormat", dsiec, dsiec.ValueFormat, null, repo,
                 v =>
@@ -1401,6 +1427,8 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 });
+
+            // ValueList
 
             AddHintBubble(
                 stack, hintMode,
@@ -1428,15 +1456,78 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
-                ValueListHelper(stack, repo, "valueList",
+                ValueListHelper(
+                    env, stack, repo, "valueList",
                     dsiec.ValueList.ValueReferencePairs,
                     relatedReferable: relatedReferable);
+
+            // Value
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => { return dsiec.Value == null || dsiec.Value.Trim().Length < 1; },
+                            "If the concepts stands for a single vlaue, please provide the value. " +
+                            "Not required for enumerations or properties.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            AddKeyValueExRef(
+                stack, "value", dsiec, dsiec.Value, null, repo,
+                v =>
+                {
+                    dsiec.Value = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // LevelType
+
+            AddHintBubble(
+                stack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => true,
+                            "There seems to be a bug in AAS core / LevelType.",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            if (SafeguardAccess(
+                    stack, repo, dsiec.LevelType, "levelType:", "Create data element!",
+                    v =>
+                    {
+                        dsiec.LevelType = new();
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                var subg = AddSubGrid(stack, "levelType:",
+                1, 4, new[] { "#", "#", "#", "#" },
+                minWidthFirstCol: this.standardFirstColWidth);
+
+                int col = 0;
+                foreach (var lt in AdminShellUtil.GetEnumValues<LevelType>())
+                {
+                    var currentLT = lt;
+                    AnyUiUIElement.RegisterControl(
+                        AddSmallCheckBoxTo(subg, 0, col++,
+                            content: Stringification.ToString(lt),
+                            isChecked: (dsiec.LevelType.Value & lt) > 0,
+                            margin: new AnyUiThickness(0, 0, 15, 0)),
+                        (v) =>
+                        {
+                            dsiec.LevelType = (dsiec.LevelType & ~currentLT);
+                            if (v is bool vb && vb)
+                                dsiec.LevelType = dsiec.LevelType | currentLT;
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        });
+                }
+            }
         }
 
         //
         // DataSpecificationIEC61360
         //
-
 
         public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
             AnyUiStackPanel stack,

@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.SqlTypes;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,7 @@ using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;
@@ -1075,7 +1077,26 @@ namespace AasxPackageLogic
         // ValueList of CD
         //
 
+        private bool PasteValueReferencePairTextIntoExisting(
+            string jsonInput,
+            ValueReferencePair pCurr)
+        {
+            var node = System.Text.Json.Nodes.JsonNode.Parse(jsonInput);
+            var pIn = Jsonization.Deserialize.ValueReferencePairFrom(node);
+            if (pCurr != null && pIn != null)
+            {
+                pCurr.Value = pIn.Value;
+                if (pIn.ValueId != null)
+                    pCurr.ValueId = pIn.ValueId.Copy();
+                Log.Singleton.Info("ValueReferencePair data taken from clipboard.");
+                return true;
+            }
+            return false;
+        }
+
+
         public void ValueListHelper(
+            AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack, ModifyRepo repo, string key,
             List<ValueReferencePair> valuePairs,
             IReferable relatedReferable = null)
@@ -1085,20 +1106,85 @@ namespace AasxPackageLogic
                 // let the user control the number of pairs
                 AddAction(
                     stack, $"{key}:",
-                    new[] { "Add blank", "Delete last" },
+                    new[] { "Add blank", "Add from clipboard", "Delete last" },
                     repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
                         {
-                            valuePairs.Add(new ValueReferencePair("", null));
+                            valuePairs.Add(new ValueReferencePair(
+                                "", 
+                                new Reference(ReferenceTypes.GlobalReference, new List<Key> { 
+                                    new Key(KeyTypes.GlobalReference, "") 
+                                })));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
-                        if (buttonNdx == 1 && valuePairs.Count > 0)
+                        if (buttonNdx == 1)
+                        {
+                            try
+                            {
+                                var pNew = new ValueReferencePair("", null);
+                                var jsonInput = this.context?.ClipboardGet()?.Text;
+                                if (PasteValueReferencePairTextIntoExisting(jsonInput, pNew))
+                                {
+                                    valuePairs.Add(pNew);
+                                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Singleton.Error(ex, "while accessing ValueReferencePair data in clipboard");
+                            }
+                        }
+
+                        if (buttonNdx == 2 && valuePairs.Count > 0)
                             valuePairs.RemoveAt(valuePairs.Count - 1);
 
                         return new AnyUiLambdaActionRedrawEntity();
+                    });
+
+                AddAction(
+                    stack, "Create:",
+                    new[] { "CDs \U0001f844 pairs" }, repo,
+                    actionToolTips: new[] { "For each Value /Reference pair, create a separate ConceptDescription." },
+                    action: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            // make sure
+                            if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                    "This operation will create additional ConceptDescriptions for each " +
+                                    "pair of Value and Reference. Do you want to proceed?",
+                                    "Create CDs",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                return new AnyUiLambdaActionNone();
+
+                            // do it
+                            for (int i = 0; i < valuePairs.Count; i++)
+                            {
+                                var eds = new EmbeddedDataSpecification(
+                                    ExtendIDataSpecificationContent.GetReferencForIec61360(),
+                                    new DataSpecificationIec61360(
+                                        preferredName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
+                                        shortName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
+                                        definition: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
+                                        dataType: DataTypeIec61360.StringTranslatable));
+
+                                var cd = new ConceptDescription(
+                                    id: valuePairs[i].ValueId?.GetAsIdentifier(),
+                                    idShort: "" + valuePairs[i].Value,
+                                    displayName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
+                                    embeddedDataSpecifications: new List<EmbeddedDataSpecification> { eds }) ;
+
+                                env?.Add(cd);
+                            }
+
+                            // display
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: relatedReferable);
+                        }
+
+                        return new AnyUiLambdaActionNone();
                     });
             }
 
@@ -1108,14 +1194,17 @@ namespace AasxPackageLogic
                 var substack = AddSubStackPanel(stack, "", minWidthFirstCol: this.smallFirstColWidth); 
 
                 int storedI = i;
+                var txt = AdminShellUtil.ShortenWithEllipses(valuePairs[i].Value, 30);
                 AddGroup(
-                    substack, $"Pair {1 + i}",
+                    substack, $"Pair {1 + i}: {txt}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
                         "\u2702", "Delete",
                         "\u25b2", "Move Up",
-                        "\u25bc", "Move Down"
+                        "\u25bc", "Move Down",
+                        "\u29c9", "Copy to clipboard",
+                        "\u2398", "Paste from clipboard",
                     },
                     menuItemLambda: (o) =>
                     {
@@ -1142,6 +1231,31 @@ namespace AasxPackageLogic
                                     if (resd > -1)
                                     {
                                         action = true;
+                                    }
+                                    break;
+                                case 3:
+                                    //var jsonStr = JsonConvert.SerializeObject(
+                                    //    valuePairs[storedI], Formatting.Indented);
+
+                                    var jsonStr = Jsonization.Serialize.ToJsonObject(valuePairs[storedI])
+                                            .ToJsonString(new System.Text.Json.JsonSerializerOptions() { 
+                                                WriteIndented = true
+                                            });
+
+                                    this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
+                                    Log.Singleton.Info("Value pair serialized to clipboard.");
+                                    break;
+                                case 4:
+                                    try
+                                    {
+                                        var jsonInput = this.context?.ClipboardGet()?.Text;
+                                        action = PasteValueReferencePairTextIntoExisting(jsonInput, valuePairs[storedI]);
+                                        if (action)
+                                            Log.Singleton.Info("Value pair taken from clipboard.");
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Singleton.Error(ex, "while accessing ValueReferencePair data in clipboard");
                                     }
                                     break;
 

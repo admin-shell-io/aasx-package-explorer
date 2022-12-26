@@ -13,6 +13,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
@@ -500,12 +501,12 @@ namespace AasxPackageLogic
         public enum ItemType
         {
             Env = 0, Shells, ConceptDescriptions, Package, OrphanSubmodels, AllSubmodels, SupplFiles,
-            EmptySet, DummyNode
+            CdValueReference, EmptySet, DummyNode
         };
 
         public static string[] ItemTypeNames = new string[] {
             "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "Orphan Submodels",
-            "All Submodels", "Supplementary files", "Empty", "Dummy" };
+            "All Submodels", "Supplementary files", "Value Reference", "Empty", "Dummy" };
 
         public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
 
@@ -841,21 +842,31 @@ namespace AasxPackageLogic
                 case MultiLanguageProperty mlp:
                     if (mlp.Value != null)
                         info += "-> " + mlp.Value.GetDefaultString();
+                    showCDinfo = true;
                     break;
 
                 case File smef:
                     if (smef.Value != null && smef.Value != "")
                         info += "-> " + smef.Value;
+                    showCDinfo = true;
                     break;
 
                 case ReferenceElement smere:
                     if (smere.Value != null && !smere.Value.IsEmpty())
                         info += "~> " + smere.Value.ToString();
+                    showCDinfo = true;
                     break;
 
                 case SubmodelElementCollection smc:
                     if (smc.Value != null)
                         info += "(" + smc.Value.Count + " elements)";
+                    showCDinfo = true;
+                    break;
+
+                case SubmodelElementList sml:
+                    if (sml.Value != null)
+                        info += "(" + sml.Value.Count + " elements)";
+                    showCDinfo = true;
                     break;
             }
 
@@ -874,6 +885,9 @@ namespace AasxPackageLogic
                 // extra function
                 EnrichInfoString(sme, ref ciinfo, ref showCDinfo);
 
+                // MIHO thinks it makes sense to simply override
+                showCDinfo = true;
+
                 // decode
                 this.Caption = ((sme.Kind != null && sme.Kind == ModelingKind.Template) ? "<T> " : "") + ci.Item1;
                 this.Info = ciinfo;
@@ -885,7 +899,14 @@ namespace AasxPackageLogic
                     if (sme.SemanticId != null && sme.SemanticId.Keys != null)
                     {
                         if (this._cachedCD == null)
+                        {
+                            if (sme.IdShort == "ManufacturerName")
+                            {
+                                ;
+                            }
+
                             this._cachedCD = this.theEnv.FindConceptDescriptionByReference(sme.SemanticId);
+                        }
 
                         var iecprop = this._cachedCD?.GetIEC61360();
                         if (iecprop != null)
@@ -1097,6 +1118,50 @@ namespace AasxPackageLogic
 #endif
     }
 
+    public class VisualElementValueRefPair : VisualElementGeneric
+    {
+        public AasCore.Aas3_0_RC02.Environment theEnv = null;
+        public ConceptDescription theCD = null;
+        public ValueReferencePair theVLP = null;
+
+        public VisualElementValueRefPair(
+            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
+            ConceptDescription cd, ValueReferencePair vlp)
+            : base()
+        {
+            this.Parent = parent;
+            this.Cache = cache;
+            this.theEnv = env;
+            this.theCD = cd;
+            this.theVLP = vlp;
+
+            this.Background = new AnyUiColor(0xffd0d0d0u);
+            this.Border = new AnyUiColor(0xff606060u);
+            this.TagBg = new AnyUiColor(0xff707070u);
+            this.TagFg = AnyUiColors.White;
+
+            this.TagString = "VRP";
+
+            RefreshFromMainData();
+            RestoreFromCache();
+        }
+
+        public override object GetMainDataObject()
+        {
+            return theVLP;
+        }
+
+        public override void RefreshFromMainData()
+        {
+            if (theVLP != null)
+            {
+                this.Caption = "\"" + theVLP.Value + "\"";
+                this.Info = "" + theVLP.ValueId?.ToStringExtended();
+            }
+        }
+
+    }
+
     public class VisualElementSupplementalFile : VisualElementGeneric
     {
         public AdminShellPackageEnv thePackage = null;
@@ -1273,12 +1338,60 @@ namespace AasxPackageLogic
             return null;
         }
 
+        private VisualElementConceptDescription GenerateVisualElementsForSingleCD(
+            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
+            ConceptDescription cd, VisualElementGeneric parent)
+        {
+            // access
+            if (cache == null || cd == null || parent == null) 
+                return null;
+
+            // CD itself
+            var tiCD = new VisualElementConceptDescription(parent, cache, env, cd);
+            parent.Members.Add(tiCD);
+
+            // value list?
+            var dsiec = cd.GetIEC61360();
+            if (dsiec?.ValueList?.ValueReferencePairs != null)
+            {
+                foreach (var vlp in dsiec.ValueList.ValueReferencePairs)
+                {
+                    // pretty paranoic
+                    if (vlp?.Value?.HasContent() != true || vlp.ValueId?.Keys == null)
+                        continue;
+
+                    // try find in CDs
+                    var vrpCD = env?.FindConceptDescriptionByReference(vlp.ValueId);
+                    if (vrpCD != null && tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
+                    {
+                        // nice, add "real" CD
+                        var tiCDVRP = new VisualElementConceptDescription(tiCD, cache, env, vrpCD);
+                        tiCD.Members.Add(tiCDVRP);
+                    }
+                    else
+                    {
+                        // add as VLP
+                        var tiVP = new VisualElementValueRefPair(tiCD, cache, env, cd, vlp);
+                        tiCD.Members.Add(tiVP);
+                    }
+                }
+            }
+
+            // return 
+            return tiCD;
+        }
+
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
             Submodel sm, VisualElementGeneric parent,
             IReferable parentContainer, ISubmodelElement el)
         {
             // add itself
+            if (el.IdShort == "ManufacturerName")
+            {
+                ;
+            }
+
             var ti = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
             parent.Members.Add(ti);
 
@@ -1293,8 +1406,9 @@ namespace AasxPackageLogic
             if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
                 && ti.CachedCD != null)
             {
-                var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
-                ti.Members.Add(tiCD);
+                //var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
+                //ti.Members.Add(tiCD);
+                GenerateVisualElementsForSingleCD(cache, env, ti.CachedCD, ti);
             }
 
             // Recurse: SMC
@@ -1510,9 +1624,6 @@ namespace AasxPackageLogic
 
             foreach (var cd in env.ConceptDescriptions)
             {
-                // item
-                var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
-
                 // stop criteria for adding?
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
                     && _cdReferred.ContainsKey(cd))
@@ -1522,8 +1633,12 @@ namespace AasxPackageLogic
                     && _cdToSm.ContainsKey(cd))
                     continue;
 
-                // add
-                root.Members.Add(tiCD);
+                //// item
+                //var tiCD = new VisualElementConceptDescription(tiCDs, cache, env, cd);
+                //// add
+                //root.Members.Add(tiCD);
+
+                GenerateVisualElementsForSingleCD(cache, env, cd, tiCDs);
             }
 
             //

@@ -19,6 +19,11 @@ namespace Extensions
                 "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0");
         }
 
+        public static Reference GetReferencForIec61360()
+        {
+            return new Reference(ReferenceTypes.GlobalReference, new List<Key> { GetKeyForIec61360() });
+        }
+
         public static Key GetKeyForPhysicalUnit()
         {
             return new Key(KeyTypes.GlobalReference,

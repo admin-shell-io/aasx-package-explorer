@@ -49,6 +49,11 @@ namespace Extensions
             return res;
         }
 
+        public static List<LangString> Create(string language, string text)
+        {
+            return new List<LangString> { new LangString(language, text) };
+        }
+
         public static List<LangString> CreateManyFromStringArray(string[] s)
         {
             if (s == null)

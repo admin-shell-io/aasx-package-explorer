@@ -24,7 +24,11 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * CDs below SME?
 * CD below MLP does not work
-* make unique only when required (PR 550)
+* NavigateTo: Find also CDs with GlobalReference
+
+## Findings / Open questions in spec
+
+* DataSpecification61360.Value is string (aas core) or ShortNameTypeIEC61360 (spec)?
 
 ## Feature Requests to AAS core
 
@@ -35,6 +39,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Factory for SubmodelElements
 * Constructors without mandatory init parameters ("Bevormundung war letztes Jahrhundert")
 * have an attribute telling if there are children (Descend().OfType<ISubmodelElement> .., IEnumerateChildren) or not
+* LevelType needs powers of 2 in order to have enum with multiple bits!!
 
 ## Decisions
 
@@ -78,3 +83,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   => solved, have DisplayOrEditEntityFileResource()
 * Asset below AAS? => done
 * Refactoring of SMEs re-implemented completely new
+* make unique implemented
+* new handling of EmbeddedDataSpecification
+* physical units implemented
+* valuelist for iec61360

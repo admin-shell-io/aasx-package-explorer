@@ -164,6 +164,22 @@ namespace AdminShellNS
             return string.Format(fmt, o);
         }
 
+        /// <summary>
+        /// If len of <paramref name="str"/> exceeds <paramref name="maxLen"/> then
+        /// string is shortened and returned with an ellipsis(…) at the end.
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="maxLen"></param>
+        /// <returns>Shortened string</returns>
+        public static string ShortenWithEllipses(string str, int maxLen)
+        {
+            if (str == null)
+                return null;
+            if (maxLen >= 0 && str.Length > maxLen)
+                str = str.Substring(0, maxLen) + "\u2026";
+            return str;
+        }
+
         /// <summary>Creates a filter-friendly name from the source.</summary>
         /// <example>
         /// <code>Assert.AreEqual("", AdminShellUtil.FilterFriendlyName(""));</code>

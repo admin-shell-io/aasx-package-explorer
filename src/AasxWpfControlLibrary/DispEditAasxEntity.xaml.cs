@@ -367,6 +367,12 @@ namespace AasxPackageExplorer
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
                 }
+                else if (entity is VisualElementValueRefPair vevlp)
+                {
+                    _helper.DisplayOrEditAasEntityValueReferencePair(
+                        packages, vevlp.theEnv, null, vevlp.theCD, vevlp.theVLP, 
+                        editMode, repo, stack, hintMode: hintMode);
+                }
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {

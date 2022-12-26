@@ -1950,7 +1950,7 @@ namespace AasxPackageLogic
 
             // new apprpoach: model distinct sections with [Reference + Content]
             DisplayOrEditEntityHasEmbeddedSpecification(
-                stack, cd.EmbeddedDataSpecifications, 
+                env, stack, cd.EmbeddedDataSpecifications, 
                 (v) => { cd.EmbeddedDataSpecifications = v; },
                 addPresetNames: new[] { "IEC61360", "Physical Unit" },
                 addPresetKeyLists: new[] {
@@ -1960,6 +1960,26 @@ namespace AasxPackageLogic
                 relatedReferable: cd);
 
 #endif
+        }
+
+        public void DisplayOrEditAasEntityValueReferencePair(
+            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
+            IReferable parentContainer, ConceptDescription cd, ValueReferencePair vlp, bool editMode,
+            ModifyRepo repo,
+            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
+        {
+            this.AddGroup(stack, "ConceptDescription / ValueList item", this.levelColors.MainSection);
+
+            AddAction(stack, "Action:",
+                new[] { "Jump to CD" }, repo,
+                action: (buttonNdx) =>
+                {
+                    if (buttonNdx == 0)
+                    {
+                        return new AnyUiLambdaActionNavigateTo(vlp?.ValueId);
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
         }
 
         //
