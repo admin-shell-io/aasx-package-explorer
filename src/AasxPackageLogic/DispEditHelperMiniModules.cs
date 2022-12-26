@@ -23,6 +23,7 @@ using AdminShellNS;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
+using swagger = IO.Swagger.Model;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic
@@ -232,6 +233,10 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
+                // Qualifier members
+
+                // SemanticId
+
                 AddHintBubble(
                     substack, hintMode,
                     new[] {
@@ -251,18 +256,49 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    List<string> keys = new();
-                    foreach (var key in qual.SemanticId.Keys)
-                    {
-                        keys.Add(key.Value);
-                    }
-                    AddKeyListOfIdentifier(
-                        substack, "semanticId", keys, repo,
+                    AddKeyReference(
+                        substack, "semanticId", qual.SemanticId, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
                         addExistingEntities: "All",
-                        addEclassIrdi: true,
-                        relatedReferable: relatedReferable);
+                        addEclassIrdi: true, addFromKnown: true,
+                        showRefSemId: false,
+                        relatedReferable: relatedReferable,
+                        auxContextHeader: new[] { "\u2573", "Delete semanticId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                qual.SemanticId = null;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
                 }
+
+                // Kind
+
+                if (this.SafeguardAccess(
+                    substack, repo, qual.Kind, "kind:", "Create data element!",
+                    v =>
+                    {
+                        qual.Kind = QualifierKind.ConceptQualifier;
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+                    ))
+                    {
+                        AddKeyValueExRef(
+                        substack, "kind", qual, Stringification.ToString(qual.Kind), null, repo,
+                        v =>
+                        {
+                            qual.Kind = Stringification.QualifierKindFromString((string)v);
+                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionNone();
+                        },
+                        Enum.GetNames(typeof(QualifierKind)));
+                    }
+
+                // Type
 
                 AddKeyValueExRef(
                     substack, "type", qual, qual.Type, null, repo,
@@ -273,6 +309,24 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
+                // ValueType
+
+                AddKeyValueExRef(
+                    substack, "valueType", qual, Stringification.ToString(qual.ValueType), null, repo,
+                    comboBoxIsEditable: editMode,
+                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
+                    comboBoxMinWidth: 190,
+                    setValue: v =>
+                    {
+                        var vt = Stringification.DataTypeDefXsdFromString((string)v);
+                        if (vt.HasValue)
+                            qual.ValueType = vt.Value;
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    });
+
+                // Value
+
                 AddKeyValueExRef(
                     substack, "value", qual, qual.Value, null, repo,
                     v =>
@@ -280,7 +334,29 @@ namespace AasxPackageLogic
                         qual.Value = v as string;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
+                    },
+                    limitToOneRowForNoEdit: true,
+                    auxButtonTitles: new[] { "\u2261" },
+                    auxButtonToolTips: new[] { "Edit in multiline editor" },
+                    auxButtonLambda: (buttonNdx) =>
+                    {
+                        if (buttonNdx == 0)
+                        {
+                            var uc = new AnyUiDialogueDataTextEditor(
+                                                caption: $"Edit Extension '{"" + qual.Type}'",
+                                                mimeType: Stringification.ToString(qual.ValueType),
+                                                text: qual.Value);
+                            if (this.context.StartFlyoverModal(uc))
+                            {
+                                qual.Value = uc.Text;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryUpdateValue());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+                        return new AnyUiLambdaActionNone();
                     });
+
+                // ValueId
 
                 if (SafeguardAccess(
                         substack, repo, qual.ValueId, "valueId:", "Create data element!",
@@ -291,14 +367,22 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    List<string> keys = new();
-                    foreach (var key in qual.ValueId.Keys)
-                    {
-                        keys.Add(key.Value);
-                    }
-                    AddKeyListOfIdentifier(substack, "valueId", keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All",
-                        relatedReferable: relatedReferable);
+                    AddKeyReference(substack, "valueId", qual.ValueId, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        addExistingEntities: "All", addFromKnown: true,
+                        showRefSemId: false,
+                        relatedReferable: relatedReferable,
+                        auxContextHeader: new[] { "\u2573", "Delete valueId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                qual.ValueId = null;
+                                this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
                 }
 
             }

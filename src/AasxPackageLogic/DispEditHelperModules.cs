@@ -885,6 +885,11 @@ namespace AasxPackageLogic
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
+                    () => true,
+                    "In IEC63278, 'not applicable' is a further choice. This will be part of " +
+                    "a new release.",
+                    severityLevel: HintCheck.Severity.Notice ),
+                new HintCheck(
                     () => { return kind != AssetKind.Instance; },
                     "Check for kind setting. 'Instance' is the usual choice.",
                     severityLevel: HintCheck.Severity.Notice )

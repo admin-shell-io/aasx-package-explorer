@@ -42,6 +42,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * LevelType needs powers of 2 in order to have enum with multiple bits!!
 * still xmlns="https://admin-shell.io/aas/3/0/RC02" -> changed to /3/0
 * .NET NS also still RC02
+* AssetKind/NotApplicable
 
 ## Decisions
 
@@ -91,3 +92,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * valuelist for iec61360
 * first serializations converted
 * copy/paste via clipboard
+* rework of Qualifiers (References, ValueType, Kind, Value with multi-line)
