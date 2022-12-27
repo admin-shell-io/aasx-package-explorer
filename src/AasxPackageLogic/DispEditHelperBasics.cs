@@ -15,6 +15,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
@@ -225,34 +226,24 @@ namespace AasxPackageLogic
 
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrushTuple colors,
             ModifyRepo repo = null,
-            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null)
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
         {
-            AddGroup(view, name, colors?.Bg, colors?.Fg, repo, auxButtonTitle, auxButtonLambda);
+            AddGroup(view, name, colors?.Bg, colors?.Fg, repo, 
+                auxButtonTitle, auxButtonLambda,
+                auxContextHeader, auxContextLambda);
         }
 
         public void AddGroup(AnyUiStackPanel view, string name, AnyUiBrush background, AnyUiBrush foreground,
             ModifyRepo repo = null,
-            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null)
+            string auxButtonTitle = null, Func<object, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
         {
-            var g = new AnyUiGrid();
-            g.Margin = new AnyUiThickness(0, 13, 0, 0);
-
-            var gc1 = new AnyUiColumnDefinition();
-            gc1.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-            g.ColumnDefinitions.Add(gc1);
-
-            var gr1 = new AnyUiRowDefinition();
-            gr1.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.RowDefinitions.Add(gr1);
+            var g = AddSmallGrid(1, 4, new[] { "*", "#", "#", "#" }, margin: new AnyUiThickness(0, 13, 0, 0));
 
             var auxButton = repo != null && auxButtonTitle != null && auxButtonLambda != null;
-            if (auxButton)
-            {
-                var gc3 = new AnyUiColumnDefinition();
-                gc3.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-                g.ColumnDefinitions.Add(gc3);
-            }
 
+            // manually add label (legacy?)
             var l = new AnyUiLabel();
             l.Margin = new AnyUiThickness(0, 0, 0, 0);
             l.Padding = new AnyUiThickness(5, 0, 0, 0);
@@ -265,6 +256,7 @@ namespace AasxPackageLogic
             g.Children.Add(l);
             view.Children.Add(g);
 
+            // auxButton
             if (auxButton)
             {
                 AnyUiUIElement.RegisterControl(
@@ -274,6 +266,19 @@ namespace AasxPackageLogic
                         padding: new AnyUiThickness(5, 0, 5, 0),
                         content: auxButtonTitle),
                     auxButtonLambda);
+            }
+
+            // context menu
+            if (auxContextHeader != null && auxContextLambda != null)
+            {
+                AddSmallContextMenuItemTo(
+                        g, 0, 2,
+                        "\u22ee",
+                        auxContextHeader.ToArray(),
+                        margin: new AnyUiThickness(2, 2, 2, 2),
+                        padding: new AnyUiThickness(5, 0, 5, 0),
+                        verticalAlignment: AnyUiVerticalAlignment.Center,
+                        menuItemLambda: auxContextLambda);
             }
         }
 

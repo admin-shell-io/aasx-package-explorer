@@ -45,7 +45,7 @@ namespace AasxPackageLogic
         //
         //
 
-        public void DisplayOrEditAasEntityAsset(
+        public void DisplayOrEditAasEntityAssetInformation(
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             AssetAdministrationShell aas, AssetInformation asset,
             object preferredNextFocus,
@@ -54,14 +54,19 @@ namespace AasxPackageLogic
         {
             this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
 
-            // global Asset ID
+            // Kind
+
+            this.DisplayOrEditEntityAssetKind(stack, asset.AssetKind,
+                (k) => { asset.AssetKind = k; }, relatedReferable: aas);
+
+            // Global Asset ID
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
                     () => asset.GlobalAssetId?.IsValid() != true,
                     "It is strobly encouraged to have the AAS associated with an global asset id from the " +
                     "very beginning. If the AAS describes a product, the individual asset id should to be " +
-                    "found on its typeplate. " +
+                    "found on its name plate. " +
                     "This  attribute  is  required  as  soon  as  the  AAS  is exchanged via partners in " +
                     "the life cycle of the asset.",
                     severityLevel: HintCheck.Severity.High)
@@ -190,24 +195,17 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 });
             }
-
-            // Kind
-            this.DisplayOrEditEntityAssetKind(stack, asset.AssetKind,
-                (k) => { asset.AssetKind = k; }, relatedReferable: aas);
-
-
+    
+            // Specific Asset IDs
             // list of multiple key value pairs
             this.DisplayOrEditEntityListOfIdentifierKeyValuePair(stack, asset.SpecificAssetIds,
                 (ico) => { asset.SpecificAssetIds = ico; },
                 key: "specificAssetId",
                 relatedReferable: aas);
-
+            
             // Thumbnail: File [0..1]
-            // Note: another, may be better approach would be have a special SMWCollection constrained
-            // on [0..1] and let the existing functions work on this. This could give better copy/ paste
-            // and more. The serialization would then materialize (via getter/setters) this as "File" [0..1].
 
-            this.AddGroup(stack, "DefaultThumbnail: Resource element", this.levelColors.SubSection,
+            this.AddGroup(stack, "DefaultThumbnail: Resource element", this.levelColors.SubSection, repo,
                 auxButtonTitle: (asset.DefaultThumbnail == null) ? null : "Delete",
                 auxButtonLambda: (o) =>
                 {
@@ -1008,7 +1006,7 @@ namespace AasxPackageLogic
             AssetAdministrationShell aas,
             bool editMode, AnyUiStackPanel stack, bool hintMode = false)
         {
-            this.AddGroup(stack, "Asset Administration Shell", this.levelColors.MainSection);
+            this.AddGroup(stack, "AssetAdministrationShell (according IEC63278)", this.levelColors.MainSection);
             if (aas == null)
                 return;
 
@@ -1240,15 +1238,15 @@ namespace AasxPackageLogic
             // Referable
             this.DisplayOrEditEntityReferable(stack, aas, categoryUsual: false);
 
-            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
-            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.EmbeddedDataSpecifications,
-                (ds) => { aas.EmbeddedDataSpecifications = ds; }, relatedReferable: aas);
-
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
                 stack, aas,
                 Options.Curr.TemplateIdAas,
                 null);
+
+            // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
+            this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.EmbeddedDataSpecifications,
+                (ds) => { aas.EmbeddedDataSpecifications = ds; }, relatedReferable: aas);
 
             // use some asset reference
             var asset = aas.AssetInformation;
@@ -1258,7 +1256,7 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () =>
                     {
-                        return asset != null && asset.AssetKind != null && asset.AssetKind== AssetKind.Instance &&
+                        return asset != null && asset.AssetKind== AssetKind.Instance &&
                             ( aas.DerivedFrom == null || aas.DerivedFrom.Keys.Count < 1);
                     },
                     "You have decided to create an AAS for kind = 'Instance'. " +
@@ -1274,7 +1272,8 @@ namespace AasxPackageLogic
                 stack, repo, aas.DerivedFrom, "derivedFrom:", "Create data element!",
                 v =>
                 {
-                    aas.DerivedFrom = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.AssetAdministrationShell, "")});
+                    aas.DerivedFrom = new Reference(ReferenceTypes.ModelReference, 
+                        new List<Key>() { new Key(KeyTypes.AssetAdministrationShell, "")});
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
@@ -1287,10 +1286,22 @@ namespace AasxPackageLogic
                         new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)), translateAssetToAAS: true);
                 };
 
-                this.AddKeyListKeys(
-                    stack, "derivedFrom", aas.DerivedFrom.Keys, repo,
+                this.AddKeyReference(
+                    stack, "derivedFrom", aas.DerivedFrom, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "AssetAdministrationShell",
-                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas);
+                    showRefSemId: false,
+                    jumpLambda: lambda, noEditJumpLambda: lambda, relatedReferable: aas,
+                    auxContextHeader: new[] { "\u2573", "Delete derivedFrom" },
+                    auxContextLambda: (i) =>
+                    {
+                        if (i == 0)
+                        {
+                            aas.DerivedFrom = null;
+                            this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
             }
 
             //
@@ -1311,7 +1322,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                DisplayOrEditAasEntityAsset(
+                DisplayOrEditAasEntityAssetInformation(
                     packages, env, aas, aas.AssetInformation,
                     preferredNextFocus: aas,
                     editMode: editMode, repo: repo, stack: stack, hintMode: hintMode);
@@ -3266,13 +3277,15 @@ namespace AasxPackageLogic
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
 
                 AddKeyValueExRef(
-                    stack, "value", blb, Encoding.Default.GetString(blb.Value), null, repo,
+                    stack, "value", blb, (blb.Value == null) ? "" : Encoding.Default.GetString(blb.Value), 
+                    null, repo,
                     v =>
                     {
                         blb.Value = Encoding.Default.GetBytes((string)v);
                         this.AddDiaryEntry(blb, new DiaryEntryUpdateValue());
                         return new AnyUiLambdaActionNone();
                     },
+                    limitToOneRowForNoEdit: true,
                     auxButtonTitles: new[] { "\u2261" },
                     auxButtonToolTips: new[] { "Edit in multiline editor" },
                     auxButtonLambda: (buttonNdx) =>
@@ -3458,18 +3471,21 @@ namespace AasxPackageLogic
                     this.AddKeyValue(
                         stack, "Statements", "Please add statements via editing of sub-ordinate entities");
 
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => {
-                                return ent?.EntityType == null;
+                // EntityType
+
+                //is not nullable!
+                //this.AddHintBubble(
+                //    stack, hintMode,
+                //    new[] {
+                //        new HintCheck(
+                //            () => {
+                //                return ent?.EntityType == null;
                                     
-                            },
-                            "EntityType needs to be either CoManagedEntity (no assigned AssetInformation reference) " +
-                                "or SelfManagedEntity (with assigned AssetInformation reference)",
-                            severityLevel: HintCheck.Severity.High)
-                    });
+                //            },
+                //            "EntityType needs to be either CoManagedEntity (no assigned AssetInformation reference) " +
+                //                "or SelfManagedEntity (with assigned AssetInformation reference)",
+                //            severityLevel: HintCheck.Severity.High)
+                //    });
 
                 AddKeyValueExRef(
                     stack, "entityType", ent, Stringification.ToString(ent.EntityType), null, repo,
@@ -3482,6 +3498,10 @@ namespace AasxPackageLogic
                     comboBoxItems: Enum.GetNames(typeof(EntityType)),
                     comboBoxIsEditable: true);
 
+                // GlobalAssetId
+
+                AddGroup(stack, "GlobalAssetId (in case of self managed asset, preferred)", levelColors.SubSection);
+
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -3491,11 +3511,11 @@ namespace AasxPackageLogic
                                     ent.EntityType == EntityType.SelfManagedEntity &&
                                     (ent.GlobalAssetId == null || ent.GlobalAssetId.Keys.Count < 1);
                             },
-                            "Please choose the AssetInformation for the SelfManagedEntity.",
+                            "Please choose the global identifier for the SelfManagedEntity.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (this.SafeguardAccess(
-                        stack, repo, ent.GlobalAssetId.GetAsIdentifier(), "AssetInformation:", "Create data element!",
+                        stack, repo, ent.GlobalAssetId, "globalAssetId:", "Create data element!",
                         v =>
                         {
                             ent.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
@@ -3508,18 +3528,43 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(
                             new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)), translateAssetToAAS: true);
                     };
-                    this.AddKeyListKeys(
-                        /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
-                           It shall be replaced (after intergrating AnyUI) by a better repo handling */
-                        /* Update: already better! */
-                        stack, "AssetInformation", ent.GlobalAssetId.Keys, repo, packages,
+                    AddKeyReference(
+                        stack, "globalAssetId", ent.GlobalAssetId, repo, packages,
                         PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        "",
+                        addExistingEntities: "All", showRefSemId: false,
                         jumpLambda: lambda,
                         noEditJumpLambda: lambda,
-                        relatedReferable: ent);
+                        relatedReferable: ent,
+                        auxContextHeader: new[] { "\u2573", "Delete globalAssetId" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                ent.GlobalAssetId = null;
+                                this.AddDiaryEntry(ent, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
                 }
 
+                // 0..1 ?? of specificAssetId ??
+                this.DisplayOrEditEntitySingleIdentifierKeyValuePair(
+                    stack, ent.SpecificAssetId,
+                    (v) => { ent.SpecificAssetId = v; },
+                    key: "specificAssetId",
+                    relatedReferable: ent,
+                    auxContextHeader: new[] { "\u2573", "Delete SpecificAssetId" },
+                    auxContextLambda: (o) =>
+                    {
+                        if (o is int i && i == 0)
+                        {
+                            ent.SpecificAssetId = null;
+                            this.AddDiaryEntry(ent, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
             }
             else if (sme is BasicEventElement bev)
             {

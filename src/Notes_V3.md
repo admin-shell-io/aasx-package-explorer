@@ -25,10 +25,14 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * CDs below SME?
 * CD below MLP does not work
 * NavigateTo: Find also CDs with GlobalReference
+* crash: add entity
 
 ## Findings / Open questions in spec
 
 * DataSpecification61360.Value is string (aas core) or ShortNameTypeIEC61360 (spec)?
+* AssetInformation: UML and table with different ordering of attributes
+* AssetInformation.assetType .. what is it?
+* Entity.GlobalAssetId is Reference (aas core) or Identifier (spec)?
 
 ## Feature Requests to AAS core
 
@@ -43,6 +47,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * still xmlns="https://admin-shell.io/aas/3/0/RC02" -> changed to /3/0
 * .NET NS also still RC02
 * AssetKind/NotApplicable
+* AssetInformation.assetType missing?
 
 ## Decisions
 
@@ -93,3 +98,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * first serializations converted
 * copy/paste via clipboard
 * rework of Qualifiers (References, ValueType, Kind, Value with multi-line)
+* rework of AssetInformation
+* remove Referable.Checksum
+* rework of AAS
+* check of Submodel
+* check of SME
+* rework of Entity (sigh! single specific asset id pair ..)

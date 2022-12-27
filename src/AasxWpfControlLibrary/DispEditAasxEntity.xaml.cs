@@ -323,7 +323,7 @@ namespace AasxPackageExplorer
                 }
                 else if (entity is VisualElementAsset veas)
                 {
-                    _helper.DisplayOrEditAasEntityAsset(
+                    _helper.DisplayOrEditAasEntityAssetInformation(
                         packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
                         editMode, repo, stack, hintMode: hintMode);
                 }

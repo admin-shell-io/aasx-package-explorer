@@ -423,11 +423,94 @@ namespace AasxPackageLogic
             public SpecificAssetId pair = new("", "", null);
         }
 
+        public void IdentifierKeyValueSinglePairHelper(
+            AnyUiStackPanel substack, ModifyRepo repo,
+            SpecificAssetId pair,
+            IReferable relatedReferable = null)
+        {
+            // access
+            if (substack == null || pair == null)
+                return;
+
+            // semanticId
+
+            AddHintBubble(
+                substack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => pair.SemanticId?.IsValid() != true,
+                            "Check, if a semanticId can be given in addition the key!",
+                            severityLevel: HintCheck.Severity.Notice)
+                });
+            if (SafeguardAccess(
+                    substack, repo, pair.SemanticId, "semanticId:", "Create data element!",
+                    v =>
+                    {
+                        pair.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                AddKeyReference(
+                    substack, "semanticId", pair.SemanticId, repo,
+                    packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                    addExistingEntities: "All",
+                    addEclassIrdi: true, showRefSemId: false,
+                    relatedReferable: relatedReferable);
+            }
+
+            // Name
+
+            AddHintBubble(
+                substack, hintMode,
+                new[] {
+                        new HintCheck(
+                            () => !pair.Name.HasContent(),
+                            "A key string specification shall be given!")
+                });
+            AddKeyValueExRef(
+                substack, "key", pair, pair.Name, null, repo,
+                v =>
+                {
+                    pair.Name = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            // Value
+
+            AddKeyValueExRef(
+                substack, "value", pair, pair.Value, null, repo,
+                v =>
+                {
+                    pair.Value = v as string;
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                });
+
+            if (SafeguardAccess(
+                    substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
+                    v =>
+                    {
+                        pair.ExternalSubjectId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }))
+            {
+                AddKeyReference(substack, "externalSubjectId", pair.ExternalSubjectId, repo,
+                    packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                    addExistingEntities: "All", addFromKnown: true, showRefSemId: false,
+                    relatedReferable: relatedReferable);
+            }
+
+        }
+
         public void IdentifierKeyValuePairHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<SpecificAssetId> pairs,
             string key = "IdentifierKeyValuePairs",
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            bool constrainToOne = false)
         {
             if (editMode)
             {
@@ -438,13 +521,13 @@ namespace AasxPackageLogic
                     repo,
                     (buttonNdx) =>
                     {
-                        if (buttonNdx == 0)
+                        if (buttonNdx == 0 && (!constrainToOne || pairs.Count < 1))
                         {
                             pairs.Add(new SpecificAssetId("", "", null));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
-                        if (buttonNdx == 1)
+                        if (buttonNdx == 1 && (!constrainToOne || pairs.Count < 1))
                         {
                             var pfn = Options.Curr.IdentifierKeyValuePairsFile;
                             if (pfn == null || !System.IO.File.Exists(pfn))
@@ -480,7 +563,7 @@ namespace AasxPackageLogic
                             }
                         }
 
-                        if (buttonNdx == 2)
+                        if (buttonNdx == 2 && (!constrainToOne || pairs.Count < 1))
                         {
                             try
                             {
@@ -508,11 +591,11 @@ namespace AasxPackageLogic
             for (int i = 0; i < pairs.Count; i++)
             {
                 var pair = pairs[i];
-                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth);
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Pair {1 + i}",
+                    substack, $"Pair {1 + i}: {AdminShellUtil.ShortenWithEllipses(pairs[storedI].Name, 30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -579,81 +662,9 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => pair.SemanticId?.IsValid() != true,
-                            "Check, if a semanticId can be given in addition the key!",
-                            severityLevel: HintCheck.Severity.Notice)
-                    });
-                if (SafeguardAccess(
-                        substack, repo, pair.SemanticId, "semanticId:", "Create data element!",
-                        v =>
-                        {
-                            pair.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    List<string> keys = new ();
-                    foreach(var semKey in pair.SemanticId.Keys)
-                    {
-                        keys.Add(semKey.Value);
-                    }
-                    AddKeyListOfIdentifier(
-                        substack, "semanticId", keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        addExistingEntities: "All",
-                        addEclassIrdi: true,
-                        relatedReferable: relatedReferable);
-                }
+                // extra function for single pair, because of special cases (sigh!)
 
-                AddHintBubble(
-                    substack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => !pair.Name.HasContent(),
-                            "A key string specification shall be given!")
-                    });
-                AddKeyValueExRef(
-                    substack, "key", pair, pair.Name, null, repo,
-                    v =>
-                    {
-                        pair.Name = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                AddKeyValueExRef(
-                    substack, "value", pair, pair.Value, null, repo,
-                    v =>
-                    {
-                        pair.Value = v as string;
-                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    });
-
-                if (SafeguardAccess(
-                        substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
-                        v =>
-                        {
-                            pair.ExternalSubjectId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
-                            this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
-                            return new AnyUiLambdaActionRedrawEntity();
-                        }))
-                {
-                    //TODO: jtikekar: Test 
-                    List<string> keys = new();
-                    foreach(var extSubIdKey in pair.ExternalSubjectId.Keys)
-                    {
-                        keys.Add(extSubIdKey.Value);
-                    }
-                    AddKeyListOfIdentifier(substack, "externalSubjectId", keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "All",
-                        relatedReferable: relatedReferable);
-                }
-
+                IdentifierKeyValueSinglePairHelper(substack, repo, pair, relatedReferable);
             }
 
         }
@@ -784,11 +795,11 @@ namespace AasxPackageLogic
             for (int i = 0; i < extensions.Count; i++)
             {
                 var extension = extensions[i];
-                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth);
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Extension {1 + i}",
+                    substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {

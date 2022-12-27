@@ -195,7 +195,7 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(referable, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
-                comboBoxItems: new string[] {"CONSTANT, PARAMETER, VARIABLE"}, comboBoxIsEditable: true);
+                comboBoxItems: new string[] {"CONSTANT", "PARAMETER", "VARIABLE"}, comboBoxIsEditable: true);
 
             this.AddHintBubble(
                 stack, hintMode,
@@ -235,6 +235,7 @@ namespace AasxPackageLogic
             }
 
             // Checksum
+#if OLD
             this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
                         () => referable.Checksum?.HasContent() == true,
@@ -264,6 +265,7 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionNone();
                 }
                 );
+#endif
 
             // Extensions (at the end to make them not so much impressive!)
 
@@ -1191,6 +1193,36 @@ namespace AasxPackageLogic
 
         }
 
+        public void DisplayOrEditEntitySingleIdentifierKeyValuePair(AnyUiStackPanel stack,
+            SpecificAssetId pair,
+            Action<SpecificAssetId> setOutput,
+            string key = "IdentifierKeyValuePair",
+            IReferable relatedReferable = null,
+            string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
+        {
+            // access
+            if (stack == null)
+                return;
+
+            // members
+            this.AddGroup(stack, $"{key}:", levelColors.SubSection, repo, 
+                auxContextHeader: auxContextHeader, auxContextLambda: auxContextLambda);
+
+            if (this.SafeguardAccess(
+                stack, repo, pair, $"{key}:", "Create IdentifierKeyValuePair!",
+                v =>
+                {
+                    setOutput?.Invoke(new SpecificAssetId("", "", null));
+                    this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionRedrawEntity();
+                }))
+            {
+                this.IdentifierKeyValueSinglePairHelper(
+                    stack, repo, pair,
+                    relatedReferable: relatedReferable);
+            }
+        }
+
         //
         // DataSpecificationIEC61360
         //
@@ -1808,6 +1840,9 @@ namespace AasxPackageLogic
         // special Submodel References
         // 
 
+
+        // TODO (MIHO, 2022-12-26): seems not to be used
+#if OLD
         public void DisplayOrEditEntitySubmodelRef(AnyUiStackPanel stack,
             Reference smref,
             Action<Reference> setOutput,
@@ -1843,6 +1878,7 @@ namespace AasxPackageLogic
                     relatedReferable: relatedReferable);
             }
         }
+#endif
 
         //
         // File / Resource attributes
@@ -1860,17 +1896,19 @@ namespace AasxPackageLogic
                 return;
 
             // members
+            // ContentType
+
             this.AddHintBubble(
                 stack, hintMode,
                 new[] {
-                        new HintCheck(
-                            () =>
-                            {
-                                return valueContent == null || valueContent.Trim().Length < 1 ||
-                                    valueContent.IndexOf('/') < 1 || valueContent.EndsWith("/");
-                            },
-                            "The content type of the file. Former known as MIME type. This is " +
-                            "mandatory information. See RFC2046.")
+                    new HintCheck(
+                        () =>
+                        {
+                            return valueContent == null || valueContent.Trim().Length < 1 ||
+                                valueContent.IndexOf('/') < 1 || valueContent.EndsWith("/");
+                        },
+                        "The content type of the file. Former known as MIME type. This is " +
+                        "mandatory information. See RFC2046.")
                 });
 
             AddKeyValueExRef(
@@ -1882,7 +1920,7 @@ namespace AasxPackageLogic
                     this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionNone();
                 },
-                comboBoxIsEditable: true,
+                comboBoxIsEditable: true, comboBoxMinWidth: 140,
                 comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
 
             this.AddHintBubble(
@@ -1899,6 +1937,8 @@ namespace AasxPackageLogic
                             "Backslashes ('\') are not allow. Please use '/' as path delimiter.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
+
+            // Value
 
             AddKeyValueExRef(
                 stack, "value", containingObject, valuePath, null, repo,
@@ -1936,6 +1976,7 @@ namespace AasxPackageLogic
 
             if (editMode && uploadAssistance != null && packages.Main != null)
             {
+                // Remove, create text, edit
                 // More file actions
                 this.AddAction(
                     stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
@@ -2213,7 +2254,6 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
             }
-
 
         }
     }
