@@ -2138,7 +2138,7 @@ namespace AasxPackageLogic
                                     // emit event (for parent container, e.g. Operation)
                                     this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
-                                    return new AnyUiLambdaActionRedrawEntity();
+                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
                                 }
                             return new AnyUiLambdaActionNone();
                         });
@@ -2652,51 +2652,37 @@ namespace AasxPackageLogic
 
                 var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
-                for (int dirNdx = 0; dirNdx < 3; dirNdx++)
-                {
-                    var names = (new[] { "In", "Out", "InOut" })[dirNdx];
-                    var dir = (
-                        new[]
-                        {
-                            OperationVariableDirection.In,
-                            OperationVariableDirection.Out,
-                            OperationVariableDirection.InOut
-                        })[dirNdx];
+                foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
+                { 
+                    // dispatch
+                    var names = (new[] { "In", "Out", "InOut" })[(int) dir];
+                    var ovl = smo.GetVars(dir);
 
+                    // group
                     this.AddGroup(substack, "OperationVariables " + names, this.levelColors.SubSection);
 
-                    List<OperationVariable> operationVariables = null;
-                    if(dir == OperationVariableDirection.In)
-                    {
-                        operationVariables = smo.InputVariables;
-                    }
-                    else if(dir == OperationVariableDirection.Out)
-                    {
-                        operationVariables = smo.OutputVariables;
-                    }
-                    else if(dir == OperationVariableDirection.InOut)
-                    {
-                        operationVariables = smo.InoutputVariables;
-                    }
-
+                    // add, paste
                     this.AddHintBubble(
                         substack, hintMode,
                         new[] {
                             new HintCheck(
-                                () => { return operationVariables == null || operationVariables.Count < 1; },
+                                () => { return ovl == null || ovl.Count < 1; },
                                 "This collection of OperationVariables currently has no elements, yet. " +
                                     "Please check, which in- and out-variables are required.",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
                     this.AddAction(
                         substack, "OperationVariable:", new[] { "Add", "Paste into" }, repo,
-                        (buttonNdx) =>
+                        (Func<int, AnyUiLambdaActionBase>)((buttonNdx) =>
                         {
                             if (buttonNdx == 0)
                             {
-                                var ov = new OperationVariable(null); //TODO: jtikekar not a good solution to add null SME
-                                operationVariables ??= new List<OperationVariable>();
-                                operationVariables.Add(ov);  //TODO:jtikekar test if get assigned to corresponding in, out inOut variables in actual operation
+                                // prepare
+                                //TODO: jtikekar not a good solution to add null SME
+                                ovl ??= new List<OperationVariable>();
+                                var ov = new OperationVariable(null); 
+                                ovl.Add(ov);
+                                smo.SetVars(dir, ovl);
 
                                 // emit event
                                 this.AddDiaryEntry(smo, new DiaryEntryStructChange());
@@ -2724,10 +2710,7 @@ namespace AasxPackageLogic
                                     var smw2 = item.sme.Copy();
 
                                     businessObj = smo.AddChild(smw2,
-                                        new EnumerationPlacmentOperationVariable()
-                                        {
-                                            Direction = dir
-                                        });
+                                        new EnumerationPlacmentOperationVariable() { Direction = dir });
 
                                     // may delete original
                                     if (!this.theCopyPaste.Duplicate)
@@ -2748,7 +2731,7 @@ namespace AasxPackageLogic
                             }
 
                             return new AnyUiLambdaActionNone();
-                        });
+                        }));
 
                     this.AddHintBubble(
                         substack, hintMode,
@@ -2772,27 +2755,10 @@ namespace AasxPackageLogic
                                 if (rve != null)
                                 {
                                     var mdo = rve.GetMainDataObject();
-                                    if (mdo != null && mdo is OperationVariable)
+                                    if (mdo != null && mdo is OperationVariable mdov && mdov.Value != null)
                                     {
-                                        var clone = (mdo as OperationVariable).Copy();
-
-                                        List<OperationVariable> opVars = null;
-                                        if(dir == OperationVariableDirection.In)
-                                        {
-                                            opVars = smo.InputVariables;
-                                        }
-                                        else if(dir == OperationVariableDirection.Out)
-                                        {
-                                            opVars = smo.OutputVariables;
-                                        }
-                                        else if(dir == OperationVariableDirection.InOut)
-                                        {
-                                            opVars = smo.InoutputVariables;
-                                        }
-
-                                        opVars ??= new List<OperationVariable>();
-
-                                        opVars.Add(clone);
+                                        smo.AddChild(mdov.Value.Copy(),
+                                            new EnumerationPlacmentOperationVariable() { Direction = dir });
 
                                         // emit event
                                         this.AddDiaryEntry(smo, new DiaryEntryStructChange());
@@ -3124,6 +3090,8 @@ namespace AasxPackageLogic
                 var mlp = sme as MultiLanguageProperty;
                 this.AddGroup(stack, "MultiLanguageProperty", this.levelColors.MainSection);
 
+                // Value
+
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -3145,6 +3113,8 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                     this.AddKeyListLangStr(stack, "value", mlp.Value, repo);
+
+                // ValueId
 
                 if (this.SafeguardAccess(
                         stack, repo, mlp.ValueId, "valueId:", "Create data element!",
@@ -3254,27 +3224,7 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Blob", this.levelColors.MainSection);
 
-                this.AddHintBubble(
-                    stack, hintMode,
-                    new[] {
-                        new HintCheck(
-                            () => {
-                                return blb.ContentType == null || blb.ContentType.Trim().Length < 1 ||
-                                    blb.ContentType.IndexOf('/') < 1 || blb.ContentType.EndsWith("/");
-                            },
-                            "The mime-type of the file. Mandatory information. See RFC2046.")
-                    });
-
-                AddKeyValueExRef(
-                    stack, "mimeType", blb, blb.ContentType, null, repo,
-                    v =>
-                    {
-                        blb.ContentType = v as string;
-                        this.AddDiaryEntry(blb, new DiaryEntryStructChange());
-                        return new AnyUiLambdaActionNone();
-                    },
-                    comboBoxIsEditable: true,
-                    comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
+                                // Value
 
                 AddKeyValueExRef(
                     stack, "value", blb, (blb.Value == null) ? "" : Encoding.Default.GetString(blb.Value), 
@@ -3305,6 +3255,32 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
+
+                // ContentType
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => {
+                                return blb.ContentType == null || blb.ContentType.Trim().Length < 1 ||
+                                    blb.ContentType.IndexOf('/') < 1 || blb.ContentType.EndsWith("/");
+                            },
+                            "The contenty-type of the file. Also known as MIME type. " +
+                            "Mandatory information. See RFC2046.")
+                    });
+
+                AddKeyValueExRef(
+                    stack, "contentType", blb, blb.ContentType, null, repo,
+                    v =>
+                    {
+                        blb.ContentType = v as string;
+                        this.AddDiaryEntry(blb, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: true,
+                    comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
+
             }
             else if (sme is ReferenceElement rfe)
             {

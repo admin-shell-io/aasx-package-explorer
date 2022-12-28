@@ -104,3 +104,5 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * check of Submodel
 * check of SME
 * rework of Entity (sigh! single specific asset id pair ..)
+* rework of File (FileResources): re-order of attributes
+* rework of Operation, OperationVariable, OV may contain SME hierarchies

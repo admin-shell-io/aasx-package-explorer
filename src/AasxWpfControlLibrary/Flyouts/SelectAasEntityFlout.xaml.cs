@@ -142,10 +142,7 @@ namespace AasxPackageExplorer
             //
             // other special cases
             //
-            if (siMdo is Reference smref &&
-                    (DiaData.Filter == null ||
-                        ApplyFullFilterString(DiaData.Filter)
-                            .ToLower().IndexOf("submodelref ", StringComparison.Ordinal) >= 0))
+            if (siMdo is Reference smref && CheckFilter("submodelref"))
             {
                 DiaData.ResultKeys = new List<AasCore.Aas3_0_RC02.Key>();
                 DiaData.ResultKeys.AddRange(smref.Keys);
@@ -168,6 +165,14 @@ namespace AasxPackageExplorer
                     // ok
                     return true;
                 }
+            }
+
+            if (si is VisualElementOperationVariable veov && CheckFilter("OperationVariable")
+                && veov.theOpVar?.Value != null)
+            {
+                // prepare data
+                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
+                return true;
             }
 
             if (si is VisualElementSupplementalFile vesf && vesf.theFile != null)
@@ -206,6 +211,14 @@ namespace AasxPackageExplorer
             filter = ApplyFullFilterString(filter);
             DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter,
                 lazyLoadingFirst: true);
+        }
+
+        private bool CheckFilter(string name)
+        {
+            return (
+                DiaData.Filter == null || name == null
+                || ApplyFullFilterString(DiaData.Filter).ToLower()
+                    .IndexOf($"{name.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)

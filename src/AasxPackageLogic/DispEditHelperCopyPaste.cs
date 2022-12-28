@@ -524,7 +524,7 @@ namespace AasxPackageLogic
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
-                            "Stored ISubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.IdShort,
+                            "Stored SubmodelElement '{0}'({1}) to internal buffer.{2}", "" + sme.IdShort,
                             "" + sme?.GetSelfDescription().AasElementName,
                             cpbInternal.Duplicate
                                 ? " Paste will duplicate."
@@ -623,7 +623,7 @@ namespace AasxPackageLogic
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
-                                        var opVariables = pcop.GetChildrenFor(place.Direction);
+                                        var opVariables = pcop.GetVars(place.Direction);
                                         createAtIndex = this.AddElementInListBefore<OperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;
@@ -665,7 +665,7 @@ namespace AasxPackageLogic
                                     if (place?.OperationVariable != null)
                                     {
                                         var op = new OperationVariable(smw2);
-                                        var opVariables = pcop.GetChildrenFor(place.Direction);
+                                        var opVariables = pcop.GetVars(place.Direction);
                                         createAtIndex = this.AddElementInListAfter<OperationVariable>(
                                             opVariables, op, place.OperationVariable);
                                         nextBusObj = op;

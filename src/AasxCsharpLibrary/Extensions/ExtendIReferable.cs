@@ -371,20 +371,23 @@ namespace Extensions
             }
             else if (referable is Operation operation)
             {
-                foreach (var inputVariable in operation.InputVariables)
-                {
-                    yield return inputVariable.Value;
-                }
+                if (operation.InputVariables != null)
+                    foreach (var inputVariable in operation.InputVariables)
+                    {
+                        yield return inputVariable.Value;
+                    }
 
-                foreach (var outputVariable in operation.OutputVariables)
-                {
-                    yield return outputVariable.Value;
-                }
+                if (operation.OutputVariables != null)
+                    foreach (var outputVariable in operation.OutputVariables)
+                    {
+                        yield return outputVariable.Value;
+                    }
 
-                foreach (var inOutVariable in operation.InoutputVariables)
-                {
-                    yield return inOutVariable.Value;
-                }
+                if (operation.InoutputVariables != null)
+                    foreach (var inOutVariable in operation.InoutputVariables)
+                    {
+                        yield return inOutVariable.Value;
+                    }
             }
             else
             {

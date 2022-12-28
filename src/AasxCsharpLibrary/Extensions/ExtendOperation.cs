@@ -3,6 +3,7 @@ using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -91,12 +92,30 @@ namespace Extensions
             };
         }
 
-        public static List<OperationVariable> GetChildrenFor(this Operation op, OperationVariableDirection dir)
+        public static List<OperationVariable> GetVars(this Operation op, OperationVariableDirection dir)
         {
             if (dir == OperationVariableDirection.In)
                 return op.InputVariables;
             if (dir == OperationVariableDirection.Out)
                 return op.OutputVariables;
+            return op.InoutputVariables;
+        }
+
+        public static List<OperationVariable> SetVars(
+            this Operation op, OperationVariableDirection dir, List<OperationVariable> value)
+        {
+            if (dir == OperationVariableDirection.In)
+            {
+                op.InputVariables = value;
+                return op.InputVariables;
+            }
+            if (dir == OperationVariableDirection.Out)
+            {
+                op.OutputVariables = value;
+                return op.OutputVariables;
+            }
+
+            op.InoutputVariables = value;
             return op.InoutputVariables;
         }
 

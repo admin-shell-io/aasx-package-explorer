@@ -967,7 +967,7 @@ namespace AasxPackageLogic
             if (this.theDir == OperationVariableDirection.Out)
                 this.TagString = "Out";
             if (this.theDir == OperationVariableDirection.InOut)
-                this.TagString = "InOut";
+                this.TagString = "I/O";
 
             RefreshFromMainData();
             RestoreFromCache();
@@ -1384,31 +1384,33 @@ namespace AasxPackageLogic
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
             TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
             Submodel sm, VisualElementGeneric parent,
-            IReferable parentContainer, ISubmodelElement el)
+            IReferable parentContainer, ISubmodelElement el,
+            VisualElementGeneric useExistingVE = null)
         {
-            // add itself
-            if (el.IdShort == "ManufacturerName")
-            {
-                ;
-            }
+            var ti = useExistingVE;
 
-            var ti = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
-            parent.Members.Add(ti);
-
-            // bookkeeping
-            if (ti.CachedCD != null)
+            // generate new VI?
+            if (ti == null)
             {
-                _cdReferred.Add(ti.CachedCD, ti);
-                _cdToSm.Add(ti.CachedCD, sm);
-            }
+                var tism = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
+                ti = tism; // set outer variable!
+                parent.Members.Add(tism);
 
-            // nested cd?
-            if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
-                && ti.CachedCD != null)
-            {
-                //var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
-                //ti.Members.Add(tiCD);
-                GenerateVisualElementsForSingleCD(cache, env, ti.CachedCD, ti);
+                // bookkeeping
+                if (tism.CachedCD != null)
+                {
+                    _cdReferred.Add(tism.CachedCD, tism);
+                    _cdToSm.Add(tism.CachedCD, sm);
+                }
+
+                // nested cd?
+                if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
+                    && tism.CachedCD != null)
+                {
+                    //var tiCD = new VisualElementConceptDescription(ti, cache, env, ti.CachedCD);
+                    //ti.Members.Add(tiCD);
+                    GenerateVisualElementsForSingleCD(cache, env, tism.CachedCD, tism);
+                }
             }
 
             // Recurse: SMC
@@ -1431,22 +1433,42 @@ namespace AasxPackageLogic
             // Recurse: Operation
             if (el is Operation elo)
             {
-                if (elo.InputVariables != null)
-                    foreach (var vin in elo.InputVariables)
-                        ti.Members.Add(
-                            new VisualElementOperationVariable(
-                                ti, cache, env, el, vin, OperationVariableDirection.In));
-                if (elo.OutputVariables != null)
-                    foreach (var vout in elo.OutputVariables)
-                        ti.Members.Add(
-                            new VisualElementOperationVariable(
-                                ti, cache, env, el, vout, OperationVariableDirection.Out));
-                if (elo.InoutputVariables != null)
-                    foreach (var vout in elo.InoutputVariables)
-                        ti.Members.Add(
-                            new VisualElementOperationVariable(
-                                ti, cache, env, el, vout,
-                                OperationVariableDirection.InOut));
+                foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
+                {
+                    var opv = elo.GetVars(dir);
+                    if (opv != null)
+                        foreach (var v in opv)
+                        {
+                            // OP Var
+                            var veopv = new VisualElementOperationVariable(
+                                   ti, cache, env, el, v, OperationVariableDirection.In);
+                            ti.Members.Add(veopv);
+                            // .. might have childs
+                            if (v.Value != null)
+                                GenerateVisualElementsFromShellEnvAddElements(
+                                    cache, env, sm, ti, elo, v.Value, 
+                                    useExistingVE: veopv);
+                        }
+
+#if OLD
+                    if (elo.InputVariables != null)
+                        foreach (var vin in elo.InputVariables)
+                            ti.Members.Add(
+                                new VisualElementOperationVariable(
+                                    ti, cache, env, el, vin, OperationVariableDirection.In));
+                    if (elo.OutputVariables != null)
+                        foreach (var vout in elo.OutputVariables)
+                            ti.Members.Add(
+                                new VisualElementOperationVariable(
+                                    ti, cache, env, el, vout, OperationVariableDirection.Out));
+                    if (elo.InoutputVariables != null)
+                        foreach (var vout in elo.InoutputVariables)
+                            ti.Members.Add(
+                                new VisualElementOperationVariable(
+                                    ti, cache, env, el, vout,
+                                    OperationVariableDirection.InOut));
+#endif
+                }
             }
 
             // Recurse: AnnotatedRelationshipElement

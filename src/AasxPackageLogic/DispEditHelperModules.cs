@@ -1896,6 +1896,43 @@ namespace AasxPackageLogic
                 return;
 
             // members
+
+            // Value
+
+            AddKeyValueExRef(
+                stack, "value", containingObject, valuePath, null, repo,
+                v =>
+                {
+                    valuePath = v as string;
+                    setOutput?.Invoke(valuePath, valueContent);
+                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                    return new AnyUiLambdaActionNone();
+                },
+                auxButtonTitles: new[] { "Choose supplementary file", },
+                auxButtonToolTips: new[] { "Select existing supplementary files" },
+                auxButtonLambda: (bi) =>
+                {
+                    if (bi == 0)
+                    {
+                        // Select
+                        var ve = this.SmartSelectAasEntityVisualElement(
+                                    packages, PackageCentral.PackageCentral.Selector.Main, "File");
+                        if (ve != null)
+                        {
+                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
+                            if (sf != null)
+                            {
+                                valuePath = sf.Uri.ToString();
+                                setOutput?.Invoke(valuePath, valueContent);
+                                this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                        }
+                    }
+
+                    return new AnyUiLambdaActionNone();
+                });
+
             // ContentType
 
             this.AddHintBubble(
@@ -1938,41 +1975,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
 
-            // Value
-
-            AddKeyValueExRef(
-                stack, "value", containingObject, valuePath, null, repo,
-                v =>
-                {
-                    valuePath = v as string;
-                    setOutput?.Invoke(valuePath, valueContent);
-                    this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
-                    return new AnyUiLambdaActionNone();
-                },
-                auxButtonTitles: new[] { "Choose supplementary file", },
-                auxButtonToolTips: new[] { "Select existing supplementary files" },
-                auxButtonLambda: (bi) =>
-                {
-                    if (bi == 0)
-                    {
-                        // Select
-                        var ve = this.SmartSelectAasEntityVisualElement(
-                                    packages, PackageCentral.PackageCentral.Selector.Main, "File");
-                        if (ve != null)
-                        {
-                            var sf = (ve.GetMainDataObject()) as AdminShellPackageSupplementaryFile;
-                            if (sf != null)
-                            {
-                                valuePath = sf.Uri.ToString();
-                                setOutput?.Invoke(valuePath, valueContent);
-                                this.AddDiaryEntry(containingObject, new DiaryEntryStructChange());
-                                return new AnyUiLambdaActionRedrawEntity();
-                            }
-                        }
-                    }
-
-                    return new AnyUiLambdaActionNone();
-                });
+            // Further actions
 
             if (editMode && uploadAssistance != null && packages.Main != null)
             {
