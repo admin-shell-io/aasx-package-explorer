@@ -1686,7 +1686,7 @@ namespace AasxPackageLogic
 
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme)
                 {
-                    tiCDs.Info = "(only CD not referenced by any ISubmodelElement)";
+                    tiCDs.Info = "(only CD not referenced by any SubmodelElement)";
                 }
 
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)

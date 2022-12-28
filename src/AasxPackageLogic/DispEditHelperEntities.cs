@@ -303,7 +303,7 @@ namespace AasxPackageLogic
                             "it is best practice to include (duplicates of the) concept descriptions " +
                             "inside the AAS environment. You should consider adding a ConceptDescription " +
                             "by clicking 'Add ConceptDescription' on the panel below or " +
-                            "adding a ISubmodelElement to a Submodel. This step is typically done after " +
+                            "adding a SubmodelElement to a Submodel. This step is typically done after " +
                             "creating assets and Administration Shell and when creating SubmodelElements."),
                 });
 
@@ -1454,7 +1454,7 @@ namespace AasxPackageLogic
                         "This Submodel currently has no SubmodelElements, yet. " +
                             "These are the actual carriers of information. " +
                             "You could create them by clicking the 'Add ..' buttons below. " +
-                            "Subsequently, when having a ISubmodelElement established, " +
+                            "Subsequently, when having a SubmodelElement established, " +
                             "you could add meaning by relating it to a ConceptDefinition.",
                         severityLevel: HintCheck.Severity.Notice)
                 });
@@ -1811,7 +1811,7 @@ namespace AasxPackageLogic
                 stack, cd,
                 new DispEditHelperModules.DispEditInjectAction(
                     new[] { "Sync" },
-                    new[] { "Copy (if target is empty) idShort to shortName and ISubmodelElement idShort." },
+                    new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
                     (v) =>
                     {
                         AnyUiLambdaActionBase la = new AnyUiLambdaActionNone();
@@ -2090,7 +2090,7 @@ namespace AasxPackageLogic
                                             .SubmodelElementCollection;
                                     if (buttonNdx == 3)
                                         en = this.SelectAdequateEnum(
-                                            "Select ISubmodelElement to create ..",
+                                            "Select SubmodelElement to create ..",
                                             excludeValues: new[] {
                                                 AasSubmodelElements.Operation });
 
@@ -2129,7 +2129,7 @@ namespace AasxPackageLogic
                         {
                             if (buttonNdx == 0)
                                 if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                         "Delete value, which is the dataset of a ISubmodelElement? " +
+                                         "Delete value, which is the dataset of a SubmodelElement? " +
                                              "This cannot be reverted!",
                                          "AAS-ENV", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 {
@@ -2185,7 +2185,7 @@ namespace AasxPackageLogic
 
                     // value == ISubmodelElement is displayed
                     this.AddGroup(
-                        stack, "OperationVariable value (is a ISubmodelElement)", this.levelColors.SubSection);
+                        stack, "OperationVariable value (is a SubmodelElement)", this.levelColors.SubSection);
                     var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
 
                     // huh, recursion in a lambda based GUI feedback function??!!
@@ -2325,10 +2325,10 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return sme.SemanticId == null || sme.SemanticId.IsEmpty(); },
                             "The semanticId (see below) is empty. " +
-                                "This ISubmodelElement ist currently not assigned to any ConceptDescription. " +
+                                "This SubmodelElement ist currently not assigned to any ConceptDescription. " +
                                 "However, it is recommended to do such assignemt. " +
                                 "With the 'Assign ..' buttons below you might create and/or assign " +
-                                "the ISubmodelElement to an ConceptDescription.",
+                                "the SubmodelElement to an ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
@@ -2502,7 +2502,7 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck( () => { return targets.Count > 0;  },
-                        "Consider importing a ConceptDescription from ECLASS for the existing ISubmodelElement.",
+                        "Consider importing a ConceptDescription from ECLASS for the existing SubmodelElement.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
@@ -2540,7 +2540,7 @@ namespace AasxPackageLogic
                             "This element currently has no SubmodelElements, yet. " +
                                 "These are the actual carriers of information. " +
                                 "You could create them by clicking the 'Add ..' buttons below. " +
-                                "Subsequently, when having a ISubmodelElement established, " +
+                                "Subsequently, when having a SubmodelElement established, " +
                                 "you could add meaning by relating it to a ConceptDefinition.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
@@ -2561,7 +2561,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 2)
                                 en = AasSubmodelElements.SubmodelElementCollection;
                             if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum("Select ISubmodelElement to create ..");
+                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..");
 
                             // ok?
                             if (en != AasSubmodelElements.SubmodelElement)
@@ -2849,7 +2849,7 @@ namespace AasxPackageLogic
                         {
                             var rve = this.SmartSelectAasEntityVisualElement(
                                 packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                "ISubmodelElement") as VisualElementSubmodelElement;
+                                "SubmodelElement") as VisualElementSubmodelElement;
 
                             if (rve != null)
                             {
