@@ -109,3 +109,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * in most display strings, renamed ISubmodelElement to SubmodelElement
 * little tuning on Range
 * little tuning on ReferenceElement, show referredSemanticId (what a monster!)
+* little tuning on RelationshipElem, "Jump" works again (bug in Env.FindReferable())

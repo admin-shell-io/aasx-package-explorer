@@ -3440,6 +3440,8 @@ namespace AasxPackageLogic
                     this.AddKeyValue(stack, "# of values", "" + sml.Value.Count);
                 else
                     this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
+
+
             }
             else if (sme is Operation)
             {
