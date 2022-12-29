@@ -912,7 +912,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    Enum.GetNames(typeof(AssetKind)));
+                    Enum.GetNames(typeof(AssetKind)), comboBoxMinWidth: 105);
             }
         }
 
@@ -958,7 +958,7 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    Enum.GetNames(typeof(ModelingKind)));
+                    Enum.GetNames(typeof(ModelingKind)), comboBoxMinWidth: 105);
             }
         }
 

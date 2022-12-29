@@ -1682,6 +1682,8 @@ namespace AasxPackageLogic
             AnyUiPanel frontPanel = null,
             AnyUiPanel footerPanel = null,
             bool topContextMenu = false,
+            Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
             string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
         {
             // sometimes needless to show
@@ -1703,47 +1705,9 @@ namespace AasxPackageLogic
                 emitCustomEvent = (rf) => { this.AddDiaryEntry(rf, new DiaryEntryStructChange()); };
 
             // Grid
-            var g = new AnyUiGrid();
-            g.Margin = new AnyUiThickness(0, 0, 0, 0);
-
-            // 0 key
-            var gc = new AnyUiColumnDefinition();
-            gc.Width = AnyUiGridLength.Auto;
-            gc.MinWidth = this.standardFirstColWidth;
-            g.ColumnDefinitions.Add(gc);
-
-            // 1 type
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // 2 local
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // 3 id type
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // 4 value
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Star);
-            g.ColumnDefinitions.Add(gc);
-
-            // 5 .. buttons behind it
-            gc = new AnyUiColumnDefinition();
-            gc.Width = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-            g.ColumnDefinitions.Add(gc);
-
-            // rows
-            for (int r = 0; r < rows + rowOfs; r++)
-            {
-                var gr = new AnyUiRowDefinition();
-                gr.Height = new AnyUiGridLength(1.0, AnyUiGridUnitType.Auto);
-                g.RowDefinitions.Add(gr);
-            }
+            var g = AddSmallGrid(rows + rowOfs, 6, new[] { "#", "#", "#", "#", "*", "#", },
+                margin: new AnyUiThickness(0, 0, 0, 0));
+            g.ColumnDefinitions[0].MinWidth = this.standardFirstColWidth;
 
             // populate key
             AddSmallLabelTo(g, 0, 0, margin: new AnyUiThickness(5, 0, 0, 0), 
@@ -1771,6 +1735,9 @@ namespace AasxPackageLogic
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
+                if (auxButtonTitles != null)
+                    for (int i = 0; i < auxButtonTitles.Length; i++)
+                        colDescs.Add("#");
 
                 var g2 = AddSmallGrid(1, 9 + presetNo, colDescs.ToArray());
                 g2.HorizontalAlignment = AnyUiHorizontalAlignment.Stretch;
@@ -1945,6 +1912,31 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         });
                 }
+
+                //
+                // Aux Buttons
+                //
+
+                if (auxButtonTitles != null)
+                    for (int i = 0; i < auxButtonTitles.Length; i++)
+                    {
+                        Func<object, AnyUiLambdaActionBase> lmb = null;
+                        int closureI = i;
+                        if (auxButtonLambda != null)
+                            lmb = (o) =>
+                            {
+                                return auxButtonLambda(closureI); // exchange o with i !!
+                            };
+                        var b = AnyUiUIElement.RegisterControl(
+                            AddSmallButtonTo(
+                                g2, 0, 8 + presetNo + i,
+                                margin: new AnyUiThickness(2, 2, 2, 2),
+                                padding: new AnyUiThickness(5, 0, 5, 0),
+                                content: auxButtonTitles[i]),
+                            lmb) as AnyUiButton;
+                        if (auxButtonToolTips != null && i < auxButtonToolTips.Length)
+                            b.ToolTip = auxButtonToolTips[i];
+                    }
 
                 //
                 // Top Row Context Menue

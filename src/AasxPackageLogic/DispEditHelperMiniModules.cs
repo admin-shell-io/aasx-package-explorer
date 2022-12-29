@@ -1037,22 +1037,24 @@ namespace AasxPackageLogic
         //
 
         public void AddKeyReference(
-        AnyUiStackPanel view, string key,
-        Reference refkeys,
-        ModifyRepo repo = null,
-        PackageCentral.PackageCentral packages = null,
-        PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
-        string addExistingEntities = null,
-        bool addEclassIrdi = false,
-        bool addFromKnown = false,
-        string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
-        Func<List<Key>, AnyUiLambdaActionBase> jumpLambda = null,
-        AnyUiLambdaActionBase takeOverLambdaAction = null,
-        Func<List<Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
-        IReferable relatedReferable = null,
-        Action<IReferable> emitCustomEvent = null,
-        bool showRefSemId = true,
-        string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
+            AnyUiStackPanel view, string key,
+            Reference refkeys,
+            ModifyRepo repo = null,
+            PackageCentral.PackageCentral packages = null,
+            PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
+            string addExistingEntities = null,
+            bool addEclassIrdi = false,
+            bool addFromKnown = false,
+            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
+            Func<List<Key>, AnyUiLambdaActionBase> jumpLambda = null,
+            AnyUiLambdaActionBase takeOverLambdaAction = null,
+            Func<List<Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            IReferable relatedReferable = null,
+            Action<IReferable> emitCustomEvent = null,
+            bool showRefSemId = true,
+            Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
+            string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
+            string[] auxContextHeader = null, Func<int, AnyUiLambdaActionBase> auxContextLambda = null)
         {
             //
             // extended Front panel
@@ -1156,6 +1158,8 @@ namespace AasxPackageLogic
                 frontPanel: frontPanel,
                 topContextMenu: true,
                 footerPanel: footerPanel,
+                auxButtonTitles: auxButtonTitles, auxButtonToolTips: auxButtonToolTips,
+                auxButtonLambda: auxButtonLambda,
                 auxContextHeader: auxContextHeader,
                 auxContextLambda: auxContextLambda,
                 emitCustomEvent: (o) =>

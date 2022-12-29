@@ -81,14 +81,10 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
-                List<string> keys = new();
-                foreach(var key in asset.GlobalAssetId.Keys)
-                {
-                    keys.Add(key.Value);
-                }
-                this.AddKeyListOfIdentifier(
-                    stack, "globalAssetId", keys, repo,
+                this.AddKeyReference(
+                    stack, "globalAssetId", asset.GlobalAssetId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
+                    showRefSemId: false,
                     auxButtonTitles: new[] { "Generate", "Input", "Rename" },
                     auxButtonToolTips: new[] {
                         "Generate an id based on the customizable template option for asset ids.",
@@ -99,9 +95,10 @@ namespace AasxPackageLogic
                     {
                         if (i == 0)
                         {
-                            //TODO: jtikekar keyType
-                            asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "" + AdminShellUtil.GenerateIdAccordingTemplate(
-                                Options.Curr.TemplateIdAsset))});
+                            asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { 
+                                new Key(KeyTypes.GlobalReference, "" + AdminShellUtil.GenerateIdAccordingTemplate(
+                                Options.Curr.TemplateIdAsset))
+                            });
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: preferredNextFocus);
                         }
@@ -116,8 +113,9 @@ namespace AasxPackageLogic
                                 text: "" + asset.GlobalAssetId?.GetAsIdentifier());
                             if (this.context.StartFlyoverModal(uc))
                             {
-                                //TODO: jtikekar keyType
-                                asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, "" + uc.Text) });
+                                asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { 
+                                    new Key(KeyTypes.GlobalReference, "" + uc.Text) 
+                                });
                                 this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
                             }
@@ -170,7 +168,6 @@ namespace AasxPackageLogic
                             }
                         }
                         return new AnyUiLambdaActionNone();
-
                     });
 
                 // print code sheet

@@ -106,3 +106,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * rework of Entity (sigh! single specific asset id pair ..)
 * rework of File (FileResources): re-order of attributes
 * rework of Operation, OperationVariable, OV may contain SME hierarchies
+* in most display strings, renamed ISubmodelElement to SubmodelElement
