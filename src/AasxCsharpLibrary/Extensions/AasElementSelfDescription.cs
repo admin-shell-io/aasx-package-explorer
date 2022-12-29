@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AasCore.Aas3_0_RC02;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,10 +13,17 @@ namespace Extensions
 
         public string ElementAbbreviation { get; set; }
 
-        public AasElementSelfDescription(string aasElementName, string elementAbbreviation)
+        public KeyTypes? KeyTpe { get; set; }
+
+        public AasSubmodelElements? SmeType { get; set; }
+
+        public AasElementSelfDescription(string aasElementName, string elementAbbreviation,
+            KeyTypes? keyType, AasSubmodelElements? smeType)
         {
             AasElementName = aasElementName;
             ElementAbbreviation = elementAbbreviation;
+            KeyTpe = keyType; 
+            SmeType = smeType;
         }
     }
 }

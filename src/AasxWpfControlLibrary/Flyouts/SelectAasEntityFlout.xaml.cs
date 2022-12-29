@@ -58,6 +58,7 @@ namespace AasxPackageExplorer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             DisplayElements.Background = new SolidColorBrush(Color.FromRgb(40, 40, 40));
+            DisplayElements.ActivateElementStateCache();
 
             // fill combo box
             ComboBoxFilter.Items.Add("All");
@@ -69,7 +70,9 @@ namespace AasxPackageExplorer
                 foreach (var x in ComboBoxFilter.Items)
                     if (x.ToString().Trim().ToLower() == DiaData.Filter.Trim().ToLower())
                     {
+                        _disableValueCallbacks = true;
                         ComboBoxFilter.SelectedItem = x;
+                        _disableValueCallbacks = false;
                         break;
                     }
 
@@ -93,8 +96,14 @@ namespace AasxPackageExplorer
         // Mechanics
         //
 
+        // automatic re-filtering might be a time driver
+        protected bool _disableValueCallbacks = false;
+
         private void ComboBoxFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_disableValueCallbacks)
+                return;
+
             if (sender == ComboBoxFilter)
             {
                 DiaData.Filter = ComboBoxFilter.SelectedItem.ToString();
@@ -203,13 +212,18 @@ namespace AasxPackageExplorer
             if (res.Trim().ToLower() == "submodelelement")
                 foreach (var s in Enum.GetNames(typeof(AasSubmodelElements)))
                     res += " " + s + " ";
-            return " " + res + " ";
+            if (res.Trim().ToLower() == "all")
+                return null;
+            else
+                return " " + res + " ";
         }
 
         private void FilterFor(string filter)
         {
             filter = ApplyFullFilterString(filter);
             DisplayElements.RebuildAasxElements(packages, DiaData.Selector, true, filter,
+                // expandModePrimary: (filter?.ToLower().Contains("ConceptDescription") == true) ? 1 : 0,
+                expandModePrimary: 1, expandModeAux: 0,
                 lazyLoadingFirst: true);
         }
 

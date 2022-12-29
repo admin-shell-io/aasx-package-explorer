@@ -48,6 +48,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * .NET NS also still RC02
 * AssetKind/NotApplicable
 * AssetInformation.assetType missing?
+* mapping between Enum:KeyTpes and various other types, such as Enum:AasSubmodelElements
 
 ## Decisions
 

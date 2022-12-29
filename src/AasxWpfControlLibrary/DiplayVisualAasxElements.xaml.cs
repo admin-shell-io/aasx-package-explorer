@@ -530,7 +530,9 @@ namespace AasxPackageExplorer
             PackageCentral packages,
             PackageCentral.Selector selector,
             bool editMode = false, string filterElementName = null,
-            bool lazyLoadingFirst = false)
+            bool lazyLoadingFirst = false, 
+            int expandModePrimary = 1,
+            int expandModeAux = 0)
         {
             // clear tree
             displayedTreeViewLines.Clear();
@@ -543,7 +545,7 @@ namespace AasxPackageExplorer
                 // generate lines, add
                 displayedTreeViewLines.AddVisualElementsFromShellEnv(
                     treeViewLineCache, packages.Main?.AasEnv, packages.Main,
-                    packages.MainItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                    packages.MainItem?.Filename, editMode, expandMode: expandModePrimary, lazyLoadingFirst: lazyLoadingFirst);
 
                 // more?
                 if (packages.AuxAvailable &&
@@ -552,7 +554,7 @@ namespace AasxPackageExplorer
                 {
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, packages.Aux?.AasEnv, packages.Aux,
-                        packages.AuxItem?.Filename, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                        packages.AuxItem?.Filename, editMode, expandMode: expandModeAux, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // more?
@@ -564,7 +566,7 @@ namespace AasxPackageExplorer
 
                     displayedTreeViewLines.AddVisualElementsFromShellEnv(
                         treeViewLineCache, pkg?.AasEnv, pkg,
-                        null, editMode, expandMode: 1, lazyLoadingFirst: lazyLoadingFirst);
+                        null, editMode, expandMode: expandModeAux, lazyLoadingFirst: lazyLoadingFirst);
                 }
 
                 // may be filter

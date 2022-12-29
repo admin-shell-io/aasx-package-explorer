@@ -15,7 +15,7 @@ namespace Extensions
 
         public static AasElementSelfDescription GetSelfDescription(this Reference reference)
         {
-            return new AasElementSelfDescription("Reference", "Rfc");
+            return new AasElementSelfDescription("Reference", "Rfc", null, null);
         }
 
         public static bool IsValid(this Reference reference)

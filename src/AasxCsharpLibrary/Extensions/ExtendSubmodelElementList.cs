@@ -1,6 +1,7 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -119,6 +120,82 @@ namespace Extensions
             }
 
             return elem;
+        }
+
+        // advanced checks
+
+        public class ConstraintStat
+        {
+            /// <summary>
+            /// Constraint AASd-107: If a first level child element in a SubmodelElementList has a semanticId 
+            /// it shall be identical to SubmodelElementList/semanticIdListElement. 
+            /// </summary>
+            public bool AllChildSemIdMatch = true;
+
+            /// <summary>
+            /// Constraint AASd-108: All first level child elements in a SubmodelElementList shall have the 
+            /// same submodel element type as specified in SubmodelElementList/typeValueListElement.
+            /// </summary>
+            public bool AllChildSmeTypeMatch = true;
+
+            /// <summary>
+            /// Constraint AASd-109: If SubmodelElementList/typeValueListElement equal to Property or Range, 
+            /// SubmodelElementList/valueTypeListElement shall be set and all first level child elements in 
+            /// the SubmodelElementList shall have the the value type as specified in 
+            /// SubmodelElementList/valueTypeListElement
+            /// </summary>
+            public bool AllChildValueTypeMatch = true;
+        }
+
+        public static ConstraintStat EvalConstraintStat(this SubmodelElementList list)
+        {
+            // access
+            var res = new ConstraintStat();
+            if (list.Value == null)
+                return res;
+
+            // prepare SME type
+            var smeTypeToCheck = list.TypeValueListElement;
+
+            // prepare value type
+            var valueTypeToCheck = list.ValueTypeListElement;
+
+            // eval
+            foreach (var sme in list.Value)
+            {
+                // need self description
+                var smesd = sme.GetSelfDescription();
+                if (smesd == null)
+                    continue;
+
+                // sem id?
+                if (res.AllChildSemIdMatch
+                    && list.SemanticIdListElement?.IsValid() == true
+                    && sme.SemanticId?.IsValid() == true
+                    && !list.SemanticIdListElement.Matches(sme.SemanticId))
+                    res.AllChildSemIdMatch = false;
+
+                // type of SME?
+                if (res.AllChildSmeTypeMatch
+                    && smesd.SmeType != smeTypeToCheck)
+                    res.AllChildSmeTypeMatch = false;
+
+                // value type to check
+                if (valueTypeToCheck.HasValue
+                    && res.AllChildValueTypeMatch
+                    && sme is Property prop
+                    && prop.ValueType != valueTypeToCheck.Value)
+                    res.AllChildValueTypeMatch = false;
+
+                if (valueTypeToCheck.HasValue
+                    && res.AllChildValueTypeMatch
+                    && sme is AasCore.Aas3_0_RC02.Range range
+                    && range.ValueType != valueTypeToCheck.Value)
+                    res.AllChildValueTypeMatch = false;
+            }
+
+            // ok 
+            return res;
         }
     }
 }

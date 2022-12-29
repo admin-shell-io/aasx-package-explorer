@@ -3157,8 +3157,8 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    comboBoxIsEditable: true,
-                    comboBoxItems: Enum.GetNames(typeof(DataTypeDefXsd)));
+                    comboBoxIsEditable: true, comboBoxMinWidth: 190,
+                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray());
 
                 var mine = rng.Min == null || rng.Min.Trim().Length < 1;
                 var maxe = rng.Max == null || rng.Max.Trim().Length < 1;
@@ -3441,7 +3441,120 @@ namespace AasxPackageLogic
                 else
                     this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
 
+                this.AddCheckBox(
+                   stack, "orderRelevant:", sml.OrderRelevant ?? false, " (true if order in list is relevant)",
+                   (b) => { sml.OrderRelevant = b; });
 
+                // stats
+                var stats = sml.EvalConstraintStat();
+
+                // type of the items of the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => stats?.AllChildSmeTypeMatch == false,
+                            "Constraint AASd-108 violated: All first level child elements in a " +
+                            "SubmodelElementList shall have the same submodel element type as specified " +
+                            "in SubmodelElementList/typeValueListElement.")
+                    });
+                this.AddKeyValueExRef(
+                    stack, "typeValueListElement", sml, Stringification.ToString(sml.TypeValueListElement),
+                    null, repo,
+                    v =>
+                    {
+                        var tvle = Stringification.AasSubmodelElementsFromString(v as string);
+                        if (tvle.HasValue)
+                            sml.TypeValueListElement = tvle.Value;
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode, comboBoxMinWidth: 190,
+                    comboBoxItems: Enum.GetNames(typeof(AasSubmodelElements)));
+
+                // ValueType for the list
+
+                this.AddHintBubble(
+                    stack, hintMode,
+                    new[] {
+                        new HintCheck(
+                            () => stats?.AllChildValueTypeMatch == false,
+                            "Constraint AASd-109 violated: If SubmodelElementList/typeValueListElement " +
+                            "equal to Property or Range, SubmodelElementList/valueTypeListElement shall " +
+                            "be set and all first level child elements in the SubmodelElementList shall " +
+                            "have the the value type as specified in SubmodelElementList/valueTypeListElement")
+                    });
+                this.AddKeyValueExRef(
+                    stack, "valueTypeListElement", sml, Stringification.ToString(sml.ValueTypeListElement), 
+                    null, repo,
+                    v =>
+                    {
+                        sml.ValueTypeListElement = Stringification.DataTypeDefXsdFromString((string)v);
+                        this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionNone();
+                    },
+                    comboBoxIsEditable: editMode, comboBoxMinWidth: 190,
+                    comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray());
+
+                // SemanticId for the list
+
+                this.AddHintBubble(
+                   stack, hintMode,
+                   new[] {
+                        new HintCheck(
+                            () => stats?.AllChildSemIdMatch == false,
+                            "Constraint AASd-107 violated: If a first level child element in a " +
+                            "SubmodelElementList has a semanticId it shall be identical to " +
+                            "SubmodelElementList/semanticIdListElement.")
+                   });
+
+                // do not use the DisplayOrEditEntitySemanticId(), but use native functions
+
+                // add from Copy Buffer
+                var bufferKeys = CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
+
+                // add the keys
+                if (this.SafeguardAccess(
+                        stack, repo, sml.SemanticIdListElement, "semanticIdListElement:", "Create data element!",
+                        v =>
+                        {
+                            sml.SemanticIdListElement = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                            return new AnyUiLambdaActionRedrawEntity();
+                        }))
+                    AddKeyReference(
+                        stack, "semanticIdListElement", sml.SemanticIdListElement, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAux,
+                        showRefSemId: false,
+                        addExistingEntities: "ConceptDescription ", addFromKnown: true,
+                        addEclassIrdi: true,
+                        addPresetNames: bufferKeys.Item1,
+                        addPresetKeyLists: bufferKeys.Item2,
+                        jumpLambda: (kl) =>
+                        {
+                            return new AnyUiLambdaActionNavigateTo(sml.SemanticIdListElement);
+                        },
+                        relatedReferable: sml,
+                        auxContextHeader: new[] { "\u2573", "Delete semanticIdListElement" },
+                        auxContextLambda: (i) =>
+                        {
+                            if (i == 0)
+                            {
+                                sml.SemanticIdListElement = null;
+                                this.AddDiaryEntry(sml, new DiaryEntryStructChange());
+                                return new AnyUiLambdaActionRedrawEntity();
+                            }
+                            return new AnyUiLambdaActionNone();
+                        });
+
+
+                //DisplayOrEditEntitySemanticId(stack, sml.SemanticIdListElement,
+                //    (o) => { sml.semanticIdListElement = o; },
+                //    key: "semanticIdListElement",
+                //    groupHeader: null,
+                //    statement: "Semantic Id the submodel elements contained in the list match to.",
+                //    addExistingEntities: AdminShell.Key.AllElements);
             }
             else if (sme is Operation)
             {
