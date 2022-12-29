@@ -1130,6 +1130,7 @@ namespace AasxPackageLogic
                     // careful! Full recursion of edit function
                     AddKeyReference(
                         footerPanel, "referredSem.Id", refkeys.ReferredSemanticId, repo,
+                        packages, PackageCentral.PackageCentral.Selector.Main, addExistingEntities: "All",
                         showRefSemId: false,
                         addEclassIrdi: true,
                         addFromKnown: true,

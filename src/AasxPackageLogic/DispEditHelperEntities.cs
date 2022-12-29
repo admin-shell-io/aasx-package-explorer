@@ -72,6 +72,10 @@ namespace AasxPackageLogic
                     severityLevel: HintCheck.Severity.High)
             });
 
+            // Global Asset ID
+
+            this.AddGroup(stack, "globalAssetId:", this.levelColors.SubSection);
+
             if (this.SafeguardAccess(
                     stack, repo, asset.GlobalAssetId, "globalAssetId:", "Create data element!",
                     v =>
@@ -3165,11 +3169,10 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return (rng.Kind == null || rng.Kind == ModelingKind.Instance) && mine && maxe; },
                             "Please provide either min or max.",
-                            severityLevel: HintCheck.Severity.High,
-                            breakIfTrue: true),
+                            severityLevel: HintCheck.Severity.High),
                         new HintCheck(
                             () => { return mine; },
-                            "The value of the Property. " +
+                            "The value of the minimum of the Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be negative infinite.",
@@ -3190,7 +3193,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return maxe; },
-                            "The value of the Property. " +
+                            "The value of the maximum of the Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be positive infinite.",
@@ -3312,12 +3315,14 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNavigateTo(
                             new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)), translateAssetToAAS: true);
                     };
-                    this.AddKeyListKeys(stack, "value", rfe.Value.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "",
+                    this.AddKeyReference(stack, "value", rfe.Value, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
+                        addExistingEntities: "All", // no restriction
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: lambda, noEditJumpLambda: lambda,
-                        relatedReferable: rfe,
+                        relatedReferable: rfe, 
+                        showRefSemId: true, // in this case, show also the referenced semId!!
                         emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
@@ -3338,6 +3343,9 @@ namespace AasxPackageLogic
                 };
 
                 // members
+                
+                // First
+
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
@@ -3358,14 +3366,22 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    this.AddKeyListKeys(
-                        stack, "first", rele.First.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "",
+                    this.AddKeyReference(
+                        stack, "first", rele.First, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: "All", // no restriction
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: lambda, noEditJumpLambda: lambda,
-                        relatedReferable: rele);
+                        relatedReferable: rele,
+                        showRefSemId: true, // in this case, show also the referenced semId!!
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
+
+                // small space in between
+                AddVerticalSpace(stack, height: 12);
+
+                // Second
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -3379,7 +3395,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 if (this.SafeguardAccess(
-                        stack, repo, rele.First, "Second relation:", "Create data element!",
+                        stack, repo, rele.Second, "Second relation:", "Create data element!",
                         v =>
                         {
                             rele.Second = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
@@ -3387,13 +3403,16 @@ namespace AasxPackageLogic
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    this.AddKeyListKeys(
-                        stack, "second", rele.Second.Keys, repo,
-                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, "",
+                    this.AddKeyReference(
+                        stack, "second", rele.Second, repo,
+                        packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
+                        addExistingEntities: "All", // no restriction
                         addPresetNames: bufferKeys.Item1,
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: lambda, noEditJumpLambda: lambda,
-                        relatedReferable: rele);
+                        relatedReferable: rele,
+                        showRefSemId: true, // in this case, show also the referenced semId!!
+                        emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
 
                 // specifically for annotated relationship?

@@ -554,11 +554,15 @@ namespace Extensions
         #region Referable Queries
 
         //TODO: jtikekar Need to test
-        public static IReferable FindReferableByReference(this AasCore.Aas3_0_RC02.Environment environment, Reference reference, int keyIndex = 0, List<ISubmodelElement> submodelElementList = null)
+        public static IReferable FindReferableByReference(
+            this AasCore.Aas3_0_RC02.Environment environment, 
+            Reference reference, 
+            int keyIndex = 0, 
+            List<ISubmodelElement> submodelElementList = null)
         {
             var keyList = reference.Keys;
 
-            if (keyList == null || keyList.Count == 0)
+            if (keyList == null || keyList.Count == 0 || keyIndex >= keyList.Count)
             {
                 return null;
             }
@@ -579,7 +583,6 @@ namespace Extensions
                         }
 
                         return environment.FindReferableByReference(reference, ++keyIndex);
-
                     }
 
                 case KeyTypes.ConceptDescription:
@@ -597,36 +600,34 @@ namespace Extensions
 
                         return environment.FindReferableByReference(reference, ++keyIndex, submodel.SubmodelElements);
                     }
-                case KeyTypes.SubmodelElement:
-                    {
-                        if (submodelElementList != null)
-                        {
-                            var submodelElement = submodelElementList.Where(sme => sme.IdShort.Equals(keyList[keyIndex].Value, StringComparison.OrdinalIgnoreCase)).First();
+            }
 
-                            //This is required element
-                            if (keyIndex + 1 >= keyList.Count)
-                            {
-                                return submodelElement;
-                            }
+            if (firstKeyType.IsSME() && submodelElementList != null)
+            {
+                var submodelElement = submodelElementList.Where(
+                    sme => sme.IdShort.Equals(keyList[keyIndex].Value, 
+                        StringComparison.OrdinalIgnoreCase)).First();
 
-                            //Recurse again
-                            if (submodelElement != null && submodelElement is SubmodelElementCollection smeColl)
-                            {
-                                return environment.FindReferableByReference(reference, ++keyIndex, smeColl.Value);
-                            }
+                //This is required element
+                if (keyIndex + 1 >= keyList.Count)
+                {
+                    return submodelElement;
+                }
 
-                            if (submodelElement != null && submodelElement is SubmodelElementList smeList)
-                            {
-                                return environment.FindReferableByReference(reference, ++keyIndex, smeList.Value);
-                            }
-                        }
-                        break;
-                    }
+                //Recurse again
+                if (submodelElement != null && submodelElement is SubmodelElementCollection smeColl)
+                {
+                    return environment.FindReferableByReference(reference, ++keyIndex, smeColl.Value);
+                }
+
+                if (submodelElement != null && submodelElement is SubmodelElementList smeList)
+                {
+                    return environment.FindReferableByReference(reference, ++keyIndex, smeList.Value);
+                }
             }
 
             //Nothing in this environment
             return null;
-
         }
 
         #endregion

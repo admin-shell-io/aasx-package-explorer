@@ -1732,6 +1732,7 @@ namespace AasxPackageLogic
                 // populate [+], [Select], [ECLASS], [Copy] buttons
                 //
 
+                // quite many columns in the first row; separately managed
                 var colDescs = new List<string>(new[] { "*", "#", "#", "#", "#", "#", "#", "#", "#" });
                 for (int i = 0; i < presetNo; i++)
                     colDescs.Add("#");
@@ -1739,13 +1740,15 @@ namespace AasxPackageLogic
                     for (int i = 0; i < auxButtonTitles.Length; i++)
                         colDescs.Add("#");
 
-                var g2 = AddSmallGrid(1, 9 + presetNo, colDescs.ToArray());
+                // add this first row grid to the overall grid
+                var g2 = AddSmallGrid(1, colDescs.Count, colDescs.ToArray());
                 g2.HorizontalAlignment = AnyUiHorizontalAlignment.Stretch;
                 AnyUiGrid.SetRow(g2, 0);
                 AnyUiGrid.SetColumn(g2, 1);
                 AnyUiGrid.SetColumnSpan(g2, 7);
                 g.Children.Add(g2);
 
+                // hook in the front panel, if given
                 if (frontPanel != null)
                 {
                     AnyUiGrid.SetRow(frontPanel, 0);
@@ -1754,7 +1757,7 @@ namespace AasxPackageLogic
                 }
 
                 //
-                // Define lambdas for double use
+                // Define lambdas for double use (first row / context menu)
                 //
 
                 Func<object, AnyUiLambdaActionBase> lambdaEclassIrdi = (o) =>
@@ -1917,6 +1920,8 @@ namespace AasxPackageLogic
                 // Aux Buttons
                 //
 
+                int currCol = 8 + presetNo;
+
                 if (auxButtonTitles != null)
                     for (int i = 0; i < auxButtonTitles.Length; i++)
                     {
@@ -1929,7 +1934,7 @@ namespace AasxPackageLogic
                             };
                         var b = AnyUiUIElement.RegisterControl(
                             AddSmallButtonTo(
-                                g2, 0, 8 + presetNo + i,
+                                g2, 0, currCol++,
                                 margin: new AnyUiThickness(2, 2, 2, 2),
                                 padding: new AnyUiThickness(5, 0, 5, 0),
                                 content: auxButtonTitles[i]),
@@ -1958,7 +1963,7 @@ namespace AasxPackageLogic
                         contextHeaders.AddRange(auxContextHeader);
 
                     AddSmallContextMenuItemTo(
-                        g2, 0, 8 + presetNo,
+                        g2, 0, currCol++,
                         "\u22ee",
                         contextHeaders.ToArray(),
                         margin: new AnyUiThickness(2, 2, 2, 2),
@@ -1995,13 +2000,17 @@ namespace AasxPackageLogic
                             g, 0 + i + rowOfs, 1,
                             padding: new AnyUiThickness(2, 0, 0, 0),
                             setNoWrap: true,
-                            content: "(" + keys[i].Type + ")");
+                            content: "(" + keys[i].Type + ")",
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
                         // value
                         AddSmallLabelTo(
                             g, 0 + i + rowOfs, 4,
                             padding: new AnyUiThickness(2, 0, 0, 0),
-                            content: "" + keys[i].Value);
+                            content: "" + keys[i].Value,
+                            verticalAlignment: AnyUiVerticalAlignment.Center,
+                            verticalContentAlignment: AnyUiVerticalAlignment.Center);
 
                         // jump
                         /* TODO (MIHO, 2021-02-16): this mechanism is ugly and only intended to be temporary!
