@@ -14,10 +14,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using AdminShellNS.Extenstions;
-using AnyUi;
 using Extensions;
+using AnyUi;
 using Newtonsoft.Json;
+using AdminShellNS.Extenstions;
 
 /*
  * The Instances are organized in a different schema than the Descriptions!
@@ -333,17 +333,17 @@ namespace AasxIntegrationBase.AasForms
 
                 // for newly added elements, shaping of idSHort might be required
                 if (lst != null)
-                    foreach (var smw in lst)
+                    foreach (var sme in lst)
                     {
                         // access
-                        if (smw?.IdShort == null)
+                        if (sme.IdShort == null)
                             continue;
 
                         // check, if to make idShort unique?
-                        FormInstanceHelper.MakeIdShortUnique(elements, smw);
+                        FormInstanceHelper.MakeIdShortUnique(elements, sme);
 
                         // add to tracing
-                        res.Add(smw);
+                        res.Add(sme);
                     }
             }
             return res;
@@ -446,10 +446,10 @@ namespace AasxIntegrationBase.AasForms
             // maximum == 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToOne || desc.Multiplicity == FormMultiplicity.One)
             {
-                var smw = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
-                if (smw != null)
+                var sme = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
+                if (sme != null)
                 {
-                    var y = desc.CreateInstance(this, smw);
+                    var y = desc.CreateInstance(this, sme);
                     if (y != null)
                         this.SubInstances.Add(y);
                 }
@@ -458,10 +458,10 @@ namespace AasxIntegrationBase.AasForms
             // maximum > 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToMany || desc.Multiplicity == FormMultiplicity.OneToMany)
             {
-                foreach (var smw in sourceElements.FindAllSemanticId(desc.KeySemanticId))
-                    if (smw != null)
+                foreach (var sme in sourceElements.FindAllSemanticId(desc.KeySemanticId))
+                    if (sme != null)
                     {
-                        var y = desc.CreateInstance(this, smw);
+                        var y = desc.CreateInstance(this, sme);
                         if (y != null)
                             this.SubInstances.Add(y);
                     }
@@ -1030,7 +1030,7 @@ namespace AasxIntegrationBase.AasForms
                 sm.Description = source.Description.Copy();
 
             if (desc.KeySemanticId != null)
-                sm.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId });
+                sm.SemanticId = ExtendReference.CreateFromKey(desc.KeySemanticId);
         }
 
         public FormInstanceListOfDifferent GetListOfDifferent()
@@ -1067,7 +1067,7 @@ namespace AasxIntegrationBase.AasForms
                 if (this.sm.IdShort != null)
                     this.sourceSM.IdShort = "" + this.sm.IdShort;
                 if (this.sm.Description != null)
-                    this.sourceSM.Description = this.sm.Description.Copy();
+                    this.sourceSM.Description = sm.Description.Copy();
             }
 
             // SM as a set of elements
@@ -1155,7 +1155,7 @@ namespace AasxIntegrationBase.AasForms
                 sme.Description = source.Description.Copy();
 
             if (desc.KeySemanticId != null)
-                sme.SemanticId = new Reference(ReferenceTypes.ModelReference,new List<Key> { desc.KeySemanticId});
+                sme.SemanticId = ExtendReference.CreateFromKey(desc.KeySemanticId);
         }
 
         /// <summary>
@@ -1198,13 +1198,10 @@ namespace AasxIntegrationBase.AasForms
                 if (doAdd)
                 {
                     // add to elements (this is the real transaction)
-                    //collectionNewElements.Add(SubmodelElementWrapper.CreateFor(sme));
-                    var clonedSme = sme.Copy();
-                    collectionNewElements.Add(clonedSme);
+                    collectionNewElements.Add(sme.Copy());
 
                     // add to the tracing information for new elements
-                    //res.Add(SubmodelElementWrapper.CreateFor(sme));
-                    res.Add(clonedSme);
+                    res.Add(sme.Copy());
                 }
             }
 
@@ -1394,8 +1391,8 @@ namespace AasxIntegrationBase.AasForms
             {
                 // some more preferences
                 if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    //p.ValueType = parentDesc.allowedValueTypes[0];
-                    p.ValueType = DataTypeDefXsd.String;
+                    p.ValueType = Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0]) 
+                        ?? DataTypeDefXsd.String;
 
                 if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
                 {
@@ -1596,7 +1593,8 @@ namespace AasxIntegrationBase.AasForms
             if (mlpSource != null)
             {
                 // take over
-                mlp.Value = new List<LangString>(mlpSource.Value);
+                if (mlpSource.Value != null)
+                    mlp.Value = mlpSource.Value.Copy();
             }
 
             // create user control
@@ -1624,7 +1622,8 @@ namespace AasxIntegrationBase.AasForms
             var mlpSource = this.sourceSme as MultiLanguageProperty;
             if (mlp != null && Touched && mlpSource != null && editSource)
             {
-                mlpSource.Value = new List<LangString>(mlp.Value);
+                if (mlp.Value != null)
+                    mlpSource.Value = mlp.Value.Copy();
                 return false;
             }
             return true;
@@ -1668,7 +1667,7 @@ namespace AasxIntegrationBase.AasForms
                         {
                             if (mlp.Value == null)
                                 mlp.Value = new List<LangString>();
-                            mlp.Value.Add(new LangString("",""));
+                            mlp.Value.Add(new LangString("", ""));
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });
@@ -1947,7 +1946,8 @@ namespace AasxIntegrationBase.AasForms
             if (reSource != null)
             {
                 // take over
-                re.Value = new Reference(ReferenceTypes.ModelReference, reSource.Value.Keys);
+                if (reSource.Value != null) 
+                    re.Value = reSource.Value.Copy();
             }
 
             // create user control
@@ -1975,7 +1975,8 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as ReferenceElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.Value = new Reference(ReferenceTypes.ModelReference, re.Value.Keys);
+                if (re.Value != null)
+                    reSource.Value = re.Value.Copy();
                 return false;
             }
             return true;
@@ -2039,7 +2040,6 @@ namespace AasxIntegrationBase.AasForms
                             tempI.PushAndAdaptEventFromTop(
                                 new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                 {
-                                    //filterEntities = Key.AllElements, //TODO: jtikekar
                                     filterEntities = "All",
                                     showAuxPackage = true,
                                     showRepoFiles = true
@@ -2049,7 +2049,7 @@ namespace AasxIntegrationBase.AasForms
                                     if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                                     {
                                         // do it
-                                        refe.Value = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                                        refe.Value = ExtendReference.CreateNew(rsel.resultKeys);
                                         Touch();
 
                                         // send event to re-render
@@ -2073,16 +2073,20 @@ namespace AasxIntegrationBase.AasForms
             this.desc = parentDesc;
 
             // initialize Referable
-            
+            var re = new RelationshipElement(null, null);
+            this.sme = re;
+            InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
             var reSource = this.sourceSme as RelationshipElement;
             if (reSource != null)
             {
-                var re = new RelationshipElement(reSource.First, reSource.Second);
-                this.sme = re;
-                InitReferable(parentDesc, source);
+                // take over
+                if (reSource.First != null)
+                    re.First = reSource.First.Copy();
+                if (reSource.Second != null)
+                    re.Second = reSource.Second.Copy();
             }
 
             // create user control
@@ -2110,8 +2114,10 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.First = re.First;
-                reSource.Second = re.Second;
+                if (re.First != null) 
+                    reSource.First = re.First.Copy();
+                if (re.Second != null)
+                    reSource.Second = re.Second.Copy();
                 return false;
             }
             return true;
@@ -2196,7 +2202,6 @@ namespace AasxIntegrationBase.AasForms
                                 tempI.PushAndAdaptEventFromTop(
                                     new AasxIntegrationBase.AasxPluginResultEventSelectAasEntity()
                                     {
-                                        //filterEntities = Key.AllElements, //TODO: jtikekar
                                         filterEntities = "All",
                                         showAuxPackage = true,
                                         showRepoFiles = true
@@ -2207,7 +2212,7 @@ namespace AasxIntegrationBase.AasForms
                                             && rsel.resultKeys != null)
                                         {
                                             // do it
-                                            valSet(new Reference(ReferenceTypes.ModelReference, rsel.resultKeys));
+                                            valSet(ExtendReference.CreateNew(rsel.resultKeys));
                                             Touch();
 
                                             // send event to re-render
@@ -2271,8 +2276,10 @@ namespace AasxIntegrationBase.AasForms
             var reSource = this.sourceSme as RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
-                reSource.First = re.First;
-                reSource.Second = re.Second;
+                if (re.First != null)
+                    reSource.First = re.First.Copy();
+                if (re.Second != null)
+                    reSource.Second = re.Second.Copy();
                 return false;
             }
             return true;

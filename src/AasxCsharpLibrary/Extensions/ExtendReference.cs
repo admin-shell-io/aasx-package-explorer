@@ -1,5 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Exceptions;
+using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,36 @@ namespace Extensions
         {
             return reference.Keys != null && !reference.Keys.IsEmpty();
         }
+
+        /// <summary>
+        /// Formaly a static constructor.
+        /// Creates a Reference from a key, guessing Reference.Type.
+        /// </summary>
+        /// <param name="k">Given single Key</param>
+        /// <returns>Reference with guessed type</returns>
+        public static Reference CreateFromKey(Key k)
+        {
+            var res = new Reference(ReferenceTypes.GlobalReference, new List<Key> { k });   
+            res.Type = res.GuessType();
+            return res;
+        }
+
+        /// <summary>
+        /// Formaly a static constructor.
+        /// Creates a Reference from a list of keys, guessing Reference.Type.
+        /// </summary>
+        /// <param name="lk"></param>
+        /// <returns></returns>
+        public static Reference CreateNew(List<Key> lk)
+        {
+            var res = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+            if (lk == null)
+                return res;
+            res.Keys.AddRange(lk.Copy());
+            res.Type = res.GuessType();
+            return res;
+        }
+
 
         //This is alternative for operator overloding method +, as operator overloading cannot be done in extension classes
         public static Reference Add(this Reference a, Reference b)

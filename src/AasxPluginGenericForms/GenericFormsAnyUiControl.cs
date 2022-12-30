@@ -12,11 +12,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdminShellNS;
+using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using Extensions;
+using AdminShellNS.Extenstions;
 
 namespace AasxPluginGenericForms
 {
@@ -27,7 +30,7 @@ namespace AasxPluginGenericForms
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AdminShell.Submodel _submodel = null;
+        private Submodel _submodel = null;
         private AasxPluginGenericForms.GenericFormOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -47,7 +50,7 @@ namespace AasxPluginGenericForms
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             AasxPluginGenericForms.GenericFormOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -75,7 +78,7 @@ namespace AasxPluginGenericForms
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -107,7 +110,7 @@ namespace AasxPluginGenericForms
 
             // identify the record
             // check for a record in options, that matches Submodel
-            _currentFormRecord = _options.MatchRecordsForSemanticId(_submodel.semanticId);
+            _currentFormRecord = _options.MatchRecordsForSemanticId(_submodel.SemanticId);
             if (_currentFormRecord == null)
                 return;
 
@@ -118,7 +121,7 @@ namespace AasxPluginGenericForms
             // prepare form instance, take over existing data
             var fi = new FormInstanceSubmodel(_currentFormRecord.FormSubmodel);
             fi.InitReferable(_currentFormRecord.FormSubmodel, _submodel);
-            fi.PresetInstancesBasedOnSource(_submodel.submodelElements);
+            fi.PresetInstancesBasedOnSource(_submodel.SubmodelElements);
             fi.outerEventStack = _eventStack;
 
             // initialize form
@@ -200,10 +203,10 @@ namespace AasxPluginGenericForms
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    AdminShell.SubmodelElementWrapperCollection currentElements = null;
+                    List<ISubmodelElement> currentElements = null;
                     if (_form.InUpdateMode)
                     {
-                        currentElements = _submodel.submodelElements;
+                        currentElements = _submodel.SubmodelElements;
                     }
                     else
                     {
@@ -279,13 +282,13 @@ namespace AasxPluginGenericForms
                 int nr = 0;
                 foreach (var cd in _currentFormRecord.ConceptDescriptions)
                 {
-                    if (cd == null || cd.identification == null)
+                    if (cd == null || cd.Id == null)
                         continue;
-                    var cdFound = env.FindConceptDescription(cd.identification);
+                    var cdFound = env.FindConceptDescriptionById(cd.Id);
                     if (cdFound != null)
                         continue;
                     // ok, add
-                    var newCd = new AdminShell.ConceptDescription(cd);
+                    var newCd = cd.Copy();
                     env.ConceptDescriptions.Add(newCd);
                     nr++;
                 }

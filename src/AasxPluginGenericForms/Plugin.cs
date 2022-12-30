@@ -14,7 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 
@@ -53,18 +55,53 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // need special settings
                 var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
-                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+                    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase),
+                    typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
+                    typeof(AasxCompatibilityModels.AdminShellV20) });
+
+                // this plugin can read OLD options (using the meta-model V2.0.1)
+                var upgrades = new List<AasxPluginOptionsBase.UpgradeMapping>();
+                upgrades.Add(new AasxPluginOptionsBase.UpgradeMapping()
+                {
+                    Info = "AAS2.0.1",
+                    Trigger = "AdminShellNS.AdminShellV20+",
+                    OldRootType = typeof(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20),
+                    Replacements = new Dictionary<string, string>()
+                    {
+                        { "AdminShellNS.AdminShellV20+", "AasxCompatibilityModels.AdminShellV20+" }
+                    },
+                    UpgradeLambda = (old) => new AasxPluginGenericForms.GenericFormOptions(
+                        old as AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20)
+                });
 
                 // base options
-                var newOpt =
-                    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
+                var newOpt = AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
+                        _log, upgrades.ToArray());
                 if (newOpt != null)
-                    this._options = newOpt;
+                    _options = newOpt;
 
                 // try find additional options
-                this._options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
-                    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, _log);
+                _options.TryLoadAdditionalOptionsFromAssemblyDir
+                    <AasxPluginGenericForms.GenericFormOptions>(
+                        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings,
+                        _log, upgrades.ToArray());
+
+                //// need special settings
+                //var settings = AasxPluginOptionSerialization.GetDefaultJsonSettings(
+                //    new[] { typeof(AasxPluginGenericForms.GenericFormOptions), typeof(AasForms.FormDescBase) });
+
+                //// base options
+                //var newOpt =
+                //    AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
+                //        this.GetPluginName(), Assembly.GetExecutingAssembly(), settings);
+                //if (newOpt != null)
+                //    this._options = newOpt;
+
+                //// try find additional options
+                //this._options.TryLoadAdditionalOptionsFromAssemblyDir<AasxPluginGenericForms.GenericFormOptions>(
+                //    this.GetPluginName(), Assembly.GetExecutingAssembly(), settings, _log);
             }
             catch (Exception ex)
             {
@@ -131,12 +168,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         return null;
 
                     // looking only for Submodels
-                    var sm = args[0] as AdminShell.Submodel;
+                    var sm = args[0] as Submodel;
                     if (sm == null)
                         return null;
 
                     // check for a record in options, that matches Submodel
-                    var found = this._options?.MatchRecordsForSemanticId(sm.semanticId);
+                    var found = this._options?.MatchRecordsForSemanticId(sm.SemanticId);
                     if (found == null)
                         return null;
 

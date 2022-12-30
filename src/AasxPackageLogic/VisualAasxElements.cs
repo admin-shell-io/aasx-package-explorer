@@ -1289,7 +1289,7 @@ namespace AasxPackageLogic
         // need some attach points, which are determined by initial rendering and
         // kept in the class
         private VisualElementEnvironmentItem
-            tiPackage = null, tiEnv = null, tiShells = null, tiAssets = null, tiCDs = null;
+            tiPackage = null, tiEnv = null, tiShells = null, tiCDs = null;
 
         private MultiValueDictionary<ConceptDescription, VisualElementGeneric> _cdReferred =
             new MultiValueDictionary<ConceptDescription, VisualElementGeneric>();

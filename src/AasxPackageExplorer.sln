@@ -45,6 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AasxPluginTechnicalData", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9264D68F-5269-420F-A486-6B8F39BEEB8B}"
 	ProjectSection(SolutionItems) = preProject
+		Notes_V3.md = Notes_V3.md
 		README-packages.md = README-packages.md
 	EndProjectSection
 EndProject

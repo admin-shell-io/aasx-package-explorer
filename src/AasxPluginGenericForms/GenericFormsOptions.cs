@@ -15,8 +15,11 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Newtonsoft.Json;
+using Extensions;
+using AasxCompatibilityModels;
 
 namespace AasxPluginGenericForms
 {
@@ -41,7 +44,35 @@ namespace AasxPluginGenericForms
         /// <summary>
         /// A list with required concept descriptions, if appropriate.
         /// </summary>
-        public AdminShell.ListOfConceptDescriptions ConceptDescriptions = null;
+        public List<ConceptDescription> ConceptDescriptions = null;
+
+        //
+        // Constructors
+        //
+
+        public GenericFormsOptionsRecord() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public GenericFormsOptionsRecord(
+            AasxCompatibilityModels.AasxPluginGenericForms.GenericFormsOptionsRecordV20 src) : base()
+        {
+            FormTag = src.FormTag;
+            FormTitle = src.FormTitle;
+            if (src.FormSubmodel != null)
+                FormSubmodel = new FormDescSubmodel(src.FormSubmodel);
+            if (src.ConceptDescriptions != null)
+            {
+                ConceptDescriptions = new List<ConceptDescription>();
+                foreach (var ocd in src.ConceptDescriptions)
+                {
+                    ConceptDescriptions.Add(
+                        ExtendConceptDescription.ConvertFromV20(
+                            new ConceptDescription(""), ocd));
+                }
+            }
+        }
+#endif
+
     }
 
     [DisplayName("Options")]
@@ -56,6 +87,22 @@ namespace AasxPluginGenericForms
         //
 
         public List<GenericFormsOptionsRecord> Records = new List<GenericFormsOptionsRecord>();
+
+        //
+        // Constructors
+        //
+
+        public GenericFormOptions() : base() { }
+
+#if !DoNotUseAasxCompatibilityModels
+        public GenericFormOptions(AasxCompatibilityModels.AasxPluginGenericForms.GenericFormOptionsV20 src)
+            : base()
+        {
+            if (src.Records != null)
+                foreach (var rec in src.Records)
+                    Records.Add(new GenericFormsOptionsRecord(rec));
+        }
+#endif
 
         /// <summary>
         /// Create a set of minimal options
@@ -73,14 +120,14 @@ namespace AasxPluginGenericForms
 
             rec.FormSubmodel = new FormDescSubmodel(
                 "Submodel Root",
-                new AdminShell.Key("Submodel", false, "IRI", "www.exmaple.com/sms/1112"),
+                new Key(KeyTypes.Submodel, "www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
                 formText: "Sample Property",
                 multiplicity: FormMultiplicity.OneToMany,
-                smeSemanticId: new AdminShell.Key("ConceptDescription", false, "IRI", "www.example.com/cds/1113"),
+                smeSemanticId: new Key(KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",
                 valueType: "string",
                 presetValue: "123"));
@@ -88,14 +135,14 @@ namespace AasxPluginGenericForms
             return opt;
         }
 
-        public GenericFormsOptionsRecord MatchRecordsForSemanticId(AdminShell.SemanticId sem)
+        public GenericFormsOptionsRecord MatchRecordsForSemanticId(Reference sem)
         {
             // check for a record in options, that matches Submodel
             GenericFormsOptionsRecord res = null;
             if (Records != null)
                 foreach (var rec in Records)
                     if (rec?.FormSubmodel?.KeySemanticId != null)
-                        if (sem != null && sem.Matches(rec.FormSubmodel.KeySemanticId))
+                        if (sem != null && sem.MatchesExactlyOneKey(rec.FormSubmodel.KeySemanticId))
                         {
                             res = rec;
                             break;

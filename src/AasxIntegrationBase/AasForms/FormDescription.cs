@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using AdminShellNS.Extenstions;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxIntegrationBase.AasForms
@@ -36,14 +38,14 @@ namespace AasxIntegrationBase.AasForms
     }
 
     /// <summary>
-    /// Aim: provide a (abstract) communality for Submodel und ISubmodelElement.
+    /// Aim: provide a (abstract) communality for Submodel und SubmodelElement.
     /// Host FormTitle, Info, Presets and Semantic Id
     /// </summary>
     [DisplayName("FormSubmodelReferable")]
     public class FormDescReferable : FormDescBase
     {
         /// <summary>
-        /// Displayed as label in front/ on top of the ISubmodelElement
+        /// Displayed as label in front/ on top of the SubmodelElement
         /// </summary>
         [JsonProperty(Order = 1)]
         public string FormTitle = "";
@@ -55,13 +57,13 @@ namespace AasxIntegrationBase.AasForms
         public string FormInfo = null;
 
         /// <summary>
-        /// True, if the user shall be able to edit the idShort of the IReferable
+        /// True, if the user shall be able to edit the idShort of the Referable
         /// </summary>
         [JsonProperty(Order = 3)]
         public bool FormEditIdShort = false;
 
         /// <summary>
-        /// True, if the user shall be able to edit the description of the IReferable
+        /// True, if the user shall be able to edit the description of the Referable
         /// </summary>
         [JsonProperty(Order = 4)]
         public bool FormEditDescription = false;
@@ -72,28 +74,28 @@ namespace AasxIntegrationBase.AasForms
         public string FormUrl = null;
 
         /// <summary>
-        /// Preset for IReferable.IdShort. Always required. "{0}" will be replaced by instance number
+        /// Preset for Referable.idShort. Always required. "{0}" will be replaced by instance number
         /// </summary>
         [JsonProperty(Order = 5)]
         public string PresetIdShort = "SME{0:000}";
 
         /// <summary>
-        /// Preset for IReferable.Category. Always required
+        /// Preset for Referable.category. Always required
         /// </summary>
         [JsonProperty(Order = 6)]
         public string PresetCategory = "CONSTANT";
 
         /// <summary>
-        /// Preset for IReferable.Description
+        /// Preset for Referable.description
         /// </summary>
         [JsonProperty(Order = 7)]
         public List<LangString> PresetDescription = null;
 
         /// <summary>
-        /// SemanticId of the ISubmodelElement. Always required.
+        /// SemanticId of the SubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public Key KeySemanticId = new Key(KeyTypes.SubmodelElement, ""); //TODO:jtikear what about value?
+        public Key KeySemanticId = new Key(KeyTypes.GlobalReference, "");
 
         // Constructors
         //=============
@@ -122,6 +124,38 @@ namespace AasxIntegrationBase.AasForms
             this.PresetDescription = other.PresetDescription;
         }
 
+#if !DoNotUseAasxCompatibilityModels
+
+        public static List<LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
+        {
+            var res = new List<LangString>();
+            if (desc?.langString != null)
+                foreach (var ls in desc.langString)
+                    res.Add(new LangString(ls?.lang, ls?.str));
+            return res;
+        }
+
+        public static Key ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Key key)
+        {
+            if (key != null)
+                return new Key(
+                    Stringification.KeyTypesFromString(key.type) ?? KeyTypes.GlobalReference, key.value);
+            return null;
+        }
+
+        public FormDescReferable(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescReferableV20 other)
+            : base()
+        {
+            // this part == static, therefore only shallow copy
+            this.FormTitle = other.FormTitle;
+            this.FormInfo = other.FormInfo;
+            this.KeySemanticId = ConvertFromV20(other.KeySemanticId);
+            this.PresetIdShort = other.PresetIdShort;
+            this.PresetCategory = other.PresetCategory;
+            this.PresetDescription = ConvertFromV20(other.PresetDescription);
+        }
+#endif
+
 
         // Dynamic behaviour
         //==================
@@ -134,7 +168,7 @@ namespace AasxIntegrationBase.AasForms
             rf.IdShort = this.PresetIdShort;
             rf.Category = this.PresetCategory;
             if (this.PresetDescription != null)
-                rf.Description = new List<LangString>(this.PresetDescription);
+                rf.Description = this.PresetDescription.Copy();
         }
 
     }
@@ -170,6 +204,14 @@ namespace AasxIntegrationBase.AasForms
             this.SubmodelElements = other.SubmodelElements;
         }
 
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescSubmodel(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelV20 other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.SubmodelElements = new FormDescListOfElement(other.SubmodelElements);
+        }
+#endif
 
         // Dynamic behaviour
         //==================
@@ -192,12 +234,12 @@ namespace AasxIntegrationBase.AasForms
         {
             var res = new Submodel("");
 
-            // is IReferable
+            // is Referable
             this.InitReferable(res);
 
             // has SemanticId
             if (this.KeySemanticId != null)
-                res.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key> { this.KeySemanticId});
+                res.SemanticId = ExtendReference.CreateFromKey(this.KeySemanticId);
 
             // has elements
             res.SubmodelElements = this.SubmodelElements.GenerateDefault();
@@ -226,6 +268,36 @@ namespace AasxIntegrationBase.AasForms
             foreach (var o in other)
                 this.Add(o);
         }
+
+#if !DoNotUseAasxCompatibilityModels
+        public static FormDescSubmodelElement CloneFromOld(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementV20 o)
+        {
+            if (o is AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescPropertyV20 op)
+                return new FormDescProperty(op);
+            if (o is AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescMultiLangPropV20 omlp)
+                return new FormDescMultiLangProp(omlp);
+            if (o is AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescFileV20 ofile)
+                return new FormDescFile(ofile);
+            if (o is AasxCompatibilityModels.AasxIntegrationBase
+                     .AasForms.FormDescSubmodelElementCollectionV20 osmc)
+                return new FormDescSubmodelElementCollection(osmc);
+            return null;
+        }
+
+        public FormDescListOfElement(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescListOfElementV20 other)
+        {
+            if (other == null)
+                return;
+            foreach (var o in other)
+            {
+                var sme = CloneFromOld(o);
+                if (sme != null)
+                    this.Add(sme);
+            }
+        }
+#endif
 
         public List<ISubmodelElement> GenerateDefault()
         {
@@ -262,7 +334,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescSubmodelElement : FormDescReferable
     {
         /// <summary>
-        /// In the containing collection, how often shall the ISubmodelElement might occur?
+        /// In the containing collection, how often shall the SubmodelElement might occur?
         /// </summary>
         [JsonProperty(Order = 10)]
         [JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -302,6 +374,17 @@ namespace AasxIntegrationBase.AasForms
             this.IsReadOnly = other.IsReadOnly;
         }
 
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescSubmodelElement(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementV20 other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.Multiplicity = (FormMultiplicity)((int)other.Multiplicity);
+            this.IsReadOnly = other.IsReadOnly;
+        }
+#endif
+
         public virtual FormDescSubmodelElement Clone()
         {
             return new FormDescSubmodelElement(this);
@@ -318,12 +401,12 @@ namespace AasxIntegrationBase.AasForms
 
         public void InitSme(ISubmodelElement sme)
         {
-            // is a IReferable
+            // is a Referable
             this.InitReferable(sme);
 
             // has SemanticId
             if (this.KeySemanticId != null)
-                sme.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key> { this.KeySemanticId});
+                sme.SemanticId = ExtendReference.CreateFromKey(this.KeySemanticId);
         }
     }
 
@@ -355,6 +438,21 @@ namespace AasxIntegrationBase.AasForms
                 foreach (var ov in other.value)
                     this.value.Add(ov.Clone());
         }
+
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescSubmodelElementCollection(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescSubmodelElementCollectionV20 other)
+            : base(other)
+        {
+            if (other.value != null)
+                foreach (var ov in other.value)
+                {
+                    var sme = FormDescListOfElement.CloneFromOld(ov);
+                    if (sme != null)
+                        this.value.Add(sme);
+                }
+        }
+#endif
 
         public override FormDescSubmodelElement Clone()
         {
@@ -457,6 +555,18 @@ namespace AasxIntegrationBase.AasForms
             this.valueFromComboBoxIndex = other.valueFromComboBoxIndex;
         }
 
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescProperty(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescPropertyV20 other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.allowedValueTypes = other.allowedValueTypes;
+            this.presetValue = other.presetValue;
+            this.comboBoxChoices = other.comboBoxChoices;
+            this.valueFromComboBoxIndex = other.valueFromComboBoxIndex;
+        }
+#endif
+
         public override FormDescSubmodelElement Clone()
         {
             return new FormDescProperty(this);
@@ -479,8 +589,8 @@ namespace AasxIntegrationBase.AasForms
                 res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                //res.ValueType = this.allowedValueTypes[0];
-                res.ValueType = DataTypeDefXsd.String;
+                res.ValueType = Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
+                    ?? DataTypeDefXsd.String;
             }
             return res;
         }
@@ -507,6 +617,14 @@ namespace AasxIntegrationBase.AasForms
             : base(other)
         {
         }
+
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescMultiLangProp(
+            AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescMultiLangPropV20 other)
+            : base(other)
+        {
+        }
+#endif
 
         /// <summary>
         /// Build a new instance, based on the description data
@@ -557,6 +675,16 @@ namespace AasxIntegrationBase.AasForms
             this.presetMimeType = other.presetMimeType;
         }
 
+#if !DoNotUseAasxCompatibilityModels
+        public FormDescFile(AasxCompatibilityModels.AasxIntegrationBase.AasForms.FormDescFileV20 other)
+            : base(other)
+        {
+            // this part == static, therefore only shallow copy
+            this.presetMimeType = other.presetMimeType;
+        }
+#endif
+
+
         public override FormDescSubmodelElement Clone()
         {
             return new FormDescFile(this);
@@ -571,7 +699,7 @@ namespace AasxIntegrationBase.AasForms
             return new FormInstanceFile(parentInstance, this, source);
         }
 
-        public File GenerateDefault()
+        public ISubmodelElement GenerateDefault()
         {
             var res = new File("");
             this.InitSme(res);
@@ -586,7 +714,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescReferenceElement : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed ISubmodelElement types.
+        /// pre-set a filter for allowed SubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";
@@ -640,7 +768,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescRelationshipElement : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed ISubmodelElement types.
+        /// pre-set a filter for allowed SubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";
@@ -683,7 +811,7 @@ namespace AasxIntegrationBase.AasForms
 
         public RelationshipElement GenerateDefault()
         {
-            var res = new RelationshipElement(null, null); //TODO:jtikekar: first and second cannot be null
+            var res = new RelationshipElement(null, null);
             this.InitSme(res);
             return res;
         }
@@ -694,7 +822,7 @@ namespace AasxIntegrationBase.AasForms
     public class FormDescCapability : FormDescSubmodelElement
     {
         /// <summary>
-        /// pre-set a filter for allowed ISubmodelElement types.
+        /// pre-set a filter for allowed SubmodelElement types.
         /// </summary>
         [JsonProperty(Order = 20)]
         public string presetFilter = "";

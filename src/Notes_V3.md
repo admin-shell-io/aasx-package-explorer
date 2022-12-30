@@ -64,6 +64,11 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * PR550 (backup, make unique)
 
+## PRs to be integrated
+
+* from 10 Aug
+  https://github.com/admin-shell-io/aasx-package-explorer/commit/2a5f5f6a1d11a56fa874490072b6bdea0ab08527
+
 ## Done
 
 * added Reference/type to dialogues. Added guessing.

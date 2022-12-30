@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>library</OutputType>
@@ -34,6 +34,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
+    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\LICENSE.TXT">

@@ -16,29 +16,16 @@ namespace AdminShellNS.Extenstions
                 return;
 
             // check
-            if (modelingKind == null)
+            if (modelingKind != ModelingKind.Template && modelingKind != ModelingKind.Instance)
             {
-                // warning
+                // violation case
                 results.Add(new AasValidationRecord(
-                    AasValidationSeverity.Warning, container,
-                    "ModelingKind: is null",
+                    AasValidationSeverity.SchemaViolation, container,
+                    $"ModelingKind: enumeration value neither Template nor Instance",
                     () =>
                     {
+                        modelingKind = ModelingKind.Instance;
                     }));
-            }
-            else
-            {
-                if (modelingKind != ModelingKind.Template && modelingKind != ModelingKind.Instance)
-                {
-                    // violation case
-                    results.Add(new AasValidationRecord(
-                        AasValidationSeverity.SchemaViolation, container,
-                        $"ModelingKind: enumeration value neither Template nor Instance",
-                        () =>
-                        {
-                            modelingKind = ModelingKind.Instance;
-                        }));
-                }
             }
         }
     }
