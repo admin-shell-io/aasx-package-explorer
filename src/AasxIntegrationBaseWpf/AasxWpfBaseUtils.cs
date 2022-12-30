@@ -157,7 +157,7 @@ namespace AasxIntegrationBase
 
                 thumbStream.Close();
 
-                // note: no closing required, as BitmapImage (OnLoad!) will close it!
+                // note: no closing of bi required, as BitmapImage (OnLoad!) will close it!
                 // give this back
                 return bi;
             }

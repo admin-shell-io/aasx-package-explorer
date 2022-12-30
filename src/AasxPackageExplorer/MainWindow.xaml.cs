@@ -1075,11 +1075,14 @@ namespace AasxPackageExplorer
                     // now: search
                     DisplayElements.TrySelectMainDataObject(wish.NextFocus, wish.IsExpanded);
                 }
+
                 // fake selection
                 DispEditHighlight.HighlightFieldInfo hfi = null;
                 if (lab is AnyUiLambdaActionRedrawAllElements wishhl)
                     hfi = wishhl.HighlightField;
                 RedrawElementView(hightlightField: hfi);
+
+                // ok
                 DisplayElements.Refresh();
                 ContentTakeOver.IsEnabled = false;
             }
@@ -1586,9 +1589,6 @@ namespace AasxPackageExplorer
 
         private async Task MainTimer_HandleApplicationEvents()
         {
-            // OZOZ
-            return;
-
             // check if a plug-in has some work to do ..
             foreach (var lpi in Plugins.LoadedPlugins.Values)
             {

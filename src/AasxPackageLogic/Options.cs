@@ -375,6 +375,11 @@ namespace AasxPackageLogic
         public string PluginDir = null;
 
         [OptionDescription(Description =
+            "Plugin usage prefernces, e.g. WPF or ANYUI",
+            Cmd = "-plugin-prefer")]
+        public string PluginPrefer = null;
+
+        [OptionDescription(Description =
             "For such operations as query repository, do load a new AASX file without " +
             "prompting the user.",
             Cmd = "-load-without-prompt")]

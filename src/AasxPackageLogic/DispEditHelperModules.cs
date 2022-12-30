@@ -369,6 +369,15 @@ namespace AasxPackageLogic
                         }
                         return new AnyUiLambdaActionNone();
                     });
+
+                // further info?
+                if (identifiable.Id.HasContent())
+                {
+                    this.AddKeyValue(
+                        stack, "id (Base64)", AdminShellUtil.Base64Encode(identifiable.Id),
+                        repo: null);
+                }
+
             }
 
             this.AddHintBubble(stack, hintMode, new[] {
