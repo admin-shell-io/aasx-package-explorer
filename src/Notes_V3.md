@@ -71,6 +71,11 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
   => TODO check for every plugin, for Blazor !!
 
+* Fix AnyUI usage:
+  https://github.com/admin-shell-io/aasx-package-explorer/compare/master...MIHO/FixAnyUiInPlugins
+
+  => TODO take over changes in DocuShelf..
+
 ## Done
 
 * added Reference/type to dialogues. Added guessing.

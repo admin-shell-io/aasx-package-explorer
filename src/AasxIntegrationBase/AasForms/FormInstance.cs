@@ -1648,7 +1648,7 @@ namespace AasxIntegrationBase.AasForms
             //   LANG2 VAL2        [-]
 
             var g = view.Add(
-                uitk.AddSmallGrid(rows: 1 + mlp.Value.Count, cols: 5,
+                uitk.AddSmallGrid(rows: 1 + (mlp.Value?.Count ?? 0), cols: 5,
                     colWidths: new[] { "2:", "60:", "*", "23:", "2:" }));
 
             // Label in 1st row

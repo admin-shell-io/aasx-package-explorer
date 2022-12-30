@@ -215,6 +215,10 @@ namespace AasxPluginGenericForms
                     // create a sequence of SMEs
                     try
                     {
+                        if (_form.FormInstance is FormInstanceSubmodel fism)
+                            fism.AddOrUpdateDifferentElementsToCollection(
+                                currentElements, _package, addFilesToPackage: true);
+
                         if (_form.FormInstance is FormInstanceSubmodelElementCollection fismec)
                             fismec.AddOrUpdateDifferentElementsToCollection(
                                 currentElements, _package, addFilesToPackage: true);
