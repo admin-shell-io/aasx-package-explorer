@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPluginDocumentShelf
@@ -28,30 +30,30 @@ namespace AasxPluginDocumentShelf
     /// </summary>
     public class DocuShelfSemanticConfig
     {
-        public AdminShell.Key SemIdDocumentation = null;
-        public AdminShell.Key SemIdDocument = null;
-        public AdminShell.Key SemIdDocumentIdValue = null;
-        public AdminShell.Key SemIdDocumentClassId = null;
-        public AdminShell.Key SemIdDocumentClassName = null;
-        public AdminShell.Key SemIdDocumentClassificationSystem = null;
-        public AdminShell.Key SemIdOrganizationName = null;
-        public AdminShell.Key SemIdOrganizationOfficialName = null;
-        public AdminShell.Key SemIdDocumentVersion = null;
-        public AdminShell.Key SemIdLanguage = null;
-        public AdminShell.Key SemIdTitle = null;
-        public AdminShell.Key SemIdDate = null;
-        public AdminShell.Key SemIdDocumentVersionIdValue = null;
-        public AdminShell.Key SemIdDigitalFile = null;
+        public Key SemIdDocumentation = null;
+        public Key SemIdDocument = null;
+        public Key SemIdDocumentIdValue = null;
+        public Key SemIdDocumentClassId = null;
+        public Key SemIdDocumentClassName = null;
+        public Key SemIdDocumentClassificationSystem = null;
+        public Key SemIdOrganizationName = null;
+        public Key SemIdOrganizationOfficialName = null;
+        public Key SemIdDocumentVersion = null;
+        public Key SemIdLanguage = null;
+        public Key SemIdTitle = null;
+        public Key SemIdDate = null;
+        public Key SemIdDocumentVersionIdValue = null;
+        public Key SemIdDigitalFile = null;
 
-        public AdminShell.Key SemIdDocumentId = null;
-        public AdminShell.Key SemIdIsPrimaryDocumentId = null;
-        public AdminShell.Key SemIdDocumentVersionId = null;
-        public AdminShell.Key SemIdSummary = null;
-        public AdminShell.Key SemIdKeywords = null;
-        public AdminShell.Key SemIdStatusValue = null;
-        public AdminShell.Key SemIdRole = null;
-        public AdminShell.Key SemIdDomainId = null;
-        public AdminShell.Key SemIdReferencedObject = null;
+        public Key SemIdDocumentId = null;
+        public Key SemIdIsPrimaryDocumentId = null;
+        public Key SemIdDocumentVersionId = null;
+        public Key SemIdSummary = null;
+        public Key SemIdKeywords = null;
+        public Key SemIdStatusValue = null;
+        public Key SemIdRole = null;
+        public Key SemIdDomainId = null;
+        public Key SemIdReferencedObject = null;
 
         public FormDescSubmodelElementCollection FormVdi2770 = null;
 
@@ -68,7 +70,7 @@ namespace AasxPluginDocumentShelf
             var preDefLib = new AasxPredefinedConcepts.DefinitionsVDI2770();
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(preDefLib);
 
-            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            opt.SemIdDocumentation = preDefs.SM_VDI2770_Documentation?.SemanticId?.GetAsExactlyOneKey();
 
             opt.SemIdDocument = preDefs.CD_VDI2770_Document?.GetCdReference()?.GetAsExactlyOneKey();
             opt.SemIdDocumentIdValue = preDefs.CD_VDI2770_DocumentIdValue?.GetCdReference()?.GetAsExactlyOneKey();

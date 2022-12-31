@@ -217,56 +217,49 @@ namespace Extensions
             return conceptDescription;
         }
 
-        public static ConceptDescription ConvertFromV20(this ConceptDescription conceptDescription, AasxCompatibilityModels.AdminShellV20.ConceptDescription sourceConceptDescription)
+        public static ConceptDescription ConvertFromV20(this ConceptDescription cd, AasxCompatibilityModels.AdminShellV20.ConceptDescription srcCD)
         {
-            if (sourceConceptDescription == null)
-            {
+            if (srcCD == null)
                 return null;
-            }
 
-            if (string.IsNullOrEmpty(sourceConceptDescription.idShort))
-            {
-                conceptDescription.IdShort = "";
-            }
+            if (string.IsNullOrEmpty(srcCD.idShort))
+                cd.IdShort = "";
             else
-            {
-                conceptDescription.IdShort = sourceConceptDescription.idShort;
-            }
+                cd.IdShort = srcCD.idShort;
 
-            if (sourceConceptDescription.description != null)
-            {
-                conceptDescription.Description = ExtensionsUtil.ConvertDescriptionFromV20(sourceConceptDescription.description);
-            }
+            if (srcCD.identification?.id != null)
+                cd.Id = srcCD.identification.id;
 
-            if (sourceConceptDescription.administration != null)
-            {
-                conceptDescription.Administration = new AdministrativeInformation(version: sourceConceptDescription.administration.version, revision: sourceConceptDescription.administration.revision);
-            }
+            if (srcCD.description != null)
+                cd.Description = ExtensionsUtil.ConvertDescriptionFromV20(srcCD.description);
 
-            if (sourceConceptDescription.IsCaseOf != null && sourceConceptDescription.IsCaseOf.Count != 0)
+            if (srcCD.administration != null)
+                cd.Administration = new AdministrativeInformation(version: srcCD.administration.version, revision: srcCD.administration.revision);
+
+            if (srcCD.IsCaseOf != null && srcCD.IsCaseOf.Count != 0)
             {
-                if (conceptDescription.IsCaseOf == null)
+                if (cd.IsCaseOf == null)
                 {
-                    conceptDescription.IsCaseOf = new List<Reference>();
+                    cd.IsCaseOf = new List<Reference>();
                 }
-                foreach (var caseOf in sourceConceptDescription.IsCaseOf)
+                foreach (var caseOf in srcCD.IsCaseOf)
                 {
-                    conceptDescription.IsCaseOf.Add(ExtensionsUtil.ConvertReferenceFromV20(caseOf, ReferenceTypes.ModelReference));
+                    cd.IsCaseOf.Add(ExtensionsUtil.ConvertReferenceFromV20(caseOf, ReferenceTypes.ModelReference));
                 }
             }
 
             //jtikekar:as per old implementation
-            if(sourceConceptDescription.embeddedDataSpecification != null)
+            if(srcCD.embeddedDataSpecification != null)
             {
-                foreach (var sourceEsd in sourceConceptDescription.embeddedDataSpecification)
+                foreach (var sourceEsd in srcCD.embeddedDataSpecification)
                 {
                     var esd = new EmbeddedDataSpecification(null, null);
                     esd.ConvertFromV20(sourceEsd);
-                    conceptDescription.AddEmbeddedDataSpecification(esd);
+                    cd.AddEmbeddedDataSpecification(esd);
                 }
             }
 
-            return conceptDescription;
+            return cd;
         }
 
         public static EmbeddedDataSpecification AddEmbeddedDataSpecification(this ConceptDescription cd, EmbeddedDataSpecification eds)

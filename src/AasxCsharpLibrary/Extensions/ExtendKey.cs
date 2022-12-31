@@ -47,7 +47,8 @@ namespace Extensions
                 return key.Type == otherKey.Type && key.Value == otherKey.Value;
 
             if (matchMode == MatchMode.Relaxed)
-                return key.Type == otherKey.Type || key.Type == KeyTypes.GlobalReference || otherKey.Type == KeyTypes.GlobalReference;
+                return (key.Type == otherKey.Type || key.Type == KeyTypes.GlobalReference || otherKey.Type == KeyTypes.GlobalReference)
+                    && (key.Value == otherKey.Value);
 
             if (matchMode == MatchMode.Identification)
                 return key.Value == otherKey.Value;

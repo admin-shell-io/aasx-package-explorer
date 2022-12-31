@@ -331,6 +331,25 @@ namespace Extensions
             return outputReference;
         }
 
+        /// <summary>
+        ///  If instance, return semanticId as one key.
+        ///  If template, return identification as key.
+        /// </summary>
+        public static Key GetSemanticKey(this Submodel submodel)
+        {
+            if (submodel.Kind == ModelingKind.Instance)
+                return submodel.SemanticId.GetAsExactlyOneKey();
+            else
+                return new Key(KeyTypes.Submodel, submodel.Id);
+        }
+
+        public static List<ISubmodelElement> SmeForWrite(this Submodel submodel)
+        {
+            if (submodel.SubmodelElements == null)
+                submodel.SubmodelElements = new();
+            return submodel.SubmodelElements;
+        }
+
         public static void RecurseOnSubmodelElements(this Submodel submodel, object state, Func<object, List<IReferable>, ISubmodelElement, bool> lambda)
         {
             submodel.SubmodelElements?.RecurseOnReferables(state, null, (o, par, rf) =>

@@ -797,10 +797,11 @@ namespace AnyUi
                    if (a is AnyUiCountryFlag cntl && b is CountryFlag.Wpf.CountryFlag wpf
                        && mode == AnyUiRenderMode.All)
                    {
-                        // need to translate two enums
+                        // need to translate two enums -> seems to be old version
                         //foreach (var ev in (CountryCode[])Enum.GetValues(typeof(CountryFlag.CountryCode)))
                         //    if (Enum.GetName(typeof(CountryCode), ev)?.Trim().ToUpper() == cntl.ISO3166Code)
                         //        wpf.Code = ev;
+                        wpf.CountryCode = cntl.ISO3166Code;
                    }
                 }),
 

@@ -16,7 +16,9 @@ using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxPredefinedConcepts;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 namespace AasxPluginDocumentShelf
@@ -64,7 +66,7 @@ namespace AasxPluginDocumentShelf
             // V1.0
             var preDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
-            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.semanticId?.GetAsExactlyOneKey();
+            var semIdDocumentation = preDefs.SM_VDI2770_Documentation?.SemanticId?.GetAsExactlyOneKey();
             if (semIdDocumentation != null)
                 rec.AllowSubmodelSemanticId.Add(semIdDocumentation);
 
@@ -83,21 +85,17 @@ namespace AasxPluginDocumentShelf
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+            rec.AllowSubmodelSemanticId.Add(new Key(
+                KeyTypes.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Key(
+                KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Key(
+                KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
 
-            rec.AllowSubmodelSemanticId.Add(new AdminShell.Key(
-                AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Key(
+                KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
 
             return opt;
         }

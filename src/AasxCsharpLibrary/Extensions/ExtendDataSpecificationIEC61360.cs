@@ -9,50 +9,32 @@ namespace Extensions
 {
     public static class ExtendDataSpecificationIEC61360
     {
-        public static DataSpecificationIec61360 ConvertFromV20(this DataSpecificationIec61360 dataSpecificationIEC61360, AasxCompatibilityModels.AdminShellV20.DataSpecificationIEC61360 sourceDataSpecIEC61360)
+        public static DataSpecificationIec61360 ConvertFromV20(this DataSpecificationIec61360 ds61360, AasxCompatibilityModels.AdminShellV20.DataSpecificationIEC61360 src616360)
         {
-            if (sourceDataSpecIEC61360.preferredName != null)
-            {
-                //TODO:jtikekar performance impact
-                List<LangString> preferredNames = new List<LangString>();
-                foreach(var srcPrefName in sourceDataSpecIEC61360.preferredName)
-                {
-                    preferredNames.Add(new LangString(srcPrefName.lang, srcPrefName.str));
-                }
-                dataSpecificationIEC61360.PreferredName = preferredNames;
-            }
+            if (src616360.preferredName != null)
+                ds61360.PreferredName = new List<LangString>().ConvertFromV20(src616360.preferredName);
             
-            if (sourceDataSpecIEC61360.preferredName != null)
-            {
-                //TODO:jtikekar performance impact
-                List<LangString> shortNames = new List<LangString>();
-                foreach(var srcShortName in sourceDataSpecIEC61360.shortName)
-                {
-                    shortNames.Add(new LangString(srcShortName.lang, srcShortName.str));
-                }
-                dataSpecificationIEC61360.ShortName = shortNames;
-            }
+            if (src616360.shortName != null)
+                ds61360.ShortName = new List<LangString>().ConvertFromV20(src616360.shortName);
                 
-            dataSpecificationIEC61360.Unit = sourceDataSpecIEC61360.unit;
-            if (sourceDataSpecIEC61360.unitId != null)
+            ds61360.Unit = src616360.unit;
+            if (src616360.unitId != null)
+                ds61360.UnitId = ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(src616360.unitId.keys), ReferenceTypes.GlobalReference);
+            
+            ds61360.ValueFormat = src616360.valueFormat;
+            ds61360.SourceOfDefinition = src616360.sourceOfDefinition;
+            ds61360.Symbol = src616360.symbol;
+            if (!(string.IsNullOrEmpty(src616360.dataType)))
             {
-                dataSpecificationIEC61360.UnitId =  ExtensionsUtil.ConvertReferenceFromV20(AasxCompatibilityModels.AdminShellV20.Reference.CreateNew(sourceDataSpecIEC61360.unitId.keys), ReferenceTypes.GlobalReference);
+                var dt = src616360.dataType;
+                if (!dt.StartsWith("xs:"))
+                    dt = "xs:" + dt;
+                ds61360.DataType = Stringification.DataTypeIec61360FromString(dt);
             }
-            dataSpecificationIEC61360.ValueFormat = sourceDataSpecIEC61360.valueFormat;
-            dataSpecificationIEC61360.SourceOfDefinition = sourceDataSpecIEC61360.sourceOfDefinition;
-            dataSpecificationIEC61360.Symbol = sourceDataSpecIEC61360.symbol;
-            dataSpecificationIEC61360.DataType = Stringification.DataTypeIec61360FromString(sourceDataSpecIEC61360.dataType);
-            if (sourceDataSpecIEC61360.definition != null)
-            {
-                //TODO:jtikekar performance impact
-                List<LangString> definitions = new List<LangString>();
-                foreach (var srcDefinition in sourceDataSpecIEC61360.definition)
-                {
-                    definitions.Add(new LangString(srcDefinition.lang, srcDefinition.str));
-                }
-                dataSpecificationIEC61360.Definition = definitions;
-            }
-            return dataSpecificationIEC61360;
+            if (src616360.definition != null)
+                ds61360.Definition = new List<LangString>().ConvertFromV20(src616360.definition);
+
+            return ds61360;
         }
     }
 }

@@ -88,6 +88,7 @@ namespace Extensions
 
             return false;
         }
+
         public static bool Matches(this Reference reference, string id)
         {
             if (string.IsNullOrEmpty(id))
@@ -106,7 +107,7 @@ namespace Extensions
 
         public static bool Matches(this Reference reference, Reference otherReference, MatchMode matchMode = MatchMode.Strict)
         {
-            if (reference.Keys == null || reference.Keys.Count == 0 || otherReference.Keys == null || otherReference.Keys.Count == 0)
+            if (reference.Keys == null || reference.Keys.Count == 0 || otherReference?.Keys == null || otherReference.Keys.Count == 0)
             {
                 return false;
             }
@@ -197,6 +198,11 @@ namespace Extensions
         public static int Count(this Reference rf)
         {
             return rf.Keys.Count;
+        }
+
+        public static Key Last(this Reference rf)
+        { 
+            return rf.Keys.Last(); 
         }
 
     }

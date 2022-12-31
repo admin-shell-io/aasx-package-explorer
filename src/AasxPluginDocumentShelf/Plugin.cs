@@ -15,7 +15,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPluginDocumentShelf;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -118,7 +120,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null)
                     return null;
 
@@ -126,7 +128,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var found = false;
                 // ReSharper disable once UnusedVariable
                 foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                    sm.semanticId?.GetAsExactlyOneKey()))
+                    sm.SemanticId?.GetAsExactlyOneKey()))
                     found = true;
                 if (!found)
                     return null;
@@ -297,17 +299,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // generate (by hand)
-                var sm = new AdminShell.Submodel();
+                var sm = new Submodel("");
                 if (smName.Contains("V1.1"))
                 {
-                    sm.semanticId = new AdminShell.SemanticId(
+                    sm.SemanticId = ExtendReference.CreateFromKey(
                         AasxPredefinedConcepts.VDI2770v11.Static.SM_ManufacturerDocumentation.GetSemanticKey());
-                    sm.idShort = "ManufacturerDocumentation";
+                    sm.IdShort = "ManufacturerDocumentation";
                 }
                 else
                 {
-                    sm.semanticId = new AdminShell.SemanticId(DocuShelfSemanticConfig.Singleton.SemIdDocumentation);
-                    sm.idShort = "Documentation";
+                    sm.SemanticId = ExtendReference.CreateFromKey(DocuShelfSemanticConfig.Singleton.SemIdDocumentation);
+                    sm.IdShort = "Documentation";
                 }
 
                 // make result

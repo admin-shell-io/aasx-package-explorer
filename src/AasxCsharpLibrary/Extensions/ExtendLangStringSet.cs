@@ -68,7 +68,9 @@ namespace Extensions
             return r;
         }
 
-        public static List<LangString> ConvertFromV20(this List<LangString> langStringSet, AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
+        public static List<LangString> ConvertFromV20(
+            this List<LangString> langStringSet, 
+            AasxCompatibilityModels.AdminShellV20.LangStringSet sourceLangStrings)
         {
 
             //if (!sourceLangStrings.langString.IsNullOrEmpty())
@@ -82,6 +84,24 @@ namespace Extensions
                 }
             }
             return langStringSet;
+        }
+
+        public static List<LangString> ConvertFromV20(
+            this List<LangString> lss, 
+            AasxCompatibilityModels.AdminShellV20.LangStringSetIEC61360 src)
+        {
+
+            //if (!sourceLangStrings.langString.IsNullOrEmpty())
+            if (src != null && src.Count != 0)
+            {
+                lss = new List<LangString>();
+                foreach (var sourceLangString in src)
+                {
+                    var langString = new LangString(sourceLangString.lang, sourceLangString.str);
+                    lss.Add(langString);
+                }
+            }
+            return lss;
         }
     }
 }

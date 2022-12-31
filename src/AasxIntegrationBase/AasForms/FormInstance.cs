@@ -446,7 +446,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum == 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToOne || desc.Multiplicity == FormMultiplicity.One)
             {
-                var sme = sourceElements.FindFirstSemanticId(desc.KeySemanticId);
+                var sme = sourceElements.FindFirstSemanticId(desc.KeySemanticId, matchMode: MatchMode.Relaxed);
                 if (sme != null)
                 {
                     var y = desc.CreateInstance(this, sme);
@@ -458,7 +458,7 @@ namespace AasxIntegrationBase.AasForms
             // maximum > 1?
             if (desc.Multiplicity == FormMultiplicity.ZeroToMany || desc.Multiplicity == FormMultiplicity.OneToMany)
             {
-                foreach (var sme in sourceElements.FindAllSemanticId(desc.KeySemanticId))
+                foreach (var sme in sourceElements.FindAllSemanticId(desc.KeySemanticId, matchMode: MatchMode.Relaxed))
                     if (sme != null)
                     {
                         var y = desc.CreateInstance(this, sme);

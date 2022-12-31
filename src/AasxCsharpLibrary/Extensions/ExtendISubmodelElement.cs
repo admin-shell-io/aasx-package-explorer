@@ -979,7 +979,26 @@ namespace Extensions
                         yield return (T)submodelElement;
         }
 
-        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements, Key semId, MatchMode matchMode = MatchMode.Strict)
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(this List<ISubmodelElement> submodelELements, 
+            Reference semId, MatchMode matchMode = MatchMode.Strict)
+        where T : ISubmodelElement
+        {
+            foreach (var submodelElement in submodelELements)
+                if (submodelElement != null && submodelElement is T
+                    && submodelElement.SemanticId != null)
+                    if (submodelElement.SemanticId.Matches(semId, matchMode))
+                        yield return (T)submodelElement;
+        }
+
+        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements, 
+            Key semId, MatchMode matchMode = MatchMode.Strict)
+            where T : ISubmodelElement
+        {
+            return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();
+        }
+
+        public static T FindFirstSemanticIdAs<T>(this List<ISubmodelElement> submodelElements, 
+            Reference semId, MatchMode matchMode = MatchMode.Strict)
             where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticIdAs<T>(semId, matchMode).FirstOrDefault<T>();

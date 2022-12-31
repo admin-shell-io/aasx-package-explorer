@@ -107,11 +107,11 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
       "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net472\\AasxPluginDocumentShelf.dll",
-      "Args": []
     }, */
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    }, 
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []

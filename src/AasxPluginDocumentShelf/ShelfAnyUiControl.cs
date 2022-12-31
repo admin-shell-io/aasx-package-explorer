@@ -10,16 +10,18 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
+using AdminShellNS.Extenstions;
 
 // ReSharper disable InconsistentlySynchronizedField
 // ReSharper disable AccessToModifiedClosure
@@ -33,7 +35,7 @@ namespace AasxPluginDocumentShelf
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AdminShell.Submodel _submodel = null;
+        private Submodel _submodel = null;
         private DocumentShelfOptions _options = null;
         private PluginEventStack _eventStack = null;
         private PluginSessionBase _session = null;
@@ -121,7 +123,7 @@ namespace AasxPluginDocumentShelf
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             DocumentShelfOptions theOptions,
             PluginEventStack eventStack,
             PluginSessionBase session,
@@ -155,7 +157,7 @@ namespace AasxPluginDocumentShelf
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -182,13 +184,13 @@ namespace AasxPluginDocumentShelf
         private void RenderFullShelf(AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk)
         {
             // test trivial access
-            if (_options == null || _submodel?.semanticId == null)
+            if (_options == null || _submodel?.SemanticId == null)
                 return;
 
             // make sure for the right Submodel
             DocumentShelfOptionsRecord foundRec = null;
             foreach (var rec in _options.LookupAllIndexKey<DocumentShelfOptionsRecord>(
-                _submodel?.semanticId?.GetAsExactlyOneKey()))
+                _submodel?.SemanticId?.GetAsExactlyOneKey()))
                 foundRec = rec;
 
             if (foundRec == null)
@@ -197,7 +199,7 @@ namespace AasxPluginDocumentShelf
             // right now: hardcoded check for mdoel version
             _renderedVersion = DocumentEntity.SubmodelVersion.Default;
             var defs11 = AasxPredefinedConcepts.VDI2770v11.Static;
-            if (_submodel.semanticId.Matches(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
+            if (_submodel.SemanticId.MatchesExactlyOneKey(defs11?.SM_ManufacturerDocumentation?.GetSemanticKey()))
                 _renderedVersion = DocumentEntity.SubmodelVersion.V11;
             if (foundRec.ForceVersion == DocumentEntity.SubmodelVersion.V10)
                 _renderedVersion = DocumentEntity.SubmodelVersion.V10;
@@ -587,12 +589,14 @@ namespace AasxPluginDocumentShelf
             var hds = new List<string>();
             if (_opContext?.IsDisplayModeEditOrAdd == true)
             {
-                hds.AddRange(new[] { "\u270e", "Edit" });
+                hds.AddRange(new[] { "\u270e", "Edit metadata" });
                 hds.AddRange(new[] { "\u2702", "Delete" });
             }
             else
-                hds.AddRange(new[] { "\u270e", "Display" });
-            hds.AddRange(new[] { "\U0001F4BE", "Save as .." });
+                hds.AddRange(new[] { "\u270e", "View metadata" });
+
+            hds.AddRange(new[] { "\U0001F56E", "View file" });
+            hds.AddRange(new[] { "\U0001F4BE", "Save file as .." });
 
             // context menu
             uitk.AddSmallContextMenuItemTo(g, 2, 2,
@@ -603,9 +607,9 @@ namespace AasxPluginDocumentShelf
                     fontWeight: AnyUiFontWeight.Bold,
                     menuItemLambda: (o) =>
                     {
-                        if (o is int ti)
+                        if (o is int ti && ti >= 0 && ti < hds.Count)
                             // awkyard, but for compatibility to WPF version
-                            de?.RaiseMenuClick((new[] { "Edit", "Delete", "Save file .." })[ti], null);
+                            de?.RaiseMenuClick(hds[2 * ti + 1], null);
                         return new AnyUiLambdaActionNone();
                     });
 
@@ -715,7 +719,7 @@ namespace AasxPluginDocumentShelf
             _eventStack?.PushEvent(new AasxPluginEventReturnUpdateAnyUi()
             {
                 // get the always currentplugin name
-                PluginName = AasxIntegrationBase.AasxPlugin.PluginName,
+                PluginName = "AasxPluginDocumentShelf",
                 Session = _session,
                 Mode = mode,
                 UseInnerGrid = true
@@ -798,7 +802,7 @@ namespace AasxPluginDocumentShelf
         #region Callbacks
         //===============
 
-        private AdminShell.SubmodelElementWrapperCollection _updateSourceElements = null;
+        private List<ISubmodelElement> _updateSourceElements = null;
 
         private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
@@ -808,7 +812,7 @@ namespace AasxPluginDocumentShelf
 
             // what to do?
             if (tag == null
-                && (menuItemHeader == "Edit" || menuItemHeader == "Display")
+                && (menuItemHeader == "Edit metadata" || menuItemHeader == "View metadata")
                 && e.SourceElementsDocument != null && e.SourceElementsDocumentVersion != null)
             {
                 // prepare form instance, take over existing data
@@ -832,7 +836,7 @@ namespace AasxPluginDocumentShelf
             }
 
             if (tag == null && menuItemHeader == "Delete" && e.SourceElementsDocument != null
-                && e.SourceElementsDocumentVersion != null && _submodel?.submodelElements != null
+                && e.SourceElementsDocumentVersion != null && _submodel?.SubmodelElements != null
                 && _options != null
                 && _opContext?.IsDisplayModeEditOrAdd == true)
             {
@@ -840,23 +844,23 @@ namespace AasxPluginDocumentShelf
                 var semConf = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
                 var found = false;
                 foreach (var smcDoc in
-                    _submodel.submodelElements.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                    _submodel.SubmodelElements.FindAllSemanticIdAs<SubmodelElementCollection>(
                         semConf.SemIdDocument))
-                    if (smcDoc?.value == e.SourceElementsDocument)
+                    if (smcDoc?.Value == e.SourceElementsDocument)
                     {
                         // identify as well the DocumentVersion
                         // (convert to List() because of Count() below)
                         var allVers =
-                            e.SourceElementsDocument.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
+                            e.SourceElementsDocument.FindAllSemanticIdAs<SubmodelElementCollection>(
                                 semConf.SemIdDocumentVersion).ToList();
                         foreach (var smcVer in allVers)
-                            if (smcVer?.value == e.SourceElementsDocumentVersion)
+                            if (smcVer?.Value == e.SourceElementsDocumentVersion)
                             {
                                 // found 
                                 found = true;
 
                                 // access
-                                if (smcVer == null || smcVer.value == null || smcDoc == null || smcDoc.value == null)
+                                if (smcVer == null || smcVer.Value == null || smcDoc == null || smcDoc.Value == null)
                                     continue;
 
                                 // ask back via event stack
@@ -880,7 +884,7 @@ namespace AasxPluginDocumentShelf
                                             // confirmed! -> delete
                                             if (allVers.Count < 2)
                                                 // remove the whole document!
-                                                _submodel.submodelElements.Remove(smcDoc);
+                                                _submodel.SubmodelElements.Remove(smcDoc);
                                             else
                                                 // remove only the document version
                                                 e.SourceElementsDocument.Remove(smcVer);
@@ -910,8 +914,12 @@ namespace AasxPluginDocumentShelf
                     _log?.Error("Document element was not found properly!");
             }
 
+            // show digital file
+            if (tag == null && menuItemHeader == "View file")
+                DocumentEntity_DoubleClick(e);
+
             // save digital file?
-            if (tag == null && menuItemHeader == "Save file .." && e.DigitalFile?.Path.HasContent() == true)
+            if (tag == null && menuItemHeader == "Save file as .." && e.DigitalFile?.Path.HasContent() == true)
             {
                 // make a file available
                 var inputFn = e.DigitalFile.Path;
@@ -944,7 +952,7 @@ namespace AasxPluginDocumentShelf
                         try
                         {
                             // do it
-                            File.Copy(inputFn, rsel.FileNames[0], overwrite: true);
+                            System.IO.File.Copy(inputFn, rsel.FileNames[0], overwrite: true);
                             _log.Info("Successfully saved {0}", rsel.FileNames[0]);
                         }
                         catch (Exception ex)
@@ -1062,14 +1070,14 @@ namespace AasxPluginDocumentShelf
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    AdminShell.SubmodelElementWrapperCollection currentElements = null;
+                    List<ISubmodelElement> currentElements = null;
                     if (_formDoc.InUpdateMode)
                     {
                         currentElements = _updateSourceElements;
                     }
                     else
                     {
-                        currentElements = new AdminShell.SubmodelElementWrapperCollection();
+                        currentElements = new List<ISubmodelElement>();
                     }
 
                     // create a sequence of SMEs
@@ -1089,16 +1097,16 @@ namespace AasxPluginDocumentShelf
                     // the InstSubmodel, which started the process, should have a "fresh" SMEC available
                     // make it unique in the Documentens Submodel
                     var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme
-                            as AdminShell.SubmodelElementCollection;
+                            as SubmodelElementCollection;
 
                     // if not update, put them into the Document's Submodel
                     if (!_formDoc.InUpdateMode && currentElements != null && newSmc != null)
                     {
                         // make newSmc unique in the cotext of the Submodel
-                        FormInstanceHelper.MakeIdShortUnique(_submodel.submodelElements, newSmc);
+                        FormInstanceHelper.MakeIdShortUnique(_submodel.SubmodelElements, newSmc);
 
                         // add the elements
-                        newSmc.value = currentElements;
+                        newSmc.Value = currentElements;
 
                         // add the whole SMC
                         _submodel.Add(newSmc);
@@ -1119,13 +1127,13 @@ namespace AasxPluginDocumentShelf
                 var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
                 var theCds = theDefs.GetAllReferables().Where(
-                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+                    (rf) => { return rf is ConceptDescription; }).ToList();
 
                 // v11
                 if (_selectedVersion == DocumentEntity.SubmodelVersion.V11)
                 {
                     theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
-                    (rf) => { return rf is AdminShell.ConceptDescription; }).ToList();
+                    (rf) => { return rf is ConceptDescription; }).ToList();
                 }
 
                 if (theCds.Count < 1)
@@ -1167,14 +1175,14 @@ namespace AasxPluginDocumentShelf
                             int nr = 0;
                             foreach (var x in theCds)
                             {
-                                var cd = x as AdminShell.ConceptDescription;
-                                if (cd == null || cd.identification == null)
+                                var cd = x as ConceptDescription;
+                                if (cd == null || cd.Id?.HasContent() != true)
                                     continue;
-                                var cdFound = env.FindConceptDescription(cd.identification);
+                                var cdFound = env.FindConceptDescriptionById(cd.Id);
                                 if (cdFound != null)
                                     continue;
                                 // ok, add
-                                var newCd = new AdminShell.ConceptDescription(cd);
+                                var newCd = cd.Copy();
                                 env.ConceptDescriptions.Add(newCd);
                                 nr++;
                             }
@@ -1230,7 +1238,7 @@ namespace AasxPluginDocumentShelf
             if (cmd == "ButtonAddEntity" && _formEntity.IdShort.HasContent())
             {
                 // add entity
-                _submodel?.SmeForWrite?.CreateSMEForCD<AdminShell.Entity>(
+                _submodel?.SmeForWrite().CreateSMEForCD<Entity>(
                     AasxPredefinedConcepts.VDI2770v11.Static.CD_DocumentedEntity,
                     idShort: "" + _formEntity.IdShort.Trim(),
                     addSme: true);
@@ -1261,6 +1269,8 @@ namespace AasxPluginDocumentShelf
         private const int maxDocEntitiesInPreview = 3;
 
         private bool _inDispatcherTimer = false;
+
+        protected int _dispatcherNumException = 0;
 
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
@@ -1377,6 +1387,12 @@ namespace AasxPluginDocumentShelf
                 catch (Exception ex)
                 {
                     AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+
+                    if (_dispatcherNumException < 3)
+                        _log?.Error(ex, "AasxPluginDocumentShelf / converting previews");
+                    else if (_dispatcherNumException == 3)
+                        _log?.Info("AasxPluginDocumentShelf / stopping logging exceptions.");
+                    _dispatcherNumException++;
                 }
             }
 
@@ -1405,7 +1421,7 @@ namespace AasxPluginDocumentShelf
                                 // it is quite likely (e.g. http:// files) that the delete fails!
                                 try
                                 {
-                                    File.Delete(fn);
+                                    System.IO.File.Delete(fn);
                                 }
                                 catch (Exception ex)
                                 {
@@ -1421,6 +1437,12 @@ namespace AasxPluginDocumentShelf
                     catch (Exception ex)
                     {
                         AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+
+                        if (_dispatcherNumException < 3)
+                            _log?.Error(ex, "AasxPluginDocumentShelf / displaying previews");
+                        else if (_dispatcherNumException == 3)
+                            _log?.Info("AasxPluginDocumentShelf / stopping logging exceptions.");
+                        _dispatcherNumException++;
                     }
                 }
             }

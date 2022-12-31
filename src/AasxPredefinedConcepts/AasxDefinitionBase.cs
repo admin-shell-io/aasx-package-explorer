@@ -25,6 +25,13 @@ namespace AasxPredefinedConcepts
     public class AasxDefinitionBase
     {
         //
+        // Constants & members
+        //
+
+        public const string V20Tag = "AAS2.0";
+        public string ReadVersion = "";
+
+        //
         // Inner classes
         //
 
@@ -41,11 +48,15 @@ namespace AasxPredefinedConcepts
             }
         }
 
+        public class Library : Dictionary<string, LibraryEntry>
+        {
+        }
+
         //
         // Fields
         //
 
-        protected Dictionary<string, LibraryEntry> theLibrary = new Dictionary<string, LibraryEntry>();
+        protected Library _library = new Library();
 
         protected List<IReferable> theReflectedReferables = new List<IReferable>();
 
@@ -59,7 +70,7 @@ namespace AasxPredefinedConcepts
 
         public AasxDefinitionBase(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
         //
@@ -68,13 +79,13 @@ namespace AasxPredefinedConcepts
 
         public void ReadLibrary(Assembly assembly, string resourceName)
         {
-            this.theLibrary = BuildLibrary(assembly, resourceName);
+            this._library = BuildLibrary(assembly, resourceName);
         }
 
-        protected Dictionary<string, LibraryEntry> BuildLibrary(Assembly assembly, string resourceName)
+        protected Library BuildLibrary(Assembly assembly, string resourceName)
         {
             // empty result
-            var res = new Dictionary<string, LibraryEntry>();
+            var res = new Library();
 
             // access resource
             var stream = assembly.GetManifestResourceStream(resourceName);
@@ -97,6 +108,14 @@ namespace AasxPredefinedConcepts
                 if (prop == null)
                     continue;
 
+                // some special cases
+                if (prop.Name == "Version")
+                {
+                    // note this once for the whole class
+                    ReadVersion = prop.Value.ToString();
+                    continue;
+                }
+
                 // ok
                 var name = prop.Name;
                 var contents = prop.Value.ToString();
@@ -111,14 +130,14 @@ namespace AasxPredefinedConcepts
         public LibraryEntry RetrieveEntry(string name)
         {
             // simple access
-            if (theLibrary == null || name == null || !theLibrary.ContainsKey(name))
+            if (_library == null || name == null || !_library.ContainsKey(name))
                 return null;
 
             // return
-            return theLibrary[name];
+            return _library[name];
         }
 
-        public T RetrieveReferable<T>(string name) where T : IReferable
+        public T RetrieveReferable<T>(string name) where T : class, IReferable
         {
             // entry
             var entry = this.RetrieveEntry(name);
@@ -126,16 +145,42 @@ namespace AasxPredefinedConcepts
                 return default(T);
 
             // try de-serialize
+            T res = null;
             try
             {
-                var r = JsonConvert.DeserializeObject<T>(entry.contents);
-                return r;
+                // do some on-the-fly conversion?
+#if !DoNotUseAasxCompatibilityModels
+                if (ReadVersion == V20Tag)
+                {
+                    if (typeof(T) == typeof(Submodel))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.Submodel>(entry.contents);
+                        if (old != null)
+                            res = new Submodel("").ConvertFromV20(old) as T;
+                    }
+
+                    if (typeof(T) == typeof(ConceptDescription))
+                    {
+                        var old = JsonConvert.DeserializeObject
+                            <AasxCompatibilityModels.AdminShellV20.ConceptDescription>(entry.contents);
+                        if (old != null)
+                            res = new ConceptDescription("").ConvertFromV20(old) as T;
+                    }
+                }
+#endif
+                // TODO (MIHO, 2022-12-31): for V3.0, another method of deserialization is required!!
+                
+                res ??= JsonConvert.DeserializeObject<T>(entry.contents);
             }
             catch (Exception ex)
             {
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
                 return default(T);
             }
+
+            // OK
+            return res;
         }
 
         public static ConceptDescription CreateSparseConceptDescription(
@@ -185,7 +230,7 @@ namespace AasxPredefinedConcepts
             bool useAttributes = false, bool useFieldNames = false)
         {
             // access
-            if (this.theLibrary == null || typeToReflect == null)
+            if (this._library == null || typeToReflect == null)
                 return;
 
             // remember found Referables
