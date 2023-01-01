@@ -13,7 +13,9 @@ using System.IO;
 using System.Reflection;
 using AasxIntegrationBase;
 using AasxIntegrationBaseGdi;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
 
@@ -26,7 +28,7 @@ namespace AasxPluginKnownSubmodels
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AdminShell.Submodel _submodel = null;
+        private Submodel _submodel = null;
         private KnownSubmodelsOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -57,7 +59,7 @@ namespace AasxPluginKnownSubmodels
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             KnownSubmodelsOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel)
@@ -82,7 +84,7 @@ namespace AasxPluginKnownSubmodels
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -106,16 +108,16 @@ namespace AasxPluginKnownSubmodels
         private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm)
+            Submodel sm)
         {
             // test trivial access
-            if (_options == null || _submodel?.semanticId == null)
+            if (_options == null || _submodel?.SemanticId == null)
                 return;
 
             // make sure for the right Submodel
             var foundRecs = new List<KnownSubmodelsOptionsRecord>();
             foreach (var rec in _options.LookupAllIndexKey<KnownSubmodelsOptionsRecord>(
-                _submodel?.semanticId?.GetAsExactlyOneKey()))
+                _submodel?.SemanticId?.GetAsExactlyOneKey()))
                 foundRecs.Add(rec);
 
             // render
@@ -126,7 +128,7 @@ namespace AasxPluginKnownSubmodels
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<KnownSubmodelsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm)
+            Submodel sm)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
@@ -196,7 +198,7 @@ namespace AasxPluginKnownSubmodels
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             KnownSubmodelsOptionsRecord rec,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm)
+            Submodel sm)
         {
             // access
             if (view == null || uitk == null || sm == null || rec == null)

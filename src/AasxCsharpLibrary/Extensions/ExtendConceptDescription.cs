@@ -234,7 +234,8 @@ namespace Extensions
                 cd.Description = ExtensionsUtil.ConvertDescriptionFromV20(srcCD.description);
 
             if (srcCD.administration != null)
-                cd.Administration = new AdministrativeInformation(version: srcCD.administration.version, revision: srcCD.administration.revision);
+                cd.Administration = new AdministrativeInformation(
+                    version: srcCD.administration.version, revision: srcCD.administration.revision);
 
             if (srcCD.IsCaseOf != null && srcCD.IsCaseOf.Count != 0)
             {

@@ -123,5 +123,6 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * little tuning on Range
 * little tuning on ReferenceElement, show referredSemanticId (what a monster!)
 * little tuning on RelationshipElem, "Jump" works again (bug in Env.FindReferable())
-* AasxPluginGenericForms
-* AasxPluginDocumentShelf
+* quite intense rework of AasxPluginGenericForms
+* rework of AasxPluginDocumentShelf
+* touching up AasxPluginKnownSubmodels

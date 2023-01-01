@@ -17,7 +17,7 @@
   /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
   /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
   "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_forV3-spiel.aasx",
-  "WindowLeft": -1,
+  "WindowLeft": 2000,
   "WindowTop": -1,
   "WindowWidth": 900,
   "WindowHeight": 600,
@@ -109,9 +109,13 @@
       "Args": []
     }, */
     {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
+      "Args": []
+    },
+    {
       "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
       "Args": []
-    }, 
+    },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
@@ -120,10 +124,7 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
       "Args": []
     },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net472\\AasxPluginKnownSubmodels.dll",
-      "Args": []
-    },
+    
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
       "Args": []

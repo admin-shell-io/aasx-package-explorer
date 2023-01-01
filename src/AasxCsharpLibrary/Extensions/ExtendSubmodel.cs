@@ -204,36 +204,30 @@ namespace Extensions
 
         }
 
-        public static Submodel ConvertFromV20(this Submodel submodel, AasxCompatibilityModels.AdminShellV20.Submodel sourceSubmodel, bool shallowCopy = false)
+        public static Submodel ConvertFromV20(this Submodel sm, AasxCompatibilityModels.AdminShellV20.Submodel srcSM, bool shallowCopy = false)
         {
-            if (sourceSubmodel == null)
-            {
+            if (srcSM == null)
                 return null;
-            }
 
-            if (string.IsNullOrEmpty(sourceSubmodel.idShort))
-            {
-                submodel.IdShort = "";
-            }
+            if (string.IsNullOrEmpty(srcSM.idShort))
+                sm.IdShort = "";
             else
-            {
-                submodel.IdShort = sourceSubmodel.idShort;
-            }
+                sm.IdShort = srcSM.idShort;
 
-            if (sourceSubmodel.description != null)
-            {
-                submodel.Description = ExtensionsUtil.ConvertDescriptionFromV20(sourceSubmodel.description);
-            }
+            if (srcSM.identification?.id != null)
+                sm.Id = srcSM.identification.id;
 
-            if (sourceSubmodel.administration != null)
-            {
-                submodel.Administration = new AdministrativeInformation(version: sourceSubmodel.administration.version, revision: sourceSubmodel.administration.revision);
-            }
+            if (srcSM.description != null)
+                sm.Description = ExtensionsUtil.ConvertDescriptionFromV20(srcSM.description);
 
-            if (sourceSubmodel.semanticId != null)
+            if (srcSM.administration != null)
+                sm.Administration = new AdministrativeInformation(
+                    version: srcSM.administration.version, revision: srcSM.administration.revision);
+
+            if (srcSM.semanticId != null)
             {
                 var keyList = new List<Key>();
-                foreach (var refKey in sourceSubmodel.semanticId.Keys)
+                foreach (var refKey in srcSM.semanticId.Keys)
                 {
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
@@ -245,57 +239,57 @@ namespace Extensions
                         Console.WriteLine($"KeyType value {refKey.type} not found.");
                     }
                 }
-                submodel.SemanticId = new Reference(ReferenceTypes.GlobalReference, keyList);
+                sm.SemanticId = new Reference(ReferenceTypes.GlobalReference, keyList);
             }
 
-            if (sourceSubmodel.kind != null)
+            if (srcSM.kind != null)
             {
-                if (sourceSubmodel.kind.IsInstance)
+                if (srcSM.kind.IsInstance)
                 {
-                    submodel.Kind = ModelingKind.Instance;
+                    sm.Kind = ModelingKind.Instance;
                 }
                 else
                 {
-                    submodel.Kind = ModelingKind.Template;
+                    sm.Kind = ModelingKind.Template;
                 }
             }
 
-            if (sourceSubmodel.qualifiers != null && sourceSubmodel.qualifiers.Count != 0)
+            if (srcSM.qualifiers != null && srcSM.qualifiers.Count != 0)
             {
-                if (submodel.Qualifiers == null)
+                if (sm.Qualifiers == null)
                 {
-                    submodel.Qualifiers = new List<Qualifier>();
+                    sm.Qualifiers = new List<Qualifier>();
                 }
 
-                foreach (var sourceQualifier in sourceSubmodel.qualifiers)
+                foreach (var sourceQualifier in srcSM.qualifiers)
                 {
                     var newQualifier = new Qualifier("", DataTypeDefXsd.String);
                     newQualifier = newQualifier.ConvertFromV20(sourceQualifier);
-                    submodel.Qualifiers.Add(newQualifier);
+                    sm.Qualifiers.Add(newQualifier);
                 }
             }
 
-            if (!shallowCopy && sourceSubmodel.submodelElements != null)
+            if (!shallowCopy && srcSM.submodelElements != null)
             {
-                if (submodel.SubmodelElements == null)
+                if (sm.SubmodelElements == null)
                 {
-                    submodel.SubmodelElements = new List<ISubmodelElement>();
+                    sm.SubmodelElements = new List<ISubmodelElement>();
                 }
 
-                foreach (var submodelElementWrapper in sourceSubmodel.submodelElements)
+                foreach (var submodelElementWrapper in srcSM.submodelElements)
                 {
                     var sourceSubmodelELement = submodelElementWrapper.submodelElement;
                     ISubmodelElement outputSubmodelElement = null;
                     if (sourceSubmodelELement != null)
                     {
                         outputSubmodelElement = outputSubmodelElement.ConvertFromV20(sourceSubmodelELement, shallowCopy);
-                        submodel.SubmodelElements.Add(outputSubmodelElement);
+                        sm.SubmodelElements.Add(outputSubmodelElement);
                     }
 
                 }
             }
 
-            return submodel;
+            return sm;
 
         }
 

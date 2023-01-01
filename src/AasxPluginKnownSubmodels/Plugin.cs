@@ -14,7 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
 
@@ -26,10 +28,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         private AasxPluginKnownSubmodels.KnownSubmodelsOptions _options
             = new AasxPluginKnownSubmodels.KnownSubmodelsOptions();
-
-#if USE_WPF
-        private AasxPluginKnownSubmodels.KnownSubmodelsControl _viewerControl = null;
-#endif
 
         public class Session : PluginSessionBase
         {
@@ -90,10 +88,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase("get-check-visual-extension",
                 "Returns true, if plug-ins checks for visual extension."));
-#if USE_WPF
-            res.Add(new AasxPluginActionDescriptionBase("fill-panel-visual-extension",
-                "When called, fill given WPF panel with control for graph display."));
-#endif
             res.Add(new AasxPluginActionDescriptionBase(
                 "fill-anyui-visual-extension",
                 "When called, fill given AnyUI panel with control for graph display."));
@@ -117,26 +111,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
-#if __old
-                var found = false;
-
-                if (_options != null && _options.Records != null)
-                    foreach (var rec in _options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
-#else
-                bool found = _options?.ContainsIndexKey(sm?.semanticId?.GetAsExactlyOneKey()) ?? false;
-#endif
+                bool found = _options?.ContainsIndexKey(sm?.SemanticId?.GetAsExactlyOneKey()) ?? false;
                 if (!found)
                     return null;
 
@@ -241,25 +221,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 // ReSharper enable UnusedVariable
             }
-
-#if USE_WPF
-            if (action == "fill-panel-visual-extension" && _viewerControl != null)
-            {
-                // arguments
-                if (args?.Length < 3)
-                    return null;
-
-                // call
-                var resobj = AasxPluginKnownSubmodels.KnownSubmodelsControl.FillWithWpfControls(
-                    _log, args?[0], args?[1],
-                    _options, _eventStack, args?[2]);
-
-                // give object back
-                var res = new AasxPluginResultBaseObject();
-                res.obj = resobj;
-                return res;
-            }
-#endif
 
             // default
             return null;

@@ -13,7 +13,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginKnownSubmodels
 {
@@ -63,7 +65,7 @@ namespace AasxPluginKnownSubmodels
                     AasxPredefinedConcepts.ZveiNameplateV10.Static.SM_Nameplate.GetSemanticKey()
                 }.ToList())
             });
-
+            
             opt.Records.Add(new KnownSubmodelsOptionsRecord()
             {
                 Header = "VDMA Article of trade information (Version 0.8)",
@@ -74,8 +76,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaArticleOfTradeInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                        "https://admin-shell.io/sandbox/vdma/article-information/0/8")
+                    new Key(KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/article-information/0/8")
                 }.ToList())
             });
 
@@ -90,8 +91,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaHandoverEngSystems.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                        "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/")
+                    new Key(KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/")
                 }.ToList())
             });
 
@@ -106,8 +106,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaParameterInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRI,
-                        "https://admin-shell.io/sandbox/vdma/parameter-information/0/8")
+                    new Key(KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/parameter-information/0/8")
                 }.ToList())
             });
 
@@ -124,8 +123,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaProductChangeNotification.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    AdminShell.Key.CreateNew(AdminShell.Key.Submodel, false, AdminShell.Identification.IRDI,
-                        "0173-10029#01-XFB001#001")
+                    new Key(KeyTypes.Submodel, "0173-10029#01-XFB001#001")
                 }.ToList())
             });
 
