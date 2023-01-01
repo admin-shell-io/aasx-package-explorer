@@ -10,7 +10,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,7 +19,9 @@ using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
 
@@ -36,7 +37,7 @@ namespace AasxPluginTechnicalData
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AdminShell.Submodel _submodel = null;
+        private Submodel _submodel = null;
         private TechnicalDataOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -67,7 +68,7 @@ namespace AasxPluginTechnicalData
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             TechnicalDataOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel)
@@ -92,7 +93,7 @@ namespace AasxPluginTechnicalData
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -116,16 +117,16 @@ namespace AasxPluginTechnicalData
         private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string defaultLang = null)
+            Submodel sm, string defaultLang = null)
         {
             // test trivial access
-            if (_options == null || _submodel?.semanticId == null)
+            if (_options == null || _submodel?.SemanticId == null)
                 return;
 
             // make sure for the right Submodel
             TechnicalDataOptionsRecord foundRec = null;
             foreach (var rec in _options.LookupAllIndexKey<TechnicalDataOptionsRecord>(
-                _submodel?.semanticId?.GetAsExactlyOneKey()))
+                _submodel?.SemanticId?.GetAsExactlyOneKey()))
                 foundRec = rec;
 
             if (foundRec == null)
@@ -142,7 +143,7 @@ namespace AasxPluginTechnicalData
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string defaultLang = null)
+            Submodel sm, string defaultLang = null)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
@@ -277,7 +278,7 @@ namespace AasxPluginTechnicalData
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string defaultLang = null)
+            Submodel sm, string defaultLang = null)
         {
             // access
             if (view == null || uitk == null || sm == null)
@@ -292,29 +293,29 @@ namespace AasxPluginTechnicalData
             //           
 
             // section General
-            var smcGeneral = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                theDefs.CD_GeneralInformation.GetSingleKey());
+            var smcGeneral = sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                theDefs.CD_GeneralInformation.GetSingleKey(), MatchMode.Relaxed);
             if (smcGeneral != null)
             {
                 // gather information
 
                 var prodDesig = "" +
-                    smcGeneral.value.FindFirstSemanticId(
+                    smcGeneral.Value.FindFirstSemanticId(
                         theDefs.CD_ManufacturerProductDesignation.GetSingleKey(),
-                        allowedTypes: AdminShell.SubmodelElement.PROP_MLP)?
-                            .submodelElement?.ValueAsText(defaultLang);
+                        allowedTypes: ExtendISubmodelElement.PROP_MLP, MatchMode.Relaxed)?
+                            .ValueAsText(defaultLang);
 
                 var prodCode = "" +
-                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                        theDefs.CD_ManufacturerOrderCode.GetSingleKey())?.value;
+                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                        theDefs.CD_ManufacturerOrderCode.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 var partNumber = "" +
-                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                        theDefs.CD_ManufacturerPartNumber.GetSingleKey())?.value;
+                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                        theDefs.CD_ManufacturerPartNumber.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 var manuName = "" +
-                    smcGeneral.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                        theDefs.CD_ManufacturerName.GetSingleKey())?.value;
+                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                        theDefs.CD_ManufacturerName.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 AnyUiBitmapInfo imageManuLogo = null;
                 if (package != null)
@@ -328,8 +329,8 @@ namespace AasxPluginTechnicalData
                     imageManuLogo = AnyUiHelper.CreateAnyUiBitmapInfo(bi);
 #else
                     imageManuLogo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(package,
-                        smcGeneral.value.FindFirstSemanticIdAs<AdminShell.File>(
-                            theDefs.CD_ManufacturerLogo.GetSingleKey())?.value
+                        smcGeneral.Value.FindFirstSemanticIdAs<File>(
+                            theDefs.CD_ManufacturerLogo.GetSingleKey(), MatchMode.Relaxed)?.Value
                         );
 #endif
                 }
@@ -376,8 +377,8 @@ namespace AasxPluginTechnicalData
 
                 var pil = new List<AnyUiBitmapInfo>();
                 foreach (var pi in
-                            smcGeneral.value.FindAllSemanticIdAs<AdminShell.File>(
-                                theDefs.CD_ProductImage.GetSingleKey()))
+                            smcGeneral.Value.FindAllSemanticIdAs<File>(
+                                theDefs.CD_ProductImage.GetSingleKey(), MatchMode.Relaxed))
                 {
 #if USE_WPF
                     var bi = AasxWpfBaseUtils.LoadBitmapImageFromPackage(package, pi.value);
@@ -385,7 +386,7 @@ namespace AasxPluginTechnicalData
                     if (imgInfo != null)
                         pil.Add(imgInfo);
 #else
-                    var imgInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(package, pi.value);
+                    var imgInfo = AnyUiGdiHelper.LoadBitmapInfoFromPackage(package, pi.Value);
                     if (imgInfo != null)
                         pil.Add(imgInfo);
 #endif
@@ -417,29 +418,32 @@ namespace AasxPluginTechnicalData
             //
 
             var smcClassifications =
-                sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    theDefs.CD_ProductClassifications.GetSingleKey());
+                sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                    theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed);
             if (smcClassifications != null)
             {
                 // gather
 
                 var clr = new List<ClassificationRecord>();
                 foreach (var smc in
-                        smcClassifications.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                            theDefs.CD_ProductClassificationItem.GetSingleKey()))
+                        smcClassifications.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                            theDefs.CD_ProductClassificationItem.GetSingleKey(), 
+                            MatchMode.Relaxed))
                 {
                     var sys = (
                         "" +
-                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_ProductClassificationSystem.GetSingleKey())?.value).Trim();
+                        smc.Value.FindFirstSemanticIdAs<Property>(
+                            theDefs.CD_ProductClassificationSystem.GetSingleKey(), 
+                            MatchMode.Relaxed)?.Value).Trim();
                     var ver = (
                         "" +
-                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_ClassificationSystemVersion.GetSingleKey())?.value).Trim();
+                        smc.Value.FindFirstSemanticIdAs<Property>(
+                            theDefs.CD_ClassificationSystemVersion.GetSingleKey(), 
+                            MatchMode.Relaxed)?.Value).Trim();
                     var cls = (
                         "" +
-                        smc.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            theDefs.CD_ProductClassId.GetSingleKey())?.value).Trim();
+                        smc.Value.FindFirstSemanticIdAs<Property>(
+                            theDefs.CD_ProductClassId.GetSingleKey())?.Value).Trim();
 
                     if (sys != "" && cls != "")
                         clr.Add(new ClassificationRecord() { System = sys, Version = ver, ClassTxt = cls });
@@ -551,43 +555,43 @@ namespace AasxPluginTechnicalData
 
         protected void TableAddPropertyRows_Recurse(
             ConceptModelZveiTechnicalData theDefs, string defaultLang, AdminShellPackageEnv package,
-            List<TripleRowData> rows, AdminShell.SubmodelElementWrapperCollection smwc, int depth = 0)
+            List<TripleRowData> rows, List<ISubmodelElement> smec, int depth = 0)
         {
             // access
-            if (rows == null || smwc == null)
+            if (rows == null || smec == null)
                 return;
 
             // go element by element
-            foreach (var smw in smwc)
+            foreach (var sme in smec)
             {
                 // access
-                if (smw?.submodelElement == null)
+                if (sme == null)
                     continue;
-                var sme = smw.submodelElement;
 
                 // prepare information about displayName, semantics unit
                 var semantics = "-";
                 var unit = "";
                 // make up property name (1)
-                var dispName = "" + sme.idShort;
+                var dispName = "" + sme.IdShort;
                 var dispNameWithCD = dispName;
 
                 // make up semantics
-                if (sme.semanticId != null)
+                if (sme.SemanticId != null)
                 {
-                    if (sme.semanticId.Matches(theDefs.CD_SemanticIdNotAvailable.GetSingleKey()))
+                    if (sme.SemanticId.MatchesExactlyOneKey(
+                        theDefs.CD_SemanticIdNotAvailable.GetSingleKey(), MatchMode.Relaxed))
                         semantics = "(not available)";
                     else
                     {
                         // the semantics display
-                        semantics = "" + sme.semanticId.ToString(2);
+                        semantics = "" + sme.SemanticId.ToStringExtended();
 
                         // find better property name (2)
-                        var cd = package?.AasEnv?.FindConceptDescription(sme.semanticId);
+                        var cd = package?.AasEnv?.FindConceptDescriptionByReference(sme.SemanticId);
                         if (cd != null)
                         {
                             // unit?
-                            unit = "" + cd.GetIEC61360()?.unit;
+                            unit = "" + cd.GetIEC61360()?.Unit;
 
                             // names
                             var dsn = cd.GetDefaultShortName(defaultLang);
@@ -602,7 +606,7 @@ namespace AasxPluginTechnicalData
                 }
 
                 // make up even better better property name (3)
-                var descDef = "" + sme.description?.langString?.GetDefaultStr(defaultLang);
+                var descDef = "" + sme.Description?.GetDefaultString(defaultLang);
                 if (descDef.HasContent())
                 {
                     dispName = descDef;
@@ -610,8 +614,9 @@ namespace AasxPluginTechnicalData
                 }
 
                 // special function?
-                if (sme is AdminShell.SubmodelElementCollection &&
-                        true == sme.semanticId?.Matches(theDefs.CD_MainSection.GetSingleKey()))
+                if (sme is SubmodelElementCollection &&
+                        true == sme.SemanticId?.MatchesExactlyOneKey(
+                            theDefs.CD_MainSection.GetSingleKey(), MatchMode.Relaxed))
                 {
                     // Main Section
                     rows.Add(new TripleRowData()
@@ -625,11 +630,12 @@ namespace AasxPluginTechnicalData
                     // recurse into that (again, new group)
                     TableAddPropertyRows_Recurse(
                         theDefs, defaultLang, package, rows,
-                        (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
+                        (sme as SubmodelElementCollection).Value, depth + 1);
                 }
                 else
-                if (sme is AdminShell.SubmodelElementCollection &&
-                    true == sme.semanticId?.Matches(theDefs.CD_SubSection.GetSingleKey()))
+                if (sme is SubmodelElementCollection &&
+                    true == sme.SemanticId?.MatchesExactlyOneKey(
+                        theDefs.CD_SubSection.GetSingleKey(), MatchMode.Relaxed))
                 {
                     // Sub Section
                     rows.Add(new TripleRowData()
@@ -643,10 +649,10 @@ namespace AasxPluginTechnicalData
                     // recurse into that
                     TableAddPropertyRows_Recurse(
                         theDefs, defaultLang, package, rows,
-                        (sme as AdminShell.SubmodelElementCollection).value, depth + 1);
+                        (sme as SubmodelElementCollection).Value, depth + 1);
                 }
                 else
-                if (sme is AdminShell.Property || sme is AdminShell.MultiLanguageProperty || sme is AdminShell.Range)
+                if (sme is Property || sme is MultiLanguageProperty || sme is AasCore.Aas3_0_RC02.Range)
                 {
                     rows.Add(new TripleRowData()
                     {
@@ -662,7 +668,7 @@ namespace AasxPluginTechnicalData
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string defaultLang = null)
+            Submodel sm, string defaultLang = null)
         {
             // access
             if (view == null || uitk == null || sm == null)
@@ -670,8 +676,8 @@ namespace AasxPluginTechnicalData
 
             // section Properties
             var smcProps =
-                sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    theDefs.CD_TechnicalProperties.GetSingleKey());
+                sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                    theDefs.CD_TechnicalProperties.GetSingleKey(), MatchMode.Relaxed);
             if (smcProps == null)
                 return;
 
@@ -686,7 +692,7 @@ namespace AasxPluginTechnicalData
             });
 
             // recurse
-            TableAddPropertyRows_Recurse(theDefs, defaultLang, package, rows, smcProps.value);
+            TableAddPropertyRows_Recurse(theDefs, defaultLang, package, rows, smcProps.Value);
 
             // render
             RenderTripleRowData(view, uitk, rows.ToArray());
@@ -701,7 +707,7 @@ namespace AasxPluginTechnicalData
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             ConceptModelZveiTechnicalData theDefs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm, string defaultLang = null)
+            Submodel sm, string defaultLang = null)
         {
             // access
             if (view == null || uitk == null || sm == null)
@@ -711,19 +717,20 @@ namespace AasxPluginTechnicalData
             var validDate = "";
             var tsl = new List<string>();
 
-            var smcFurther = sm.submodelElements.FindFirstSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                theDefs.CD_FurtherInformation.GetSingleKey());
+            var smcFurther = sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                theDefs.CD_FurtherInformation.GetSingleKey(), MatchMode.Relaxed);
             if (smcFurther != null)
             {
                 // single items
-                validDate = "" + smcFurther.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                    theDefs.CD_ValidDate.GetSingleKey())?.value;
+                validDate = "" + smcFurther.Value.FindFirstSemanticIdAs<Property>(
+                    theDefs.CD_ValidDate.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 // Lines
-                foreach (var smw in
-                    smcFurther.value.FindAllSemanticId(
-                        theDefs.CD_TextStatement.GetSingleKey(), allowedTypes: AdminShell.SubmodelElement.PROP_MLP))
-                    tsl.Add("" + smw?.submodelElement?.ValueAsText(defaultLang));
+                foreach (var sme in
+                    smcFurther.Value.FindAllSemanticId(
+                        theDefs.CD_TextStatement.GetSingleKey(), 
+                        allowedTypes: ExtendISubmodelElement.PROP_MLP, MatchMode.Relaxed))
+                    tsl.Add("" + sme?.ValueAsText(defaultLang));
             }
 
             // make an grid with two columns, first a bit wider 

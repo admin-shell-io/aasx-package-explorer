@@ -26,6 +26,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * CD below MLP does not work
 * NavigateTo: Find also CDs with GlobalReference
 * crash: add entity
+* web browser not working
 
 ## Findings / Open questions in spec
 
@@ -126,3 +127,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * quite intense rework of AasxPluginGenericForms
 * rework of AasxPluginDocumentShelf
 * touching up AasxPluginKnownSubmodels
+* touching up AasxPluginAdvancedTextEditor
+  had to: <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies> in .cdproj
+  in order to copy ICSharpCode.AvalonEdit.dll to debug folder
+  this includes ALL *.dll to bindary folder, which IS NOT NICE :-(
+* touching up AasxPluginTechnicalData
+  => add always: MatchMode.Relaxed (stupid GlobalReference vor CDs)
+  => very general handling of finding CondeptDescription by GlobalReference

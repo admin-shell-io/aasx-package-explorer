@@ -14,7 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -111,7 +113,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null)
                     return null;
 
@@ -121,7 +123,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     foreach (var rec in this._options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
+                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
                                 {
                                     found = true;
                                     break;

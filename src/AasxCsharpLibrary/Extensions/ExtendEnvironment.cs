@@ -528,25 +528,23 @@ namespace Extensions
 
         #region ConceptDescription Queries
 
-        public static ConceptDescription FindConceptDescriptionById(this AasCore.Aas3_0_RC02.Environment environment, string conceptDescriptionId)
+        public static ConceptDescription FindConceptDescriptionById(
+            this AasCore.Aas3_0_RC02.Environment env, string cdId)
         {
-            if (string.IsNullOrEmpty(conceptDescriptionId))
-            {
+            if (string.IsNullOrEmpty(cdId))
                 return null;
-            }
 
-            var conceptDescription = environment.ConceptDescriptions.Where(c => c.Id.Equals(conceptDescriptionId)).FirstOrDefault();
+            var conceptDescription = env.ConceptDescriptions.Where(c => c.Id.Equals(cdId)).FirstOrDefault();
             return conceptDescription;
         }
 
-        public static ConceptDescription FindConceptDescriptionByReference(this AasCore.Aas3_0_RC02.Environment environment, Reference reference)
+        public static ConceptDescription FindConceptDescriptionByReference(
+            this AasCore.Aas3_0_RC02.Environment env, Reference rf)
         {
-            if (reference == null)
-            {
+            if (rf == null)
                 return null;
-            }
 
-            return environment.FindConceptDescriptionById(reference.GetAsIdentifier());
+            return env.FindConceptDescriptionById(rf.GetAsIdentifier());
         }
 
         #endregion
@@ -585,6 +583,8 @@ namespace Extensions
                         return environment.FindReferableByReference(reference, ++keyIndex);
                     }
 
+                // TODO (MIHO, 2023-01-01): stupid generalization :-(
+                case KeyTypes.GlobalReference:
                 case KeyTypes.ConceptDescription:
                     {
                         return environment.FindConceptDescriptionById(firstKeyId);

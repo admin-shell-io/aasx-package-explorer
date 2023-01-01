@@ -23,6 +23,7 @@
     <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />

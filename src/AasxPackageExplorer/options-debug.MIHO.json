@@ -97,14 +97,6 @@
       "Args": []
     },
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net472\\AasxPluginWebBrowser.dll",
-      "Args": []
-    },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net472\\AasxPluginTechnicalData.dll",
-      "Args": []
-    },
-    {
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net472\\AasxPluginMtpViewer.dll",
       "Args": []
     }, */
@@ -119,7 +111,20 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
       "Args": []
-    } /* ,
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
+      "Args": []
+    }
+    /* ,
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Args": []
+    }
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net472\\AasxPluginImageMap.dll",
       "Args": []
@@ -129,10 +134,6 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
       "Args": []
     },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net472\\AasxPluginAdvancedTextEditor.dll",
-      "Args": []
-    } 
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",

@@ -4,8 +4,12 @@
     <OutputType>library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
-	  
-	<!-- 
+
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- 
 	    Both Platform and Platforms need to be specified:
 	        * Dotnet CLI will only recognize "Platform",
 			* Visual Studio will only recognize "Platforms". 
@@ -14,6 +18,22 @@
 	  <Platform>x64</Platform>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x86'">
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x86</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'x64'">
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-x64</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PlatformTarget)' == 'arm64'">
+    <RuntimeIdentifier Condition="'$(RuntimeIdentifier)' == ''">win-arm64</RuntimeIdentifier>
+    <SelfContained Condition="'$(SelfContained)' == ''">false</SelfContained>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Update="AasxPluginWebBrowser.plugin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -42,13 +62,13 @@
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="cef.redist.x64" Version="106.0.26" />
-    <PackageReference Include="cef.redist.x86" Version="106.0.26" />
-    <PackageReference Include="CefSharp.Common" Version="106.0.260" />
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="106.0.260" />
-    <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.CodeDom" Version="6.0.0" />
+    <PackageReference Include="cef.redist.x64" Version="108.4.13" />
+    <PackageReference Include="cef.redist.x86" Version="108.4.13" />
+    <PackageReference Include="CefSharp.Common" Version="108.4.130" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="108.4.130" />
+    <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

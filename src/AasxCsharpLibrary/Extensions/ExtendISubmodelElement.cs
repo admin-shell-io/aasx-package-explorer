@@ -13,6 +13,10 @@ namespace Extensions
 {
     public static class ExtendISubmodelElement
     {
+        // constants
+        public static Type[] PROP_MLP = new Type[] {
+            typeof(MultiLanguageProperty), typeof(Property) };
+
         #region AasxPackageExplorer
 
         public static object AddChild(this ISubmodelElement submodelElement, ISubmodelElement childSubmodelElement, EnumerationPlacmentBase placement = null)
@@ -1168,7 +1172,10 @@ namespace Extensions
             return default;
         }
 
-        public static IEnumerable<T> FindAllSemanticId<T>(this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds, bool invertedAllowed = false) where T : ISubmodelElement
+        public static IEnumerable<T> FindAllSemanticId<T>(
+            this List<ISubmodelElement> submodelElements, 
+            string[] allowedSemanticIds, 
+            bool invertedAllowed = false) where T : ISubmodelElement
         {
             if (allowedSemanticIds == null || allowedSemanticIds.Length < 1)
                 yield break;
@@ -1206,7 +1213,10 @@ namespace Extensions
             return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, invertAllowed).FirstOrDefault();
         }
 
-        public static IEnumerable<ISubmodelElement> FindAllSemanticId(this List<ISubmodelElement> submodelElements, Key semId, Type[] allowedTypes = null, MatchMode matchMode = MatchMode.Strict)
+        public static IEnumerable<ISubmodelElement> FindAllSemanticId(
+            this List<ISubmodelElement> submodelElements, Key semId, 
+            Type[] allowedTypes = null, 
+            MatchMode matchMode = MatchMode.Strict)
         {
             foreach (var smw in submodelElements)
                 if (smw != null && smw.SemanticId != null)

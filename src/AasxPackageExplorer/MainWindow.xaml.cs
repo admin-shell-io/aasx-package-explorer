@@ -10,6 +10,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -122,7 +123,13 @@ namespace AasxPackageExplorer
                 // open externally
                 Log.Singleton.Info($"Displaying {this.showContentPackageUri} with mimeType {"" + mimeType} " +
                     $"remotely in external viewer ..");
-                System.Diagnostics.Process.Start(url);
+
+                Process proc = new Process();
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.FileName = url;
+                proc.Start();
+
+                // System.Diagnostics.Process.Start(url);
             }
         }
 

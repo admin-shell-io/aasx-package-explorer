@@ -13,7 +13,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
+
 
 namespace AasxPluginTechnicalData
 {
