@@ -172,14 +172,14 @@ namespace Extensions
             return new Key(key.Type, key.Value);
         }
 
-        public static string ToStringExtended( this Reference reference, string delimiter = ",")
+        public static string ToStringExtended(this Reference reference, int format = 1, string delimiter = ",")
         {
             if(reference.Keys == null)
             {
                 throw new NullValueException("Keys");
             }
 
-            return reference.Keys.ToStringExtended(delimiter);
+            return reference.Keys.ToStringExtended(format, delimiter);
         }
 
         public static ReferenceTypes GuessType(this Reference reference)

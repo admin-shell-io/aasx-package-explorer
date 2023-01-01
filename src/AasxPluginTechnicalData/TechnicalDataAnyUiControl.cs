@@ -584,7 +584,7 @@ namespace AasxPluginTechnicalData
                     else
                     {
                         // the semantics display
-                        semantics = "" + sme.SemanticId.ToStringExtended();
+                        semantics = "" + sme.SemanticId?.ToStringExtended(2);
 
                         // find better property name (2)
                         var cd = package?.AasEnv?.FindConceptDescriptionByReference(sme.SemanticId);

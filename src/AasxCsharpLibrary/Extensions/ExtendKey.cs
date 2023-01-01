@@ -118,8 +118,10 @@ namespace Extensions
 
         
 
-        public static string ToStringExtended(this Key key)
+        public static string ToStringExtended(this Key key, int format = 1)
         {
+            if (format == 2)
+                return "" + key.Value;
             return $"[{key.Type}, {key.Value}]";
         }
 
@@ -205,9 +207,9 @@ namespace Extensions
             return true;
         }
 
-        public static string ToStringExtended(this List<Key> keys, string delimiter = ",")
+        public static string ToStringExtended(this List<Key> keys, int format = 1, string delimiter = ",")
         {
-            return string.Join(delimiter, keys.Select((k) => k.ToStringExtended()));
+            return string.Join(delimiter, keys.Select((k) => k.ToStringExtended(format)));
         }
 
         public static void Validate(this List<Key> keys, AasValidationRecordList results,

@@ -25,7 +25,7 @@ namespace Extensions
         {
             //TODO: need to check/test again
             //return "" + multiLanguageProperty.Value?.LangStrings.FirstOrDefault().Text;
-            return "" + multiLanguageProperty.Value?.GetDefaultString();
+            return "" + multiLanguageProperty.Value?.GetDefaultString(defaultLang);
         }
 
         public static MultiLanguageProperty ConvertFromV20(this MultiLanguageProperty property, AasxCompatibilityModels.AdminShellV20.MultiLanguageProperty sourceProperty)

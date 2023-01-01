@@ -27,6 +27,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * NavigateTo: Find also CDs with GlobalReference
 * crash: add entity
 * web browser not working
+* TreeViewItems / MLP / value displayed multi line
 
 ## Findings / Open questions in spec
 
