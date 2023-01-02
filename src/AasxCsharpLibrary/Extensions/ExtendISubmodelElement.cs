@@ -154,34 +154,35 @@ namespace Extensions
 
         }
 
-        public static Reference GetModelReference(this ISubmodelElement submodelElement, bool includeParents = true)
+        public static Reference GetModelReference(this ISubmodelElement sme, bool includeParents = true)
         {
+            // this will be the tail of our chain
             var keyList = new List<Key>();
-            var keyType = ExtensionsUtil.GetKeyType(submodelElement);
-            var key = new Key(keyType, submodelElement.IdShort);
+            var keyType = ExtensionsUtil.GetKeyType(sme);
+            var key = new Key(keyType, sme.IdShort);
             keyList.Add(key);
 
-            //Keys for Parents
-            var currentParent = submodelElement.Parent;
+            // keys for Parents will be INSERTED in front, iteratively
+            var currentParent = sme.Parent;
             while (includeParents && currentParent != null)
             {
                 if (currentParent is IIdentifiable identifiable)
                 {
                     var currentParentKey = new Key(ExtensionsUtil.GetKeyType(identifiable), identifiable.Id);
-                    keyList.Add(currentParentKey);
+                    keyList.Insert(0, currentParentKey);
                     currentParent = null;
                 }
                 else if (currentParent is IReferable referable)
                 {
                     var currentParentKey = new Key(ExtensionsUtil.GetKeyType(referable), referable.IdShort);
-                    keyList.Add(currentParentKey);
+                    keyList.Insert(0, currentParentKey);
                     currentParent = referable.Parent;
                 }
 
             }
 
             var outputReference = new Reference(ReferenceTypes.ModelReference, keyList);
-            outputReference.ReferredSemanticId = submodelElement.SemanticId;
+            outputReference.ReferredSemanticId = sme.SemanticId;
             return outputReference;
         }
 
@@ -456,7 +457,7 @@ namespace Extensions
                 else if (sourceSubmodelElement is AdminShellV20.Entity sourceEntity)
                 {
                     var entityType = Stringification.EntityTypeFromString(sourceEntity.entityType);
-                    var newEntity = new Entity((EntityType)entityType);
+                    var newEntity = new Entity(entityType ?? EntityType.CoManagedEntity);
                     outputSubmodelElement = newEntity.ConvertFromV20(sourceEntity);
                 }
                 else if (sourceSubmodelElement is AdminShellV20.Operation sourceOperation)

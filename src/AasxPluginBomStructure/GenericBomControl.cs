@@ -7,6 +7,8 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
+// #define TESTMODE
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +18,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginBomStructure
 {
@@ -28,16 +32,16 @@ namespace AasxPluginBomStructure
     public class GenericBomControl
     {
         private AdminShellPackageEnv _package;
-        private AdminShell.Submodel _submodel;
+        private Submodel _submodel;
 
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
-        private AdminShell.Referable theReferable = null;
+        private IReferable theReferable = null;
 
         private PluginEventStack eventStack = null;
 
-        private Dictionary<AdminShell.Referable, int> preferredPresetIndex =
-            new Dictionary<AdminShellV20.Referable, int>();
+        private Dictionary<IReferable, int> preferredPresetIndex =
+            new Dictionary<IReferable, int>();
 
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 
@@ -56,14 +60,14 @@ namespace AasxPluginBomStructure
         {
             // access
             _package = opackage as AdminShellPackageEnv;
-            _submodel = osm as AdminShell.Submodel;
+            _submodel = osm as Submodel;
             _bomOptions = bomOptions;
             var master = masterDockPanel as DockPanel;
             if (_bomOptions == null || _package == null || _submodel == null || master == null)
                 return null;
 
             // set of records helping layouting
-            _bomRecords = new BomStructureOptionsRecordList(_bomOptions?.MatchingRecords(_submodel.semanticId));
+            _bomRecords = new BomStructureOptionsRecordList(_bomOptions?.MatchingRecords(_submodel.SemanticId));
 
             // clear some other members (GenericBomControl is not allways created new)
             _creatorOptions = new GenericBomCreatorOptions();
@@ -149,7 +153,7 @@ namespace AasxPluginBomStructure
 
         private Microsoft.Msagl.Drawing.Graph CreateGraph(
             AdminShellPackageEnv env,
-            AdminShell.Submodel sm,
+            Submodel sm,
             GenericBomCreatorOptions options)
         {
             // access   
@@ -159,7 +163,7 @@ namespace AasxPluginBomStructure
             //create a graph object
             Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph("BOM-graph");
 
-#if FALSE
+#if TESTMODE
             //create the graph content
             graph.AddEdge("A", "B");
                 var e1 = graph.AddEdge("B", "C");
@@ -184,9 +188,9 @@ namespace AasxPluginBomStructure
 
             using (var tw = new StreamWriter("bomgraph.log"))
             {
-                creator.RecurseOnLayout(1, graph, null, sm.submodelElements, 1, tw);
-                creator.RecurseOnLayout(2, graph, null, sm.submodelElements, 1, tw);
-                creator.RecurseOnLayout(3, graph, null, sm.submodelElements, 1, tw);
+                creator.RecurseOnLayout(1, graph, null, sm.SubmodelElements, 1, tw);
+                creator.RecurseOnLayout(2, graph, null, sm.SubmodelElements, 1, tw);
+                creator.RecurseOnLayout(3, graph, null, sm.SubmodelElements, 1, tw);
             }
 
             // make default or (already) preferred settings
@@ -224,25 +228,25 @@ namespace AasxPluginBomStructure
                     if (x != null && x.DrawingObject != null && x.DrawingObject.UserData != null)
                     {
                         var us = x.DrawingObject.UserData;
-                        if (us is AdminShell.Referable)
+                        if (us is IReferable)
                         {
                             // make event
-                            var refs = new List<AdminShell.Key>();
-                            (us as AdminShell.Referable).CollectReferencesByParent(refs);
+                            var refs = new List<Key>();
+                            (us as IReferable).CollectReferencesByParent(refs);
 
                             // ok?
                             if (refs.Count > 0)
                             {
                                 var evt = new AasxPluginResultEventNavigateToReference();
-                                evt.targetReference = AdminShell.Reference.CreateNew(refs);
+                                evt.targetReference = ExtendReference.CreateNew(refs);
                                 this.eventStack.PushEvent(evt);
                             }
                         }
 
-                        if (us is AdminShell.Reference)
+                        if (us is Reference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
-                            evt.targetReference = (us as AdminShell.Reference);
+                            evt.targetReference = (us as Reference);
                             this.eventStack.PushEvent(evt);
                         }
                     }

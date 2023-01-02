@@ -14,7 +14,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginBomStructure
 {
@@ -39,7 +41,7 @@ namespace AasxPluginBomStructure
         protected MultiValueDictionary<uint, T> dict =
             new MultiValueDictionary<uint, T>();
 
-        protected uint ComputeHashOnReference(AdminShell.Reference r)
+        protected uint ComputeHashOnReference(Reference r)
         {
             // access
             if (r == null || r.Keys == null)
@@ -51,13 +53,10 @@ namespace AasxPluginBomStructure
             {
                 foreach (var k in r.Keys)
                 {
-                    var bs = System.Text.Encoding.UTF8.GetBytes(k.type.Trim().ToLower());
+                    var bs = BitConverter.GetBytes((int) k.Type);
                     mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.idType.Trim().ToLower());
-                    mems.Write(bs, 0, bs.Length);
-
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.value.Trim().ToLower());
+                    bs = System.Text.Encoding.UTF8.GetBytes(k.Value.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
                 }
 
@@ -77,7 +76,7 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
-        public void Index(AdminShell.Reference rf, T elem)
+        public void Index(Reference rf, T elem)
         {
             // access
             if (elem == null || rf == null)
@@ -88,8 +87,8 @@ namespace AasxPluginBomStructure
         }
 
         public T FindElementByReference(
-            AdminShell.Reference r,
-            AdminShell.Key.MatchMode matchMode = AdminShell.Key.MatchMode.Strict)
+            Reference r,
+            MatchMode matchMode = MatchMode.Strict)
         {
             var hk = ComputeHashOnReference(r);
             if (hk == 0 || !dict.ContainsKey(hk))
@@ -97,7 +96,7 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as AdminShell.IGetReference)?.GetReference();
+                var xx = (test as IReferable)?.GetReference();
                 if (xx != null && xx.Matches(r, matchMode))
                     return test;
             }
@@ -107,9 +106,9 @@ namespace AasxPluginBomStructure
 
     }
 
-    public class AasReferableStore : AasReferenceStore<AdminShell.Referable>
+    public class AasReferableStore : AasReferenceStore<IReferable>
     {
-        private void RecurseIndexSME(AdminShell.Reference currRef, AdminShell.SubmodelElement sme)
+        private void RecurseIndexSME(Reference currRef, ISubmodelElement sme)
         {
             // access
             if (currRef == null || sme == null)
@@ -117,24 +116,24 @@ namespace AasxPluginBomStructure
 
             // add to the currRef
             currRef.Keys.Add(
-                new AdminShell.Key(
-                    sme.GetElementName(), false, AdminShell.Identification.IdShort, sme.idShort));
+                new Key(
+                    sme.GetSelfDescription().KeyType ?? KeyTypes.GlobalReference, sme.IdShort));
 
             // index
             var hk = ComputeHashOnReference(currRef);
             dict.Add(hk, sme);
 
             // recurse
-            var childs = (sme as AdminShell.IEnumerateChildren)?.EnumerateChildren();
+            var childs = sme?.EnumerateChildren();
             if (childs != null)
                 foreach (var sme2 in childs)
-                    RecurseIndexSME(currRef, sme2?.submodelElement);
+                    RecurseIndexSME(currRef, sme2);
 
             // remove from currRef
             currRef.Keys.RemoveAt(currRef.Keys.Count - 1);
         }
 
-        public void Index(AdminShell.ConceptDescription cd)
+        public void Index(ConceptDescription cd)
         {
             // access
             if (cd == null)
@@ -145,7 +144,7 @@ namespace AasxPluginBomStructure
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
-        public void Index(AdminShell.Submodel sm)
+        public void Index(Submodel sm)
         {
             // access
             if (sm == null)
@@ -157,10 +156,10 @@ namespace AasxPluginBomStructure
 
             // recurse
             foreach (var sme in sm.EnumerateChildren())
-                RecurseIndexSME(currRef, sme?.submodelElement);
+                RecurseIndexSME(currRef, sme);
         }
 
-        public void Index(AdminShell.AdministrationShellEnv env)
+        public void Index(AasCore.Aas3_0_RC02.Environment env)
         {
             // access
             if (env == null || env.Submodels == null)

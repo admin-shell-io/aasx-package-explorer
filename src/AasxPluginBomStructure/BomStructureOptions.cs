@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 
 // ReSharper disable ClassNeverInstantiated.Global
@@ -22,9 +24,9 @@ namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyle : AdminShell.IGetReference
+    public class BomLinkStyle // : IReferable
     {
-        public AdminShell.Key Match;
+        public Key Match;
         public bool Skip;
         public BomLinkDirection Direction;
         public string Color;
@@ -33,7 +35,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new Reference(Match);
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -44,13 +46,13 @@ namespace AasxPluginBomStructure
         public void Index()
         {
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(ExtendReference.CreateFromKey(ls.Match), ls);
         }
     }
 
-    public class BomNodeStyle : AdminShell.IGetReference
+    public class BomNodeStyle // : IGetReference
     {
-        public AdminShell.Key Match;
+        public Key Match;
         public bool Skip;
 
         public string Shape;
@@ -61,7 +63,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        public AdminShell.Reference GetReference(bool includeParents = true) => new AdminShell.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new Reference(Match);
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>
@@ -72,13 +74,13 @@ namespace AasxPluginBomStructure
         public void Index()
         {
             foreach (var ls in this)
-                Store.Index(AdminShell.Reference.CreateNew(ls.Match), ls);
+                Store.Index(ExtendReference.CreateFromKey(ls.Match), ls);
         }
     }
 
     public class BomStructureOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<Key> AllowSubmodelSemanticId = new List<Key>();
 
         public int Layout;
         public bool? Compact;
@@ -92,18 +94,18 @@ namespace AasxPluginBomStructure
             NodeStyles.Index();
         }
 
-        public BomLinkStyle FindFirstLinkStyle(AdminShell.SemanticId semId)
+        public BomLinkStyle FindFirstLinkStyle(Reference semId)
         {
             if (semId == null)
                 return null;
-            return LinkStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return LinkStyles.Store.FindElementByReference(semId, MatchMode.Relaxed);
         }
 
-        public BomNodeStyle FindFirstNodeStyle(AdminShell.SemanticId semId)
+        public BomNodeStyle FindFirstNodeStyle(Reference semId)
         {
             if (semId == null)
                 return null;
-            return NodeStyles.Store.FindElementByReference(semId, AdminShell.Key.MatchMode.Relaxed);
+            return NodeStyles.Store.FindElementByReference(semId, MatchMode.Relaxed);
         }
 
     }
@@ -114,7 +116,7 @@ namespace AasxPluginBomStructure
 
         public BomStructureOptionsRecordList(IEnumerable<BomStructureOptionsRecord> collection) : base(collection) { }
 
-        public BomLinkStyle FindFirstLinkStyle(AdminShell.SemanticId semId)
+        public BomLinkStyle FindFirstLinkStyle(Reference semId)
         {
             foreach (var rec in this)
             {
@@ -125,7 +127,7 @@ namespace AasxPluginBomStructure
             return null;
         }
 
-        public BomNodeStyle FindFirstNodeStyle(AdminShell.SemanticId semId)
+        public BomNodeStyle FindFirstNodeStyle(Reference semId)
         {
             foreach (var rec in this)
             {
@@ -147,11 +149,8 @@ namespace AasxPluginBomStructure
         public static BomStructureOptions CreateDefault()
         {
             var rec = new BomStructureOptionsRecord();
-            rec.AllowSubmodelSemanticId.Add(AdminShell.Key.CreateNew(
-                type: "Submodel",
-                local: false,
-                idType: "IRI",
-                value: "http://smart.festo.com/id/type/submodel/BOM/1/1"));
+            rec.AllowSubmodelSemanticId.Add(
+                new Key(KeyTypes.Submodel, "http://smart.festo.com/id/type/submodel/BOM/1/1"));
 
             var opt = new BomStructureOptions();
             opt.Records.Add(rec);
@@ -171,12 +170,12 @@ namespace AasxPluginBomStructure
         /// <summary>
         /// Find matching options records
         /// </summary>
-        public IEnumerable<BomStructureOptionsRecord> MatchingRecords(AdminShell.SemanticId semId)
+        public IEnumerable<BomStructureOptionsRecord> MatchingRecords(Reference semId)
         {
             foreach (var rec in Records)
                 if (rec.AllowSubmodelSemanticId != null)
                     foreach (var x in rec.AllowSubmodelSemanticId)
-                        if (semId != null && semId.Matches(x))
+                        if (semId != null && semId.MatchesExactlyOneKey(x))
                             yield return rec;
         }
     }

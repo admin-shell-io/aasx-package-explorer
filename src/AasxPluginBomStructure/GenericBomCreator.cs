@@ -16,7 +16,10 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
+using AdminShellNS.Extenstions;
 
 namespace AasxPluginBomStructure
 {
@@ -47,12 +50,12 @@ namespace AasxPluginBomStructure
         public static Microsoft.Msagl.Drawing.Color AssetBorderColor =
             new Microsoft.Msagl.Drawing.Color(128, 128, 128);
 
-        private Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node> referableToNode =
-            new Dictionary<AdminShell.Referable, Microsoft.Msagl.Drawing.Node>();
-        private Dictionary<AdminShell.Referable, AdminShell.RelationshipElement> referableByRelation =
-            new Dictionary<AdminShell.Referable, AdminShell.RelationshipElement>();
+        private Dictionary<IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
+            new Dictionary<IReferable, Microsoft.Msagl.Drawing.Node>();
+        private Dictionary<IReferable, RelationshipElement> referableByRelation =
+            new Dictionary<IReferable, RelationshipElement>();
 
-        private AdminShell.AdministrationShellEnv _env;
+        private AasCore.Aas3_0_RC02.Environment _env;
         private BomStructureOptionsRecordList _bomRecords;
         private GenericBomCreatorOptions _options;
 
@@ -61,7 +64,7 @@ namespace AasxPluginBomStructure
         private AasReferableStore _refStore = null;
 
         public GenericBomCreator(
-            AdminShell.AdministrationShellEnv env,
+            AasCore.Aas3_0_RC02.Environment env,
             BomStructureOptionsRecordList bomRecords,
             GenericBomCreatorOptions options)
         {
@@ -72,11 +75,11 @@ namespace AasxPluginBomStructure
             _refStore.Index(env);
         }
 
-        public AdminShell.Referable FindReferableByReference(AdminShell.Reference r)
+        public IReferable FindReferableByReference(Reference r)
         {
             if (_refStore == null)
                 return this._env?.FindReferableByReference(r);
-            return _refStore.FindElementByReference(r, AdminShell.Key.MatchMode.Relaxed);
+            return _refStore.FindElementByReference(r, MatchMode.Relaxed);
         }
 
         private string GenerateNodeID()
@@ -427,33 +430,33 @@ namespace AasxPluginBomStructure
         public void RecurseOnLayout(
             int pass,
             Microsoft.Msagl.Drawing.Graph graph,
-            AdminShell.Referable parentRef,
-            List<AdminShell.SubmodelElementWrapper> wrappers,
+            IReferable parentRef,
+            List<ISubmodelElement> smec,
             int depth = 1, TextWriter textWriter = null)
         {
             // access
-            if (graph == null || wrappers == null)
+            if (graph == null || smec == null)
                 return;
 
             // loop
-            foreach (var smw in wrappers)
+            foreach (var sme in smec)
             {
-                if (smw.submodelElement == null)
+                if (sme == null)
                     continue;
 
                 if (textWriter != null)
                     textWriter.WriteLine(
                         "{0} Recurse pass {1} SME {2}",
-                        new String(' ', depth), pass, "" + smw.submodelElement?.idShort);
+                        new String(' ', depth), pass, "" + sme.IdShort);
 
-                if (smw.submodelElement is AdminShell.RelationshipElement rel)
+                if (sme is RelationshipElement rel)
                 {
                     // for adding Nodes to the graph, we need in advance the knowledge, if a property
                     // is connected by a BOM relationship ..
                     if (pass == 1)
                     {
-                        var x1 = this.FindReferableByReference(rel.first);
-                        var x2 = this.FindReferableByReference(rel.second);
+                        var x1 = this.FindReferableByReference(rel.First);
+                        var x2 = this.FindReferableByReference(rel.Second);
                         if (x1 != null)
                             referableByRelation[x1] = rel;
                         if (x2 != null)
@@ -467,17 +470,15 @@ namespace AasxPluginBomStructure
                         {
                             // build label text
                             var labelText = rel.ToIdShortString();
-                            if (rel.semanticId != null && rel.semanticId.Count == 1)
-                                labelText += " : " + rel.semanticId[0].value;
-                            if (rel.semanticId != null && rel.semanticId.Count > 1)
-                                labelText += " : " + rel.semanticId.ToString();
+                            if (rel.SemanticId != null && rel.SemanticId.Count() == 1)
+                                labelText += " : " + rel.SemanticId.Keys[0].Value;
+                            if (rel.SemanticId != null && rel.SemanticId.Count() > 1)
+                                labelText += " : " + rel.SemanticId.ToString();
 
                             // even CD?
-                            if (rel.semanticId != null && rel.semanticId.Count > 0)
+                            if (rel.SemanticId != null && rel.SemanticId.Count() > 0)
                             {
-                                var cd = this.FindReferableByReference(
-                                    new AdminShell.Reference(
-                                        rel.semanticId)) as AdminShell.ConceptDescription;
+                                var cd = this.FindReferableByReference(rel.SemanticId.Copy()) as ConceptDescription;
 
                                 if (cd != null)
                                 {
@@ -485,8 +486,8 @@ namespace AasxPluginBomStructure
 
                                     // option
                                     if (_options?.CompactLabels == true
-                                        && cd.idShort.HasContent())
-                                        labelText = cd.idShort;
+                                        && cd.IdShort.HasContent())
+                                        labelText = cd.IdShort;
                                 }
                             }
 
@@ -494,15 +495,15 @@ namespace AasxPluginBomStructure
                             labelText = WrapOnMaxColumn(labelText, WrapMaxColumn);
 
                             // can get an link style?
-                            var ls = _bomRecords?.FindFirstLinkStyle(rel.semanticId);
+                            var ls = _bomRecords?.FindFirstLinkStyle(rel.SemanticId);
 
                             // skip?
                             if (ls?.Skip == true)
                                 continue;
 
                             // now add
-                            var x1 = this.FindReferableByReference(rel.first);
-                            var x2 = this.FindReferableByReference(rel.second);
+                            var x1 = this.FindReferableByReference(rel.First);
+                            var x2 = this.FindReferableByReference(rel.Second);
 
                             if (x1 == null || x2 == null)
                                 continue;
@@ -526,16 +527,13 @@ namespace AasxPluginBomStructure
                     }
                 }
 
-                if (smw.submodelElement is AdminShell.Property)
+                if (sme is Property prop)
                 {
-                    // access
-                    var prop = (smw.submodelElement as AdminShell.Property);
-
                     // add as a Node to the graph?
                     if (pass == 2 && referableByRelation.ContainsKey(prop))
                     {
                         // can get an link style?
-                        var ns = _bomRecords?.FindFirstNodeStyle(prop.semanticId);
+                        var ns = _bomRecords?.FindFirstNodeStyle(prop.SemanticId);
 
                         // skip?
                         if (ns?.Skip == true)
@@ -586,26 +584,23 @@ namespace AasxPluginBomStructure
                     }
                 }
 
-                if (smw.submodelElement is AdminShell.Entity)
+                if (sme is Entity ent)
                 {
-                    // access
-                    var sme = (smw.submodelElement as AdminShell.Entity);
-
                     // add Nodes?
                     if (pass == 2)
                     {
                         // this gives nodes!
                         var node1 = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
-                        node1.UserData = sme;
-                        node1.LabelText = "" + sme.ToIdShortString();
+                        node1.UserData = ent;
+                        node1.LabelText = "" + ent.ToIdShortString();
                         node1.Label.FontSize = 12;
 
                         // what type?
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.SelfManagedEntity)
+                        if (ent.EntityType == EntityType.SelfManagedEntity)
                         {
                             node1.Attr.FillColor = AssetSelfManagedColor;
                         }
-                        if (sme.GetEntityType() == AdminShellV20.Entity.EntityTypeEnum.CoManagedEntity)
+                        if (ent.EntityType == EntityType.CoManagedEntity)
                         {
                             node1.Attr.FillColor = AssetCoManagedColor;
                         }
@@ -615,12 +610,12 @@ namespace AasxPluginBomStructure
                         referableToNode[sme] = node1;
 
                         // add asset label
-                        if (sme.assetRef != null && sme.assetRef.Count > 0)
+                        if (ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
                         {
                             // another node
                             var node2 = new Microsoft.Msagl.Drawing.Node(GenerateNodeID());
-                            node2.UserData = sme.assetRef;
-                            node2.LabelText = WrapOnMaxColumn("" + sme.assetRef.ToString(), WrapMaxColumn);
+                            node2.UserData = ent.GlobalAssetId;
+                            node2.LabelText = WrapOnMaxColumn("" + ent.GlobalAssetId.ToStringExtended(), WrapMaxColumn);
                             node2.Label.FontSize = 6;
                             node2.Attr.Color = AssetBorderColor;
                             node2.Attr.FillColor = AssetFillColor;
@@ -643,15 +638,15 @@ namespace AasxPluginBomStructure
 
                     // might have statements
                     // recurse
-                    RecurseOnLayout(pass, graph, sme, sme.statements, depth + 1, textWriter);
+                    RecurseOnLayout(pass, graph, sme, ent.Statements, depth + 1, textWriter);
                 }
 
-                if (smw.submodelElement is AdminShell.SubmodelElementCollection)
+                if (sme is SubmodelElementCollection innerSmc)
                 {
                     // recurse
                     RecurseOnLayout(
-                        pass, graph, smw.submodelElement,
-                        (smw.submodelElement as AdminShell.SubmodelElementCollection).value,
+                        pass, graph, sme,
+                        innerSmc.Value,
                         depth + 1, textWriter);
                 }
             }

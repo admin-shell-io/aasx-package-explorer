@@ -28,6 +28,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * crash: add entity
 * web browser not working
 * TreeViewItems / MLP / value displayed multi line
+* remove unnecessary XAML files from WPF legacy
 
 ## Findings / Open questions in spec
 

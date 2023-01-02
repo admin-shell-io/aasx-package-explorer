@@ -13,7 +13,7 @@ namespace Extensions
 
         public string ElementAbbreviation { get; set; }
 
-        public KeyTypes? KeyTpe { get; set; }
+        public KeyTypes? KeyType { get; set; }
 
         public AasSubmodelElements? SmeType { get; set; }
 
@@ -22,7 +22,7 @@ namespace Extensions
         {
             AasElementName = aasElementName;
             ElementAbbreviation = elementAbbreviation;
-            KeyTpe = keyType; 
+            KeyType = keyType; 
             SmeType = smeType;
         }
     }

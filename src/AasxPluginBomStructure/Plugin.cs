@@ -14,7 +14,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -101,14 +103,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null || _options == null)
                     return null;
 
                 // check for a record in options, that matches Submodel
                 var found = false;
                 // ReSharper disable UnusedVariable
-                foreach (var x in _options.MatchingRecords(sm.semanticId))
+                foreach (var x in _options.MatchingRecords(sm.SemanticId))
                 {
                     found = true;
                     break;

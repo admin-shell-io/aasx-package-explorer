@@ -1573,7 +1573,12 @@ namespace Microsoft.Msagl.WpfGraphControl
         {
             var geomEdge = GeometryGraphCreator.CreateGeometryEdgeFromDrawingEdge(drawingEdge);
             var geomGraph = _drawingGraph.GeometryGraph;
-            LayoutHelpers.RouteAndLabelEdges(geomGraph, _drawingGraph.LayoutAlgorithmSettings, new[] { geomEdge });
+            LayoutHelpers.RouteAndLabelEdges(
+                geomGraph, 
+                _drawingGraph.LayoutAlgorithmSettings, 
+                new[] { geomEdge },
+                10,                             // new in new nuget package
+                new CancelToken());             // new in new nuget package
             return CreateEdge(drawingEdge, _drawingGraph.LayoutAlgorithmSettings as LgLayoutSettings);
         }
 

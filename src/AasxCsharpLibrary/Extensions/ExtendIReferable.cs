@@ -126,6 +126,13 @@ namespace Extensions
         }
         #endregion
 
+        public static string ToIdShortString(this IReferable rf)
+        {
+            if (rf.IdShort == null || rf.IdShort.Trim().Length < 1)
+                return ("<no idShort!>");
+            return rf.IdShort.Trim();
+        }
+
         public static Reference GetReference(this IReferable referable)
         {
             if (referable is IIdentifiable identifiable)
