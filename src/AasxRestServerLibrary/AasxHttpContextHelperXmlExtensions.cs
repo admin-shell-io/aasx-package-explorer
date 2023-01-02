@@ -385,7 +385,7 @@ namespace AasxRestServerLibrary
             foreach (var child in xmlElement.Elements().ToList())
             {
                 var childName = GetLocalXpathExpression(child);
-                if (!childDict.TryGetValue(childName, out List<XElement>  childrenWithSameName))
+                if (!childDict.TryGetValue(childName, out List<XElement> childrenWithSameName))
                 {
                     childrenWithSameName = new List<XElement>();
                 }
