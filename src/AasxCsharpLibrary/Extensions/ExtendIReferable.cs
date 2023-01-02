@@ -492,5 +492,26 @@ namespace Extensions
                     jar.Add(Jsonization.Serialize.ToJsonObject(c));
             return jar;
         }
+
+        public static Qualifier HasQualifierOfType(this IReferable rf, string qualifierType)
+        {
+            if (!(rf is IQualifiable rfq) || rfq.Qualifiers == null)
+                return null;
+            foreach (var q in rfq.Qualifiers)
+                if (q.Type?.Trim().ToLower() == qualifierType?.Trim().ToLower())
+                    return q;
+            return null;
+        }
+
+        public static Extension HasExtensionOfName(this IReferable rf, string extensionName)
+        {
+            if (!(rf is IHasExtensions rfe) || rfe.Extensions == null)
+                return null;
+            foreach (var e in rfe.Extensions)
+                if (e.Name?.Trim().ToLower() == extensionName?.Trim().ToLower())
+                    return e;
+            return null;
+        }
+
     }
 }

@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using Microsoft.Msagl.Core.Geometry.Curves;
 using Microsoft.Msagl.Core.Layout;
 using Microsoft.Msagl.Drawing;
+using Microsoft.Msagl.GraphmapsWithMesh;
 using Microsoft.Msagl.Layout.LargeGraphLayout;
 using MEdge = Microsoft.Msagl.Drawing.Edge;
 using MEllipse = Microsoft.Msagl.Core.Geometry.Curves.Ellipse;
@@ -74,17 +75,20 @@ namespace Microsoft.Msagl.WpfGraphControl
             if (edge.Attr.ArrowAtSource)
                 SourceArrowHeadPath = new WPath
                 {
-                    Data = DefiningSourceArrowHead(),
+                    Data = DefiningSourceArrowHead(edge.Attr.ArrowheadAtSource),
                     Tag = this
                 };
             if (edge.Attr.ArrowAtTarget)
                 TargetArrowHeadPath = new WPath
                 {
-                    Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness),
+                    Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness, 
+                            edge.Attr.ArrowheadAtTarget),
                     Tag = this
                 };
 
-            SetPathStroke();
+            SetPathStroke(
+                ArrowHeadIsEmpty(edge.Attr.ArrowheadAtSource), 
+                ArrowHeadIsEmpty(edge.Attr.ArrowheadAtTarget));
 
             if (labelFrameworkElement != null)
             {
@@ -124,7 +128,7 @@ namespace Microsoft.Msagl.WpfGraphControl
 
         internal EdgeAttr EdgeAttrClone { get; set; }
 
-        internal static WGeometry DefiningTargetArrowHead(EdgeGeometry edgeGeometry, double thickness)
+        internal static WGeometry DefiningTargetArrowHead(EdgeGeometry edgeGeometry, double thickness, ArrowStyle? arrStyle = null)
         {
             if (edgeGeometry.TargetArrowhead == null || edgeGeometry.Curve == null)
                 return null;
@@ -132,17 +136,29 @@ namespace Microsoft.Msagl.WpfGraphControl
             using (WStreamGeometryContext context = streamGeometry.Open())
             {
                 AddArrow(context, edgeGeometry.Curve.End,
-                         edgeGeometry.TargetArrowhead.TipPosition, thickness);
+                         edgeGeometry.TargetArrowhead.TipPosition, thickness, arrStyle);
                 return streamGeometry;
             }
         }
 
-        WGeometry DefiningSourceArrowHead()
+        bool ArrowHeadIsEmpty(ArrowStyle? arrStyle = null)
+        {
+            return arrStyle.HasValue
+                && (arrStyle.Value == ArrowStyle.Tee
+                    || arrStyle.Value == ArrowStyle.ODiamond
+                    || arrStyle.Value == ArrowStyle.Generalization);
+        }
+
+        WGeometry DefiningSourceArrowHead(ArrowStyle? arrStyle = null)
         {
             var streamGeometry = new WStreamGeometry();
             using (WStreamGeometryContext context = streamGeometry.Open())
             {
-                AddArrow(context, Edge.GeometryEdge.Curve.Start, Edge.GeometryEdge.EdgeGeometry.SourceArrowhead.TipPosition, PathStrokeThickness);
+                AddArrow(context, 
+                    Edge.GeometryEdge.Curve.Start, 
+                    Edge.GeometryEdge.EdgeGeometry.SourceArrowhead.TipPosition, 
+                    PathStrokeThickness,
+                    arrStyle);
                 return streamGeometry;
             }
         }
@@ -286,9 +302,70 @@ namespace Microsoft.Msagl.WpfGraphControl
         }
 
 
-        static void AddArrow(WStreamGeometryContext context, MPoint start, MPoint end, double thickness)
+        static void AddArrow(WStreamGeometryContext context, MPoint start, MPoint end, double thickness, ArrowStyle? arrStyle = null)
         {
+            if (arrStyle.HasValue && arrStyle.Value == ArrowStyle.Diamond
+                || arrStyle.Value == ArrowStyle.ODiamond)
+            {
+                MPoint dir = end - start;
+                double dl = dir.Length;
+                //take into account the widths
+                double delta = Math.Min(dl / 2, thickness + thickness / 2);
+                dir *= (dl - delta) / dl;
 
+                MPoint start2 = start + 0.4 * dir;
+                MPoint end2 = start + 1.0*dir;
+                MPoint mid = start - 0.2*dir;
+                
+                dir = dir.Rotate(Math.PI / 2);
+                MPoint s = 1.2 * dir * HalfArrowAngleTan;
+
+                context.BeginFigure(Common.WpfPoint(start2 + s), true, true);
+                context.LineTo(Common.WpfPoint(end2), true, true);
+                context.LineTo(Common.WpfPoint(start2 - s), true, true);
+                context.LineTo(Common.WpfPoint(mid), true, true);
+                context.LineTo(Common.WpfPoint(start2 + s), true, true);
+            }
+            else
+            if (arrStyle.HasValue && arrStyle.Value == ArrowStyle.Tee)
+            {
+                MPoint dir = end - start;
+                double dl = dir.Length;
+                //take into account the widths
+                double delta = Math.Min(dl / 2, thickness + thickness / 2);
+                dir *= (dl - delta) / dl;
+
+                MPoint start2 = start + 0.0 * dir;
+                MPoint end2 = start + 1.0 * dir;
+                MPoint mid = start - 0.2 * dir;
+
+                dir = dir.Rotate(Math.PI / 2);
+                MPoint s = 0.5 * dir * HalfTeeAngleTan;
+
+                context.BeginFigure(Common.WpfPoint(start2 + s), true, true);
+                context.LineTo(Common.WpfPoint(start2 - s), true, true);
+            }
+            else
+            if (arrStyle.HasValue && arrStyle.Value == ArrowStyle.Generalization)
+            {
+                MPoint dir = end - start;
+                double dl = dir.Length;
+                //take into account the widths
+                double delta = Math.Min(dl / 2, thickness + thickness / 2);
+                dir *= (dl - delta) / dl;
+
+                MPoint start2 = start + 0.0 * dir;
+                MPoint end2 = start + 1.0 * dir;
+                MPoint mid = start - 0.2 * dir;
+
+                dir = dir.Rotate(Math.PI / 2);
+                MPoint s = 1.2 * dir * HalfGeneralizationAngleTan;
+
+                context.BeginFigure(Common.WpfPoint(start2 + s), true, true);
+                context.LineTo(Common.WpfPoint(end2), true, true);
+                context.LineTo(Common.WpfPoint(start2 - s), true, true);
+            }
+            else
             if (thickness > 1)
             {
                 MPoint dir = end - start;
@@ -330,9 +407,15 @@ namespace Microsoft.Msagl.WpfGraphControl
             }
         }
 
+        const double ArrowAngle = 30.0; //degrees
+        const double GeneralizationAngle = 45.0; //degrees
+        const double TeeAngle = 90.0; //degrees
+
         static readonly double HalfArrowAngleTan = Math.Tan(ArrowAngle * 0.5 * Math.PI / 180.0);
         static readonly double HalfArrowAngleCos = Math.Cos(ArrowAngle * 0.5 * Math.PI / 180.0);
-        const double ArrowAngle = 30.0; //degrees
+
+        static readonly double HalfTeeAngleTan = Math.Tan(TeeAngle * 0.5 * Math.PI / 180.0);
+        static readonly double HalfGeneralizationAngleTan = Math.Tan(GeneralizationAngle * 0.5 * Math.PI / 180.0);
 
         #region Implementation of IViewerObject
 
@@ -375,26 +458,35 @@ namespace Microsoft.Msagl.WpfGraphControl
                 return;
             CurvePath.Data = GetICurveWpfGeometry(Edge.GeometryEdge.Curve);
             if (Edge.Attr.ArrowAtSource)
-                SourceArrowHeadPath.Data = DefiningSourceArrowHead();
+                SourceArrowHeadPath.Data = DefiningSourceArrowHead(
+                    Edge.Attr.ArrowheadAtSource);
             if (Edge.Attr.ArrowAtTarget)
-                TargetArrowHeadPath.Data = DefiningTargetArrowHead(Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness);
-            SetPathStroke();
+                TargetArrowHeadPath.Data = DefiningTargetArrowHead(
+                    Edge.GeometryEdge.EdgeGeometry, PathStrokeThickness,
+                    Edge.Attr.ArrowheadAtTarget);
+            SetPathStroke(
+                ArrowHeadIsEmpty(Edge.Attr.ArrowheadAtSource),
+                ArrowHeadIsEmpty(Edge.Attr.ArrowheadAtTarget));
             if (VLabel != null)
                 ((IInvalidatable)VLabel).Invalidate();
         }
 
-        void SetPathStroke()
+        void SetPathStroke(bool emptySource, bool emptyTarget)
         {
             SetPathStrokeToPath(CurvePath);
             if (SourceArrowHeadPath != null)
             {
                 SourceArrowHeadPath.Stroke = SourceArrowHeadPath.Fill = Common.BrushFromMsaglColor(Edge.Attr.Color);
                 SourceArrowHeadPath.StrokeThickness = PathStrokeThickness;
+                if (emptySource)
+                    SourceArrowHeadPath.Fill = WBrushes.White;
             }
             if (TargetArrowHeadPath != null)
             {
                 TargetArrowHeadPath.Stroke = TargetArrowHeadPath.Fill = Common.BrushFromMsaglColor(Edge.Attr.Color);
                 TargetArrowHeadPath.StrokeThickness = PathStrokeThickness;
+                if (emptyTarget)
+                    TargetArrowHeadPath.Fill = WBrushes.White;
             }
         }
 

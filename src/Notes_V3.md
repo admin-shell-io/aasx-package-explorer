@@ -30,6 +30,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * TreeViewItems / MLP / value displayed multi line
 * remove unnecessary XAML files from WPF legacy
 
+* V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
+
 ## Findings / Open questions in spec
 
 * DataSpecification61360.Value is string (aas core) or ShortNameTypeIEC61360 (spec)?

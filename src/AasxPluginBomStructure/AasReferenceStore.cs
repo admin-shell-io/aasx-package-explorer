@@ -53,10 +53,12 @@ namespace AasxPluginBomStructure
             {
                 foreach (var k in r.Keys)
                 {
-                    var bs = BitConverter.GetBytes((int) k.Type);
-                    mems.Write(bs, 0, bs.Length);
+                    // DO NOT include the Type into the hash, as this would render it impossible
+                    // to find CDs with either "ConceptDescription" / "GlobalReference"
+                    //// var bs = BitConverter.GetBytes((int) k.Type);
+                    //// mems.Write(bs, 0, bs.Length);
 
-                    bs = System.Text.Encoding.UTF8.GetBytes(k.Value.Trim().ToLower());
+                    var bs = System.Text.Encoding.UTF8.GetBytes(k.Value.Trim().ToLower());
                     mems.Write(bs, 0, bs.Length);
                 }
 

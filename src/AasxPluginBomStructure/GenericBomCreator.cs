@@ -475,6 +475,9 @@ namespace AasxPluginBomStructure
                             if (rel.SemanticId != null && rel.SemanticId.Count() > 1)
                                 labelText += " : " + rel.SemanticId.ToString();
 
+                            // find BOM display arguments?
+                            var args = BomArguments.Parse(rel.HasQualifierOfType("BOM.Args")?.Value);
+
                             // even CD?
                             if (rel.SemanticId != null && rel.SemanticId.Count() > 0)
                             {
@@ -488,6 +491,9 @@ namespace AasxPluginBomStructure
                                     if (_options?.CompactLabels == true
                                         && cd.IdShort.HasContent())
                                         labelText = cd.IdShort;
+
+                                    // (less important) args?
+                                    args = args ?? BomArguments.Parse(cd.HasExtensionOfName("BOM.Args")?.Value);
                                 }
                             }
 
@@ -516,6 +522,23 @@ namespace AasxPluginBomStructure
                             e.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.Normal;
                             e.Attr.LineWidth = 1;
+
+                            if (args != null)
+                            {
+                                if (args.title != null)
+                                    e.LabelText = args.title;
+
+                                if (args.start.HasValue)
+                                    e.Attr.ArrowheadAtSource = BomArguments.MsaglArrowStyleFrom(args.start.Value);
+                                if (args.end.HasValue)
+                                    e.Attr.ArrowheadAtTarget = BomArguments.MsaglArrowStyleFrom(args.end.Value);
+
+                                if (args.width.HasValue)
+                                    e.Attr.LineWidth = args.width.Value;
+
+                                if (args.stroke?.HasContent() == true)
+                                    e.Attr.Color = BomArguments.MsaglColorFrom(args.stroke);
+                            }
 
                             // more style based on semantic id?
                             ApplyLinkStyle(e, ls);

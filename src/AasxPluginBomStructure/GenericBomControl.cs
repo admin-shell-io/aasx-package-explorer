@@ -166,18 +166,22 @@ namespace AasxPluginBomStructure
 #if TESTMODE
             //create the graph content
             graph.AddEdge("A", "B");
-                var e1 = graph.AddEdge("B", "C");
-                // e1.LabelText = "Dumpf!";
-                e1.LabelText = "hbhbjhbjhb";
-                // e1.Label = new Microsoft.Msagl.Drawing.Label("Dumpf!!");
-                graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
-                graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
-                graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
-                Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
-                graph.FindNode("B").LabelText = "HalliHallo";
-                c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
-                c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
-                c.Label.FontSize = 28;
+            var e1 = graph.AddEdge("B", "C");
+            e1.Attr.ArrowheadAtSource = Microsoft.Msagl.Drawing.ArrowStyle.None;
+            e1.Attr.ArrowheadAtTarget = Microsoft.Msagl.Drawing.ArrowStyle.None;
+            e1.Attr.Color = Microsoft.Msagl.Drawing.Color.Magenta;
+            e1.GeometryEdge = new Microsoft.Msagl.Core.Layout.Edge();
+            // e1.LabelText = "Dumpf!";
+            e1.LabelText = "hbhbjhbjhb";
+            // e1.Label = new Microsoft.Msagl.Drawing.Label("Dumpf!!");
+            graph.AddEdge("A", "C").Attr.Color = Microsoft.Msagl.Drawing.Color.Green;
+            graph.FindNode("A").Attr.FillColor = Microsoft.Msagl.Drawing.Color.Magenta;
+            graph.FindNode("B").Attr.FillColor = Microsoft.Msagl.Drawing.Color.MistyRose;
+            Microsoft.Msagl.Drawing.Node c = graph.FindNode("C");
+            graph.FindNode("B").LabelText = "HalliHallo";
+            c.Attr.FillColor = Microsoft.Msagl.Drawing.Color.PaleGreen;
+            c.Attr.Shape = Microsoft.Msagl.Drawing.Shape.Diamond;
+            c.Label.FontSize = 28;
 
 #else
 
