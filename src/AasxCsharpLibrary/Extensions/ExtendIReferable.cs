@@ -493,6 +493,15 @@ namespace Extensions
             return jar;
         }
 
+        public static IEnumerable<Qualifier> FindAllQualifierType(this IReferable rf, string qualifierType)
+        {
+            if (!(rf is IQualifiable rfq) || rfq.Qualifiers == null || qualifierType == null)
+                yield break;
+            foreach (var q in rfq.Qualifiers)
+                if (q.Type.Trim().ToLower() == qualifierType.Trim().ToLower())
+                    yield return q;
+        }
+
         public static Qualifier HasQualifierOfType(this IReferable rf, string qualifierType)
         {
             if (!(rf is IQualifiable rfq) || rfq.Qualifiers == null)
@@ -502,6 +511,26 @@ namespace Extensions
                     return q;
             return null;
         }
+
+        public static Qualifier Add(this IReferable rf, Qualifier q)
+        {
+            if (!(rf is IQualifiable rfq))
+                return null;
+            if (rfq.Qualifiers == null)
+                rfq.Qualifiers = new List<Qualifier>();
+            rfq.Qualifiers.Add(q);
+            return q;
+        }
+
+        public static IEnumerable<Extension> FindAllExtensionName(this IReferable rf, string extensionName)
+        {
+            if (!(rf is IHasExtensions rfe) || rfe.Extensions == null)
+                yield break;
+            foreach (var e in rfe.Extensions)
+                if (e.Name?.Trim().ToLower() == extensionName?.Trim().ToLower())
+                    yield return e;
+        }
+
 
         public static Extension HasExtensionOfName(this IReferable rf, string extensionName)
         {
@@ -513,5 +542,39 @@ namespace Extensions
             return null;
         }
 
+        public static Extension Add(this IReferable rf, Extension ext)
+        {
+            if (rf.Extensions == null)
+                rf.Extensions = new List<Extension>();
+            rf.Extensions.Add(ext); 
+            return ext;
+        }
+
+        public static void MigrateV20QualifiersToExtensions(this IReferable rf)
+        {
+            // access
+            if (!(rf is IQualifiable iq) || iq.Qualifiers == null || !(rf is IHasExtensions ihe))
+                return;
+
+            // Qualifiers to migrate
+            var toMigrate = new[] { "Animate.Args", "Plotting.Args", "TimeSeries.Args", "BOM.Args" };
+
+            List<Qualifier> toMove = new List<Qualifier>();
+            foreach (var q in iq.Qualifiers)
+                foreach (var tm in toMigrate)
+                    if (q?.Type?.Equals(tm, StringComparison.InvariantCultureIgnoreCase) == true)
+                        toMove.Add(q);
+
+            // now move these 
+            for (int i=0; i<toMove.Count; i++)
+            {
+                var q = toMove[i];
+                var ext = new Extension(
+                    name: q.Type, semanticId: q.SemanticId, 
+                    valueType: q.ValueType, value: q.Value);
+                rf.Add(ext);
+                iq.Qualifiers.Remove(q);
+            }
+        }
     }
 }

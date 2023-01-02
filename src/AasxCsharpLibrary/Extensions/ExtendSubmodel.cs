@@ -289,8 +289,10 @@ namespace Extensions
                 }
             }
 
-            return sm;
+            // move Qualifiers to Extensions
+            sm.MigrateV20QualifiersToExtensions();
 
+            return sm;
         }
 
         public static T FindFirstIdShortAs<T>(this Submodel submodel, string idShort) where T : ISubmodelElement

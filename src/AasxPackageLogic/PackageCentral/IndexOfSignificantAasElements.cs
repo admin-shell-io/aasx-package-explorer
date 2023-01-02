@@ -27,7 +27,7 @@ namespace AasxPackageLogic.PackageCentral
         Unknown,
         EventStructureChangeOutwards,
         EventUpdateValueOutwards,
-        QualifiedAnimation
+        ValueAnimation
     }
 
     /// <summary>
@@ -110,8 +110,8 @@ namespace AasxPackageLogic.PackageCentral
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 
-                    if (null != sme.FindQualifierOfType("Animate.Args"))
-                        Add(SignificantAasElement.QualifiedAnimation, sm, parents, sme);
+                    if (null != sme.FindAllExtensionName("Animate.Args"))
+                        Add(SignificantAasElement.ValueAnimation, sm, parents, sme);
 
                     // recurse
                     return true;

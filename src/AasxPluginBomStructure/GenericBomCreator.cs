@@ -476,7 +476,7 @@ namespace AasxPluginBomStructure
                                 labelText += " : " + rel.SemanticId.ToString();
 
                             // find BOM display arguments?
-                            var args = BomArguments.Parse(rel.HasQualifierOfType("BOM.Args")?.Value);
+                            var args = BomArguments.Parse(rel.HasExtensionOfName("BOM.Args")?.Value);
 
                             // even CD?
                             if (rel.SemanticId != null && rel.SemanticId.Count() > 0)

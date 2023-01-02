@@ -32,6 +32,7 @@
   /* "LogoFile": "SpecPI40_t.png", */
   "LogoFile": "PI40_and_IDTA.png",
   "QualifiersFile": "qualifier-presets.json",
+  "ExtensionsPresetFile": "extension-presets.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
   "UseFlyovers": true,
   "SplashTime": 0,
@@ -124,7 +125,12 @@
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
       "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
+      "Args": []
     }
+
     /* ,
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
@@ -135,10 +141,6 @@
       "Args": []
     },
     
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net472\\AasxPluginPlotting.dll",
-      "Args": []
-    },
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",

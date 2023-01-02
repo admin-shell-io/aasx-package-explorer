@@ -122,8 +122,8 @@ namespace AasxPackageLogic
             Action<Property, IAasDiaryEntry> emitEvent) 
         {
             // prop needs to exists and have qualifiers
-            var q = prop.FindQualifierOfType("Animate.Args");
-            var args = Parse(q.Value);
+            var ext = prop.HasExtensionOfName("Animate.Args");
+            var args = Parse(ext?.Value);
             if (args == null)
                 return;
 

@@ -5,20 +5,26 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
+
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="LICENSE.TXT" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="ScottPlot" Version="4.1.58" />
-    <PackageReference Include="ScottPlot.WPF" Version="4.1.58" />
+    <PackageReference Include="ScottPlot" Version="4.1.60" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.1.60" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="WpfPlotViewControlCumulative.xaml.cs">
@@ -50,9 +56,6 @@
     <Compile Update="WpfPlotViewControlVertical - Kopieren %283%29.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>WpfPlotViewControlVertical.xaml.cs</DependentUpon>
-    </Compile>
-    <Compile Update="WpfPlotViewControlHorizontal.xaml.cs">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Update="WpfPlotViewControlVertical - Kopieren - Kopieren %282%29 - Kopieren.xaml.cs">
       <SubType>Code</SubType>
@@ -98,9 +101,6 @@
   <ItemGroup>
     <Page Update="WpfPlotViewControlCumulative.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="WpfPlotViewControlHorizontal.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

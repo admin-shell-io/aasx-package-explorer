@@ -1644,7 +1644,7 @@ namespace AasxPackageExplorer
                 return;
 
             // find elements?
-            foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.QualifiedAnimation))
+            foreach (var rec in significantElems.Retrieve(env, SignificantAasElement.ValueAnimation))
             {
                 // valid?
                 if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)

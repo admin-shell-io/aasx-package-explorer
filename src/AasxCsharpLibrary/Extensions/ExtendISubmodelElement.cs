@@ -109,6 +109,17 @@ namespace Extensions
                 }
             }
         }
+
+        public static IEnumerable<IReferable> FindAllParentsWithSemanticId(
+                this ISubmodelElement submodelElement, Reference semId,
+                bool includeThis = false, bool includeSubmodel = false, bool passOverMiss = false)
+        {
+            return (FindAllParents(submodelElement,
+                (rf) => (true == (rf as IHasSemantics)?.SemanticId?.Matches(semId,
+                    matchMode: MatchMode.Relaxed)),
+                includeThis: includeThis, includeSubmodel: includeSubmodel, passOverMiss: passOverMiss));
+        }
+
         public static string ValueAsText(this ISubmodelElement submodelElement, string defaultLang = null)
         {
             //TODO:Need to check/test this logic again
@@ -519,19 +530,13 @@ namespace Extensions
         private static void BasicConversionFromV20(this ISubmodelElement submodelElement, AdminShellV20.SubmodelElement sourceSubmodelElement)
         {
             if (!string.IsNullOrEmpty(sourceSubmodelElement.idShort))
-            {
                 submodelElement.IdShort = sourceSubmodelElement.idShort;
-            }
 
             if (!string.IsNullOrEmpty(sourceSubmodelElement.category))
-            {
                 submodelElement.Category = sourceSubmodelElement.category;
-            }
 
             if (sourceSubmodelElement.description != null)
-            {
                 submodelElement.Description = ExtensionsUtil.ConvertDescriptionFromV20(sourceSubmodelElement.description);
-            }
 
             if (sourceSubmodelElement.semanticId != null)
             {
@@ -559,21 +564,15 @@ namespace Extensions
             if (sourceSubmodelElement.kind != null)
             {
                 if (sourceSubmodelElement.kind.IsInstance)
-                {
                     submodelElement.Kind = ModelingKind.Instance;
-                }
                 else
-                {
                     submodelElement.Kind = ModelingKind.Template;
-                }
             }
 
             if (sourceSubmodelElement.qualifiers != null && sourceSubmodelElement.qualifiers.Count != 0)
             {
                 if (submodelElement.Qualifiers == null || submodelElement.Qualifiers.Count == 0)
-                {
                     submodelElement.Qualifiers = new List<Qualifier>();
-                }
 
                 foreach (var sourceQualifier in sourceSubmodelElement.qualifiers)
                 {
@@ -587,9 +586,7 @@ namespace Extensions
             {
                 //TODO: jtikekar : EmbeddedDataSpecification?? (as per old implementation)
                 if (submodelElement.EmbeddedDataSpecifications == null)
-                {
                     submodelElement.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
-                }
 
                 //TODO: jtikekar: DataSpecificationContent?? (as per old implementation)
                 foreach (var sourceDataSpec in sourceSubmodelElement.hasDataSpecification)
@@ -600,6 +597,9 @@ namespace Extensions
                             null));
                 }
             }
+
+            // move Qualifiers to Extensions
+            submodelElement.MigrateV20QualifiersToExtensions();
         }
 
         #region List<ISubmodelElement>
@@ -1174,28 +1174,28 @@ namespace Extensions
         }
 
         public static IEnumerable<T> FindAllSemanticId<T>(
-            this List<ISubmodelElement> submodelElements, 
+            this List<ISubmodelElement> smes, 
             string[] allowedSemanticIds, 
             bool invertedAllowed = false) where T : ISubmodelElement
         {
             if (allowedSemanticIds == null || allowedSemanticIds.Length < 1)
                 yield break;
 
-            foreach (var submodelElement in submodelElements)
+            foreach (var sme in smes)
             {
-                if (submodelElement == null || !(submodelElement is T))
+                if (sme == null || !(sme is T))
                     continue;
 
-                if (submodelElement.SemanticId == null || submodelElement.SemanticId.Keys.Count < 1)
+                if (sme.SemanticId == null || sme.SemanticId.Keys.Count < 1)
                 {
                     if (invertedAllowed)
-                        yield return (T)submodelElement;
+                        yield return (T)sme;
                     continue;
                 }
 
                 var found = false;
                 foreach (var semanticId in allowedSemanticIds)
-                    if (submodelElement.SemanticId.Matches(semanticId))
+                    if (sme.SemanticId.Matches(semanticId))
                     {
                         found = true;
                         break;
@@ -1205,13 +1205,57 @@ namespace Extensions
                     found = !found;
 
                 if (found)
-                    yield return (T)submodelElement;
+                    yield return (T)sme;
             }
         }
 
         public static T FindFirstAnySemanticId<T>(this List<ISubmodelElement> submodelElements, string[] allowedSemanticIds, bool invertAllowed = false) where T : ISubmodelElement
         {
             return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, invertAllowed).FirstOrDefault();
+        }
+
+        public static IEnumerable<T> FindAllSemanticId<T>(
+            this List<ISubmodelElement> smes,
+            Key[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
+            bool invertedAllowed = false) where T : ISubmodelElement
+        {
+            if (allowedSemanticIds == null || allowedSemanticIds.Length < 1)
+                yield break;
+
+            foreach (var sme in smes)
+            {
+                if (sme == null || !(sme is T))
+                    continue;
+
+                if (sme.SemanticId == null || sme.SemanticId.Keys.Count < 1)
+                {
+                    if (invertedAllowed)
+                        yield return (T)sme;
+                    continue;
+                }
+
+                var found = false;
+                foreach (var semanticId in allowedSemanticIds)
+                    if (sme.SemanticId.MatchesExactlyOneKey(semanticId, mm))
+                    {
+                        found = true;
+                        break;
+                    }
+
+                if (invertedAllowed)
+                    found = !found;
+
+                if (found)
+                    yield return (T)sme;
+            }
+        }
+
+        public static T FindFirstAnySemanticId<T>(
+            this List<ISubmodelElement> submodelElements,
+            Key[] allowedSemanticIds, MatchMode mm = MatchMode.Strict,
+            bool invertAllowed = false) where T : ISubmodelElement
+        {
+            return submodelElements.FindAllSemanticId<T>(allowedSemanticIds, mm, invertAllowed).FirstOrDefault();
         }
 
         public static IEnumerable<ISubmodelElement> FindAllSemanticId(

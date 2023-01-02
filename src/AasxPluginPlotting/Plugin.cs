@@ -16,7 +16,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using AasxIntegrationBase.AdminShellEvents;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using JetBrains.Annotations;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
@@ -110,7 +112,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null)
                     return null;
 
@@ -120,7 +122,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     foreach (var rec in this.options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
+                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
                                 {
                                     found = true;
                                     break;
@@ -202,7 +204,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 // access
                 var package = args[0] as AdminShellPackageEnv;
-                var sm = args[1] as AdminShell.Submodel;
+                var sm = args[1] as Submodel;
                 var master = args[2] as DockPanel;
                 if (package == null || sm == null || master == null)
                     return null;

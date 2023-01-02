@@ -2,6 +2,7 @@
 using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,6 +37,23 @@ namespace Extensions
             return "" + property.Value;
         }
 
+        public static double? ValueAsDouble(this Property prop)
+        {
+            // pointless
+            if (prop.Value == null || prop.Value.Trim() == "")
+                return null;
+
+            // type?
+            if (!ExtendDataElement.ValueTypes_Number.Contains(prop.ValueType))
+                return null;
+
+            // try convert
+            if (double.TryParse(prop.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
+                return dbl;
+
+            // no
+            return null;
+        }
         public static Property ConvertFromV10(this Property property, AasxCompatibilityModels.AdminShellV10.Property sourceProperty)
         {
             if (sourceProperty == null)

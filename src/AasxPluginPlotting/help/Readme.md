@@ -63,7 +63,7 @@ of a live plotting:
 
 The first functionality is atually a functionality of the main 
 application AASX Package Explorer but not of the plug-in. However,
-some controlling Qualifier `Animate.Args` could attached to 
+some controlling Extension `Animate.Args` could attached to 
 SubmodelElements to animate value e.g. along a sine curve. 
 Changes to the value will also send AAS events `UpdateValue`. 
 This allows nice mock-ups and helps developing/ debugging a 
@@ -72,7 +72,7 @@ configuration.
 The second and third functionality are both provided by the 
 plugin and have quite different nature.
 
-The fixed-len buffers are controlled via Qualifiers `Plotting.Args`
+The fixed-len buffers are controlled via Extensions `Plotting.Args`
 and select individual, independent `SubmodelElements` to be 
 presented as tiled/ tabled values or as plot items. Multiple plot
 items can be arranged into one plot. The plot item always represents
@@ -85,7 +85,7 @@ a server, as well.
 
 The Time-series plot items are mostly controlled by the structure
 and semanticIds of the Submodel time series. Only minor graphical
-hints are given by Qualifiers `TimeSeries.Args`. As the data
+hints are given by Extensions `TimeSeries.Args`. As the data
 is kept in SME structures and may be hold by a server, re-loading
 of the plugin will also keep the display identical, as no buffers
 are cleared. AAS events `StructuralChange`and `UpdateValue`
@@ -135,12 +135,12 @@ public class AnimateArgs
 
 ### Working sample
 
-Qualifier name: `Animate.Args`
+Extension name: `Animate.Args`
 
-Qualifier value: 
+Extension value: 
 `{ type: "Sin", ofs: 230.0, scale: 10.0, freq: 0.05, timer: 500 }`
 
-Each 500ms, a new value will be assigned to the qualified 
+Each 500ms, a new value will be assigned to the attributed 
 SubmodelElement, following a sine-function, ranging from 220 to 240 
 in value. The sine frequency will by 1 / 0.05, that is, 20 seconds.
 
@@ -267,26 +267,26 @@ public class PlotArguments
 
 #### Submodel
 
-The Submodel is qualified with some information:
+The Submodel is attributed with some information:
 
-Qualifier name: `Plotting.Args`
+Extension name: `Plotting.Args`
 
-Qualifier value: 
+Extension value: 
 `{ title: "Carbon monitoring", timer: 500, tiles: true }`
 
 This will place the title as title of the right-hand panel of the
 AASX Package Explorer. The timer for redisplaying the fixed-len
-buffers is 500ms. Qualified data points will displayed as tiles
+buffers is 500ms. Attributed data points will displayed as tiles
 and not as a list.
 
 #### Data points
 
 Individual data points, most likely of type `Property`, are
-qualified with:
+attributed with:
 
-Qualifier name: `Plotting.Args`
+Extension name: `Plotting.Args`
 
-Qualifier value: 
+Extension value: 
 `{ grp:1, src: "Event", title: "Phase voltages", fmt: "F0", 
    row: 6, col: 0, rowspan: 1, colspan:1, unit: "V", 
    linewidth: 1.0 }`
@@ -320,11 +320,11 @@ descriptions.
 
 #### SMC for /TimeSeriesData/TimeSeries/1/0
 
-The topmost SMC is qualified with some information:
+The topmost SMC is attributed with some information:
 
-Qualifier name: `TimeSeries.Args`
+Extension name: `TimeSeries.Args`
 
-Qualifier value: 
+Extension value: 
 `{ height: 400, palette: "Category10" }`
 
 The plot area of this chart has a height of 400 pixel. During 

@@ -28,7 +28,9 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using ScottPlot;
 
 namespace AasxPluginPlotting
@@ -109,8 +111,8 @@ namespace AasxPluginPlotting
         }
 
         public static string EvalDisplayText(
-                string minmalText, AdminShell.SubmodelElement sme,
-                AdminShell.ConceptDescription cd = null,
+                string minmalText, ISubmodelElement sme,
+                ConceptDescription cd = null,
                 bool addMinimalTxt = false,
                 string defaultLang = null,
                 bool useIdShort = true)
@@ -119,12 +121,12 @@ namespace AasxPluginPlotting
             if (sme != null)
             {
                 // best option: description of the SME itself
-                string better = sme.description?.GetDefaultStr(defaultLang);
+                string better = sme.Description?.GetDefaultString(defaultLang);
 
                 // if still none, simply use idShort
                 // SME specific non-multi-lang found better than CD multi-lang?!
                 if (!better.HasContent() && useIdShort)
-                    better = sme.idShort;
+                    better = sme.IdShort;
 
                 // no? then look for CD information
                 if (cd != null)
@@ -132,9 +134,9 @@ namespace AasxPluginPlotting
                     if (!better.HasContent())
                         better = cd.GetDefaultPreferredName(defaultLang);
                     if (!better.HasContent())
-                        better = cd.idShort;
-                    if (better.HasContent() && true == cd.IEC61360Content?.unit.HasContent())
-                        better += $" [{cd.IEC61360Content?.unit}]";
+                        better = cd.IdShort;
+                    if (better.HasContent() && true == cd.GetIEC61360()?.Unit.HasContent())
+                        better += $" [{cd.GetIEC61360().Unit}]";
                 }
 
                 if (better.HasContent())

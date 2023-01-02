@@ -1153,7 +1153,33 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Qualifiable:", levelColors.SubSection);
+            this.AddGroup(stack, "Qualifiable:", levelColors.SubSection,
+                auxContextHeader: new[] { "\u27f4", "Migrate to Extensions" },
+                auxContextLambda: (o) =>
+                {
+                    if (o is int i && i == 0 && relatedReferable != null)
+                    {
+                        if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                                "Migrate particular Qualifiers (V2.0) to Extensions (V3.0) " +
+                                "for this element and all child elements? " +
+                                "This operation cannot be reverted!", "Qualifiers",
+                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            return new AnyUiLambdaActionNone();
+
+                        relatedReferable.RecurseOnReferables(null,
+                            includeThis: true,
+                            lambda: (o, parents, rf) =>
+                            {
+                                rf?.MigrateV20QualifiersToExtensions();
+                                return true;
+                            });
+
+                        Log.Singleton.Info("Migration of particular Qualifiers (V2.0) to Extensions (V3.0).");
+                        this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
+                    return new AnyUiLambdaActionNone();
+                });
 
             if (this.SafeguardAccess(
                 stack, repo, qualifiers, "Qualifiers:", "Create empty list of Qualifiers!",

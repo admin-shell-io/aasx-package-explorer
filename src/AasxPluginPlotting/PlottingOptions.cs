@@ -12,13 +12,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
+
 
 namespace AasxPluginPlotting
 {
     public class PlottingOptionsRecord
     {
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<Key> AllowSubmodelSemanticId = new List<Key>();
     }
 
     public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase

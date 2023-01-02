@@ -139,3 +139,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   => add always: MatchMode.Relaxed (stupid GlobalReference vor CDs)
   => very general handling of finding CondeptDescription by GlobalReference
 * touching up AasxPluginBomStructure
+  - implemented formatting of Edges and arrow-head styles
