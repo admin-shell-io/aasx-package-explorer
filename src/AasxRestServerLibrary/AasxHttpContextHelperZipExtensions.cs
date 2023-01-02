@@ -54,15 +54,12 @@ namespace AasxRestServerLibrary
                     string json = JsonConvert.SerializeObject(fragmentObject, Newtonsoft.Json.Formatting.Indented, converter);
                     SendJsonResponse(context, json);
                 }
-
-                return;
             }
             catch (ZipFragmentEvaluationException e)
             {
                 context.Response.SendResponse(
                     Grapevine.Shared.HttpStatusCode.NotFound,
                     e.Message);
-                return;
             }
         }
         public static Stream EvalGetZIPFragmentAsStream(this AasxHttpContextHelper helper, IHttpContext context, Stream zipFileStream, string zipFragment)
@@ -145,7 +142,7 @@ namespace AasxRestServerLibrary
                     // might be a directory that does not have its own entry
                     var entries = archive.Entries.Where(e => e.FullName.StartsWith(zipFragment));
 
-                    if (entries.Count() > 0)
+                    if (entries.Any())
                     {
                         return zipFragment;
                     }
@@ -257,8 +254,6 @@ namespace AasxRestServerLibrary
             }
 
             result.WriteTo(writer);
-            return;
-
         }
 
         public JObject BuildJsonRecursively(ZipArchive archive, string path, bool deep, int level = 0)
@@ -295,9 +290,9 @@ namespace AasxRestServerLibrary
 
                     try
                     {
-                        var children = GetChildren(archive, path, false);
+                        var children = GetChildren(archive, path, false).ToList();
 
-                        if (children.Count() == 0)
+                        if (!children.Any())
                         {
                             return result;
                         }
@@ -326,7 +321,12 @@ namespace AasxRestServerLibrary
         {
             SortedSet<string> result = new SortedSet<string>();
 
-            foreach (var entry in archive?.Entries)
+            if (archive == null)
+            {
+                return result;
+            }
+
+            foreach (var entry in archive.Entries)
             {
                 string entryPath = entry.FullName?.TrimEnd(PathSeparators).Replace("\\\\", "\\");
                 string relativeEntryPath = GetRelativePath(path, entryPath);
@@ -341,7 +341,7 @@ namespace AasxRestServerLibrary
                 if (deep || entryParts.Length == 2)
                 {
                     // some zip files do not contain entries for folders, hence, we add the folder manually
-                    int place = entryPath.LastIndexOf(entryParts.Last());
+                    int place = entryPath.LastIndexOf(entryParts.Last(), StringComparison.Ordinal);
                     result.Add(entryPath.Remove(place, entryParts.Last().Length).TrimEnd(PathSeparators));
                 }
 
@@ -361,7 +361,7 @@ namespace AasxRestServerLibrary
                 return null;
             }
 
-            if (sourcePath == null || sourcePath.Length == 0)
+            if (sourcePath.Length == 0)
             {
                 return targetPath;
             }

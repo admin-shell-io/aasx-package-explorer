@@ -136,6 +136,12 @@ namespace AasxRestServerLibrary
             XmlNamespaceManager manager = new XmlNamespaceManager(navigator.NameTable);
             navigator.MoveToFollowing(XPathNodeType.Element);
             IDictionary<string, string> namespaces = navigator.GetNamespacesInScope(XmlNamespaceScope.All);
+
+            if (namespaces == null)
+            {
+                return manager;
+            }
+
             foreach (KeyValuePair<string, string> ns in namespaces)
             {
                 manager.AddNamespace(ns.Key, ns.Value);
@@ -341,7 +347,12 @@ namespace AasxRestServerLibrary
 
             Dictionary<string, List<XElement>> childDict = GetChildrenSortedByName(xmlElement);
 
-            foreach (var key in childDict?.Keys)
+            if (childDict == null)
+            {
+                return paths;
+            }
+
+            foreach (var key in childDict.Keys)
             {
                 var values = childDict[key];
 
@@ -371,11 +382,10 @@ namespace AasxRestServerLibrary
         {
             var childDict = new Dictionary<string, List<XElement>>();
 
-            foreach (var child in xmlElement?.Elements().ToList())
+            foreach (var child in xmlElement.Elements().ToList())
             {
                 var childName = GetLocalXpathExpression(child);
-                List<XElement> childrenWithSameName;
-                if (!childDict.TryGetValue(childName, out childrenWithSameName))
+                if (!childDict.TryGetValue(childName, out List<XElement>  childrenWithSameName))
                 {
                     childrenWithSameName = new List<XElement>();
                 }

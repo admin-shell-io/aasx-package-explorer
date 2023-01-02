@@ -341,7 +341,7 @@ namespace AasxRestServerLibrary
                     foreach (var fragment in nestedFragmentStrings)
                     {
                         var parts = fragment.Split(new[] { '/' }, 2);
-                        nestedFragments.Add((parts[0], parts[1].TrimEnd(new[] { '/' })));
+                        nestedFragments.Add((parts[0], parts[1].TrimEnd('/')));
                     }
 
                     helper.EvalGetSubmodelElementFragment(context, aasid, smid, elemids.ToArray(), nestedFragments);

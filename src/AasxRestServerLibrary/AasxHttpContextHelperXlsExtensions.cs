@@ -207,7 +207,7 @@ namespace AasxRestServerLibrary
                 }
                 else
                 {
-                    (result["worksheets"] as JArray).Add(worksheetJson);
+                    (result["worksheets"] as JArray)?.Add(worksheetJson);
                 }
             }
 
@@ -253,7 +253,7 @@ namespace AasxRestServerLibrary
 
                 foreach (var cell in cells)
                 {
-                    result.Add(CompileJson(cell, valueOnly));
+                    result.Add(CompileJson(cell, false));
                 }
             }
 
