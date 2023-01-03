@@ -15,7 +15,7 @@
     <ProjectReference Include="..\AasxIntegrationBaseGdi\AasxIntegrationBaseGdi.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
-	<ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
+	  <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="LICENSE.TXT" />

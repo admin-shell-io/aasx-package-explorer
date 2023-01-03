@@ -61,6 +61,13 @@ namespace Extensions
             return a;
         }
 
+        public static Reference Add(this Reference a, Key k)
+        {
+            if (k != null)
+                a.Keys?.Add(k);
+            return a;
+        }
+
         public static bool IsEmpty(this Reference reference)
         {
             if (reference == null || reference.Keys == null || reference.Keys.Count < 1)

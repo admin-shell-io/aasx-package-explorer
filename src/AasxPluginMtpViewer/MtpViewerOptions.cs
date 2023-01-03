@@ -13,7 +13,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasxPredefinedConcepts;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using WpfMtpControl;
 
 namespace AasxPluginMtpViewer
@@ -23,7 +25,7 @@ namespace AasxPluginMtpViewer
         public enum MtpRecordType { MtpType, MtpInstance }
 
         public MtpRecordType RecordType = MtpRecordType.MtpType;
-        public List<AdminShell.Key> AllowSubmodelSemanticId = new List<AdminShell.Key>();
+        public List<Key> AllowSubmodelSemanticId = new List<Key>();
     }
 
     public class MtpViewerOptions : AasxIntegrationBase.AasxPluginOptionsBase
@@ -43,11 +45,11 @@ namespace AasxPluginMtpViewer
 
             var rec1 = new MtpViewerOptionsRecord();
             rec1.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpType;
-            rec1.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpSubmodel.Keys);
+            rec1.AllowSubmodelSemanticId = new List<Key>(defs.SEM_MtpSubmodel.Keys);
 
             var rec2 = new MtpViewerOptionsRecord();
             rec2.RecordType = MtpViewerOptionsRecord.MtpRecordType.MtpInstance;
-            rec2.AllowSubmodelSemanticId = new List<AdminShell.Key>(defs.SEM_MtpInstanceSubmodel.Keys);
+            rec2.AllowSubmodelSemanticId = new List<Key>(defs.SEM_MtpInstanceSubmodel.Keys);
 
             var opt = new MtpViewerOptions();
             opt.Records.Add(rec1);

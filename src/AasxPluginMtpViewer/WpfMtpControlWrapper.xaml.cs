@@ -16,17 +16,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using Newtonsoft.Json;
 using WpfMtpControl;
 using WpfMtpControl.DataSources;
+using AdminShellNS.Extenstions;
 
 namespace AasxPluginMtpViewer
 {
@@ -36,7 +34,7 @@ namespace AasxPluginMtpViewer
 
         private LogInstance theLog = null;
         private AdminShellPackageEnv thePackage = null;
-        private AdminShell.Submodel theSubmodel = null;
+        private Submodel theSubmodel = null;
         private AasxPluginMtpViewer.MtpViewerOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
@@ -49,7 +47,7 @@ namespace AasxPluginMtpViewer
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
         private WpfMtpControl.MtpData activeMtpData = null;
 
-        private AdminShell.File activeMtpFileElem = null;
+        private File activeMtpFileElem = null;
         private string activeMtpFileFn = null;
 
         public WpfMtpControl.MtpVisuOpcUaClient client = new WpfMtpControl.MtpVisuOpcUaClient();
@@ -71,7 +69,7 @@ namespace AasxPluginMtpViewer
 
         public void Start(
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             AasxPluginMtpViewer.MtpViewerOptions theOptions,
             PluginEventStack eventStack,
             LogInstance log)
@@ -92,7 +90,7 @@ namespace AasxPluginMtpViewer
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var master = masterDockPanel as DockPanel;
             if (package == null || sm == null || master == null)
                 return null;
@@ -172,69 +170,69 @@ namespace AasxPluginMtpViewer
         {
             // access
             var env = this.thePackage?.AasEnv;
-            if (this.theSubmodel?.semanticId == null || this.theSubmodel.submodelElements == null
+            if (this.theSubmodel?.SemanticId == null || this.theSubmodel.SubmodelElements == null
                 || this.defsMtp == null
-                || env?.AdministrationShells == null
+                || env?.AssetAdministrationShells == null
                 || this.thePackage.AasEnv.Submodels == null)
                 return false;
 
             // need to find the type Submodel
-            AdminShell.Submodel mtpTypeSm = null;
+            Submodel mtpTypeSm = null;
 
             // check, if the user pointed to the instance submodel
-            if (this.theSubmodel.semanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
+            if (this.theSubmodel.SemanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
             {
                 // Source list
-                foreach (var srcLst in this.theSubmodel.submodelElements
-                    .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceList?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
+                foreach (var srcLst in this.theSubmodel.SubmodelElements
+                    .FindAllSemanticIdAs<SubmodelElementCollection>(
+                        this.defsMtp.CD_SourceList?.GetReference(), MatchMode.Relaxed))
                 {
                     // found a source list, might contain sources
-                    if (srcLst?.value == null)
+                    if (srcLst?.Value == null)
                         continue;
 
                     // UA Server?
-                    foreach (var src in srcLst.value.FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                        this.defsMtp.CD_SourceOpcUaServer?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
-                        if (src?.value != null)
+                    foreach (var src in srcLst.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                        this.defsMtp.CD_SourceOpcUaServer?.GetReference(), MatchMode.Relaxed))
+                        if (src?.Value != null)
                         {
                             // UA server
-                            var ep = src.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                                this.defsMtp.CD_Endpoint.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
+                            var ep = src.Value.FindFirstSemanticIdAs<Property>(
+                                this.defsMtp.CD_Endpoint.GetReference(), MatchMode.Relaxed)?.Value;
 
                             // add
                             if (preLoadInfo?.EndpointMapping != null)
                                 preLoadInfo.EndpointMapping.Add(
                                     new MtpDataSourceOpcUaEndpointMapping(
-                                        "" + ep, ForName: ("" + src.idShort).Trim()));
+                                        "" + ep, ForName: ("" + src.IdShort).Trim()));
                         }
                 }
 
                 // Identifier renaming?
-                foreach (var ren in theSubmodel.submodelElements
-                    .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    this.defsMtp.CD_IdentifierRenaming?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
-                    if (ren?.value != null)
+                foreach (var ren in theSubmodel.SubmodelElements
+                    .FindAllSemanticIdAs<SubmodelElementCollection>(
+                    this.defsMtp.CD_IdentifierRenaming?.GetReference(), MatchMode.Relaxed))
+                    if (ren?.Value != null)
                     {
-                        var oldtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingOldText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
-                        var newtxt = ren.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingNewText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
+                        var oldtxt = ren.Value.FindFirstSemanticIdAs<Property>(
+                            this.defsMtp.CD_RenamingOldText?.GetReference(), MatchMode.Relaxed)?.Value;
+                        var newtxt = ren.Value.FindFirstSemanticIdAs<Property>(
+                            this.defsMtp.CD_RenamingNewText?.GetReference(), MatchMode.Relaxed)?.Value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.IdentifierRenaming != null)
                             preLoadInfo.IdentifierRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
                     }
 
                 // Namespace renaming?
-                foreach (var ren in theSubmodel.submodelElements
-                    .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    this.defsMtp.CD_NamespaceRenaming?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
-                    if (ren?.value != null)
+                foreach (var ren in theSubmodel.SubmodelElements
+                    .FindAllSemanticIdAs<SubmodelElementCollection>(
+                    this.defsMtp.CD_NamespaceRenaming?.GetReference(), MatchMode.Relaxed))
+                    if (ren?.Value != null)
                     {
-                        var oldtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingOldText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
-                        var newtxt = ren?.value.FindFirstSemanticIdAs<AdminShell.Property>(
-                            this.defsMtp.CD_RenamingNewText?.GetReference(), AdminShell.Key.MatchMode.Relaxed)?.value;
+                        var oldtxt = ren?.Value.FindFirstSemanticIdAs<Property>(
+                            this.defsMtp.CD_RenamingOldText?.GetReference(), MatchMode.Relaxed)?.Value;
+                        var newtxt = ren?.Value.FindFirstSemanticIdAs<Property>(
+                            this.defsMtp.CD_RenamingNewText?.GetReference(), MatchMode.Relaxed)?.Value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.NamespaceRenaming != null)
                             preLoadInfo.NamespaceRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
@@ -242,12 +240,12 @@ namespace AasxPluginMtpViewer
 
                 // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
                 // How to get from subModel to AAS?
-                var instanceAas = env.FindAASwithSubmodel(this.theSubmodel.identification);
-                var typeAas = env.FindReferableByReference(instanceAas?.derivedFrom) as AdminShell.AdministrationShell;
-                if (instanceAas?.derivedFrom != null && typeAas != null)
+                var instanceAas = env.FindAasWithSubmodelId(this.theSubmodel.Id);
+                var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as AssetAdministrationShell;
+                if (instanceAas?.DerivedFrom != null && typeAas != null)
                     foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>
                     {
-                        return aas == typeAas && true == sm?.semanticId?.Matches(this.defsMtp.SEM_MtpSubmodel);
+                        return aas == typeAas && true == sm?.SemanticId?.Matches(this.defsMtp.SEM_MtpSubmodel);
                     }))
                     {
                         mtpTypeSm = msm;
@@ -255,10 +253,10 @@ namespace AasxPluginMtpViewer
                     }
 
                 // another possibility: direct reference
-                var dirLink = this.theSubmodel.submodelElements
-                    .FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
-                        this.defsMtp.CD_MtpTypeSubmodel?.GetReference(), AdminShell.Key.MatchMode.Relaxed);
-                var dirLinkSm = env.FindReferableByReference(dirLink?.value) as AdminShell.Submodel;
+                var dirLink = this.theSubmodel.SubmodelElements
+                    .FindFirstSemanticIdAs<ReferenceElement>(
+                        this.defsMtp.CD_MtpTypeSubmodel?.GetReference(), MatchMode.Relaxed);
+                var dirLinkSm = env.FindReferableByReference(dirLink?.Value) as Submodel;
                 if (mtpTypeSm == null)
                     mtpTypeSm = dirLinkSm;
 
@@ -266,7 +264,7 @@ namespace AasxPluginMtpViewer
 
             // other (not intended) case: user points to type submodel directly
             if (mtpTypeSm == null
-                && this.theSubmodel.semanticId.Matches(this.defsMtp.SEM_MtpSubmodel))
+                && this.theSubmodel.SemanticId.Matches(this.defsMtp.SEM_MtpSubmodel))
                 mtpTypeSm = this.theSubmodel;
 
             // ok, is there a type submodel?
@@ -275,10 +273,10 @@ namespace AasxPluginMtpViewer
 
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
-            this.activeMtpFileElem = mtpTypeSm.submodelElements?
-                .FindFirstSemanticIdAs<AdminShell.File>(this.defsMtp.CD_MtpFile.GetReference(),
-                    AdminShell.Key.MatchMode.Relaxed);
-            var inputFn = this.activeMtpFileElem?.value;
+            this.activeMtpFileElem = mtpTypeSm.SubmodelElements?
+                .FindFirstSemanticIdAs<File>(this.defsMtp.CD_MtpFile.GetReference(),
+                    MatchMode.Relaxed);
+            var inputFn = this.activeMtpFileElem?.Value;
             if (inputFn == null)
                 return false;
             this.activeMtpFileFn = inputFn;
@@ -327,7 +325,7 @@ namespace AasxPluginMtpViewer
         private void MtpVisu_MtpObjectDoubleClick(MtpData.MtpBaseObject source)
         {
             // access
-            var sme = this.theSubmodel?.submodelElements;
+            var sme = this.theSubmodel?.SubmodelElements;
             var first = this.activeMtpFileElem.GetReference();
             if (source == null || this.activeMtpFileElem == null || sme == null || first == null)
                 return;
@@ -343,17 +341,16 @@ namespace AasxPluginMtpViewer
                 // Search for FileToNavigateElement
                 //
 
-                var firstFtn = first + (new AdminShell.Key(
-                        AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, searchId));
-                this.theLog?.Info($"DblClick MTP .. search reference: {firstFtn.ToString(1)}");
+                var firstFtn = first.Add(new Key(KeyTypes.GlobalReference, searchId));
+                this.theLog?.Info($"DblClick MTP .. search reference: {firstFtn.ToStringExtended(1)}");
 
-                foreach (var fileToNav in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(
-                this.defsInterop?.CD_FileToNavigateElement?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
-                    if (fileToNav.first?.Matches(firstFtn, AdminShell.Key.MatchMode.Relaxed) == true)
+                foreach (var fileToNav in sme.FindAllSemanticIdAs<RelationshipElement>(
+                this.defsInterop?.CD_FileToNavigateElement?.GetReference(), MatchMode.Relaxed))
+                    if (fileToNav.First?.Matches(firstFtn, MatchMode.Relaxed) == true)
                     {
                         // try activate
                         var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                        ev.targetReference = new AdminShell.Reference(fileToNav.second);
+                        ev.targetReference = fileToNav.Second.Copy();
                         this.theEventStack?.PushEvent(ev);
                         return;
                     }
@@ -362,26 +359,25 @@ namespace AasxPluginMtpViewer
                 // Search for FileToEntity
                 //
 
-                var firstFte = first + (new AdminShell.Key(
-                        AdminShell.Key.GlobalReference, true, AdminShell.Key.Custom, searchId));
-                this.theLog?.Info($"DblClick MTP .. search reference: {firstFte.ToString(1)}");
+                var firstFte = first.Add(new Key(KeyTypes.GlobalReference, searchId));
+                this.theLog?.Info($"DblClick MTP .. search reference: {firstFte.ToStringExtended(1)}");
 
-                foreach (var fileToEnt in sme.FindAllSemanticIdAs<AdminShell.RelationshipElement>(
-                this.defsInterop?.CD_FileToEntity?.GetReference(), AdminShell.Key.MatchMode.Relaxed))
-                    if (fileToEnt.first?.Matches(firstFte, AdminShell.Key.MatchMode.Relaxed) == true)
+                foreach (var fileToEnt in sme.FindAllSemanticIdAs<RelationshipElement>(
+                this.defsInterop?.CD_FileToEntity?.GetReference(), MatchMode.Relaxed))
+                    if (fileToEnt.First?.Matches(firstFte, MatchMode.Relaxed) == true)
                     {
                         // debug
-                        this.theLog?.Info($"try find Entity {"" + fileToEnt.second} ..");
+                        this.theLog?.Info($"try find Entity {"" + fileToEnt.Second} ..");
 
                         // find Entity, check if self-contained
-                        var foundRef = this.thePackage?.AasEnv?.FindReferableByReference(fileToEnt.second);
-                        if (foundRef is AdminShell.Entity foundEnt
-                            && foundEnt.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity
-                            && foundEnt.assetRef != null)
+                        var foundRef = this.thePackage?.AasEnv?.FindReferableByReference(fileToEnt.Second);
+                        if (foundRef is Entity foundEnt
+                            && foundEnt.EntityType == EntityType.SelfManagedEntity
+                            && foundEnt.GlobalAssetId != null)
                         {
                             // try activate
                             var ev = new AasxIntegrationBase.AasxPluginResultEventNavigateToReference();
-                            ev.targetReference = new AdminShell.Reference(foundEnt.assetRef);
+                            ev.targetReference = foundEnt.GlobalAssetId.Copy();
                             this.theEventStack?.PushEvent(ev);
                             return;
                         }
@@ -448,7 +444,7 @@ namespace AasxPluginMtpViewer
             if (fontSize.HasValue)
                 p.FontSize = fontSize.Value;
             if (monoSpaced)
-                p.FontFamily = new FontFamily("Courier New");
+                p.FontFamily = new System.Windows.Media.FontFamily("Courier New");
             p.Inlines.Add(new Run(text));
             rtb.Document.Blocks.Add(p);
         }

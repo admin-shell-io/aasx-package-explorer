@@ -841,19 +841,19 @@ namespace AasxPackageLogic
 
                 case MultiLanguageProperty mlp:
                     if (mlp.Value != null)
-                        info += "-> " + mlp.Value.GetDefaultString();
+                        info += "\u2192 " + mlp.Value.GetDefaultString();
                     showCDinfo = true;
                     break;
 
                 case File smef:
                     if (smef.Value != null && smef.Value != "")
-                        info += "-> " + smef.Value;
+                        info += "\u21d2 " + smef.Value;
                     showCDinfo = true;
                     break;
 
                 case ReferenceElement smere:
                     if (smere.Value != null && !smere.Value.IsEmpty())
-                        info += "~> " + smere.Value.ToString();
+                        info += "\u21e8 " + smere.Value.ToStringExtended(1);
                     showCDinfo = true;
                     break;
 
@@ -930,6 +930,19 @@ namespace AasxPackageLogic
                             qv = "valueId";
                         if (qv != "")
                             qv = "=" + qv;
+                        this.Info += " @{" + qt + qv + "}";
+                    }
+                }
+
+                // Extensions?
+                if (sme.Extensions != null && sme.Extensions.Count > 0)
+                {
+                    foreach (var ext in sme.Extensions)
+                    {
+                        var qt = ext.Name ?? "";
+                        var qv = ext.Value ?? "";
+                        if (qv != "")
+                            qv = "=" + AdminShellUtil.ShortenWithEllipses(qv, 30);
                         this.Info += " @{" + qt + qv + "}";
                     }
                 }

@@ -30,6 +30,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * TreeViewItems / MLP / value displayed multi line
 * remove unnecessary XAML files from WPF legacy
 * ImageMap does not display anything without background image
+* AasxPluginBomStructure still old plugin interface
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
 
@@ -154,3 +155,5 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * touching up AasxPluginImageMap
   - changed to Extension
   - error when no background image
+* initial touch up of AasxPluginMtpViewer
+  - seems to work, no testing
