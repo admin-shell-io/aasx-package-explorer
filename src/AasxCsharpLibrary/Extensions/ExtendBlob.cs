@@ -9,6 +9,13 @@ namespace Extensions
 {
     public static class ExtendBlob
     {
+        public static void Set(this Blob blob,
+            string contentType = "", byte[]? value = null)
+        {
+            blob.ContentType = contentType;
+            blob.Value = value;
+        }
+
         public static Blob ConvertFromV10(this Blob blob, AasxCompatibilityModels.AdminShellV10.Blob sourceBlob)
         {
             blob.ContentType = sourceBlob.mimeType;

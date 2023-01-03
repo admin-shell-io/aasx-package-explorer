@@ -121,7 +121,7 @@ namespace Extensions
         {
             var res = new List<Key>();
             foreach (var rf in referables)
-                res.Add(new Key(KeyTypes.Referable, rf.IdShort));
+                res.Add(new Key(rf.GetSelfDescription()?.KeyType ?? KeyTypes.GlobalReference, rf.IdShort));
             return res;
         }
         #endregion
@@ -557,7 +557,9 @@ namespace Extensions
                 return;
 
             // Qualifiers to migrate
-            var toMigrate = new[] { "Animate.Args", "Plotting.Args", "TimeSeries.Args", "BOM.Args" };
+            var toMigrate = new[] { 
+                "Animate.Args", "Plotting.Args", "TimeSeries.Args", "BOM.Args", "ImageMap.Args"
+            };
 
             List<Qualifier> toMove = new List<Qualifier>();
             foreach (var q in iq.Qualifiers)

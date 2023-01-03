@@ -14,9 +14,12 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AdminShellNS;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
+using AdminShellNS.Extenstions;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -110,7 +113,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as AdminShell.Submodel;
+                var sm = args[0] as Submodel;
                 if (sm == null)
                     return null;
 
@@ -120,7 +123,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     foreach (var rec in this._options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.semanticId != null && sm.semanticId.Matches(x))
+                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
                                 {
                                     found = true;
                                     break;
@@ -267,62 +270,63 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // generate (by hand)
-                var sm = new AdminShell.Submodel();
-                sm.semanticId = new AdminShell.SemanticId(AasxPredefinedConcepts.ImageMap.Static.SEM_ImageMapSubmodel);
-                sm.idShort = "ImageMap";
+                var sm = new Submodel("");
+                sm.SemanticId = AasxPredefinedConcepts.ImageMap.Static.SEM_ImageMapSubmodel.Copy();
+                sm.IdShort = "ImageMap";
 
-                sm.SmeForWrite.CreateSMEForCD<AdminShell.File>(AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
+                sm.SmeForWrite().CreateSMEForCD<AasCore.Aas3_0_RC02.File>(AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
                     idShort: "ImageFile", addSme: true);
 
-                var ent = sm.SmeForWrite.CreateSMEForCD<AdminShell.Entity>(
+                var ent = sm.SmeForWrite().CreateSMEForCD<Entity>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_EntityOfImageMap,
                     idShort: "Entity00", addSme: true);
 
-                ent.CreateSMEForCD<AdminShell.Property>(
+                ent.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect,
-                    idShort: "RegionRect", addSme: true)?.Set("string", "[ 10, 10, 30, 30 ]");
+                    idShort: "RegionRect", addSme: true)?.Set(DataTypeDefXsd.String, "[ 10, 10, 30, 30 ]");
 
-                ent.CreateSMEForCD<AdminShell.Property>(
+                ent.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle,
-                    idShort: "RegionCircle", addSme: true)?.Set("string", "[ 40, 40, 10 ]");
+                    idShort: "RegionCircle", addSme: true)?.Set(DataTypeDefXsd.String, "[ 40, 40, 10 ]");
 
-                ent.CreateSMEForCD<AdminShell.Property>(
+                ent.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon,
-                    idShort: "RegionPolygon", addSme: true)?.Set("string", "[ 20, 20, 50, 20, 40, 30 ]");
+                    idShort: "RegionPolygon", addSme: true)?.Set(DataTypeDefXsd.String, "[ 20, 20, 50, 20, 40, 30 ]");
 
-                ent.CreateSMEForCD<AdminShell.ReferenceElement>(
+                ent.CreateSMEForCD<ReferenceElement>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo,
                     idShort: "NavigateTo", addSme: true);
 
-                var smcVE = sm.SmeForWrite.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                var smcVE = sm.SmeForWrite().CreateSMEForCD<SubmodelElementCollection>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_VisualElement,
                     idShort: "VisuElem00", addSme: true);
 
-                smcVE.CreateSMEForCD<AdminShell.Property>(
+                smcVE.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect,
-                    idShort: "RegionRect", addSme: true)?.Set("string", "[ 50, 10, 70, 30 ]");
+                    idShort: "RegionRect", addSme: true)?.Set(DataTypeDefXsd.String, "[ 50, 10, 70, 30 ]");
 
-                smcVE.CreateSMEForCD<AdminShell.Property>(
+                smcVE.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
-                    idShort: "TextDisplay01", addSme: true)?.Set("string", "Hallo");
+                    idShort: "TextDisplay01", addSme: true)?.Set(DataTypeDefXsd.String, "Hallo");
 
-                smcVE.CreateSMEForCD<AdminShell.Property>(
+                smcVE.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
                     idShort: "TextDisplay02", addSme: true)?
-                        .Set("double", "3.1415")
-                        .Set(new AdminShell.Qualifier("ImageMap.Args", "{ fmt: \"F2\" }"));
+                        .Set(DataTypeDefXsd.String, "3.1415")
+                        .Set(new Extension("ImageMap.Args", valueType: DataTypeDefXsd.String, 
+                             value: "{ fmt: \"F2\" }"));
 
-                smcVE.CreateSMEForCD<AdminShell.ReferenceElement>(
+                smcVE.CreateSMEForCD<ReferenceElement>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
                     idShort: "TextDisplay03", addSme: true);
 
-                smcVE.CreateSMEForCD<AdminShell.Property>(
+                smcVE.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_Foreground,
-                    idShort: "Foreground", addSme: true)?.Set("string", "#ffffffff");
+                    idShort: "Foreground", addSme: true)?.Set(DataTypeDefXsd.String, "#ffffffff");
 
-                smcVE.CreateSMEForCD<AdminShell.Property>(
+                smcVE.CreateSMEForCD<Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_Background,
-                    idShort: "Background", addSme: true)?.Set("string", "#ff000040");
+                    idShort: "Background", addSme: true)?.Set(DataTypeDefXsd.String, "#ff000040");
 
                 // make result
                 var res = new AasxPluginResultBaseObject();

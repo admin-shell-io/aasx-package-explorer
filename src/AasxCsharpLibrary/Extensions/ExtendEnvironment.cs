@@ -558,16 +558,16 @@ namespace Extensions
             int keyIndex = 0, 
             List<ISubmodelElement> submodelElementList = null)
         {
-            var keyList = reference.Keys;
-
+            // access
+            var keyList = reference?.Keys;
             if (keyList == null || keyList.Count == 0 || keyIndex >= keyList.Count)
-            {
                 return null;
-            }
 
+            // shortcuts
             var firstKeyType = keyList[keyIndex].Type;
             var firstKeyId = keyList[keyIndex].Value;
 
+            // different pathes
             switch (firstKeyType)
             {
                 case KeyTypes.AssetAdministrationShell:

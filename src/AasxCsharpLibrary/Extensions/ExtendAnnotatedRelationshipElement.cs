@@ -89,6 +89,14 @@ namespace Extensions
             return default;
         }
 
+        public static AnnotatedRelationshipElement Set(this AnnotatedRelationshipElement elem,
+            Reference first, Reference second)
+        {
+            elem.First = first;
+            elem.Second = second;
+            return elem;
+        }
+
         public static AnnotatedRelationshipElement UpdateFrom(
             this AnnotatedRelationshipElement elem, ISubmodelElement source)
         {

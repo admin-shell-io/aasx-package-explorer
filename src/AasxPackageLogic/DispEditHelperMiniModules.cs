@@ -160,7 +160,7 @@ namespace AasxPackageLogic
             for (int i = 0; i < qualifiers.Count; i++)
             {
                 var qual = qualifiers[i];
-                var substack = AddSubStackPanel(stack, "  "); // just a bit spacing to the left
+                var substack = AddSubStackPanel(stack, "  ", minWidthFirstCol: this.smallFirstColWidth); 
 
                 int storedI = i;
                 AddGroup(

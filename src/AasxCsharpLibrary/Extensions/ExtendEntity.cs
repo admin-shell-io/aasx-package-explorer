@@ -92,5 +92,17 @@ namespace Extensions
 
             return default;
         }
+
+        public static T CreateSMEForCD<T>(
+            this Entity ent,
+            ConceptDescription conceptDescription, string category = null, string idShort = null,
+            string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
+                where T : ISubmodelElement
+        {
+            if (ent.Statements == null)
+                ent.Statements = new List<ISubmodelElement>();
+            return ent.Statements.CreateSMEForCD<T>(
+                conceptDescription, category, idShort, idxTemplate, maxNum, addSme, isTemplate);
+        }
     }
 }

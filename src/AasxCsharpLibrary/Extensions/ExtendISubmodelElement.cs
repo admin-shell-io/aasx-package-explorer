@@ -1,4 +1,4 @@
-﻿
+﻿using AdminShellNS;
 using AasCore.Aas3_0_RC02;
 using AasxCompatibilityModels;
 using AdminShellNS.Display;
@@ -915,13 +915,18 @@ namespace Extensions
             if (conceptDescription == null)
                 return default(T);
 
+            // fin type enum
+            var smeType = AdminShellUtil.AasSubmodelElementsFrom<T>();
+            if (!smeType.HasValue)
+                return default(T);
+
             // try to potentially figure out idShort
             var ids = conceptDescription.IdShort;
 
             //TODO:jtikekar Temporarily removed
-            //if ((ids == null || ids.Trim() == "") && conceptDescription.GetIEC61360() != null)
-            //    ids = conceptDescription.GetIEC61360().shortName?
-            //        .GetDefaultStr();
+            if ((ids == null || ids.Trim() == "") && conceptDescription.GetIEC61360() != null)
+                ids = conceptDescription.GetIEC61360().ShortName?
+                    .GetDefaultString();
 
             if (idShort != null)
                 ids = idShort;
@@ -935,28 +940,11 @@ namespace Extensions
 
             // make a new instance
             var semanticId = conceptDescription.GetCdReference();
-            ISubmodelElement sme = null;
-            if(typeof(T) == typeof(Property))
-            {
-                sme = new Property(DataTypeDefXsd.String, idShort: ids, semanticId: new Reference(semanticId.Type, semanticId.Keys));
-            }
-            else if(typeof(T) == typeof(Property))
-            {
-                sme = new ReferenceElement();
-            }
-            else if(typeof(T) == typeof(File))
-            {
-                sme = new File("");
-            }
-            else
-            {
-                //sme = new T()
-                //{
-                //    IdShort = ids,
-                //    SemanticId = new Reference(semanticId.Type, semanticId.Keys)
-                //};
-            }
-
+            ISubmodelElement sme = AdminShellUtil.CreateSubmodelElementFromEnum(smeType.Value);
+            if (sme == null)
+                return default(T);
+            sme.IdShort = ids;
+            sme.SemanticId = semanticId.Copy();
             if (category != null)
                 sme.Category = category;
             if (isTemplate)
@@ -1285,6 +1273,24 @@ namespace Extensions
         {
             return submodelElements.FindAllSemanticId(semId, allowedTypes, matchMode)?.FirstOrDefault<ISubmodelElement>();
         }
+
+        public static IEnumerable<T> FindAllSemanticIdAs<T>(
+            this List<ISubmodelElement> smes, 
+            ConceptDescription cd, MatchMode matchMode = MatchMode.Strict)
+                where T : ISubmodelElement
+        {
+            foreach (var x in FindAllSemanticIdAs<T>(smes, cd.GetReference(), matchMode))
+                yield return x;
+        }
+
+        public static T FindFirstSemanticIdAs<T>(
+            this List<ISubmodelElement> smes,
+            ConceptDescription cd, MatchMode matchMode = MatchMode.Strict)
+                where T : ISubmodelElement
+        {
+            return smes.FindAllSemanticIdAs<T>(cd, matchMode).FirstOrDefault<T>();
+        }
+
 
         public static string IterateIdShortTemplateToBeUnique(this List<ISubmodelElement> submodelElements, string idShortTemplate, int maxNum)
         {

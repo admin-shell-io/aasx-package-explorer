@@ -143,6 +143,18 @@ namespace Extensions
             submodelElementCollection.Value.Insert(index, submodelElement);
         }
 
+        public static T CreateSMEForCD<T>(
+            this SubmodelElementCollection smc,
+            ConceptDescription conceptDescription, string category = null, string idShort = null,
+            string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
+                where T : ISubmodelElement
+        {
+            if (smc.Value == null)
+                smc.Value = new List<ISubmodelElement>();
+            return smc.Value.CreateSMEForCD<T>(
+                conceptDescription, category, idShort, idxTemplate, maxNum, addSme, isTemplate);
+        }
+
         public static SubmodelElementCollection UpdateFrom(
             this SubmodelElementCollection elem, ISubmodelElement source)
         {

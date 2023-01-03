@@ -11,6 +11,13 @@ namespace Extensions
 {
     public static class ExtendReferenceElement
     {
+        public static AAS.ReferenceElement Set(this AAS.ReferenceElement elem,
+            Reference rf)
+        {
+            elem.Value = rf;
+            return elem;
+        }
+
         public static AAS.ReferenceElement UpdateFrom(
             this AAS.ReferenceElement elem, AAS.ISubmodelElement source)
         {

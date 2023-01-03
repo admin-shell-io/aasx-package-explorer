@@ -32,7 +32,7 @@ namespace AasxCompatibilityModels
     // Utils
     //
 
-    public class AdminShellUtil
+    public class AdminShellUtilV10
     {
         public static string EvalToNonNullString(string fmt, object o, string elseString = "")
         {
@@ -1092,7 +1092,7 @@ namespace AasxCompatibilityModels
 
             public string GetFriendlyName()
             {
-                return AdminShellUtil.FilterFriendlyName(this.idShort);
+                return AdminShellUtilV10.FilterFriendlyName(this.idShort);
             }
 
             public void CollectReferencesByParent(List<Key> refs)
@@ -1171,8 +1171,8 @@ namespace AasxCompatibilityModels
             public new string GetFriendlyName()
             {
                 if (identification != null && identification.id != "")
-                    return AdminShellUtil.FilterFriendlyName(this.identification.id);
-                return AdminShellUtil.FilterFriendlyName(this.idShort);
+                    return AdminShellUtilV10.FilterFriendlyName(this.identification.id);
+                return AdminShellUtilV10.FilterFriendlyName(this.idShort);
             }
 
         }
@@ -1291,7 +1291,7 @@ namespace AasxCompatibilityModels
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "\"AAS\"");
+                var caption = AdminShellUtilV10.EvalToNonNullString("\"{0}\" ", idShort, "\"AAS\"");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
 
@@ -1405,7 +1405,7 @@ namespace AasxCompatibilityModels
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV10.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
 
@@ -1540,7 +1540,7 @@ containedElements == null) return null; return containedElements[index];
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV10.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
                 if (this.semanticId != null)
                     info = Key.KeyListToString(this.semanticId.Keys);
@@ -2734,10 +2734,10 @@ containedElements == null) return null; return containedElements[index];
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV10.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 var info = "";
                 if (semanticId != null)
-                    info = AdminShellUtil.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
+                    info = AdminShellUtilV10.EvalToNonEmptyString("\u21e8 {0}", semanticId.ToString(), "");
                 return Tuple.Create(caption, info);
             }
 
@@ -3087,7 +3087,7 @@ containedElements == null) return null; return containedElements[index];
 
             public Tuple<string, string> ToCaptionInfo()
             {
-                var caption = AdminShellUtil.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
+                var caption = AdminShellUtilV10.EvalToNonNullString("\"{0}\" ", idShort, "<no idShort!>");
                 if (administration != null)
                     caption += "V" + administration.version + "." + administration.revision;
                 var info = "";
@@ -3910,7 +3910,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         throw (new Exception(
                             string.Format("While reading AAS {0} at {1} gave: {2}", fn,
-                                AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -3933,7 +3933,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         throw (new Exception(
                             string.Format("While reading AAS {0} at {1} gave: {2}",
-                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                fn, AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4007,14 +4007,14 @@ containedElements == null) return null; return containedElements[index];
                         {
                             throw (new Exception(
                                 string.Format("While reading AAS {0} spec at {1} gave: {2}",
-                                    fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                    fn, AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                         }
                     }
                     catch (Exception ex)
                     {
                         throw (new Exception(
                             string.Format("While reading AASX {0} at {1} gave: {2}", fn,
-                                AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4040,7 +4040,7 @@ containedElements == null) return null; return containedElements[index];
                 {
                     throw (new Exception(
                         string.Format("While reading AASENV string {0} gave: {1}",
-                            AdminShellUtil.ShortLocation(ex), ex.Message)));
+                            AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                 }
                 return true;
             }
@@ -4071,7 +4071,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         throw (new Exception(
                             string.Format("While writing AAS {0} at {1} gave: {2}",
-                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                fn, AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4103,7 +4103,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         throw (new Exception(
                             string.Format("While writing AAS {0} at {1} gave: {2}",
-                                fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                                fn, AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }
@@ -4374,7 +4374,7 @@ containedElements == null) return null; return containedElements[index];
                     {
                         throw (new Exception(
                             string.Format("While write AASX {0} at {1} gave: {2}",
-                            fn, AdminShellUtil.ShortLocation(ex), ex.Message)));
+                            fn, AdminShellUtilV10.ShortLocation(ex), ex.Message)));
                     }
                     return true;
                 }

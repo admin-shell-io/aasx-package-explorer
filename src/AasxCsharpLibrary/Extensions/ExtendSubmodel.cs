@@ -439,5 +439,17 @@ namespace Extensions
             submodel.SubmodelElements.Insert(index, submodelElement);
         }
 
+        public static T CreateSMEForCD<T>(
+            this Submodel sm, 
+            ConceptDescription conceptDescription, string category = null, string idShort = null,
+            string idxTemplate = null, int maxNum = 999, bool addSme = false, bool isTemplate = false)
+                where T : ISubmodelElement
+        {
+            if (sm.SubmodelElements == null)
+                sm.SubmodelElements = new List<ISubmodelElement>();
+            return sm.SubmodelElements.CreateSMEForCD<T>(
+                conceptDescription, category, idShort, idxTemplate, maxNum, addSme, isTemplate);
+        }
+
     }
 }

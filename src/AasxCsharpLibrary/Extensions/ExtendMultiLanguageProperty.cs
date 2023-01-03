@@ -100,5 +100,29 @@ namespace Extensions
 
             return elem;
         }
+
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp,
+            List<LangString> ls)
+        {
+            mlp.Value = ls;
+            return mlp;
+        }
+
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
+            LangString ls)
+        {
+            if (ls == null)
+                return mlp;
+            if (mlp.Value == null)
+                mlp.Value = new List<LangString>();
+            mlp.Value.Set(ls.Language, ls.Text);
+            return mlp;
+        }
+
+        public static MultiLanguageProperty Set(this MultiLanguageProperty mlp, 
+            string lang, string str)
+        {
+            return mlp.Set(new LangString(lang, str));
+        }
     }
 }

@@ -82,6 +82,38 @@ namespace AdminShellNS
             }
         }
 
+        public static AasSubmodelElements? AasSubmodelElementsFrom<T>() where T : ISubmodelElement
+        {
+            if (typeof(T) == typeof(Property))
+                return AasSubmodelElements.Property;
+            if (typeof(T) == typeof(MultiLanguageProperty))
+                return AasSubmodelElements.MultiLanguageProperty;
+            if (typeof(T) == typeof(AasCore.Aas3_0_RC02.Range))
+                return AasSubmodelElements.Range;
+            if (typeof(T) == typeof(AasCore.Aas3_0_RC02.File))
+                return AasSubmodelElements.File;
+            if (typeof(T) == typeof(Blob))
+                return AasSubmodelElements.Blob;
+            if (typeof(T) == typeof(ReferenceElement))
+                return AasSubmodelElements.ReferenceElement;
+            if (typeof(T) == typeof(RelationshipElement))
+                return AasSubmodelElements.RelationshipElement;
+            if (typeof(T) == typeof(AnnotatedRelationshipElement))
+                return AasSubmodelElements.AnnotatedRelationshipElement;
+            if (typeof(T) == typeof(Capability))
+                return AasSubmodelElements.Capability;
+            if (typeof(T) == typeof(SubmodelElementCollection))
+                return AasSubmodelElements.SubmodelElementCollection;
+            if (typeof(T) == typeof(Operation))
+                return AasSubmodelElements.Operation;
+            if (typeof(T) == typeof(BasicEventElement))
+                return AasSubmodelElements.BasicEventElement;
+            if (typeof(T) == typeof(Entity))
+                return AasSubmodelElements.Entity;
+            return null;
+        }
+
+
         public static ISubmodelElement CreateSubmodelElementFromEnum(AasSubmodelElements smeEnum, ISubmodelElement sourceSme = null)
         {
             switch(smeEnum)

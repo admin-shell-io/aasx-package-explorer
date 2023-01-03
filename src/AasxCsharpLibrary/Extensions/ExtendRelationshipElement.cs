@@ -10,6 +10,14 @@ namespace Extensions
 {
     public static class ExtendRelationshipElement
     {
+        public static AAS.RelationshipElement Set(this AAS.RelationshipElement elem,
+            AAS.Reference first, AAS.Reference second)
+        {
+            elem.First = first;
+            elem.Second = second;
+            return elem;
+        }
+
         public static AAS.RelationshipElement UpdateFrom(
             this AAS.RelationshipElement elem, AAS.ISubmodelElement source)
         {

@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,7 +20,9 @@ using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 using AnyUi;
 using Newtonsoft.Json;
 
@@ -37,7 +38,7 @@ namespace AasxPluginImageMap
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AdminShell.Submodel _submodel = null;
+        private Submodel _submodel = null;
         private ImageMapOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -78,7 +79,7 @@ namespace AasxPluginImageMap
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AdminShell.Submodel theSubmodel,
+            Submodel theSubmodel,
             ImageMapOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -106,7 +107,7 @@ namespace AasxPluginImageMap
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AdminShell.Submodel;
+            var sm = osm as Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -130,16 +131,16 @@ namespace AasxPluginImageMap
         private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm)
+            Submodel sm)
         {
             // test trivial access
-            if (_options == null || _submodel?.semanticId == null)
+            if (_options == null || _submodel?.SemanticId == null)
                 return;
 
             // make sure for the right Submodel
             var foundRecs = new List<ImageMapOptionsOptionsRecord>();
             foreach (var rec in _options.LookupAllIndexKey<ImageMapOptionsOptionsRecord>(
-                _submodel?.semanticId?.GetAsExactlyOneKey()))
+                _submodel?.SemanticId?.GetAsExactlyOneKey()))
                 foundRecs.Add(rec);
 
             // render
@@ -150,7 +151,7 @@ namespace AasxPluginImageMap
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<ImageMapOptionsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
-            AdminShell.Submodel sm)
+            Submodel sm)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
@@ -253,24 +254,24 @@ namespace AasxPluginImageMap
                     if (o is AnyUiEventData ev
                         && ev.ClickCount >= 2
                         && ev.Source is AnyUiFrameworkElement fe
-                        && fe.Tag is AdminShell.Property prop
-                        && prop.parent is AdminShell.Entity ent)
+                        && fe.Tag is Property prop
+                        && prop.Parent is Entity ent)
                     {
                         // need a targetReference
                         // first check, if a navigate to reference element can be found
-                        var navTo = ent.statements?.FindFirstSemanticIdAs<AdminShell.ReferenceElement>(
+                        var navTo = ent.Statements?.FindFirstSemanticIdAs<ReferenceElement>(
                             AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
-                            AdminShell.Key.MatchMode.Relaxed);
-                        var targetRf = navTo?.value;
+                            MatchMode.Relaxed);
+                        var targetRf = navTo?.Value;
 
                         // if not, have a look to the Entity itself
-                        if ((targetRf == null || targetRf.Count < 1)
-                            && ent.GetEntityType() == AdminShell.Entity.EntityTypeEnum.SelfManagedEntity
-                            && ent.assetRef != null && ent.assetRef.Count > 0)
-                            targetRf = ent.assetRef;
+                        if ((targetRf == null || targetRf.Count() < 1)
+                            && ent.EntityType == EntityType.SelfManagedEntity
+                            && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
+                            targetRf = ent.GlobalAssetId;
 
                         // if found, hand over to main program
-                        if (targetRf != null && targetRf.Count > 0)
+                        if (targetRf != null && targetRf.Count() > 0)
                             _eventStack?.PushEvent(new AasxPluginResultEventNavigateToReference()
                             {
                                 targetReference = targetRf
@@ -360,50 +361,30 @@ namespace AasxPluginImageMap
 
             // image
             // file?
-            var fe = _submodel.submodelElements.FindFirstSemanticIdAs<AdminShell.File>(
-                AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile.GetReference(),
-                AdminShellV20.Key.MatchMode.Relaxed);
-            if (fe?.value == null)
+            var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<File>(
+                AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
+                MatchMode.Relaxed);
+            if (fe?.Value == null)
                 return;
 
-#if USE_WPF
-            // bitmap data
-            var bitmapdata = _package.GetByteArrayFromUriOrLocalPackage(fe.value);
-            if (bitmapdata == null)
-                return;
-
-            // set?
-            var sourceBi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
-            if (sourceBi != null)
+            var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.Value);
+            if (_backgroundImage != null)
             {
-                // but adopt in any case to 96 dpi
-                // https://andydunkel.net/2020/09/10/wpf-bitmapimage-falsche-hoehe-breite-und-unscharfe-darstellung/
-                double dpi = 96;
-                int width = sourceBi.PixelWidth;
-                int height = sourceBi.PixelHeight;
-
-                int stride = width * sourceBi.Format.BitsPerPixel;
-                byte[] pixelData = new byte[stride * height];
-                sourceBi.CopyPixels(pixelData, stride, 0);
-                var destBi = BitmapSource.Create(width, height, dpi, dpi, sourceBi.Format, null, pixelData, stride);
-                destBi.Freeze();
-
-                // put this in WPF and HTML rendering
-                if (_backgroundImage != null && destBi != null)
+                if (bi != null)
                 {
-                    _backgroundImage.BitmapInfo = AnyUiHelper.CreateAnyUiBitmapInfo(destBi);
-                    _backgroundSize = sourceBi.Width + sourceBi.Height;
+                    bi.ConvertTo96dpi = true;
+                    _backgroundImage.BitmapInfo = bi;
+                    _backgroundSize = bi.PixelWidth + bi.PixelHeight;
+                }
+                else
+                {
+                    // no image available
+                    _backgroundImage.Width = 100;
+                    _backgroundImage.Height = 100;
+                    _backgroundSize = 100;
+                    _backgroundImage.Touch();
                 }
             }
-#else
-            var bi = AnyUiGdiHelper.LoadBitmapInfoFromPackage(_package, fe.value);
-            if (bi != null && _backgroundImage != null)
-            {
-                bi.ConvertTo96dpi = true;
-                _backgroundImage.BitmapInfo = bi;
-                _backgroundSize = bi.PixelWidth + bi.PixelHeight;
-            }
-#endif
         }
 
         private string ClickedCoordinatesToString()
@@ -462,10 +443,10 @@ namespace AasxPluginImageMap
         private void RenderRegions(bool forceTransparent)
         {
             // access
-            if (_submodel?.submodelElements == null || _canvas == null)
+            if (_submodel?.SubmodelElements == null || _canvas == null)
                 return;
             var defs = AasxPredefinedConcepts.ImageMap.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
+            var mm = MatchMode.Relaxed;
 
             // result
             var res = new List<AnyUiUIElement>();
@@ -479,21 +460,21 @@ namespace AasxPluginImageMap
 
             // entities
             int index = -1;
-            foreach (var ent in _submodel.submodelElements.FindAllSemanticIdAs<AdminShell.Entity>(
-                defs.CD_EntityOfImageMap.GetReference(), mm))
+            foreach (var ent in _submodel.SubmodelElements.FindAllSemanticIdAs<Entity>(
+                defs.CD_EntityOfImageMap, mm))
             {
                 // access
-                if (ent?.statements == null)
+                if (ent?.Statements == null)
                     continue;
 
                 // find all regions known
-                foreach (var prect in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    defs.CD_RegionRect.GetReference(), mm))
+                foreach (var prect in ent.Statements.FindAllSemanticIdAs<Property>(
+                    defs.CD_RegionRect, mm))
                 {
                     // access
-                    if (!(prect?.value.HasContent() == true))
+                    if (!(prect?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(prect.value);
+                    var pts = ParseDoubles(prect.Value);
                     if (pts == null || pts.Length != 4)
                         continue;
                     if (pts[2] < pts[0] || pts[3] < pts[1])
@@ -531,17 +512,17 @@ namespace AasxPluginImageMap
                             VerticalContentAlignment = AnyUiVerticalAlignment.Center,
                             Foreground = cols.Item3,
                             FontSize = fontSize,
-                            Content = "" + prect.idShort
+                            Content = "" + prect.IdShort
                         });
                 }
 
-                foreach (var pcirc in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    defs.CD_RegionCircle.GetReference(), mm))
+                foreach (var pcirc in ent.Statements.FindAllSemanticIdAs<Property>(
+                    defs.CD_RegionCircle, mm))
                 {
                     // access
-                    if (!(pcirc?.value.HasContent() == true))
+                    if (!(pcirc?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(pcirc.value);
+                    var pts = ParseDoubles(pcirc.Value);
                     if (pts == null || pts.Length != 3)
                         continue;
                     if (pts[2] <= 0.0)
@@ -579,17 +560,17 @@ namespace AasxPluginImageMap
                             VerticalContentAlignment = AnyUiVerticalAlignment.Center,
                             Foreground = cols.Item3,
                             FontSize = fontSize,
-                            Content = "" + pcirc.idShort
+                            Content = "" + pcirc.IdShort
                         });
                 }
 
-                foreach (var ppoly in ent.statements.FindAllSemanticIdAs<AdminShell.Property>(
-                    defs.CD_RegionPolygon.GetReference(), mm))
+                foreach (var ppoly in ent.Statements.FindAllSemanticIdAs<Property>(
+                    defs.CD_RegionPolygon, mm))
                 {
                     // access
-                    if (!(ppoly?.value.HasContent() == true))
+                    if (!(ppoly?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(ppoly.value);
+                    var pts = ParseDoubles(ppoly.Value);
                     if (pts == null || pts.Length < 6 || pts.Length % 2 == 1)
                         continue;
                     index++;
@@ -633,7 +614,7 @@ namespace AasxPluginImageMap
                             VerticalContentAlignment = AnyUiVerticalAlignment.Center,
                             Foreground = cols.Item3,
                             FontSize = fontSize,
-                            Content = "" + ppoly.idShort
+                            Content = "" + ppoly.IdShort
                         });
                     }
                 }
@@ -649,23 +630,24 @@ namespace AasxPluginImageMap
 
         protected class DataPointInfo
         {
-            public string Value, ValueType;
+            public string Value;
+            public DataTypeDefXsd ValueType;
             public ImageMapArguments Args;
 
-            public static DataPointInfo CreateFrom(AdminShell.SubmodelElement sme)
+            public static DataPointInfo CreateFrom(ISubmodelElement sme)
             {
-                if (sme is AdminShell.Property prop)
+                if (sme is Property prop)
                     return new DataPointInfo()
                     {
-                        Value = prop.value,
-                        ValueType = prop.valueType
+                        Value = prop.Value,
+                        ValueType = prop.ValueType
                     };
 
-                if (sme is AdminShell.MultiLanguageProperty mlp)
+                if (sme is MultiLanguageProperty mlp)
                     return new DataPointInfo()
                     {
-                        Value = mlp.value?.GetDefaultStr(),
-                        ValueType = "string"
+                        Value = mlp.Value?.GetDefaultString(),
+                        ValueType = DataTypeDefXsd.String
                     };
 
                 return null;
@@ -674,8 +656,9 @@ namespace AasxPluginImageMap
             public double? EvalAsDouble(bool forceDouble = false)
             {
                 // try to convert to double
-                var vt = ValueType?.Trim().ToLower();
-                if ((forceDouble || vt == "float" || vt == "double"))
+                if ((forceDouble 
+                    || ValueType == DataTypeDefXsd.Float 
+                    || ValueType == DataTypeDefXsd.Double))
                 {
                     if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
                     {
@@ -806,19 +789,19 @@ namespace AasxPluginImageMap
         }
 
         private DataPointInfo EvalDataPoint(
-            AdminShell.SubmodelElementWrapperCollection smw,
-            AdminShell.Reference semId)
+            List<ISubmodelElement> smec,
+            Reference semId)
         {
             // access
-            if (smw == null || semId == null)
+            if (smec == null || semId == null)
                 return null;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
+            var mm = MatchMode.Relaxed;
 
             DataPointInfo res = null;
 
             // find a property?
-            AdminShell.SubmodelElement specSme = null;
-            foreach (var prop in smw.FindAllSemanticIdAs<AdminShell.Property>(semId, mm))
+            ISubmodelElement specSme = null;
+            foreach (var prop in smec.FindAllSemanticIdAs<Property>(semId, mm))
             {
                 res = DataPointInfo.CreateFrom(prop);
                 if (res != null)
@@ -828,7 +811,7 @@ namespace AasxPluginImageMap
                 }
             }
 
-            foreach (var mlp in smw.FindAllSemanticIdAs<AdminShell.MultiLanguageProperty>(semId, mm))
+            foreach (var mlp in smec.FindAllSemanticIdAs<MultiLanguageProperty>(semId, mm))
             {
                 res = DataPointInfo.CreateFrom(mlp);
                 if (res != null)
@@ -838,10 +821,10 @@ namespace AasxPluginImageMap
                 }
             }
 
-            foreach (var refe in smw.FindAllSemanticIdAs<AdminShell.ReferenceElement>(semId, mm))
+            foreach (var refe in smec.FindAllSemanticIdAs<ReferenceElement>(semId, mm))
             {
                 // find reference target?
-                var targetSme = _package?.AasEnv?.FindReferableByReference(refe?.value) as AdminShell.SubmodelElement;
+                var targetSme = _package?.AasEnv?.FindReferableByReference(refe?.Value) as ISubmodelElement;
                 if (targetSme == null)
                     continue;
 
@@ -859,9 +842,9 @@ namespace AasxPluginImageMap
                 return null;
 
             // find args?
-            var q = specSme.HasQualifierOfType("ImageMap.Args");
+            var q = specSme.HasExtensionOfName("ImageMap.Args");
             if (q != null)
-                res.Args = ImageMapArguments.Parse(q.value);
+                res.Args = ImageMapArguments.Parse(q.Value);
 
             // OK
             return res;
@@ -874,39 +857,39 @@ namespace AasxPluginImageMap
         private bool RenderVisuElems()
         {
             // access
-            if (_submodel?.submodelElements == null || _canvas == null)
+            if (_submodel?.SubmodelElements == null || _canvas == null)
                 return false;
             var defs = AasxPredefinedConcepts.ImageMap.Static;
-            var mm = AdminShell.Key.MatchMode.Relaxed;
+            var mm = MatchMode.Relaxed;
 
             // check, if required anyway
-            var anyElem = _submodel.submodelElements
-                .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    defs.CD_VisualElement.GetReference(), mm).FirstOrDefault();
+            var anyElem = _submodel.SubmodelElements
+                .FindAllSemanticIdAs<SubmodelElementCollection>(
+                    defs.CD_VisualElement, mm).FirstOrDefault();
             if (anyElem == null)
                 return false;
 
             // result
             var res = new List<AnyUiUIElement>();
 
-            foreach (var smcVE in _submodel.submodelElements
-                .FindAllSemanticIdAs<AdminShell.SubmodelElementCollection>(
-                    defs.CD_VisualElement.GetReference(), mm))
+            foreach (var smcVE in _submodel.SubmodelElements
+                .FindAllSemanticIdAs<SubmodelElementCollection>(
+                    defs.CD_VisualElement, mm))
             {
                 // access
-                if (smcVE?.value == null)
+                if (smcVE?.Value == null)
                     continue;
 
                 // need a background shape (at least for the dimensions)
                 AnyUiShape backShape = null;
 
-                foreach (var prect in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                foreach (var prect in smcVE.Value.FindAllSemanticIdAs<Property>(
                     defs.CD_RegionRect, mm))
                 {
                     // access
-                    if (!(prect?.value.HasContent() == true))
+                    if (!(prect?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(prect.value);
+                    var pts = ParseDoubles(prect.Value);
                     if (pts == null || pts.Length != 4)
                         continue;
                     if (pts[2] < pts[0] || pts[3] < pts[1])
@@ -926,13 +909,13 @@ namespace AasxPluginImageMap
                     break;
                 }
 
-                foreach (var pcirc in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                foreach (var pcirc in smcVE.Value.FindAllSemanticIdAs<Property>(
                     defs.CD_RegionCircle, mm))
                 {
                     // access
-                    if (!(pcirc?.value.HasContent() == true))
+                    if (!(pcirc?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(pcirc.value);
+                    var pts = ParseDoubles(pcirc.Value);
                     if (pts == null || pts.Length != 3)
                         continue;
                     if (pts[2] <= 0.0)
@@ -952,13 +935,13 @@ namespace AasxPluginImageMap
                     break;
                 }
 
-                foreach (var ppoly in smcVE.value.FindAllSemanticIdAs<AdminShell.Property>(
+                foreach (var ppoly in smcVE.Value.FindAllSemanticIdAs<Property>(
                     defs.CD_RegionPolygon, mm))
                 {
                     // access
-                    if (!(ppoly?.value.HasContent() == true))
+                    if (!(ppoly?.Value.HasContent() == true))
                         continue;
-                    var pts = ParseDoubles(ppoly.value);
+                    var pts = ParseDoubles(ppoly.Value);
                     if (pts == null || pts.Length < 6 || pts.Length % 2 == 1)
                         continue;
 
@@ -987,9 +970,9 @@ namespace AasxPluginImageMap
                     continue;
 
                 // find important information
-                var dpiText = EvalDataPoint(smcVE.value, defs.CD_TextDisplay.GetReference());
-                var dpiFg = EvalDataPoint(smcVE.value, defs.CD_Foreground.GetReference());
-                var dpiBg = EvalDataPoint(smcVE.value, defs.CD_Background.GetReference());
+                var dpiText = EvalDataPoint(smcVE.Value, defs.CD_TextDisplay.GetReference());
+                var dpiFg = EvalDataPoint(smcVE.Value, defs.CD_Foreground.GetReference());
+                var dpiBg = EvalDataPoint(smcVE.Value, defs.CD_Background.GetReference());
 
                 // apply minimum requirements
                 if (dpiText == null)
@@ -1083,8 +1066,15 @@ namespace AasxPluginImageMap
         #region Callbacks
         //===============
 
+        private bool _dispatcherTimerActive = false;
+
         private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
+            // access
+            if (_dispatcherTimerActive)
+                return;
+            _dispatcherTimerActive = true;
+
             // render
             if (_showRegions == 0 || _showRegions == 2)
                 RenderRegions(forceTransparent: (_showRegions == 0));
@@ -1100,6 +1090,9 @@ namespace AasxPluginImageMap
                     UseInnerGrid = true
                 });
             }
+
+            // release
+            _dispatcherTimerActive = false;
         }
 
         #endregion

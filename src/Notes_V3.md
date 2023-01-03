@@ -29,8 +29,13 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * web browser not working
 * TreeViewItems / MLP / value displayed multi line
 * remove unnecessary XAML files from WPF legacy
+* ImageMap does not display anything without background image
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
+
+## Regexes
+
+* (\.CD_\w+)\.GetReference\(\) .. $1
 
 ## Findings / Open questions in spec
 
@@ -45,7 +50,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * Attribute per IClass : Name, ShortName
 * Attribute per Member : meta model name
 * Constructors for SME taking over attributes from other SMEs (different subtypes!)
-* Factory for SubmodelElements
+* Factory for SubmodelElements (AasSubmodelElementsFrom(), CreateSubmodelElementFromEnum())
 * Constructors without mandatory init parameters ("Bevormundung war letztes Jahrhundert")
 * have an attribute telling if there are children (Descend().OfType<ISubmodelElement> .., IEnumerateChildren) or not
 * LevelType needs powers of 2 in order to have enum with multiple bits!!
@@ -54,6 +59,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * AssetKind/NotApplicable
 * AssetInformation.assetType missing?
 * mapping between Enum:KeyTpes and various other types, such as Enum:AasSubmodelElements
+
+* places which deserve a factory/ mapping approach:
+  GetKeyType()
 
 ## Decisions
 
@@ -140,3 +148,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   => very general handling of finding CondeptDescription by GlobalReference
 * touching up AasxPluginBomStructure
   - implemented formatting of Edges and arrow-head styles
+* rework of AasxPluginPlotting
+  - change Qualifiers to Extensions
+  - migrating Qualifiers
+* touching up AasxPluginImageMap
+  - changed to Extension
+  - error when no background image

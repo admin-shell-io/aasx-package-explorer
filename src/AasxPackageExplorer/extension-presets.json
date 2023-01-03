@@ -34,5 +34,14 @@
       "value": "{ height: 400, palette: \"Category10\" }",
       "valueId": null
     }
+  },
+  {
+    "name": "ImageMap Plugin | Image map arguments",
+    "extension": {
+      "semanticId": null,
+      "name": "ImageMap.Args",
+      "value": "{  }",
+      "valueId": null
+    }
   }
 ]

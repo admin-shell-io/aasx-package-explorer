@@ -1,7 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using System;
 using System.Collections.Generic;
-using static AasxCompatibilityModels.AdminShellV20;
 
 namespace Extensions
 {
@@ -66,6 +65,18 @@ namespace Extensions
                 i += 2;
             }
             return r;
+        }
+
+        public static List<LangString> Set(this List<LangString> lss, string lang, string text)
+        {
+            foreach (var ls in lss)
+                if (ls.Language.Trim().ToLower() == lang?.Trim().ToLower())
+                {
+                    ls.Text = text;
+                    return lss;
+                }
+            lss.Add(new LangString(lang, text));
+            return lss;
         }
 
         public static List<LangString> ConvertFromV20(

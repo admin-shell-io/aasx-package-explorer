@@ -110,7 +110,7 @@ namespace AasxPackageLogic.PackageCentral
                             Add(SignificantAasElement.EventStructureChangeOutwards, sm, parents, sme);
                     }
 
-                    if (null != sme.FindAllExtensionName("Animate.Args"))
+                    if (null != sme.HasExtensionOfName("Animate.Args"))
                         Add(SignificantAasElement.ValueAnimation, sm, parents, sme);
 
                     // recurse

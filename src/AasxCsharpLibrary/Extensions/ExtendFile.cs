@@ -15,6 +15,13 @@ namespace Extensions
             return "" + file.Value;
         }
 
+        public static void Set(this File file, 
+            string contentType = "", string value = "")
+        {
+            file.ContentType = contentType;
+            file.Value = value;
+        }
+
         public static File ConvertFromV10(this File file, AasxCompatibilityModels.AdminShellV10.File sourceFile)
         {
             file.ContentType = sourceFile.mimeType;
