@@ -700,9 +700,18 @@ namespace AasxPackageExplorer
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
 
-            // main menu
+            // logical main menu
+            var logicalMainMenu = CreateMainMenu();
+
+            // top level children have other color
+            logicalMainMenu.DefaultForeground = AnyUiColors.Black;
+            foreach (var mi in logicalMainMenu)
+                if (mi is AasxMenuItem mii)
+                    mii.Foreground = AnyUiColors.White;
+
+            // WPF main menu
             _mainMenu = new AasxMenuWpf();
-            _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain, this.CommandBindings, this.InputBindings);
+            _mainMenu.LoadAndRender(logicalMainMenu, MenuMain, this.CommandBindings, this.InputBindings);
 
             // display elements has a cache
             DisplayElements.ActivateElementStateCache();

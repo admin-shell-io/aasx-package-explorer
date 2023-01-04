@@ -110,6 +110,12 @@ namespace AasxWpfControlLibrary
                         Command = cmd
                     };
 
+                    if (topMenu?.DefaultForeground != null)
+                        wpf.Foreground = AnyUiDisplayContextWpf.GetWpfBrush(topMenu.DefaultForeground);
+
+                    if (mii.Foreground != null)
+                        wpf.Foreground = AnyUiDisplayContextWpf.GetWpfBrush(mii.Foreground);
+
                     // if for any sake cmd isn't available, do directly
                     if (cmd == null && mii.Name?.HasContent() == true)
                     {

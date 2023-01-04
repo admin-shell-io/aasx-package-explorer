@@ -432,17 +432,28 @@ namespace AasxPackageExplorer
             // check if Referable Type is ok
             ScriptSelectRefType refType = ScriptSelectRefType.None;
 
-            if (refTypeName.Trim().ToLower() == "this")
-                refType = ScriptSelectRefType.This;
-
-            if (refTypeName.Trim().ToLower() == "AAS")
-                refType = ScriptSelectRefType.AAS;
-            if (refTypeName.Trim().ToLower() == "SM")
-                refType = ScriptSelectRefType.SM;
-            if (refTypeName.Trim().ToLower() == "SME")
-                refType = ScriptSelectRefType.SME;
-            if (refTypeName.Trim().ToLower() == "CD")
-                refType = ScriptSelectRefType.CD;
+            switch (refTypeName.Trim().ToLower())
+            {
+                case "this":
+                    refType = ScriptSelectRefType.This;
+                    break;
+                case "aas":
+                case "assetadministrationshell":
+                    refType = ScriptSelectRefType.AAS;
+                    break;
+                case "sm":
+                case "submodel":
+                    refType = ScriptSelectRefType.SM;
+                    break;
+                case "sme":
+                case "submodelelement":
+                    refType = ScriptSelectRefType.SME;
+                    break;
+                case "cd":
+                case "conceptdescription":
+                    refType = ScriptSelectRefType.CD;
+                    break;
+            }
 
             if (refType == ScriptSelectRefType.None)
             {

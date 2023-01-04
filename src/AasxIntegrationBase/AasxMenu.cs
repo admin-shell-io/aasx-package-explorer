@@ -271,6 +271,11 @@ namespace AasxIntegrationBase
         public string Header = "";
 
         /// <summary>
+        /// Foreground color of the menu item.
+        /// </summary>
+        public AnyUiColor Foreground = null;
+
+        /// <summary>
         /// Icon to be place aside the header in GUI based applications.
         /// Might contain unicode symbil, text or bitmap.
         /// </summary>
@@ -344,6 +349,10 @@ namespace AasxIntegrationBase
         /// </summary>
         public AasxMenuActionAsyncDelegate DefaultActionAsync = null;
 
+        /// <summary>
+        /// Default foreground color, if not overruled by items.
+        /// </summary>
+        public AnyUiColor DefaultForeground = null;
 
         //
         // Creators (here, because class name is shorter)
