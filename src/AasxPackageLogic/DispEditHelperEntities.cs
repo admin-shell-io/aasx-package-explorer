@@ -25,7 +25,6 @@ using AdminShellNS.Display;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
-using swagger = IO.Swagger.Model;
 
 namespace AasxPackageLogic
 {
@@ -50,7 +49,8 @@ namespace AasxPackageLogic
             AssetAdministrationShell aas, AssetInformation asset,
             object preferredNextFocus,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
-            bool hintMode = false)
+            bool hintMode = false,
+            AasxMenu superMenu = null)
         {
             this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
 
@@ -175,7 +175,13 @@ namespace AasxPackageLogic
                     });
 
                 // print code sheet
-                this.AddAction(stack, "Actions:", new[] { "Print asset code sheet .." }, repo, (buttonNdx) =>
+                AddAction(stack, "Actions:",
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("print-code-sheet", "Print asset code sheet ..",
+                        "Prints an sheet with 2D codes for the asset id."),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0)
                     {
@@ -183,9 +189,9 @@ namespace AasxPackageLogic
                         this.context?.StartFlyover(uc);
                         try
                         {
-                            this.context?.PrintSingleAssetCodeSheet(
-                                asset.GlobalAssetId?.GetAsIdentifier(),
-                                asset.GlobalAssetId?.GetAsIdentifier().ToString());
+                            if (asset.GlobalAssetId.IsValid() == true)
+                                this.context?.PrintSingleAssetCodeSheet(
+                                    asset.GlobalAssetId.Keys[0].Value, aas?.IdShort);
                         }
                         catch (Exception ex)
                         {
@@ -240,7 +246,7 @@ namespace AasxPackageLogic
                 //    sme: (ISubmodelElement)asset.DefaultThumbnail,
                 //    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
                 DisplayOrEditEntityFileResource(
-                    substack, aas, 
+                    substack, aas, repo, superMenu,
                     asset.DefaultThumbnail.Path, asset.DefaultThumbnail.ContentType, 
                     (fn, ct) => {
                         asset.DefaultThumbnail.Path = fn;
@@ -260,7 +266,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditAasEntityAasEnv(
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             VisualElementEnvironmentItem ve, bool editMode, AnyUiStackPanel stack,
-            bool hintMode = false)
+            bool hintMode = false,
+            AasxMenu superMenu = null)
         {
             this.AddGroup(stack, "Environment of AssetInformation Administration Shells", this.levelColors.MainSection);
             if (env == null)
@@ -309,9 +316,17 @@ namespace AasxPackageLogic
                 });
 
                 // let the user control the number of entities
-                this.AddAction(
-                    stack, "Entities:", new[] { "Add AAS", "Add ConceptDescription" }, repo,
-                    (buttonNdx) =>
+                AddAction(
+                    stack, "Entities:",
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("add-asset", "Add Asset",
+                            "Adds an asset with blank information.")
+                        .AddAction("add-aas", "Add AAS",
+                            "Adds an AAS with blank information.")
+                        .AddAction("add-cd", "Add ConceptDescription",
+                            "Adds an ConceptDescription with blank information."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -350,9 +365,17 @@ namespace AasxPackageLogic
 
                     this.AddAction(
                         stack, "Copy from existing AAS:",
-                        new[] { "Copy single entity ", "Copy recursively", "Copy rec. w/ suppl. files" },
-                        repo,
-                        (buttonNdx) =>
+                        repo: repo,
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("copy-single", "Copy single",
+                                "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
+                            .AddAction("copy-recurse", "Copy recursively",
+                                "Copy selected entity and children from another AAS, caring for ConceptDescriptions.")
+                            .AddAction("copy-with-files", "Copy rec. w/ suppl. files",
+                                "Copy selected entity and children from another AAS, caring for ConceptDescriptions " +
+                                "and supplementary files."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0 || buttonNdx == 1 || buttonNdx == 2)
                             {
@@ -627,8 +650,12 @@ namespace AasxPackageLogic
                     });
                     this.AddAction(
                         stack, "Copy from existing ConceptDescription:",
-                        new[] { "Copy single entity" }, repo,
-                        (buttonNdx) =>
+                        repo: repo,
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("copy-single", "Copy single",
+                                "Copy single selected entity from another AAS."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                             {
@@ -761,12 +788,12 @@ namespace AasxPackageLogic
 
                     this.AddAction(
                         stack, "Fix:",
-                        new[] { "Fix data specs wrt. content" }, repo,
-                        actionToolTips: new[]
-                        {
-                            "For data specifications of CDs, fix References according stored contents."
-                        },
-                        action: (buttonNdx) =>
+                        repo: repo,
+                        superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("fix-data-specs", "Fix data specs wrt. content",
+                                "Auto-detect content of data specification and set References accordingly."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                             {
@@ -943,7 +970,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages,
             VisualElementSupplementalFile entity,
             AdminShellPackageSupplementaryFile psf, bool editMode,
-            AnyUiStackPanel stack)
+            AnyUiStackPanel stack,
+            AasxMenu superMenu = null)
         {
             //
             // Package
@@ -952,47 +980,53 @@ namespace AasxPackageLogic
 
             if (editMode && packages.MainStorable && psf != null)
             {
-                this.AddAction(stack, "Action", new[] { "Delete" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx == 0)
-                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
-                                AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                        {
-                            // try remember where we are
-                            var sibling = entity.FindSibling()?.GetDereferencedMainDataObject();
+                AddAction(stack, "Action",
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("file-delete", "Delete",
+                            "Deletes the supplementary file from the respective AAS environment."),
+                    ticketAction: (buttonNdx, ticket) =>
+                    {
+                        if (buttonNdx == 0)
+                            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                    "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
+                                    AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            {
+                                // try remember where we are
+                                var sibling = entity.FindSibling()?.GetDereferencedMainDataObject();
 
-                            // delete
-                            try
-                            {
-                                packages.Main.DeleteSupplementaryFile(psf);
-                                Log.Singleton.Info(
-                                "Added {0} to pending package items to be deleted. " +
-                                    "A save-operation might be required.", PackageSourcePath);
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Singleton.Error(ex, "Deleting file in package");
+                                // delete
+                                try
+                                {
+                                    packages.Main.DeleteSupplementaryFile(psf);
+                                    Log.Singleton.Info(
+                                    "Added {0} to pending package items to be deleted. " +
+                                        "A save-operation might be required.", PackageSourcePath);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(ex, "Deleting file in package");
+                                }
+
+                                // try to re-focus to a sibling
+                                if (sibling != null)
+                                {
+                                    // stay around
+                                    return new AnyUiLambdaActionRedrawAllElements(
+                                        nextFocus: sibling);
+                                }
+                                else
+                                {
+                                    // jump to root
+                                    return new AnyUiLambdaActionRedrawAllElements(
+                                        nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
+                                            VisualElementEnvironmentItem.ItemType.Package));
+                                }
                             }
 
-                            // try to re-focus to a sibling
-                            if (sibling != null)
-                            {
-                                // stay around
-                                return new AnyUiLambdaActionRedrawAllElements(
-                                    nextFocus: sibling);
-                            }
-                            else
-                            {
-                                // jump to root
-                                return new AnyUiLambdaActionRedrawAllElements(
-                                    nextFocus: VisualElementEnvironmentItem.GiveAliasDataObject(
-                                        VisualElementEnvironmentItem.ItemType.Package));
-                            }
-                        }
-
-                    return new AnyUiLambdaActionNone();
-                });
+                        return new AnyUiLambdaActionNone();
+                    });
             }
         }
 
@@ -1005,7 +1039,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditAasEntityAas(
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             AssetAdministrationShell aas,
-            bool editMode, AnyUiStackPanel stack, bool hintMode = false)
+            bool editMode, AnyUiStackPanel stack, bool hintMode = false, 
+            AasxMenu superMenu = null)
         {
             this.AddGroup(stack, "AssetAdministrationShell (according IEC63278)", this.levelColors.MainSection);
             if (aas == null)
@@ -1018,7 +1053,8 @@ namespace AasxPackageLogic
 
                 // Up/ down/ del
                 this.EntityListUpDownDeleteHelper<AssetAdministrationShell>(
-                    stack, repo, env.AssetAdministrationShells, aas, env, "AAS:");
+                    stack, repo, env.AssetAdministrationShells, aas, env, "AAS:",
+                    superMenu: superMenu);
 
                 // Cut, copy, paste within list of AASes
                 this.DispPlainIdentifiableCutCopyPasteHelper<AssetAdministrationShell>(
@@ -1078,13 +1114,16 @@ namespace AasxPackageLogic
                     });// adding submodels
                 this.AddAction(
                     stack, "SubmodelRef:",
-                    new[] {
-                        "Reference to existing Submodel",
-                        "Create new Submodel of kind Template",
-                        "Create new Submodel of kind Instance"
-                    },
-                    repo,
-                    (buttonNdx) =>
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("ref-existing", "Reference to existing Submodel",
+                            "Links the SubmodelReference to an existing Submodel.")
+                        .AddAction("create-template", "Create new Submodel of kind Template",
+                            "Creates a new Submodel of kind Template and link to this SubmodelReference.")
+                        .AddAction("create-instance", "Create new Submodel of kind Instance",
+                            "Creates a new Submodel of kind Instance and link to this SubmodelReference."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -1161,8 +1200,16 @@ namespace AasxPackageLogic
                 });
                 this.AddAction(
                     stack, "Copy from existing Submodel:",
-                    new[] { "Copy single entity ", "Copy recursively" }, repo,
-                    (buttonNdx) =>
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("copy-single", "Copy single",
+                            "Copy selected Submodel without children from another AAS, " +
+                            "caring for ConceptDescriptions.")
+                        .AddAction("copy-recurse", "Copy recursively",
+                            "Copy selected Submodel and children from another AAS, " +
+                            "caring for ConceptDescriptions."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
@@ -1247,7 +1294,7 @@ namespace AasxPackageLogic
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityHasDataSpecificationReferences(stack, aas.EmbeddedDataSpecifications,
-                (ds) => { aas.EmbeddedDataSpecifications = ds; }, relatedReferable: aas);
+                (ds) => { aas.EmbeddedDataSpecifications = ds; }, relatedReferable: aas, superMenu: superMenu);
 
             // use some asset reference
             var asset = aas.AssetInformation;
@@ -1326,7 +1373,8 @@ namespace AasxPackageLogic
                 DisplayOrEditAasEntityAssetInformation(
                     packages, env, aas, aas.AssetInformation,
                     preferredNextFocus: aas,
-                    editMode: editMode, repo: repo, stack: stack, hintMode: hintMode);
+                    editMode: editMode, repo: repo, stack: stack, hintMode: hintMode,
+                    superMenu: superMenu);
             }
         }
 
@@ -1340,7 +1388,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             AssetAdministrationShell aas,
             Reference smref, Submodel submodel, bool editMode,
-            AnyUiStackPanel stack, bool hintMode = false)
+            AnyUiStackPanel stack, bool hintMode = false,
+            AasxMenu superMenu = null)
         {
             // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
@@ -1385,21 +1434,27 @@ namespace AasxPackageLogic
                     stack, "Editing of entities (environment's Submodel collection)",
                     this.levelColors.MainSection);
 
-                this.AddAction(stack, "Submodel:", new[] { "Delete" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx == 0)
-                        if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                 "Delete selected Submodel? This operation can not be reverted!", "AAS-ENV",
-                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                        {
-                            if (env.Submodels.Contains(submodel))
-                                env.Submodels.Remove(submodel);
-                            this.AddDiaryEntry(submodel, new DiaryEntryStructChange(StructuralChangeReason.Delete));
-                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
-                        }
+                AddAction(stack, "Submodel:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("aas-elem-del", "Delete",
+                            "Deletes the currently selected element.",
+                        inputGesture: "Delete"),
+                    ticketAction: (buttonNdx, ticket) =>
+                    {
+                        if (buttonNdx == 0)
+                            if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                     "Delete selected Submodel? This operation can not be reverted!", "AAS-ENV",
+                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                            {
+                                if (env.Submodels.Contains(submodel))
+                                    env.Submodels.Remove(submodel);
+                                this.AddDiaryEntry(submodel, new DiaryEntryStructChange(StructuralChangeReason.Delete));
+                                return new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: null);
+                            }
 
-                    return new AnyUiLambdaActionNone();
-                });
+                        return new AnyUiLambdaActionNone();
+                    });
             }
 
             // Cut, copy, paste within an aas
@@ -1409,7 +1464,7 @@ namespace AasxPackageLogic
                 // cut/ copy / paste
                 this.DispSubmodelCutCopyPasteHelper<Reference>(stack, repo, this.theCopyPaste,
                     aas.Submodels, smref, (sr) => { return new Reference(sr.Type, new List<Key>(sr.Keys)); },
-                    smref, submodel,
+                    smref, submodel, superMenu: superMenu,
                     label: "Buffer:",
                     checkEquality: (r1, r2) =>
                     {
@@ -1442,7 +1497,7 @@ namespace AasxPackageLogic
                 // cut/ copy / paste
                 this.DispSubmodelCutCopyPasteHelper<Submodel>(stack, repo, this.theCopyPaste,
                     env.Submodels, submodel, (sm) => { return sm.Copy(); },
-                    null, submodel,
+                    null, submodel, superMenu: superMenu,
                     label: "Buffer:");
             }
 
@@ -1461,9 +1516,19 @@ namespace AasxPackageLogic
                 });
                 this.AddAction(
                     stack, "SubmodelElement:",
-                    new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
-                    repo,
-                    (buttonNdx) =>
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("add-prop", "Add Property",
+                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-mlp", "Add MultiLang.Prop.",
+                            "Adds a new MultiLanguageProperty to the containing collection.")
+                        .AddAction("add-smc", "Add Collection",
+                            "Adds a new SubmodelElementCollection to the containing collection.")
+                        .AddAction("add-named", "Add other ..",
+                            "Adds a selected kind of SubmodelElement to the containing collection.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
@@ -1476,7 +1541,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 2)
                                 en = AasSubmodelElements.SubmodelElementCollection;
                             if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..");
+                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
 
                             // ok?
                             if (en != AasSubmodelElements.SubmodelElement)
@@ -1508,8 +1573,16 @@ namespace AasxPackageLogic
                 });
                 this.AddAction(
                     stack, "Copy from existing SubmodelElement:",
-                    new[] { "Copy single entity", "Copy recursively" }, repo,
-                    (buttonNdx) =>
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("copy-single", "Copy single",
+                            "Copy selected Submodel without children from another AAS, " +
+                            "caring for ConceptDescriptions.")
+                        .AddAction("copy-recurse", "Copy recursively",
+                            "Copy selected Submodel and children from another AAS, " +
+                            "caring for ConceptDescriptions."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
@@ -1569,10 +1642,13 @@ namespace AasxPackageLogic
                 });
                 this.AddAction(
                     stack, "ConceptDescriptions (missing):",
-                    new[] { "Create \U0001f844 ECLASS", "Create \U0001f844 SMEs" },
-                    actionToolTips: new[] { "Create missing CDs searching from ECLASS", "Create missing CDs from semanticId of used SMEs" },
-                    repo: repo,
-                    action: (buttonNdx) =>
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("create-eclass", "Create \U0001f844 ECLASS",
+                            "Create missing CDs searching from ECLASS.")
+                        .AddAction("create-smes", "Create \U0001f844 SMEs",
+                            "Create missing CDs from semanticId of used SMEs."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -1599,13 +1675,20 @@ namespace AasxPackageLogic
 
                 this.AddAction(
                     stack, "Submodel & -elements:",
-                    new[] { "Turn to kind Template", "Turn to kind Instance", "Remove qualifiers" },
-                    repo,
-                    (buttonNdx) =>
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("convert-template", "Turn to kind Template",
+                            "Sets all kind attributes in element and children to kind Template.")
+                        .AddAction("convert-instance", "Turn to kind Instance",
+                            "Sets all kind attributes in element and children to kind Instance.")
+                        .AddAction("remove-qualifiers", "Remove qualifiers",
+                            "Removes all qualifiers for selected element."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
-                            if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                            if (ticket?.ScriptMode != true
+                                && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Kind attributes of " +
                                         "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Setting Kind",
@@ -1634,9 +1717,10 @@ namespace AasxPackageLogic
 
                         if (buttonNdx == 2)
                         {
-                            if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
+                            if (ticket?.ScriptMode != true
+                                && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Qualifers of " +
-                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Remove qualifiers",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
@@ -1755,12 +1839,14 @@ namespace AasxPackageLogic
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, submodel.Qualifiers,
                     (q) => { submodel.Qualifiers = q; },
-                    relatedReferable: submodel);
+                    relatedReferable: submodel,
+                    superMenu: superMenu);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, submodel.EmbeddedDataSpecifications,
                     (ds) => { submodel.EmbeddedDataSpecifications = ds; },
-                    relatedReferable: submodel);
+                    relatedReferable: submodel,
+                    superMenu: superMenu);
 
             }
         }
@@ -1775,7 +1861,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             IReferable parentContainer, ConceptDescription cd, bool editMode,
             ModifyRepo repo,
-            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false, bool preventMove = false)
+            AnyUiStackPanel stack, bool embedded = false, bool hintMode = false, bool preventMove = false,
+            AasxMenu superMenu = null)
         {
             this.AddGroup(stack, "ConceptDescription", this.levelColors.MainSection);
 
@@ -1794,7 +1881,8 @@ namespace AasxPackageLogic
 
                 this.EntityListUpDownDeleteHelper<ConceptDescription>(
                     stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate,
-                    preventMove: preventMove);
+                    preventMove: preventMove,
+                    superMenu: superMenu);
             }
 
             // Cut, copy, paste within list of CDs
@@ -1804,7 +1892,7 @@ namespace AasxPackageLogic
                 this.DispPlainIdentifiableCutCopyPasteHelper<ConceptDescription>(
                     stack, repo, this.theCopyPaste,
                     env.ConceptDescriptions, cd, (o) => { return (o as ConceptDescription).Copy(); },
-                    label: "Buffer:");
+                    label: "Buffer:", superMenu: superMenu);
             }
 
             // IReferable
@@ -1902,7 +1990,7 @@ namespace AasxPackageLogic
             // isCaseOf are MULTIPLE references. That is: multiple x multiple keys!
             this.DisplayOrEditEntityListOfReferences(stack, cd.IsCaseOf,
                 (ico) => { cd.IsCaseOf = ico; },
-                "isCaseOf", relatedReferable: cd);
+                "isCaseOf", relatedReferable: cd, superMenu: superMenu);
 
 
 #if OLD
@@ -1969,7 +2057,7 @@ namespace AasxPackageLogic
                     new List<Key>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() },
                     new List<Key>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() }
                 },
-                relatedReferable: cd);
+                relatedReferable: cd, superMenu: superMenu);
 
 #endif
         }
@@ -2003,7 +2091,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditAasEntityOperationVariable(
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             IReferable parentContainer, OperationVariable ov, bool editMode,
-            AnyUiStackPanel stack, bool hintMode = false)
+            AnyUiStackPanel stack, bool hintMode = false,
+            AasxMenu superMenu = null)
         {
             //
             // Submodel Element GENERAL
@@ -2073,9 +2162,19 @@ namespace AasxPackageLogic
                     {
                         this.AddAction(
                             stack, "value:",
-                            new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
-                            repo,
-                            (buttonNdx) =>
+                            repo: repo, superMenu: superMenu,
+                            ticketMenu: new AasxMenu()
+                                .AddAction("add-prop", "Add Property",
+                                    "Adds a new Property to the containing collection.")
+                                .AddAction("add-mlp", "Add MultiLang.Prop.",
+                                    "Adds a new MultiLanguageProperty to the containing collection.")
+                                .AddAction("add-smc", "Add Collection",
+                                    "Adds a new SubmodelElementCollection to the containing collection.")
+                                .AddAction("add-named", "Add other ..",
+                                    "Adds a selected kind of SubmodelElement to the containing collection.",
+                                    args: new AasxMenuListOfArgDefs()
+                                        .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
+                            ticketAction: (buttonNdx, ticket) =>
                             {
                                 if (buttonNdx >= 0 && buttonNdx <= 3)
                                 {
@@ -2126,23 +2225,28 @@ namespace AasxPackageLogic
 
                     if (editMode)
                     {
-                        this.AddAction(stack, "value:", new[] { "Remove existing" }, repo, (buttonNdx) =>
-                        {
-                            if (buttonNdx == 0)
-                                if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                         "Delete value, which is the dataset of a SubmodelElement? " +
-                                             "This cannot be reverted!",
-                                         "AAS-ENV", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
-                                {
-                                    ov.Value = null;
+                        this.AddAction(stack, "value:", 
+                            repo: repo, superMenu: superMenu,
+                            ticketMenu: new AasxMenu()
+                                .AddAction("remove-value", "Remove existing",
+                                    "Remove existing value from the OperationVariable."),
+                            ticketAction: (buttonNdx, ticket) =>
+                            {
+                                if (buttonNdx == 0)
+                                    if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                                             "Delete value, which is the dataset of a SubmodelElement? " +
+                                                 "This cannot be reverted!",
+                                             "AAS-ENV", AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                                    {
+                                        ov.Value = null;
 
-                                    // emit event (for parent container, e.g. Operation)
-                                    this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
+                                        // emit event (for parent container, e.g. Operation)
+                                        this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
-                                    return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
-                                }
-                            return new AnyUiLambdaActionNone();
-                        });
+                                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
+                                    }
+                                return new AnyUiLambdaActionNone();
+                            });
 
                         this.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck(
@@ -2152,8 +2256,13 @@ namespace AasxPackageLogic
                         });
                         this.AddAction(
                             stack, "Copy from existing SubmodelElement:",
-                            new[] { "Copy single", "Copy recursively" }, repo,
-                            (buttonNdx) =>
+                            repo: repo, superMenu: superMenu,
+                            ticketMenu: new AasxMenu()
+                                .AddAction("copy-single", "Copy single",
+                                    "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
+                                .AddAction("copy-recurse", "Copy recursively",
+                                    "Copy selected entity and children from another AAS, caring for ConceptDescriptions."),
+                            ticketAction: (buttonNdx, ticket) =>
                             {
                                 if (buttonNdx == 0 || buttonNdx == 1)
                                 {
@@ -2209,7 +2318,8 @@ namespace AasxPackageLogic
             PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
             IReferable parentContainer, ISubmodelElement wrapper,
             ISubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
-            bool hintMode = false, bool nestedCds = false)
+            bool hintMode = false, bool nestedCds = false,
+            AasxMenu superMenu = null)
         {
             //
             // Submodel Element GENERAL
@@ -2249,27 +2359,33 @@ namespace AasxPackageLogic
                 if (parentContainer != null && parentContainer is Submodel && wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as Submodel).SubmodelElements, wrapper, env,
-                        "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate);
+                        "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is SubmodelElementCollection &&
                         wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as SubmodelElementCollection).Value,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper, sendUpdateEvent: evTemplate);
+                        nextFocus: wrapper, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is Entity && wrapper != null)
                     this.EntityListUpDownDeleteHelper<ISubmodelElement>(
                         horizStack, repo, (parentContainer as Entity).Statements,
                         wrapper, env, "SubmodelElement:",
-                        nextFocus: wrapper, sendUpdateEvent: evTemplate);
+                        nextFocus: wrapper, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
 
                 // refactor?
                 if (parentContainer != null && parentContainer is IReferable)
                     this.AddAction(
                         horizStack, "Refactoring:",
-                        new[] { "Refactor" }, repo,
-                        (buttonNdx) =>
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("refactor", "Refactor",
+                                "Takes the selected AAS element and converts it to a new kind, keeping most of the attributes."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                             {
@@ -2301,7 +2417,7 @@ namespace AasxPackageLogic
                 if (parentContainer != null)
                 {
                     this.DispSmeCutCopyPasteHelper(stack, repo, env, parentContainer, this.theCopyPaste, wrapper, sme,
-                        label: "Buffer:");
+                        label: "Buffer:", superMenu: superMenu);
                 }
             }
 
@@ -2333,28 +2449,32 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
-                var actionDef = new List<string>(new[] {
-                    "Use existing", "Create empty", "Create \U0001f844 ECLASS",
-                    "Create \U0001f844 this"});
-
-                var toolTipDef = new List<string>(new[] {
-                    "Assign SME to existing CD", "Create empty CD with new id and assign to SME",
-                    "Create CD with existing id from ECLASS and assign to SME",
-                    "Create CD from data of this SME"});
+                // CDs, dynamic menu items
+                var cdmenu = new AasxMenu()
+                        .AddAction("assign-existing", "Use existing",
+                            "Assign the SubmodelElement to an semanticId of an existing ConceptDescription.")
+                        .AddAction("create-empty", "Create empty",
+                            "Creates an empty ConceptDescription and assigns the SubmodelElement to it.")
+                        .AddAction("create-eclass", "Create \U0001f844 ECLASS",
+                            "Selects an concept from ECLASS, creates an ConceptDescription and " +
+                            "assigns the SubmodelElement to it.")
+                        .AddAction("create-this", "Create \U0001f844 this",
+                            "Creates an ConceptDescription from this element and " +
+                            "assigns the SubmodelElement to it.");
 
                 // TODO: MIHO, check again
                 if (sme.EnumeratesChildren())
                 {
-                    actionDef.Add("Create \U0001f844 all");
-                    toolTipDef.Add("Create CDs from data of this SME and all subsequent children.");
+                    cdmenu.AddAction("create-all", "Create \U0001f844 all",
+                            "Creates ConceptDescription(s) for this element and all subsequent children " +
+                            "and assigns the SubmodelElement(s) to it.");
                 }
 
                 this.AddAction(
                     stack, "Concept Description:",
-                    actionDef.ToArray(),
-                    actionToolTips: toolTipDef.ToArray(),
-                    repo: repo,
-                    action: (buttonNdx) =>
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: cdmenu,
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -2507,8 +2627,13 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
-                    stack, "ConceptDescriptions from ECLASS:", new[] { "Import missing" }, repo,
-                    (buttonNdx) =>
+                    stack, "ConceptDescriptions from ECLASS:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("import-missing", "Import missing",
+                        "Checks for the element and its children, if semanticIds link to missing CD " +
+                        "and imports those from ECLASS."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -2547,9 +2672,19 @@ namespace AasxPackageLogic
                     });
                 this.AddAction(
                     stack, "SubmodelElement:",
-                    new[] { "Add Property", "Add MultiLang.Prop.", "Add Collection", "Add other .." },
-                    repo,
-                    (buttonNdx) =>
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("add-prop", "Add Property",
+                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-mlp", "Add MultiLang.Prop.",
+                            "Adds a new MultiLanguageProperty to the containing collection.")
+                        .AddAction("add-smc", "Add Collection",
+                            "Adds a new SubmodelElementCollection to the containing collection.")
+                        .AddAction("add-named", "Add other ..",
+                            "Adds a selected kind of SubmodelElement to the containing collection.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
@@ -2562,7 +2697,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 2)
                                 en = AasSubmodelElements.SubmodelElementCollection;
                             if (buttonNdx == 3)
-                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..");
+                                en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
 
                             // ok?
                             if (en != AasSubmodelElements.SubmodelElement)
@@ -2593,8 +2728,14 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "Copy from existing SubmodelElement:", new[] { "Copy single", "Copy recursively" }, repo,
-                    (buttonNdx) =>
+                    stack, "Copy from existing SubmodelElement:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("copy-single", "Copy single",
+                            "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
+                        .AddAction("copy-recurse", "Copy recursively",
+                            "Copy selected entity and children from another AAS, caring for ConceptDescriptions."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0 || buttonNdx == 1)
                         {
@@ -2637,14 +2778,19 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Navigation of entities", this.levelColors.MainSection);
 
-                this.AddAction(stack, "Navigate to:", new[] { "Concept Description" }, repo, (buttonNdx) =>
-                {
-                    if (buttonNdx == 0)
+                AddAction(stack, "Navigate to:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("navigate-cd", "ConceptDescription",
+                            "Finds the associated ConceptDescription by semanticId and visually selects it."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
-                        return new AnyUiLambdaActionRedrawAllElements(nextFocus: jumpToCD, isExpanded: true);
-                    }
-                    return new AnyUiLambdaActionNone();
-                });
+                        if (buttonNdx == 0)
+                        {
+                            return new AnyUiLambdaActionRedrawAllElements(nextFocus: jumpToCD, isExpanded: true);
+                        }
+                        return new AnyUiLambdaActionNone();
+                    });
             }
 
             if (editMode && sme is Operation smo)
@@ -2672,9 +2818,15 @@ namespace AasxPackageLogic
                                     "Please check, which in- and out-variables are required.",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
-                    this.AddAction(
-                        substack, "OperationVariable:", new[] { "Add", "Paste into" }, repo,
-                        (Func<int, AnyUiLambdaActionBase>)((buttonNdx) =>
+                    AddAction(
+                        substack, "OperationVariable:",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("operation-add", "Add",
+                                "Adds an empty operation variable to the selected operation variable(s).")
+                            .AddAction("operation-paste", "Paste into",
+                                "Pastes an SubmodelElement from the paste buffer into the operation variable(s)."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                             {
@@ -2732,7 +2884,7 @@ namespace AasxPackageLogic
                             }
 
                             return new AnyUiLambdaActionNone();
-                        }));
+                        });
 
                     this.AddHintBubble(
                         substack, hintMode,
@@ -2742,10 +2894,15 @@ namespace AasxPackageLogic
                                 "You have opened an auxiliary AASX package. You can copy elements from it!",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
-                    this.AddAction(
-                        substack, "Copy from existing OperationVariable:", new[] { "Copy single", "Copy recursively" },
-                        repo,
-                        (buttonNdx) =>
+                    AddAction(
+                        substack, "Copy from existing OperationVariable:",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("copy-single", "Copy single",
+                                "Copy single selected entity from another AAS, caring for ConceptDescriptions.")
+                            .AddAction("copy-recurse", "Copy recursively",
+                                "Copy selected entity and children from another AAS, caring for ConceptDescriptions."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0 || buttonNdx == 1)
                             {
@@ -2792,13 +2949,25 @@ namespace AasxPackageLogic
                                 "Consider add DataElements or refactor to ordinary RelationshipElement.",
                             severityLevel: HintCheck.Severity.Notice)
                         });
-                this.AddAction(
-                    stack, "annotation:", new[] { "Add Property", "Add MultiLang.Prop.", "Add Range", "Add other .." },
-                    repo,
-                    (buttonNdx) =>
+                AddAction(
+                    stack, "annotation:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("add-prop", "Add Property",
+                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-mlp", "Add MultiLang.Prop.",
+                            "Adds a new MultiLanguageProperty to the containing collection.")
+                        .AddAction("add-smc", "Add Collection",
+                            "Adds a new SubmodelElementCollection to the containing collection.")
+                        .AddAction("add-named", "Add other ..",
+                            "Adds a selected kind of SubmodelElement to the containing collection.",
+                            args: new AasxMenuListOfArgDefs()
+                                .Add("Kind", "Name (not abbreviated) of kind of SubmodelElement.")),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
+                            // TODO MICHA: check elems!!!!
                             // which adequate type?
                             var en = AasSubmodelElements.SubmodelElement;
                             if (buttonNdx == 0)
@@ -2809,8 +2978,16 @@ namespace AasxPackageLogic
                                 en = AasSubmodelElements.Range;
                             if (buttonNdx == 3)
                                 en = this.SelectAdequateEnum(
-                                    "Select ISubmodelElement to create ..",
-                                    includeValues: new AasSubmodelElements[] {AasSubmodelElements.SubmodelElementCollection, AasSubmodelElements.RelationshipElement, AasSubmodelElements.AnnotatedRelationshipElement, AasSubmodelElements.Capability, AasSubmodelElements.Operation, AasSubmodelElements.BasicEventElement, AasSubmodelElements.Entity});
+                                    "Select SubmodelElement to create ..",
+                                    includeValues: new AasSubmodelElements[] {
+                                        AasSubmodelElements.SubmodelElementCollection, 
+                                        AasSubmodelElements.RelationshipElement, 
+                                        AasSubmodelElements.AnnotatedRelationshipElement, 
+                                        AasSubmodelElements.Capability, 
+                                        AasSubmodelElements.Operation, 
+                                        AasSubmodelElements.BasicEventElement, 
+                                        AasSubmodelElements.Entity},
+                                    ticket: ticket);
 
                             // ok?
                             if (en != AasSubmodelElements.SubmodelElement)
@@ -2843,8 +3020,12 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
-                    substack, "Copy from existing DataElement:", new[] { "Copy single" }, repo,
-                    (buttonNdx) =>
+                    substack, "Copy from existing DataElement:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("copy-single", "Copy single",
+                            "Copy single selected entity from another AAS, caring for ConceptDescriptions."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -2944,11 +3125,12 @@ namespace AasxPackageLogic
                 // That is: multiple x multiple keys!
                 this.DisplayOrEditEntityQualifierCollection(
                     stack, sme.Qualifiers,
-                    (q) => { sme.Qualifiers = q; }, relatedReferable: sme);
+                    (q) => { sme.Qualifiers = q; }, relatedReferable: sme,
+                    superMenu: superMenu);
 
                 // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
                 this.DisplayOrEditEntityHasDataSpecificationReferences(stack, sme.EmbeddedDataSpecifications,
-                (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme);
+                (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme, superMenu: superMenu);
 
                 //
                 // ConceptDescription <- via semantic ID ?!
@@ -3214,7 +3396,9 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "File", this.levelColors.MainSection);
 
                 // refer to mini-module
-                DisplayOrEditEntityFileResource(stack, fl, fl.Value, fl.ContentType, 
+                DisplayOrEditEntityFileResource(
+                    stack, fl, repo, superMenu,
+                    fl.Value, fl.ContentType, 
                     (fn, ct) => {
                         fl.Value = fn;
                         fl.ContentType = ct;
@@ -3224,7 +3408,7 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Blob", this.levelColors.MainSection);
 
-                                // Value
+                // Value
 
                 AddKeyValueExRef(
                     stack, "value", blb, (blb.Value == null) ? "" : Encoding.Default.GetString(blb.Value), 
@@ -3717,9 +3901,15 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Invocation of Events", this.levelColors.SubSection);
 
                 this.AddAction(
-                    stack, "Emit Event:", new[] { "Emit directly", "Emit with JSON payload" }, repo,
+                    stack, "Emit Event:",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("emit-direct", "Emit directly",
+                            "Emits selected event without user-defined payload.")
+                        .AddAction("emit-json", "Emit with JSON payload",
+                            "Emits selected event after editing user-defined payload."),
                     addWoEdit: new[] { true, true },
-                    action: (buttonNdx) =>
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         string PayloadsRaw = null;
 

@@ -1,9 +1,7 @@
 /*
 Copyright (c) 2018-2021 Festo AG & Co. KG <https://www.festo.com/net/de_de/Forms/web/contact_international>
 Author: Michael Hoffmeister
-
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
-
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
@@ -135,7 +133,7 @@ namespace AasxPackageExplorer
                             {
                                 if (subheadline != "")
                                 {
-                                    propGroup[0] = new SubmodelElementCollection(idShort:subheadline);
+                                    propGroup[0] = new SubmodelElementCollection(idShort: subheadline);
                                     sm.Add(propGroup[0]);
                                 }
                             }
@@ -160,7 +158,7 @@ namespace AasxPackageExplorer
                                         //var p = Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
                                         //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Property(DataTypeDefXsd.String, category: "PARAMETER", idShort:"", semanticId:new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id)}));
+                                        var p = new Property(DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -362,7 +360,7 @@ namespace AasxPackageExplorer
                                         if (StackPointer_FID == 0) // oberste Collection
                                         {
                                             Stack_FID[0] = FID;
-                                            propGroup[0] = new SubmodelElementCollection(idShort:FT_NAME);
+                                            propGroup[0] = new SubmodelElementCollection(idShort: FT_NAME);
                                             sm.Add(propGroup[0]);
                                             StackPointer_FID++; // nächste Ebene
                                         }

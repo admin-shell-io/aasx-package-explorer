@@ -15,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
 using AasCore.Aas3_0_RC02;
+using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -773,6 +774,47 @@ namespace AasxPackageLogic
                 var ci = theSubmodel.ToCaptionInfo();
                 this.Caption = ((theSubmodel.Kind != null && theSubmodel.Kind == ModelingKind.Template) ? "<T> " : "") + ci.Item1;
                 this.Info = ci.Item2;
+            }
+        }
+
+    }
+
+    public class VisualElementReference : VisualElementGeneric
+    {
+        public AdminShell.AdministrationShellEnv theEnv = null;
+        public AdminShell.Reference theReference = null;
+
+        public VisualElementReference(
+            VisualElementGeneric parent, TreeViewLineCache cache, AdminShell.AdministrationShellEnv env,
+            AdminShell.Reference rf)
+            : base()
+        {
+            this.Parent = parent;
+            this.Cache = cache;
+            this.theEnv = env;
+            this.theReference = rf;
+
+            this.Background = AnyUiColors.White;
+            this.Border = AnyUiColors.White;
+            this.TagBg = Options.Curr.GetColor(OptionsInformation.ColorNames.DarkestAccentColor);
+            this.TagFg = AnyUiColors.White;
+
+            this.TagString = "\u2b95";
+            RefreshFromMainData();
+            RestoreFromCache();
+        }
+
+        public override object GetMainDataObject()
+        {
+            return theReference;
+        }
+
+        public override void RefreshFromMainData()
+        {
+            if (theReference != null && theReference.Keys != null)
+            {
+                this.Caption = "";
+                this.Info = theReference.ListOfValues("/ ");
             }
         }
 

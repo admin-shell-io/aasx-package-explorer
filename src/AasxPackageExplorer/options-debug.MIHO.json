@@ -269,5 +269,83 @@
       "StayConnected": true,
       "AutoClose": false
     }
-  ]
+  ],
+  "FontSizePreset": 16,
+  "ScriptPresets": [
+    {
+      "Name": "Test1",
+      "Lines": [
+        "Select(\"AAS\", \"First\");",
+        "Sleep(1000);",
+        "Location(\"Push\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "while (true) {",
+        "  rf = Select(\"This\");",
+        "  WriteLine(\"Approaching Referable \" + rf);",
+        "  if (Select(\"Submodel\", \"Next\") == null) break;",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test2",
+      "Lines": [
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "Tool(\"ImportTimeSeries\", ",
+        "  \"Format\", \"Excel\", \"File\", \"Test.xlsx\", ",
+        "  \"ColData\", \"3\" );",
+        "Sleep(1000);",
+        "WriteLine(\"Done\");"
+      ]
+    },
+    {
+      "Name": "Select Test 3",
+      "Lines": [
+        "Select(\"AAS\", \"Next\");"
+      ]
+    },
+    {
+      "Name": "Select Test 4",
+      "Lines": [
+        "Select(\"AAS\", \"Prev\");"
+      ]
+    },
+    {
+      "Name": "Test 5",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsFindText\", \"FindText\", \"DE\"); ",
+        "num = 0;",
+        "while (res) {",
+        "    x = Select(\"This\"); ",
+        "    WriteLine(num, \":\", x.idShort);",
+        "    num = num + 1;",
+        "    if (num > 18)",
+        "        break;",
+        "    res = Tool(\"ToolsFindForward\");",
+        "    Sleep(200);",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test 6",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsReplaceText\", \"FindText\", \"DE\", \"ReplaceText\", \"GDR\", \"Do\", \"All\"); "
+      ]
+    },
+    {
+      "Name": "Test 7",
+      "Lines": [
+        "Tool(\"aas-elem-delete\");"
+      ]
+    }
+  ],
+  "ScriptLoglevel": 2,
+  "ScriptLaunchWithoutPrompt": true,
+  "ScriptExecuteSystem": true
+  // "ScriptCmd":  "WriteLine(\"Hallo\");"
+  // "ScriptFn" :  "test-script.txt"
 }

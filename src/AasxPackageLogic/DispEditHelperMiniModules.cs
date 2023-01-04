@@ -23,7 +23,6 @@ using AdminShellNS;
 using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
-using swagger = IO.Swagger.Model;
 using Newtonsoft.Json;
 
 namespace AasxPackageLogic
@@ -79,16 +78,26 @@ namespace AasxPackageLogic
         public void QualifierHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<Qualifier> qualifiers,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             if (editMode)
             {
                 // let the user control the number of references
                 AddAction(
                     stack, "Qualifier entities:",
-                    new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
-                    repo,
-                    (buttonNdx) =>
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("qualifier-blank", "Add blank",
+                            "Adds an empty qualifier.")
+                        .AddAction("qualifier-preset", "Add preset",
+                            "Adds an qualifier given from the list of presets.")
+                        .AddAction("qualifier-clipboard", "Add from clipboard",
+                            "Adds an qualifier from parsed clipboard data (JSON).")
+                        .AddAction("qualifier-del", "Delete last",
+                            "Deletes last qualifier in the list."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
@@ -1199,7 +1208,8 @@ namespace AasxPackageLogic
             AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack, ModifyRepo repo, string key,
             List<ValueReferencePair> valuePairs,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             if (editMode)
             {
@@ -1246,9 +1256,12 @@ namespace AasxPackageLogic
 
                 AddAction(
                     stack, "Create:",
-                    new[] { "CDs \U0001f844 pairs" }, repo,
-                    actionToolTips: new[] { "For each Value /Reference pair, create a separate ConceptDescription." },
-                    action: (buttonNdx) =>
+                    repo: repo,
+                    superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("create-cds", "CDs \U0001f844 pairs",
+                            "For each Value /Reference pair, create a separate ConceptDescription."),
+                    ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {

@@ -18,6 +18,8 @@ using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 
+// ReSharper disable UnassignedField.Global
+
 namespace AasxPackageLogic
 {
     /// <summary>
@@ -427,6 +429,29 @@ namespace AasxPackageLogic
         [OptionDescription(Description = "Preset shown in the file repo connect to AAS repository dialogue")]
         public string DefaultConnectRepositoryLocation = "";
 
+        [OptionDescription(Description = "List of tuples (Name, Text) with presets for available scripts.")]
+        public List<AnyUiDialogueDataTextEditor.Preset> ScriptPresets;
+
+        [OptionDescription(Description = "Verbosity level for script execution (0=silent, 2=very verbose).")]
+        public int ScriptLoglevel = 2;
+
+        [OptionDescription(Description = "Determins if user is prompted before starting a script..",
+            Cmd = "-script-launch-without-prompt")]
+        public bool ScriptLaunchWithoutPrompt = false;
+
+        [OptionDescription(Description = "Determins if the script is allowed to execute system commands " +
+            "on the shell (CMD.EXE).",
+            Cmd = "-script-execute-system")]
+        public bool ScriptExecuteSystem = false;
+
+        [OptionDescription(Description = "Filename for scipt to read and execute.",
+            Cmd = "-script")]
+        public string ScriptFn = "";
+
+        [OptionDescription(Description = "Script command(s) to directly execute.",
+            Cmd = "-cmd")]
+        public string ScriptCmd = "";
+
         [OptionDescription(Description = "May contain different string-based options for stay connect, " +
             "event update mechanisms")]
         public string StayConnectOptions = "";
@@ -744,6 +769,18 @@ namespace AasxPackageLogic
                 if (arg == "-plugin-dir" && morearg > 0)
                 {
                     optionsInformation.PluginDir = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-script" && morearg > 0)
+                {
+                    optionsInformation.ScriptFn = args[index + 1];
+                    index++;
+                    continue;
+                }
+                if (arg == "-cmd" && morearg > 0)
+                {
+                    optionsInformation.ScriptCmd = args[index + 1];
                     index++;
                     continue;
                 }

@@ -1,9 +1,7 @@
 ﻿/*
 Copyright (c) 2021-2022 Otto-von-Guericke-Universität Magdeburg, Lehrstuhl Integrierte Automation
 harish.pakala@ovgu.de, Author: Harish Kumar Pakala
-
 This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
-
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
@@ -19,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
 using AasCore.Aas3_0_RC02;
+using AasxPackageLogic;
 using AdminShellNS;
 using Extensions;
 using Microsoft.VisualBasic.FileIO;
@@ -1018,7 +1017,7 @@ namespace AasxPackageExplorer
         // AAS Qualifier
         public static Qualifier createAASQualifier(string qualifierType, string qualifierValue)
         {
-            Qualifier aasQualifier = new Qualifier(qualifierType, DataTypeDefXsd.String, value:qualifierValue);
+            Qualifier aasQualifier = new Qualifier(qualifierType, DataTypeDefXsd.String, value: qualifierValue);
             if (TDSemanticId.getSemanticID(qualifierType) != "empty")
             {
                 aasQualifier.SemanticId = createSemanticID(qualifierType);
@@ -1237,9 +1236,6 @@ namespace AasxPackageExplorer
                 exportData["error"] = (ex).ToString();
                 return exportData;
             }
-
-
-
         }
     }
 }

@@ -31,6 +31,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * remove unnecessary XAML files from WPF legacy
 * ImageMap does not display anything without background image
 * AasxPluginBomStructure still old plugin interface
+* for AnnotatedRel: check SelectAdequateEnum() for allowed elems
+
+* solve MANY issues marked with #if TODO
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
 

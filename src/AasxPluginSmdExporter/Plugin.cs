@@ -33,32 +33,36 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 Queue<string> logs;
                 string modeltype = "";
                 string machineName = "";
-                // To work three arguments are needed
-                if (args[0] is AasxIntegrationBase.IFlyoutProvider &&
-                    args[1] is Queue<string> &&
-                    args[2] is string &&
-                    args[3] is string)
+                // To work five arguments are needed
+                if (args[0] is AasxIntegrationBase.IFlyoutProvider fop
+                    && args[1] is Queue<string>
+                    && args[2] is string
+                    && args[3] is string
+                    && args[4] is AasxMenuActionTicket ticket)
                 {
-                    var fop = args[0] as IFlyoutProvider;
-                    if (fop == null) return null;
-
                     // Flyout for the name
-                    var tb = new TextBoxFlyout("Enter name:", AnyUiMessageBoxImage.Question);
-                    fop.StartFlyoverModal(tb);
-                    if (!tb.Result) return null;
-                    machineName = tb.Text;
+                    machineName = ticket["Machine"] as string;
+                    if (machineName == null)
+                    {
+                        var tb = new TextBoxFlyout("Enter name:", AnyUiMessageBoxImage.Question);
+                        fop.StartFlyoverModal(tb);
+                        if (!tb.Result) return null;
+                        machineName = tb.Text;
+                    }
 
                     // Flyout for choosing type of simulationmodel
-                    var pd = new PhysicalDialog();
-                    fop.StartFlyoverModal(pd);
-                    modeltype = pd.Result;
-                    if (modeltype == null) return null;
+                    modeltype = ticket["Model"] as string;
+                    if (modeltype?.HasContent() != true)
+                    {
+                        var pd = new PhysicalDialog();
+                        fop.StartFlyoverModal(pd);
+                        modeltype = pd.Result;
+                        if (modeltype == null) return null;
+                    }
 
                     // Gets the queue from the argument list
                     // The queue is used to be able to display log messages in the Package Explorer
                     logs = args[1] as Queue<string>;
-
-
                 }
                 else
                 {

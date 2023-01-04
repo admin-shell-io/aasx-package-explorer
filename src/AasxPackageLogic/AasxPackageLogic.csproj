@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="LICENSE.txt" />
+    <Reference Include="System.Security" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LICENSE.txt">
@@ -22,19 +23,29 @@
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="jose-jwt" Version="4.0.1" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.24.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
-    <ProjectReference Include="..\AasxFileServerRestLibrary\AasxFileServerRestLibrary.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxSignature\AasxSignature.csproj" />
     <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\jsoncanonicalizer\jsoncanonicalizer.csproj" />
     <ProjectReference Include="..\SSIExtension\SSIExtension.csproj" />
+    
+    <!--
+    <ProjectReference Include="..\AasxRestServerLibrary\AasxRestServerLibrary.csproj" />
+    <ProjectReference Include="..\AasxFileServerRestLibrary\AasxFileServerRestLibrary.csproj" />
+    <ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj" />
+    <ProjectReference Include="..\AasxUANodesetImExport\AasxUANodesetImExport.csproj" />
+    -->
   </ItemGroup>
 
 </Project>

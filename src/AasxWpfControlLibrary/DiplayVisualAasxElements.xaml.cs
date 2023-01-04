@@ -394,6 +394,11 @@ namespace AasxPackageExplorer
             return displayedTreeViewLines[0];
         }
 
+        public void ClearSelection()
+        {
+            _selectedItems.Clear();
+        }
+
         public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
         {
             // access?

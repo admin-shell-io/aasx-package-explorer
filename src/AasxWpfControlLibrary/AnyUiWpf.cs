@@ -1200,6 +1200,35 @@ namespace AnyUi
             public System.Windows.Input.Key Key;
             public bool Preview = true;
             public string Info;
+
+            public string GestureToString(int fmt)
+            {
+                if (fmt == 1)
+                {
+                    var res = "";
+                    if (Modifiers.HasFlag(ModifierKeys.Shift))
+                        res += "[Shift] ";
+                    if (Modifiers.HasFlag(ModifierKeys.Control))
+                        res += "[Control] ";
+                    if (Modifiers.HasFlag(ModifierKeys.Alt))
+                        res += "[Alt] ";
+
+                    res += "[" + Key.ToString() + "]";
+                    return res;
+                }
+                else
+                {
+                    var l = new List<string>();
+                    if (Modifiers.HasFlag(ModifierKeys.Shift))
+                        l.Add("Shift");
+                    if (Modifiers.HasFlag(ModifierKeys.Control))
+                        l.Add("Ctrl");
+                    if (Modifiers.HasFlag(ModifierKeys.Alt))
+                        l.Add("Alt");
+                    l.Add(Key.ToString());
+                    return String.Join("+", l);
+                }
+            }
         }
 
         private List<KeyShortcutRecord> _keyShortcuts = new List<KeyShortcutRecord>();

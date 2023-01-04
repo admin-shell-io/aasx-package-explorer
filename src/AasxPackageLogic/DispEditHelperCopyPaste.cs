@@ -492,7 +492,8 @@ namespace AasxPackageLogic
             CopyPasteBuffer cpbInternal,
             ISubmodelElement wrapper,
             ISubmodelElement sme,
-            string label = "Buffer:")
+            string label = "Buffer:",
+            AasxMenu superMenu = null)
         {
             // access
             if (parentContainer == null || cpbInternal == null || sme == null)
@@ -501,10 +502,24 @@ namespace AasxPackageLogic
             // use an action
             this.AddAction(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                actionTags: new[] { "aas-elem-cut", "aas-elem-copy", "aas-elem-paste-above",
-                    "aas-elem-paste-below", "aas-elem-paste-into" },
-                action: (buttonNdx) =>
+                repo: repo,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -730,7 +745,8 @@ namespace AasxPackageLogic
             Submodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
-            Action<CopyPasteItemBase> extraAction = null) /*where T : new()*/ //TODO:jtikekar Test
+            Action<CopyPasteItemBase> extraAction = null,
+            AasxMenu superMenu = null) /*where T : new()*/ //TODO:jtikekar Test
         {
             // access
             if (parentContainer == null || cpbInternal == null || sm == null || cloneEntity == null)
@@ -745,9 +761,25 @@ namespace AasxPackageLogic
             // use an action
             this.AddAction(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                (buttonNdx) =>
-                {
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Alt+V"),
+                ticketAction: (buttonNdx, ticket) => {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
                         // store info
@@ -956,7 +988,8 @@ namespace AasxPackageLogic
             Func<T, T> cloneEntity,
             string label = "Buffer:",
             Func<CopyPasteBuffer, bool> checkPasteInfo = null,
-            Func<CopyPasteItemBase, bool, object> doPasteInto = null)
+            Func<CopyPasteItemBase, bool, object> doPasteInto = null,
+            AasxMenu superMenu = null)
                 where T : IIdentifiable/*, new()*/ //TODO:jtikekar Test
         {
             // access
@@ -966,8 +999,25 @@ namespace AasxPackageLogic
             // use an action
             this.AddAction(
                 stack, label,
-                new[] { "Cut", "Copy", "Paste above", "Paste below", "Paste into" }, repo,
-                (buttonNdx) =>
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-cut", "Cut",
+                        "Removes the currently selected element and places it in the paste buffer.",
+                        inputGesture: "Ctrl+X")
+                    .AddAction("aas-elem-copy", "Copy",
+                        "Places the currently selected element in the paste buffer.",
+                        inputGesture: "Ctrl+C")
+                    .AddAction("aas-elem-paste-above", "Paste above",
+                        "Adds the content of the paste buffer before (above) the currently selected element.",
+                        inputGesture: "Ctrl+Shift+V")
+                    .AddAction("aas-elem-paste-below", "Paste below",
+                        "Adds the content of the paste buffer after (below) the currently selected element.",
+                        inputGesture: "Ctrl+V")
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0 || buttonNdx == 1)
                     {
@@ -1132,7 +1182,8 @@ namespace AasxPackageLogic
             ModifyRepo repo,
             CopyPasteBuffer cpbInternal,
             string label = "Buffer:",
-            Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null)
+            Func<CopyPasteItemBase, bool, object> lambdaPasteInto = null,
+            AasxMenu superMenu = null)
                 where T : IIdentifiable/*, new()*/   //TODO: jtikekar test
         {
             // access
@@ -1142,8 +1193,13 @@ namespace AasxPackageLogic
             // use an action
             this.AddAction(
                 stack, label,
-                new[] { "Paste into" }, repo,
-                (buttonNdx) =>
+                repo: repo,
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-paste-into", "Paste into",
+                        "Adds the content of the paste buffer into the currently selected collection-like element.",
+                        inputGesture: "Ctrl+Alt+V"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0)
                     {

@@ -513,7 +513,8 @@ namespace AasxPackageLogic
             Action<List<EmbeddedDataSpecification>> setOutput,
             string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -550,8 +551,13 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddAction(
                         stack, "Specifications:",
-                        new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to a data specification.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
@@ -638,7 +644,8 @@ namespace AasxPackageLogic
             List<EmbeddedDataSpecification> hasDataSpecification,
             Action<List<EmbeddedDataSpecification>> setOutput,
             string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -806,7 +813,7 @@ namespace AasxPackageLogic
                                         env, stack, 
                                         hasDataSpecification[i].DataSpecificationContent 
                                             as DataSpecificationIec61360,
-                                        relatedReferable: relatedReferable);
+                                        relatedReferable: relatedReferable, superMenu: superMenu);
 
                                 if (cntByDs == ExtendIDataSpecificationContent.ContentTypes.PhysicalUnit)
                                     this.DisplayOrEditEntityDataSpecificationPhysicalUnit(
@@ -829,7 +836,8 @@ namespace AasxPackageLogic
             Action<List<Reference>> setOutput,
             string entityName,
             string[] addPresetNames = null, Key[] addPresetKeys = null,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -850,8 +858,14 @@ namespace AasxPackageLogic
                 {
                     // let the user control the number of references
                     this.AddAction(
-                        stack, $"{entityName}:", new[] { "Add Reference", "Delete last reference" }, repo,
-                        (buttonNdx) =>
+                        stack, $"{entityName}:",
+                        repo: repo, superMenu: superMenu,
+                        ticketMenu: new AasxMenu()
+                            .AddAction("add-reference", "Add Reference",
+                                "Adds a reference to the list.")
+                            .AddAction("delete-reference", "Delete last reference",
+                                "Deletes the last reference in the list."),
+                        ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
                                 references.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>()));
@@ -1146,7 +1160,8 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityQualifierCollection(AnyUiStackPanel stack,
             List<Qualifier> qualifiers,
             Action<List<Qualifier>> setOutput,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null)
@@ -1190,7 +1205,8 @@ namespace AasxPackageLogic
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
-                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable);
+                this.QualifierHelper(stack, repo, qualifiers, relatedReferable: relatedReferable, 
+                        superMenu: superMenu);
             }
 
         }
@@ -1267,7 +1283,8 @@ namespace AasxPackageLogic
             AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack,
             DataSpecificationIec61360 dsiec,
-            IReferable relatedReferable = null)
+            IReferable relatedReferable = null,
+            AasxMenu superMenu = null)
         {
             // access
             if (stack == null || dsiec == null)
@@ -1531,7 +1548,7 @@ namespace AasxPackageLogic
                 ValueListHelper(
                     env, stack, repo, "valueList",
                     dsiec.ValueList.ValueReferencePairs,
-                    relatedReferable: relatedReferable);
+                    relatedReferable: relatedReferable, superMenu: superMenu);
 
             // Value
 
@@ -1921,6 +1938,7 @@ namespace AasxPackageLogic
 
         public void DisplayOrEditEntityFileResource(AnyUiStackPanel stack,
             IReferable containingObject,
+            ModifyRepo repo, AasxMenu superMenu,
             string valuePath,
             string valueContent,
             Action<string, string> setOutput,
@@ -2017,9 +2035,17 @@ namespace AasxPackageLogic
                 // Remove, create text, edit
                 // More file actions
                 this.AddAction(
-                    stack, "Action", new[] { "Remove existing file", "Create text file", "Edit text file" },
-                    repo,
-                    (buttonNdx) =>
+                    stack, "Action",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("remove-file", "Remove existing file",
+                            "Removes the file from the AASX environment.")
+                        .AddAction("create-text", "Create text file",
+                            "Creates a text file and adds it to the AAS environment.")
+                        .AddAction("edit-text", "Edit text file",
+                            "Edits the associated text file and updates it to the AAS environment."),
+                    ticketAction: (buttonNdx, ticket) =>
+
                     {
                         if (buttonNdx == 0 && valuePath.HasContent())
                         {
@@ -2230,10 +2256,15 @@ namespace AasxPackageLogic
                     }, minHeight: 40);
 
                 this.AddAction(
-                stack, "Action", new[] { "Select source file", "Add or update to AASX" },
-                    repo,
-                    (buttonNdx) =>
-                    {
+                    stack, "Action",
+                    repo: repo, superMenu: superMenu,
+                    ticketMenu: new AasxMenu()
+                        .AddAction("select-source", "Select source file",
+                            "Select a filename to be added later.")
+                        .AddAction("add-to-aasx", "Add or update to AASX",
+                            "Add or update file given by selected filename to the AAS environment."),
+                    ticketAction: (buttonNdx, ticket) =>
+                        {
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataOpenFile(

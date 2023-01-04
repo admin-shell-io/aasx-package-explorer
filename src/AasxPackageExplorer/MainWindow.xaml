@@ -30,6 +30,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AasxIntegrationBaseWpf;component/Themes/Generic.xaml"/>
                 <ResourceDictionary>
+                    <!--
                     <RoutedUICommand x:Key="ExportSMD" Text="ExportSMD" />
                     <RoutedUICommand x:Key="New" Text="New" />
                     <RoutedUICommand x:Key="Open" Text="Open" />
@@ -52,8 +53,8 @@
                     <RoutedUICommand x:Key="PrintRepo" Text="PrintRepo" />
                     <RoutedUICommand x:Key="PrintAsset" Text="PrintAsset" />
                     <RoutedUICommand x:Key="ImportAML" Text="ImportAML" />
-                    <RoutedUICommand x:Key="ImportSubmodel" Text="ImportSubmodel" />
-                    <RoutedUICommand x:Key="ImportSubmodelElements" Text="ImportSubmodelElements" />
+                    <RoutedUICommand x:Key="ImportDictSubmodel" Text="ImportSubmodel" />
+                    <RoutedUICommand x:Key="ImportDictSubmodelElements" Text="ImportSubmodelElements" />
                     <RoutedUICommand x:Key="OPCRead" Text="OPCRead" />
                     <RoutedUICommand x:Key="RDFRead" Text="RDFRead" />
                     <RoutedUICommand x:Key="SubmodelWrite" Text="SubmodelWrite" />
@@ -62,7 +63,7 @@
                     <RoutedUICommand x:Key="SubmodelPut" Text="SubmodelPut" />
                     <RoutedUICommand x:Key="BMEcatImport" Text="BMEcatImport" />
                     <RoutedUICommand x:Key="CSVImport" Text="CSVImport" />
-                    <RoutedUICommand x:Key="TDImport" Text="TDImport" />
+                    <RoutedUICommand x:Key="SubmodelTDImport" Text="SubmodelTDImport" />
                     <RoutedUICommand x:Key="SubmodelTDExport" Text="SubmodelTDExport" />
                     <RoutedUICommand x:Key="ExportAML" Text="ExportAML" />
                     <RoutedUICommand x:Key="OpcUaImportNodeSet" Text="OpcUaImportNodeSet" />
@@ -116,8 +117,10 @@
                     <RoutedUICommand x:Key="FileRepoLoadWoPrompt" Text="FileRepoLoadWoPrompt" />
                     <RoutedUICommand x:Key="FileRepoCreateLRU" Text="FileRepoCreateLRU" />
                     <RoutedUICommand x:Key="FileRepoQuery" Text="FileRepoQuery" />
+                    -->
 
                     <!-- TODO: move this to separate xaml file -->
+                    <!--
                     <ControlTemplate x:Key="MenuItemControlTemplateDropShadow" TargetType="{x:Type MenuItem}">
                         <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
                             <Grid VerticalAlignment="Center">
@@ -171,12 +174,14 @@
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
+                    -->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
 
     <Window.InputBindings>
+        <!--
         <KeyBinding Key="N" Modifiers="Ctrl" Command="{StaticResource New}"/>
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{StaticResource Open}"/>
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{StaticResource Save}"/>
@@ -198,8 +203,10 @@
         <KeyBinding Key="F3" Command="{StaticResource ToolsFindForward}"/>
         <KeyBinding Key="F3" Modifiers="Shift" Command="{StaticResource ToolsFindBackward}"/>
         <KeyBinding Key="M" Modifiers="Ctrl+Shift" Command="{StaticResource NewSubmodelFromPlugin}"/>
+        -->
     </Window.InputBindings>
 
+    <!--
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource ExportSMD}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource New}" Executed="CommandBinding_Executed"/>
@@ -288,6 +295,7 @@
         <CommandBinding Command="{StaticResource FileRepoCreateLRU}" Executed="CommandBinding_Executed"/>
         <CommandBinding Command="{StaticResource FileRepoQuery}" Executed="CommandBinding_Executed"/>
     </Window.CommandBindings>
+    -->
 
     <Grid x:Name="OuterGrid">
 
@@ -326,8 +334,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Menu Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" 
-                      Background="Transparent" Foreground="White">
+                <Menu x:Name="MenuMain" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" VerticalAlignment="Center" FontSize="14" Background="Transparent">
+
+                    <!-- Create dynamically
+                    
                     <MenuItem Header="_File" Template="{DynamicResource MenuItemControlTemplateDropShadow}">
                         <MenuItem Foreground="Black" Header="_New .." Command="{StaticResource New}"/>
                         <MenuItem Foreground="Black" Header="_Open .." InputGestureText="Ctrl+O" Command="{StaticResource Open}"/>
@@ -444,6 +454,9 @@
                         <MenuItem x:Name="MenuItemFaqIssues" Foreground="Black" Header="Issues on Github .." Command="{StaticResource HelpIssues}"/>
                         <MenuItem x:Name="MenuItemGenerateOptionInfo" Foreground="Black" Header="Available options .." Command="{StaticResource HelpOptionsInfo}"/>
                     </MenuItem>
+                
+                    -->
+                
                 </Menu>
 
                 <local:VisualElementHistoryControl Grid.Column="2" x:Name="ButtonHistory" Margin="2" Width="50"
@@ -471,19 +484,15 @@
 
                     <!-- Find -->
                     <TabItem x:Name="TabItemToolsFind" Visibility="Collapsed">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Center"/>
-                            <!--
-                            <WrapPanel Orientation="Horizontal">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
 
-                                <ComboBox x:Name="ComboBoxToolsFindText" Width="200" Margin="2" IsEditable="True"></ComboBox>
-                                <Button x:Name="ButtonToolsFindBackward" Content="&#x25c0;" Margin="2" />
-                                <Button x:Name="ButtonToolsFindForward" Content="&#x25b6;" Margin="2" />
-
-                            </WrapPanel>
-                            -->
-                            <local:ToolControlFindReplace x:Name="ToolFindReplace"/>
-                        </StackPanel>
+                            <TextBlock Grid.Column="0" Text="Find &amp; Replace" Background="{DynamicResource LightAccentColor}" Margin="2" Padding="2" VerticalAlignment="Top"/>
+                            <local:ToolControlFindReplace x:Name="ToolFindReplace" Grid.Column="1"/>
+                        </Grid>
                     </TabItem>
 
                 </TabControl>

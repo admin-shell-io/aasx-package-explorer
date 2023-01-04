@@ -444,251 +444,6 @@ namespace AdminShellNS
         }
 
         //
-        //
-        //
-        //
-        //
-
-        public static void PrintSearchableProperties(object obj, int indent)
-        {
-            if (obj == null) return;
-            string indentString = new string(' ', indent);
-            Type objType = obj.GetType();
-            PropertyInfo[] properties = objType.GetProperties();
-            foreach (PropertyInfo property in properties)
-            {
-                object propValue = property.GetValue(obj, null);
-                var elems = propValue as IList;
-                if (elems != null)
-                {
-                    foreach (var item in elems)
-                    {
-                        PrintSearchableProperties(item, indent + 3);
-                    }
-                }
-                else
-                {
-                    // This will not cut-off System.Collections because of the first check
-                    if (property.PropertyType.Assembly == objType.Assembly)
-                    {
-                        Console.WriteLine("{0}{1}:", indentString, property.Name);
-
-                        PrintSearchableProperties(propValue, indent + 2);
-                    }
-                    else
-                    {
-                        Console.WriteLine("{0}{1}: {2}", indentString, property.Name, propValue);
-                    }
-                }
-            }
-        }
-
-        public class SearchOptions
-        {
-            public Assembly[] allowedAssemblies = null;
-            public int maxDepth = int.MaxValue;
-            public bool findFirst = false;
-            public int skipFirstResults = 0;
-            public string findText = null;
-            public bool isIgnoreCase = false;
-            public bool isRegex = false;
-        }
-
-        public class SearchResultItem : IEquatable<SearchResultItem>
-        {
-            public SearchOptions searchOptions;
-            public string qualifiedNameHead;
-            public string metaModelName;
-            public object businessObject;
-            public string foundText;
-            public object foundObject;
-            public object containingObject;
-            public int foundHash;
-
-            public bool Equals(SearchResultItem other)
-            {
-                if (other == null)
-                    return false;
-
-                return this.qualifiedNameHead == other.qualifiedNameHead &&
-                       this.metaModelName == other.metaModelName &&
-                       this.businessObject == other.businessObject &&
-                       this.containingObject == other.containingObject &&
-                       this.foundText == other.foundText &&
-                       this.foundHash == other.foundHash;
-            }
-        }
-
-        public class SearchResults
-        {
-            public int foundIndex = 0;
-            public List<SearchResultItem> foundResults = new List<SearchResultItem>();
-
-            public void Clear()
-            {
-                foundIndex = -1;
-                foundResults.Clear();
-            }
-        }
-
-        public static void CheckSearchable(
-            SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
-            MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash)
-        {
-            // try get a speaking name
-            var metaModelName = "<unknown>";
-            var x1 = mi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.MetaModelName>(); //TODO: jtikekar need to test
-            if (x1 != null && x1.name != null)
-                metaModelName = x1.name;
-
-            // check if this object is searchable
-            var x2 = mi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.TextSearchable>();
-            if (x2 != null)
-            {
-                // what to check?
-                string foundText = "" + memberValue?.ToString();
-
-                // find options
-                var found = true;
-                if (options.findText != null)
-                    found = foundText.IndexOf(
-                        options.findText, options.isIgnoreCase ? StringComparison.CurrentCultureIgnoreCase : 0) >= 0;
-
-                // add?
-                if (found)
-                {
-                    var sri = new SearchResultItem();
-                    sri.searchOptions = options;
-                    sri.qualifiedNameHead = qualifiedNameHead;
-                    sri.metaModelName = metaModelName;
-                    sri.businessObject = businessObject;
-                    sri.foundText = foundText;
-                    sri.foundObject = memberValue;
-                    sri.containingObject = containingObject;
-                    if (getMemberHash != null)
-                        sri.foundHash = getMemberHash();
-
-                    // avoid duplicates
-                    if (!results.foundResults.Contains(sri))
-                        results.foundResults.Add(sri);
-                }
-            }
-        }
-
-        public static void EnumerateSearchable(
-            SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
-            object businessObject = null)
-        {
-            // access
-            if (results == null || obj == null || options == null)
-                return;
-            Type objType = obj.GetType();
-
-            // depth
-            if (depth > options.maxDepth)
-                return;
-
-            // try to get element name of an AAS entity
-            string elName = null;
-            if (obj is IReferable referable)
-            {
-                //elName = (obj as IReferable).GetElementName();
-                elName = obj.GetType().Name;
-                businessObject = obj;
-            }
-
-            // enrich qualified name, accordingly
-            var qualifiedName = qualifiedNameHead;
-            if (elName != null)
-                qualifiedName = qualifiedName + (qualifiedName.Length > 0 ? "." : "") + elName;
-
-            // do NOT dive into objects, which are not in the reight assembly
-            if (options.allowedAssemblies == null || !options.allowedAssemblies.Contains(objType.Assembly))
-                return;
-
-            // do not dive into enums
-            if (objType.IsEnum)
-                return;
-
-            // look at fields, first
-            var fields = objType.GetFields();
-            foreach (var fi in fields)
-            {
-                // is the object marked to be skipped?
-                var x3 = fi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForReflection>();
-                if (x3 != null)
-                    continue;
-
-                var x4 = fi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForSearch>();
-                if (x4 != null)
-                    continue;
-
-                // get value(s)
-                var fieldValue = fi.GetValue(obj);
-                if (fieldValue == null)
-                    continue;
-                var valueElems = fieldValue as IList;
-                if (valueElems != null)
-                {
-                    // field is a collection .. dive deeper, if allowed
-                    foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
-                }
-                else
-                {
-                    // field is a single entity .. check it
-                    CheckSearchable(
-                        results, options, qualifiedName, businessObject, fi, fieldValue, obj,
-                        () => { return fieldValue.GetHashCode(); });
-
-                    // dive deeper ..
-                    EnumerateSearchable(results, fieldValue, qualifiedName, depth + 1, options, businessObject);
-                }
-            }
-
-            // properties & objects behind
-            var properties = objType.GetProperties();
-            foreach (var pi in properties)
-            {
-                var gip = pi.GetIndexParameters();
-                if (gip.Length > 0)
-                    // no indexed properties, yet
-                    continue;
-
-                // is the object marked to be skipped?
-                var x3 = pi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForReflection>();
-                if (x3 != null)
-                    continue;
-
-                var x4 = pi.GetCustomAttribute<AasxCompatibilityModels.AdminShell.SkipForSearch>();
-                if (x4 != null)
-                    continue;
-
-                // get value(s)
-                var propValue = pi.GetValue(obj, null);
-                if (propValue == null)
-                    continue;
-                var valueElems = propValue as IList;
-                if (valueElems != null)
-                {
-                    // property is a collection .. dive deeper, if allowed
-                    foreach (var el in valueElems)
-                        EnumerateSearchable(results, el, qualifiedName, depth + 1, options, businessObject);
-                }
-                else
-                {
-                    // field is a single entity .. check it
-                    CheckSearchable(
-                        results, options, qualifiedName, businessObject, pi, propValue, obj,
-                        () => { return propValue.GetHashCode(); });
-
-                    // dive deeper ..
-                    EnumerateSearchable(results, propValue, qualifiedName, depth + 1, options, businessObject);
-                }
-            }
-        }
-
-        //
         // String manipulations
         //
 
@@ -726,6 +481,82 @@ namespace AdminShellNS
 
             // ok
             return input;
+        }
+
+        //
+        // Reflection
+        //
+
+        public static void SetFieldLazyValue(FieldInfo f, object obj, object value)
+        {
+            // access
+            if (f == null || obj == null)
+                return;
+
+            switch (Type.GetTypeCode(f.FieldType))
+            {
+                case TypeCode.String:
+                    f.SetValue(obj, "" + value);
+                    break;
+
+                case TypeCode.Byte:
+                    if (Byte.TryParse("" + value, out var ui8))
+                        f.SetValue(obj, ui8);
+                    break;
+
+                case TypeCode.SByte:
+                    if (SByte.TryParse("" + value, out var i8))
+                        f.SetValue(obj, i8);
+                    break;
+
+                case TypeCode.Int16:
+                    if (Int16.TryParse("" + value, out var i16))
+                        f.SetValue(obj, i16);
+                    break;
+
+                case TypeCode.Int32:
+                    if (Int32.TryParse("" + value, out var i32))
+                        f.SetValue(obj, i32);
+                    break;
+
+                case TypeCode.Int64:
+                    if (Int64.TryParse("" + value, out var i64))
+                        f.SetValue(obj, i64);
+                    break;
+
+                case TypeCode.UInt16:
+                    if (UInt16.TryParse("" + value, out var ui16))
+                        f.SetValue(obj, ui16);
+                    break;
+
+                case TypeCode.UInt32:
+                    if (UInt32.TryParse("" + value, out var ui32))
+                        f.SetValue(obj, ui32);
+                    break;
+
+                case TypeCode.UInt64:
+                    if (UInt64.TryParse("" + value, out var ui64))
+                        f.SetValue(obj, ui64);
+                    break;
+
+                case TypeCode.Single:
+                    if (Single.TryParse("" + value, out var sgl))
+                        f.SetValue(obj, sgl);
+                    break;
+
+                case TypeCode.Double:
+                    if (Double.TryParse("" + value, out var dbl))
+                        f.SetValue(obj, dbl);
+                    break;
+
+                case TypeCode.Boolean:
+                    var isFalse = value == null
+                        || (value is int vi && vi == 0)
+                        || (value is string vs && vs == "")
+                        || (value is bool vb && !vb);
+                    f.SetValue(obj, isFalse);
+                    break;
+            }
         }
 
         //

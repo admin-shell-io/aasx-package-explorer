@@ -25,6 +25,7 @@ using AasxWpfControlLibrary;
 using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
+using static AnyUi.AnyUiDisplayContextWpf;
 
 namespace AasxPackageExplorer
 {
@@ -210,7 +211,8 @@ namespace AasxPackageExplorer
             VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder = null,
             IFlyoutProvider flyoutProvider = null,
             IPushApplicationEvent appEventProvider = null,
-            DispEditHighlight.HighlightFieldInfo hightlightField = null)
+            DispEditHighlight.HighlightFieldInfo hightlightField = null,
+            AasxMenu superMenu = null)
         {
             //
             // Start
@@ -314,18 +316,21 @@ namespace AasxPackageExplorer
                 if (entity is VisualElementEnvironmentItem veei)
                 {
                     _helper.DisplayOrEditAasEntityAasEnv(
-                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode);
+                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode, 
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementAdminShell veaas)
                 {
                     _helper.DisplayOrEditAasEntityAas(
-                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode);
+                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementAsset veas)
                 {
                     _helper.DisplayOrEditAasEntityAssetInformation(
                         packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
-                        editMode, repo, stack, hintMode: hintMode);
+                        editMode, repo, stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
@@ -337,20 +342,22 @@ namespace AasxPackageExplorer
                     // edit
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
-                        hintMode: hintMode);
+                        hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
                 {
                     _helper.DisplayOrEditAasEntitySubmodelOrRef(
                         packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
-                        hintMode: hintMode);
+                        hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementSubmodelElement vesme)
                 {
                     _helper.DisplayOrEditAasEntitySubmodelElement(
                         packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper,
                         editMode,
-                        repo, stack, hintMode: hintMode,
+                        repo, stack, hintMode: hintMode, superMenu: superMenu,
                         nestedCds: cdSortOrder.HasValue &&
                             cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
                 }
@@ -358,12 +365,14 @@ namespace AasxPackageExplorer
                 {
                     _helper.DisplayOrEditAasEntityOperationVariable(
                         packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
-                        stack, hintMode: hintMode);
+                        stack, hintMode: hintMode,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementConceptDescription vecd)
                 {
                     _helper.DisplayOrEditAasEntityConceptDescription(
                         packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
+                        superMenu: superMenu,
                         preventMove: cdSortOrder.HasValue &&
                             cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
                 }
@@ -376,7 +385,8 @@ namespace AasxPackageExplorer
                 else
                 if (entity is VisualElementSupplementalFile vesf)
                 {
-                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack);
+                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack,
+                        superMenu: superMenu);
                 }
                 else if (entity is VisualElementPluginExtension vepe)
                 {
@@ -489,7 +499,8 @@ namespace AasxPackageExplorer
                 //
                 // Dispatch: MULTIPLE items
                 //
-                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder);
+                _helper.DisplayOrEditAasEntityMultipleElements(packages, entities, editMode, stack, cdSortOrder, 
+                    superMenu: superMenu);
             }
 
             // now render master stack
@@ -683,111 +694,11 @@ namespace AasxPackageExplorer
                 e.Handled = true;
         }
 
-        public string CreateTempFileForKeyboardShortcuts()
+        public IEnumerable<KeyShortcutRecord> EnumerateShortcuts()
         {
-            try
-            {
-                // create a temp HTML file
-                var tmpfn = System.IO.Path.GetTempFileName();
-
-                // rename to html file
-                var htmlfn = tmpfn.Replace(".tmp", ".html");
-                System.IO.File.Move(tmpfn, htmlfn);
-
-                // create html content as string
-                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<!doctype html>
-                    <html lang=en>
-                    <head>
-                    <style>
-                    body {
-                      background-color: #FFFFE0;
-                      font-size: small;
-                      font-family: Arial, Helvetica, sans-serif;
-                    }
-
-                    table {
-                      font-family: arial, sans-serif;
-                      border-collapse: collapse;
-                      width: 100%;
-                    }
-
-                    td, th {
-                      border: 1px solid #dddddd;
-                      text-align: left;
-                      padding: 8px;
-                    }
-
-                    tr:nth-child(even) {
-                      background-color: #fffff0;
-                    }
-                    </style>
-                    <meta charset=utf-8>
-                    <title>blah</title>
-                    </head>
-                    <body>");
-
-                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</body>
-                    </html>");
-
-                var html = "";
-
-                html += "<h3>Keyboard shortcuts</h3>" + System.Environment.NewLine;
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<table style=""width:100%"">
-                    <tr>
-                    <th>Modifiers & Keys</th>
-                    <th>Function</th>
-                    <th>Description</th>
-                    </tr>");
-
-                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
-                    @"<tr>
-                    <td>{0}</th>
-                    <td>{1}</th>
-                    <td>{2}</th>
-                    </tr>");
-
-                if (_displayContext?.KeyShortcuts != null)
-                    foreach (var sc in _displayContext.KeyShortcuts)
-                    {
-                        // Keys
-                        var keys = "";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Shift))
-                            keys += "[Shift] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Control))
-                            keys += "[Control] ";
-                        if (sc.Modifiers.HasFlag(ModifierKeys.Alt))
-                            keys += "[Alt] ";
-
-                        keys += "[" + sc.Key.ToString() + "]";
-
-                        // Function
-                        var fnct = "";
-                        if (sc.Element is AnyUiButton btn)
-                            fnct = "" + btn.Content;
-
-                        // fill
-                        html += String.Format(rowfmt,
-                            "" + keys,
-                            "" + fnct,
-                            "" + sc.Info);
-                    }
-
-                html += AdminShellUtil.CleanHereStringWithNewlines(
-                    @"</table>");
-
-                // write
-                System.IO.File.WriteAllText(htmlfn, htmlHeader + html + htmlFooter);
-                return htmlfn;
-            }
-            catch (Exception ex)
-            {
-                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
-            }
-            return null;
+            if (_displayContext?.KeyShortcuts != null)
+                foreach (var sc in _displayContext.KeyShortcuts)
+                    yield return sc;
         }
     }
 }

@@ -312,12 +312,14 @@ namespace AasxWpfControlLibrary.PackageCentral
 
                     //Add file to package explorer's unnamed repo
 
+#if TODO
                     if (fr is PackageContainerAasxFileRepository fileRepo)
                     {
                         //Add the file to File Server
                         int packageId = fileRepo.AddPackageToServer(inputDialog.FileNames[0]);
                         fileRepo.LoadAasxFile(_packageCentral, inputDialog.FileNames[0], packageId);
                     }
+#endif
                 }
 
                 if (cmd == "filerepomultiadd")
@@ -431,7 +433,7 @@ namespace AasxWpfControlLibrary.PackageCentral
                     cm.Add(new DynamicContextItem("FileRepoPrint", "\u2699", "Print 2D code sheet .."));
                 }
 
-                cm.Start(sender, (tag) =>
+                cm.Start(sender, (tag, o) =>
                 {
                     CommandBinding_FileRepoAll(senderList, fr, tag);
                 });

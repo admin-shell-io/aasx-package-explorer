@@ -14,7 +14,6 @@ using System.Collections.Generic;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
-
 namespace AasxIntegrationBase
 {
     public class AasxPluginActionDescriptionBase

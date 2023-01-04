@@ -226,7 +226,7 @@ namespace AasxWpfControlLibrary.AdminShellEvents
                 cm.Add(new DynamicContextItem("CopyJson", "\u29c9", "Copy JSON"));
                 cm.Add(new DynamicContextItem("SaveJson", "\U0001f4be", "Save JSON .."));
 
-                cm.Start(sender as Button, (tag) =>
+                cm.Start(sender as Button, (tag, o) =>
                 {
                     CommandBinding_ContextMenu(tag);
                 });

@@ -215,5 +215,35 @@ namespace AasxPluginAdvancedTextEditor
         {
         }
         #endregion
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender == ButtonFontPlus)
+            {
+                textEditor.FontSize += 4;
+            }
+
+            if (sender == ButtonFontMinus)
+            {
+                textEditor.FontSize = Math.Max(10, textEditor.FontSize);
+            }
+        }
+
+        private void UserControl_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift)
+                && e.Key == Key.OemPlus)
+            {
+                textEditor.FontSize += 4;
+                e.Handled = true;
+            }
+
+            if (Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift)
+                && e.Key == Key.OemPlus)
+            {
+                textEditor.FontSize = Math.Max(10, textEditor.FontSize);
+                e.Handled = true;
+            }
+        }
     }
 }

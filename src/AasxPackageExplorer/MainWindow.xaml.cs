@@ -13,8 +13,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -54,6 +56,8 @@ namespace AasxPackageExplorer
 
         public PackageCentral _packageCentral = new PackageCentral();
 
+        public AasxMenuWpf _mainMenu = new AasxMenuWpf();
+
         private string showContentPackageUri = null;
         private string showContentPackageMime = null;
         private VisualElementGeneric currentEntityForUpdate = null;
@@ -64,6 +68,10 @@ namespace AasxPackageExplorer
         private AasxIntegrationBase.IAasxOnlineConnection theOnlineConnection = null;
 
         private AasEventCompressor _eventCompressor = new AasEventCompressor();
+
+        protected MainWindowDispatch _logic = new MainWindowDispatch();
+
+        protected AasxMenuWpf _dynamicMenu = new AasxMenuWpf();
 
         #endregion
         #region Init Component
@@ -169,7 +177,7 @@ namespace AasxPackageExplorer
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                _packageCentral, PackageCentral.Selector.Main, MenuItemWorkspaceEdit.IsChecked,
+                _packageCentral, PackageCentral.Selector.Main, _mainMenu?.IsChecked("EditMenu") == true,
                 lazyLoadingFirst: true);
 
             // ok .. try re-focus!!
@@ -206,7 +214,7 @@ namespace AasxPackageExplorer
                 // visually a new content
                 // switch off edit mode -> will will cause the browser to show the AAS as selected element
                 // and -> this will update the left side of the screen correctly!
-                MenuItemWorkspaceEdit.IsChecked = false;
+                _mainMenu?.SetChecked("EditMenu", false);
                 ClearAllViews();
                 RedrawAllAasxElements();
                 RedrawElementView();
@@ -255,7 +263,7 @@ namespace AasxPackageExplorer
                 ShowMesssageBox = (content, text, title, buttons) =>
                 {
                     // not verbose
-                    if (MenuItemOptionsVerboseConnect.IsChecked == false)
+                    if (_mainMenu?.IsChecked("VerboseConnect") == false)
                     {
                         // give specific default answers
                         if (title?.ToLower().Trim() == "Select certificate chain".ToLower())
@@ -509,11 +517,13 @@ namespace AasxPackageExplorer
                 VisualElementEnvironmentItem;
 
             // update element view?
+            _dynamicMenu.Menu.Clear();
             var renderHints = DispEditEntityPanel.DisplayOrEditVisualAasxElement(
                     _packageCentral, entities, editMode, hintMode, showIriMode, tiCds?.CdSortOrder,
                     flyoutProvider: this,
                     appEventProvider: this,
-                    hightlightField: hightlightField);
+                    hightlightField: hightlightField,
+                    superMenu: _dynamicMenu.Menu);
 
             // panels
             var panelHeight = 48;
@@ -673,9 +683,9 @@ namespace AasxPackageExplorer
             PrepareDispEditEntity(
                 _packageCentral.Main,
                 DisplayElements.SelectedItems,
-                MenuItemWorkspaceEdit.IsChecked,
-                MenuItemWorkspaceHints.IsChecked,
-                MenuItemOptionsShowIri.IsChecked,
+                 _mainMenu?.IsChecked("EditMenu") == true,
+                 _mainMenu?.IsChecked("HintsMenu") == true,
+                 _mainMenu?.IsChecked("ShowIriMenu") == true,
                 hightlightField: hightlightField);
 
         }
@@ -689,6 +699,10 @@ namespace AasxPackageExplorer
             // making up "empty" picture
             this.AasId.Text = "<id unknown!>";
             this.AssetId.Text = "<id unknown!>";
+
+            // main menu
+            _mainMenu = new AasxMenuWpf();
+            _mainMenu.LoadAndRender(CreateMainMenu(), MenuMain, this.CommandBindings, this.InputBindings);
 
             // display elements has a cache
             DisplayElements.ActivateElementStateCache();
@@ -729,7 +743,9 @@ namespace AasxPackageExplorer
             MainTimer.Start();
 
             // attach result search
+            ToolFindReplace.Flyout = this;
             ToolFindReplace.ResultSelected += ToolFindReplace_ResultSelected;
+            ToolFindReplace.SetProgressBar += SetProgressBar;
 
             // Package Central starting ..
             _packageCentral.CentralRuntimeOptions = UiBuildRuntimeOptionsForMainAppLoad();
@@ -777,7 +793,7 @@ namespace AasxPackageExplorer
                     return;
 
                 // safety?
-                if (!MenuItemOptionsLoadWoPrompt.IsChecked)
+                if (_mainMenu?.IsChecked("FileRepoLoadWoPrompt") == false)
                 {
                     // ask double question
                     if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -796,6 +812,7 @@ namespace AasxPackageExplorer
                     copts = fi.ContainerOptions;
 
                 // try load ..
+#if TODO
                 if (repo is PackageContainerAasxFileRepository restRepository)
                 {
                     if (restRepository.IsAspNetConnection)
@@ -815,6 +832,7 @@ namespace AasxPackageExplorer
                     }
                 }
                 else
+#endif
                 {
                     var location = repo.GetFullItemLocation(fi.Location);
                     if (location == null)
@@ -895,12 +913,12 @@ namespace AasxPackageExplorer
 #endif
 
             // initialize menu
-            MenuItemOptionsLoadWoPrompt.IsChecked = Options.Curr.LoadWithoutPrompt;
-            MenuItemOptionsShowIri.IsChecked = Options.Curr.ShowIdAsIri;
-            MenuItemOptionsVerboseConnect.IsChecked = Options.Curr.VerboseConnect;
-            MenuItemOptionsAnimateElems.IsChecked = Options.Curr.AnimateElements;
-            MenuItemOptionsObserveEvents.IsChecked = Options.Curr.ObserveEvents;
-            MenuItemOptionsCompressEvents.IsChecked = Options.Curr.CompressEvents;
+            _mainMenu?.SetChecked("FileRepoLoadWoPrompt", Options.Curr.LoadWithoutPrompt);
+            _mainMenu?.SetChecked("ShowIriMenu", Options.Curr.ShowIdAsIri);
+            _mainMenu?.SetChecked("VerboseConnect", Options.Curr.VerboseConnect);
+            _mainMenu?.SetChecked("AnimateElements", Options.Curr.AnimateElements);
+            _mainMenu?.SetChecked("ObserveEvents", Options.Curr.ObserveEvents);
+            _mainMenu?.SetChecked("CompressEvents", Options.Curr.CompressEvents);
 
             // the UI application might receive events from items in the package central
             _packageCentral.ChangeEventHandler = (data) =>
@@ -956,16 +974,53 @@ namespace AasxPackageExplorer
             // open last UI elements
             if (Options.Curr.ShowEvents)
                 PanelConcurrentSetVisibleIfRequired(true, targetEvents: true);
+
+            // script file to launch?
+            if (Options.Curr.ScriptFn.HasContent())
+            {
+                try
+                {
+                    Log.Singleton.Info("Opening and executing '{0}' for script commands.", Options.Curr.ScriptFn);
+                    if (_aasxScript == null)
+                        _aasxScript = new AasxScript();
+                    var script = System.IO.File.ReadAllText(Options.Curr.ScriptFn);
+                    _aasxScript.StartEnginBackground(
+                        script, Options.Curr.ScriptLoglevel,
+                        _mainMenu?.Menu, this);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptFn}");
+                }
+            }
+
+            // script file to launch?
+            if (Options.Curr.ScriptCmd.HasContent())
+            {
+                try
+                {
+                    Log.Singleton.Info("Executing '{0}' as direct script commands.", Options.Curr.ScriptCmd);
+                    if (_aasxScript == null)
+                        _aasxScript = new AasxScript();
+                    _aasxScript.StartEnginBackground(
+                        Options.Curr.ScriptCmd, Options.Curr.ScriptLoglevel,
+                        _mainMenu?.Menu, this);
+                }
+                catch (Exception ex)
+                {
+                    Log.Singleton.Error(ex, $"when executing script file {Options.Curr.ScriptCmd}");
+                }
+            }
         }
 
-        private void ToolFindReplace_ResultSelected(AdminShellUtil.SearchResultItem resultItem)
+        private void ToolFindReplace_ResultSelected(AasxSearchUtil.SearchResultItem resultItem)
         {
             // have a result?
             if (resultItem == null || resultItem.businessObject == null)
                 return;
 
             // for valid display, app needs to be in edit mode
-            if (!MenuItemWorkspaceEdit.IsChecked)
+            if (_mainMenu.IsChecked("EditMenu") != true)
             {
                 this.MessageBoxFlyoutShow(
                     "The application needs to be in edit mode to show found entities correctly. Aborting.",
@@ -1029,6 +1084,9 @@ namespace AasxPackageExplorer
                             break;
                         }
                 }
+
+                // message window
+                _messageReportWindow?.AddStoredPrint(sp);
             }
 
             // always tell the errors
@@ -1265,7 +1323,7 @@ namespace AasxPackageExplorer
                 else
                 {
                     // make sure the user wants to change
-                    if (!MenuItemOptionsLoadWoPrompt.IsChecked)
+                    if (_mainMenu?.IsChecked("FileRepoLoadWoPrompt") != false)
                     {
                         // ask double question
                         if (AnyUiMessageBoxResult.OK != MessageBoxFlyoutShow(
@@ -1575,7 +1633,7 @@ namespace AasxPackageExplorer
                     UiHandleReRenderAnyUiInEntityPanel(update.PluginName, update.Mode, useInnerGrid: true);
                 }
 
-                #endregion
+#endregion
             }
             catch (Exception ex)
             {
@@ -1640,7 +1698,7 @@ namespace AasxPackageExplorer
             IndexOfSignificantAasElements significantElems)
         {
             // trivial
-            if (env == null || significantElems == null || !MenuItemOptionsAnimateElems.IsChecked)
+            if (env == null || significantElems == null || _mainMenu?.IsChecked("AnimateElements") != true)
                 return;
 
             // find elements?
@@ -1686,7 +1744,7 @@ namespace AasxPackageExplorer
             bool directEmit)
         {
             // trivial
-            if (env == null || significantElems == null || !MenuItemOptionsObserveEvents.IsChecked)
+            if (env == null || significantElems == null || _mainMenu?.IsChecked("ObserveEvents") != true)
                 return;
 
             // do this twice
@@ -2106,7 +2164,7 @@ namespace AasxPackageExplorer
                     _mainTimer_LastCheckForDiaryEvents,
                     _packageCentral.MainItem.Container.Env?.AasEnv,
                     _packageCentral.MainItem.Container.SignificantElements,
-                    directEmit: !MenuItemOptionsCompressEvents.IsChecked);
+                    directEmit: !_mainMenu?.IsChecked("CompressEvents") != true);
                 _mainTimer_LastCheckForDiaryEvents = DateTime.UtcNow;
 
                 // do animation?
@@ -2250,6 +2308,8 @@ namespace AasxPackageExplorer
             }
         }
 
+        protected MessageReportWindow _messageReportWindow = null;
+
         private void ButtonReport_Click(object sender, RoutedEventArgs e)
         {
             if (sender == ButtonClear)
@@ -2264,6 +2324,7 @@ namespace AasxPackageExplorer
 
             if (sender == ButtonReport)
             {
+#if __disabled
                 // report on message / exception
                 var head = @"
                 |Dear user,
@@ -2314,29 +2375,57 @@ namespace AasxPackageExplorer
                 // show dialogue
                 var dlg = new MessageReportWindow(Prints());
                 dlg.ShowDialog();
+#endif
+
+                // show only if not present
+                if (_messageReportWindow != null)
+                    return;
+
+                // Collect all the stored log prints
+                IEnumerable<StoredPrint> Prints()
+                {
+                    var prints = Log.Singleton.GetStoredLongTermPrints();
+                    if (prints != null)
+                    {
+                        foreach (var sp in prints)
+                        {
+                            yield return sp;
+                            if (sp.stackTrace != null)
+                                yield return new StoredPrint("    Stacktrace: " + sp.stackTrace);
+                        }
+                    }
+                }
+
+                // show (non modal)
+                _messageReportWindow = new MessageReportWindow(Prints());
+                _messageReportWindow.Closed += (s2, e2) =>
+                {
+                    _messageReportWindow = null;
+                };
+                _messageReportWindow.Show();
             }
         }
 
-        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            // decode
-            var ruic = e?.Command as RoutedUICommand;
-            if (ruic == null)
-                return;
-            var cmd = ruic.Text?.Trim().ToLower();
+        //private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+        //{
+        //    // decode
+        //    var ruic = e?.Command as RoutedUICommand;
+        //    if (ruic == null)
+        //        return;
+        //    var cmd = ruic.Text?.Trim().ToLower();
 
-            // see: MainWindow.CommandBindings.cs
-            try
-            {
-                this.CommandBinding_GeneralDispatch(cmd);
-            }
-            catch (Exception err)
-            {
-                throw new InvalidOperationException(
-                    $"Failed to execute the command {cmd}: {err}");
-            }
+        //    // see: MainWindow.CommandBindings.cs
+        //    try
+        //    {
+        //        this.CommandBinding_GeneralDispatch(cmd);
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw new InvalidOperationException(
+        //            $"Failed to execute the command {cmd}: {err}");
+        //    }
 
-        }
+        //}
 
 
         private void DisplayElements_SelectedItemChanged(object sender, EventArgs e)
@@ -2404,6 +2493,7 @@ namespace AasxPackageExplorer
 
             try
             {
+                // save LRU
                 var lru = _packageCentral?.Repositories?.FindLRU();
                 if (lru != null)
                 {
@@ -2411,6 +2501,10 @@ namespace AasxPackageExplorer
                     var lruFn = PackageContainerListLastRecentlyUsed.BuildDefaultFilename();
                     lru.SaveAsLocalFile(lruFn);
                 }
+
+                // also close log silently
+                if (_messageReportWindow != null)
+                    _messageReportWindow.Close();
             }
             catch (Exception ex)
             {
@@ -2503,7 +2597,7 @@ namespace AasxPackageExplorer
 
         private void CheckIfToFlushEvents()
         {
-            if (MenuItemOptionsCompressEvents.IsChecked)
+            if (_mainMenu?.IsChecked("CompressEvents") == true)
             {
                 var evs = _eventCompressor?.Flush();
                 if (evs != null)
@@ -2559,8 +2653,17 @@ namespace AasxPackageExplorer
                 currentFlyoutControl.ControlPreviewKeyDown(e);
             }
 
-            DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
+            // DispEditEntityPanel.HandleGlobalKeyDown(e, preview: true);
 
+            // global handling
+            var la = _dynamicMenu?.HandleGlobalKeyDown(e, preview: true);
+            if (la != null && !(la is AnyUiLambdaActionNone))
+            {
+                // add to "normal" event quoue
+                DispEditEntityPanel.AddWishForOutsideAction(la);
+            }
+
+            // test
             if (e.Key == System.Windows.Input.Key.T
                 && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
             {
@@ -2572,7 +2675,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        #region Modal Flyovers
+#region Modal Flyovers
         //====================
 
         private List<StoredPrint> flyoutLogMessages = null;
@@ -2801,13 +2904,29 @@ namespace AasxPackageExplorer
             return uc.Result;
         }
 
+        public AnyUiMessageBoxResult MessageBoxFlyoutLogOrShow(
+            bool log, StoredPrint.Color logColor,
+            string message, string caption, AnyUiMessageBoxButton buttons, AnyUiMessageBoxImage image)
+        {
+            if (log)
+            {
+                if (logColor == StoredPrint.Color.Red)
+                    Log.Singleton.Error(caption + ": " + message);
+                else
+                    Log.Singleton.Info(logColor, caption + ": " + message);
+                return AnyUiMessageBoxResult.OK;
+            }
+            else
+                return MessageBoxFlyoutShow(message, caption, buttons, image);
+        }
+
         public Window GetWin32Window()
         {
             return this;
         }
 
-        #endregion
-        #region Drag&Drop
+#endregion
+#region Drag&Drop
         //===============
 
         private void Window_DragEnter(object sender, DragEventArgs e)
@@ -2897,7 +3016,7 @@ namespace AasxPackageExplorer
             dragStartPoint = e.GetPosition(null);
         }
 
-        #endregion
+#endregion
 
         private void ButtonTools_Click(object sender, RoutedEventArgs e)
         {
@@ -2909,9 +3028,256 @@ namespace AasxPackageExplorer
             }
         }
 
+        public string CreateTempFileForKeyboardShortcuts()
+        {
+            try
+            {
+                //
+                // HTML statr
+                //
+
+                // create a temp HTML file
+                var tmpfn = System.IO.Path.GetTempFileName();
+
+                // rename to html file
+                var htmlfn = tmpfn.Replace(".tmp", ".html");
+                System.IO.File.Move(tmpfn, htmlfn);
+
+                // create html content as string
+                var htmlHeader = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<!doctype html>
+                    <html lang=en>
+                    <head>
+                    <style>
+                    body {
+                      background-color: #FFFFE0;
+                      font-size: small;
+                      font-family: Arial, Helvetica, sans-serif;
+                    }
+                    table {
+                      font-family: arial, sans-serif;
+                      border-collapse: collapse;
+                      width: 100%;
+                    }
+                    td, th {
+                      border: 1px solid #dddddd;
+                      text-align: left;
+                      padding: 8px;
+                    }
+                    </style>
+                    <meta charset=utf-8>
+                    <title>blah</title>
+                    </head>
+                    <body>");
+
+                var htmlFooter = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</body>
+                    </html>");
+
+                var html = new StringBuilder();
+
+                html.Append(htmlHeader);
+
+                var color = false;
+
+                //
+                // Keyboard shortcuts
+                //
+
+                html.AppendLine("<h3>Keyboard shortcuts</h3>");
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Modifiers & Keys</th>
+                    <th>Function</th>
+                    <th>Description</th>
+                    </tr>"));
+
+                var rowfmt = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td>{1}</th>
+                    <td>{2}</th>
+                    <td>{3}</th>
+                    </tr>");
+
+                foreach (var sc in DispEditEntityPanel.EnumerateShortcuts())
+                {
+                    // Function
+                    var fnct = "";
+                    if (sc.Element is AnyUiButton btn)
+                        fnct = "" + btn.Content;
+
+                    // fill
+                    html.Append(String.Format(rowfmt,
+                        (color) ? "#ffffe0" : "#fffff0",
+                        "" + sc.GestureToString(fmt: 0),
+                        "" + fnct,
+                        "" + sc.Info));
+
+                    // color change
+                    color = !color;
+                }
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"</table>"));
+
+                //
+                // Menu command
+                //
+
+                // ReSharper disable AccessToModifiedClosure
+
+                Action<AasxMenu> lambdaMenu = (menu) =>
+                {
+
+                    html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<table style=""width:100%"">
+                    <tr>
+                    <th>Keyboard</th>
+                    <th>Menu header</th>
+                    <th>ToolCmd / <br><i>Argument</i></th>
+                    <th>Description</th>
+                    </tr>"));
+
+                    var rowfmtTC = AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<tr style=""background-color: {0}"">
+                    <td>{1}</td>
+                    <td>{2}</td>
+                    <td>{3}</td>
+                    <td>{4}</td>
+                    </tr>");
+
+                    var rowfmtTCAD = AdminShellUtil.CleanHereStringWithNewlines(
+                        @"<tr style=""background-color: {0}"">
+                    <td colspan=""2"" 
+                     style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
+                    </td>
+                    <td><i>{1}</i></td>
+                    <td><i>{2}</i></td>
+                    </tr>");
+
+                    foreach (var mib in menu.FindAll((x) => x is AasxMenuItem))
+                    {
+                        // access
+                        if (!(mib is AasxMenuItem mi) || mi.Name?.HasContent() != true)
+                            continue;
+
+                        // filter header
+                        var header = mi.Header.Replace("_", "");
+
+                        // fill
+                        html.Append(String.Format(rowfmtTC,
+                            (color) ? "#ffffe0" : "#fffff0",
+                            "" + mi.InputGesture,
+                            "" + header,
+                            "" + mi.Name,
+                            "" + mi.HelpText));
+
+                        // arguments
+                        if (mi.ArgDefs != null)
+                            foreach (var ad in mi.ArgDefs)
+                            {
+                                if (ad.Hidden)
+                                    continue;
+                                html.Append(String.Format(rowfmtTCAD,
+                                    (color) ? "#ffffe0" : "#fffff0",
+                                    "" + ad.Name,
+                                    "" + ad.Help));
+                            }
+
+                        // color change
+                        color = !color;
+                    }
+
+                    html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                        @"</table>"));
+                };
+
+                // ReSharper enable AccessToModifiedClosure
+
+                html.AppendLine("<h3>Menu and script commands</h3>");
+                lambdaMenu(_mainMenu.Menu);
+
+                html.AppendLine("<h3>Displayed entity and script commands</h3>");
+                lambdaMenu(_dynamicMenu.Menu);
+
+                //
+                // Script command
+                //
+
+                var script = new AasxScript();
+                script.PrepareHelp();
+
+                html.AppendLine("<h3>Script built-in commands</h3>");
+
+                html.Append(AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<table style=""width:100%"">
+                    <tr>
+                    <th>Keyword</th>
+                    <th>Argument</th>
+                    <th>Description</th>
+                    </tr>"));
+
+                var rowfmtSC = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td>{1}</td>
+                    <td colspan=""2"">{2}</td>
+                    </tr>");
+
+                var rowfmtSCAD = AdminShellUtil.CleanHereStringWithNewlines(
+                    @"<tr style=""background-color: {0}"">
+                    <td  
+                     style=""border-top:none;border-bottom:none;border-left:none;background-color:#FFFFE0"">
+                    </td>
+                    <td><i>{1}</i></td>
+                    <td><i>{2}</i></td>
+                    </tr>");
+
+                foreach (var hr in script.ListOfHelp)
+                {
+                    // fill
+                    html.Append(String.Format(rowfmtSC,
+                        (color) ? "#ffffe0" : "#fffff0",
+                        "" + hr.Keyword,
+                        "" + hr.Description));
+
+                    // arguments
+                    if (hr.ArgDefs != null)
+                        foreach (var ad in hr.ArgDefs)
+                        {
+                            if (ad.Hidden)
+                                continue;
+                            html.Append(String.Format(rowfmtSCAD,
+                                (color) ? "#ffffe0" : "#fffff0",
+                                "" + HttpUtility.HtmlEncode(ad.Name),
+                                "" + ad.Help));
+                        }
+
+                    // color change
+                    color = !color;
+                }
+
+                //
+                // HTMLend
+                //
+
+                html.Append(htmlFooter);
+
+                // write
+                System.IO.File.WriteAllText(htmlfn, html.ToString());
+                return htmlfn;
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "Creating HTML file for keyboard shortcuts");
+            }
+            return null;
+        }
+
         private void ButtonKeyboard_Click(object sender, RoutedEventArgs e)
         {
-            var htmlfn = DispEditEntityPanel.CreateTempFileForKeyboardShortcuts();
+            var htmlfn = CreateTempFileForKeyboardShortcuts();
             BrowserDisplayLocalFile(htmlfn, System.Net.Mime.MediaTypeNames.Text.Html,
                                     preferInternal: true);
         }

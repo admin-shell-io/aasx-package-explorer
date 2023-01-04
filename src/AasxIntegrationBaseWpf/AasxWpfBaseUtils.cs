@@ -260,5 +260,130 @@ namespace AasxIntegrationBase
             }
         }
 
+        public static void StoredPrintToFloqDoc(
+            FlowDocument doc, StoredPrint sp, StoredPrintColors colors, bool isExternalError = false,
+            RoutedEventHandler linkClickHandler = null)
+        {
+            // access
+            if (doc == null || sp == null)
+                return;
+
+            // simple first
+            var pr = new Paragraph();
+            pr.Inlines.Add(sp.msg);
+
+            if (isExternalError || sp.isError)
+            {
+                pr.Foreground = colors.BrushError;
+                pr.FontWeight = FontWeights.Bold;
+            }
+            else
+            {
+                switch (sp.color)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(sp.color);
+                    case StoredPrint.Color.Red:
+                        pr.Foreground = colors.BrushRed;
+                        break;
+                    case StoredPrint.Color.Blue:
+                        pr.Foreground = colors.BrushBlue;
+                        break;
+                    case StoredPrint.Color.Yellow:
+                        pr.Foreground = colors.BrushYellow;
+                        break;
+                    case StoredPrint.Color.Black:
+                        pr.Foreground = colors.BrushBlack;
+                        break;
+                }
+            }
+
+            if (sp.linkTxt != null && sp.linkUri != null)
+            {
+                // see: https://stackoverflow.com/questions/762271/
+                // clicking-hyperlinks-in-a-richtextbox-without-holding-down-ctrl-wpf
+                // see: https://stackoverflow.com/questions/9279061/dynamically-adding-hyperlinks-to-a-richtextbox
+
+                // make another append!
+                var link = new Hyperlink();
+                link.IsEnabled = true;
+
+                try
+                {
+                    link.Inlines.Add("" + sp.linkTxt + Environment.NewLine);
+                    link.NavigateUri = new Uri(sp.linkUri);
+                    if (linkClickHandler != null)
+                        link.Click += linkClickHandler;
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+
+                pr.Inlines.Add(link);
+            }
+
+            doc.Blocks.Add(pr);
+
+#if __disabled
+            // append
+            TextRange tr = new TextRange(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
+            tr.Text = "" + sp.msg;
+            tr.Text += Environment.NewLine;
+
+            if (isExternalError || sp.isError)
+            {
+                tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushError);
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            }
+            else
+            {
+                switch (sp.color)
+                {
+                    default:
+                        throw ExhaustiveMatch.Failed(sp.color);
+                    case StoredPrint.Color.Red:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushRed);
+                        break;
+                    case StoredPrint.Color.Blue:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlue);
+                        break;
+                    case StoredPrint.Color.Yellow:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushYellow);
+                        break;
+                    case StoredPrint.Color.Black:
+                        tr.ApplyPropertyValue(TextElement.ForegroundProperty, colors.BrushBlack);
+                        break;
+                }
+            }
+
+            if (sp.linkTxt != null && sp.linkUri != null)
+            {
+                // see: https://stackoverflow.com/questions/762271/
+                // clicking-hyperlinks-in-a-richtextbox-without-holding-down-ctrl-wpf
+                // see: https://stackoverflow.com/questions/9279061/dynamically-adding-hyperlinks-to-a-richtextbox
+
+                // try modify existing
+                tr.Text = tr.Text.TrimEnd('\r', '\n') + " ";
+
+                // make another append!
+                var link = new Hyperlink(rtb.Document.ContentEnd, rtb.Document.ContentEnd);
+                link.IsEnabled = true;
+
+                try
+                {
+                    link.Inlines.Add("" + sp.linkTxt + Environment.NewLine);
+                    link.NavigateUri = new Uri(sp.linkUri);
+                    if (linkClickHandler != null)
+                        link.Click += linkClickHandler;
+                }
+                catch (Exception ex)
+                {
+                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+                }
+            }
+#endif
+        }
+
     }
 }

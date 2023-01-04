@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using AasCore.Aas3_0_RC02;
+using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
@@ -799,18 +800,41 @@ namespace AasxPackageLogic
         }
 
         public void AddAction(
-            AnyUiPanel view, string key, string[] actionStr, ModifyRepo repo = null,            
+            AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,            
             Func<int, AnyUiLambdaActionBase> action = null,
             string[] actionTags = null,
             bool[] addWoEdit = null,
-            string[] actionToolTips = null)
+            AasxMenu superMenu = null,
+            AasxMenu ticketMenu = null,
+            Func<int, AasxMenuActionTicket, AnyUiLambdaActionBase> ticketAction = null)
         {
+            // generate actionStr from ticketMenu
+            if (actionStr == null && ticketMenu != null)
+                actionStr = ticketMenu.Select((tmi) => (tmi is AasxMenuItem mi) ? mi.Header : "").ToArray();
+
             // access 
-            if (action == null || actionStr == null)
+            if ((action == null && ticketAction == null) || actionStr == null)
                 return;
             if (repo == null && addWoEdit == null)
                 return;
             var numButton = actionStr.Length;
+
+            // add the ticketMenu items to the super menu
+            // an re-route lambdas
+            if (superMenu != null && ticketMenu != null && ticketAction != null)
+            {
+                for (int i = 0; i < ticketMenu.Count; i++)
+                {
+                    var tmi = ticketMenu[i];
+                    var currentI = i;
+                    tmi.Action = (name, item, ticket) =>
+                    {
+                        if (ticket != null)
+                            ticket.UiLambdaAction = ticketAction(currentI, ticket);
+                    };
+                    superMenu.Add(tmi);
+                }
+            }
 
             // Grid
             var g = new AnyUiGrid();
@@ -856,19 +880,28 @@ namespace AasxPackageLogic
                 int currentI = i;
                 var b = new AnyUiButton();
                 b.Content = "" + actionStr[i];
-                if (actionToolTips != null && actionToolTips.Length > i)
-                    b.ToolTip = actionToolTips[i];
                 b.Margin = new AnyUiThickness(0, 2, 4, 2);
                 b.Padding = new AnyUiThickness(5, 0, 5, 0);
                 wp.Children.Add(b);
+
+                // register callback
                 AnyUiUIElement.RegisterControl(b,
                     (o) =>
                     {
-                        return action(currentI); // button # as argument!
+                        // button # as argument!
+                        return (ticketAction != null)
+                            ? ticketAction(currentI, null)
+                            : action?.Invoke(currentI);
                     });
 
                 if (actionTags != null && i < actionTags.Length)
                     AnyUiUIElement.NameControl(b, actionTags[i]);
+
+                // can set a tool tip?
+                if (ticketMenu != null && ticketMenu.Count > i
+                    && ticketMenu[i] is AasxMenuItem mii
+                    && mii.HelpText?.HasContent() == true)
+                    b.ToolTip = mii.HelpText;
             }
 
             // in total
@@ -1091,12 +1124,20 @@ namespace AasxPackageLogic
         /// </summary>
         public AasSubmodelElements SelectAdequateEnum(
             string caption, AasSubmodelElements[] excludeValues = null,
-            AasSubmodelElements[] includeValues = null)
+            AasSubmodelElements[] includeValues = null,
+            AasxMenuActionTicket ticket = null)
         {
             // prepare a list
             var fol = new List<AnyUiDialogueListItem>();
             foreach (var en in AdminShellUtil.GetAdequateEnums(excludeValues, includeValues))
                 fol.Add(new AnyUiDialogueListItem(Enum.GetName(typeof(AasSubmodelElements), en), en));
+
+            // argument in ticket?
+            var arg = ticket?["Kind"] as string;
+            if (arg != null)
+                foreach (var foli in fol)
+                    if (foli.Text.Trim().ToLower() == arg.Trim().ToLower())
+                        return (AasSubmodelElements)foli.Tag;
 
             // prompt for this list
             var uc = new AnyUiDialogueDataSelectFromList(
@@ -2347,7 +2388,8 @@ namespace AasxPackageLogic
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity,
             object alternativeFocus, string label = "Entities:",
             object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false,
-            IReferable explicitParent = null)
+            IReferable explicitParent = null,
+            AasxMenu superMenu = null)
         {
             if (nextFocus == null)
                 nextFocus = entity;
@@ -2361,11 +2403,25 @@ namespace AasxPackageLogic
 
             AddAction(
                 stack, label,
-                new[] { "Move up", "Move down", "Move top", "Move end", "Delete" },
-                actionTags: new[] { "aas-elem-move-up", "aas-elem-move-down",
-                    "aas-elem-move-top", "aas-elem-move-end", "aas-elem-delete" },
                 repo: repo,
-                action: (buttonNdx) =>
+                superMenu: superMenu,
+                ticketMenu: new AasxMenu()
+                    .AddAction("aas-elem-move-up", "Move up",
+                        "Moves the currently selected element up in containing collection.",
+                        inputGesture: "Shift+Ctrl+Up")
+                    .AddAction("aas-elem-move-down", "Move down",
+                        "Moves the currently selected element down in containing collection.",
+                        inputGesture: "Shift+Ctrl+Down")
+                    .AddAction("aas-elem-move-top", "Move top",
+                        "Moves the currently selected element to the top in containing collection.",
+                        inputGesture: "Shift+Ctrl+Home")
+                    .AddAction("aas-elem-move-end", "Move end",
+                        "Moves the currently selected element to the end in containing collection.",
+                        inputGesture: "Shift+Ctrl+End")
+                    .AddAction("aas-elem-delete", "Delete",
+                        "Deletes the currently selected element.",
+                        inputGesture: "Delete"),
+                ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)
                     {
@@ -2406,6 +2462,7 @@ namespace AasxPackageLogic
                     if (buttonNdx == 4)
 
                         if (this.context.ActualShiftState
+                            || ticket?.ScriptMode == true
                             || AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
                                 "Delete selected entity? This operation can not be reverted!", "AAS-ENV",
                                 AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))

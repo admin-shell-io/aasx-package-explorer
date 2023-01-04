@@ -26,8 +26,6 @@ using AasxOpenIdClient;
 using AdminShellNS;
 using Extensions;
 using IdentityModel.Client;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
 using Newtonsoft.Json;
 using SSIExtension;
 
