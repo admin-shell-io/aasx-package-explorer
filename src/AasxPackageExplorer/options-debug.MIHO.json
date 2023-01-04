@@ -135,12 +135,11 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
       "Args": []
     }
-    /* ,
+    /* ,    
     {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
       "Args": []
     }
-    
     // Festo specific from here on
     {
       "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",

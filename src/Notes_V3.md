@@ -81,6 +81,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * PR550 (backup, make unique)
 
+* PR606 / MIHO/TestDynamicMenues
+
 ## PRs to be integrated
 
 * from 10 Aug, some parts were already moved (Jui?), some parts not
@@ -160,3 +162,5 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   - error when no background image
 * initial touch up of AasxPluginMtpViewer
   - seems to work, no testing
+* integrated #PR606 / MIHO/TestDynamicMenues
+* WebBrowser still sucking :-(
