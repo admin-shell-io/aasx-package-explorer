@@ -39,6 +39,22 @@ namespace Extensions
 
         /// <summary>
         /// Formaly a static constructor.
+        /// Creates a Reference from a key, guessing Reference.Type.
+        /// </summary>
+        public static Reference CreateFromKey(KeyTypes type,
+            string value)
+        {
+            var res = new Reference(ReferenceTypes.GlobalReference, 
+                        new List<Key> { new Key(type, value) });
+            res.Type = res.GuessType();
+            return res;
+        }
+
+
+        
+
+        /// <summary>
+        /// Formaly a static constructor.
         /// Creates a Reference from a list of keys, guessing Reference.Type.
         /// </summary>
         /// <param name="lk"></param>

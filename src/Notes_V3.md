@@ -163,4 +163,5 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * initial touch up of AasxPluginMtpViewer
   - seems to work, no testing
 * integrated #PR606 / MIHO/TestDynamicMenues
-* WebBrowser still sucking :-(
+* WebBrowser still sucking :-/
+* rework AasxBammRdfImExport

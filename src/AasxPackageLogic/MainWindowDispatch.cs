@@ -329,10 +329,8 @@ namespace AasxPackageLogic
                 try
                 {
                     // do it
-#if TODO
                     AasxBammRdfImExport.BAMMRDFimport.ImportInto(
-                        fn, ticket?.Env, ticket?.Submodel);
-#endif
+                        fn, ticket?.Env, ticket?.Submodel, null);
                 }
                 catch (Exception ex)
                 {
