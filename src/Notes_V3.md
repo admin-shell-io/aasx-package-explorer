@@ -173,3 +173,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   -> also quick&dirty approach not working
 * rework AasxPluginExportTable
 * integrated PR547
+* LARGE REFACTORING to "using Aas = AasCore.Aas3_0_RC02" namespace
+* AasxFormatCst
+* AasxMqtt, AasxMqttClient
+* dictionary import works

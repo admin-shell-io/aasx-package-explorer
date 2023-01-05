@@ -386,6 +386,26 @@ namespace Extensions
             return cd;
         }
 
+        public static Submodel Add(this AasCore.Aas3_0_RC02.Environment env, Submodel sm)
+        {
+            if (sm == null)
+                return null;
+            if (env.Submodels == null)
+                env.Submodels = new();
+            env.Submodels.Add(sm);
+            return sm;
+        }
+
+        public static AssetAdministrationShell Add(this AasCore.Aas3_0_RC02.Environment env, AssetAdministrationShell aas)
+        {
+            if (aas == null)
+                return null;
+            if (env.AssetAdministrationShells == null)
+                env.AssetAdministrationShells = new();
+            env.AssetAdministrationShells.Add(aas);
+            return aas;
+        }
+
         //public static JsonWriter SerialiazeJsonToStream(this AasCore.Aas3_0_RC02.Environment environment, StreamWriter streamWriter, bool leaveJsonWriterOpen = false)
         //{
         //    streamWriter.AutoFlush = true;

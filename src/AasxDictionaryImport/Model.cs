@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxDictionaryImport.Model
 {
@@ -238,8 +240,8 @@ namespace AasxDictionaryImport.Model
         /// <param name="adminShell">The admin shell to add the submodel to</param>
         /// <returns>true if the import was successful, or false if the import failed or if this element cannot be
         /// converted to an AAS submodel</returns>
-        bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell);
+        bool ImportSubmodelInto(Aas.Environment env,
+            Aas.AssetAdministrationShell adminShell);
 
         /// <summary>
         /// Converts this element into a AAS submodel element (i. e. a property or a collection) and adds it to the
@@ -254,8 +256,8 @@ namespace AasxDictionaryImport.Model
         /// <param name="parent">The parent element to add the submodel elements to</param>
         /// <returns>true if the import was successful, or false if the import failed or
         /// if this element cannot be converted to an AAS submodel element</returns>
-        bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-            AdminShell.IManageSubmodelElements parent);
+        bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent);
 
         /// <summary>
         /// Returns all detail information for this element, suitable for the user interface.  The keys of the returned
@@ -434,12 +436,12 @@ namespace AasxDictionaryImport.Model
         public virtual Uri? GetDetailsUrl() => null;
 
         /// <inheritdoc/>
-        public virtual bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell) => false;
+        public virtual bool ImportSubmodelInto(Aas.Environment env,
+            Aas.AssetAdministrationShell adminShell) => false;
 
         /// <inheritdoc/>
-        public virtual bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-            AdminShell.IManageSubmodelElements parent) => false;
+        public virtual bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent) => false;
 
         /// <inheritdoc/>
         public virtual bool Match(IEnumerable<string> queryParts)

@@ -25,6 +25,7 @@
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
 	  <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
     <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj" />
@@ -38,7 +39,6 @@
     <ProjectReference Include="..\AasxAmlImExport\AasxAmlImExport.csproj" />
 	<ProjectReference Include="..\AasxBammRdfImExport\AasxBammRdfImExport.csproj" />
     <ProjectReference Include="..\AasxCsharpLibrary\AasxCsharpLibrary.csproj" />
-    <ProjectReference Include="..\AasxDictionaryImport\AasxDictionaryImport.csproj" />
     <ProjectReference Include="..\AasxPackageLogic\AasxPackageLogic.csproj" />
     <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />

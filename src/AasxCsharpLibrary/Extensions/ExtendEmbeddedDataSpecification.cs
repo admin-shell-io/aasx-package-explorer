@@ -74,8 +74,7 @@ namespace Extensions
 
             var res = new EmbeddedDataSpecification(
                 new Reference(ReferenceTypes.GlobalReference, 
-                new List<Key>( new[] {
-                new Key(KeyTypes.GlobalReference, "http://admin-shell.io/DataSpecificationTemplates/DataSpecificationIEC61360/3/0") })),
+                    new List<Key>( new[] { ExtendIDataSpecificationContent.GetKeyForIec61360() })),
                 content);
             return res;
         }

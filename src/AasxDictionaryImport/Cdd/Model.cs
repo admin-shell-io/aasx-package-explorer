@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AasxDictionaryImport.Model;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxDictionaryImport.Cdd
 {
@@ -263,15 +265,15 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-           AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(Aas.Environment env,
+           Aas.AssetAdministrationShell adminShell)
         {
             return new Importer(env, Context).ImportSubmodel(this, adminShell);
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-           AdminShell.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+           Aas.IReferable parent)
         {
             // If we wanted to import the class, we would typically use the submodel import
             // instead.  Therefore we import the children instead.
@@ -350,8 +352,8 @@ namespace AasxDictionaryImport.Cdd
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShell.AdministrationShellEnv env,
-           AdminShell.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+           Aas.IReferable parent)
         {
             return new Importer(env, Context).ImportSubmodelElements(this, parent);
         }

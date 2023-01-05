@@ -11,7 +11,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxDictionaryImport.Cdd
 {
@@ -30,7 +32,7 @@ namespace AasxDictionaryImport.Cdd
     /// </summary>
     internal class Importer
     {
-        private readonly AdminShellV20.AdministrationShellEnv _env;
+        private readonly Aas.Environment _env;
         private readonly Context _context;
         private readonly bool _all;
 
@@ -39,7 +41,7 @@ namespace AasxDictionaryImport.Cdd
         /// </summary>
         /// <param name="env">The environment to import the data into</param>
         /// <param name="context">The data context of the IEC CDD data</param>
-        public Importer(AdminShellV20.AdministrationShellEnv env, Context context)
+        public Importer(Aas.Environment env, Context context)
         {
             _env = env;
             _context = context;
@@ -52,7 +54,7 @@ namespace AasxDictionaryImport.Cdd
         /// <param name="cls">The IEC CDD class to import</param>
         /// <param name="adminShell">The admin shell to import the submodel into</param>
         /// <returns>true if the class was imported successfully</returns>
-        public bool ImportSubmodel(ClassWrapper cls, AdminShellV20.AdministrationShell adminShell)
+        public bool ImportSubmodel(ClassWrapper cls, Aas.AssetAdministrationShell adminShell)
         {
             if (!cls.IsSelected)
                 return false;
@@ -69,7 +71,7 @@ namespace AasxDictionaryImport.Cdd
         /// <param name="element">The IEC CDD element to import</param>
         /// <param name="parent">The parent element to import the submodel into</param>
         /// <returns>true if the class was imported successfully</returns>
-        public bool ImportSubmodelElements(Model.IElement element, AdminShell.IManageSubmodelElements parent)
+        public bool ImportSubmodelElements(Model.IElement element, Aas.IReferable parent)
         {
             if (!element.IsSelected)
                 return false;
@@ -85,7 +87,7 @@ namespace AasxDictionaryImport.Cdd
         }
 
         private void AddProperties<T>(T elements, IEnumerable<Model.IElement> properties)
-            where T : AdminShellV20.IManageSubmodelElements
+            where T : Aas.IReferable
         {
             foreach (var property in properties)
             {
@@ -98,7 +100,7 @@ namespace AasxDictionaryImport.Cdd
             }
         }
 
-        private AdminShellV20.SubmodelElement? CreateSubmodelElement(Model.IElement e)
+        private Aas.ISubmodelElement? CreateSubmodelElement(Model.IElement e)
         {
             if (e is ClassWrapper cls)
                 return CreatePropertyCollection(cls.Element, cls.Children);
@@ -107,7 +109,7 @@ namespace AasxDictionaryImport.Cdd
             return null;
         }
 
-        private AdminShellV20.SubmodelElementCollection CreatePropertyCollection(Class cls,
+        private Aas.SubmodelElementCollection CreatePropertyCollection(Class cls,
             IEnumerable<Model.IElement> properties)
         {
             var collection = Iec61360Utils.CreateCollection(_env, cls.GetIec61360Data(_all));
@@ -115,7 +117,7 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.SubmodelElement? CreatePropertySubmodelElement(PropertyWrapper wrapper)
+        private Aas.ISubmodelElement? CreatePropertySubmodelElement(PropertyWrapper wrapper)
         {
             var reference = wrapper.Element.DataType.GetClassReference();
             if (reference != null)
@@ -130,7 +132,7 @@ namespace AasxDictionaryImport.Cdd
             return CreateProperty(wrapper.Element);
         }
 
-        private AdminShellV20.SubmodelElementCollection CreateAggregateCollection(
+        private Aas.SubmodelElementCollection CreateAggregateCollection(
             PropertyWrapper wrapper, AggregateType aggregateType)
         {
             var collection = Iec61360Utils.CreateCollection(_env, wrapper.Element.GetIec61360Data(_all));
@@ -145,7 +147,7 @@ namespace AasxDictionaryImport.Cdd
                         var element = CreateSubmodelElement(child);
                         if (element != null)
                         {
-                            element.idShort += i;
+                            element.IdShort += i;
                             collection.Add(element);
                         }
                     }
@@ -155,7 +157,7 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.SubmodelElementCollection CreateLevelCollection(Property property, LevelType levelType)
+        private Aas.SubmodelElementCollection CreateLevelCollection(Property property, LevelType levelType)
         {
             var data = property.GetIec61360Data(_all);
             var collection = Iec61360Utils.CreateCollection(_env, data);
@@ -169,23 +171,24 @@ namespace AasxDictionaryImport.Cdd
             return collection;
         }
 
-        private AdminShellV20.Property CreateProperty(Property property)
+        private Aas.Property CreateProperty(Property property)
         {
             return Iec61360Utils.CreateProperty(_env, property.GetIec61360Data(_all),
                 GetValueType(property.DataType));
         }
 
-        private AdminShellV20.Property CreateLevelProperty(Iec61360Data data, LevelType levelType,
+        private Aas.Property CreateLevelProperty(Iec61360Data data, LevelType levelType,
             LevelType.Type levelValue)
         {
             // idShort for the level property: <Level><Property>, e. g. MinimumOperatingTemperature,
             // MaximumOperatingTemperature
             var idShort = levelValue.ToString() + data.IdShort;
-            return new AdminShellV20.Property()
+            return new Aas.Property(Aas.DataTypeDefXsd.String)
             {
-                idShort = idShort,
-                kind = AdminShellV20.ModelingKind.CreateAsInstance(),
-                valueType = GetValueType(levelType.Subtype),
+                IdShort = idShort,
+                Kind = Aas.ModelingKind.Instance,
+                ValueType = Aas.Stringification.DataTypeDefXsdFromString(GetValueType(levelType.Subtype)) 
+                    ?? Aas.DataTypeDefXsd.String,
             };
         }
 

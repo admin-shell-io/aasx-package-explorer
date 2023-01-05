@@ -2231,9 +2231,7 @@ namespace AasxPackageExplorer
                 var dataChanged = false;
                 try
                 {
-#if TODO
                     dataChanged = AasxDictionaryImport.Import.ImportSubmodel(this, env, Options.Curr.DictImportDir, aas);
-#endif
                 }
                 catch (Exception ex)
                 {
@@ -2267,10 +2265,8 @@ namespace AasxPackageExplorer
                 var dataChanged = false;
                 try
                 {
-#if TODO
                     dataChanged = AasxDictionaryImport.Import.ImportSubmodelElements(
                         this, env, Options.Curr.DictImportDir, sm);
-#endif
                 }
                 catch (Exception ex)
                 {

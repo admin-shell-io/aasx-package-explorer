@@ -21,7 +21,7 @@ namespace Extensions
                     .PreferredName?.GetDefaultString(defaultLang);
         }
 
-        public static void SetIEC61360Spec(this ConceptDescription conceptDescription,
+        public static EmbeddedDataSpecification SetIEC61360Spec(this ConceptDescription conceptDescription,
                 string[] preferredNames = null,
                 string shortName = "",
                 string unit = "",
@@ -52,6 +52,8 @@ namespace Extensions
             // TODO (MIHO, 2022-12-22): Check, but I think it makes no sense
             // conceptDescription.IsCaseOf ??= new List<Reference>();
             // conceptDescription.IsCaseOf.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, conceptDescription.Id) }));
+
+            return eds;
         }
 
         /*
@@ -279,6 +281,14 @@ namespace Extensions
         {
             var key = new Key(KeyTypes.ConceptDescription, conceptDescription.Id);
             return new Reference(ReferenceTypes.ModelReference, new List<Key> { key });
+        }
+
+        public static void AddIsCaseOf(this ConceptDescription cd,
+            Reference ico)
+        {
+            if (cd.IsCaseOf == null)
+                cd.IsCaseOf = new List<Reference>();
+            cd.IsCaseOf.Add(ico);
         }
     }
 }

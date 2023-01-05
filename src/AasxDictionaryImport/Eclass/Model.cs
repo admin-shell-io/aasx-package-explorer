@@ -25,7 +25,10 @@ using System.Xml.Linq;
 using AasxDictionaryImport.Model;
 using AasxPackageExplorer;
 using AasxPackageLogic;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
+
 
 namespace AasxDictionaryImport.Eclass
 {
@@ -659,8 +662,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.AdministrationShell adminShell)
+        public override bool ImportSubmodelInto(Aas.Environment env,
+            Aas.AssetAdministrationShell adminShell)
         {
             if (!IsSelected)
                 return false;
@@ -688,8 +691,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent)
         {
             if (!IsSelected)
                 return false;
@@ -786,8 +789,8 @@ namespace AasxDictionaryImport.Eclass
         }
 
         /// <inheritdoc/>
-        public override bool ImportSubmodelElementsInto(AdminShellV20.AdministrationShellEnv env,
-            AdminShellV20.IManageSubmodelElements parent)
+        public override bool ImportSubmodelElementsInto(Aas.Environment env,
+            Aas.IReferable parent)
         {
             if (!IsSelected)
                 return false;
@@ -820,10 +823,10 @@ namespace AasxDictionaryImport.Eclass
             // TODO (krahlro-sick, 2021-02-23): This logic is copied from EclassUtils.GenerateConceptDescription -- does
             // it handle all possible values?
             var lowerType = type.ToLower();
-            foreach (var aasType in AdminShell.DataSpecificationIEC61360.DataTypeNames)
+            foreach (var aasType in AdminShellUtil.GetEnumValues<Aas.DataTypeIec61360>())
             {
-                if (lowerType.Contains(aasType.ToLower()))
-                    return aasType;
+                if (lowerType.Contains(aasType.ToString().ToLower()))
+                    return aasType.ToString();
             }
             return string.Empty;
         }
