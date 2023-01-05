@@ -136,7 +136,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show Aas.Qualifier presets ({pfn})");
+                                    ex, $"While show Qualifier presets ({pfn})");
                             }
                         }
 
@@ -154,7 +154,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing Aas.Qualifier data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
                             }
                         }
 
@@ -225,7 +225,7 @@ namespace AasxPackageLogic
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing Aas.Qualifier data in clipboard");
+                                        Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
                                     }
                                     break;
 
@@ -740,7 +740,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !System.IO.File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    $"JSON file for Aas.IReferable.extension presets not defined nor existing ({pfn}).");
+                                    $"JSON file for IReferable.extension presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -766,7 +766,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show Aas.Qualifier presets ({pfn})");
+                                    ex, $"While show Qualifier presets ({pfn})");
                             }
                         }
 
@@ -1007,7 +1007,7 @@ namespace AasxPackageLogic
                         // let the user control the number of references
                         this.AddAction(
                             substack, "refersTo:",
-                            new[] { "Add Aas.Reference", "Delete last reference" }, repo,
+                            new[] { "Add Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
                             {
                                 if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
@@ -1259,7 +1259,7 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("create-cds", "CDs \U0001f844 pairs",
-                            "For each Value /Reference pair, create a separate Aas.ConceptDescription."),
+                            "For each Value /Reference pair, create a separate ConceptDescription."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -1267,7 +1267,7 @@ namespace AasxPackageLogic
                             // make sure
                             if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will create additional ConceptDescriptions for each " +
-                                    "pair of Value and Aas.Reference. Do you want to proceed?",
+                                    "pair of Value and Reference. Do you want to proceed?",
                                     "Create CDs",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();

@@ -792,7 +792,7 @@ namespace AasxPackageLogic
                         // user feedback
                         Log.Singleton.Info(
                             StoredPrint.Color.Blue,
-                            "Stored Aas.Submodel '{0}' to internal buffer.{1}", "" + sm.IdShort,
+                            "Stored Submodel '{0}' to internal buffer.{1}", "" + sm.IdShort,
                             cpbInternal.Duplicate
                                 ? " Paste will duplicate."
                                 : " Paste will cut at original position.");

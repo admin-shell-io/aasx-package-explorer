@@ -550,7 +550,7 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem Aas.IReferable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
@@ -634,7 +634,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent Aas.IReferable! " + change.Path.ToString()));
+                        "Cannot find parent IReferable! " + change.Path.ToString()));
                     return;
                 }
 
@@ -643,7 +643,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target Aas.IReferable already existing .. Aborting! " + change.Path.ToString()));
+                        "Target IReferable already existing .. Aborting! " + change.Path.ToString()));
                     return;
                 }
 
@@ -653,7 +653,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot deserize StructuralChangeItem Aas.IReferable data!"));
+                        "Cannot deserize StructuralChangeItem IReferable data!"));
                     return;
                 }
 
@@ -764,7 +764,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target Aas.IReferable! " + change.Path.ToStringExtended()));
+                        "Cannot find target IReferable! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -773,7 +773,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent Aas.IReferable for target! " + change.Path.ToStringExtended()));
+                        "Cannot find parent IReferable for target! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -906,7 +906,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Cannot find target Aas.IReferable!"));
+                    "Cannot find target IReferable!"));
                 return;
             }
 
@@ -927,7 +927,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of Aas.Submodel not implemented!"));
+                    "Update of Submodel not implemented!"));
                 // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
@@ -936,7 +936,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of Aas.SubmodelElementCollection not implemented!"));
+                    "Update of SubmodelElementCollection not implemented!"));
                 // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
@@ -1079,7 +1079,7 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem Aas.IReferable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements

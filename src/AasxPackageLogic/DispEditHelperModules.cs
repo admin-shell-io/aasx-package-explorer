@@ -463,7 +463,7 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddAction(
                         stack, "Specifications:",
-                        new[] { "Add Aas.Reference", "Delete last reference" }, repo,
+                        new[] { "Add Reference", "Delete last reference" }, repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
@@ -490,7 +490,7 @@ namespace AasxPackageLogic
                         this.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck(
                                 () => references[i]?.IsValid() != true,
-                                "A Aas.Reference without Keys makes no sense.")});
+                                "A Reference without Keys makes no sense.")});
                         
                         this.AddKeyReference(
                             stack, String.Format("dataSpec.[{0}]", i), references[i], repo,
@@ -529,7 +529,7 @@ namespace AasxPackageLogic
                     () => dataSpecRefsAreUsual && (hasDataSpecification == null
                         ||  hasDataSpecification.Count < 1),
                     "Check if a data specification is appropriate here. " +
-                    "A Aas.ConceptDescription typically goes along with a data specification, e.g. " +
+                    "A ConceptDescription typically goes along with a data specification, e.g. " +
                     "according IEC61360.",
                     severityLevel: HintCheck.Severity.Notice),
                 new HintCheck(
@@ -662,8 +662,8 @@ namespace AasxPackageLogic
                         () => { return hasDataSpecification == null ||
                             hasDataSpecification.Count < 1; },
                         "For ConceptDescriptions, the main data carrier lies in the embedded data specification. " +
-                        "In these elements, a Aas.Reference to a data specification is combined with content " +
-                        "attributes, which are attached to the Aas.ConceptDescription. These attributes hold the " +
+                        "In these elements, a Reference to a data specification is combined with content " +
+                        "attributes, which are attached to the ConceptDescription. These attributes hold the " +
                         "descriptive information on a concept and thus allow for an off-line understanding of " +
                         "the meaning of a concept/ SubmodelElement. Multiple data specifications " +
                         "could be possible. The most used is the IEC61360, which is also used by ECLASS. " +
@@ -722,7 +722,7 @@ namespace AasxPackageLogic
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                     {
                         // indicate
-                        this.AddGroup(stack, $"dataSpec.[{i}] / Aas.Reference:", levelColors.SubSection);
+                        this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
 
                         // Aas.Reference
                         int currentI = i;
@@ -765,8 +765,8 @@ namespace AasxPackageLogic
                             stack, hintMode, new[] {
                             new HintCheck(
                                 () => cntByDs == ExtendIDataSpecificationContent.ContentTypes.NoInfo,
-                                "No valid data specification Aas.Reference could be identified. Thus, no content " +
-                                "attributes could be provided. Check the Aas.Reference.")
+                                "No valid data specification Reference could be identified. Thus, no content " +
+                                "attributes could be provided. Check the Reference.")
                             });
 
                         // indicate new section
@@ -793,7 +793,7 @@ namespace AasxPackageLogic
                                     breakIfTrue: true),
                                 new HintCheck(
                                     () => cntMismatch,
-                                    "Mismatch between data specification Aas.Reference and stored content " +
+                                    "Mismatch between data specification Reference and stored content " +
                                     "of data specification.")
                                 });
 
@@ -906,7 +906,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "Kind (of Aas.AssetInformation):", levelColors.SubSection);
+            this.AddGroup(stack, "Kind (of AssetInformation):", levelColors.SubSection);
 
             this.AddHintBubble(stack, hintMode, new[] {
                 new HintCheck(
@@ -1533,7 +1533,7 @@ namespace AasxPackageLogic
                             breakIfTrue: true),
                         new HintCheck(
                             () => { return dsiec.ValueList.ValueReferencePairs.Count < 2; },
-                            "Please add multiple pairs of name and Aas.Reference.",
+                            "Please add multiple pairs of name and Reference.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             if (SafeguardAccess(
@@ -1910,7 +1910,7 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () => { return smref == null; },
                     $"No {entityName}. Please consider adding a reference " +
-                        "to an adequate Aas.Submodel."),
+                        "to an adequate Submodel."),
             });
             if (this.SafeguardAccess(
                     stack, repo, smref, $"{entityName}:",
@@ -1922,7 +1922,7 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddGroup(
-                    stack, $"{entityName} - Aas.Reference to describing Aas.Submodel:",
+                    stack, $"{entityName} - Aas.Reference to describing Submodel:",
                     levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,

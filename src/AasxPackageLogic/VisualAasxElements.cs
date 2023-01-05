@@ -730,7 +730,7 @@ namespace AasxPackageLogic
             }
             else
             {
-                this.Caption = "Missing Aas.Submodel for Aas.Reference!";
+                this.Caption = "Missing Aas.Submodel for Reference!";
                 this.Info = "->" + ((this.theSubmodelRef == null) ? "<null>" : this.theSubmodelRef.ToString());
             }
         }
@@ -1746,7 +1746,7 @@ namespace AasxPackageLogic
 
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
                 {
-                    tiCDs.Info = "(only CD not referenced by any Aas.Submodel)";
+                    tiCDs.Info = "(only CD not referenced by any Submodel)";
                 }
             }
         }

@@ -161,7 +161,7 @@ namespace AasxPackageLogic
 
                                 if (!res)
                                     this.context.MessageBoxFlyoutShow(
-                                        "The renaming of the Aas.Submodel or some referring elements " +
+                                        "The renaming of the Submodel or some referring elements " +
                                         "has not performed successfully! Please review your inputs and " +
                                         "the AAS structure for any inconsistencies.",
                                         "Warning",
@@ -268,7 +268,7 @@ namespace AasxPackageLogic
             bool hintMode = false,
             AasxMenu superMenu = null)
         {
-            this.AddGroup(stack, "Environment of Aas.AssetInformation Administration Shells", this.levelColors.MainSection);
+            this.AddGroup(stack, "Environment of AssetInformation Administration Shells", this.levelColors.MainSection);
             if (env == null)
                 return;
 
@@ -301,16 +301,16 @@ namespace AasxPackageLogic
                             "created by adding them to associated to Administration Shells. " +
                             "Therefore, an Adminstration Shell shall exist before and shall be selected. " +
                             "You could then add Submodels by clicking " +
-                            "'Create new Aas.Submodel of kind Type/Instance' on the edit panel. " +
+                            "'Create new Submodel of kind Type/Instance' on the edit panel. " +
                             "This step is typically done after creating asset and Administration Shell."),
                     new HintCheck(
                         () => { return env.ConceptDescriptions == null || env.ConceptDescriptions.Count < 1; },
                         "There are no ConceptDescriptions in this AAS environment. " +
                             "Even if SubmodelElements can reference external concept descriptions, " +
                             "it is best practice to include (duplicates of the) concept descriptions " +
-                            "inside the AAS environment. You should consider adding a Aas.ConceptDescription " +
-                            "by clicking 'Add Aas.ConceptDescription' on the panel below or " +
-                            "adding a SubmodelElement to a Aas.Submodel. This step is typically done after " +
+                            "inside the AAS environment. You should consider adding a ConceptDescription " +
+                            "by clicking 'Add ConceptDescription' on the panel below or " +
+                            "adding a SubmodelElement to a Submodel. This step is typically done after " +
                             "creating assets and Administration Shell and when creating SubmodelElements."),
                 });
 
@@ -324,7 +324,7 @@ namespace AasxPackageLogic
                         .AddAction("add-aas", "Add AAS",
                             "Adds an AAS with blank information.")
                         .AddAction("add-cd", "Add Aas.ConceptDescription",
-                            "Adds an Aas.ConceptDescription with blank information."),
+                            "Adds an ConceptDescription with blank information."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -648,7 +648,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                     this.AddAction(
-                        stack, "Copy from existing Aas.ConceptDescription:",
+                        stack, "Copy from existing ConceptDescription:",
                         repo: repo,
                         superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -810,7 +810,7 @@ namespace AasxPackageLogic
 
                                 if (env?.ConceptDescriptions == null)
                                 {
-                                    Log.Singleton.Info(".. no Aas.ConceptDescription!");
+                                    Log.Singleton.Info(".. no ConceptDescription!");
                                     return new AnyUiLambdaActionNone();
                                 }
 
@@ -931,14 +931,14 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return env.AssetAdministrationShells.Count < 1; },
-                            "There are no Aas.AssetAdministrationShell entities in the environment. " +
+                            "There are no AssetAdministrationShell entities in the environment. " +
                                 "Select the 'Administration Shells' item on the middle panel and " +
                                 "select 'Add AAS' to add a new entity."),
                         new HintCheck(
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
-                                "It is a good practive to have those. Select or add an Aas.AssetAdministrationShell, " +
-                                "Submodel and SubmodelElement and add a Aas.ConceptDescription.",
+                                "It is a good practive to have those. Select or add an AssetAdministrationShell, " +
+                                "Submodel and SubmodelElement and add a ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice),
                     });
 
@@ -1106,7 +1106,7 @@ namespace AasxPackageLogic
                             () => { return aas.Submodels.Count < 1;  },
                             "You have no Submodels referenced by this Administration Shell. " +
                                 "This is rather unusual, as the Submodels are the actual carriers of information. " +
-                                "Most likely, you want to click 'Create new Aas.Submodel of kind Instance'. " +
+                                "Most likely, you want to click 'Create new Submodel of kind Instance'. " +
                                 "You might also consider to load another AASX as auxiliary AASX " +
                                 "(see 'File' menu) to copy structures from.",
                             severityLevel: HintCheck.Severity.Notice)
@@ -1117,17 +1117,17 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("ref-existing", "Reference to existing Aas.Submodel",
-                            "Links the SubmodelReference to an existing Aas.Submodel.")
+                            "Links the SubmodelReference to an existing Submodel.")
                         .AddAction("create-template", "Create new Aas.Submodel of kind Template",
-                            "Creates a new Aas.Submodel of kind Template and link to this SubmodelReference.")
+                            "Creates a new Submodel of kind Template and link to this SubmodelReference.")
                         .AddAction("create-instance", "Create new Aas.Submodel of kind Instance",
-                            "Creates a new Aas.Submodel of kind Instance and link to this SubmodelReference."),
+                            "Creates a new Submodel of kind Instance and link to this SubmodelReference."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
                             if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
-                                    "This operation creates a reference to an existing Aas.Submodel. " +
+                                    "This operation creates a reference to an existing Submodel. " +
                                         "By this, two AAS will share exactly the same data records. " +
                                         "Changing one will cause the other AAS's information to change as well. " +
                                         "This operation is rather special. Do you want to proceed?",
@@ -1198,15 +1198,15 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "Copy from existing Aas.Submodel:",
+                    stack, "Copy from existing Submodel:",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
-                            "Copy selected Aas.Submodel without children from another AAS, " +
+                            "Copy selected Submodel without children from another AAS, " +
                             "caring for ConceptDescriptions.")
                         .AddAction("copy-recurse", "Copy recursively",
-                            "Copy selected Aas.Submodel and children from another AAS, " +
+                            "Copy selected Submodel and children from another AAS, " +
                             "caring for ConceptDescriptions."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1309,7 +1309,7 @@ namespace AasxPackageLogic
                     "You have decided to create an AAS for kind = 'Instance'. " +
                         "You might derive this from another AAS of kind = 'Instance' or " +
                         "from another AAS of kind = 'Type'. It is perfectly fair to create " +
-                        "an Aas.AssetAdministrationShell with no 'derivedFrom' relation! " +
+                        "an AssetAdministrationShell with no 'derivedFrom' relation! " +
                         "However, for example, if you're an supplier of products which stem from a series-type, " +
                         "you might want to maintain a relation of the AAS's of the individual prouct instances " +
                         "to the AAS of the series type.",
@@ -1403,7 +1403,7 @@ namespace AasxPackageLogic
 
                 this.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.Main, "Reference Aas.Submodel ",
+                    packages, PackageCentral.PackageCentral.Selector.Main, "Reference Submodel ",
                     takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref),
                     jumpLambda: lambda, relatedReferable: aas);
             }
@@ -1430,7 +1430,7 @@ namespace AasxPackageLogic
             if (editMode && smref == null && submodel != null)
             {
                 this.AddGroup(
-                    stack, "Editing of entities (environment's Aas.Submodel collection)",
+                    stack, "Editing of entities (environment's Submodel collection)",
                     this.levelColors.MainSection);
 
                 AddAction(stack, "Submodel:",
@@ -1443,7 +1443,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                             if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                     "Delete selected Aas.Submodel? This operation can not be reverted!", "AAS-ENV",
+                                     "Delete selected Submodel? This operation can not be reverted!", "AAS-ENV",
                                      AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                             {
                                 if (env.Submodels.Contains(submodel))
@@ -1506,7 +1506,7 @@ namespace AasxPackageLogic
                 this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
                         () => { return submodel.SubmodelElements == null || submodel.SubmodelElements.Count < 1; },
-                        "This Aas.Submodel currently has no SubmodelElements, yet. " +
+                        "This Submodel currently has no SubmodelElements, yet. " +
                             "These are the actual carriers of information. " +
                             "You could create them by clicking the 'Add ..' buttons below. " +
                             "Subsequently, when having a SubmodelElement established, " +
@@ -1518,11 +1518,11 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("add-prop", "Add Aas.Property",
-                            "Adds a new Aas.Property to the containing collection.")
+                            "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
+                            "Adds a new MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
+                            "Adds a new SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -1576,10 +1576,10 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
-                            "Copy selected Aas.Submodel without children from another AAS, " +
+                            "Copy selected Submodel without children from another AAS, " +
                             "caring for ConceptDescriptions.")
                         .AddAction("copy-recurse", "Copy recursively",
-                            "Copy selected Aas.Submodel and children from another AAS, " +
+                            "Copy selected Submodel and children from another AAS, " +
                             "caring for ConceptDescriptions."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1689,7 +1689,7 @@ namespace AasxPackageLogic
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Kind attributes of " +
-                                        "the Aas.Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Setting Kind",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
@@ -1719,7 +1719,7 @@ namespace AasxPackageLogic
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Qualifers of " +
-                                    "the Aas.Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Remove qualifiers",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
@@ -1802,7 +1802,7 @@ namespace AasxPackageLogic
 
                                     if (!res)
                                         this.context.MessageBoxFlyoutShow(
-                                            "The renaming of the Aas.Submodel or some referring elements " +
+                                            "The renaming of the Submodel or some referring elements " +
                                             "has not performed successfully! Please review your inputs and " +
                                             "the AAS structure for any inconsistencies.",
                                             "Warning",
@@ -1819,7 +1819,7 @@ namespace AasxPackageLogic
                     stack, submodel.Kind,
                     (k) => { submodel.Kind = k; },
                     instanceExceptionStatement:
-                        "Exception: if you want to declare a Aas.Submodel, which is been standardised " +
+                        "Exception: if you want to declare a Submodel, which is been standardised " +
                         "by you or a standardisation body.",
                     relatedReferable: submodel);
 
@@ -1974,7 +1974,7 @@ namespace AasxPackageLogic
 
                             if (!res)
                                 this.context.MessageBoxFlyoutShow(
-                                    "The renaming of the Aas.ConceptDescription or some referring elements has not " +
+                                    "The renaming of the ConceptDescription or some referring elements has not " +
                                         "performed successfully! Please review your inputs and the AAS " +
                                         "structure for any inconsistencies.",
                                         "Warning",
@@ -2031,7 +2031,7 @@ namespace AasxPackageLogic
                         "Providing an embeddedDataSpecification, e.g. IEC61360 data specification content, " +
                             "is mandatory. This holds the descriptive information " +
                             "of an concept and allows for an off-line understanding of the meaning " +
-                            "of an concept/ Aas.ISubmodelElement. Please create this data element.",
+                            "of an concept/ ISubmodelElement. Please create this data element.",
                         breakIfTrue: true),
                 });
             var Iec61360spec = cd.EmbeddedDataSpecifications.FindFirstIEC61360Spec();
@@ -2164,11 +2164,11 @@ namespace AasxPackageLogic
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
                                 .AddAction("add-prop", "Add Aas.Property",
-                                    "Adds a new Aas.Property to the containing collection.")
+                                    "Adds a new Property to the containing collection.")
                                 .AddAction("add-mlp", "Add MultiLang.Prop.",
-                                    "Adds a new Aas.MultiLanguageProperty to the containing collection.")
+                                    "Adds a new MultiLanguageProperty to the containing collection.")
                                 .AddAction("add-smc", "Add Collection",
-                                    "Adds a new Aas.SubmodelElementCollection to the containing collection.")
+                                    "Adds a new SubmodelElementCollection to the containing collection.")
                                 .AddAction("add-named", "Add other ..",
                                     "Adds a selected kind of SubmodelElement to the containing collection.",
                                     args: new AasxMenuListOfArgDefs()
@@ -2439,31 +2439,31 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return sme.SemanticId == null || sme.SemanticId.IsEmpty(); },
                             "The semanticId (see below) is empty. " +
-                                "This SubmodelElement ist currently not assigned to any Aas.ConceptDescription. " +
+                                "This SubmodelElement ist currently not assigned to any ConceptDescription. " +
                                 "However, it is recommended to do such assignemt. " +
                                 "With the 'Assign ..' buttons below you might create and/or assign " +
-                                "the SubmodelElement to an Aas.ConceptDescription.",
+                                "the SubmodelElement to an ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
                 // CDs, dynamic menu items
                 var cdmenu = new AasxMenu()
                         .AddAction("assign-existing", "Use existing",
-                            "Assign the SubmodelElement to an semanticId of an existing Aas.ConceptDescription.")
+                            "Assign the SubmodelElement to an semanticId of an existing ConceptDescription.")
                         .AddAction("create-empty", "Create empty",
-                            "Creates an empty Aas.ConceptDescription and assigns the SubmodelElement to it.")
+                            "Creates an empty ConceptDescription and assigns the SubmodelElement to it.")
                         .AddAction("create-eclass", "Create \U0001f844 ECLASS",
-                            "Selects an concept from ECLASS, creates an Aas.ConceptDescription and " +
+                            "Selects an concept from ECLASS, creates an ConceptDescription and " +
                             "assigns the SubmodelElement to it.")
                         .AddAction("create-this", "Create \U0001f844 this",
-                            "Creates an Aas.ConceptDescription from this element and " +
+                            "Creates an ConceptDescription from this element and " +
                             "assigns the SubmodelElement to it.");
 
                 // TODO: MIHO, check again
                 if (sme.EnumeratesChildren())
                 {
                     cdmenu.AddAction("create-all", "Create \U0001f844 all",
-                            "Creates Aas.ConceptDescription(s) for this element and all subsequent children " +
+                            "Creates ConceptDescription(s) for this element and all subsequent children " +
                             "and assigns the SubmodelElement(s) to it.");
                 }
 
@@ -2620,7 +2620,7 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck( () => { return targets.Count > 0;  },
-                        "Consider importing a Aas.ConceptDescription from ECLASS for the existing SubmodelElement.",
+                        "Consider importing a ConceptDescription from ECLASS for the existing SubmodelElement.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
@@ -2672,11 +2672,11 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("add-prop", "Add Aas.Property",
-                            "Adds a new Aas.Property to the containing collection.")
+                            "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
+                            "Adds a new MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
+                            "Adds a new SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -2779,7 +2779,7 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("navigate-cd", "ConceptDescription",
-                            "Finds the associated Aas.ConceptDescription by semanticId and visually selects it."),
+                            "Finds the associated ConceptDescription by semanticId and visually selects it."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -2951,11 +2951,11 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("add-prop", "Add Aas.Property",
-                            "Adds a new Aas.Property to the containing collection.")
+                            "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
+                            "Adds a new MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
+                            "Adds a new SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -3111,7 +3111,7 @@ namespace AasxPackageLogic
                     "Only by this means, an automatic system can identify and " +
                     "understand the meaning of the SubmodelElements and, for example, " +
                     "its unit or logical datatype. " +
-                    "The semanticId shall reference to a Aas.ConceptDescription within the AAS environment " +
+                    "The semanticId shall reference to a ConceptDescription within the AAS environment " +
                     "or an external repository, such as IEC CDD or ECLASS or " +
                     "a company / consortia repository.",
                     checkForCD: true,
@@ -3191,7 +3191,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return p.Value == null || p.Value.Trim().Length < 1; },
-                            "The value of the Aas.Property. " +
+                            "The value of the Property. " +
                                 "Please provide a string representation " +
                                 "(in case of numbers: without quotes, '.' as decimal separator, " +
                                 "in XML number representation).",
@@ -3220,7 +3220,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                caption: $"Edit Aas.Property '{"" + p.IdShort}'",
+                                caption: $"Edit Property '{"" + p.IdShort}'",
                                 text: p.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {
@@ -3351,7 +3351,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.High),
                         new HintCheck(
                             () => { return mine; },
-                            "The value of the minimum of the Aas.Range. " +
+                            "The value of the minimum of the Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be negative infinite.",
@@ -3372,7 +3372,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return maxe; },
-                            "The value of the maximum of the Aas.Range. " +
+                            "The value of the maximum of the Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be positive infinite.",
@@ -3477,7 +3477,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return rfe.Value == null || rfe.Value.IsEmpty(); },
                             "Please choose the target of the reference. " +
-                                "You refer to any Aas.IReferable, if local within the AAS environment or outside. " +
+                                "You refer to any IReferable, if local within the AAS environment or outside. " +
                                 "The semantics of your reference shall be described " +
                                 "by the concept referred by semanticId.",
                             severityLevel: HintCheck.Severity.Notice)
@@ -3638,7 +3638,7 @@ namespace AasxPackageLogic
                             () => stats?.AllChildSmeTypeMatch == false,
                             "Constraint AASd-108 violated: All first level child elements in a " +
                             "SubmodelElementList shall have the same submodel element type as specified " +
-                            "in Aas.SubmodelElementList/typeValueListElement.")
+                            "in SubmodelElementList/typeValueListElement.")
                     });
                 this.AddKeyValueExRef(
                     stack, "typeValueListElement", sml, Aas.Stringification.ToString(sml.TypeValueListElement),
@@ -3661,10 +3661,10 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => stats?.AllChildValueTypeMatch == false,
-                            "Constraint AASd-109 violated: If Aas.SubmodelElementList/typeValueListElement " +
-                            "equal to Aas.Property or Aas.Range, Aas.SubmodelElementList/valueTypeListElement shall " +
-                            "be set and all first level child elements in the Aas.SubmodelElementList shall " +
-                            "have the the value type as specified in Aas.SubmodelElementList/valueTypeListElement")
+                            "Constraint AASd-109 violated: If SubmodelElementList/typeValueListElement " +
+                            "equal to Aas.Property or Aas.Range, SubmodelElementList/valueTypeListElement shall " +
+                            "be set and all first level child elements in the SubmodelElementList shall " +
+                            "have the the value type as specified in SubmodelElementList/valueTypeListElement")
                     });
                 this.AddKeyValueExRef(
                     stack, "valueTypeListElement", sml, Aas.Stringification.ToString(sml.ValueTypeListElement), 
@@ -3868,10 +3868,10 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return bev.Observed == null || bev.Observed.IsEmpty(); },
-                                "Please choose the Referabe, e.g. Aas.Submodel, Aas.SubmodelElementCollection or " +
+                                "Please choose the Referabe, e.g. Aas.Submodel, SubmodelElementCollection or " +
                                 "DataElement which is being observed. " + System.Environment.NewLine +
-                                "You could refer to any Aas.IReferable, however it recommended restrict the scope " +
-                                "to the local AAS or even within a Aas.Submodel.",
+                                "You could refer to any IReferable, however it recommended restrict the scope " +
+                                "to the local AAS or even within a Submodel.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 if (this.SafeguardAccess(

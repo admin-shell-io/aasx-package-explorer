@@ -1036,7 +1036,7 @@ namespace AasxPackageExplorer
             // access
             if (sm == null || env == null)
             {
-                LogErrorToTicket(ticket, "Read Aas.Submodel: invalid Aas.Submodel or Environment.");
+                LogErrorToTicket(ticket, "Read Aas.Submodel: invalid Submodel or Environment.");
                 return;
             }
 
@@ -1094,7 +1094,7 @@ namespace AasxPackageExplorer
             // access
             if (sm == null)
             {
-                LogErrorToTicket(ticket, "Write Aas.Submodel: invalid Aas.Submodel.");
+                LogErrorToTicket(ticket, "Write Aas.Submodel: invalid Submodel.");
                 return;
             }
 
@@ -1125,7 +1125,7 @@ namespace AasxPackageExplorer
             // access
             if (sm == null)
             {
-                LogErrorToTicket(ticket, "Put Aas.Submodel: invalid Aas.Submodel.");
+                LogErrorToTicket(ticket, "Put Aas.Submodel: invalid Submodel.");
                 return;
             }
 
@@ -1157,7 +1157,7 @@ namespace AasxPackageExplorer
             // access
             if (sm == null || env == null)
             {
-                LogErrorToTicket(ticket, "Get Aas.Submodel: invalid Aas.Submodel or Environment.");
+                LogErrorToTicket(ticket, "Get Aas.Submodel: invalid Submodel or Environment.");
                 return;
             }
 
