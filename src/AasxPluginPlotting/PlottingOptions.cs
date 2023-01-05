@@ -21,7 +21,7 @@ namespace AasxPluginPlotting
 {
     public class PlottingOptionsRecord
     {
-        public List<AasCore.Aas3_0_RC02.Key> AllowSubmodelSemanticId = new List<AasCore.Aas3_0_RC02.Key>();
+        public List<Aas.Key> AllowSubmodelSemanticId = new List<Aas.Key>();
     }
 
     public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase

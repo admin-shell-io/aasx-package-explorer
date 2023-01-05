@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts
     {
         public static AasEvents Static = new AasEvents();
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_StructureChangeOutwards,
             CD_UpdateValueOutwards;
 

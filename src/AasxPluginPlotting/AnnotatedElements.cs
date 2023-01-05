@@ -77,7 +77,7 @@ namespace AasxIntegrationBase
         /// which features the Qualifier "Annotation.Args".
         /// </summary>
         [JsonIgnore]
-        public List<AasCore.Aas3_0_RC02.LangString> Description;
+        public List<Aas.LangString> Description;
 
         // ReSharper enable UnassignedField.Global
 
@@ -106,12 +106,12 @@ namespace AasxIntegrationBase
 
         public AnnotatedElements() { }
 
-        public AnnotatedElements(AasCore.Aas3_0_RC02.IReferable root)
+        public AnnotatedElements(Aas.IReferable root)
         {
             Parse(root);
         }
 
-        public void Parse(AasCore.Aas3_0_RC02.IReferable root)
+        public void Parse(Aas.IReferable root)
         {
             root?.RecurseOnReferables(null,
                 includeThis: true,
@@ -123,10 +123,10 @@ namespace AasxIntegrationBase
                         if (a == null)
                             continue;
 
-                        if (a.desc && rf is AasCore.Aas3_0_RC02.Submodel sm)
+                        if (a.desc && rf is Aas.Submodel sm)
                             a.Description = sm.Description;
 
-                        if (a.desc && rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+                        if (a.desc && rf is Aas.ISubmodelElement sme)
                             a.Description = sme.Description;
 
                         _args.Add(a);

@@ -42,8 +42,8 @@ namespace AasxPluginExportTable.TimeSeries
         //
 
         public static void ImportTimeSeriesFromFile(
-            AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.Submodel submodel,
+            Aas.Environment env,
+            Aas.Submodel submodel,
             ImportTimeSeriesRecord options,
             string fn, LogInstance log = null)
         {
@@ -247,7 +247,7 @@ namespace AasxPluginExportTable.TimeSeries
 
         protected bool WriteSeries(
             ImportTimeSeriesRecord options,
-            AasCore.Aas3_0_RC02.Submodel submodel)
+            Aas.Submodel submodel)
         {
             // access 
             if (options == null || submodel == null || _rows == null || _columnNames == null)
@@ -261,21 +261,21 @@ namespace AasxPluginExportTable.TimeSeries
                 submodel.SemanticId = defs.SM_TimeSeriesData?.SemanticId?.Copy();
 
             // time series
-            var smcTimeSeries = submodel.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+            var smcTimeSeries = submodel.SubmodelElements.CreateSMEForCD<Aas.SubmodelElementCollection>(
                     defs.CD_TimeSeries, addSme: true);
 
             // attributes for this
 
-            smcTimeSeries.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
+            smcTimeSeries.Value.CreateSMEForCD<Aas.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
                 .Set("en", "To be defined");
 
-            smcTimeSeries.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
+            smcTimeSeries.Value.CreateSMEForCD<Aas.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
                 .Set("en", "To be defined");
 
             while (true)
             {
                 // segment
-                var smcSegment = smcTimeSeries.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                var smcSegment = smcTimeSeries.Value.CreateSMEForCD<Aas.SubmodelElementCollection>(
                     defs.CD_TimeSeriesSegment, addSme: true);
 
                 // chunk of records (idea: simply copy!)
@@ -283,37 +283,37 @@ namespace AasxPluginExportTable.TimeSeries
 
                 // attributes for this
 
-                smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
+                smcSegment.Value.CreateSMEForCD<Aas.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
                     .Set("en", "To be defined");
 
-                smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
+                smcSegment.Value.CreateSMEForCD<Aas.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
                     .Set("en", "To be defined");
 
-                smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordCount, addSme: true)?
-                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + chunk.Count);
+                smcSegment.Value.CreateSMEForCD<Aas.Property>(defs.CD_RecordCount, addSme: true)?
+                    .Set(Aas.DataTypeDefXsd.Integer, "" + chunk.Count);
 
-                smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_StartTime, addSme: true)?
-                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.DateTime, "");
+                smcSegment.Value.CreateSMEForCD<Aas.Property>(defs.CD_StartTime, addSme: true)?
+                    .Set(Aas.DataTypeDefXsd.DateTime, "");
 
-                smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_EndTime, addSme: true)?
-                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.DateTime, "");
+                smcSegment.Value.CreateSMEForCD<Aas.Property>(defs.CD_EndTime, addSme: true)?
+                    .Set(Aas.DataTypeDefXsd.DateTime, "");
 
                 // Time Stamps? == TimeSeriesVariable
 
                 if (options.ColTime >= 1)
                 {
                     // variable
-                    var smcVar = smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    var smcVar = smcSegment.Value.CreateSMEForCD<Aas.SubmodelElementCollection>(
                         defs.CD_TimeSeriesVariable, idShort: "TimeSeriesVariable_TimeStamps", addSme: true);
 
                     // attributes for this
 
-                    smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + (0));
+                    smcVar.Value.CreateSMEForCD<Aas.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
+                        .Set(Aas.DataTypeDefXsd.Integer, "" + (0));
 
-                    smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_UtcTime, addSme: true, isTemplate: true);
+                    smcVar.Value.CreateSMEForCD<Aas.Property>(defs.CD_UtcTime, addSme: true, isTemplate: true);
 
-                    var va = smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Blob>(defs.CD_ValueArray, addSme: true);
+                    var va = smcVar.Value.CreateSMEForCD<Aas.Blob>(defs.CD_ValueArray, addSme: true);
                     if (va != null)
                     {
                         va.Value = Encoding.Default.GetBytes(
@@ -332,19 +332,19 @@ namespace AasxPluginExportTable.TimeSeries
                     var ids = $"TimeSeriesVariable_{(1 + di).ToString("D2")}";
                     if (options.RowHeader >= 1 && _columnNames.Count > di)
                         ids += "_" + _columnNames[di];
-                    var smcVar = smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    var smcVar = smcSegment.Value.CreateSMEForCD<Aas.SubmodelElementCollection>(
                         defs.CD_TimeSeriesVariable, idShort: ids, addSme: true);
 
                     // attributes for this
 
-                    smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + (1 + di));
+                    smcVar.Value.CreateSMEForCD<Aas.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
+                        .Set(Aas.DataTypeDefXsd.Integer, "" + (1 + di));
 
-                    var dp = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.Double, idShort: "DataPoint");
-                    dp.Kind = AasCore.Aas3_0_RC02.ModelingKind.Template;
+                    var dp = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: "DataPoint");
+                    dp.Kind = Aas.ModelingKind.Template;
                     smcVar.Value.Add(dp);
 
-                    var va = smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Blob>(defs.CD_ValueArray, addSme: true);
+                    var va = smcVar.Value.CreateSMEForCD<Aas.Blob>(defs.CD_ValueArray, addSme: true);
                     if (va != null)
                     {
                         va.Value = Encoding.Default.GetBytes(

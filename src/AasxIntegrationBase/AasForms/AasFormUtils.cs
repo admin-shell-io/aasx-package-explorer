@@ -20,8 +20,8 @@ namespace AasxIntegrationBase.AasForms
     public static class AasFormUtils
     {
         private static void RecurseExportAsTemplate(
-            List<AasCore.Aas3_0_RC02.ISubmodelElement> smwc, FormDescListOfElement tels,
-            AasCore.Aas3_0_RC02.Environment env = null, List<AasCore.Aas3_0_RC02.ConceptDescription> cds = null)
+            List<Aas.ISubmodelElement> smwc, FormDescListOfElement tels,
+            Aas.Environment env = null, List<Aas.ConceptDescription> cds = null)
         {
             // access
             if (smwc == null || tels == null)
@@ -32,43 +32,43 @@ namespace AasxIntegrationBase.AasForms
                 if (smw != null && smw != null)
                 {
                     FormDescSubmodelElement tsme = null;
-                    if (smw is AasCore.Aas3_0_RC02.Property p)
+                    if (smw is Aas.Property p)
                     {
                         tsme = new FormDescProperty(
                             "" + p.IdShort, FormMultiplicity.One, p.SemanticId?.GetAsExactlyOneKey(),
-                            "" + p.IdShort, valueType: AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType));
+                            "" + p.IdShort, valueType: Aas.Stringification.ToString(p.ValueType));
                     }
-                    if (smw is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+                    if (smw is Aas.MultiLanguageProperty mlp)
                     {
                         tsme = new FormDescMultiLangProp(
                             "" + mlp.IdShort, FormMultiplicity.One, mlp.SemanticId?.GetAsExactlyOneKey(),
                             "" + mlp.IdShort);
                     }
-                    if (smw is AasCore.Aas3_0_RC02.File fl)
+                    if (smw is Aas.File fl)
                     {
                         tsme = new FormDescFile(
                             "" + fl.IdShort, FormMultiplicity.One, fl.SemanticId?.GetAsExactlyOneKey(),
                             "" + fl.IdShort);
                     }
-                    if (smw is AasCore.Aas3_0_RC02.ReferenceElement rf)
+                    if (smw is Aas.ReferenceElement rf)
                     {
                         tsme = new FormDescReferenceElement(
                             "" + rf.IdShort, FormMultiplicity.One, rf.SemanticId?.GetAsExactlyOneKey(),
                             "" + rf.IdShort);
                     }
-                    if (smw is AasCore.Aas3_0_RC02.RelationshipElement re)
+                    if (smw is Aas.RelationshipElement re)
                     {
                         tsme = new FormDescRelationshipElement(
                             "" + re.IdShort, FormMultiplicity.One, re.SemanticId?.GetAsExactlyOneKey(),
                             "" + re.IdShort);
                     }
-                    if (smw is AasCore.Aas3_0_RC02.Capability cap)
+                    if (smw is Aas.Capability cap)
                     {
                         tsme = new FormDescCapability(
                             "" + cap.IdShort, FormMultiplicity.One, cap.SemanticId?.GetAsExactlyOneKey(),
                             "" + cap.IdShort);
                     }
-                    if (smw is AasCore.Aas3_0_RC02.SubmodelElementCollection smec)
+                    if (smw is Aas.SubmodelElementCollection smec)
                     {
                         tsme = new FormDescSubmodelElementCollection(
                             "" + smec.IdShort, FormMultiplicity.One, smec.SemanticId?.GetAsExactlyOneKey(),
@@ -153,7 +153,7 @@ namespace AasxIntegrationBase.AasForms
                             {
                                 // add clone
                                 cds.Add(
-                                    new AasCore.Aas3_0_RC02.ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
+                                    new Aas.ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
                                         masterCd.IdShort, masterCd.DisplayName, masterCd.Description, 
                                         masterCd.Checksum, masterCd.Administration, 
                                         masterCd.EmbeddedDataSpecifications, masterCd.IsCaseOf));
@@ -162,9 +162,9 @@ namespace AasxIntegrationBase.AasForms
                     }
 
                     // recurse
-                    if (smw is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                    if (smw is Aas.SubmodelElementCollection)
                         RecurseExportAsTemplate(
-                            (smw as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value,
+                            (smw as Aas.SubmodelElementCollection).Value,
                             (tsme as FormDescSubmodelElementCollection).value, env, cds);
                 }
         }
@@ -205,7 +205,7 @@ namespace AasxIntegrationBase.AasForms
             System.IO.File.WriteAllText(fn, json);
         }
 
-        public static void ExportAsTemplate(AasCore.Aas3_0_RC02.Submodel sm, string fn)
+        public static void ExportAsTemplate(Aas.Submodel sm, string fn)
         {
             // access
             if (fn == null || sm == null || sm.SubmodelElements == null)
@@ -237,7 +237,7 @@ namespace AasxIntegrationBase.AasForms
             public string FormTag = "";
             public string FormTitle = "";
             public FormDescSubmodel FormSubmodel = null;
-            public List<AasCore.Aas3_0_RC02.ConceptDescription> ConceptDescriptions = null;
+            public List<Aas.ConceptDescription> ConceptDescriptions = null;
         }
 
         [DisplayName("Options", noTypeLookup: true)]
@@ -248,7 +248,7 @@ namespace AasxIntegrationBase.AasForms
         }
 
         public static void ExportAsGenericFormsOptions(
-            AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm, string fn)
+            Aas.Environment env, Aas.Submodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.SubmodelElements == null)
@@ -263,7 +263,7 @@ namespace AasxIntegrationBase.AasForms
             tsm.SubmodelElements = new FormDescListOfElement();
 
             // will collect a list of CDs
-            var cds = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
+            var cds = new List<Aas.ConceptDescription>();
 
             // ok, export all SubmodelElems into tsm
             RecurseExportAsTemplate(sm.SubmodelElements, tsm.SubmodelElements, env, cds);

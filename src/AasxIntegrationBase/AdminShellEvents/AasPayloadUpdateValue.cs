@@ -39,7 +39,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Path of the element to be updated. Contains one or more Keys, relative to the Observable of
         /// the defined Event.
         /// </summary>
-        public List<AasCore.Aas3_0_RC02.Key> Path { get; set; }
+        public List<Aas.Key> Path { get; set; }
 
         /// <summary>
         /// Serialized updated value of the updated element.
@@ -49,23 +49,23 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// <summary>
         /// ValueId of the update element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference ValueId { get; set; }
+        public Aas.Reference ValueId { get; set; }
 
         /// <summary>
         /// Direct reference to Referable, when value item was successfully processed.
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]
-        public AasCore.Aas3_0_RC02.IReferable FoundReferable;
+        public Aas.IReferable FoundReferable;
 
         //
         // Constructor
         //
 
         public AasPayloadUpdateValueItem(
-            List<AasCore.Aas3_0_RC02.Key> path = null,
+            List<Aas.Key> path = null,
             string value = null,
-            AasCore.Aas3_0_RC02.Reference valueId = null)
+            Aas.Reference valueId = null)
         {
             Path = path;
             Value = value;

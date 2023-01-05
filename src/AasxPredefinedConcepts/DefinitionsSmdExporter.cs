@@ -25,10 +25,10 @@ namespace AasxPredefinedConcepts
     {
         public static SmdExporter Static = new SmdExporter();
 
-        public AasCore.Aas3_0_RC02.Reference
+        public Aas.Reference
             SEM_SmdExporterSubmodel;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_Dummy;
 
         public SmdExporter()
@@ -37,7 +37,7 @@ namespace AasxPredefinedConcepts
             this.DomainInfo = "Plugin SmdExporter";
 
             // IReferable
-            SEM_SmdExporterSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/SmdExporter/Submodel/1/0") });
+            SEM_SmdExporterSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/SmdExporter/Submodel/1/0") });
 
             // dummy .. to be replaced later
             CD_Dummy = CreateSparseConceptDescription("en", "IRI",

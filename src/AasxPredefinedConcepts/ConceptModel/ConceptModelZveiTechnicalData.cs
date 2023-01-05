@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts.ConceptModel
 
         public Version ActiveVersion = Version.Unknown;
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_TechnicalData;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_GeneralInformation,
             CD_ManufacturerName,
             CD_ManufacturerLogo,
@@ -52,7 +52,7 @@ namespace AasxPredefinedConcepts.ConceptModel
             CD_TextStatement,
             CD_ValidDate;
 
-        public ConceptModelZveiTechnicalData(AasCore.Aas3_0_RC02.Submodel sm)
+        public ConceptModelZveiTechnicalData(Aas.Submodel sm)
         {
             InitFromSubmodel(sm);
         }
@@ -127,7 +127,7 @@ namespace AasxPredefinedConcepts.ConceptModel
             }
         }
 
-        public void InitFromSubmodel(AasCore.Aas3_0_RC02.Submodel sm)
+        public void InitFromSubmodel(Aas.Submodel sm)
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());

@@ -30,11 +30,11 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class ModuleTypePackage : AasxDefinitionBase
         {
-            public AasCore.Aas3_0_RC02.Reference
+            public Aas.Reference
                 SEM_MtpSubmodel,
                 SEM_MtpInstanceSubmodel;
 
-            public AasCore.Aas3_0_RC02.ConceptDescription
+            public Aas.ConceptDescription
                 CD_MtpTypeSubmodel,
                 CD_SourceList,
                 CD_SourceOpcUaServer,
@@ -51,9 +51,9 @@ namespace AasxPredefinedConcepts
                 this.DomainInfo = "Module Type Package (MTP)";
 
                 // IReferable
-                SEM_MtpSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
+                SEM_MtpSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
 
-                SEM_MtpInstanceSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
+                SEM_MtpInstanceSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",

@@ -24,10 +24,10 @@ namespace AasxPredefinedConcepts
     {
         public static ImageMap Static = new ImageMap();
 
-        public AasCore.Aas3_0_RC02.Reference
+        public Aas.Reference
             SEM_ImageMapSubmodel;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_ImageFile,
             CD_EntityOfImageMap,
             CD_RegionRect,
@@ -45,7 +45,7 @@ namespace AasxPredefinedConcepts
             this.DomainInfo = "Plugin ImageMap";
 
             // IReferable
-            SEM_ImageMapSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
+            SEM_ImageMapSubmodel = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",
                 "ImageFile",

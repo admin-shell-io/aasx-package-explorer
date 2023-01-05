@@ -44,7 +44,7 @@ namespace AasxPluginGenericForms
         /// <summary>
         /// A list with required concept descriptions, if appropriate.
         /// </summary>
-        public List<AasCore.Aas3_0_RC02.ConceptDescription> ConceptDescriptions = null;
+        public List<Aas.ConceptDescription> ConceptDescriptions = null;
 
         //
         // Constructors
@@ -62,12 +62,12 @@ namespace AasxPluginGenericForms
                 FormSubmodel = new FormDescSubmodel(src.FormSubmodel);
             if (src.ConceptDescriptions != null)
             {
-                ConceptDescriptions = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
+                ConceptDescriptions = new List<Aas.ConceptDescription>();
                 foreach (var ocd in src.ConceptDescriptions)
                 {
                     ConceptDescriptions.Add(
                         ExtendConceptDescription.ConvertFromV20(
-                            new AasCore.Aas3_0_RC02.ConceptDescription(""), ocd));
+                            new Aas.ConceptDescription(""), ocd));
                 }
             }
         }
@@ -120,14 +120,14 @@ namespace AasxPluginGenericForms
 
             rec.FormSubmodel = new FormDescSubmodel(
                 "Submodel Root",
-                new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "www.exmaple.com/sms/1112"),
+                new Aas.Key(Aas.KeyTypes.Submodel, "www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
                 formText: "Sample Property",
                 multiplicity: FormMultiplicity.OneToMany,
-                smeSemanticId: new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
+                smeSemanticId: new Aas.Key(Aas.KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",
                 valueType: "string",
                 presetValue: "123"));
@@ -135,7 +135,7 @@ namespace AasxPluginGenericForms
             return opt;
         }
 
-        public GenericFormsOptionsRecord MatchRecordsForSemanticId(AasCore.Aas3_0_RC02.Reference sem)
+        public GenericFormsOptionsRecord MatchRecordsForSemanticId(Aas.Reference sem)
         {
             // check for a record in options, that matches Submodel
             GenericFormsOptionsRecord res = null;

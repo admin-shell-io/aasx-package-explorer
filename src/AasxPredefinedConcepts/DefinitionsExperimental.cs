@@ -36,7 +36,7 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class InteropRelations : AasxDefinitionBase
         {
-            public AasCore.Aas3_0_RC02.ConceptDescription
+            public Aas.ConceptDescription
                 CD_FileToNavigateElement,
                 CD_FileToEntity,
                 CD_IsPartOfForBOM,
@@ -75,7 +75,7 @@ namespace AasxPredefinedConcepts
                     "EntityOfElectricalEngineering",
                     "http://admin-shell.io/sandbox/CompositeComponent/Electrical/EntityOfElectricalEngineering/1/0",
                     @"States, that the Entity is part of the model for Electrical engineering.
-                    Note: Any AasCore.Aas3_0_RC02.Entity with a certain meaning to the Electrical engineering might be 
+                    Note: Any Aas.Entity with a certain meaning to the Electrical engineering might be 
                     declared as EntityOfElectricalEngineering.");
 
                 CD_ElectricSinglePoleConnection = CreateSparseConceptDescription("en", "IRI",

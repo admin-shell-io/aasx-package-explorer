@@ -84,7 +84,7 @@ namespace AasxPluginExportTable.Uml
                 _builder.AppendLine(line);
         }
 
-        public UmlHandle AddClass(AasCore.Aas3_0_RC02.IReferable rf)
+        public UmlHandle AddClass(Aas.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -119,7 +119,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public UmlHandle ProcessEntity(
-            AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
+            Aas.IReferable parent, Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -151,7 +151,7 @@ namespace AasxPluginExportTable.Uml
             return dstTuple;
         }
 
-        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
+        public void ProcessSubmodel(Aas.Submodel submodel)
         {
             Writeln("mainframe SMT " + submodel.IdShort);
             Writeln("");

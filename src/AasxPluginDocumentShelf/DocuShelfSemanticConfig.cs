@@ -30,30 +30,30 @@ namespace AasxPluginDocumentShelf
     /// </summary>
     public class DocuShelfSemanticConfig
     {
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentation = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocument = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentIdValue = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentClassId = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentClassName = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentClassificationSystem = null;
-        public AasCore.Aas3_0_RC02.Key SemIdOrganizationName = null;
-        public AasCore.Aas3_0_RC02.Key SemIdOrganizationOfficialName = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentVersion = null;
-        public AasCore.Aas3_0_RC02.Key SemIdLanguage = null;
-        public AasCore.Aas3_0_RC02.Key SemIdTitle = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDate = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentVersionIdValue = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDigitalFile = null;
+        public Aas.Key SemIdDocumentation = null;
+        public Aas.Key SemIdDocument = null;
+        public Aas.Key SemIdDocumentIdValue = null;
+        public Aas.Key SemIdDocumentClassId = null;
+        public Aas.Key SemIdDocumentClassName = null;
+        public Aas.Key SemIdDocumentClassificationSystem = null;
+        public Aas.Key SemIdOrganizationName = null;
+        public Aas.Key SemIdOrganizationOfficialName = null;
+        public Aas.Key SemIdDocumentVersion = null;
+        public Aas.Key SemIdLanguage = null;
+        public Aas.Key SemIdTitle = null;
+        public Aas.Key SemIdDate = null;
+        public Aas.Key SemIdDocumentVersionIdValue = null;
+        public Aas.Key SemIdDigitalFile = null;
 
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentId = null;
-        public AasCore.Aas3_0_RC02.Key SemIdIsPrimaryDocumentId = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDocumentVersionId = null;
-        public AasCore.Aas3_0_RC02.Key SemIdSummary = null;
-        public AasCore.Aas3_0_RC02.Key SemIdKeywords = null;
-        public AasCore.Aas3_0_RC02.Key SemIdStatusValue = null;
-        public AasCore.Aas3_0_RC02.Key SemIdRole = null;
-        public AasCore.Aas3_0_RC02.Key SemIdDomainId = null;
-        public AasCore.Aas3_0_RC02.Key SemIdReferencedObject = null;
+        public Aas.Key SemIdDocumentId = null;
+        public Aas.Key SemIdIsPrimaryDocumentId = null;
+        public Aas.Key SemIdDocumentVersionId = null;
+        public Aas.Key SemIdSummary = null;
+        public Aas.Key SemIdKeywords = null;
+        public Aas.Key SemIdStatusValue = null;
+        public Aas.Key SemIdRole = null;
+        public Aas.Key SemIdDomainId = null;
+        public Aas.Key SemIdReferencedObject = null;
 
         public FormDescSubmodelElementCollection FormVdi2770 = null;
 

@@ -24,7 +24,7 @@ namespace AasxPredefinedConcepts
     {
         public static PackageExplorer Static = new PackageExplorer();
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_AasxLoadedNavigateTo;
 
         public PackageExplorer()

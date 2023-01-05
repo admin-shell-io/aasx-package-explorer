@@ -26,7 +26,7 @@ namespace AasxPluginBomStructure
 
     public class BomLinkStyle // : IReferable
     {
-        public AasCore.Aas3_0_RC02.Key Match;
+        public Aas.Key Match;
         public bool Skip;
         public BomLinkDirection Direction;
         public string Color;
@@ -35,7 +35,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        // public Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new Aas.Reference(Match);
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -52,7 +52,7 @@ namespace AasxPluginBomStructure
 
     public class BomNodeStyle // : IGetReference
     {
-        public AasCore.Aas3_0_RC02.Key Match;
+        public Aas.Key Match;
         public bool Skip;
 
         public string Shape;
@@ -63,7 +63,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        // public Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new Aas.Reference(Match);
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>
@@ -80,7 +80,7 @@ namespace AasxPluginBomStructure
 
     public class BomStructureOptionsRecord
     {
-        public List<AasCore.Aas3_0_RC02.Key> AllowSubmodelSemanticId = new List<AasCore.Aas3_0_RC02.Key>();
+        public List<Aas.Key> AllowSubmodelSemanticId = new List<Aas.Key>();
 
         public int Layout;
         public bool? Compact;
@@ -94,14 +94,14 @@ namespace AasxPluginBomStructure
             NodeStyles.Index();
         }
 
-        public BomLinkStyle FindFirstLinkStyle(AasCore.Aas3_0_RC02.Reference semId)
+        public BomLinkStyle FindFirstLinkStyle(Aas.Reference semId)
         {
             if (semId == null)
                 return null;
             return LinkStyles.Store.FindElementByReference(semId, MatchMode.Relaxed);
         }
 
-        public BomNodeStyle FindFirstNodeStyle(AasCore.Aas3_0_RC02.Reference semId)
+        public BomNodeStyle FindFirstNodeStyle(Aas.Reference semId)
         {
             if (semId == null)
                 return null;
@@ -116,7 +116,7 @@ namespace AasxPluginBomStructure
 
         public BomStructureOptionsRecordList(IEnumerable<BomStructureOptionsRecord> collection) : base(collection) { }
 
-        public BomLinkStyle FindFirstLinkStyle(AasCore.Aas3_0_RC02.Reference semId)
+        public BomLinkStyle FindFirstLinkStyle(Aas.Reference semId)
         {
             foreach (var rec in this)
             {
@@ -127,7 +127,7 @@ namespace AasxPluginBomStructure
             return null;
         }
 
-        public BomNodeStyle FindFirstNodeStyle(AasCore.Aas3_0_RC02.Reference semId)
+        public BomNodeStyle FindFirstNodeStyle(Aas.Reference semId)
         {
             foreach (var rec in this)
             {
@@ -150,7 +150,7 @@ namespace AasxPluginBomStructure
         {
             var rec = new BomStructureOptionsRecord();
             rec.AllowSubmodelSemanticId.Add(
-                new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://smart.festo.com/id/type/submodel/BOM/1/1"));
+                new Aas.Key(Aas.KeyTypes.Submodel, "http://smart.festo.com/id/type/submodel/BOM/1/1"));
 
             var opt = new BomStructureOptions();
             opt.Records.Add(rec);
@@ -170,7 +170,7 @@ namespace AasxPluginBomStructure
         /// <summary>
         /// Find matching options records
         /// </summary>
-        public IEnumerable<BomStructureOptionsRecord> MatchingRecords(AasCore.Aas3_0_RC02.Reference semId)
+        public IEnumerable<BomStructureOptionsRecord> MatchingRecords(Aas.Reference semId)
         {
             foreach (var rec in Records)
                 if (rec.AllowSubmodelSemanticId != null)

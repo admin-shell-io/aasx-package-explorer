@@ -34,7 +34,7 @@ namespace AasxPluginDocumentShelf
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
+        private Aas.Submodel _submodel = null;
         private DocumentShelfOptions _options = null;
         private PluginEventStack _eventStack = null;
         private PluginSessionBase _session = null;
@@ -122,7 +122,7 @@ namespace AasxPluginDocumentShelf
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel theSubmodel,
+            Aas.Submodel theSubmodel,
             DocumentShelfOptions theOptions,
             PluginEventStack eventStack,
             PluginSessionBase session,
@@ -156,7 +156,7 @@ namespace AasxPluginDocumentShelf
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
+            var sm = osm as Aas.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -801,7 +801,7 @@ namespace AasxPluginDocumentShelf
         #region Callbacks
         //===============
 
-        private List<AasCore.Aas3_0_RC02.ISubmodelElement> _updateSourceElements = null;
+        private List<Aas.ISubmodelElement> _updateSourceElements = null;
 
         private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
@@ -843,14 +843,14 @@ namespace AasxPluginDocumentShelf
                 var semConf = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
                 var found = false;
                 foreach (var smcDoc in
-                    _submodel.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    _submodel.SubmodelElements.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         semConf.SemIdDocument))
                     if (smcDoc?.Value == e.SourceElementsDocument)
                     {
                         // identify as well the DocumentVersion
                         // (convert to List() because of Count() below)
                         var allVers =
-                            e.SourceElementsDocument.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                            e.SourceElementsDocument.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                                 semConf.SemIdDocumentVersion).ToList();
                         foreach (var smcVer in allVers)
                             if (smcVer?.Value == e.SourceElementsDocumentVersion)
@@ -1069,14 +1069,14 @@ namespace AasxPluginDocumentShelf
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    List<AasCore.Aas3_0_RC02.ISubmodelElement> currentElements = null;
+                    List<Aas.ISubmodelElement> currentElements = null;
                     if (_formDoc.InUpdateMode)
                     {
                         currentElements = _updateSourceElements;
                     }
                     else
                     {
-                        currentElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                        currentElements = new List<Aas.ISubmodelElement>();
                     }
 
                     // create a sequence of SMEs
@@ -1096,7 +1096,7 @@ namespace AasxPluginDocumentShelf
                     // the InstSubmodel, which started the process, should have a "fresh" SMEC available
                     // make it unique in the Documentens Submodel
                     var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme
-                            as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                            as Aas.SubmodelElementCollection;
 
                     // if not update, put them into the Document's Submodel
                     if (!_formDoc.InUpdateMode && currentElements != null && newSmc != null)
@@ -1126,13 +1126,13 @@ namespace AasxPluginDocumentShelf
                 var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
                 var theCds = theDefs.GetAllReferables().Where(
-                    (rf) => { return rf is AasCore.Aas3_0_RC02.ConceptDescription; }).ToList();
+                    (rf) => { return rf is Aas.ConceptDescription; }).ToList();
 
                 // v11
                 if (_selectedVersion == DocumentEntity.SubmodelVersion.V11)
                 {
                     theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
-                    (rf) => { return rf is AasCore.Aas3_0_RC02.ConceptDescription; }).ToList();
+                    (rf) => { return rf is Aas.ConceptDescription; }).ToList();
                 }
 
                 if (theCds.Count < 1)
@@ -1174,7 +1174,7 @@ namespace AasxPluginDocumentShelf
                             int nr = 0;
                             foreach (var x in theCds)
                             {
-                                var cd = x as AasCore.Aas3_0_RC02.ConceptDescription;
+                                var cd = x as Aas.ConceptDescription;
                                 if (cd == null || cd.Id?.HasContent() != true)
                                     continue;
                                 var cdFound = env.FindConceptDescriptionById(cd.Id);
@@ -1237,7 +1237,7 @@ namespace AasxPluginDocumentShelf
             if (cmd == "ButtonAddEntity" && _formEntity.IdShort.HasContent())
             {
                 // add entity
-                _submodel?.SmeForWrite().CreateSMEForCD<AasCore.Aas3_0_RC02.Entity>(
+                _submodel?.SmeForWrite().CreateSMEForCD<Aas.Entity>(
                     AasxPredefinedConcepts.VDI2770v11.Static.CD_DocumentedEntity,
                     idShort: "" + _formEntity.IdShort.Trim(),
                     addSme: true);

@@ -167,7 +167,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         return null;
 
                     // looking only for Submodels
-                    var sm = args[0] as AasCore.Aas3_0_RC02.Submodel;
+                    var sm = args[0] as Aas.Submodel;
                     if (sm == null)
                         return null;
 

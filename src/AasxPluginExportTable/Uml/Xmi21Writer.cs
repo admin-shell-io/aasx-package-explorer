@@ -152,7 +152,7 @@ namespace AasxPluginExportTable.Uml
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<AasCore.Aas3_0_RC02.ISubmodelElement> features)
+            List<Aas.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
@@ -167,7 +167,7 @@ namespace AasxPluginExportTable.Uml
 
                 var attribute = CreateAppendElement(featureContainer, "ownedAttribute",
                     new[] {
-                        "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
+                        "xmi:type", "uml:Aas.Property",
                         "xmi:id", attrId,
                         "name", "" + sme.IdShort,
                         "visibility", "public",
@@ -195,7 +195,7 @@ namespace AasxPluginExportTable.Uml
             }
         }
 
-        public XmiHandle AddClass(AasCore.Aas3_0_RC02.IReferable rf)
+        public XmiHandle AddClass(Aas.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -216,7 +216,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public XmiHandle ProcessEntity(
-            AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
+            Aas.IReferable parent, Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -247,7 +247,7 @@ namespace AasxPluginExportTable.Uml
             return dstTuple;
         }
 
-        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
+        public void ProcessSubmodel(Aas.Submodel submodel)
         {
             ProcessEntity(null, submodel);
         }
@@ -265,7 +265,7 @@ namespace AasxPluginExportTable.Uml
 
                     var attribute = CreateAppendElement(job.SrcTuple.Elem, "ownedAttribute",
                         new[] {
-                            "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
+                            "xmi:type", "uml:Aas.Property",
                             "xmi:id", assocAttrId,
                             "visibility", "public",
                             "association", assocId,
@@ -309,7 +309,7 @@ namespace AasxPluginExportTable.Uml
 
                     var ownedEnd1 = CreateAppendElement(assoc, "ownedEnd",
                         new[] {
-                            "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
+                            "xmi:type", "uml:Aas.Property",
                             "xmi:id", ownEndId,
                             "visibility", "public",
                             "association", assocId,

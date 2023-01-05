@@ -41,16 +41,16 @@ namespace AasxPluginExportTable
         /// <summary>
         /// This element carries data from either SM or SME.
         /// </summary>
-        public AasCore.Aas3_0_RC02.IReferable Parent;
+        public Aas.IReferable Parent;
 
-        public AasCore.Aas3_0_RC02.Submodel sm;
-        public AasCore.Aas3_0_RC02.ISubmodelElement sme;
-        public AasCore.Aas3_0_RC02.ConceptDescription cd;
+        public Aas.Submodel sm;
+        public Aas.ISubmodelElement sme;
+        public Aas.ConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
-            int depth, AasCore.Aas3_0_RC02.Submodel sm = null, AasCore.Aas3_0_RC02.ISubmodelElement sme = null,
-            AasCore.Aas3_0_RC02.ConceptDescription cd = null,
-            AasCore.Aas3_0_RC02.IReferable parent = null)
+            int depth, Aas.Submodel sm = null, Aas.ISubmodelElement sme = null,
+            Aas.ConceptDescription cd = null,
+            Aas.IReferable parent = null)
         {
             this.depth = depth;
             this.sm = sm;
@@ -59,7 +59,7 @@ namespace AasxPluginExportTable
             this.Parent = parent;
         }
 
-        public AasCore.Aas3_0_RC02.IReferable GetHeadingReferable()
+        public Aas.IReferable GetHeadingReferable()
         {
             if (Parent != null)
                 return Parent;
@@ -176,14 +176,14 @@ namespace AasxPluginExportTable
                 repDict[tag] = value;
             }
 
-            private void repLangStr(string head, AasCore.Aas3_0_RC02.LangString ls)
+            private void repLangStr(string head, Aas.LangString ls)
             {
                 if (ls == null)
                     return;
                 rep(head + "@" + "" + ls.Language, "" + ls.Text);
             }
 
-            private void repListOfLangStr(string head, List<AasCore.Aas3_0_RC02.LangString> lss)
+            private void repListOfLangStr(string head, List<Aas.LangString> lss)
             {
                 if (lss == null)
                     return;
@@ -196,7 +196,7 @@ namespace AasxPluginExportTable
                     repLangStr(head, ls);
             }
 
-            private void repReferable(string head, AasCore.Aas3_0_RC02.IReferable rf)
+            private void repReferable(string head, Aas.IReferable rf)
             {
                 //-9- {Referable}.{idShort, category, description, description[@en..], elementName, 
                 //     elementAbbreviation, parent}
@@ -209,16 +209,16 @@ namespace AasxPluginExportTable
                 rep(head + "elementName", "" + rf.GetSelfDescription()?.AasElementName);
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
 
-                if (rf is AasCore.Aas3_0_RC02.ISubmodelElement rfsme)
+                if (rf is Aas.ISubmodelElement rfsme)
                 {
                     rep(head + "elementShort", "" +
                         rf.GetSelfDescription()?.ElementAbbreviation);
                 }
-                if (rf is AasCore.Aas3_0_RC02.IReferable rfpar)
+                if (rf is Aas.IReferable rfpar)
                     rep(head + "parent", "" + ((rfpar.IdShort != null) ? rfpar.IdShort : "-"));
             }
 
-            private void repModelingKind(string head, AasCore.Aas3_0_RC02.ModelingKind? k)
+            private void repModelingKind(string head, Aas.ModelingKind? k)
             {
                 if (!k.HasValue)
                     return;
@@ -227,7 +227,7 @@ namespace AasxPluginExportTable
                 rep(head + "kind", "" + k.ToString());
             }
 
-            private void repQualifiable(string head, List<AasCore.Aas3_0_RC02.Qualifier> qualifiers)
+            private void repQualifiable(string head, List<Aas.Qualifier> qualifiers)
             {
                 if (qualifiers == null)
                     return;
@@ -236,7 +236,7 @@ namespace AasxPluginExportTable
                 rep(head + "qualifiers", "" + qualifiers.ToStringExtended(1));
             }
 
-            private void repMultiplicty(string head, List<AasCore.Aas3_0_RC02.Qualifier> qualifiers)
+            private void repMultiplicty(string head, List<Aas.Qualifier> qualifiers)
             {
                 // access
                 if (qualifiers == null)
@@ -258,7 +258,7 @@ namespace AasxPluginExportTable
                 rep(head + "multiplicity", "" + multiStr);
             }
 
-            private void repIdentifiable(string head, AasCore.Aas3_0_RC02.IIdentifiable ifi)
+            private void repIdentifiable(string head, Aas.IIdentifiable ifi)
             {
                 if (ifi == null)
                     return;
@@ -274,7 +274,7 @@ namespace AasxPluginExportTable
                 }
             }
 
-            private void repReference(string head, string refName, AasCore.Aas3_0_RC02.Reference rid)
+            private void repReference(string head, string refName, Aas.Reference rid)
             {
                 if (rid == null || refName == null || rid.Keys == null)
                     return;
@@ -330,7 +330,7 @@ namespace AasxPluginExportTable
                     rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
 
                     //-1- {Parent}
-                    if (par is AasCore.Aas3_0_RC02.Submodel parsm)
+                    if (par is Aas.Submodel parsm)
                     {
                         var head = "Parent.";
                         repReferable(head, parsm);
@@ -342,7 +342,7 @@ namespace AasxPluginExportTable
                         repReference(head, "semanticId", parsm.SemanticId);
                     }
 
-                    if (par is AasCore.Aas3_0_RC02.ISubmodelElement parsme)
+                    if (par is Aas.ISubmodelElement parsme)
                     {
                         var head = "Parent.";
                         repReferable(head, parsme);
@@ -377,7 +377,7 @@ namespace AasxPluginExportTable
 
                         //-2- SME.value
 
-                        if (sme is AasCore.Aas3_0_RC02.Property p)
+                        if (sme is Aas.Property p)
                         {
                             //-2- Property.{value, valueType, valueId}
                             rep("Property.value", "" + p.Value);
@@ -388,7 +388,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + p.Value);
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+                        if (sme is Aas.MultiLanguageProperty mlp)
                         {
                             //-2- MultiLanguageProperty.{value, vlaueId}
                             repListOfLangStr("MultiLanguageProperty.value", mlp.Value);
@@ -398,7 +398,7 @@ namespace AasxPluginExportTable
                             repListOfLangStr("SME.value", mlp.Value);
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.Range r)
+                        if (sme is Aas.Range r)
                         {
                             //-2- Range.{valueType, min, max}
                             rep("Range.valueType", "" + r.ValueType);
@@ -408,7 +408,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + r.Min + " .. " + r.Max);
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.Blob b)
+                        if (sme is Aas.Blob b)
                         {
                             //-2- Blob.{mimeType, value}
                             rep("Blob.mimeType", "" + b.ContentType);
@@ -417,7 +417,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + ("" + b.Value).Length + " bytes");
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.File f)
+                        if (sme is Aas.File f)
                         {
                             //-2- File.{mimeType, value}
                             rep("File.mimeType", "" + f.ContentType);
@@ -426,7 +426,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + f.Value);
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.ReferenceElement re)
+                        if (sme is Aas.ReferenceElement re)
                         {
                             //-2- ReferenceElement.value
                             rep("ReferenceElement.value", "" + re.Value?.ToStringExtended(1));
@@ -434,7 +434,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + re.Value?.ToStringExtended(1));
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.RelationshipElement rele)
+                        if (sme is Aas.RelationshipElement rele)
                         {
                             //-2- RelationshipElement.{first, second}
                             rep("RelationshipElement.first", "" + rele.First?.ToStringExtended(1));
@@ -444,7 +444,7 @@ namespace AasxPluginExportTable
                                 + " -> " + rele.Second?.ToStringExtended(1));
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smc)
+                        if (sme is Aas.SubmodelElementCollection smc)
                         {
                             //-2- SubmodelElementCollection.{value = #elements}
                             rep(
@@ -457,7 +457,7 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + ((smc.Value != null) ? smc.Value.Count : 0) + " elements");
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.SubmodelElementList sml)
+                        if (sme is Aas.SubmodelElementList sml)
                         {
                             //-2- SubmodelElementList.{value = #elements, orderRelevant}
                             rep(
@@ -471,10 +471,10 @@ namespace AasxPluginExportTable
                             rep("SME.value", "" + ((sml.Value != null) ? sml.Value.Count : 0) + " elements");
                         }
 
-                        if (sme is AasCore.Aas3_0_RC02.Entity ent)
+                        if (sme is Aas.Entity ent)
                         {
                             //-2- Entity.{entityType, asset}
-                            rep("Entity.entityType", "" + AasCore.Aas3_0_RC02.Stringification.ToString(ent.EntityType));
+                            rep("Entity.entityType", "" + Aas.Stringification.ToString(ent.EntityType));
                             if (ent.GlobalAssetId != null)
                                 rep("Entity.globalAssetId", "" + ent.GlobalAssetId.ToStringExtended(1));
                         }
@@ -500,7 +500,7 @@ namespace AasxPluginExportTable
                             repReference(head, "unitId", iec.UnitId);
                             rep(head + "sourceOfDefinition", "" + iec.SourceOfDefinition);
                             rep(head + "symbol", "" + iec.Symbol);
-                            rep(head + "dataType", "" + AasCore.Aas3_0_RC02.Stringification.ToString(iec.DataType));
+                            rep(head + "dataType", "" + Aas.Stringification.ToString(iec.DataType));
                             repListOfLangStr(head + "definition", iec.Definition);
                             rep(head + "valueFormat", "" + iec.ValueFormat);
 

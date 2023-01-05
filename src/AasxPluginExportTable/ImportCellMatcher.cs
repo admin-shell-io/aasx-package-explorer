@@ -31,8 +31,8 @@ namespace AasxPluginExportTable
         /// Parent denotes the container, in which the SMEs are to be found (the "table head").
         /// SME are expressed by single table rows.
         /// </summary>
-        public AasCore.Aas3_0_RC02.ISubmodelElement Parent, Sme;
-        public AasCore.Aas3_0_RC02.ConceptDescription CD;
+        public Aas.ISubmodelElement Parent, Sme;
+        public Aas.ConceptDescription CD;
 
         /// <summary>
         /// For identification purposes, the parent even of the parent is to be specified.
@@ -72,18 +72,18 @@ namespace AasxPluginExportTable
             SmeParentName = "";
             ParentValue = "";
             SmeValue = "";
-            Parent = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
-            Sme = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
-            CD = new AasCore.Aas3_0_RC02.ConceptDescription("");
+            Parent = new Aas.Property(Aas.DataTypeDefXsd.String);
+            Sme = new Aas.Property(Aas.DataTypeDefXsd.String);
+            CD = new Aas.ConceptDescription("");
             
             // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
-                new AasCore.Aas3_0_RC02.EmbeddedDataSpecification(
-                    new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> {
+                new Aas.EmbeddedDataSpecification(
+                    new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key> {
                         ExtendIDataSpecificationContent.GetKeyForIec61360()
                     }),
-                    new AasCore.Aas3_0_RC02.DataSpecificationIec61360(new List<AasCore.Aas3_0_RC02.LangString>() {
-                        new AasCore.Aas3_0_RC02.LangString("EN?", "")
+                    new Aas.DataSpecificationIec61360(new List<Aas.LangString>() {
+                        new Aas.LangString("EN?", "")
                     })));
         }
     }
@@ -198,12 +198,12 @@ namespace AasxPluginExportTable
             Preset = preset;
         }
 
-        private AasCore.Aas3_0_RC02.Reference CreateSemanticId(string cell)
+        private Aas.Reference CreateSemanticId(string cell)
         {
             if (!cell.HasContent())
                 return null;
 
-            var key = ExtendKey.Parse(cell, AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
+            var key = ExtendKey.Parse(cell, Aas.KeyTypes.ConceptDescription,
                         allowFmtAll: true);
             if (key == null)
                 return null;
@@ -212,7 +212,7 @@ namespace AasxPluginExportTable
         }
 
         private bool MatchEntity(
-            AasCore.Aas3_0_RC02.ISubmodelElement elem, string preset, string cell,
+            Aas.ISubmodelElement elem, string preset, string cell,
             ref string parentName, ref string elemName, ref string valueStr,
             bool allowMultiplicity = false)
         {
@@ -237,7 +237,7 @@ namespace AasxPluginExportTable
                 elem.Category = commit(cell);
 
             if (preset == "kind")
-                elem.Kind = AasCore.Aas3_0_RC02.Stringification.ModelingKindFromString(commit(cell));
+                elem.Kind = Aas.Stringification.ModelingKindFromString(commit(cell));
 
             if (preset == "semanticId")
                 elem.SemanticId = CreateSemanticId(commit(cell));
@@ -259,7 +259,7 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShellUtil.GetEnumValues<AasCore.Aas3_0_RC02.AasSubmodelElements>())
+                foreach (var x in AdminShellUtil.GetEnumValues<Aas.AasSubmodelElements>())
                     // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToString().ToLower() == x.ToString().ToLower())
                         return true;
@@ -269,12 +269,12 @@ namespace AasxPluginExportTable
                     return true;
 
                 // stringify
-                var vtd = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(vt) ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
+                var vtd = Aas.Stringification.DataTypeDefXsdFromString(vt) ?? Aas.DataTypeDefXsd.String;
 
                 // set
-                if (elem is AasCore.Aas3_0_RC02.Property prop)
+                if (elem is Aas.Property prop)
                     prop.ValueType = vtd;
-                if (elem is AasCore.Aas3_0_RC02.Range rng)
+                if (elem is Aas.Range rng)
                     rng.ValueType = vtd;
             }
 
@@ -289,7 +289,7 @@ namespace AasxPluginExportTable
                     multival = "ZeroToMany";
                 if (tricell == "1..*" || tricell == "[1..*]" || tricell == "OneToMany")
                     multival = "OneToMany";
-                elem.Add(new AasCore.Aas3_0_RC02.Qualifier(type: "Multiplicity", valueType: AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: multival));
+                elem.Add(new Aas.Qualifier(type: "Multiplicity", valueType: Aas.DataTypeDefXsd.String, value: multival));
                 return true;
             }
 
@@ -334,7 +334,7 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShellUtil.GetEnumValues<AasCore.Aas3_0_RC02.AasSubmodelElements>())
+                foreach (var x in AdminShellUtil.GetEnumValues<Aas.AasSubmodelElements>())
                     // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToLower() == x.ToString().ToLower())
                         return;
@@ -348,7 +348,7 @@ namespace AasxPluginExportTable
             }
         }
 
-        private bool MatchEntity(AasCore.Aas3_0_RC02.ConceptDescription cd, string preset, string cell)
+        private bool MatchEntity(Aas.ConceptDescription cd, string preset, string cell)
         {
             // access
             if (cd == null || preset == null || cell == null)
@@ -379,7 +379,7 @@ namespace AasxPluginExportTable
                 cd.GetIEC61360().Symbol = commit(cell);
 
             if (preset == "dataType")
-                cd.GetIEC61360().DataType = AasCore.Aas3_0_RC02.Stringification.DataTypeIec61360FromString(commit(cell));
+                cd.GetIEC61360().DataType = Aas.Stringification.DataTypeIec61360FromString(commit(cell));
 
             return res;
         }

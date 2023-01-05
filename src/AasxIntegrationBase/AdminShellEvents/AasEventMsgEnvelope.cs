@@ -35,25 +35,25 @@ namespace AasxIntegrationBase.AdminShellEvents
     public class AasEventMsgEnvelope : IAasPayloadItem
     {
         /// <summary>
-        /// Reference to the source AasCore.Aas3_0_RC02.EventElement, including identification of  AAS,  Submodel, SubmodelElements.
+        /// Reference to the source Aas.EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference Source { get; set; }
+        public Aas.Reference Source { get; set; }
 
         /// <summary>
         /// SematicId  of  the  source  EventElement,  if available.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference SourceSemanticId { get; set; }
+        public Aas.Reference SourceSemanticId { get; set; }
 
         /// <summary>
         /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
         /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference ObservableReference { get; set; }
+        public Aas.Reference ObservableReference { get; set; }
 
         /// <summary>
         /// SemanticId  of  the  Referable,  which  defines  the scope of the event, if available. 
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference ObservableSemanticId { get; set; }
+        public Aas.Reference ObservableSemanticId { get; set; }
 
         /// <summary>
         /// Information for the outer message infrastructure for  scheduling the  event to the  respective 
@@ -168,10 +168,10 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         public AasEventMsgEnvelope(
             DateTime timestamp,
-            AasCore.Aas3_0_RC02.Reference source = null,
-            AasCore.Aas3_0_RC02.Reference sourceSemanticId = null,
-            AasCore.Aas3_0_RC02.Reference observableReference = null,
-            AasCore.Aas3_0_RC02.Reference observableSemanticId = null,
+            Aas.Reference source = null,
+            Aas.Reference sourceSemanticId = null,
+            Aas.Reference observableReference = null,
+            Aas.Reference observableSemanticId = null,
             string topic = null,
             string subject = null,
             AasPayloadBase payload = null,

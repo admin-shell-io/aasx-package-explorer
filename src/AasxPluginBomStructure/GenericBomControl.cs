@@ -32,16 +32,16 @@ namespace AasxPluginBomStructure
     public class GenericBomControl
     {
         private AdminShellPackageEnv _package;
-        private AasCore.Aas3_0_RC02.Submodel _submodel;
+        private Aas.Submodel _submodel;
 
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
-        private AasCore.Aas3_0_RC02.IReferable theReferable = null;
+        private Aas.IReferable theReferable = null;
 
         private PluginEventStack eventStack = null;
 
-        private Dictionary<AasCore.Aas3_0_RC02.IReferable, int> preferredPresetIndex =
-            new Dictionary<AasCore.Aas3_0_RC02.IReferable, int>();
+        private Dictionary<Aas.IReferable, int> preferredPresetIndex =
+            new Dictionary<Aas.IReferable, int>();
 
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 
@@ -60,7 +60,7 @@ namespace AasxPluginBomStructure
         {
             // access
             _package = opackage as AdminShellPackageEnv;
-            _submodel = osm as AasCore.Aas3_0_RC02.Submodel;
+            _submodel = osm as Aas.Submodel;
             _bomOptions = bomOptions;
             var master = masterDockPanel as DockPanel;
             if (_bomOptions == null || _package == null || _submodel == null || master == null)
@@ -153,7 +153,7 @@ namespace AasxPluginBomStructure
 
         private Microsoft.Msagl.Drawing.Graph CreateGraph(
             AdminShellPackageEnv env,
-            AasCore.Aas3_0_RC02.Submodel sm,
+            Aas.Submodel sm,
             GenericBomCreatorOptions options)
         {
             // access   
@@ -232,11 +232,11 @@ namespace AasxPluginBomStructure
                     if (x != null && x.DrawingObject != null && x.DrawingObject.UserData != null)
                     {
                         var us = x.DrawingObject.UserData;
-                        if (us is AasCore.Aas3_0_RC02.IReferable)
+                        if (us is Aas.IReferable)
                         {
                             // make event
-                            var refs = new List<AasCore.Aas3_0_RC02.Key>();
-                            (us as AasCore.Aas3_0_RC02.IReferable).CollectReferencesByParent(refs);
+                            var refs = new List<Aas.Key>();
+                            (us as Aas.IReferable).CollectReferencesByParent(refs);
 
                             // ok?
                             if (refs.Count > 0)
@@ -247,10 +247,10 @@ namespace AasxPluginBomStructure
                             }
                         }
 
-                        if (us is AasCore.Aas3_0_RC02.Reference)
+                        if (us is Aas.Reference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
-                            evt.targetReference = (us as AasCore.Aas3_0_RC02.Reference);
+                            evt.targetReference = (us as Aas.Reference);
                             this.eventStack.PushEvent(evt);
                         }
                     }

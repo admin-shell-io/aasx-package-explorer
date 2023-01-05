@@ -146,8 +146,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 if (args[0] is ImportExportTableRecord record
                     && args[1] is string fn
-                    && args[2] is AasCore.Aas3_0_RC02.Environment env
-                    && args[3] is AasCore.Aas3_0_RC02.Submodel sm
+                    && args[2] is Aas.Environment env
+                    && args[3] is Aas.Submodel sm
                     && args[4] is AasxMenuActionTicket ticket)
                 {
                     // the Submodel elements need to have parents
@@ -166,8 +166,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args != null && args.Length >= 4
                     && args[0] is ExportUmlRecord record
                     && args[1] is string fn
-                    && args[2] is AasCore.Aas3_0_RC02.Environment env
-                    && args[3] is AasCore.Aas3_0_RC02.Submodel sm)
+                    && args[2] is Aas.Environment env
+                    && args[3] is Aas.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -185,8 +185,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args != null && args.Length >= 4
                     && args[0] is ImportTimeSeriesRecord record
                     && args[1] is string fn
-                    && args[1] is AasCore.Aas3_0_RC02.Environment env
-                    && args[2] is AasCore.Aas3_0_RC02.Submodel sm)
+                    && args[1] is Aas.Environment env
+                    && args[2] is Aas.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -202,9 +202,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         }
 
         private void ExportTable_EnumerateSubmodel(
-            List<ExportTableAasEntitiesList> list, AasCore.Aas3_0_RC02.Environment env,
+            List<ExportTableAasEntitiesList> list, Aas.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.ISubmodelElement sme)
+            Aas.Submodel sm, Aas.ISubmodelElement sme)
         {
             // check
             if (list == null || env == null || sm == null)
@@ -214,7 +214,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // Submodel or SME ??
             //
 
-            AasCore.Aas3_0_RC02.IReferable coll = null;
+            Aas.IReferable coll = null;
             if (sme == null)
             {
                 // yield SM
@@ -227,8 +227,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             else
             {
                 // simple check for SME collection
-                if (sme is AasCore.Aas3_0_RC02.IReferable)
-                    coll = (sme as AasCore.Aas3_0_RC02.IReferable);
+                if (sme is Aas.IReferable)
+                    coll = (sme as Aas.IReferable);
             }
 
             // prepare listItem
@@ -257,11 +257,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // add
                     listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
-                        parent: coll as AasCore.Aas3_0_RC02.IReferable));
+                        parent: coll as Aas.IReferable));
 
                     // go directly deeper?
                     if (!broadSearch && ci != null &&
-                        ci is AasCore.Aas3_0_RC02.IReferable)
+                        ci is Aas.IReferable)
                         ExportTable_EnumerateSubmodel(
                             list, env, broadSearch: false, actInHierarchy,
                             depth: 1 + depth, sm: sm, sme: ci);
@@ -272,7 +272,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 if (coll != null)
                     foreach (var ci in coll.EnumerateChildren())
-                        if (ci != null && ci is AasCore.Aas3_0_RC02.IReferable)
+                        if (ci != null && ci is Aas.IReferable)
                             ExportTable_EnumerateSubmodel(
                                 list, env, broadSearch: true, actInHierarchy,
                                 depth: 1 + depth, sm: sm, sme: ci);
@@ -281,7 +281,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private void Export(ImportExportTableRecord record,
             string fn,
-            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null)
         {
             // prepare list of items to be exported
@@ -330,7 +330,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private void Import(ImportExportTableRecord record,
             string fn,
-            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel sm, Aas.Environment env,
             AasxMenuActionTicket ticket = null)
         {
             // get the import file

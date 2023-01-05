@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiNameplateV10 Static = new ZveiNameplateV10();
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_Nameplate;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_ManNam,
             CD_ManProDes,
             CD_Add,

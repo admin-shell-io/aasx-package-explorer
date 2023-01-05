@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiTimeSeriesDataV10 Static = new ZveiTimeSeriesDataV10();
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_TimeSeriesData;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_TimeSeries,
             CD_Name,
             CD_Description,

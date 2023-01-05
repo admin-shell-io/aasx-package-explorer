@@ -41,7 +41,7 @@ namespace AasxPluginBomStructure
         protected MultiValueDictionary<uint, T> dict =
             new MultiValueDictionary<uint, T>();
 
-        protected uint ComputeHashOnReference(AasCore.Aas3_0_RC02.Reference r)
+        protected uint ComputeHashOnReference(Aas.Reference r)
         {
             // access
             if (r == null || r.Keys == null)
@@ -78,7 +78,7 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
-        public void Index(AasCore.Aas3_0_RC02.Reference rf, T elem)
+        public void Index(Aas.Reference rf, T elem)
         {
             // access
             if (elem == null || rf == null)
@@ -89,7 +89,7 @@ namespace AasxPluginBomStructure
         }
 
         public T FindElementByReference(
-            AasCore.Aas3_0_RC02.Reference r,
+            Aas.Reference r,
             MatchMode matchMode = MatchMode.Strict)
         {
             var hk = ComputeHashOnReference(r);
@@ -98,7 +98,7 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as AasCore.Aas3_0_RC02.IReferable)?.GetReference();
+                var xx = (test as Aas.IReferable)?.GetReference();
                 if (xx != null && xx.Matches(r, matchMode))
                     return test;
             }
@@ -108,9 +108,9 @@ namespace AasxPluginBomStructure
 
     }
 
-    public class AasReferableStore : AasReferenceStore<AasCore.Aas3_0_RC02.IReferable>
+    public class AasReferableStore : AasReferenceStore<Aas.IReferable>
     {
-        private void RecurseIndexSME(AasCore.Aas3_0_RC02.Reference currRef, AasCore.Aas3_0_RC02.ISubmodelElement sme)
+        private void RecurseIndexSME(Aas.Reference currRef, Aas.ISubmodelElement sme)
         {
             // access
             if (currRef == null || sme == null)
@@ -118,8 +118,8 @@ namespace AasxPluginBomStructure
 
             // add to the currRef
             currRef.Keys.Add(
-                new AasCore.Aas3_0_RC02.Key(
-                    sme.GetSelfDescription().KeyType ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, sme.IdShort));
+                new Aas.Key(
+                    sme.GetSelfDescription().KeyType ?? Aas.KeyTypes.GlobalReference, sme.IdShort));
 
             // index
             var hk = ComputeHashOnReference(currRef);
@@ -135,7 +135,7 @@ namespace AasxPluginBomStructure
             currRef.Keys.RemoveAt(currRef.Keys.Count - 1);
         }
 
-        public void Index(AasCore.Aas3_0_RC02.ConceptDescription cd)
+        public void Index(Aas.ConceptDescription cd)
         {
             // access
             if (cd == null)
@@ -146,7 +146,7 @@ namespace AasxPluginBomStructure
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
-        public void Index(AasCore.Aas3_0_RC02.Submodel sm)
+        public void Index(Aas.Submodel sm)
         {
             // access
             if (sm == null)
@@ -161,7 +161,7 @@ namespace AasxPluginBomStructure
                 RecurseIndexSME(currRef, sme);
         }
 
-        public void Index(AasCore.Aas3_0_RC02.Environment env)
+        public void Index(Aas.Environment env)
         {
             // access
             if (env == null || env.Submodels == null)

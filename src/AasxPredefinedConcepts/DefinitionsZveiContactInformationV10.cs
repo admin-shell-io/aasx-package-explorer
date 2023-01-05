@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiContactInformationV10 Static = new ZveiContactInformationV10();
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_ContactInformation;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
         CD_ContactInformation,
         CD_RolOfConPer,
         CD_NatCod,

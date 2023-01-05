@@ -633,32 +633,32 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Environment Env;
+        public Aas.Environment Env;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.AssetAdministrationShell AAS;
+        public Aas.AssetAdministrationShell AAS;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.AssetInformation AssetInfo;
+        public Aas.AssetInformation AssetInfo;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Submodel Submodel;
+        public Aas.Submodel Submodel;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference SubmodelRef;
+        public Aas.Reference SubmodelRef;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AasCore.Aas3_0_RC02.ISubmodelElement SubmodelElement;
+        public Aas.ISubmodelElement SubmodelElement;
 
         /// <summary>
         /// Gives the calling function the possibility to better handle messages

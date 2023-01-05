@@ -47,7 +47,7 @@ namespace AasxPluginPlotting
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public AasCore.Aas3_0_RC02.ISubmodelElement SME = null;
+        public Aas.ISubmodelElement SME = null;
         public string ArgsStr = "";
         public PlotArguments Args = null;
 
@@ -89,8 +89,8 @@ namespace AasxPluginPlotting
             set { _unit = value; OnPropertyChanged("DisplayUnit"); }
         }
 
-        private List<AasCore.Aas3_0_RC02.LangString> _description = new List<AasCore.Aas3_0_RC02.LangString>();
-        public List<AasCore.Aas3_0_RC02.LangString> Description
+        private List<Aas.LangString> _description = new List<Aas.LangString>();
+        public List<Aas.LangString> Description
         {
             get { return _description; }
             set { _description = value; OnPropertyChanged("DisplayDescription"); }
@@ -120,8 +120,8 @@ namespace AasxPluginPlotting
 
         public PlotItem() { }
 
-        public PlotItem(AasCore.Aas3_0_RC02.ISubmodelElement sme, string args,
-            string path, List<AasCore.Aas3_0_RC02.LangString> description, string lang)
+        public PlotItem(Aas.ISubmodelElement sme, string args,
+            string path, List<Aas.LangString> description, string lang)
         {
             SME = sme;
             ArgsStr = args;
@@ -268,7 +268,7 @@ namespace AasxPluginPlotting
         public void UpdateValues(string lang = null)
         {
             foreach (var it in this)
-                if (it.SME is AasCore.Aas3_0_RC02.Property prop)
+                if (it.SME is Aas.Property prop)
                 {
                     var dbl = prop.ValueAsDouble();
                     it.SetValue(dbl, lang);
@@ -277,7 +277,7 @@ namespace AasxPluginPlotting
 
         public void RebuildFromSubmodel(
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Submodel sm, string lang)
+            Aas.Submodel sm, string lang)
         {
             // clear & access
             this.Clear();
@@ -295,7 +295,7 @@ namespace AasxPluginPlotting
 
                 // select for SME type
                 /* TODO (MIHO, 2021-01-04): consider at least to include MLP, as well */
-                if (!(sme is AasCore.Aas3_0_RC02.Property prop))
+                if (!(sme is Aas.Property prop))
                     return true;
 
                 // build path
@@ -422,7 +422,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in groupPI)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
+                    if (true == pi.Args?.skip || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // value
@@ -682,7 +682,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
+                    if (true == pi.Args?.skip || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // do this NOT for event sources items
@@ -739,7 +739,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // must be event source
-                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
+                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event || !(pi.SME is Aas.Property prop))
                         continue;
 
                     // found a hit?

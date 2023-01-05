@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(Aas.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                             new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
-            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
+            var sm = currentReferable as Aas.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferTechnicalDataToFlat(this,
                         $"Convert Submodel '{"" + sm.IdShort}' from Technical Data to flat Submodel"));
@@ -47,7 +47,7 @@ namespace AasxPredefinedConcepts.Convert
         }
 
         public override bool ExecuteOffer(
-            AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
+            AdminShellPackageEnv package, Aas.IReferable currentReferable,
             ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -60,18 +60,18 @@ namespace AasxPredefinedConcepts.Convert
                                 new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
             // access Submodel (again)
-            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
+            var sm = currentReferable as Aas.Submodel;
             if (sm == null || sm.SubmodelElements == null
                 || true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsTD.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 return false;
 
             // convert in place: detach old SMEs, change semanticId
             var smcOldTD = sm.SubmodelElements;
-            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
-            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
+            sm.SubmodelElements = new List<Aas.ISubmodelElement>();
+            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
 
             // find all technical properties
-            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                 defsTD.CD_TechnicalProperties.GetSingleKey()))
             {
                 // access
@@ -79,10 +79,10 @@ namespace AasxPredefinedConcepts.Convert
                     continue;
 
                 // now, take this as root for a recurse find ..
-                foreach (var oldSme in smcTDP.Value.FindDeep<AasCore.Aas3_0_RC02.ISubmodelElement>((o) => true))
+                foreach (var oldSme in smcTDP.Value.FindDeep<Aas.ISubmodelElement>((o) => true))
                 {
                     // no collections!
-                    if (oldSme is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                    if (oldSme is Aas.SubmodelElementCollection)
                         continue;
 
                     // simply add to new

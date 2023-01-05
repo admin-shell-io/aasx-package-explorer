@@ -38,7 +38,7 @@ namespace AasxPluginImageMap
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
+        private Aas.Submodel _submodel = null;
         private ImageMapOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -79,7 +79,7 @@ namespace AasxPluginImageMap
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel theSubmodel,
+            Aas.Submodel theSubmodel,
             ImageMapOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -107,7 +107,7 @@ namespace AasxPluginImageMap
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
+            var sm = osm as Aas.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -131,7 +131,7 @@ namespace AasxPluginImageMap
         private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Submodel sm)
+            Aas.Submodel sm)
         {
             // test trivial access
             if (_options == null || _submodel?.SemanticId == null)
@@ -151,7 +151,7 @@ namespace AasxPluginImageMap
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<ImageMapOptionsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Submodel sm)
+            Aas.Submodel sm)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
@@ -254,19 +254,19 @@ namespace AasxPluginImageMap
                     if (o is AnyUiEventData ev
                         && ev.ClickCount >= 2
                         && ev.Source is AnyUiFrameworkElement fe
-                        && fe.Tag is AasCore.Aas3_0_RC02.Property prop
-                        && prop.Parent is AasCore.Aas3_0_RC02.Entity ent)
+                        && fe.Tag is Aas.Property prop
+                        && prop.Parent is Aas.Entity ent)
                     {
                         // need a targetReference
                         // first check, if a navigate to reference element can be found
-                        var navTo = ent.Statements?.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
+                        var navTo = ent.Statements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
                             AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo?.GetReference(),
                             MatchMode.Relaxed);
                         var targetRf = navTo?.Value;
 
                         // if not, have a look to the Entity itself
                         if ((targetRf == null || targetRf.Count() < 1)
-                            && ent.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity
+                            && ent.EntityType == Aas.EntityType.SelfManagedEntity
                             && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
                             targetRf = ent.GlobalAssetId;
 
@@ -361,7 +361,7 @@ namespace AasxPluginImageMap
 
             // image
             // file?
-            var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
+            var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<Aas.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
                 MatchMode.Relaxed);
             if (fe?.Value == null)
@@ -460,7 +460,7 @@ namespace AasxPluginImageMap
 
             // entities
             int index = -1;
-            foreach (var ent in _submodel.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Entity>(
+            foreach (var ent in _submodel.SubmodelElements.FindAllSemanticIdAs<Aas.Entity>(
                 defs.CD_EntityOfImageMap, mm))
             {
                 // access
@@ -468,7 +468,7 @@ namespace AasxPluginImageMap
                     continue;
 
                 // find all regions known
-                foreach (var prect in ent.Statements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var prect in ent.Statements.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionRect, mm))
                 {
                     // access
@@ -516,7 +516,7 @@ namespace AasxPluginImageMap
                         });
                 }
 
-                foreach (var pcirc in ent.Statements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var pcirc in ent.Statements.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionCircle, mm))
                 {
                     // access
@@ -564,7 +564,7 @@ namespace AasxPluginImageMap
                         });
                 }
 
-                foreach (var ppoly in ent.Statements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var ppoly in ent.Statements.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionPolygon, mm))
                 {
                     // access
@@ -631,23 +631,23 @@ namespace AasxPluginImageMap
         protected class DataPointInfo
         {
             public string Value;
-            public AasCore.Aas3_0_RC02.DataTypeDefXsd ValueType;
+            public Aas.DataTypeDefXsd ValueType;
             public ImageMapArguments Args;
 
-            public static DataPointInfo CreateFrom(AasCore.Aas3_0_RC02.ISubmodelElement sme)
+            public static DataPointInfo CreateFrom(Aas.ISubmodelElement sme)
             {
-                if (sme is AasCore.Aas3_0_RC02.Property prop)
+                if (sme is Aas.Property prop)
                     return new DataPointInfo()
                     {
                         Value = prop.Value,
                         ValueType = prop.ValueType
                     };
 
-                if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+                if (sme is Aas.MultiLanguageProperty mlp)
                     return new DataPointInfo()
                     {
                         Value = mlp.Value?.GetDefaultString(),
-                        ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.String
+                        ValueType = Aas.DataTypeDefXsd.String
                     };
 
                 return null;
@@ -657,8 +657,8 @@ namespace AasxPluginImageMap
             {
                 // try to convert to double
                 if ((forceDouble 
-                    || ValueType == AasCore.Aas3_0_RC02.DataTypeDefXsd.Float 
-                    || ValueType == AasCore.Aas3_0_RC02.DataTypeDefXsd.Double))
+                    || ValueType == Aas.DataTypeDefXsd.Float 
+                    || ValueType == Aas.DataTypeDefXsd.Double))
                 {
                     if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
                     {
@@ -789,8 +789,8 @@ namespace AasxPluginImageMap
         }
 
         private DataPointInfo EvalDataPoint(
-            List<AasCore.Aas3_0_RC02.ISubmodelElement> smec,
-            AasCore.Aas3_0_RC02.Reference semId)
+            List<Aas.ISubmodelElement> smec,
+            Aas.Reference semId)
         {
             // access
             if (smec == null || semId == null)
@@ -800,8 +800,8 @@ namespace AasxPluginImageMap
             DataPointInfo res = null;
 
             // find a property?
-            AasCore.Aas3_0_RC02.ISubmodelElement specSme = null;
-            foreach (var prop in smec.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(semId, mm))
+            Aas.ISubmodelElement specSme = null;
+            foreach (var prop in smec.FindAllSemanticIdAs<Aas.Property>(semId, mm))
             {
                 res = DataPointInfo.CreateFrom(prop);
                 if (res != null)
@@ -811,7 +811,7 @@ namespace AasxPluginImageMap
                 }
             }
 
-            foreach (var mlp in smec.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(semId, mm))
+            foreach (var mlp in smec.FindAllSemanticIdAs<Aas.MultiLanguageProperty>(semId, mm))
             {
                 res = DataPointInfo.CreateFrom(mlp);
                 if (res != null)
@@ -821,10 +821,10 @@ namespace AasxPluginImageMap
                 }
             }
 
-            foreach (var refe in smec.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(semId, mm))
+            foreach (var refe in smec.FindAllSemanticIdAs<Aas.ReferenceElement>(semId, mm))
             {
                 // find reference target?
-                var targetSme = _package?.AasEnv?.FindReferableByReference(refe?.Value) as AasCore.Aas3_0_RC02.ISubmodelElement;
+                var targetSme = _package?.AasEnv?.FindReferableByReference(refe?.Value) as Aas.ISubmodelElement;
                 if (targetSme == null)
                     continue;
 
@@ -864,7 +864,7 @@ namespace AasxPluginImageMap
 
             // check, if required anyway
             var anyElem = _submodel.SubmodelElements
-                .FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                     defs.CD_VisualElement, mm).FirstOrDefault();
             if (anyElem == null)
                 return false;
@@ -873,7 +873,7 @@ namespace AasxPluginImageMap
             var res = new List<AnyUiUIElement>();
 
             foreach (var smcVE in _submodel.SubmodelElements
-                .FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                     defs.CD_VisualElement, mm))
             {
                 // access
@@ -883,7 +883,7 @@ namespace AasxPluginImageMap
                 // need a background shape (at least for the dimensions)
                 AnyUiShape backShape = null;
 
-                foreach (var prect in smcVE.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var prect in smcVE.Value.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionRect, mm))
                 {
                     // access
@@ -909,7 +909,7 @@ namespace AasxPluginImageMap
                     break;
                 }
 
-                foreach (var pcirc in smcVE.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var pcirc in smcVE.Value.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionCircle, mm))
                 {
                     // access
@@ -935,7 +935,7 @@ namespace AasxPluginImageMap
                     break;
                 }
 
-                foreach (var ppoly in smcVE.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                foreach (var ppoly in smcVE.Value.FindAllSemanticIdAs<Aas.Property>(
                     defs.CD_RegionPolygon, mm))
                 {
                     // access

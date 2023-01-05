@@ -22,7 +22,7 @@ namespace AasxPredefinedConcepts
 {
     public static class ExportPredefinedConcepts
     {
-        public static void Export(AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm, string fn)
+        public static void Export(Aas.Environment env, Aas.Submodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
@@ -43,8 +43,8 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string, AasCore.Aas3_0_RC02.ConceptDescription>();
-                foreach (var sme in sm.SubmodelElements?.FindDeep<AasCore.Aas3_0_RC02.ISubmodelElement>())
+                var usedCds = new Dictionary<string, Aas.ConceptDescription>();
+                foreach (var sme in sm.SubmodelElements?.FindDeep<Aas.ISubmodelElement>())
                 {
                     // for SME, try to lookup CD
                     if (sme.SemanticId == null)

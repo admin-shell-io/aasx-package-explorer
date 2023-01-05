@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiTechnicalDataV11 Static = new ZveiTechnicalDataV11();
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_TechnicalData;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_GeneralInformation,
             CD_ManufacturerName,
             CD_ManufacturerLogo,

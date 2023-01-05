@@ -88,13 +88,13 @@ namespace AasxIntegrationBase.AasForms
         /// Preset for Referable.description
         /// </summary>
         [JsonProperty(Order = 7)]
-        public List<AasCore.Aas3_0_RC02.LangString> PresetDescription = null;
+        public List<Aas.LangString> PresetDescription = null;
 
         /// <summary>
         /// SemanticId of the SubmodelElement. Always required.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public AasCore.Aas3_0_RC02.Key KeySemanticId = new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "");
+        public Aas.Key KeySemanticId = new Aas.Key(Aas.KeyTypes.GlobalReference, "");
 
         // Constructors
         //=============
@@ -102,7 +102,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescReferable() { }
 
         public FormDescReferable(
-            string formText, AasCore.Aas3_0_RC02.Key keySemanticId, string presetIdShort, string formInfo = null)
+            string formText, Aas.Key keySemanticId, string presetIdShort, string formInfo = null)
             : base()
         {
             this.FormTitle = formText;
@@ -125,20 +125,20 @@ namespace AasxIntegrationBase.AasForms
 
 #if !DoNotUseAasxCompatibilityModels
 
-        public static List<AasCore.Aas3_0_RC02.LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
+        public static List<Aas.LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
         {
-            var res = new List<AasCore.Aas3_0_RC02.LangString>();
+            var res = new List<Aas.LangString>();
             if (desc?.langString != null)
                 foreach (var ls in desc.langString)
-                    res.Add(new AasCore.Aas3_0_RC02.LangString(ls?.lang, ls?.str));
+                    res.Add(new Aas.LangString(ls?.lang, ls?.str));
             return res;
         }
 
-        public static AasCore.Aas3_0_RC02.Key ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Key key)
+        public static Aas.Key ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Key key)
         {
             if (key != null)
-                return new AasCore.Aas3_0_RC02.Key(
-                    AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(key.type) ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, key.value);
+                return new Aas.Key(
+                    Aas.Stringification.KeyTypesFromString(key.type) ?? Aas.KeyTypes.GlobalReference, key.value);
             return null;
         }
 
@@ -159,7 +159,7 @@ namespace AasxIntegrationBase.AasForms
         // Dynamic behaviour
         //==================
 
-        protected void InitReferable(AasCore.Aas3_0_RC02.IReferable rf)
+        protected void InitReferable(Aas.IReferable rf)
         {
             if (rf == null)
                 return;
@@ -191,7 +191,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodel() { }
 
         public FormDescSubmodel(
-            string formText, AasCore.Aas3_0_RC02.Key keySemanticId, string presetIdShort, string formInfo = null)
+            string formText, Aas.Key keySemanticId, string presetIdShort, string formInfo = null)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
         }
@@ -229,9 +229,9 @@ namespace AasxIntegrationBase.AasForms
         /// Needs to get a unique Identification.
         /// </summary>
         /// <returns></returns>
-        public AasCore.Aas3_0_RC02.Submodel GenerateDefault()
+        public Aas.Submodel GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.Submodel("");
+            var res = new Aas.Submodel("");
 
             // is Referable
             this.InitReferable(res);
@@ -298,13 +298,13 @@ namespace AasxIntegrationBase.AasForms
         }
 #endif
 
-        public List<AasCore.Aas3_0_RC02.ISubmodelElement> GenerateDefault()
+        public List<Aas.ISubmodelElement> GenerateDefault()
         {
-            var res = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            var res = new List<Aas.ISubmodelElement>();
 
             foreach (var desc in this)
             {
-                AasCore.Aas3_0_RC02.ISubmodelElement sme = null;
+                Aas.ISubmodelElement sme = null;
 
                 // generate element
 
@@ -357,7 +357,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElement() { }
 
         public FormDescSubmodelElement(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key keySemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Aas.Key keySemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, keySemanticId, presetIdShort, formInfo)
         {
@@ -393,12 +393,12 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public virtual FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return null;
         }
 
-        public void InitSme(AasCore.Aas3_0_RC02.ISubmodelElement sme)
+        public void InitSme(Aas.ISubmodelElement sme)
         {
             // is a Referable
             this.InitReferable(sme);
@@ -424,7 +424,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescSubmodelElementCollection() { }
 
         public FormDescSubmodelElementCollection(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId, string presetIdShort,
             string formInfo = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo)
         {
@@ -462,7 +462,7 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceSubmodelElementCollection(parentInstance, this, source);
         }
@@ -477,9 +477,9 @@ namespace AasxIntegrationBase.AasForms
             value.Add(subDescription);
         }
 
-        public AasCore.Aas3_0_RC02.SubmodelElementCollection GenerateDefault()
+        public Aas.SubmodelElementCollection GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            var res = new Aas.SubmodelElementCollection();
             this.InitSme(res);
 
             res.Value = this.value.GenerateDefault();
@@ -532,7 +532,7 @@ namespace AasxIntegrationBase.AasForms
         public FormDescProperty() { }
 
         public FormDescProperty(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false, string valueType = null,
             string presetValue = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -575,21 +575,21 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceProperty(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.Property GenerateDefault()
+        public Aas.Property GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
+            var res = new Aas.Property(Aas.DataTypeDefXsd.String);
             this.InitSme(res);
             if (this.presetValue != null)
                 res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                res.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
-                    ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
+                res.ValueType = Aas.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
+                    ?? Aas.DataTypeDefXsd.String;
             }
             return res;
         }
@@ -606,7 +606,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescMultiLangProp(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId, string presetIdShort,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId, string presetIdShort,
             string formInfo = null, bool isReadOnly = false)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
         {
@@ -629,14 +629,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceMultiLangProp(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.MultiLanguageProperty GenerateDefault()
+        public Aas.MultiLanguageProperty GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.MultiLanguageProperty();
+            var res = new Aas.MultiLanguageProperty();
             this.InitSme(res);
             return res;
         }
@@ -658,7 +658,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescFile(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetMimeType = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -693,14 +693,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceFile(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.ISubmodelElement GenerateDefault()
+        public Aas.ISubmodelElement GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.File("");
+            var res = new Aas.File("");
             this.InitSme(res);
             if (this.presetMimeType != null)
                 res.ContentType = this.presetMimeType;
@@ -724,7 +724,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescReferenceElement(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -749,14 +749,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceReferenceElement(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.ReferenceElement GenerateDefault()
+        public Aas.ReferenceElement GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.ReferenceElement();
+            var res = new Aas.ReferenceElement();
             this.InitSme(res);
             return res;
         }
@@ -778,7 +778,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescRelationshipElement(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -803,14 +803,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceRelationshipElement(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.RelationshipElement GenerateDefault()
+        public Aas.RelationshipElement GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.RelationshipElement(null, null);
+            var res = new Aas.RelationshipElement(null, null);
             this.InitSme(res);
             return res;
         }
@@ -832,7 +832,7 @@ namespace AasxIntegrationBase.AasForms
         //=============
 
         public FormDescCapability(
-            string formText, FormMultiplicity multiplicity, AasCore.Aas3_0_RC02.Key smeSemanticId,
+            string formText, FormMultiplicity multiplicity, Aas.Key smeSemanticId,
             string presetIdShort, string formInfo = null, bool isReadOnly = false,
             string presetFilter = null)
             : base(formText, multiplicity, smeSemanticId, presetIdShort, formInfo, isReadOnly)
@@ -857,14 +857,14 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
         public override FormInstanceSubmodelElement CreateInstance(
-            FormInstanceListOfSame parentInstance, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
+            FormInstanceListOfSame parentInstance, Aas.ISubmodelElement source = null)
         {
             return new FormInstanceCapability(parentInstance, this, source);
         }
 
-        public AasCore.Aas3_0_RC02.Capability GenerateDefault()
+        public Aas.Capability GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.Capability();
+            var res = new Aas.Capability();
             this.InitSme(res);
             return res;
         }

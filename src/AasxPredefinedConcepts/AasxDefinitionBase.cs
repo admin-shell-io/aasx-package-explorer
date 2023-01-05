@@ -58,7 +58,7 @@ namespace AasxPredefinedConcepts
 
         protected Library _library = new Library();
 
-        protected List<AasCore.Aas3_0_RC02.IReferable> theReflectedReferables = new List<AasCore.Aas3_0_RC02.IReferable>();
+        protected List<Aas.IReferable> theReflectedReferables = new List<Aas.IReferable>();
 
         public string DomainInfo = "";
 
@@ -137,7 +137,7 @@ namespace AasxPredefinedConcepts
             return _library[name];
         }
 
-        public T RetrieveReferable<T>(string name) where T : class, AasCore.Aas3_0_RC02.IReferable
+        public T RetrieveReferable<T>(string name) where T : class, Aas.IReferable
         {
             // entry
             var entry = this.RetrieveEntry(name);
@@ -152,20 +152,20 @@ namespace AasxPredefinedConcepts
 #if !DoNotUseAasxCompatibilityModels
                 if (ReadVersion == V20Tag)
                 {
-                    if (typeof(T) == typeof(AasCore.Aas3_0_RC02.Submodel))
+                    if (typeof(T) == typeof(Aas.Submodel))
                     {
                         var old = JsonConvert.DeserializeObject
                             <AasxCompatibilityModels.AdminShellV20.Submodel>(entry.contents);
                         if (old != null)
-                            res = new AasCore.Aas3_0_RC02.Submodel("").ConvertFromV20(old) as T;
+                            res = new Aas.Submodel("").ConvertFromV20(old) as T;
                     }
 
-                    if (typeof(T) == typeof(AasCore.Aas3_0_RC02.ConceptDescription))
+                    if (typeof(T) == typeof(Aas.ConceptDescription))
                     {
                         var old = JsonConvert.DeserializeObject
                             <AasxCompatibilityModels.AdminShellV20.ConceptDescription>(entry.contents);
                         if (old != null)
-                            res = new AasCore.Aas3_0_RC02.ConceptDescription("").ConvertFromV20(old) as T;
+                            res = new Aas.ConceptDescription("").ConvertFromV20(old) as T;
                     }
                 }
 #endif
@@ -183,30 +183,30 @@ namespace AasxPredefinedConcepts
             return res;
         }
 
-        public static AasCore.Aas3_0_RC02.ConceptDescription CreateSparseConceptDescription(
+        public static Aas.ConceptDescription CreateSparseConceptDescription(
             string lang,
             string idType,
             string idShort,
             string id,
             string definitionHereString,
-            AasCore.Aas3_0_RC02.Reference isCaseOf = null)
+            Aas.Reference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
                 return null;
 
             // create CD
-            var cd = new AasCore.Aas3_0_RC02.ConceptDescription(id, idShort:idShort);
+            var cd = new Aas.ConceptDescription(id, idShort:idShort);
             var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
-            var dsc = dsiec.DataSpecificationContent as AasCore.Aas3_0_RC02.DataSpecificationIec61360;
-            dsc.PreferredName = new List<AasCore.Aas3_0_RC02.LangString>();
-            dsc.PreferredName.Add(new AasCore.Aas3_0_RC02.LangString(lang, "" + idShort));
-            dsc.Definition = new List<AasCore.Aas3_0_RC02.LangString>();
-            dsc.Definition.Add(new AasCore.Aas3_0_RC02.LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
+            var dsc = dsiec.DataSpecificationContent as Aas.DataSpecificationIec61360;
+            dsc.PreferredName = new List<Aas.LangString>();
+            dsc.PreferredName.Add(new Aas.LangString(lang, "" + idShort));
+            dsc.Definition = new List<Aas.LangString>();
+            dsc.Definition.Add(new Aas.LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<AasCore.Aas3_0_RC02.Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<Aas.Reference>(new[] { isCaseOf });
 
             // ok
             return cd;
@@ -221,7 +221,7 @@ namespace AasxPredefinedConcepts
         {
         }
 
-        public virtual AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
+        public virtual Aas.IReferable[] GetAllReferables()
         {
             return this.theReflectedReferables?.ToArray();
         }
@@ -234,7 +234,7 @@ namespace AasxPredefinedConcepts
                 return;
 
             // remember found Referables
-            this.theReflectedReferables = new List<AasCore.Aas3_0_RC02.IReferable>();
+            this.theReflectedReferables = new List<Aas.IReferable>();
 
             // reflection
             foreach (var fi in typeToReflect.GetFields())
@@ -244,8 +244,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AasCore.Aas3_0_RC02.Submodel);
-                var isCD = fi.FieldType == typeof(AasCore.Aas3_0_RC02.ConceptDescription);
+                var isSM = fi.FieldType == typeof(Aas.Submodel);
+                var isCD = fi.FieldType == typeof(Aas.ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -262,13 +262,13 @@ namespace AasxPredefinedConcepts
                 // access library
                 if (isSM)
                 {
-                    var sm = this.RetrieveReferable<AasCore.Aas3_0_RC02.Submodel>(libName);
+                    var sm = this.RetrieveReferable<Aas.Submodel>(libName);
                     fi.SetValue(this, sm);
                     this.theReflectedReferables.Add(sm);
                 }
                 if (isCD)
                 {
-                    var cd = this.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(libName);
+                    var cd = this.RetrieveReferable<Aas.ConceptDescription>(libName);
                     fi.SetValue(this, cd);
                     this.theReflectedReferables.Add(cd);
                 }
@@ -290,8 +290,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(AasCore.Aas3_0_RC02.Submodel);
-                var isCD = fi.FieldType == typeof(AasCore.Aas3_0_RC02.ConceptDescription);
+                var isSM = fi.FieldType == typeof(Aas.Submodel);
+                var isCD = fi.FieldType == typeof(Aas.ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -306,7 +306,7 @@ namespace AasxPredefinedConcepts
                     continue;
 
                 // add
-                var rf = fi.GetValue(this) as AasCore.Aas3_0_RC02.IReferable;
+                var rf = fi.GetValue(this) as Aas.IReferable;
                 if (rf != null)
                     this.theReflectedReferables.Add(rf);
             }

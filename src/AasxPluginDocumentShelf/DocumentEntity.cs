@@ -48,15 +48,15 @@ namespace AasxPluginDocumentShelf
         public AnyUiImage ImgContainerAnyUi = null;
         public string ReferableHash = null;
 
-        public List<AasCore.Aas3_0_RC02.ISubmodelElement> SourceElementsDocument = null;
-        public List<AasCore.Aas3_0_RC02.ISubmodelElement> SourceElementsDocumentVersion = null;
+        public List<Aas.ISubmodelElement> SourceElementsDocument = null;
+        public List<Aas.ISubmodelElement> SourceElementsDocumentVersion = null;
 
         public string ImageReadyToBeLoaded = null; // adding Image to ImgContainer needs to be done by the GUI thread!!
         public string[] DeleteFilesAfterLoading = null;
 
         public enum DocRelationType { DocumentedEntity, RefersTo, BasedOn, Affecting, TranslationOf };
-        public List<Tuple<DocRelationType, AasCore.Aas3_0_RC02.Reference>> Relations =
-            new List<Tuple<DocRelationType, AasCore.Aas3_0_RC02.Reference>>();
+        public List<Tuple<DocRelationType, Aas.Reference>> Relations =
+            new List<Tuple<DocRelationType, Aas.Reference>>();
 
         public class FileInfo
         {
@@ -65,7 +65,7 @@ namespace AasxPluginDocumentShelf
 
             public FileInfo() { }
 
-            public FileInfo(AasCore.Aas3_0_RC02.File file)
+            public FileInfo(Aas.File file)
             {
                 Path = file?.Value;
                 MimeType = file?.ContentType;
@@ -147,7 +147,7 @@ namespace AasxPluginDocumentShelf
 
         public static ListOfDocumentEntity ParseSubmodelForV10(
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel subModel, AasxPluginDocumentShelf.DocumentShelfOptions options,
+            Aas.Submodel subModel, AasxPluginDocumentShelf.DocumentShelfOptions options,
             string defaultLang,
             int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage)
         {
@@ -157,7 +157,7 @@ namespace AasxPluginDocumentShelf
             // look for Documents
             if (subModel?.SubmodelElements != null)
                 foreach (var smcDoc in
-                    subModel.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    subModel.SubmodelElements.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         _semConfigV10.SemIdDocument, MatchMode.Relaxed))
                 {
                     // access
@@ -166,7 +166,7 @@ namespace AasxPluginDocumentShelf
 
                     // look immediately for DocumentVersion, as only with this there is a valid List item
                     foreach (var smcVer in
-                        smcDoc.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                        smcDoc.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                             _semConfigV10.SemIdDocumentVersion, MatchMode.Relaxed))
                     {
                         // access
@@ -180,12 +180,12 @@ namespace AasxPluginDocumentShelf
                         // take the 1st title
                         var title =
                             "" +
-                            smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(_semConfigV10.SemIdTitle,
+                            smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(_semConfigV10.SemIdTitle,
                             MatchMode.Relaxed)?.Value;
 
                         // could be also a multi-language title
                         foreach (var mlp in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.MultiLanguageProperty>(
                                 _semConfigV10.SemIdTitle, MatchMode.Relaxed))
                             if (mlp.Value != null)
                                 title = mlp.Value.GetDefaultString(defaultLang);
@@ -193,27 +193,27 @@ namespace AasxPluginDocumentShelf
                         // have multiple opportunities for orga
                         var orga =
                             "" +
-                            smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 _semConfigV10.SemIdOrganizationOfficialName, MatchMode.Relaxed)?
                                 .Value;
                         if (orga.Trim().Length < 1)
                             orga =
                                 "" +
-                                smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                                smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     _semConfigV10.SemIdOrganizationName, MatchMode.Relaxed)?
                                     .Value;
 
                         // class infos
                         var classId =
                             "" +
-                            smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            smcDoc.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 _semConfigV10.SemIdDocumentClassId, MatchMode.Relaxed)?.Value;
 
                         // collect country codes
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(_semConfigV10.SemIdLanguage,
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(_semConfigV10.SemIdLanguage,
                             MatchMode.Relaxed))
                         {
                             // language code
@@ -251,11 +251,11 @@ namespace AasxPluginDocumentShelf
                         // further info
                         var further = "";
                         foreach (var fi in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(
                                 _semConfigV10.SemIdDocumentVersionIdValue))
                             further += "\u00b7 version: " + fi.Value;
                         foreach (var fi in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(_semConfigV10.SemIdDate,
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(_semConfigV10.SemIdDate,
                             MatchMode.Relaxed))
                             further += "\u00b7 date: " + fi.Value;
                         if (further.Length > 0)
@@ -271,7 +271,7 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.Value;
 
                         // filename
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<Aas.File>(
                             _semConfigV10.SemIdDigitalFile, MatchMode.Relaxed);
 
                         ent.DigitalFile = new DocumentEntity.FileInfo(fl);
@@ -291,16 +291,16 @@ namespace AasxPluginDocumentShelf
         //
 
         private static void SearchForRelations(
-            List<AasCore.Aas3_0_RC02.ISubmodelElement> smwc,
+            List<Aas.ISubmodelElement> smwc,
             DocumentEntity.DocRelationType drt,
-            AasCore.Aas3_0_RC02.Reference semId,
+            Aas.Reference semId,
             DocumentEntity intoDoc)
         {
             // access
             if (smwc == null || semId == null || intoDoc == null)
                 return;
 
-            foreach (var re in smwc.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(semId,
+            foreach (var re in smwc.FindAllSemanticIdAs<Aas.ReferenceElement>(semId,
                 MatchMode.Relaxed))
             {
                 // access 
@@ -308,18 +308,18 @@ namespace AasxPluginDocumentShelf
                     continue;
 
                 // be a bit picky
-                if (re.Value.Last().Type != AasCore.Aas3_0_RC02.KeyTypes.Entity)
+                if (re.Value.Last().Type != Aas.KeyTypes.Entity)
                     continue;
 
                 // add
-                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, AasCore.Aas3_0_RC02.Reference>(
+                intoDoc.Relations.Add(new Tuple<DocumentEntity.DocRelationType, Aas.Reference>(
                     drt, re.Value));
             }
         }
 
         public static ListOfDocumentEntity ParseSubmodelForV11(
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel subModel, AasxPredefinedConcepts.VDI2770v11 defs11,
+            Aas.Submodel subModel, AasxPredefinedConcepts.VDI2770v11 defs11,
             string defaultLang,
             int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage)
         {
@@ -331,7 +331,7 @@ namespace AasxPluginDocumentShelf
             // look for Documents
             if (subModel.SubmodelElements != null)
                 foreach (var smcDoc in
-                    subModel.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    subModel.SubmodelElements.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         defs11.CD_Document?.GetReference(), MatchMode.Relaxed))
                 {
                     // access
@@ -340,7 +340,7 @@ namespace AasxPluginDocumentShelf
 
                     // look immediately for DocumentVersion, as only with this there is a valid List item
                     foreach (var smcVer in
-                        smcDoc.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                        smcDoc.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                             defs11.CD_DocumentVersion?.GetReference(), MatchMode.Relaxed))
                     {
                         // access
@@ -352,21 +352,21 @@ namespace AasxPluginDocumentShelf
                         //
 
                         // take the 1st title
-                        var title = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var title = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 defs11.CD_Title?.GetReference(), MatchMode.Relaxed)?.Value;
 
                         // could be also a multi-language title
                         foreach (var mlp in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.MultiLanguageProperty>(
                                 defs11.CD_Title?.GetReference(), MatchMode.Relaxed))
                             if (mlp.Value != null)
                                 title = mlp.Value.GetDefaultString(defaultLang);
 
                         // some with sub title
-                        var subTitle = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var subTitle = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 defs11.CD_SubTitle?.GetReference(), MatchMode.Relaxed)?.Value;
                         foreach (var mlp in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.MultiLanguageProperty>(
                                 defs11.CD_SubTitle?.GetReference(), MatchMode.Relaxed))
                             if (mlp.Value != null)
                                 subTitle = mlp.Value.GetDefaultString(defaultLang);
@@ -375,11 +375,11 @@ namespace AasxPluginDocumentShelf
                             title += " \u2012 " + subTitle;
 
                         // have multiple opportunities for orga
-                        var orga = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var orga = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 defs11.CD_OrganizationOfficialName?.GetReference(),
                                 MatchMode.Relaxed)?.Value;
                         if (orga.Trim().Length < 1)
-                            orga = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            orga = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defs11.CD_OrganizationName?.GetReference(),
                                     MatchMode.Relaxed)?.Value;
 
@@ -388,7 +388,7 @@ namespace AasxPluginDocumentShelf
                         var countryCodesStr = new List<string>();
                         var countryCodesEnum = new List<AasxLanguageHelper.LangEnum>();
                         foreach (var cclp in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(defs11.CD_Language?.GetReference(),
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(defs11.CD_Language?.GetReference(),
                             MatchMode.Relaxed))
                         {
                             // language code
@@ -416,7 +416,7 @@ namespace AasxPluginDocumentShelf
                         // try find a 2770 classification
                         var okDocClass = false;
                         foreach (var smcClass in
-                            smcDoc.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                            smcDoc.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                                 defs11.CD_DocumentClassification?.GetReference(), MatchMode.Relaxed))
                         {
                             // access
@@ -424,14 +424,14 @@ namespace AasxPluginDocumentShelf
                                 continue;
 
                             // shall be a 2770 classification
-                            var classSys = "" + smcClass.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            var classSys = "" + smcClass.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defs11.CD_ClassificationSystem?.GetReference(),
                                     MatchMode.Relaxed)?.Value;
                             if (classSys.ToLower().Trim() != VDI2770v11.Vdi2770Sys.ToLower())
                                 continue;
 
                             // class id
-                            var classId = "" + smcClass.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            var classId = "" + smcClass.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defs11.CD_ClassId?.GetReference(),
                                     MatchMode.Relaxed)?.Value;
 
@@ -452,15 +452,15 @@ namespace AasxPluginDocumentShelf
                         // further info
                         var further = "";
                         foreach (var fi in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(
                                 defs11.CD_DocumentVersionId?.GetReference()))
                             further += " \u00b7 version: " + fi.Value;
                         foreach (var fi in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(
                                 defs11.CD_DocumentIdValue?.GetReference()))
                             further += " \u00b7 id: " + fi.Value;
                         foreach (var fi in
-                            smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(defs11.CD_SetDate?.GetReference(),
+                            smcVer.Value.FindAllSemanticIdAs<Aas.Property>(defs11.CD_SetDate?.GetReference(),
                             MatchMode.Relaxed))
                             further += " \u00b7 date: " + fi.Value;
                         if (further.Length > 0)
@@ -476,12 +476,12 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.Value;
 
                         // file informations
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<Aas.File>(
                             defs11.CD_DigitalFile?.GetReference(), MatchMode.Relaxed);
                         if (fl != null)
                             ent.DigitalFile = new DocumentEntity.FileInfo(fl);
 
-                        fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
+                        fl = smcVer.Value.FindFirstSemanticIdAs<Aas.File>(
                             defs11.CD_PreviewFile?.GetReference(), MatchMode.Relaxed);
                         if (fl != null)
                             ent.PreviewFile = new DocumentEntity.FileInfo(fl);

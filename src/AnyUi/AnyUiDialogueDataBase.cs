@@ -198,7 +198,7 @@ namespace AnyUi
 
         // out
         public string ResultIRDI = null;
-        public AasCore.Aas3_0_RC02.ConceptDescription ResultCD = null;
+        public Aas.ConceptDescription ResultCD = null;
 
         public AnyUiDialogueDataSelectEclassEntity(
             string caption = "",

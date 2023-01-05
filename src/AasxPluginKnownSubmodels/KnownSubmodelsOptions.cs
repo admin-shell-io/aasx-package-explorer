@@ -76,7 +76,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaArticleOfTradeInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/article-information/0/8")
+                    new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/article-information/0/8")
                 }.ToList())
             });
 
@@ -91,7 +91,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaHandoverEngSystems.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/")
+                    new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/")
                 }.ToList())
             });
 
@@ -106,7 +106,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaParameterInformation.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/parameter-information/0/8")
+                    new Aas.Key(Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/vdma/parameter-information/0/8")
                 }.ToList())
             });
 
@@ -123,7 +123,7 @@ namespace AasxPluginKnownSubmodels
                 ImageLink = "AasxPluginKnownSubmodels.media\\SMT_VdmaProductChangeNotification.png",
                 FurtherUrl = "https://github.com/admin-shell-io/id",
                 AllowSubmodelSemanticId = (new[] {
-                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "0173-10029#01-XFB001#001")
+                    new Aas.Key(Aas.KeyTypes.Submodel, "0173-10029#01-XFB001#001")
                 }.ToList())
             });
 

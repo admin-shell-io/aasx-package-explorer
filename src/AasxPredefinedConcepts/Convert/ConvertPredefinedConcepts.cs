@@ -35,13 +35,13 @@ namespace AasxPredefinedConcepts.Convert
 
     public class ConvertProviderBase
     {
-        public virtual List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
+        public virtual List<ConvertOfferBase> CheckForOffers(Aas.IReferable currentReferable)
         {
             return null;
         }
 
         public virtual bool ExecuteOffer(
-            AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable, ConvertOfferBase offer,
+            AdminShellPackageEnv package, Aas.IReferable currentReferable, ConvertOfferBase offer,
             bool deleteOldCDs, bool addNewCDs)
         {
             return true;
@@ -60,7 +60,7 @@ namespace AasxPredefinedConcepts.Convert
             yield return new ConvertNameplateHsuToZveiV10Provider();
         }
 
-        public static List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
+        public static List<ConvertOfferBase> CheckForOffers(Aas.IReferable currentReferable)
         {
             var res = new List<ConvertOfferBase>();
             var providers = GetAllProviders();

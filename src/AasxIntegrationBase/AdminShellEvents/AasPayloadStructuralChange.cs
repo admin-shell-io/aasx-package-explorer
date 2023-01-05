@@ -55,7 +55,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Observable of the defined Event. 
         /// Is null / empty, if identical to Observable.
         /// </summary>
-        public List<AasCore.Aas3_0_RC02.Key> Path { get; set; }
+        public List<Aas.Key> Path { get; set; }
 
         /// <summary>
         /// JSON-Serialization of the Submodel, SMC, SME which was denoted by Observabale and Path.
@@ -73,7 +73,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]
-        public AasCore.Aas3_0_RC02.IReferable FoundReferable;
+        public Aas.IReferable FoundReferable;
 
         //
         // Constructor
@@ -82,7 +82,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public AasPayloadStructuralChangeItem(
             DateTime timeStamp,
             StructuralChangeReason reason,
-            List<AasCore.Aas3_0_RC02.Key> path = null,
+            List<Aas.Key> path = null,
             int createAtIndex = -1,
             string data = null)
         {
@@ -131,14 +131,14 @@ namespace AasxIntegrationBase.AdminShellEvents
         }
 #endif
 
-        public AasCore.Aas3_0_RC02.IReferable GetDataAsReferable()
+        public Aas.IReferable GetDataAsReferable()
         {
             // access
             if (Data == null)
                 return null;
 
             // try deserialize
-            return AdminShellSerializationHelper.DeserializeFromJSON<AasCore.Aas3_0_RC02.IReferable>(Data);
+            return AdminShellSerializationHelper.DeserializeFromJSON<Aas.IReferable>(Data);
         }
 
         public string GetDetailsText()

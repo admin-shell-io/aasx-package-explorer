@@ -22,7 +22,7 @@ namespace AasxPluginExportTable
 {
     public static class AasConvertHelper
     {
-        public static void TakeOverSmeToSm(AasCore.Aas3_0_RC02.ISubmodelElement sme, AasCore.Aas3_0_RC02.Submodel sm)
+        public static void TakeOverSmeToSm(Aas.ISubmodelElement sme, Aas.Submodel sm)
         {
             // access
             if (sme == null || sm == null)
@@ -44,7 +44,7 @@ namespace AasxPluginExportTable
             if (sme.Qualifiers != null)
             {
                 if (sm.Qualifiers == null)
-                    sm.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                    sm.Qualifiers = new List<Aas.Qualifier>();
                 sm.Qualifiers.AddRange(sme.Qualifiers.Copy());
             }
         }

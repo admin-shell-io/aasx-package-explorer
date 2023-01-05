@@ -51,8 +51,8 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultGenerateSubmodel : AasxPluginResultBase
     {
-        public AasCore.Aas3_0_RC02.Submodel sm;
-        public List<AasCore.Aas3_0_RC02.ConceptDescription> cds;
+        public Aas.Submodel sm;
+        public List<Aas.ConceptDescription> cds;
     }
 
     public interface IPushApplicationEvent
@@ -68,7 +68,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventNavigateToReference : AasxPluginResultEventBase
     {
-        public AasCore.Aas3_0_RC02.Reference targetReference = null;
+        public Aas.Reference targetReference = null;
     }
 
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
@@ -114,7 +114,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
-        public List<AasCore.Aas3_0_RC02.Key> resultKeys = null;
+        public List<Aas.Key> resultKeys = null;
     }
 
     public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase

@@ -82,21 +82,21 @@ namespace AasxPluginExportTable.Uml
             Package = CreateAppendElement(pack, UMLNS, "Namespace.ownedElement2");
         }
 
-        public string EvalFeatureType(AasCore.Aas3_0_RC02.ISubmodelElement sme)
+        public string EvalFeatureType(Aas.ISubmodelElement sme)
         {
             // access
             if (sme == null)
                 return "";
 
-            if (sme is AasCore.Aas3_0_RC02.Property p)
-                return AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType);
+            if (sme is Aas.Property p)
+                return Aas.Stringification.ToString(p.ValueType);
 
             return sme.GetSelfDescription()?.AasElementName;
         }
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<AasCore.Aas3_0_RC02.ISubmodelElement> features)
+            List<Aas.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
@@ -106,8 +106,8 @@ namespace AasxPluginExportTable.Uml
                 var type = EvalFeatureType(sme);
                 var multiplicity = EvalMultiplicityBounds(EvalUmlMultiplicity(sme));
                 var initialValue = "";
-                if (sme is AasCore.Aas3_0_RC02.Property || sme is AasCore.Aas3_0_RC02.Range
-                    || sme is AasCore.Aas3_0_RC02.MultiLanguageProperty)
+                if (sme is Aas.Property || sme is Aas.Range
+                    || sme is Aas.MultiLanguageProperty)
                     initialValue = sme.ValueAsText();
 
                 var attribute = CreateAppendElement(featureContainer, UMLNS, "Attribute",
@@ -137,7 +137,7 @@ namespace AasxPluginExportTable.Uml
             }
         }
 
-        public void AddClass(AasCore.Aas3_0_RC02.IReferable rf)
+        public void AddClass(Aas.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -157,7 +157,7 @@ namespace AasxPluginExportTable.Uml
             AddFeatures(featureContainer, features);
         }
 
-        public void ProcessEntity(AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
+        public void ProcessEntity(Aas.IReferable parent, Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -171,7 +171,7 @@ namespace AasxPluginExportTable.Uml
                 ProcessEntity(rf, c);
         }
 
-        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
+        public void ProcessSubmodel(Aas.Submodel submodel)
         {
             ProcessEntity(null, submodel);
         }

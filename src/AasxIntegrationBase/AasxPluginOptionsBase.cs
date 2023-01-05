@@ -284,8 +284,8 @@ namespace AasxIntegrationBase
             if (src.AllowSubmodelSemanticId != null)
                 foreach (var assi in src.AllowSubmodelSemanticId)
                     AllowSubmodelSemanticId.Add(
-                        new AAS.Key(AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(assi?.type) 
-                            ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, assi.value));
+                        new AAS.Key(Aas.Stringification.KeyTypesFromString(assi?.type) 
+                            ?? Aas.KeyTypes.GlobalReference, assi.value));
         }
 #endif
 
@@ -308,16 +308,16 @@ namespace AasxIntegrationBase
 #endif
 
 
-        private string GenerateIndexKey(AasCore.Aas3_0_RC02.Key key)
+        private string GenerateIndexKey(Aas.Key key)
         {
             if (key == null)
                 return null;
-            var k = new AasCore.Aas3_0_RC02.Key(key.Type, key.Value);
+            var k = new Aas.Key(key.Type, key.Value);
             var ndx = k?.ToStringExtended();
             return ndx;
         }
 
-        public void IndexRecord(AasCore.Aas3_0_RC02.Key key, AasxPluginOptionsRecordBase rec)
+        public void IndexRecord(Aas.Key key, AasxPluginOptionsRecordBase rec)
         {
             if (_recordLookup == null)
                 _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();
@@ -339,7 +339,7 @@ namespace AasxIntegrationBase
                         IndexRecord(a2, rec);
         }
 
-        public bool ContainsIndexKey(AasCore.Aas3_0_RC02.Key key)
+        public bool ContainsIndexKey(Aas.Key key)
         {
             // access
             var ndx = GenerateIndexKey(key);
@@ -349,7 +349,7 @@ namespace AasxIntegrationBase
             return _recordLookup.ContainsKey(ndx);
         }
 
-        public IEnumerable<T> LookupAllIndexKey<T>(AasCore.Aas3_0_RC02.Key key)
+        public IEnumerable<T> LookupAllIndexKey<T>(Aas.Key key)
             where T : AasxPluginOptionsRecordBase
         {
             // access

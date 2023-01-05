@@ -161,7 +161,7 @@ namespace AasxIntegrationBase
             public override string ToString()
             {
                 var idn = "";
-                if (businessObject is AasCore.Aas3_0_RC02.IReferable rf)
+                if (businessObject is Aas.IReferable rf)
                     idn = "." + rf.IdShort;
                 return "" + qualifiedNameHead + idn + "." + metaModelName;
             }
@@ -189,12 +189,12 @@ namespace AasxIntegrationBase
         {
             // try get a speaking name
             var metaModelName = "<unknown>";
-            var x1 = mi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.MetaModelName>();
+            var x1 = mi.GetCustomAttribute<Aas.Attributes.MetaModelName>();
             if (x1 != null && x1.name != null)
                 metaModelName = x1.name;
 
             // check if this object is searchable
-            var x2 = mi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.TextSearchable>();
+            var x2 = mi.GetCustomAttribute<Aas.Attributes.TextSearchable>();
             if (x2 != null)
             {
                 // what to check?
@@ -202,13 +202,13 @@ namespace AasxIntegrationBase
 
                 // quite late: investigate, if we accepted findings from the 
                 // type of business element
-                var isColl = (businessObject is AasCore.Aas3_0_RC02.AssetAdministrationShell
-                        || businessObject is AasCore.Aas3_0_RC02.Submodel
-                        || businessObject is AasCore.Aas3_0_RC02.SubmodelElementCollection);
+                var isColl = (businessObject is Aas.AssetAdministrationShell
+                        || businessObject is Aas.Submodel
+                        || businessObject is Aas.SubmodelElementCollection);
 
-                var isProp = (businessObject is AasCore.Aas3_0_RC02.Property);
+                var isProp = (businessObject is Aas.Property);
 
-                var isMLP = (businessObject is AasCore.Aas3_0_RC02.MultiLanguageProperty);
+                var isMLP = (businessObject is Aas.MultiLanguageProperty);
 
 
                 if (!options.SearchCollection && isColl)
@@ -302,9 +302,9 @@ namespace AasxIntegrationBase
 
             // try to get element name of an AAS entity
             string elName = null;
-            if (obj is AasCore.Aas3_0_RC02.IReferable)
+            if (obj is Aas.IReferable)
             {
-                elName = (obj as AasCore.Aas3_0_RC02.IReferable).GetSelfDescription()?.AasElementName;
+                elName = (obj as Aas.IReferable).GetSelfDescription()?.AasElementName;
                 businessObject = obj;
             }
 
@@ -329,11 +329,11 @@ namespace AasxIntegrationBase
             foreach (var fi in fields)
             {
                 // is the object marked to be skipped?
-                var x3 = fi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.SkipForReflection>();
+                var x3 = fi.GetCustomAttribute<Aas.Attributes.SkipForReflection>();
                 if (x3 != null)
                     continue;
 
-                var x4 = fi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.SkipForSearch>();
+                var x4 = fi.GetCustomAttribute<Aas.Attributes.SkipForSearch>();
                 if (x4 != null)
                     continue;
 
@@ -370,11 +370,11 @@ namespace AasxIntegrationBase
                     continue;
 
                 // is the object marked to be skipped?
-                var x3 = pi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.SkipForReflection>();
+                var x3 = pi.GetCustomAttribute<Aas.Attributes.SkipForReflection>();
                 if (x3 != null)
                     continue;
 
-                var x4 = pi.GetCustomAttribute<AasCore.Aas3_0_RC02.Attributes.SkipForSearch>();
+                var x4 = pi.GetCustomAttribute<Aas.Attributes.SkipForSearch>();
                 if (x4 != null)
                     continue;
 

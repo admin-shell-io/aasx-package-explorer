@@ -85,17 +85,17 @@ namespace AasxPluginDocumentShelf
             };
             opt.Records.Add(rec);
 
-            rec.AllowSubmodelSemanticId.Add(new AasCore.Aas3_0_RC02.Key(
-                AasCore.Aas3_0_RC02.KeyTypes.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "smart.festo.com/AAS/Submodel/ComputerAidedDesign/1/0"));
 
-            rec.AllowSubmodelSemanticId.Add(new AasCore.Aas3_0_RC02.Key(
-                AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/MCAD/0/1/"));
 
-            rec.AllowSubmodelSemanticId.Add(new AasCore.Aas3_0_RC02.Key(
-                AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/EFCAD/0/1/"));
 
-            rec.AllowSubmodelSemanticId.Add(new AasCore.Aas3_0_RC02.Key(
-                AasCore.Aas3_0_RC02.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
+            rec.AllowSubmodelSemanticId.Add(new Aas.Key(
+                Aas.KeyTypes.Submodel, "https://admin-shell.io/sandbox/idta/handover/PLC/0/1/"));
 
             return opt;
         }

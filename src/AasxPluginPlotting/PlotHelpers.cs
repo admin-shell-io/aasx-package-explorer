@@ -111,8 +111,8 @@ namespace AasxPluginPlotting
         }
 
         public static string EvalDisplayText(
-                string minmalText, AasCore.Aas3_0_RC02.ISubmodelElement sme,
-                AasCore.Aas3_0_RC02.ConceptDescription cd = null,
+                string minmalText, Aas.ISubmodelElement sme,
+                Aas.ConceptDescription cd = null,
                 bool addMinimalTxt = false,
                 string defaultLang = null,
                 bool useIdShort = true)

@@ -30,10 +30,10 @@ namespace AasxPredefinedConcepts
 
         public const string Vdi2770Sys = "VDI2770:2020";
 
-        public AasCore.Aas3_0_RC02.Submodel
+        public Aas.Submodel
             SM_ManufacturerDocumentation;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription
+        public Aas.ConceptDescription
             CD_Document,
             CD_DocumentId,
             CD_DocumentDomainId,

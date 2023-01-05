@@ -29,7 +29,7 @@ namespace AasxPluginGenericForms
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
+        private Aas.Submodel _submodel = null;
         private AasxPluginGenericForms.GenericFormOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -49,7 +49,7 @@ namespace AasxPluginGenericForms
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel theSubmodel,
+            Aas.Submodel theSubmodel,
             AasxPluginGenericForms.GenericFormOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -77,7 +77,7 @@ namespace AasxPluginGenericForms
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
+            var sm = osm as Aas.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -202,7 +202,7 @@ namespace AasxPluginGenericForms
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    List<AasCore.Aas3_0_RC02.ISubmodelElement> currentElements = null;
+                    List<Aas.ISubmodelElement> currentElements = null;
                     if (_form.InUpdateMode)
                     {
                         currentElements = _submodel.SubmodelElements;

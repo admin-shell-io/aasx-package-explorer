@@ -37,7 +37,7 @@ namespace AasxPluginPlotting
     // https://rachel53461.wordpress.com/2011/09/17/wpf-grids-rowcolumn-count-properties/
     public class GridHelpers
     {
-        #region DefaultLength AasCore.Aas3_0_RC02.Property
+        #region DefaultLength Aas.Property
 
         /// <summary>
         /// Adds the specified number of Rows to RowDefinitions. 
@@ -79,7 +79,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region RowCount AasCore.Aas3_0_RC02.Property
+        #region RowCount Aas.Property
 
         /// <summary>
         /// Adds the specified number of Rows to RowDefinitions. 
@@ -123,7 +123,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region ColumnCount AasCore.Aas3_0_RC02.Property
+        #region ColumnCount Aas.Property
 
         /// <summary>
         /// Adds the specified number of Columns to ColumnDefinitions. 
@@ -167,7 +167,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region StarRows AasCore.Aas3_0_RC02.Property
+        #region StarRows Aas.Property
 
         /// <summary>
         /// Makes the specified Row's Height equal to Star. 
@@ -202,7 +202,7 @@ namespace AasxPluginPlotting
 
         #endregion
 
-        #region StarColumns AasCore.Aas3_0_RC02.Property
+        #region StarColumns Aas.Property
 
         /// <summary>
         /// Makes the specified Column's Width equal to Star. 

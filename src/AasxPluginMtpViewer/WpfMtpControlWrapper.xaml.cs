@@ -33,7 +33,7 @@ namespace AasxPluginMtpViewer
 
         private LogInstance theLog = null;
         private AdminShellPackageEnv thePackage = null;
-        private AasCore.Aas3_0_RC02.Submodel theSubmodel = null;
+        private Aas.Submodel theSubmodel = null;
         private AasxPluginMtpViewer.MtpViewerOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
@@ -46,7 +46,7 @@ namespace AasxPluginMtpViewer
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
         private WpfMtpControl.MtpData activeMtpData = null;
 
-        private AasCore.Aas3_0_RC02.File activeMtpFileElem = null;
+        private Aas.File activeMtpFileElem = null;
         private string activeMtpFileFn = null;
 
         public WpfMtpControl.MtpVisuOpcUaClient client = new WpfMtpControl.MtpVisuOpcUaClient();
@@ -68,7 +68,7 @@ namespace AasxPluginMtpViewer
 
         public void Start(
             AdminShellPackageEnv thePackage,
-            AasCore.Aas3_0_RC02.Submodel theSubmodel,
+            Aas.Submodel theSubmodel,
             AasxPluginMtpViewer.MtpViewerOptions theOptions,
             PluginEventStack eventStack,
             LogInstance log)
@@ -89,7 +89,7 @@ namespace AasxPluginMtpViewer
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
+            var sm = osm as Aas.Submodel;
             var master = masterDockPanel as DockPanel;
             if (package == null || sm == null || master == null)
                 return null;
@@ -176,14 +176,14 @@ namespace AasxPluginMtpViewer
                 return false;
 
             // need to find the type Submodel
-            AasCore.Aas3_0_RC02.Submodel mtpTypeSm = null;
+            Aas.Submodel mtpTypeSm = null;
 
             // check, if the user pointed to the instance submodel
             if (this.theSubmodel.SemanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
             {
                 // Source list
                 foreach (var srcLst in this.theSubmodel.SubmodelElements
-                    .FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         this.defsMtp.CD_SourceList?.GetReference(), MatchMode.Relaxed))
                 {
                     // found a source list, might contain sources
@@ -191,12 +191,12 @@ namespace AasxPluginMtpViewer
                         continue;
 
                     // UA Server?
-                    foreach (var src in srcLst.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    foreach (var src in srcLst.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         this.defsMtp.CD_SourceOpcUaServer?.GetReference(), MatchMode.Relaxed))
                         if (src?.Value != null)
                         {
                             // UA server
-                            var ep = src.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                            var ep = src.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 this.defsMtp.CD_Endpoint.GetReference(), MatchMode.Relaxed)?.Value;
 
                             // add
@@ -209,13 +209,13 @@ namespace AasxPluginMtpViewer
 
                 // Identifier renaming?
                 foreach (var ren in theSubmodel.SubmodelElements
-                    .FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                     this.defsMtp.CD_IdentifierRenaming?.GetReference(), MatchMode.Relaxed))
                     if (ren?.Value != null)
                     {
-                        var oldtxt = ren.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var oldtxt = ren.Value.FindFirstSemanticIdAs<Aas.Property>(
                             this.defsMtp.CD_RenamingOldText?.GetReference(), MatchMode.Relaxed)?.Value;
-                        var newtxt = ren.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var newtxt = ren.Value.FindFirstSemanticIdAs<Aas.Property>(
                             this.defsMtp.CD_RenamingNewText?.GetReference(), MatchMode.Relaxed)?.Value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.IdentifierRenaming != null)
@@ -224,13 +224,13 @@ namespace AasxPluginMtpViewer
 
                 // Namespace renaming?
                 foreach (var ren in theSubmodel.SubmodelElements
-                    .FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                    .FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                     this.defsMtp.CD_NamespaceRenaming?.GetReference(), MatchMode.Relaxed))
                     if (ren?.Value != null)
                     {
-                        var oldtxt = ren?.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var oldtxt = ren?.Value.FindFirstSemanticIdAs<Aas.Property>(
                             this.defsMtp.CD_RenamingOldText?.GetReference(), MatchMode.Relaxed)?.Value;
-                        var newtxt = ren?.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var newtxt = ren?.Value.FindFirstSemanticIdAs<Aas.Property>(
                             this.defsMtp.CD_RenamingNewText?.GetReference(), MatchMode.Relaxed)?.Value;
                         if (oldtxt.HasContent() && newtxt.HasContent() &&
                             preLoadInfo?.NamespaceRenaming != null)
@@ -240,7 +240,7 @@ namespace AasxPluginMtpViewer
                 // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
                 // How to get from subModel to AAS?
                 var instanceAas = env.FindAasWithSubmodelId(this.theSubmodel.Id);
-                var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as AasCore.Aas3_0_RC02.AssetAdministrationShell;
+                var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as Aas.AssetAdministrationShell;
                 if (instanceAas?.DerivedFrom != null && typeAas != null)
                     foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>
                     {
@@ -253,9 +253,9 @@ namespace AasxPluginMtpViewer
 
                 // another possibility: direct reference
                 var dirLink = this.theSubmodel.SubmodelElements
-                    .FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
+                    .FindFirstSemanticIdAs<Aas.ReferenceElement>(
                         this.defsMtp.CD_MtpTypeSubmodel?.GetReference(), MatchMode.Relaxed);
-                var dirLinkSm = env.FindReferableByReference(dirLink?.Value) as AasCore.Aas3_0_RC02.Submodel;
+                var dirLinkSm = env.FindReferableByReference(dirLink?.Value) as Aas.Submodel;
                 if (mtpTypeSm == null)
                     mtpTypeSm = dirLinkSm;
 
@@ -273,7 +273,7 @@ namespace AasxPluginMtpViewer
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
             this.activeMtpFileElem = mtpTypeSm.SubmodelElements?
-                .FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(this.defsMtp.CD_MtpFile.GetReference(),
+                .FindFirstSemanticIdAs<Aas.File>(this.defsMtp.CD_MtpFile.GetReference(),
                     MatchMode.Relaxed);
             var inputFn = this.activeMtpFileElem?.Value;
             if (inputFn == null)
@@ -340,10 +340,10 @@ namespace AasxPluginMtpViewer
                 // Search for FileToNavigateElement
                 //
 
-                var firstFtn = first.Add(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, searchId));
+                var firstFtn = first.Add(new Aas.Key(Aas.KeyTypes.GlobalReference, searchId));
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFtn.ToStringExtended(1)}");
 
-                foreach (var fileToNav in sme.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.RelationshipElement>(
+                foreach (var fileToNav in sme.FindAllSemanticIdAs<Aas.RelationshipElement>(
                 this.defsInterop?.CD_FileToNavigateElement?.GetReference(), MatchMode.Relaxed))
                     if (fileToNav.First?.Matches(firstFtn, MatchMode.Relaxed) == true)
                     {
@@ -358,10 +358,10 @@ namespace AasxPluginMtpViewer
                 // Search for FileToEntity
                 //
 
-                var firstFte = first.Add(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, searchId));
+                var firstFte = first.Add(new Aas.Key(Aas.KeyTypes.GlobalReference, searchId));
                 this.theLog?.Info($"DblClick MTP .. search reference: {firstFte.ToStringExtended(1)}");
 
-                foreach (var fileToEnt in sme.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.RelationshipElement>(
+                foreach (var fileToEnt in sme.FindAllSemanticIdAs<Aas.RelationshipElement>(
                 this.defsInterop?.CD_FileToEntity?.GetReference(), MatchMode.Relaxed))
                     if (fileToEnt.First?.Matches(firstFte, MatchMode.Relaxed) == true)
                     {
@@ -370,8 +370,8 @@ namespace AasxPluginMtpViewer
 
                         // find Entity, check if self-contained
                         var foundRef = this.thePackage?.AasEnv?.FindReferableByReference(fileToEnt.Second);
-                        if (foundRef is AasCore.Aas3_0_RC02.Entity foundEnt
-                            && foundEnt.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity
+                        if (foundRef is Aas.Entity foundEnt
+                            && foundEnt.EntityType == Aas.EntityType.SelfManagedEntity
                             && foundEnt.GlobalAssetId != null)
                         {
                             // try activate

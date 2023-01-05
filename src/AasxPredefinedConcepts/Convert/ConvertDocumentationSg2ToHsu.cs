@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(Aas.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
 
-            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
+            var sm = currentReferable as Aas.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferDocumentationSg2ToHsu(this,
                             $"Convert Submodel '{"" + sm.IdShort}' for Documentation SG2 to HSU"));
@@ -52,7 +52,7 @@ namespace AasxPredefinedConcepts.Convert
             return res;
         }
 
-        public override bool ExecuteOffer(AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
+        public override bool ExecuteOffer(AdminShellPackageEnv package, Aas.IReferable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -67,7 +67,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             // access Submodel (again)
-            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
+            var sm = currentReferable as Aas.Submodel;
             if (sm == null || sm.SubmodelElements == null ||
                     true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
@@ -75,8 +75,8 @@ namespace AasxPredefinedConcepts.Convert
 
             // convert in place: detach old SMEs, change semanticId
             var smcOldSg2 = sm.SubmodelElements;
-            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
-            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsHsu.SM_Document.SemanticId.GetAsExactlyOneKey() });
+            sm.SubmodelElements = new List<Aas.ISubmodelElement>();
+            sm.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { defsHsu.SM_Document.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -99,9 +99,9 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsHsu.GetAllReferables())
-                    if (rf is AasCore.Aas3_0_RC02.ConceptDescription conceptDescription)
+                    if (rf is Aas.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
-                            new AasCore.Aas3_0_RC02.ConceptDescription(
+                            new Aas.ConceptDescription(
                                 conceptDescription.Id, conceptDescription.Extensions, 
                                 conceptDescription.Category, conceptDescription.IdShort, 
                                 conceptDescription.DisplayName, conceptDescription.Description, 
@@ -110,7 +110,7 @@ namespace AasxPredefinedConcepts.Convert
                                 conceptDescription.IsCaseOf));
 
             // ok, go thru the old == SG2 records
-            foreach (var smcDoc in smcOldSg2.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+            foreach (var smcDoc in smcOldSg2.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                         defsSg2.CD_VDI2770_Document.GetSingleKey()))
             {
                 // access
@@ -118,7 +118,7 @@ namespace AasxPredefinedConcepts.Convert
                     continue;
 
                 // look immediately for DocumentVersion, as only with this there is a valid List item
-                foreach (var smcVer in smcDoc.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
+                foreach (var smcVer in smcDoc.Value.FindAllSemanticIdAs<Aas.SubmodelElementCollection>(
                             defsSg2.CD_VDI2770_DocumentVersion.GetSingleKey()))
                 {
                     // access
@@ -128,162 +128,162 @@ namespace AasxPredefinedConcepts.Convert
                     // make new HSU Document
                     // ReSharper disable once ConvertToUsingDeclaration
                     // Document Item
-                    //using (var smcHsuDoc = AasCore.Aas3_0_RC02.SubmodelElementCollection.CreateNew("" + smcDoc.IdShort,
+                    //using (var smcHsuDoc = Aas.SubmodelElementCollection.CreateNew("" + smcDoc.IdShort,
                     //            smcDoc.Category,
-                    //            AasCore.Aas3_0_RC02.Key.GetFromRef(defsHsu.CD_DocumentationItem.GetCdReference())))
-                    var smcHsuDoc = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "" + smcDoc.IdShort, category: smcDoc.Category, semanticId: defsHsu.CD_DocumentationItem.GetCdReference());
+                    //            Aas.Key.GetFromRef(defsHsu.CD_DocumentationItem.GetCdReference())))
+                    var smcHsuDoc = new Aas.SubmodelElementCollection(idShort: "" + smcDoc.IdShort, category: smcDoc.Category, semanticId: defsHsu.CD_DocumentationItem.GetCdReference());
                     {
                         // Document itself
                         smcHsuDoc.Description = smcDoc.Description;
                         sm.SubmodelElements.Add(smcHsuDoc);
 
                         // items ..
-                        var property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentType, addSme: true);
+                        var property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentType, addSme: true);
                         property.Value = "Single";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_DomainId,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_DomainId,
                             addSme: true);
                         property.Value = "";
 
-                        var b = true == smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        var b = true == smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                 defsSg2.CD_VDI2770_IsPrimaryDocumentId.GetSingleKey())?.IsValueTrue();
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_IdType, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_IdType, addSme: true);
                         property.Value = b ? "Primary" : "Secondary";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentId, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentId, addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentDomainId,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentDomainId,
                             addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Role, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Role, addSme: true);
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                         defsSg2.CD_VDI2770_Role.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_OrganisationId,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_OrganisationId,
                             addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_OrganisationName,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_OrganisationName,
                             addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                         defsSg2.CD_VDI2770_OrganizationName.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(
                                 defsHsu.CD_VDI2770_OrganisationOfficialName, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                         defsSg2.CD_VDI2770_OrganizationOfficialName.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Description,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Description,
                                 addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentPartId, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentPartId, addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentClassification_ClassId,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentClassification_ClassId,
                             addSme: true);
-                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassId.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_ClassName,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_ClassName,
                             addSme: true);
-                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassName.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_ClassificationSystem,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_ClassificationSystem,
                             addSme: true);
-                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcDoc.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassificationSystem.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentVersionId,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentVersionId,
                             addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_DocumentVersionId.GetSingleKey())?.Value;
 
                         var lcs = "";
-                        foreach (var lcp in smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        foreach (var lcp in smcVer.Value.FindAllSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_Language.GetSingleKey()))
                             lcs += "" + lcp?.Value + ",";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_DocumentVersion_LanguageCode,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_DocumentVersion_LanguageCode,
                                 addSme: true);
                         property.Value = lcs.TrimEnd(',');
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Title, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Title, addSme: true);
                         property.Value = "" + smcVer.Value.FindFirstSemanticId(
                                         defsSg2.CD_VDI2770_Title.GetSingleKey(),
                                         new[] {
-                                            typeof(AasCore.Aas3_0_RC02.Property),
-                                            typeof(AasCore.Aas3_0_RC02.MultiLanguageProperty)
+                                            typeof(Aas.Property),
+                                            typeof(Aas.MultiLanguageProperty)
                                         })?.ValueAsText();
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Summary, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Summary, addSme: true);
                         property.Value = "" + smcVer.Value.FindFirstSemanticId(
                                         defsSg2.CD_VDI2770_Summary.GetSingleKey(),
                                         new[] {
-                                            typeof(AasCore.Aas3_0_RC02.Property),
-                                            typeof(AasCore.Aas3_0_RC02.MultiLanguageProperty)
+                                            typeof(Aas.Property),
+                                            typeof(Aas.MultiLanguageProperty)
                                         })?.ValueAsText();
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Keywords,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Keywords,
                             addSme: true);
                         property.Value = "" + smcVer.Value.FindFirstSemanticId(
                                     defsSg2.CD_VDI2770_Keywords.GetSingleKey(),
                                     new[] {
-                                        typeof(AasCore.Aas3_0_RC02.Property),
-                                        typeof(AasCore.Aas3_0_RC02.MultiLanguageProperty)
+                                        typeof(Aas.Property),
+                                        typeof(Aas.MultiLanguageProperty)
                                     })?.ValueAsText();
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_StatusValue,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_StatusValue,
                             addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                     defsSg2.CD_VDI2770_StatusValue.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_SetDate, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_SetDate, addSme: true);
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Aas.Property>(
                                         defsSg2.CD_VDI2770_Date.GetSingleKey())?.Value;
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Purpose, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Purpose, addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_BasedOnProcedure,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_BasedOnProcedure,
                             addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_Comments,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_Comments,
                             addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_ReferencedObject_Type,
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_ReferencedObject_Type,
                             addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(
                             defsHsu.CD_VDI2770_ReferencedObject_RefType, addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(
                             defsHsu.CD_VDI2770_ReferencedObject_ObjectId, addSme: true);
                         property.Value = "";
 
-                        property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_FileId, addSme: true);
+                        property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_FileId, addSme: true);
                         property.Value = "";
 
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<Aas.File>(
                                 defsSg2.CD_VDI2770_DigitalFile.GetSingleKey());
                         if (fl != null)
                         {
-                            property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_FileName,
+                            property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_FileName,
                                 addSme: true);
                             property.Value = System.IO.Path.GetFileName("" + fl.Value);
 
-                            property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_FileFormat,
+                            property = smcHsuDoc.Value.CreateSMEForCD<Aas.Property>(defsHsu.CD_VDI2770_FileFormat,
                                 addSme: true);
                             property.Value = "" + fl.ContentType;
 
-                            var file = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.File>(defsHsu.CD_File, addSme: true);
+                            var file = smcHsuDoc.Value.CreateSMEForCD<Aas.File>(defsHsu.CD_File, addSme: true);
                             file.ContentType = fl.ContentType;
                             file.Value = fl.Value;
 

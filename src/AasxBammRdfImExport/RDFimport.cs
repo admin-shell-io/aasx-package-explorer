@@ -30,8 +30,8 @@ namespace AasxBammRdfImExport
         public static AdminShellNS.AdminShellPackageEnv thePackageEnv;
 
         public static void ImportInto(
-            string rdffn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Reference smref)
+            string rdffn, Aas.Environment env, Aas.Submodel sm,
+            Aas.Reference smref)
         {
             thePackageEnv = new AdminShellNS.AdminShellPackageEnv();
             List<string> entity_subject = new List<string>();
@@ -56,10 +56,10 @@ namespace AasxBammRdfImExport
             List<string> properties_list = new List<string>();
             List<string> properties_true_list = new List<string>();
             List<string> property_set_list = new List<string>();
-            AasCore.Aas3_0_RC02.Entity entity = new AasCore.Aas3_0_RC02.Entity(AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity);
-            AasCore.Aas3_0_RC02.SubmodelElementCollection set_property = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
-            AasCore.Aas3_0_RC02.SubmodelElementCollection et = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
-            AasCore.Aas3_0_RC02.SubmodelElementCollection entity_set = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.Entity entity = new Aas.Entity(Aas.EntityType.SelfManagedEntity);
+            Aas.SubmodelElementCollection set_property = new Aas.SubmodelElementCollection();
+            Aas.SubmodelElementCollection et = new Aas.SubmodelElementCollection();
+            Aas.SubmodelElementCollection entity_set = new Aas.SubmodelElementCollection();
 
             // begin new (temporary) objects
 
@@ -76,7 +76,7 @@ namespace AasxBammRdfImExport
                     obj_aspect.Name = (t.Subject.ToString().Substring(t.Subject.ToString().LastIndexOf("#") + 1));
                     sm.IdShort = obj_aspect.Name;
 
-                    var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, t.Subject.ToString());
+                    var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, t.Subject.ToString());
                     sm.SemanticId = msemanticID;
                     thePackageEnv.AasEnv.Submodels.Add(sm);
                 }
@@ -225,8 +225,8 @@ namespace AasxBammRdfImExport
                             property_Name = (t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1));
                             Console.WriteLine(property_Name);
                         }
-                        var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, semantic);
-                        set_property = new AasCore.Aas3_0_RC02.SubmodelElementCollection(
+                        var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, semantic);
+                        set_property = new Aas.SubmodelElementCollection(
                             idShort: property_Name, semanticId: msemanticID);
                         sm.Add(set_property);
                     }
@@ -250,8 +250,8 @@ namespace AasxBammRdfImExport
                         {
                             string entity_set_idshort =
                                 (t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1));
-                            var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, semantic);
-                            entity_set = new AasCore.Aas3_0_RC02.SubmodelElementCollection(
+                            var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, semantic);
+                            entity_set = new Aas.SubmodelElementCollection(
                                 idShort: entity_set_idshort, semanticId: msemanticID);
                             set_property.Add(entity_set);
                         }
@@ -375,23 +375,23 @@ namespace AasxBammRdfImExport
                 }
 
                 {
-                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(idShort: property_Name, id: semantic);
+                    var cd = new Aas.ConceptDescription(idShort: property_Name, id: semantic);
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
                         preferredNames: new[] { "EN", property_PreferredName },
                         shortName: null,
 
                          unit: null,
-                         unitId: ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, unit_name),
+                         unitId: ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, unit_name),
                         valueFormat: null,
                           dataType: "BOOLEAN",
                         definition: new[] { "EN", property_Description }
 
                     );
 
-                    var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, semantic);
-                    var mp = new AasCore.Aas3_0_RC02.Property(
-                        AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: property_Name, semanticId: msemanticID);
+                    var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.ConceptDescription, semantic);
+                    var mp = new Aas.Property(
+                        Aas.DataTypeDefXsd.String, idShort: property_Name, semanticId: msemanticID);
                     mp.Value = property_ExampleValue;
                     sm.Add(mp);
                 }
@@ -402,8 +402,8 @@ namespace AasxBammRdfImExport
             foreach (var charc_prop in entity_property_char)
 
             {
-                var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, smc_semantic);
-                et = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: charc_prop, semanticId: msemanticID);
+                var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.ConceptDescription, smc_semantic);
+                et = new Aas.SubmodelElementCollection(idShort: charc_prop, semanticId: msemanticID);
                 sm.Add(et);
             }
 
@@ -447,22 +447,22 @@ namespace AasxBammRdfImExport
                 }
 
                 {
-                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(idShort: "" + name, id: semantic);
+                    var cd = new Aas.ConceptDescription(idShort: "" + name, id: semantic);
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
                         preferredNames: new[] { "EN", preferred_name },
                         shortName: null,
 
                          unit: null,
-                         unitId: ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, unit_name),
+                         unitId: ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, unit_name),
                         valueFormat: null,
                           dataType: "BOOLEAN",
                         definition: new[] { "EN", description }
 
                     );
-                    var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, semantic);
-                    var mp =  new AasCore.Aas3_0_RC02.Property(
-                        AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
+                    var msemanticID = ExtendReference.CreateFromKey(Aas.KeyTypes.ConceptDescription, semantic);
+                    var mp =  new Aas.Property(
+                        Aas.DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
                     mp.Value = description;
                     et.Add(mp);
 

@@ -32,8 +32,8 @@ namespace AasxPluginExportTable
 
         protected LogInstance _log;
         protected ImportExportTableRecord _job;
-        protected AasCore.Aas3_0_RC02.Submodel _sm;
-        protected AasCore.Aas3_0_RC02.Environment _env;
+        protected Aas.Submodel _sm;
+        protected Aas.Environment _env;
         protected ExportTableOptions _options;
 
         protected List<ImportCellMatcherBase> _matcherTop;
@@ -42,8 +42,8 @@ namespace AasxPluginExportTable
         public ImportPopulateByTable(
             LogInstance log,
             ImportExportTableRecord job,
-            AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel sm,
+            Aas.Environment env,
             ExportTableOptions options)
         {
             // context
@@ -57,7 +57,7 @@ namespace AasxPluginExportTable
             if (sm == null || _job.Top == null || _job.Body == null)
                 return;
             if (sm.SubmodelElements == null)
-                sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                sm.SubmodelElements = new List<Aas.ISubmodelElement>();
 
             // prepare matchers
             _matcherTop = _job.Top.Select((s) => ImportCellMatcherBase.Create(s)).ToList();
@@ -121,8 +121,8 @@ namespace AasxPluginExportTable
 
         protected class ContextResult
         {
-            public AasCore.Aas3_0_RC02.IReferable Elem;
-            public List<AasCore.Aas3_0_RC02.ISubmodelElement> Childs;
+            public Aas.IReferable Elem;
+            public List<Aas.ISubmodelElement> Childs;
         }
 
         protected class FilteredElementName
@@ -131,7 +131,7 @@ namespace AasxPluginExportTable
             public string ValueType = "";
 
             public bool IsSubmodel;
-            public AasCore.Aas3_0_RC02.AasSubmodelElements? SmeEnum;
+            public Aas.AasSubmodelElements? SmeEnum;
 
             public static FilteredElementName Parse(string str)
             {
@@ -191,7 +191,7 @@ namespace AasxPluginExportTable
                     return null;
 
                 // ok, nice
-                res.Name = AasCore.Aas3_0_RC02.Stringification.ToString(ae);
+                res.Name = Aas.Stringification.ToString(ae);
                 res.SmeEnum = ae.Value;
                 return res;
             }
@@ -214,8 +214,8 @@ namespace AasxPluginExportTable
                 return null;
             if (!fen.IsSubmodel
                 && !fen.SmeEnum.HasValue
-                && fen.SmeEnum != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement
-                && fen.SmeEnum != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection)
+                && fen.SmeEnum != Aas.AasSubmodelElements.SubmodelElement
+                && fen.SmeEnum != Aas.AasSubmodelElements.SubmodelElementCollection)
                 return null;
 
             // special case: directly into the (existing) Submodel
@@ -242,10 +242,10 @@ namespace AasxPluginExportTable
             // Note: value data is not required, as fixed to SMC!
 
             var sme = AdminShellUtil.CreateSubmodelElementFromEnum(fen.SmeEnum.Value, context.Parent);
-            if (!(sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smesmc))
+            if (!(sme is Aas.SubmodelElementCollection smesmc))
                 return null;
 
-            smesmc.Value = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            smesmc.Value = new List<Aas.ISubmodelElement>();
 
             res = new ContextResult()
             {
@@ -257,14 +257,14 @@ namespace AasxPluginExportTable
             // does only search SME but no SM, however, this is not a flaw, as adding to SM is the default
             if (actInHierarchy && context.ParentParentName.HasContent() && context.Parent.IdShort.HasContent())
             {
-                foreach (var rootsmc in _sm.SubmodelElements.FindDeep<AasCore.Aas3_0_RC02.SubmodelElementCollection>((testsmc) =>
+                foreach (var rootsmc in _sm.SubmodelElements.FindDeep<Aas.SubmodelElementCollection>((testsmc) =>
                 {
                     // first condition is, that the parents match!
                     if (!testsmc.IdShort.HasContent() || testsmc.Parent == null)
                         return false;
 
                     // try testing of allowed parent names
-                    if (!(testsmc.Parent is AasCore.Aas3_0_RC02.IReferable testsmcpar))
+                    if (!(testsmc.Parent is Aas.IReferable testsmcpar))
                         return false;
                     var test1 = context.ParentParentName.ToLower().Contains(testsmcpar.IdShort.ToLower().Trim());
                     var test2 = false;
@@ -337,27 +337,27 @@ namespace AasxPluginExportTable
             var res = new ContextResult() { Elem = sme };
 
             // allow a selection a values
-            if (sme is AasCore.Aas3_0_RC02.Property prop)
+            if (sme is Aas.Property prop)
             {
                 prop.Value = context.SmeValue;
 
                 // demux
-                prop.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
+                prop.ValueType = Aas.Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? Aas.DataTypeDefXsd.String;
             }
 
-            if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+            if (sme is Aas.MultiLanguageProperty mlp)
             {
                 mlp.Value = ExtendLangStringSet.Create(ExtendLangString.LANG_DEFAULT, context.SmeValue);
             }
 
-            if (sme is AasCore.Aas3_0_RC02.File file)
+            if (sme is Aas.File file)
             {
                 file.Value = context.SmeValue;
             }
 
-            if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smc)
+            if (sme is Aas.SubmodelElementCollection smc)
             {
-                smc.Value = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                smc.Value = new List<Aas.ISubmodelElement>();
                 res.Childs = smc.Value;
             }
 
@@ -367,7 +367,7 @@ namespace AasxPluginExportTable
 
         protected ContextResult CreateBodyCD(
             ImportCellMatchContextBase context,
-            AasCore.Aas3_0_RC02.Environment env)
+            Aas.Environment env)
         {
             // access
             if (context?.Sme == null || context?.CD == null || env == null || _options == null)
@@ -384,7 +384,7 @@ namespace AasxPluginExportTable
                 // generate a new one for SME + CD
                 // this modifies the SME!
                 var id = AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription);
-                context.Sme.SemanticId = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id);
+                context.Sme.SemanticId = ExtendReference.CreateFromKey(Aas.KeyTypes.GlobalReference, id);
             }
 
             // create, add
