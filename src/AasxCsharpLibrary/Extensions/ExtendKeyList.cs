@@ -140,5 +140,44 @@ namespace Extensions
 
             return kl;
         }
+
+        /// <summary>
+        /// Take only idShort, ignore all other key-types and create a '/'-separated list
+        /// </summary>
+        /// <returns>Empty string or list of idShorts</returns>
+        public static string BuildIdShortPath(this List<Key> keyList,
+            int startPos = 0, int count = int.MaxValue)
+        {
+            if (keyList == null || startPos >= keyList.Count)
+                return "";
+            int nr = 0;
+            var res = "";
+            for (int i = startPos; i < keyList.Count && nr < count; i++)
+            {
+                nr++;
+                //// if (keyList[i].Type.Trim().ToLower() == Key.IdShort.Trim().ToLower())
+                {
+                    if (res != "")
+                        res += "/";
+                    res += keyList[i].Value;
+                }
+            }
+            return res;
+        }
+
+        public static List<Key> SubList(this List<Key> keyList, 
+            int startPos, int count = int.MaxValue)
+        {
+            var res = new List<Key>();
+            if (startPos >= keyList.Count())
+                return res;
+            int nr = 0;
+            for (int i = startPos; i < keyList.Count() && nr < count; i++)
+            {
+                nr++;
+                res.Add(keyList[i]);
+            }
+            return res;
+        }
     }
 }

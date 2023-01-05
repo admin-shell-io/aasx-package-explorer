@@ -550,12 +550,33 @@ namespace Extensions
 
         #region Referable Queries
 
+        /// <summary>
+        /// Result of FindReferable in Environment
+        /// </summary>
+        public class ReferableRootInfo
+        {
+            public AssetAdministrationShell AAS = null;
+            public AssetInformation Asset = null;
+            public Submodel Submodel = null;
+
+            public int NrOfRootKeys = 0;
+
+            public bool IsValid
+            {
+                get
+                {
+                    return NrOfRootKeys > 0 && (AAS != null || Submodel != null || Asset != null);
+                }
+            }
+        }
+
         //TODO: jtikekar Need to test
         public static IReferable FindReferableByReference(
             this AasCore.Aas3_0_RC02.Environment environment, 
             Reference reference, 
             int keyIndex = 0, 
-            List<ISubmodelElement> submodelElementList = null)
+            List<ISubmodelElement> submodelElementList = null,
+            ReferableRootInfo rootInfo = null)
         {
             // access
             var keyList = reference?.Keys;
@@ -572,6 +593,13 @@ namespace Extensions
                 case KeyTypes.AssetAdministrationShell:
                     {
                         var aas = environment.FindAasById(firstKeyId);
+
+                        // side info?
+                        if (rootInfo != null)
+                        {
+                            rootInfo.AAS = aas;
+                            rootInfo.NrOfRootKeys = 1 + keyIndex;
+                        }
 
                         //Not found or already at the end of our search
                         if (aas == null || keyIndex >= keyList.Count - 1)
@@ -595,6 +623,27 @@ namespace Extensions
                         if (submodel == null || keyIndex >= keyList.Count - 1)
                         {
                             return submodel;
+                        }
+
+                        // notice in side info
+                        if (rootInfo != null)
+                        {
+                            rootInfo.Submodel = submodel;
+                            rootInfo.NrOfRootKeys = 1 + keyIndex;
+
+                            // add even more info
+                            if (rootInfo.AAS == null)
+                            {
+                                foreach (var aas2 in environment.AssetAdministrationShells)
+                                {
+                                    var smref2 = environment.FindSubmodelById(submodel.Id);
+                                    if (smref2 != null)
+                                    {
+                                        rootInfo.AAS = aas2;
+                                        break;
+                                    }
+                                }
+                            }
                         }
 
                         return environment.FindReferableByReference(reference, ++keyIndex, submodel.SubmodelElements);

@@ -27,6 +27,8 @@
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     <ProjectReference Include="..\AasxWpfControlLibrary\AasxWpfControlLibrary.csproj" />
 	  <ProjectReference Include="..\AnyUi\AnyUi.csproj" />
+    <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj" />
+    <ProjectReference Include="..\AasxMqtt\AasxMqtt.csproj" />
   </ItemGroup>
 
   <!--
@@ -41,8 +43,6 @@
     <ProjectReference Include="..\AasxToolkit\AasxToolkit.csproj" />
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
-    <ProjectReference Include="..\AasxMqttClient\AasxMqttClient.csproj" />
-    <ProjectReference Include="..\AasxMqtt\AasxMqtt.csproj" />
     <ProjectReference Include="..\AasxOpenidClient\AasxOpenidClient.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
     <ProjectReference Include="..\AasxRestServerLibrary\AasxRestServerLibrary.csproj" />
@@ -77,7 +77,6 @@
   </Choose>
 
   <ItemGroup>
-    <Folder Include="Flyout\" />
     <None Update="IDTA_and_PI40_t.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -122,10 +121,8 @@
     <None Include="content-for-demo\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Remove="Flyout\MqttPublisherFlyout.xaml.cs" />
     <None Remove="i4AASCS.xml" />
     <None Remove="Resources\IDTA_AAS-Logo_312x281_RGB.png" />
-    <Page Remove="Flyout\MqttPublisherFlyout.xaml" />
     <EmbeddedResource Include="Resources\i4AASCS.xml" />
     <None Update="Opc.Ua.SampleClient.Config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

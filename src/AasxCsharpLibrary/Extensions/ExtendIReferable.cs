@@ -484,6 +484,16 @@ namespace Extensions
             return res;
         }
 
+        public static Key ToKey(this IReferable rf)
+        {
+            var sd = rf.GetSelfDescription();
+            if (sd == null || !sd.KeyType.HasValue)
+                return null;
+            if (rf is IIdentifiable rfi)
+                return new Key(sd.KeyType.Value, rfi.Id);
+            return new Key(sd.KeyType.Value, rf.IdShort);
+        }
+
         public static System.Text.Json.Nodes.JsonNode ToJsonObject(List<IClass> classes)
         {
             var jar = new System.Text.Json.Nodes.JsonArray();

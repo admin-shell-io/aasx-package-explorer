@@ -13,11 +13,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
+using Newtonsoft.Json;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
-using Newtonsoft.Json;
 
 // ReSharper disable ReplaceWithSingleAssignment.True
 
@@ -37,8 +37,8 @@ namespace AasxFormatCst
                     new ListOfUnique<CstPropertyDef.PropertyDefinition>();
         public List<CstPropertyRecord.PropertyRecord> PropertyRecs = new List<CstPropertyRecord.PropertyRecord>();
 
-        protected Dictionary<ConceptDescription, CstPropertyDef.PropertyDefinition>
-            _cdToProp = new Dictionary<ConceptDescription, CstPropertyDef.PropertyDefinition>();
+        protected Dictionary<Aas.ConceptDescription, CstPropertyDef.PropertyDefinition>
+            _cdToProp = new Dictionary<Aas.ConceptDescription, CstPropertyDef.PropertyDefinition>();
 
         protected CstIdStore _knownIdStore = new CstIdStore();
 
@@ -62,7 +62,7 @@ namespace AasxFormatCst
         }
 
         private void RecurseOnSme(
-            List<ISubmodelElement> smwc,
+            List<Aas.ISubmodelElement> smwc,
             CstIdObjectBase presetId,
             string presetClassType,
             CstPropertyRecord.ListOfProperty propRecs)
@@ -92,7 +92,7 @@ namespace AasxFormatCst
                         continue;
 
                     // is SMC? .. ugly contraption to have first all Properties, then all SMCs
-                    var smc = sme as SubmodelElementCollection;
+                    var smc = sme as Aas.SubmodelElementCollection;
                     if ((smcMode == 0 && smc != null)
                         || (smcMode == 1 && smc == null))
                         continue;
@@ -141,8 +141,8 @@ namespace AasxFormatCst
                         if (sme.Description != null)
                             tmpPd.Remark = sme.Description.GetDefaultString("en");
 
-                        if (sme is Property prop)
-                            tmpDt = Stringification.ToString(prop.ValueType);
+                        if (sme is Aas.Property prop)
+                            tmpDt = Aas.Stringification.ToString(prop.ValueType);
 
                         // more info
                         if (cd != null)
@@ -153,7 +153,7 @@ namespace AasxFormatCst
                                 if (ds61360.Definition != null)
                                     tmpPd.Definition = ds61360.Definition.GetDefaultString("en");
 
-                                var dst = Stringification.ToString(ds61360.DataType)?.ToUpper();
+                                var dst = Aas.Stringification.ToString(ds61360.DataType)?.ToUpper();
                                 if (ds61360 == null && dst != null)
                                 {
                                     tmpDt = dst;
@@ -272,8 +272,8 @@ namespace AasxFormatCst
 
         public void ExportSingleSubmodel(
             AdminShellPackageEnv env, string path,
-            Key smId,
-            IEnumerable<IReferable> cdReferables,
+            Aas.Key smId,
+            IEnumerable<Aas.IReferable> cdReferables,
             CstIdObjectBase firstNodeId,
             CstIdObjectBase secondNodeId,
             CstIdObjectBase appClassId)
@@ -290,7 +290,7 @@ namespace AasxFormatCst
             // Step 1: copy all relevant CDs into the AAS
             if (cdReferables != null)
                 foreach (var rf in cdReferables)
-                    if (rf is ConceptDescription cd)
+                    if (rf is Aas.ConceptDescription cd)
                         env?.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(cd);
 
             // Step 2: make up a list of used semantic references and write to default file
