@@ -205,6 +205,10 @@ namespace AasxPackageExplorer
                         help: "Export data to SIEMENS TeamCenter containing list of properties.",
                         args: new AasxMenuListOfArgDefs()
                             .Add("File", "Head-part of filenames to write data to."))
+                    .AddWpf(name: "ExportJsonSchema", header: "Export JSON schema for Submodel Templates …",
+                        help: "Export data in JSON schema format to describe AAS Submodel Templates.",
+                        args: new AasxMenuListOfArgDefs()
+                            .Add("File", "JSON schema file to write data to."))
                     .AddWpf(name: "OPCUAi4aasExport", header: "Export AAS as i4aas-nodeset …",
                         help: "Export OPC UA Nodeset2.xml format as i4aas-nodeset.",
                         args: new AasxMenuListOfArgDefs()

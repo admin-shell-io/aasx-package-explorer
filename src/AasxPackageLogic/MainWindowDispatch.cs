@@ -516,7 +516,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Import AML: No valid AAS-Env, package, target file selected or " +
+                        "Export AML: No valid AAS-Env, package, target file selected or " +
                         "a single Submodel, SubmodelElement selected");
                     return;
                 }
@@ -532,6 +532,34 @@ namespace AasxPackageLogic
                 catch (Exception ex)
                 {
                     LogErrorToTicket(ticket, ex, "When exporting AML, an error occurred");
+                }
+            }
+
+            if (cmd == "exportjsonschema")
+            {
+                // arguments
+                if (ticket.Env == null 
+                    || ticket.Submodel == null || ticket.SubmodelElement != null
+                    || !(ticket["File"] is string fn) || fn.HasContent() != true)
+                {
+                    LogErrorToTicket(ticket,
+                        "Import AML: No valid single Submodel selected");
+                    return;
+                }
+
+                try
+                {
+                    var jsonSchemaExporter = new AasxSchemaExport.SubmodelTemplateJsonSchemaExporterV20();
+                    var schema = jsonSchemaExporter.ExportSchema(ticket.Submodel);
+
+                    using (var s = new StreamWriter(fn))
+                    {
+                        s.Write(schema);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
                 }
             }
 

@@ -86,6 +86,11 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * PR547 / Export markdown for SM templates
 
+* Fix json export and adapt schema exporter #605
+  - (JSON Schema epxort; still in V20 fashion)
+  - Tests still unloaded
+  - AasxSchema & AasxSchema.Tests
+
 ## PRs to be integrated
 
 * from 10 Aug, some parts were already moved (Jui?), some parts not
@@ -97,6 +102,18 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   https://github.com/admin-shell-io/aasx-package-explorer/compare/master...MIHO/FixAnyUiInPlugins
 
   => TODO take over changes in DocuShelf..
+
+* Fix resharper problem #607
+  https://github.com/admin-shell-io/aasx-package-explorer/pull/607/files
+  => TODO when Blazor is ready
+
+* Fix json export and adapt schema exporter #605
+  https://github.com/admin-shell-io/aasx-package-explorer/pull/605
+  Fixed JSON export not taken over (new serialization). TO BE CHECKED
+  => Ask Andreas/ Jui
+  - JSON schema export taken over
+
+
 
 ## Done
 

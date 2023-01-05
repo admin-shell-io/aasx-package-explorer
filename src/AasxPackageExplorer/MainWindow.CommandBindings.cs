@@ -778,6 +778,9 @@ namespace AasxPackageExplorer
             if (cmd == "exportcst")
                 CommandBinding_ExportCst(cmd, ticket);
 
+            if (cmd == "exportjsonschema")
+                CommandBinding_ExportJsonSchema(cmd, ticket);
+
             if (cmd == "opcuai4aasimport" || cmd == "opcuai4aasexport")
                 CommandBinding_ExportOPCUANodeSet(cmd, ticket);
 
@@ -2358,6 +2361,46 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 _logic?.LogErrorToTicket(ticket, "Currently, this export is only implemented in AasxToolkit!");
+            }
+        }
+
+        public void CommandBinding_ExportJsonSchema(
+        string cmd,
+        AasxMenuActionTicket ticket = null)
+        {
+            // rely on ticket availability
+            if (ticket == null)
+                return;
+
+            if (cmd == "exportjsonschema")
+            {
+                // start
+                ticket?.StartExec();
+
+                // filename prepare
+                var fnPrep = "" + (DisplayElements.SelectedItem?
+                        .GetDereferencedMainDataObject() as Aas.IReferable)?.IdShort;
+                if (!fnPrep.HasContent())
+                    fnPrep = "new";
+
+                // filename
+                if (!MenuSelectSaveFilenameToTicket(
+                    ticket, "File",
+                    "Select JSON schema file for Submodel templates to be written",
+                    $"Submodel_Schema_{fnPrep}.json",
+                    "JSON files (*.JSON)|*.json|All files (*.*)|*.*",
+                    "Export JSON schema: No valid filename.",
+                    argFilterIndex: "FilterIndex"))
+                    return;
+
+                try
+                {
+                    _logic?.CommandBinding_GeneralDispatch(cmd, ticket);
+                }
+                catch (Exception ex)
+                {
+                    _logic?.LogErrorToTicket(ticket, ex, "When exporting JSON schema, an error occurred");
+                }
             }
         }
 

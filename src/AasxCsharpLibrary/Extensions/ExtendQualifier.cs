@@ -164,7 +164,7 @@ namespace Extensions
 
         public static Qualifier FindType(this List<Qualifier> qualifiers, string type)
         {
-            if (type == null)
+            if (type == null || qualifiers == null)
                 return null;
             foreach (var q in qualifiers)
                 if (q != null && q.Type != null && q.Type.Trim() == type.Trim())
