@@ -75,7 +75,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "ZVEI Contact Information (V1.0)";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(),
                 "AasxPredefinedConcepts.Resources." + "ZveiContactInformationV10.json");

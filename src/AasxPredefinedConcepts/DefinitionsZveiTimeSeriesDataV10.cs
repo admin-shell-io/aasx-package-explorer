@@ -56,7 +56,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Basic model for the modeling of time series data (ZVEI) v1.0";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTimeSeriesDataV10.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiTimeSeriesDataV10), useFieldNames: true);

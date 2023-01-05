@@ -35,18 +35,18 @@ namespace AasxIntegrationBase.AdminShellEvents
     public class AasEventMsgEnvelope : IAasPayloadItem
     {
         /// <summary>
-        /// AasCore.Aas3_0_RC02.Reference to the source AasCore.Aas3_0_RC02.EventElement, including identification of  AAS,  Submodel, SubmodelElements.
+        /// Reference to the source AasCore.Aas3_0_RC02.EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
         public AasCore.Aas3_0_RC02.Reference Source { get; set; }
 
         /// <summary>
-        /// SematicId  of  the  source  AasCore.Aas3_0_RC02.EventElement,  if available.
+        /// SematicId  of  the  source  EventElement,  if available.
         /// </summary>
         public AasCore.Aas3_0_RC02.Reference SourceSemanticId { get; set; }
 
         /// <summary>
-        /// AasCore.Aas3_0_RC02.Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
-        /// AasCore.Aas3_0_RC02.SubmodelElementCollection  or SubmodelElement. 
+        /// Reference  to  the  Referable,  which  defines  the scope  of  the  event.  Can  be  AAS,  Submodel, 
+        /// SubmodelElementCollection  or SubmodelElement. 
         /// </summary>
         public AasCore.Aas3_0_RC02.Reference ObservableReference { get; set; }
 

@@ -1994,7 +1994,7 @@ namespace AasxIntegrationBase.AasForms
 
             // Intended layout:
             // Grid
-            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
+            //   Reference info    [Clear]
             //   """"""""""""""    [Select]
 
             var g = view.Add(
@@ -2136,10 +2136,10 @@ namespace AasxIntegrationBase.AasForms
             // Intended layout:
             // Grid
             //   first
-            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
+            //   Reference info    [Clear]
             //   """"""""""""""    [Select]
             //   second
-            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
+            //   Reference info    [Clear]
             //   """"""""""""""    [Select]
 
             var g = view.Add(

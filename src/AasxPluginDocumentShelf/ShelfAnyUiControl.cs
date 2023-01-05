@@ -263,7 +263,7 @@ namespace AasxPluginDocumentShelf
                     uitk.AddSmallButtonTo(header, 0, 1,
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
-                        content: "Add AasCore.Aas3_0_RC02.Entity .."),
+                        content: "Add Entity .."),
                     (o) =>
                     {
                         // mode change
@@ -653,7 +653,7 @@ namespace AasxPluginDocumentShelf
                     foreground: AnyUiBrushes.DarkBlue,
                     fontSize: 1.5f,
                     setBold: true,
-                    content: $"AasCore.Aas3_0_RC02.Entity");
+                    content: $"Entity");
 
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallButtonTo(header, 0, 1,
@@ -1242,7 +1242,7 @@ namespace AasxPluginDocumentShelf
                     idShort: "" + _formEntity.IdShort.Trim(),
                     addSme: true);
 
-                _log?.Info($"AasCore.Aas3_0_RC02.Entity {_formEntity.IdShort} added.");
+                _log?.Info($"Entity {_formEntity.IdShort} added.");
 
                 // reset view
                 _formEntity = null;

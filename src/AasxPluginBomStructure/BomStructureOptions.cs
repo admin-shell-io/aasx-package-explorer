@@ -24,7 +24,7 @@ namespace AasxPluginBomStructure
 {
     public enum BomLinkDirection { None, Forward, Backward, Both }
 
-    public class BomLinkStyle // : AasCore.Aas3_0_RC02.IReferable
+    public class BomLinkStyle // : IReferable
     {
         public AasCore.Aas3_0_RC02.Key Match;
         public bool Skip;
@@ -35,7 +35,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        // public AasCore.Aas3_0_RC02.Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
     }
 
     public class BomLinkStyleList : List<BomLinkStyle>
@@ -63,7 +63,7 @@ namespace AasxPluginBomStructure
         public double FontSize;
         public bool Dashed, Bold, Dotted;
 
-        // public AasCore.Aas3_0_RC02.Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
+        // public Reference GetReference(bool includeParents = true) => new AasCore.Aas3_0_RC02.Reference(Match);
     }
 
     public class BomNodeStyleList : List<BomNodeStyle>

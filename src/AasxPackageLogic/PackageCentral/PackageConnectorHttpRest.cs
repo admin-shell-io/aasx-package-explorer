@@ -324,7 +324,7 @@ namespace AasxPackageLogic.PackageCentral
                     foreach (var tuple in vallist)
                         if (tuple.path != null)
                         {
-                            // List<AasCore.Aas3_0_RC02.Key> from path
+                            // List<Key> from path
                             var kl = new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
                             // goal (1)
                             pluv.Values.Add(
@@ -550,7 +550,7 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
@@ -634,7 +634,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent AasCore.Aas3_0_RC02.IReferable! " + change.Path.ToString()));
+                        "Cannot find parent IReferable! " + change.Path.ToString()));
                     return;
                 }
 
@@ -643,7 +643,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target AasCore.Aas3_0_RC02.IReferable already existing .. Aborting! " + change.Path.ToString()));
+                        "Target IReferable already existing .. Aborting! " + change.Path.ToString()));
                     return;
                 }
 
@@ -653,7 +653,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!"));
+                        "Cannot deserize StructuralChangeItem IReferable data!"));
                     return;
                 }
 
@@ -764,7 +764,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target AasCore.Aas3_0_RC02.IReferable! " + change.Path.ToStringExtended()));
+                        "Cannot find target IReferable! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -773,7 +773,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent AasCore.Aas3_0_RC02.IReferable for target! " + change.Path.ToStringExtended()));
+                        "Cannot find parent IReferable for target! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -906,7 +906,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Cannot find target AasCore.Aas3_0_RC02.IReferable!"));
+                    "Cannot find target IReferable!"));
                 return;
             }
 
@@ -936,7 +936,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of AasCore.Aas3_0_RC02.SubmodelElementCollection not implemented!"));
+                    "Update of SubmodelElementCollection not implemented!"));
                 // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
@@ -1079,7 +1079,7 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!");
+                                "Cannot deserize StructuralChangeItem IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements

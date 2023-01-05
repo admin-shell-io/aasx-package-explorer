@@ -126,7 +126,7 @@ namespace AasxPackageExplorer
             DiaData.ResultVisualElement = si;
 
             //
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             //
             if (siMdo is AasCore.Aas3_0_RC02.IReferable dataRef)
             {

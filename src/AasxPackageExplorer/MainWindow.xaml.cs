@@ -442,7 +442,7 @@ namespace AasxPackageExplorer
             // use convenience function
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
-                // check for AasCore.Aas3_0_RC02.ReferenceElement
+                // check for ReferenceElement
                 var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
                     AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
                     MatchMode.Relaxed);
@@ -1409,7 +1409,7 @@ namespace AasxPackageExplorer
             if (targetReference == null || targetReference.Keys.Count < 1)
                 return;
 
-            // make a copy of the AasCore.Aas3_0_RC02.Reference for searching
+            // make a copy of the Reference for searching
             VisualElementGeneric veFound = null;
             var work = targetReference.Copy();
 
@@ -1440,7 +1440,7 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.GlobalReference) //TODO: jtikekar AasCore.Aas3_0_RC02.KeyTypes.AssetInformation
+                        if (work.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
                             fi = _packageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
                         if (work.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.AssetAdministrationShell)
                             fi = _packageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());

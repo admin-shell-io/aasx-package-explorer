@@ -685,7 +685,7 @@ namespace AasxPluginTechnicalData
             var rows = new List<TripleRowData>();
             rows.Add(new TripleRowData()
             {
-                Name = "AasCore.Aas3_0_RC02.Property",
+                Name = "Property",
                 Semantics = "Semantics",
                 Value = "Value",
                 FontWeight = AnyUiFontWeight.Bold

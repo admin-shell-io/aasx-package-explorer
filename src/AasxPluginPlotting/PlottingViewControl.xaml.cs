@@ -1724,7 +1724,7 @@ namespace AasxPluginPlotting
                 // If we have a SubmodelCollection where the TimeSeries data is at the properties level
                 // this loop iterates through it and adds the data to the time series plot. Otherwise, if no
                 // SubmodelCollections were found (count = 0), it will look one level deeper and check if elements
-                // from type AasCore.Aas3_0_RC02.SubmodelElementCollection are found there, adding them to the plot afterwards too.
+                // from type SubmodelElementCollection are found there, adding them to the plot afterwards too.
                 // resharper disable once PossibleMultipleEnumeration
                 if (smcAllValues.Count() != 0)
                 {

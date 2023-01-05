@@ -20,7 +20,7 @@ namespace AasxPluginBomStructure
 {
     /// <summary>
     /// This class holds argument which could be used by the user to refine the graphical
-    /// display of the BOM. It will be attached to the AasCore.Aas3_0_RC02.Qualifier "BOM.Args" in a JSON syntax.
+    /// display of the BOM. It will be attached to the Qualifier "BOM.Args" in a JSON syntax.
     /// </summary>
     public class BomArguments
     {

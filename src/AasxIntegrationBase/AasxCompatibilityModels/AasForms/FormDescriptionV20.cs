@@ -24,7 +24,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
 {
     /// <summary>
     /// Possible multiplicities for form description elements. This says, how many of a e.g.
-    /// AasCore.Aas3_0_RC02.Property with _same__ SemanticId shall be placed in a collection.
+    /// Property with _same__ SemanticId shall be placed in a collection.
     /// Outside the FormDescription class only for shorter names.
     /// </summary>
     public enum FormMultiplicity { ZeroToOne = 0, One, ZeroToMany, OneToMany };
@@ -164,13 +164,13 @@ namespace AasxCompatibilityModels.AasxIntegrationBase.AasForms
     public class FormDescPropertyV20 : FormDescSubmodelElementV20
     {
         /// <summary>
-        /// Pre-set the AasCore.Aas3_0_RC02.Property with this valueType. Right now, only one item (and this shall be "string") is allowed!
+        /// Pre-set the Property with this valueType. Right now, only one item (and this shall be "string") is allowed!
         /// </summary>
         [JsonProperty(Order = 20)]
         public string[] allowedValueTypes = new string[] { "string" };
 
         /// <summary>
-        /// Pre-set the editable AasCore.Aas3_0_RC02.Property value with this value.
+        /// Pre-set the editable Property value with this value.
         /// </summary>
         [JsonProperty(Order = 21)]
         public string presetValue = "";

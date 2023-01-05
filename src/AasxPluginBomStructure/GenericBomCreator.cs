@@ -143,7 +143,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 1)
             {
-                tb.Text = "AasCore.Aas3_0_RC02.Entity (self-managed)";
+                tb.Text = "Entity (self-managed)";
             }
 
             // Co Managed
@@ -165,10 +165,10 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 2)
             {
-                tb.Text = "AasCore.Aas3_0_RC02.Entity (co-managed)";
+                tb.Text = "Entity (co-managed)";
             }
 
-            // AasCore.Aas3_0_RC02.Property
+            // Property
             if (column == 1 && c != null && type == 3)
             {
                 var r = new System.Windows.Shapes.Rectangle();
@@ -187,7 +187,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 3)
             {
-                tb.Text = "AasCore.Aas3_0_RC02.Property";
+                tb.Text = "Property";
             }
 
             // Asset
@@ -226,7 +226,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 5)
             {
-                tb.Text = "AasCore.Aas3_0_RC02.Property \u2b64  AasCore.Aas3_0_RC02.Entity";
+                tb.Text = "Property \u2b64  Entity";
             }
 
             // normal Rel
@@ -580,7 +580,7 @@ namespace AasxPluginBomStructure
                         referableToNode[prop] = node;
                     }
 
-                    // draw a link from the parent (AasCore.Aas3_0_RC02.Entity or SMC) to this node
+                    // draw a link from the parent (Entity or SMC) to this node
                     if (pass == 3 && parentRef != null)
                     {
                         // get nodes

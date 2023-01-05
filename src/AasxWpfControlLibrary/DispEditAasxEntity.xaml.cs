@@ -476,7 +476,7 @@ namespace AasxPackageExplorer
 
                             // helping message
                             _helper.AddGroup(
-                                stack, "AasCore.Aas3_0_RC02.Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                                stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
                         }
                         else
                         {
@@ -491,7 +491,7 @@ namespace AasxPackageExplorer
 
                 }
                 else
-                    _helper.AddGroup(stack, "AasCore.Aas3_0_RC02.Entity is unknown!", _helper.levelColors.MainSection);
+                    _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
             }
             else
             if (entities.Count > 1)

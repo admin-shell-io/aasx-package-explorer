@@ -98,7 +98,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // AasCore.Aas3_0_RC02.IReferable
+        // IReferable
         //
 
         public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
@@ -439,7 +439,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "HasDataSpecification (AasCore.Aas3_0_RC02.Reference):", levelColors.SubSection);
+            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
@@ -463,7 +463,7 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddAction(
                         stack, "Specifications:",
-                        new[] { "Add AasCore.Aas3_0_RC02.Reference", "Delete last reference" }, repo,
+                        new[] { "Add Reference", "Delete last reference" }, repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
@@ -490,7 +490,7 @@ namespace AasxPackageLogic
                         this.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck(
                                 () => references[i]?.IsValid() != true,
-                                "A AasCore.Aas3_0_RC02.Reference without Keys makes no sense.")});
+                                "A Reference without Keys makes no sense.")});
                         
                         this.AddKeyReference(
                             stack, String.Format("dataSpec.[{0}]", i), references[i], repo,
@@ -521,7 +521,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "HasDataSpecification (AasCore.Aas3_0_RC02.Reference):", levelColors.SubSection);
+            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
@@ -553,7 +553,7 @@ namespace AasxPackageLogic
                         stack, "Specifications:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add AasCore.Aas3_0_RC02.Reference",
+                            .AddAction("add-reference", "Add Reference",
                                 "Adds a reference to a data specification.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
@@ -662,7 +662,7 @@ namespace AasxPackageLogic
                         () => { return hasDataSpecification == null ||
                             hasDataSpecification.Count < 1; },
                         "For ConceptDescriptions, the main data carrier lies in the embedded data specification. " +
-                        "In these elements, a AasCore.Aas3_0_RC02.Reference to a data specification is combined with content " +
+                        "In these elements, a Reference to a data specification is combined with content " +
                         "attributes, which are attached to the ConceptDescription. These attributes hold the " +
                         "descriptive information on a concept and thus allow for an off-line understanding of " +
                         "the meaning of a concept/ SubmodelElement. Multiple data specifications " +
@@ -722,9 +722,9 @@ namespace AasxPackageLogic
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                     {
                         // indicate
-                        this.AddGroup(stack, $"dataSpec.[{i}] / AasCore.Aas3_0_RC02.Reference:", levelColors.SubSection);
+                        this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
 
-                        // AasCore.Aas3_0_RC02.Reference
+                        // Reference
                         int currentI = i;
                         if (SafeguardAccess(
                             stack, this.repo, hasDataSpecification[i].DataSpecification,
@@ -765,8 +765,8 @@ namespace AasxPackageLogic
                             stack, hintMode, new[] {
                             new HintCheck(
                                 () => cntByDs == ExtendIDataSpecificationContent.ContentTypes.NoInfo,
-                                "No valid data specification AasCore.Aas3_0_RC02.Reference could be identified. Thus, no content " +
-                                "attributes could be provided. Check the AasCore.Aas3_0_RC02.Reference.")
+                                "No valid data specification Reference could be identified. Thus, no content " +
+                                "attributes could be provided. Check the Reference.")
                             });
 
                         // indicate new section
@@ -793,7 +793,7 @@ namespace AasxPackageLogic
                                     breakIfTrue: true),
                                 new HintCheck(
                                     () => cntMismatch,
-                                    "Mismatch between data specification AasCore.Aas3_0_RC02.Reference and stored content " +
+                                    "Mismatch between data specification Reference and stored content " +
                                     "of data specification.")
                                 });
 
@@ -861,7 +861,7 @@ namespace AasxPackageLogic
                         stack, $"{entityName}:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add AasCore.Aas3_0_RC02.Reference",
+                            .AddAction("add-reference", "Add Reference",
                                 "Adds a reference to the list.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
@@ -1533,7 +1533,7 @@ namespace AasxPackageLogic
                             breakIfTrue: true),
                         new HintCheck(
                             () => { return dsiec.ValueList.ValueReferencePairs.Count < 2; },
-                            "Please add multiple pairs of name and AasCore.Aas3_0_RC02.Reference.",
+                            "Please add multiple pairs of name and Reference.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             if (SafeguardAccess(
@@ -1922,7 +1922,7 @@ namespace AasxPackageLogic
                     }))
             {
                 this.AddGroup(
-                    stack, $"{entityName} - AasCore.Aas3_0_RC02.Reference to describing Submodel:",
+                    stack, $"{entityName} - Reference to describing Submodel:",
                     levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,

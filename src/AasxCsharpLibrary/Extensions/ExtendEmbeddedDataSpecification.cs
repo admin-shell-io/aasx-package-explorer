@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-// using DataSpecificationContent = AasCore.Aas3_0_RC02.HasDataSpecification.DataSpecificationContent;
+// using DataSpecificationContent = HasDataSpecification.DataSpecificationContent;
 
 namespace Extensions
 {

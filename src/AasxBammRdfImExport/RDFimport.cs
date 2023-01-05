@@ -86,7 +86,7 @@ namespace AasxBammRdfImExport
 
             foreach (Triple t in g.Triples)
             {
-                if ((t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1)) == "AasCore.Aas3_0_RC02.Entity")
+                if ((t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1)) == "Entity")
                 {
                     entity_subject.Add((t.Subject.ToString().Substring(t.Subject.ToString().LastIndexOf("#") + 1)));
                     foreach (var month in entity_subject)
@@ -306,7 +306,7 @@ namespace AasxBammRdfImExport
             {
 
                 // Read the properties name list
-                if ((t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1)) == "AasCore.Aas3_0_RC02.Property")
+                if ((t.Object.ToString().Substring(t.Object.ToString().LastIndexOf("#") + 1)) == "Property")
                 {
 
                     properties_list.Add(

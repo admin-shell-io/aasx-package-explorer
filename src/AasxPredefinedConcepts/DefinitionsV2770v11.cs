@@ -66,7 +66,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Manufacturer Documentation (VDI2770) v1.1";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "VDI2770v11.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(VDI2770v11), useFieldNames: true);

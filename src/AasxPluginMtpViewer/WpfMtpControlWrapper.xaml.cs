@@ -329,7 +329,7 @@ namespace AasxPluginMtpViewer
             if (source == null || this.activeMtpFileElem == null || sme == null || first == null)
                 return;
 
-            // for the active file, find a AasCore.Aas3_0_RC02.Reference for it
+            // for the active file, find a Reference for it
 
             foreach (var searchId in new[] { source.Name, source.RefID })
             {
@@ -366,9 +366,9 @@ namespace AasxPluginMtpViewer
                     if (fileToEnt.First?.Matches(firstFte, MatchMode.Relaxed) == true)
                     {
                         // debug
-                        this.theLog?.Info($"try find AasCore.Aas3_0_RC02.Entity {"" + fileToEnt.Second} ..");
+                        this.theLog?.Info($"try find Entity {"" + fileToEnt.Second} ..");
 
-                        // find AasCore.Aas3_0_RC02.Entity, check if self-contained
+                        // find Entity, check if self-contained
                         var foundRef = this.thePackage?.AasEnv?.FindReferableByReference(fileToEnt.Second);
                         if (foundRef is AasCore.Aas3_0_RC02.Entity foundEnt
                             && foundEnt.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity

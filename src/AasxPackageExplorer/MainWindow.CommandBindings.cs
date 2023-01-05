@@ -809,7 +809,7 @@ namespace AasxPackageExplorer
                 ticket.InvokeMessage = (err, msg) =>
                 {
                     return MessageBoxFlyoutShow(
-                        msg, "AasCore.Aas3_0_RC02.Operation", AnyUiMessageBoxButton.OKCancel,
+                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
                         err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
                 };
 
@@ -856,7 +856,7 @@ namespace AasxPackageExplorer
                 ticket.InvokeMessage = (err, msg) =>
                 {
                     return MessageBoxFlyoutShow(
-                        msg, "AasCore.Aas3_0_RC02.Operation", AnyUiMessageBoxButton.OKCancel,
+                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
                         err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
                 };
 

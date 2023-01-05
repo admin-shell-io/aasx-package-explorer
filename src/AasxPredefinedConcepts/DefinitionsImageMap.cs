@@ -44,7 +44,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Plugin ImageMap";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             SEM_ImageMapSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Submodel/1/0") });
 
             CD_ImageFile = CreateSparseConceptDescription("en", "IRI",
@@ -55,7 +55,7 @@ namespace AasxPredefinedConcepts
             CD_EntityOfImageMap = CreateSparseConceptDescription("en", "IRI",
                 "EntityOfImageMap",
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/EntityOfImageMap/1/0",
-                @"States, that the AasCore.Aas3_0_RC02.Entity is part of an image map definition.");
+                @"States, that the Entity is part of an image map definition.");
 
             CD_RegionRect = CreateSparseConceptDescription("en", "IRI",
                 "RegionRect",
@@ -75,7 +75,7 @@ namespace AasxPredefinedConcepts
             CD_NavigateTo = CreateSparseConceptDescription("en", "IRI",
                 "NavigateTo",
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/NavigateTo/1/0",
-                @"If AasCore.Aas3_0_RC02.ReferenceElement subordinate to AasCore.Aas3_0_RC02.Entity, overrules AasCore.Aas3_0_RC02.Entity AssetId and navigates to value " +
+                @"If ReferenceElement subordinate to Entity, overrules Entity AssetId and navigates to value " +
                 "reference .");
 
             CD_VisualElement = CreateSparseConceptDescription("en", "IRI",
@@ -86,17 +86,17 @@ namespace AasxPredefinedConcepts
             CD_TextDisplay = CreateSparseConceptDescription("en", "IRI",
                 "TextDisplay",
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/TextDisplay/1/0",
-                @"AasCore.Aas3_0_RC02.Property or AasCore.Aas3_0_RC02.ReferenceElement evaluating to value of text display.");
+                @"Property or ReferenceElement evaluating to value of text display.");
 
             CD_Foreground = CreateSparseConceptDescription("en", "IRI",
                 "Foreground",
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Foreground/1/0",
-                @"AasCore.Aas3_0_RC02.Property or AasCore.Aas3_0_RC02.ReferenceElement evaluating to value of foreground color in #argb format.");
+                @"Property or ReferenceElement evaluating to value of foreground color in #argb format.");
 
             CD_Background = CreateSparseConceptDescription("en", "IRI",
                 "Background",
                 "http://admin-shell.io/aasx-package-explorer/plugins/ImageMap/Background/1/0",
-                @"AasCore.Aas3_0_RC02.Property or AasCore.Aas3_0_RC02.ReferenceElement evaluating to value of background color in #argb format.");
+                @"Property or ReferenceElement evaluating to value of background color in #argb format.");
 
             // reflect
             AddEntriesByReflection(this.GetType(), useAttributes: false, useFieldNames: true);

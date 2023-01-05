@@ -264,7 +264,7 @@ namespace AasxPluginImageMap
                             MatchMode.Relaxed);
                         var targetRf = navTo?.Value;
 
-                        // if not, have a look to the AasCore.Aas3_0_RC02.Entity itself
+                        // if not, have a look to the Entity itself
                         if ((targetRf == null || targetRf.Count() < 1)
                             && ent.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity
                             && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)

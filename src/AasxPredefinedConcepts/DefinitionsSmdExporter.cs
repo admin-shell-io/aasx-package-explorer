@@ -36,7 +36,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Plugin SmdExporter";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             SEM_SmdExporterSubmodel = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/SmdExporter/Submodel/1/0") });
 
             // dummy .. to be replaced later

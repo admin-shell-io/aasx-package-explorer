@@ -78,7 +78,7 @@ namespace AasxPackageLogic.PackageCentral
         StartOfChanges,
 
         /// <summary>
-        /// A AasCore.Aas3_0_RC02.IReferable is created within the "typical" enumeration of another AasCore.Aas3_0_RC02.IReferable.
+        /// A IReferable is created within the "typical" enumeration of another AasCore.Aas3_0_RC02.IReferable.
         /// </summary>
         Create,
 
@@ -89,23 +89,23 @@ namespace AasxPackageLogic.PackageCentral
         MoveToIndex,
 
         /// <summary>
-        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a AasCore.Aas3_0_RC02.IReferable.
-        /// The AasCore.Aas3_0_RC02.IReferable is completely rebuild.
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a IReferable.
+        /// The IReferable is completely rebuild.
         /// </summary>
         StructuralUpdate,
 
         /// <summary>
-        /// A AasCore.Aas3_0_RC02.IReferable is deleted
+        /// A IReferable is deleted
         /// </summary>
         Delete,
 
         /// <summary>
-        /// A value upatde of a single AasCore.Aas3_0_RC02.IReferable (not children) is performed
+        /// A value upatde of a single IReferable (not children) is performed
         /// </summary>
         ValueUpdateSingle,
 
         /// <summary>
-        /// A value upatde of a AasCore.Aas3_0_RC02.IReferable including possible children is performed
+        /// A value upatde of a IReferable including possible children is performed
         /// </summary>
         ValueUpdateHierarchy,
 
@@ -155,7 +155,7 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventReason Reason;
 
         /// <summary>
-        /// Changed AAS element itself (typically a AasCore.Aas3_0_RC02.IReferable, but could also be a SubmodelRef)
+        /// Changed AAS element itself (typically a IReferable, but could also be a SubmodelRef)
         /// </summary>
         public AasCore.Aas3_0_RC02.IClass ThisElem;
 
@@ -165,7 +165,7 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventLocation ThisElemLocation;
 
         /// <summary>
-        /// Parent object/ structure of the changed AAS element. Often a AasCore.Aas3_0_RC02.IReferable, but could also be a SubmodelRef.
+        /// Parent object/ structure of the changed AAS element. Often a IReferable, but could also be a SubmodelRef.
         /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
         /// for Assets, ConceptDescriptions, ..)
         /// </summary>
@@ -193,8 +193,8 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <param name="container">Identification of the container</param>
         /// <param name="reason">The reason</param>
-        /// <param name="thisRef">Changed AasCore.Aas3_0_RC02.IReferable itself</param>
-        /// <param name="parentRef">A AasCore.Aas3_0_RC02.IReferable, which contains the changed AasCore.Aas3_0_RC02.IReferable.</param>
+        /// <param name="thisRef">Changed IReferable itself</param>
+        /// <param name="parentRef">A IReferable, which contains the changed AasCore.Aas3_0_RC02.IReferable.</param>
         /// <param name="createAtIndex">If create, at which index; else: -1</param>
         /// <param name="info">Human readable information</param>
         public PackCntChangeEventData(PackageContainerBase container,

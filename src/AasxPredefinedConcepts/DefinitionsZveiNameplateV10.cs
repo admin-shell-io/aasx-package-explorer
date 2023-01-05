@@ -74,7 +74,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "ZVEI Digital Nameplate (V1.0)";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiNameplateV10.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiNameplateV10), useFieldNames: true);

@@ -87,7 +87,7 @@ namespace AasxPackageExplorer
             var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; },
                 includeThis: true).FirstOrDefault();
 
-            // for ve, find the AasCore.Aas3_0_RC02.IReferable to be ve or superordinate ..
+            // for ve, find the IReferable to be ve or superordinate ..
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
@@ -95,7 +95,7 @@ namespace AasxPackageExplorer
                 return derefdo is AasCore.Aas3_0_RC02.IReferable;
             }, includeThis: true).FirstOrDefault();
 
-            // check, if ve can identify a AasCore.Aas3_0_RC02.IReferable, to which a symbolic link can be done ..
+            // check, if ve can identify a IReferable, to which a symbolic link can be done ..
             string aasid = null;
             AasCore.Aas3_0_RC02.Reference refref = null;
 
@@ -111,7 +111,7 @@ namespace AasxPackageExplorer
             if (refref == null && ve is VisualElementConceptDescription vecd)
                 refref = vecd.theCD?.GetReference();
 
-            // found some referable AasCore.Aas3_0_RC02.Reference?
+            // found some referable Reference?
             if (refref == null)
                 return;
 

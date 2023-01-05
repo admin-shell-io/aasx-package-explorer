@@ -125,7 +125,7 @@ namespace AasxPluginGenericForms
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
-                formText: "Sample AasCore.Aas3_0_RC02.Property",
+                formText: "Sample Property",
                 multiplicity: FormMultiplicity.OneToMany,
                 smeSemanticId: new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",

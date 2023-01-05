@@ -60,7 +60,7 @@ namespace AasxPackageLogic
                     qCurr.ValueId = qIn.ValueId;
                 if (qIn.SemanticId != null)
                     qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("AasCore.Aas3_0_RC02.Qualifier data taken from clipboard.");
+                Log.Singleton.Info("Qualifier data taken from clipboard.");
                 return true;
             }
             return false;
@@ -84,7 +84,7 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of references
                 AddAction(
-                    stack, "AasCore.Aas3_0_RC02.Qualifier entities:",
+                    stack, "Qualifier entities:",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -136,7 +136,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show AasCore.Aas3_0_RC02.Qualifier presets ({pfn})");
+                                    ex, $"While show Qualifier presets ({pfn})");
                             }
                         }
 
@@ -154,7 +154,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Qualifier data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
                             }
                         }
 
@@ -172,7 +172,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"AasCore.Aas3_0_RC02.Qualifier {1 + i}",
+                    substack, $"Qualifier {1 + i}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -221,11 +221,11 @@ namespace AasxPackageLogic
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
                                         action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
                                         if (action)
-                                            Log.Singleton.Info("AasCore.Aas3_0_RC02.Qualifier taken from clipboard.");
+                                            Log.Singleton.Info("Qualifier taken from clipboard.");
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Qualifier data in clipboard");
+                                        Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
                                     }
                                     break;
 
@@ -241,7 +241,7 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
-                // AasCore.Aas3_0_RC02.Qualifier members
+                // Qualifier members
 
                 // SemanticId
 
@@ -351,7 +351,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit AasCore.Aas3_0_RC02.Extension '{"" + qual.Type}'",
+                                                caption: $"Edit Extension '{"" + qual.Type}'",
                                                 mimeType: AasCore.Aas3_0_RC02.Stringification.ToString(qual.ValueType),
                                                 text: qual.Value);
                             if (this.context.StartFlyoverModal(uc))
@@ -398,7 +398,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // AasCore.Aas3_0_RC02.Key Value Pairs
+        // Key Value Pairs
         //
 
         private bool PasteIKVPTextIntoExisting(
@@ -695,7 +695,7 @@ namespace AasxPackageLogic
                     qCurr.RefersTo = qIn.RefersTo;
                 if (qIn.SemanticId != null)
                     qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension data taken from clipboard.");
+                Log.Singleton.Info("Extension data taken from clipboard.");
                 return true;
             }
             return false;
@@ -723,7 +723,7 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of elements
                 AddAction(
-                    stack, "AasCore.Aas3_0_RC02.Extension entities:",
+                    stack, "Extension entities:",
                     new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
                     repo,
                     (buttonNdx) =>
@@ -740,7 +740,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !System.IO.File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    $"JSON file for AasCore.Aas3_0_RC02.IReferable.extension presets not defined nor existing ({pfn}).");
+                                    $"JSON file for IReferable.extension presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -766,7 +766,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show AasCore.Aas3_0_RC02.Qualifier presets ({pfn})");
+                                    ex, $"While show Qualifier presets ({pfn})");
                             }
                         }
 
@@ -784,7 +784,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Extension data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing Extension data in clipboard");
                             }
                         }
 
@@ -807,7 +807,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"AasCore.Aas3_0_RC02.Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
+                    substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -848,7 +848,7 @@ namespace AasxPackageLogic
                                     var jsonStr = JsonConvert.SerializeObject(
                                         extensions[storedI], Formatting.Indented);
                                     this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
-                                    Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension serialized to clipboard.");
+                                    Log.Singleton.Info("Extension serialized to clipboard.");
                                     break;
                                 case 4:
                                     try
@@ -856,11 +856,11 @@ namespace AasxPackageLogic
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
                                         action = PasteExtensionTextIntoExisting(jsonInput, extensions[storedI]);
                                         if (action)
-                                            Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension taken from clipboard.");
+                                            Log.Singleton.Info("Extension taken from clipboard.");
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Extension data in clipboard");
+                                        Log.Singleton.Error(ex, "while accessing Extension data in clipboard");
                                     }
                                     break;
 
@@ -935,7 +935,7 @@ namespace AasxPackageLogic
                 AddKeyValueExRef(
                     substack, "valueType", extension, AasCore.Aas3_0_RC02.Stringification.ToString(extension.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
-                    //comboBoxItems: AasCore.Aas3_0_RC02.DataElement.ValueTypeItems,
+                    //comboBoxItems: DataElement.ValueTypeItems,
                     //TODO:jtikekar change
                     comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
                     comboBoxMinWidth: 190,
@@ -973,7 +973,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit AasCore.Aas3_0_RC02.Extension '{"" + extension.Name}'",
+                                                caption: $"Edit Extension '{"" + extension.Name}'",
                                                 mimeType: AasCore.Aas3_0_RC02.Stringification.ToString(extension.ValueType),
                                                 text: extension.Value);
                             if (this.context.StartFlyoverModal(uc))
@@ -986,7 +986,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                // refersTo are MULTIPLE ModelReference<AasCore.Aas3_0_RC02.IReferable>. That is: multiple x multiple keys!
+                // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!
                 this.AddHintBubble(substack, hintMode, new[] {
                 new HintCheck(
                     () => extension.RefersTo?.IsValid() == true,
@@ -1007,7 +1007,7 @@ namespace AasxPackageLogic
                         // let the user control the number of references
                         this.AddAction(
                             substack, "refersTo:",
-                            new[] { "Add AasCore.Aas3_0_RC02.Reference", "Delete last reference" }, repo,
+                            new[] { "Add Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
                             {
                                 if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
@@ -1259,7 +1259,7 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("create-cds", "CDs \U0001f844 pairs",
-                            "For each Value /AasCore.Aas3_0_RC02.Reference pair, create a separate ConceptDescription."),
+                            "For each Value /Reference pair, create a separate ConceptDescription."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -1267,7 +1267,7 @@ namespace AasxPackageLogic
                             // make sure
                             if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will create additional ConceptDescriptions for each " +
-                                    "pair of Value and AasCore.Aas3_0_RC02.Reference. Do you want to proceed?",
+                                    "pair of Value and Reference. Do you want to proceed?",
                                     "Create CDs",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();

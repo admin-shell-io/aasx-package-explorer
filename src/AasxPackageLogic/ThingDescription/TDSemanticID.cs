@@ -42,9 +42,9 @@ namespace AasxPackageExplorer
             ["support"] = "https://www.w3.org/2019/wot/td#supportContact",
             ["base"] = "https://www.w3.org/2019/wot/td#baseURI",
 
-            //AasCore.Aas3_0_RC02.Property
+            //Property
             ["properties"] = "https://www.w3.org/2019/wot/json-schema#properties",
-            ["property"] = "https://www.w3.org/2019/wot/td#PropertyAffordance",// AasCore.Aas3_0_RC02.Property Affordance
+            ["property"] = "https://www.w3.org/2019/wot/td#PropertyAffordance",// Property Affordance
             ["observable"] = "https://www.w3.org/2019/wot/td#isObservable",
 
             //action
@@ -192,7 +192,7 @@ namespace AasxPackageExplorer
             "order to identify what resources a client may access and how. The values associated with a" +
             "form should be chosen from those defined in an OAuth2SecurityScheme active on that form.",
             ["op"] = "Indicates the semantic intention of performing the operation(s) described by" +
-            "the form. For example, the AasCore.Aas3_0_RC02.Property interaction allows get and set operations." +
+            "the form. For example, the Property interaction allows get and set operations." +
             "The protocol binding may contain a form for the get operation and a different form for the" +
             "set operation. The op attribute indicates which form is for which and allows the client to select" +
             "the correct form for the operation required. op can be assigned one or more interaction verb(s) " +

@@ -40,7 +40,7 @@ namespace AasxPredefinedConcepts
             "02-03",    "Assemblies",
             "02-04",    "Certificates, declarations",
             "03-01",    "Commissioning, de-commissioning",
-            "03-02",    "AasCore.Aas3_0_RC02.Operation",
+            "03-02",    "Operation",
             "03-03",    "General safety",
             "03-04",    "Inspection, maintenance, testing",
             "03-05",    "Repair",

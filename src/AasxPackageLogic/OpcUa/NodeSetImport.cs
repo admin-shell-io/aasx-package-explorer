@@ -132,7 +132,7 @@ namespace AasxPackageLogic
                                 currentNode.SymbolicName = reader.GetAttribute("SymbolicName");
                                 currentNode.DataType = reader.GetAttribute("DataType");
                                 break;
-                            case "AasCore.Aas3_0_RC02.Reference":
+                            case "Reference":
                                 referenceType = reader.GetAttribute("ReferenceType");
                                 break;
                             case "Definition":
@@ -187,7 +187,7 @@ namespace AasxPackageLogic
                                     currentNode.Description = reader.Value;
                                 }
                                 break;
-                            case "AasCore.Aas3_0_RC02.Reference":
+                            case "Reference":
                                 string reference = referenceType + " " + reader.Value;
                                 currentNode.references.Add(reference);
                                 break;

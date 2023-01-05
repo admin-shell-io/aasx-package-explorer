@@ -57,7 +57,7 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Generic Frame for Technical Data for Industrial Equipment (ZVEI) v1.1";
 
-            // AasCore.Aas3_0_RC02.IReferable
+            // IReferable
             this.ReadLibrary(
                 Assembly.GetExecutingAssembly(), "AasxPredefinedConcepts.Resources." + "ZveiTechnicalDataV11.json");
             this.RetrieveEntriesFromLibraryByReflection(typeof(ZveiTechnicalDataV11), useFieldNames: true);

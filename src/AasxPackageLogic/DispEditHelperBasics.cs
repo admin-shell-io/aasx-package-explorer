@@ -772,7 +772,7 @@ namespace AasxPackageLogic
             var g = this.AddSmallGrid(1, 2, new[] { "" + this.standardFirstColWidth + ":", "*" },
                     margin: new AnyUiThickness(0, 2, 0, 0));
 
-            // Column 0 = AasCore.Aas3_0_RC02.Key
+            // Column 0 = Key
             this.AddSmallLabelTo(g, 0, 0, padding: new AnyUiThickness(5, 0, 0, 0), content: key);
 
             // Column 1 = Check box or info
@@ -2796,12 +2796,12 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
-        /// Care for a pseudo-unqiue identification of the AasCore.Aas3_0_RC02.IReferable.
+        /// Care for a pseudo-unqiue identification of the IReferable.
         /// Unique identification will be established by adding something such as "---74937434739"
         /// Note: not in <c>cs</c>, as considered part of business logic.
         /// Note: if <c>idShort</c> has content, will add unique content.
         /// </summary>
-        /// <param name="rf">given AasCore.Aas3_0_RC02.IReferable</param>
+        /// <param name="rf">given IReferable</param>
         public void MakeNewReferableUnique(AasCore.Aas3_0_RC02.IReferable rf)
         {
             // access

@@ -69,7 +69,7 @@ namespace AasxIntegrationBase.AdminShellEvents
         public int CreateAtIndex = -1;
 
         /// <summary>
-        /// Direct reference to AasCore.Aas3_0_RC02.IReferable, when change item was successfully processed.
+        /// Direct reference to IReferable, when change item was successfully processed.
         /// Note: only runtime value; not specified; not interoperable
         /// </summary>
         [JsonIgnore]

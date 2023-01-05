@@ -229,7 +229,7 @@ namespace AasxPluginDocumentShelf
 
             descDoc.Add(new FormDescProperty(
                 "ReferencedObject", FormMultiplicity.One, semConfig.SemIdReferencedObject, "ReferencedObject",
-                "AasCore.Aas3_0_RC02.Reference to Asset or AasCore.Aas3_0_RC02.Entity, on which the Document is related to."));
+                "Reference to Asset or Entity, on which the Document is related to."));
 
             // DocumentVersion
 
@@ -485,7 +485,7 @@ namespace AasxPluginDocumentShelf
             descDoc.Add(new FormDescReferenceElement(
                 "DocumentedEntity", FormMultiplicity.ZeroToOne, defs.CD_DocumentedEntity?.GetSingleKey(),
                 "DocumentedEntity",
-                "Identifies the AasCore.Aas3_0_RC02.Entity, which is subject to the Documentation."));
+                "Identifies the Entity, which is subject to the Documentation."));
 
             // end
 

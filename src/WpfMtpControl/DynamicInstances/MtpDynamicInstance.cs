@@ -32,7 +32,7 @@ namespace Mtp.DynamicInstances
         /// <summary>
         /// Raises the PropertyChange event for the property specified
         /// </summary>
-        /// <param name="propertyName">AasCore.Aas3_0_RC02.Property name to update. Is case-sensitive.</param>
+        /// <param name="propertyName">Property name to update. Is case-sensitive.</param>
         public virtual void RaisePropertyChanged(string propertyName)
         {
             OnPropertyChanged(propertyName);

@@ -730,7 +730,7 @@ namespace AasxPackageLogic
             }
             else
             {
-                this.Caption = "Missing Submodel for AasCore.Aas3_0_RC02.Reference!";
+                this.Caption = "Missing Submodel for Reference!";
                 this.Info = "->" + ((this.theSubmodelRef == null) ? "<null>" : this.theSubmodelRef.ToString());
             }
         }
@@ -1478,14 +1478,14 @@ namespace AasxPackageLogic
                 foreach (var elll in ell.Value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ell, elll);
 
-            // Recurse: AasCore.Aas3_0_RC02.Entity
+            // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
             if (el is AasCore.Aas3_0_RC02.Entity ele && ele.Statements != null)
                 foreach (var eles in ele.Statements)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 
-            // Recurse: AasCore.Aas3_0_RC02.Operation
+            // Recurse: Operation
             if (el is AasCore.Aas3_0_RC02.Operation elo)
             {
                 foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
@@ -1526,7 +1526,7 @@ namespace AasxPackageLogic
                 }
             }
 
-            // Recurse: AasCore.Aas3_0_RC02.AnnotatedRelationshipElement
+            // Recurse: AnnotatedRelationshipElement
             if (el is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement ela && ela.Annotations != null)
                 foreach (var elaa in ela.Annotations)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);

@@ -323,7 +323,7 @@ namespace AasxPluginExportTable
                 return;
 
             // lambda trick to lines of code
-            if (preset == "AasCore.Aas3_0_RC02.Property.valueType")
+            if (preset == "Property.valueType")
             {
                 // value type can be distorted in many ways, so commit in each case
                 var vt = cell;

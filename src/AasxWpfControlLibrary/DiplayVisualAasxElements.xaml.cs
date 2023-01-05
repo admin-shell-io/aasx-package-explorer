@@ -613,7 +613,7 @@ namespace AasxPackageExplorer
         }
 
         //
-        // AasCore.Aas3_0_RC02.Extension to allow multi select
+        // Extension to allow multi select
         // see: https://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
         //
 

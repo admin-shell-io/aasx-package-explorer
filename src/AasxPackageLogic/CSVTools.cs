@@ -69,7 +69,7 @@ namespace AasxPackageLogic
 
                 switch (rows[0])
                 {
-                    case "AasCore.Aas3_0_RC02.SubmodelElementCollection":
+                    case "SubmodelElementCollection":
                         propGroup[i_propGroup] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: rows[1]); ;
                         if (i_propGroup == 0)
                         {
@@ -87,11 +87,11 @@ namespace AasxPackageLogic
                         }
                         i_propGroup++;
                         break;
-                    case "End-AasCore.Aas3_0_RC02.SubmodelElementCollection":
+                    case "End-SubmodelElementCollection":
                         if (i_propGroup != 0)
                             i_propGroup--;
                         break;
-                    case "AasCore.Aas3_0_RC02.Property":
+                    case "Property":
                         var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: rows[1].Replace("-", "_"));
                         p.Value = rows[2];
                         if (rows.Length > 3)

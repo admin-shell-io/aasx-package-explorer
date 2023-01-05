@@ -249,7 +249,7 @@ namespace AasxPackageLogic
                         bufferKey = new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id)};
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
-                        //bufferKey = List<AasCore.Aas3_0_RC02.Key>.CreateNew(cpbsm.sm.GetReference()?.First);
+                        //bufferKey = List<Key>.CreateNew(cpbsm.sm.GetReference()?.First);
                         bufferKey = new List<AasCore.Aas3_0_RC02.Key>() { cpbsm.sm.GetReference().Keys.First()};
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
@@ -357,7 +357,7 @@ namespace AasxPackageLogic
                     // try simple way
                     if (isSingleObject)
                     {
-                        // TODO (MIHO, 2021-06-22): think of converting AasCore.Aas3_0_RC02.IReferable to IAasElement
+                        // TODO (MIHO, 2021-06-22): think of converting IReferable to IAasElement
                         var obj = AdminShellSerializationHelper.DeserializeFromJSON<AasCore.Aas3_0_RC02.IReferable>(cps);
 
                         // try fake a copy paste item (order matters!)
@@ -629,7 +629,7 @@ namespace AasxPackageLogic
                                 }
                                     
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): AasCore.Aas3_0_RC02.Operation complete?
+                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is AasCore.Aas3_0_RC02.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
@@ -671,7 +671,7 @@ namespace AasxPackageLogic
                                         annotations, smw2, wrapper, makeUnique);
                                 }
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): AasCore.Aas3_0_RC02.Operation complete?
+                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is AasCore.Aas3_0_RC02.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as

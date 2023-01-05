@@ -181,7 +181,7 @@ namespace AasxPredefinedConcepts.Convert
                 var smcV10mk = smcV10mks.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV10.CD_Marking, idShort: "" + smcHSUmk.IdShort, addSme: true);
 
-                // take over the name of the old collection in the distinct AasCore.Aas3_0_RC02.Property
+                // take over the name of the old collection in the distinct Property
                 var mkName = "" + smcHSUmk.IdShort;
                 if (mkName.StartsWith("Marking_"))
                     mkName = mkName.Substring(8);
@@ -194,7 +194,7 @@ namespace AasxPredefinedConcepts.Convert
                     smcHSUmk.Value, defsHSU.CD_File,
                     createDefault: true, addSme: true, idShort: "ManufacturerName");
 
-                // if there a other AasCore.Aas3_0_RC02.Property inside, assume, that their semantic ids shall
+                // if there a other Property inside, assume, that their semantic ids shall
                 // go into the valueId of the Name
 
                 foreach (var other in smcHSUmk.Value.FindAll((smw) => smw is AasCore.Aas3_0_RC02.Property))

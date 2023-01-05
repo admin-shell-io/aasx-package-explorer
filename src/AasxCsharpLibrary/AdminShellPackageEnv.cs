@@ -134,7 +134,7 @@ namespace AdminShellNS
         }
 
         /// <summary>
-        /// De-serialize an open stream into AasCore.Aas3_0_RC02.Environment. Does version/ compatibility management.
+        /// De-serialize an open stream into Environment. Does version/ compatibility management.
         /// </summary>
         /// <param name="s">Open for read stream</param>
         /// <returns></returns>
