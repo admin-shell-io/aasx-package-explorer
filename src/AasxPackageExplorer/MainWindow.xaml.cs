@@ -443,7 +443,7 @@ namespace AasxPackageExplorer
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
                 // check for ReferenceElement
-                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
+                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<Aas.ReferenceElement>(
                     AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
                     MatchMode.Relaxed);
                 if (navTo?.Value == null)
@@ -1285,7 +1285,7 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<AasCore.Aas3_0_RC02.IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
+        private async Task<Aas.IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
             Aas.Reference requireReferable = null)
         {
             // access single file repo
@@ -1983,7 +1983,7 @@ namespace AasxPackageExplorer
                         rootSm.SetAllParents();
 
                         // check, if the Submodel has interesting events
-                        foreach (var ev in smrSel.theSubmodel.SubmodelElements.FindDeep<AasCore.Aas3_0_RC02.BasicEventElement>((x) =>
+                        foreach (var ev in smrSel.theSubmodel.SubmodelElements.FindDeep<Aas.BasicEventElement>((x) =>
                             (true == x?.SemanticId?.Matches(
                                 AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.Id
                                 ))))
