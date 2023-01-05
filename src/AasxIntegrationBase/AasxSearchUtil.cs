@@ -202,7 +202,7 @@ namespace AasxIntegrationBase
 
                 // quite late: investigate, if we accepted findings from the 
                 // type of business element
-                var isColl = (businessObject is AssetAdministrationShell
+                var isColl = (businessObject is AasCore.Aas3_0_RC02.AssetAdministrationShell
                         || businessObject is Submodel
                         || businessObject is AasCore.Aas3_0_RC02.SubmodelElementCollection);
 

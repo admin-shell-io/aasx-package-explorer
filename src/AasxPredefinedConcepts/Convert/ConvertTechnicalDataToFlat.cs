@@ -68,7 +68,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smcOldTD = sm.SubmodelElements;
             sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
-            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
 
             // find all technical properties
             foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(

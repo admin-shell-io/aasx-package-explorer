@@ -24,7 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
@@ -613,7 +613,7 @@ namespace AasxPackageExplorer
         }
 
         //
-        // Extension to allow multi select
+        // AasCore.Aas3_0_RC02.Extension to allow multi select
         // see: https://stackoverflow.com/questions/459375/customizing-the-treeview-to-allow-multi-select
         //
 

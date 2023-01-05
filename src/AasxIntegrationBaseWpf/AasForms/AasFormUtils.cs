@@ -36,7 +36,7 @@ namespace AasxIntegrationBase.AasForms
                     {
                         tsme = new FormDescProperty(
                             "" + p.IdShort, FormMultiplicity.One, p.SemanticId?.GetAsExactlyOneKey(),
-                            "" + p.IdShort, valueType: Stringification.ToString(p.ValueType));
+                            "" + p.IdShort, valueType: AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType));
                     }
                     if (smw is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
                     {

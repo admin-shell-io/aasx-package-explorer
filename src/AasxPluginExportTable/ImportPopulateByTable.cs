@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -32,7 +32,7 @@ namespace AasxPluginExportTable
 
         protected LogInstance _log;
         protected ImportExportTableRecord _job;
-        protected Submodel _sm;
+        protected AasCore.Aas3_0_RC02.Submodel _sm;
         protected AasCore.Aas3_0_RC02.Environment _env;
         protected ExportTableOptions _options;
 
@@ -42,7 +42,7 @@ namespace AasxPluginExportTable
         public ImportPopulateByTable(
             LogInstance log,
             ImportExportTableRecord job,
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             AasCore.Aas3_0_RC02.Environment env,
             ExportTableOptions options)
         {
@@ -131,7 +131,7 @@ namespace AasxPluginExportTable
             public string ValueType = "";
 
             public bool IsSubmodel;
-            public AasSubmodelElements? SmeEnum;
+            public AasCore.Aas3_0_RC02.AasSubmodelElements? SmeEnum;
 
             public static FilteredElementName Parse(string str)
             {
@@ -191,7 +191,7 @@ namespace AasxPluginExportTable
                     return null;
 
                 // ok, nice
-                res.Name = Stringification.ToString(ae);
+                res.Name = AasCore.Aas3_0_RC02.Stringification.ToString(ae);
                 res.SmeEnum = ae.Value;
                 return res;
             }
@@ -214,8 +214,8 @@ namespace AasxPluginExportTable
                 return null;
             if (!fen.IsSubmodel
                 && !fen.SmeEnum.HasValue
-                && fen.SmeEnum != AasSubmodelElements.SubmodelElement
-                && fen.SmeEnum != AasSubmodelElements.SubmodelElementCollection)
+                && fen.SmeEnum != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement
+                && fen.SmeEnum != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection)
                 return null;
 
             // special case: directly into the (existing) Submodel
@@ -342,7 +342,7 @@ namespace AasxPluginExportTable
                 prop.Value = context.SmeValue;
 
                 // demux
-                prop.ValueType = Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? DataTypeDefXsd.String;
+                prop.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
             }
 
             if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
@@ -350,7 +350,7 @@ namespace AasxPluginExportTable
                 mlp.Value = ExtendLangStringSet.Create(ExtendLangString.LANG_DEFAULT, context.SmeValue);
             }
 
-            if (sme is File file)
+            if (sme is AasCore.Aas3_0_RC02.File file)
             {
                 file.Value = context.SmeValue;
             }

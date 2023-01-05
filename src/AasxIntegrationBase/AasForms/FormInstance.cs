@@ -1373,7 +1373,7 @@ namespace AasxIntegrationBase.AasForms
             this.desc = parentDesc;
 
             // initialize Referable
-            var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
+            var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
             this.sme = p;
             InitReferable(parentDesc, source);
 
@@ -1390,8 +1390,8 @@ namespace AasxIntegrationBase.AasForms
             {
                 // some more preferences
                 if (parentDesc.allowedValueTypes != null && parentDesc.allowedValueTypes.Length >= 1)
-                    p.ValueType = Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0]) 
-                        ?? DataTypeDefXsd.String;
+                    p.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(parentDesc.allowedValueTypes[0]) 
+                        ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
 
                 if (parentDesc.presetValue != null && parentDesc.presetValue.Length > 0)
                 {
@@ -1665,8 +1665,8 @@ namespace AasxIntegrationBase.AasForms
                         (o) =>
                         {
                             if (mlp.Value == null)
-                                mlp.Value = new List<LangString>();
-                            mlp.Value.Add(new LangString("", ""));
+                                mlp.Value = new List<AasCore.Aas3_0_RC02.LangString>();
+                            mlp.Value.Add(new AasCore.Aas3_0_RC02.LangString("", ""));
                             Touch();
                             return NewLambdaUpdateUi(this);
                         });

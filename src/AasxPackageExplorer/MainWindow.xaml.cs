@@ -24,7 +24,7 @@ using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic;
@@ -2131,7 +2131,7 @@ namespace AasxPackageExplorer
                 // Update values?
                 //
                 var changedSomething = false;
-                if (foundObservable is Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement)
+                if (foundObservable is AasCore.Aas3_0_RC02.Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement)
                     foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                     {
                         changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
@@ -2575,7 +2575,7 @@ namespace AasxPackageExplorer
                 {
                     var viselem = this.currentEntityForUpdate as VisualElementSubmodelElement;
                     if (viselem != null && viselem.theEnv != null &&
-                        viselem.theContainer != null && viselem.theContainer is Submodel &&
+                        viselem.theContainer != null && viselem.theContainer is AasCore.Aas3_0_RC02.Submodel &&
                         viselem.theWrapper != null && viselem.theWrapper != null &&
                         viselem.theWrapper is AasCore.Aas3_0_RC02.Property)
                     {
@@ -2585,7 +2585,7 @@ namespace AasxPackageExplorer
                         {
                             // use online connection
                             var x = this.theOnlineConnection.UpdatePropertyValue(
-                                viselem.theEnv, viselem.theContainer as Submodel, p);
+                                viselem.theEnv, viselem.theContainer as AasCore.Aas3_0_RC02.Submodel, p);
                             p.Value = x;
 
                             // refresh

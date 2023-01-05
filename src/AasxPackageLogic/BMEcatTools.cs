@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -35,7 +35,7 @@ namespace AasxPackageExplorer
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
         public static void ImportBMEcatToSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
+            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
             AasCore.Aas3_0_RC02.Reference smref)
         {
             // Select between BMEcat and XML publication
@@ -144,7 +144,7 @@ namespace AasxPackageExplorer
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
                                     //using (var cd = ConceptDescription.CreateNew(
                                     //    "" + attribute_label_id, Identification.IRDI, FT_ID))
-                                    var cd = new ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
+                                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -158,7 +158,7 @@ namespace AasxPackageExplorer
                                         //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
                                         //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
+                                        var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -167,7 +167,7 @@ namespace AasxPackageExplorer
                                         {
                                             sm.Add(p);
                                         }
-                                        p.ValueType = DataTypeDefXsd.String;
+                                        p.ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
                                         p.Value = attribute_value;
                                     }
 
@@ -318,7 +318,7 @@ namespace AasxPackageExplorer
 
                                             //using (var cd = ConceptDescription.CreateNew(
                                             //   "" + extendedname, Identification.IRDI, FT_ID))
-                                            var cd = new ConceptDescription(FT_ID, idShort: "" + extendedname);
+                                            var cd = new AasCore.Aas3_0_RC02.ConceptDescription(FT_ID, idShort: "" + extendedname);
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
@@ -332,7 +332,7 @@ namespace AasxPackageExplorer
                                                 //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
                                                 //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
+                                                var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell

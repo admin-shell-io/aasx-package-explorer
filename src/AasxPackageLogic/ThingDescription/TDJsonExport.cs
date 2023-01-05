@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Microsoft.VisualBasic.FileIO;
@@ -36,7 +36,7 @@ namespace AasxPackageExplorer
             {
                 JObject formJObject = new JObject();
                 AasCore.Aas3_0_RC02.ISubmodelElement form = _tempChild;
-                foreach (Qualifier smQualifier in form.Qualifiers)
+                foreach (AasCore.Aas3_0_RC02.Qualifier smQualifier in form.Qualifiers)
                 {
                     formJObject[smQualifier.Type] = smQualifier.Value;
                 }
@@ -48,7 +48,7 @@ namespace AasxPackageExplorer
                     if (_formElement.IdShort == "security")
                     {
                         List<string> securityList = new List<string>();
-                        foreach (Qualifier _secQual in _formElement.Qualifiers)
+                        foreach (AasCore.Aas3_0_RC02.Qualifier _secQual in _formElement.Qualifiers)
                         {
                             securityList.Add(_secQual.Value);
                         }
@@ -59,7 +59,7 @@ namespace AasxPackageExplorer
                         AasCore.Aas3_0_RC02.SubmodelElementCollection _scopesCollection =
                                     (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
                         List<string> scopesList = new List<string>();
-                        foreach (Qualifier _scopeQual in _scopesCollection.Qualifiers)
+                        foreach (AasCore.Aas3_0_RC02.Qualifier _scopeQual in _scopesCollection.Qualifiers)
                         {
                             scopesList.Add(_scopeQual.Value);
                         }
@@ -101,7 +101,7 @@ namespace AasxPackageExplorer
                         AasCore.Aas3_0_RC02.SubmodelElementCollection _opCollection =
                             (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
                         List<string> opList = new List<string>();
-                        foreach (Qualifier _opQual in _opCollection.Qualifiers)
+                        foreach (AasCore.Aas3_0_RC02.Qualifier _opQual in _opCollection.Qualifiers)
                         {
                             opList.Add(_opQual.Value);
                         }
@@ -184,7 +184,7 @@ namespace AasxPackageExplorer
                 if (dsElement.IdShort == "required")
                 {
                     List<string> requiredList = new List<string>();
-                    foreach (Qualifier _requiredQual in dsElement.Qualifiers)
+                    foreach (AasCore.Aas3_0_RC02.Qualifier _requiredQual in dsElement.Qualifiers)
                     {
                         requiredList.Add(_requiredQual.Value);
                     }
@@ -194,11 +194,11 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static List<JToken> enumELement(List<Qualifier> qualCollection)
+        public static List<JToken> enumELement(List<AasCore.Aas3_0_RC02.Qualifier> qualCollection)
         {
 
             List<JToken> enums = new List<JToken>();
-            foreach (Qualifier _enumQual in qualCollection)
+            foreach (AasCore.Aas3_0_RC02.Qualifier _enumQual in qualCollection)
             {
                 if (int.TryParse(_enumQual.Value, out int numericValue))
                 {
@@ -236,7 +236,7 @@ namespace AasxPackageExplorer
                     JObject _titlesJObject = new JObject();
                     AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = (AasCore.Aas3_0_RC02.MultiLanguageProperty)dsElement.Copy();
                     var _titles = mlp.Value.Copy();
-                    foreach (LangString _title in _titles)
+                    foreach (AasCore.Aas3_0_RC02.LangString _title in _titles)
                     {
                         _titlesJObject[_title.Language] = _title.Text;
                     }
@@ -261,7 +261,7 @@ namespace AasxPackageExplorer
             }
             if (sem.Description != null)
             {
-                List<LangString> tdDescription = sem.Description;
+                List<AasCore.Aas3_0_RC02.LangString> tdDescription = sem.Description;
                 if (tdDescription.Count != 1)
                 {
                     semJObject["description"] = tdDescription[0].Text;
@@ -269,7 +269,7 @@ namespace AasxPackageExplorer
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        LangString desc = tdDescription[index];
+                        AasCore.Aas3_0_RC02.LangString desc = tdDescription[index];
                         descriptions[desc.Language] = desc.Text;
                     }
                     semJObject["descriptions"] = JToken.FromObject(descriptions);
@@ -279,7 +279,7 @@ namespace AasxPackageExplorer
                     semJObject["description"] = tdDescription[0].Text;
                 }
             }
-            foreach (Qualifier smQualifier in sem.Qualifiers)
+            foreach (AasCore.Aas3_0_RC02.Qualifier smQualifier in sem.Qualifiers)
             {
                 if (smQualifier.Type == "readOnly" || smQualifier.Type == "writeOnly")
                 {
@@ -333,7 +333,7 @@ namespace AasxPackageExplorer
                     "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in integerSchema)
                 {
-                    foreach (Qualifier semQual in sem.Qualifiers)
+                    foreach (AasCore.Aas3_0_RC02.Qualifier semQual in sem.Qualifiers)
                     {
                         if (elem == semQual.Type)
                         {
@@ -348,7 +348,7 @@ namespace AasxPackageExplorer
                     "exclusiveMaximum", "multipleOf" };
                 foreach (string elem in numberSchema)
                 {
-                    foreach (Qualifier semQual in sem.Qualifiers)
+                    foreach (AasCore.Aas3_0_RC02.Qualifier semQual in sem.Qualifiers)
                     {
                         if (elem == semQual.Type)
                         {
@@ -420,7 +420,7 @@ namespace AasxPackageExplorer
                         actionJObject["output"] = JToken.FromObject(createDataSchema(_actionItem));
                     }
                 }
-                foreach (Qualifier actionQual in _action.Qualifiers)
+                foreach (AasCore.Aas3_0_RC02.Qualifier actionQual in _action.Qualifiers)
                 {
                     if (actionQual.Type == "safe" || actionQual.Type == "idempotent")
                     {
@@ -470,7 +470,7 @@ namespace AasxPackageExplorer
             {
                 AasCore.Aas3_0_RC02.ISubmodelElement link = _tempLink;
                 JObject jObject = new JObject();
-                foreach (Qualifier linkItem in link.Qualifiers)
+                foreach (AasCore.Aas3_0_RC02.Qualifier linkItem in link.Qualifiers)
                 {
                     jObject[linkItem.Type] = linkItem.Value;
                 }
@@ -485,7 +485,7 @@ namespace AasxPackageExplorer
             AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
                 (AasCore.Aas3_0_RC02.SubmodelElementCollection)securitySem.Copy();
             List<string> securityList = new List<string>();
-            foreach (Qualifier _security in _tempCollection.Qualifiers)
+            foreach (AasCore.Aas3_0_RC02.Qualifier _security in _tempCollection.Qualifiers)
             {
                 securityList.Add(_security.Value);
             }
@@ -497,13 +497,13 @@ namespace AasxPackageExplorer
         public static JObject createSecurityScheme(AasCore.Aas3_0_RC02.ISubmodelElement sschemaSem)
         {
             JObject sschemaJOBject = new JObject();
-            foreach (Qualifier smQualifier in sschemaSem.Qualifiers)
+            foreach (AasCore.Aas3_0_RC02.Qualifier smQualifier in sschemaSem.Qualifiers)
             {
                 sschemaJOBject[smQualifier.Type] = smQualifier.Value;
             }
             if (sschemaSem.Description != null)
             {
-                List<LangString> tdDescription = sschemaSem.Description;
+                List<AasCore.Aas3_0_RC02.LangString> tdDescription = sschemaSem.Description;
                 if (tdDescription.Count != 1)
                 {
                     sschemaJOBject["description"] = tdDescription[0].Text;
@@ -511,7 +511,7 @@ namespace AasxPackageExplorer
                     JObject descriptions = new JObject();
                     for (index = 1; index < tdDescription.Count; index++)
                     {
-                        LangString desc = tdDescription[index];
+                        AasCore.Aas3_0_RC02.LangString desc = tdDescription[index];
                         descriptions[desc.Language] = desc.Text;
                     }
                     sschemaJOBject["descriptions"] = descriptions;
@@ -550,7 +550,7 @@ namespace AasxPackageExplorer
                                 AasCore.Aas3_0_RC02.SubmodelElementCollection csdItem =
                                     (AasCore.Aas3_0_RC02.SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
-                                foreach (Qualifier _csdQual in csdItem.Qualifiers)
+                                foreach (AasCore.Aas3_0_RC02.Qualifier _csdQual in csdItem.Qualifiers)
                                 {
                                     csdItemList.Add(_csdQual.Value);
                                 }
@@ -568,7 +568,7 @@ namespace AasxPackageExplorer
                                 AasCore.Aas3_0_RC02.SubmodelElementCollection oauth2SDItem =
                                     (AasCore.Aas3_0_RC02.SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
-                                foreach (Qualifier _csdQual in oauth2SDItem.Qualifiers)
+                                foreach (AasCore.Aas3_0_RC02.Qualifier _csdQual in oauth2SDItem.Qualifiers)
                                 {
                                     csdItemList.Add(_csdQual.Value);
                                 }
@@ -589,7 +589,7 @@ namespace AasxPackageExplorer
             AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
                 (AasCore.Aas3_0_RC02.SubmodelElementCollection)profileSem.Copy();
             List<string> profileList = new List<string>();
-            foreach (Qualifier _profileQual in _tempCollection.Qualifiers)
+            foreach (AasCore.Aas3_0_RC02.Qualifier _profileQual in _tempCollection.Qualifiers)
             {
                 profileList.Add(_profileQual.Value);
             }
@@ -602,7 +602,7 @@ namespace AasxPackageExplorer
             return semJObject;
         }
 
-        public static JObject ExportSMtoJson(Submodel sm)
+        public static JObject ExportSMtoJson(AasCore.Aas3_0_RC02.Submodel sm)
         {
             JObject exportData = new JObject();
             try
@@ -610,7 +610,7 @@ namespace AasxPackageExplorer
                 JObject TDJson = new JObject();
                 if (sm.Qualifiers != null)
                 {
-                    foreach (Qualifier smQualifier in sm.Qualifiers)
+                    foreach (AasCore.Aas3_0_RC02.Qualifier smQualifier in sm.Qualifiers)
                     {
                         TDJson[smQualifier.Type] = smQualifier.Value.ToString();
                     }
@@ -619,7 +619,7 @@ namespace AasxPackageExplorer
                 // description
                 if (sm.Description != null)
                 {
-                    List<LangString> tdDescription = sm.Description;
+                    List<AasCore.Aas3_0_RC02.LangString> tdDescription = sm.Description;
                     if (tdDescription.Count != 1)
                     {
                         TDJson["description"] = tdDescription[0].Text;
@@ -627,7 +627,7 @@ namespace AasxPackageExplorer
                         JObject descriptions = new JObject();
                         for (index = 1; index < tdDescription.Count; index++)
                         {
-                            LangString desc = tdDescription[index];
+                            AasCore.Aas3_0_RC02.LangString desc = tdDescription[index];
                             descriptions[desc.Language] = desc.Text;
                         }
                         TDJson["descriptions"] = descriptions;
@@ -641,7 +641,7 @@ namespace AasxPackageExplorer
                 if (sm.Administration != null)
                 {
                     JObject versionInfo = new JObject();
-                    AdministrativeInformation adm = sm.Administration;
+                    AasCore.Aas3_0_RC02.AdministrativeInformation adm = sm.Administration;
                     if (adm.Version != "")
                     {
                         versionInfo["instance"] = adm.Version;
@@ -665,7 +665,7 @@ namespace AasxPackageExplorer
                         if (tdElement.IdShort == "@type")
                         {
                             List<object> typeList = new List<object>();
-                            foreach (Qualifier _typeQual in tdElement.Qualifiers)
+                            foreach (AasCore.Aas3_0_RC02.Qualifier _typeQual in tdElement.Qualifiers)
                             {
                                 typeList.Add((_typeQual.Value));
 
@@ -677,7 +677,7 @@ namespace AasxPackageExplorer
                             JObject _titlesJObject = new JObject();
                             AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = (AasCore.Aas3_0_RC02.MultiLanguageProperty)tdElement.Copy();
                             var _titles = mlp.Value.Copy();
-                            foreach (LangString _title in _titles)
+                            foreach (AasCore.Aas3_0_RC02.LangString _title in _titles)
                             {
                                 _titlesJObject[_title.Language] = _title.Text;
                             }
@@ -687,7 +687,7 @@ namespace AasxPackageExplorer
                         {
                             List<object> contextList = new List<object>();
                             JObject _conSemantic = new JObject();
-                            foreach (Qualifier _con in tdElement.Qualifiers)
+                            foreach (AasCore.Aas3_0_RC02.Qualifier _con in tdElement.Qualifiers)
                             {
                                 if (_con.Type == "@context")
                                 {

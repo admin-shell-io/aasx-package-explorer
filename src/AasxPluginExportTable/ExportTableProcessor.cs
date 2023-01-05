@@ -23,7 +23,7 @@ using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -43,13 +43,13 @@ namespace AasxPluginExportTable
         /// </summary>
         public AasCore.Aas3_0_RC02.IReferable Parent;
 
-        public Submodel sm;
+        public AasCore.Aas3_0_RC02.Submodel sm;
         public AasCore.Aas3_0_RC02.ISubmodelElement sme;
-        public ConceptDescription cd;
+        public AasCore.Aas3_0_RC02.ConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
-            int depth, Submodel sm = null, AasCore.Aas3_0_RC02.ISubmodelElement sme = null,
-            ConceptDescription cd = null,
+            int depth, AasCore.Aas3_0_RC02.Submodel sm = null, AasCore.Aas3_0_RC02.ISubmodelElement sme = null,
+            AasCore.Aas3_0_RC02.ConceptDescription cd = null,
             AasCore.Aas3_0_RC02.IReferable parent = null)
         {
             this.depth = depth;
@@ -176,14 +176,14 @@ namespace AasxPluginExportTable
                 repDict[tag] = value;
             }
 
-            private void repLangStr(string head, LangString ls)
+            private void repLangStr(string head, AasCore.Aas3_0_RC02.LangString ls)
             {
                 if (ls == null)
                     return;
                 rep(head + "@" + "" + ls.Language, "" + ls.Text);
             }
 
-            private void repListOfLangStr(string head, List<LangString> lss)
+            private void repListOfLangStr(string head, List<AasCore.Aas3_0_RC02.LangString> lss)
             {
                 if (lss == null)
                     return;
@@ -218,7 +218,7 @@ namespace AasxPluginExportTable
                     rep(head + "parent", "" + ((rfpar.IdShort != null) ? rfpar.IdShort : "-"));
             }
 
-            private void repModelingKind(string head, ModelingKind? k)
+            private void repModelingKind(string head, AasCore.Aas3_0_RC02.ModelingKind? k)
             {
                 if (!k.HasValue)
                     return;
@@ -227,7 +227,7 @@ namespace AasxPluginExportTable
                 rep(head + "kind", "" + k.ToString());
             }
 
-            private void repQualifiable(string head, List<Qualifier> qualifiers)
+            private void repQualifiable(string head, List<AasCore.Aas3_0_RC02.Qualifier> qualifiers)
             {
                 if (qualifiers == null)
                     return;
@@ -236,7 +236,7 @@ namespace AasxPluginExportTable
                 rep(head + "qualifiers", "" + qualifiers.ToStringExtended(1));
             }
 
-            private void repMultiplicty(string head, List<Qualifier> qualifiers)
+            private void repMultiplicty(string head, List<AasCore.Aas3_0_RC02.Qualifier> qualifiers)
             {
                 // access
                 if (qualifiers == null)
@@ -258,7 +258,7 @@ namespace AasxPluginExportTable
                 rep(head + "multiplicity", "" + multiStr);
             }
 
-            private void repIdentifiable(string head, IIdentifiable ifi)
+            private void repIdentifiable(string head, AasCore.Aas3_0_RC02.IIdentifiable ifi)
             {
                 if (ifi == null)
                     return;
@@ -330,7 +330,7 @@ namespace AasxPluginExportTable
                     rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
 
                     //-1- {Parent}
-                    if (par is Submodel parsm)
+                    if (par is AasCore.Aas3_0_RC02.Submodel parsm)
                     {
                         var head = "Parent.";
                         repReferable(head, parsm);
@@ -474,7 +474,7 @@ namespace AasxPluginExportTable
                         if (sme is AasCore.Aas3_0_RC02.Entity ent)
                         {
                             //-2- AasCore.Aas3_0_RC02.Entity.{entityType, asset}
-                            rep("AasCore.Aas3_0_RC02.Entity.entityType", "" + Stringification.ToString(ent.EntityType));
+                            rep("AasCore.Aas3_0_RC02.Entity.entityType", "" + AasCore.Aas3_0_RC02.Stringification.ToString(ent.EntityType));
                             if (ent.GlobalAssetId != null)
                                 rep("AasCore.Aas3_0_RC02.Entity.globalAssetId", "" + ent.GlobalAssetId.ToStringExtended(1));
                         }
@@ -500,7 +500,7 @@ namespace AasxPluginExportTable
                             repReference(head, "unitId", iec.UnitId);
                             rep(head + "sourceOfDefinition", "" + iec.SourceOfDefinition);
                             rep(head + "symbol", "" + iec.Symbol);
-                            rep(head + "dataType", "" + Stringification.ToString(iec.DataType));
+                            rep(head + "dataType", "" + AasCore.Aas3_0_RC02.Stringification.ToString(iec.DataType));
                             repListOfLangStr(head + "definition", iec.Definition);
                             rep(head + "valueFormat", "" + iec.ValueFormat);
 

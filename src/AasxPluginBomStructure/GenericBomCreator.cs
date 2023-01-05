@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -480,7 +480,7 @@ namespace AasxPluginBomStructure
                             // even CD?
                             if (rel.SemanticId != null && rel.SemanticId.Count() > 0)
                             {
-                                var cd = this.FindReferableByReference(rel.SemanticId.Copy()) as ConceptDescription;
+                                var cd = this.FindReferableByReference(rel.SemanticId.Copy()) as AasCore.Aas3_0_RC02.ConceptDescription;
 
                                 if (cd != null)
                                 {
@@ -618,11 +618,11 @@ namespace AasxPluginBomStructure
                         node1.Label.FontSize = 12;
 
                         // what type?
-                        if (ent.EntityType == EntityType.SelfManagedEntity)
+                        if (ent.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity)
                         {
                             node1.Attr.FillColor = AssetSelfManagedColor;
                         }
-                        if (ent.EntityType == EntityType.CoManagedEntity)
+                        if (ent.EntityType == AasCore.Aas3_0_RC02.EntityType.CoManagedEntity)
                         {
                             node1.Attr.FillColor = AssetCoManagedColor;
                         }

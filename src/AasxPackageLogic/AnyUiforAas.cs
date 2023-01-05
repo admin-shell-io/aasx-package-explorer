@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
@@ -150,7 +150,7 @@ namespace AasxPackageLogic
         // (the presets will be provided by the technology implementation)
 
         // out
-        public Qualifier ResultQualifier = null;
+        public AasCore.Aas3_0_RC02.Qualifier ResultQualifier = null;
 
         public AnyUiDialogueDataSelectQualifierPreset(
             string caption = "",

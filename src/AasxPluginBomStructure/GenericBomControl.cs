@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 using AasxIntegrationBase;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -32,7 +32,7 @@ namespace AasxPluginBomStructure
     public class GenericBomControl
     {
         private AdminShellPackageEnv _package;
-        private Submodel _submodel;
+        private AasCore.Aas3_0_RC02.Submodel _submodel;
 
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
@@ -60,7 +60,7 @@ namespace AasxPluginBomStructure
         {
             // access
             _package = opackage as AdminShellPackageEnv;
-            _submodel = osm as Submodel;
+            _submodel = osm as AasCore.Aas3_0_RC02.Submodel;
             _bomOptions = bomOptions;
             var master = masterDockPanel as DockPanel;
             if (_bomOptions == null || _package == null || _submodel == null || master == null)
@@ -153,7 +153,7 @@ namespace AasxPluginBomStructure
 
         private Microsoft.Msagl.Drawing.Graph CreateGraph(
             AdminShellPackageEnv env,
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             GenericBomCreatorOptions options)
         {
             // access   

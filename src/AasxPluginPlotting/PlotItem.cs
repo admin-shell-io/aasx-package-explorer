@@ -28,7 +28,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
@@ -89,8 +89,8 @@ namespace AasxPluginPlotting
             set { _unit = value; OnPropertyChanged("DisplayUnit"); }
         }
 
-        private List<LangString> _description = new List<LangString>();
-        public List<LangString> Description
+        private List<AasCore.Aas3_0_RC02.LangString> _description = new List<AasCore.Aas3_0_RC02.LangString>();
+        public List<AasCore.Aas3_0_RC02.LangString> Description
         {
             get { return _description; }
             set { _description = value; OnPropertyChanged("DisplayDescription"); }
@@ -121,7 +121,7 @@ namespace AasxPluginPlotting
         public PlotItem() { }
 
         public PlotItem(AasCore.Aas3_0_RC02.ISubmodelElement sme, string args,
-            string path, List<LangString> description, string lang)
+            string path, List<AasCore.Aas3_0_RC02.LangString> description, string lang)
         {
             SME = sme;
             ArgsStr = args;
@@ -277,7 +277,7 @@ namespace AasxPluginPlotting
 
         public void RebuildFromSubmodel(
             AdminShellPackageEnv package,
-            Submodel sm, string lang)
+            AasCore.Aas3_0_RC02.Submodel sm, string lang)
         {
             // clear & access
             this.Clear();

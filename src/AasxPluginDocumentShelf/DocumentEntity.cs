@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using AasxIntegrationBase;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -147,7 +147,7 @@ namespace AasxPluginDocumentShelf
 
         public static ListOfDocumentEntity ParseSubmodelForV10(
             AdminShellPackageEnv thePackage,
-            Submodel subModel, AasxPluginDocumentShelf.DocumentShelfOptions options,
+            AasCore.Aas3_0_RC02.Submodel subModel, AasxPluginDocumentShelf.DocumentShelfOptions options,
             string defaultLang,
             int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage)
         {
@@ -271,7 +271,7 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.Value;
 
                         // filename
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
                             _semConfigV10.SemIdDigitalFile, MatchMode.Relaxed);
 
                         ent.DigitalFile = new DocumentEntity.FileInfo(fl);
@@ -319,7 +319,7 @@ namespace AasxPluginDocumentShelf
 
         public static ListOfDocumentEntity ParseSubmodelForV11(
             AdminShellPackageEnv thePackage,
-            Submodel subModel, AasxPredefinedConcepts.VDI2770v11 defs11,
+            AasCore.Aas3_0_RC02.Submodel subModel, AasxPredefinedConcepts.VDI2770v11 defs11,
             string defaultLang,
             int selectedDocClass, AasxLanguageHelper.LangEnum selectedLanguage)
         {
@@ -476,12 +476,12 @@ namespace AasxPluginDocumentShelf
                         ent.SourceElementsDocumentVersion = smcVer.Value;
 
                         // file informations
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
                             defs11.CD_DigitalFile?.GetReference(), MatchMode.Relaxed);
                         if (fl != null)
                             ent.DigitalFile = new DocumentEntity.FileInfo(fl);
 
-                        fl = smcVer.Value.FindFirstSemanticIdAs<File>(
+                        fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
                             defs11.CD_PreviewFile?.GetReference(), MatchMode.Relaxed);
                         if (fl != null)
                             ent.PreviewFile = new DocumentEntity.FileInfo(fl);

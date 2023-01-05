@@ -404,7 +404,7 @@ namespace AasxPackageLogic
         public bool ShowEvents = false;
 
         [OptionDescription(Description = "When activated, the UI will detect SubmodelElements which feature " +
-            "Extension of type \"Animate.Args\" and will cyclically animate its values.")]
+            "AasCore.Aas3_0_RC02.Extension of type \"Animate.Args\" and will cyclically animate its values.")]
         public bool AnimateElements = false;
 
         [OptionDescription(Description = "When activated, the UI will observe AAS events, which are subsequently " +

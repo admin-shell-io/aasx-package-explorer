@@ -152,7 +152,7 @@ namespace AasxIntegrationBase.AasForms
                             if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                             {
                                 dc.instance.Touch();
-                                var newr = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                                var newr = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, rsel.resultKeys);
 
                                 if (storedII == 0)
                                 {

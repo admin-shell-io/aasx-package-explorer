@@ -157,7 +157,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// Changed AAS element itself (typically a AasCore.Aas3_0_RC02.IReferable, but could also be a SubmodelRef)
         /// </summary>
-        public IClass ThisElem;
+        public AasCore.Aas3_0_RC02.IClass ThisElem;
 
         /// <summary>
         /// Further information to <c>ThisElem</c>.
@@ -169,7 +169,7 @@ namespace AasxPackageLogic.PackageCentral
         /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
         /// for Assets, ConceptDescriptions, ..)
         /// </summary>
-        public IClass ParentElem;
+        public AasCore.Aas3_0_RC02.IClass ParentElem;
 
         /// <summary>
         /// If create, at which index; else: -1
@@ -411,7 +411,7 @@ namespace AasxPackageLogic.PackageCentral
 
             if (smeToModify is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
             {
-                if (vl.Value is List<LangString> lss)
+                if (vl.Value is List<AasCore.Aas3_0_RC02.LangString> lss)
                     mlp.Value = lss;
                 if (vl.ValueId != null)
                     mlp.ValueId = vl.ValueId;
@@ -483,7 +483,7 @@ namespace AasxPackageLogic.PackageCentral
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
                                 var x = wrappers.FindReferableByReference(
-                                    new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
+                                    new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
                                 if (x is AasCore.Aas3_0_RC02.Property fpp)
                                     smeToModify = fpp;
                             }

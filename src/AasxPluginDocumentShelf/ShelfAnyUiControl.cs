@@ -16,7 +16,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -34,7 +34,7 @@ namespace AasxPluginDocumentShelf
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private Submodel _submodel = null;
+        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
         private DocumentShelfOptions _options = null;
         private PluginEventStack _eventStack = null;
         private PluginSessionBase _session = null;
@@ -122,7 +122,7 @@ namespace AasxPluginDocumentShelf
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            Submodel theSubmodel,
+            AasCore.Aas3_0_RC02.Submodel theSubmodel,
             DocumentShelfOptions theOptions,
             PluginEventStack eventStack,
             PluginSessionBase session,
@@ -156,7 +156,7 @@ namespace AasxPluginDocumentShelf
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as Submodel;
+            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -1126,13 +1126,13 @@ namespace AasxPluginDocumentShelf
                 var theDefs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
                 var theCds = theDefs.GetAllReferables().Where(
-                    (rf) => { return rf is ConceptDescription; }).ToList();
+                    (rf) => { return rf is AasCore.Aas3_0_RC02.ConceptDescription; }).ToList();
 
                 // v11
                 if (_selectedVersion == DocumentEntity.SubmodelVersion.V11)
                 {
                     theCds = AasxPredefinedConcepts.VDI2770v11.Static.GetAllReferables().Where(
-                    (rf) => { return rf is ConceptDescription; }).ToList();
+                    (rf) => { return rf is AasCore.Aas3_0_RC02.ConceptDescription; }).ToList();
                 }
 
                 if (theCds.Count < 1)
@@ -1174,7 +1174,7 @@ namespace AasxPluginDocumentShelf
                             int nr = 0;
                             foreach (var x in theCds)
                             {
-                                var cd = x as ConceptDescription;
+                                var cd = x as AasCore.Aas3_0_RC02.ConceptDescription;
                                 if (cd == null || cd.Id?.HasContent() != true)
                                     continue;
                                 var cdFound = env.FindConceptDescriptionById(cd.Id);

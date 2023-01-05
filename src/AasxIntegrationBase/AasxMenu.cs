@@ -638,17 +638,17 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AssetAdministrationShell AAS;
+        public AasCore.Aas3_0_RC02.AssetAdministrationShell AAS;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public AssetInformation AssetInfo;
+        public AasCore.Aas3_0_RC02.AssetInformation AssetInfo;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Submodel Submodel;
+        public AasCore.Aas3_0_RC02.Submodel Submodel;
 
         /// <summary>
         /// Filled by the currently selected element.

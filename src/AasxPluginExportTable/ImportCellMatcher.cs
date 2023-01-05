@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -32,7 +32,7 @@ namespace AasxPluginExportTable
         /// SME are expressed by single table rows.
         /// </summary>
         public AasCore.Aas3_0_RC02.ISubmodelElement Parent, Sme;
-        public ConceptDescription CD;
+        public AasCore.Aas3_0_RC02.ConceptDescription CD;
 
         /// <summary>
         /// For identification purposes, the parent even of the parent is to be specified.
@@ -72,18 +72,18 @@ namespace AasxPluginExportTable
             SmeParentName = "";
             ParentValue = "";
             SmeValue = "";
-            Parent = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
-            Sme = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
-            CD = new ConceptDescription("");
+            Parent = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
+            Sme = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
+            CD = new AasCore.Aas3_0_RC02.ConceptDescription("");
             
             // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
-                new EmbeddedDataSpecification(
-                    new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> {
+                new AasCore.Aas3_0_RC02.EmbeddedDataSpecification(
+                    new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> {
                         ExtendIDataSpecificationContent.GetKeyForIec61360()
                     }),
-                    new DataSpecificationIec61360(new List<LangString>() {
-                        new LangString("EN?", "")
+                    new AasCore.Aas3_0_RC02.DataSpecificationIec61360(new List<AasCore.Aas3_0_RC02.LangString>() {
+                        new AasCore.Aas3_0_RC02.LangString("EN?", "")
                     })));
         }
     }
@@ -237,7 +237,7 @@ namespace AasxPluginExportTable
                 elem.Category = commit(cell);
 
             if (preset == "kind")
-                elem.Kind = Stringification.ModelingKindFromString(commit(cell));
+                elem.Kind = AasCore.Aas3_0_RC02.Stringification.ModelingKindFromString(commit(cell));
 
             if (preset == "semanticId")
                 elem.SemanticId = CreateSemanticId(commit(cell));
@@ -259,7 +259,7 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShellUtil.GetEnumValues<AasSubmodelElements>())
+                foreach (var x in AdminShellUtil.GetEnumValues<AasCore.Aas3_0_RC02.AasSubmodelElements>())
                     // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToString().ToLower() == x.ToString().ToLower())
                         return true;
@@ -269,7 +269,7 @@ namespace AasxPluginExportTable
                     return true;
 
                 // stringify
-                var vtd = Stringification.DataTypeDefXsdFromString(vt) ?? DataTypeDefXsd.String;
+                var vtd = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(vt) ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
 
                 // set
                 if (elem is AasCore.Aas3_0_RC02.Property prop)
@@ -289,7 +289,7 @@ namespace AasxPluginExportTable
                     multival = "ZeroToMany";
                 if (tricell == "1..*" || tricell == "[1..*]" || tricell == "OneToMany")
                     multival = "OneToMany";
-                elem.Add(new Qualifier(type: "Multiplicity", valueType: DataTypeDefXsd.String, value: multival));
+                elem.Add(new AasCore.Aas3_0_RC02.Qualifier(type: "Multiplicity", valueType: AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: multival));
                 return true;
             }
 
@@ -334,7 +334,7 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShellUtil.GetEnumValues<AasSubmodelElements>())
+                foreach (var x in AdminShellUtil.GetEnumValues<AasCore.Aas3_0_RC02.AasSubmodelElements>())
                     // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
                     if (vt.Trim().ToLower() == x.ToString().ToLower())
                         return;
@@ -348,7 +348,7 @@ namespace AasxPluginExportTable
             }
         }
 
-        private bool MatchEntity(ConceptDescription cd, string preset, string cell)
+        private bool MatchEntity(AasCore.Aas3_0_RC02.ConceptDescription cd, string preset, string cell)
         {
             // access
             if (cd == null || preset == null || cell == null)
@@ -379,7 +379,7 @@ namespace AasxPluginExportTable
                 cd.GetIEC61360().Symbol = commit(cell);
 
             if (preset == "dataType")
-                cd.GetIEC61360().DataType = Stringification.DataTypeIec61360FromString(commit(cell));
+                cd.GetIEC61360().DataType = AasCore.Aas3_0_RC02.Stringification.DataTypeIec61360FromString(commit(cell));
 
             return res;
         }

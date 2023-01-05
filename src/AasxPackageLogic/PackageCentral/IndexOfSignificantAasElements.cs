@@ -48,7 +48,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This object reference will be filled out upon retrieval!
         /// </summary>
-        public IClass LiveObject;
+        public AasCore.Aas3_0_RC02.IClass LiveObject;
     }
 
     public class IndexOfSignificantAasElements

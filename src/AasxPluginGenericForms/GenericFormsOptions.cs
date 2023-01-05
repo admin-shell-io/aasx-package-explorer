@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Newtonsoft.Json;
 using Extensions;
@@ -44,7 +44,7 @@ namespace AasxPluginGenericForms
         /// <summary>
         /// A list with required concept descriptions, if appropriate.
         /// </summary>
-        public List<ConceptDescription> ConceptDescriptions = null;
+        public List<AasCore.Aas3_0_RC02.ConceptDescription> ConceptDescriptions = null;
 
         //
         // Constructors
@@ -62,12 +62,12 @@ namespace AasxPluginGenericForms
                 FormSubmodel = new FormDescSubmodel(src.FormSubmodel);
             if (src.ConceptDescriptions != null)
             {
-                ConceptDescriptions = new List<ConceptDescription>();
+                ConceptDescriptions = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
                 foreach (var ocd in src.ConceptDescriptions)
                 {
                     ConceptDescriptions.Add(
                         ExtendConceptDescription.ConvertFromV20(
-                            new ConceptDescription(""), ocd));
+                            new AasCore.Aas3_0_RC02.ConceptDescription(""), ocd));
                 }
             }
         }

@@ -21,7 +21,7 @@ using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -151,7 +151,7 @@ namespace AasxPluginExportTable.Uml
             return dstTuple;
         }
 
-        public void ProcessSubmodel(Submodel submodel)
+        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
         {
             Writeln("mainframe SMT " + submodel.IdShort);
             Writeln("");

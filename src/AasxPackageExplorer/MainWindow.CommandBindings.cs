@@ -2512,7 +2512,7 @@ namespace AasxPackageExplorer
 
                 // which item selected?
                 AasCore.Aas3_0_RC02.Environment env = _packageCentral.Main.AasEnv;
-                AssetAdministrationShell aas = null;
+                AasCore.Aas3_0_RC02.AssetAdministrationShell aas = null;
                 if (DisplayElements.SelectedItem != null)
                 {
                     if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)

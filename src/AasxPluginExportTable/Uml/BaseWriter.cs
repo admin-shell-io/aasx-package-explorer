@@ -21,7 +21,7 @@ using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -30,7 +30,7 @@ namespace AasxPluginExportTable.Uml
     public interface IBaseWriter
     {
         void StartDoc(ExportUmlRecord options);
-        void ProcessSubmodel(Submodel submodel);
+        void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel);
         void ProcessPost();
         void SaveDoc(string fn);
     }
@@ -93,7 +93,7 @@ namespace AasxPluginExportTable.Uml
             if (rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)
             {
                 if (sme is AasCore.Aas3_0_RC02.Property p)
-                    return Stringification.ToString(p.ValueType);
+                    return AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType);
 
             }
 

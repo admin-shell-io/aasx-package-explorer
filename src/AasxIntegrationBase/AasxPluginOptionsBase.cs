@@ -256,7 +256,7 @@ namespace AasxIntegrationBase
     }
 
     //
-    // Extension: options (records) with lookup of semantic ids
+    // AasCore.Aas3_0_RC02.Extension: options (records) with lookup of semantic ids
     //
 
     /// <summary>
@@ -284,7 +284,7 @@ namespace AasxIntegrationBase
             if (src.AllowSubmodelSemanticId != null)
                 foreach (var assi in src.AllowSubmodelSemanticId)
                     AllowSubmodelSemanticId.Add(
-                        new AAS.Key(Stringification.KeyTypesFromString(assi?.type) 
+                        new AAS.Key(AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(assi?.type) 
                             ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, assi.value));
         }
 #endif

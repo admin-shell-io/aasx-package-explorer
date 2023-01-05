@@ -293,13 +293,13 @@ namespace AasxPackageExplorer
             if (useX509)
             {
                 AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
-                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJson");
-                AasCore.Aas3_0_RC02.Property canonical = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
-                AasCore.Aas3_0_RC02.Property subject = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "subject");
+                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJson");
+                AasCore.Aas3_0_RC02.Property canonical = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
+                AasCore.Aas3_0_RC02.Property subject = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "subject");
                 AasCore.Aas3_0_RC02.SubmodelElementCollection x5c = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "x5c");
-                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "algorithm");
-                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "sigT");
-                AasCore.Aas3_0_RC02.Property signature = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "signature");
+                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "algorithm");
+                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "sigT");
+                AasCore.Aas3_0_RC02.Property signature = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "signature");
                 smec.Add(json);
                 smec.Add(canonical);
                 smec.Add(subject);
@@ -361,7 +361,7 @@ namespace AasxPackageExplorer
                     int j = 1;
                     foreach (X509ChainElement element in ch.ChainElements)
                     {
-                        AasCore.Aas3_0_RC02.Property c = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "certificate_" + j++);
+                        AasCore.Aas3_0_RC02.Property c = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "certificate_" + j++);
                         c.Value = Convert.ToBase64String(element.Certificate.GetRawCertData());
                         x5c.Add(c);
                     }
@@ -387,13 +387,13 @@ namespace AasxPackageExplorer
             else // Verifiable Credential
             {
                 AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
-                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJson");
-                AasCore.Aas3_0_RC02.Property jsonld = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJsonLD");
-                AasCore.Aas3_0_RC02.Property vc = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "vc");
-                AasCore.Aas3_0_RC02.Property epvc = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "endpointVC");
-                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "algorithm");
-                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "sigT");
-                AasCore.Aas3_0_RC02.Property proof = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "proof");
+                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJson");
+                AasCore.Aas3_0_RC02.Property jsonld = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJsonLD");
+                AasCore.Aas3_0_RC02.Property vc = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "vc");
+                AasCore.Aas3_0_RC02.Property epvc = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "endpointVC");
+                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "algorithm");
+                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "sigT");
+                AasCore.Aas3_0_RC02.Property proof = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "proof");
                 smec.Add(json);
                 smec.Add(jsonld);
                 smec.Add(vc);
@@ -1051,7 +1051,7 @@ namespace AasxPackageExplorer
                 using (var file = System.IO.File.OpenRead(sourceFn))
                 {
                     var node = System.Text.Json.Nodes.JsonNode.Parse(file);
-                    submodel = Jsonization.Deserialize.SubmodelFrom(node);
+                    submodel = AasCore.Aas3_0_RC02.Jsonization.Deserialize.SubmodelFrom(node);
                 }
 
                 // need id for idempotent behaviour
@@ -1184,7 +1184,7 @@ namespace AasxPackageExplorer
                 using (var file = System.IO.File.OpenRead(smJson))
                 {
                     var node = System.Text.Json.Nodes.JsonNode.Parse(file);
-                    submodel = Jsonization.Deserialize.SubmodelFrom(node);
+                    submodel = AasCore.Aas3_0_RC02.Jsonization.Deserialize.SubmodelFrom(node);
                 }
             }
             catch (Exception ex)

@@ -198,11 +198,11 @@ namespace AasxPredefinedConcepts
             // create CD
             var cd = new ConceptDescription(id, idShort:idShort);
             var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
-            var dsc = dsiec.DataSpecificationContent as DataSpecificationIec61360;
-            dsc.PreferredName = new List<LangString>();
-            dsc.PreferredName.Add(new LangString(lang, "" + idShort));
-            dsc.Definition = new List<LangString>();
-            dsc.Definition.Add(new LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
+            var dsc = dsiec.DataSpecificationContent as AasCore.Aas3_0_RC02.DataSpecificationIec61360;
+            dsc.PreferredName = new List<AasCore.Aas3_0_RC02.LangString>();
+            dsc.PreferredName.Add(new AasCore.Aas3_0_RC02.LangString(lang, "" + idShort));
+            dsc.Definition = new List<AasCore.Aas3_0_RC02.LangString>();
+            dsc.Definition.Add(new AasCore.Aas3_0_RC02.LangString(lang, "" + AdminShellUtil.CleanHereStringWithNewlines(nl: " ", here: definitionHereString)));
 
             // options
             if (isCaseOf != null)

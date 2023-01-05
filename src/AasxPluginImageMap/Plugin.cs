@@ -282,15 +282,15 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 ent.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect,
-                    idShort: "RegionRect", addSme: true)?.Set(DataTypeDefXsd.String, "[ 10, 10, 30, 30 ]");
+                    idShort: "RegionRect", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "[ 10, 10, 30, 30 ]");
 
                 ent.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionCircle,
-                    idShort: "RegionCircle", addSme: true)?.Set(DataTypeDefXsd.String, "[ 40, 40, 10 ]");
+                    idShort: "RegionCircle", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "[ 40, 40, 10 ]");
 
                 ent.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionPolygon,
-                    idShort: "RegionPolygon", addSme: true)?.Set(DataTypeDefXsd.String, "[ 20, 20, 50, 20, 40, 30 ]");
+                    idShort: "RegionPolygon", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "[ 20, 20, 50, 20, 40, 30 ]");
 
                 ent.CreateSMEForCD<AasCore.Aas3_0_RC02.ReferenceElement>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_NavigateTo,
@@ -302,17 +302,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_RegionRect,
-                    idShort: "RegionRect", addSme: true)?.Set(DataTypeDefXsd.String, "[ 50, 10, 70, 30 ]");
+                    idShort: "RegionRect", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "[ 50, 10, 70, 30 ]");
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
-                    idShort: "TextDisplay01", addSme: true)?.Set(DataTypeDefXsd.String, "Hallo");
+                    idShort: "TextDisplay01", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "Hallo");
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_TextDisplay,
                     idShort: "TextDisplay02", addSme: true)?
-                        .Set(DataTypeDefXsd.String, "3.1415")
-                        .Set(new Extension("ImageMap.Args", valueType: DataTypeDefXsd.String, 
+                        .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "3.1415")
+                        .Set(new AasCore.Aas3_0_RC02.Extension("ImageMap.Args", valueType: AasCore.Aas3_0_RC02.DataTypeDefXsd.String, 
                              value: "{ fmt: \"F2\" }"));
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.ReferenceElement>(
@@ -321,11 +321,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_Foreground,
-                    idShort: "Foreground", addSme: true)?.Set(DataTypeDefXsd.String, "#ffffffff");
+                    idShort: "Foreground", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "#ffffffff");
 
                 smcVE.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                     AasxPredefinedConcepts.ImageMap.Static.CD_Background,
-                    idShort: "Background", addSme: true)?.Set(DataTypeDefXsd.String, "#ff000040");
+                    idShort: "Background", addSme: true)?.Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, "#ff000040");
 
                 // make result
                 var res = new AasxPluginResultBaseObject();

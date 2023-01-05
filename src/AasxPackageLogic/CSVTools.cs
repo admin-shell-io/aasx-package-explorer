@@ -16,7 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -25,7 +25,7 @@ namespace AasxPackageLogic
     public static class CSVTools
     {
         public static void ImportCSVtoSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm /* , AdminShell.SubmodelRef smref*/)
+            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm /* , AdminShell.SubmodelRef smref*/)
         {
             AasCore.Aas3_0_RC02.SubmodelElementCollection[] propGroup = new AasCore.Aas3_0_RC02.SubmodelElementCollection[10];
             int i_propGroup = 0;
@@ -79,7 +79,7 @@ namespace AasxPackageLogic
                                 if (rows[7] != "") propGroup[0].SemanticId =
                                         ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, rows[7]));
                             }
-                            propGroup[0].Kind = ModelingKind.Instance;
+                            propGroup[0].Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
                         }
                         else
                         {
@@ -92,15 +92,15 @@ namespace AasxPackageLogic
                             i_propGroup--;
                         break;
                     case "AasCore.Aas3_0_RC02.Property":
-                        var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: rows[1].Replace("-", "_"));
+                        var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: rows[1].Replace("-", "_"));
                         p.Value = rows[2];
                         if (rows.Length > 3)
                         {
-                            p.ValueType = Stringification.DataTypeDefXsdFromString(rows[3]) ?? DataTypeDefXsd.String;
+                            p.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(rows[3]) ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
                             p.Category = rows[4];
                             if (rows[5] != "") p.AddDescription("en", rows[5]);
                             if (rows[6] != "") p.AddDescription("de", rows[6]);
-                            p.Kind = ModelingKind.Instance;
+                            p.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
                             if (rows[7] != "")
                                 p.SemanticId = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, rows[7]));
                         }

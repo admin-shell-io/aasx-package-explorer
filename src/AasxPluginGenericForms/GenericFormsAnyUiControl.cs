@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AdminShellNS;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AnyUi;
@@ -29,7 +29,7 @@ namespace AasxPluginGenericForms
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private Submodel _submodel = null;
+        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
         private AasxPluginGenericForms.GenericFormOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -49,7 +49,7 @@ namespace AasxPluginGenericForms
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            Submodel theSubmodel,
+            AasCore.Aas3_0_RC02.Submodel theSubmodel,
             AasxPluginGenericForms.GenericFormOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -77,7 +77,7 @@ namespace AasxPluginGenericForms
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as Submodel;
+            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;

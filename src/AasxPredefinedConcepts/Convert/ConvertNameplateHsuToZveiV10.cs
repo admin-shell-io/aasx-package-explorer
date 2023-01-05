@@ -70,7 +70,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smHSU = sm.SubmodelElements;
             sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
-            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsV10.SM_Nameplate.SemanticId.GetAsExactlyOneKey() });
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsV10.SM_Nameplate.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)

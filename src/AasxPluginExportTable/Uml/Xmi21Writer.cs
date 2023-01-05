@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml;
 using System.Xml.Schema;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using AdminShellNS;
@@ -247,7 +247,7 @@ namespace AasxPluginExportTable.Uml
             return dstTuple;
         }
 
-        public void ProcessSubmodel(Submodel submodel)
+        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
         {
             ProcessEntity(null, submodel);
         }

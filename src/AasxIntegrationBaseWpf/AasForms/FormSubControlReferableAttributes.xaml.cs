@@ -222,10 +222,10 @@ namespace AasxIntegrationBase.AasForms
             {
                 // add
                 if (dc.rf.Description == null)
-                    dc.rf.Description = new List<LangString>();
+                    dc.rf.Description = new List<AasCore.Aas3_0_RC02.LangString>();
 
                 dc.instance.Touch();
-                dc.rf.Description.Add(new LangString("", ""));
+                dc.rf.Description.Add(new AasCore.Aas3_0_RC02.LangString("", ""));
 
                 // show
                 UpdateDisplay();

@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
 using AnyUi;
@@ -48,9 +48,9 @@ namespace AasxPackageLogic
 
         private bool PasteQualifierTextIntoExisting(
             string jsonInput,
-            Qualifier qCurr)
+            AasCore.Aas3_0_RC02.Qualifier qCurr)
         {
-            var qIn = JsonConvert.DeserializeObject<Qualifier>(jsonInput);
+            var qIn = JsonConvert.DeserializeObject<AasCore.Aas3_0_RC02.Qualifier>(jsonInput);
             if (qCurr != null && qIn != null)
             {
                 qCurr.Type = qIn.Type;
@@ -60,7 +60,7 @@ namespace AasxPackageLogic
                     qCurr.ValueId = qIn.ValueId;
                 if (qIn.SemanticId != null)
                     qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("Qualifier data taken from clipboard.");
+                Log.Singleton.Info("AasCore.Aas3_0_RC02.Qualifier data taken from clipboard.");
                 return true;
             }
             return false;
@@ -71,12 +71,12 @@ namespace AasxPackageLogic
         public class QualifierPreset
         {
             public string name = "";
-            public Qualifier qualifier = new Qualifier("", DataTypeDefXsd.String);
+            public AasCore.Aas3_0_RC02.Qualifier qualifier = new AasCore.Aas3_0_RC02.Qualifier("", AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
         }
 
         public void QualifierHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
-            List<Qualifier> qualifiers,
+            List<AasCore.Aas3_0_RC02.Qualifier> qualifiers,
             AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
@@ -84,7 +84,7 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of references
                 AddAction(
-                    stack, "Qualifier entities:",
+                    stack, "AasCore.Aas3_0_RC02.Qualifier entities:",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -100,7 +100,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                         {
-                            qualifiers.Add(new Qualifier("", DataTypeDefXsd.String));
+                            qualifiers.Add(new AasCore.Aas3_0_RC02.Qualifier("", AasCore.Aas3_0_RC02.DataTypeDefXsd.String));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
@@ -136,7 +136,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show Qualifier presets ({pfn})");
+                                    ex, $"While show AasCore.Aas3_0_RC02.Qualifier presets ({pfn})");
                             }
                         }
 
@@ -144,7 +144,7 @@ namespace AasxPackageLogic
                         {
                             try
                             {
-                                var qNew = new Qualifier("", DataTypeDefXsd.String);
+                                var qNew = new AasCore.Aas3_0_RC02.Qualifier("", AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (PasteQualifierTextIntoExisting(jsonInput, qNew))
                                 {
@@ -154,7 +154,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Qualifier data in clipboard");
                             }
                         }
 
@@ -172,7 +172,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Qualifier {1 + i}",
+                    substack, $"AasCore.Aas3_0_RC02.Qualifier {1 + i}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -194,7 +194,7 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var resu = this.MoveElementInListUpwards<Qualifier>(
+                                    var resu = this.MoveElementInListUpwards<AasCore.Aas3_0_RC02.Qualifier>(
                                         qualifiers, qualifiers[storedI]);
                                     if (resu > -1)
                                     {
@@ -202,7 +202,7 @@ namespace AasxPackageLogic
                                     }
                                     break;
                                 case 2:
-                                    var resd = this.MoveElementInListDownwards<Qualifier>(
+                                    var resd = this.MoveElementInListDownwards<AasCore.Aas3_0_RC02.Qualifier>(
                                         qualifiers, qualifiers[storedI]);
                                     if (resd > -1)
                                     {
@@ -221,11 +221,11 @@ namespace AasxPackageLogic
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
                                         action = PasteQualifierTextIntoExisting(jsonInput, qualifiers[storedI]);
                                         if (action)
-                                            Log.Singleton.Info("Qualifier taken from clipboard.");
+                                            Log.Singleton.Info("AasCore.Aas3_0_RC02.Qualifier taken from clipboard.");
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing Qualifier data in clipboard");
+                                        Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Qualifier data in clipboard");
                                     }
                                     break;
 
@@ -241,7 +241,7 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
-                // Qualifier members
+                // AasCore.Aas3_0_RC02.Qualifier members
 
                 // SemanticId
 
@@ -259,7 +259,7 @@ namespace AasxPackageLogic
                         substack, repo, qual.SemanticId, "semanticId:", "Create data element!",
                         v =>
                         {
-                            qual.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            qual.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -290,20 +290,20 @@ namespace AasxPackageLogic
                     substack, repo, qual.Kind, "kind:", "Create data element!",
                     v =>
                     {
-                        qual.Kind = QualifierKind.ConceptQualifier;
+                        qual.Kind = AasCore.Aas3_0_RC02.QualifierKind.ConceptQualifier;
                         return new AnyUiLambdaActionRedrawEntity();
                     }
                     ))
                     {
                         AddKeyValueExRef(
-                        substack, "kind", qual, Stringification.ToString(qual.Kind), null, repo,
+                        substack, "kind", qual, AasCore.Aas3_0_RC02.Stringification.ToString(qual.Kind), null, repo,
                         v =>
                         {
-                            qual.Kind = Stringification.QualifierKindFromString((string)v);
+                            qual.Kind = AasCore.Aas3_0_RC02.Stringification.QualifierKindFromString((string)v);
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionNone();
                         },
-                        Enum.GetNames(typeof(QualifierKind)));
+                        Enum.GetNames(typeof(AasCore.Aas3_0_RC02.QualifierKind)));
                     }
 
                 // Type
@@ -320,13 +320,13 @@ namespace AasxPackageLogic
                 // ValueType
 
                 AddKeyValueExRef(
-                    substack, "valueType", qual, Stringification.ToString(qual.ValueType), null, repo,
+                    substack, "valueType", qual, AasCore.Aas3_0_RC02.Stringification.ToString(qual.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
                     comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
                     comboBoxMinWidth: 190,
                     setValue: v =>
                     {
-                        var vt = Stringification.DataTypeDefXsdFromString((string)v);
+                        var vt = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString((string)v);
                         if (vt.HasValue)
                             qual.ValueType = vt.Value;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
@@ -351,8 +351,8 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Extension '{"" + qual.Type}'",
-                                                mimeType: Stringification.ToString(qual.ValueType),
+                                                caption: $"Edit AasCore.Aas3_0_RC02.Extension '{"" + qual.Type}'",
+                                                mimeType: AasCore.Aas3_0_RC02.Stringification.ToString(qual.ValueType),
                                                 text: qual.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {
@@ -370,7 +370,7 @@ namespace AasxPackageLogic
                         substack, repo, qual.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            qual.ValueId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            qual.ValueId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -403,9 +403,9 @@ namespace AasxPackageLogic
 
         private bool PasteIKVPTextIntoExisting(
             string jsonInput,
-            SpecificAssetId qCurr)
+            AasCore.Aas3_0_RC02.SpecificAssetId qCurr)
         {
-            var qIn = JsonConvert.DeserializeObject<SpecificAssetId>(jsonInput);
+            var qIn = JsonConvert.DeserializeObject<AasCore.Aas3_0_RC02.SpecificAssetId>(jsonInput);
             if (qCurr != null && qIn != null)
             {
                 qCurr.Name = qIn.Name;
@@ -428,12 +428,12 @@ namespace AasxPackageLogic
         public class IdentifierKeyValuePairPreset
         {
             public string name = "";
-            public SpecificAssetId pair = new("", "", null);
+            public AasCore.Aas3_0_RC02.SpecificAssetId pair = new("", "", null);
         }
 
         public void IdentifierKeyValueSinglePairHelper(
             AnyUiStackPanel substack, ModifyRepo repo,
-            SpecificAssetId pair,
+            AasCore.Aas3_0_RC02.SpecificAssetId pair,
             AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
@@ -454,7 +454,7 @@ namespace AasxPackageLogic
                     substack, repo, pair.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        pair.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                        pair.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -500,7 +500,7 @@ namespace AasxPackageLogic
                     substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
                     v =>
                     {
-                        pair.ExternalSubjectId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                        pair.ExternalSubjectId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -515,7 +515,7 @@ namespace AasxPackageLogic
 
         public void IdentifierKeyValuePairHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
-            List<SpecificAssetId> pairs,
+            List<AasCore.Aas3_0_RC02.SpecificAssetId> pairs,
             string key = "IdentifierKeyValuePairs",
             AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             bool constrainToOne = false)
@@ -531,7 +531,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0 && (!constrainToOne || pairs.Count < 1))
                         {
-                            pairs.Add(new SpecificAssetId("", "", null));
+                            pairs.Add(new AasCore.Aas3_0_RC02.SpecificAssetId("", "", null));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
@@ -575,7 +575,7 @@ namespace AasxPackageLogic
                         {
                             try
                             {
-                                var pNew = new SpecificAssetId("", "", null);
+                                var pNew = new AasCore.Aas3_0_RC02.SpecificAssetId("", "", null);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (PasteIKVPTextIntoExisting(jsonInput, pNew))
                                 {
@@ -625,7 +625,7 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var resu = this.MoveElementInListUpwards<SpecificAssetId>(
+                                    var resu = this.MoveElementInListUpwards<AasCore.Aas3_0_RC02.SpecificAssetId>(
                                         pairs, pairs[storedI]);
                                     if (resu > -1)
                                     {
@@ -633,7 +633,7 @@ namespace AasxPackageLogic
                                     }
                                     break;
                                 case 2:
-                                    var resd = this.MoveElementInListDownwards<SpecificAssetId>(
+                                    var resd = this.MoveElementInListDownwards<AasCore.Aas3_0_RC02.SpecificAssetId>(
                                         pairs, pairs[storedI]);
                                     if (resd > -1)
                                     {
@@ -683,9 +683,9 @@ namespace AasxPackageLogic
 
         private bool PasteExtensionTextIntoExisting(
             string jsonInput,
-            Extension qCurr)
+            AasCore.Aas3_0_RC02.Extension qCurr)
         {
-            var qIn = JsonConvert.DeserializeObject<Extension>(jsonInput);
+            var qIn = JsonConvert.DeserializeObject<AasCore.Aas3_0_RC02.Extension>(jsonInput);
             if (qCurr != null && qIn != null)
             {
                 qCurr.Name = qIn.Name;
@@ -695,7 +695,7 @@ namespace AasxPackageLogic
                     qCurr.RefersTo = qIn.RefersTo;
                 if (qIn.SemanticId != null)
                     qCurr.SemanticId = qIn.SemanticId;
-                Log.Singleton.Info("Extension data taken from clipboard.");
+                Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension data taken from clipboard.");
                 return true;
             }
             return false;
@@ -705,13 +705,13 @@ namespace AasxPackageLogic
         public class ExtensionPreset
         {
             public string name = "";
-            public Extension extension = new Extension("");
+            public AasCore.Aas3_0_RC02.Extension extension = new AasCore.Aas3_0_RC02.Extension("");
         }
 
         public void ExtensionHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
-            List<Extension> extensions,
-            Action<List<Extension>> setOutput,
+            List<AasCore.Aas3_0_RC02.Extension> extensions,
+            Action<List<AasCore.Aas3_0_RC02.Extension>> setOutput,
             AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
@@ -723,14 +723,14 @@ namespace AasxPackageLogic
             {
                 // let the user control the number of elements
                 AddAction(
-                    stack, "Extension entities:",
+                    stack, "AasCore.Aas3_0_RC02.Extension entities:",
                     new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
                     repo,
                     (buttonNdx) =>
                     {
                         if (buttonNdx == 0)
                         {
-                            extensions.Add(new Extension(""));
+                            extensions.Add(new AasCore.Aas3_0_RC02.Extension(""));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
 
@@ -766,7 +766,7 @@ namespace AasxPackageLogic
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(
-                                    ex, $"While show Qualifier presets ({pfn})");
+                                    ex, $"While show AasCore.Aas3_0_RC02.Qualifier presets ({pfn})");
                             }
                         }
 
@@ -774,7 +774,7 @@ namespace AasxPackageLogic
                         {
                             try
                             {
-                                var eNew = new Extension("");
+                                var eNew = new AasCore.Aas3_0_RC02.Extension("");
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (PasteExtensionTextIntoExisting(jsonInput, eNew))
                                 {
@@ -784,7 +784,7 @@ namespace AasxPackageLogic
                             }
                             catch (Exception ex)
                             {
-                                Log.Singleton.Error(ex, "while accessing Extension data in clipboard");
+                                Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Extension data in clipboard");
                             }
                         }
 
@@ -807,7 +807,7 @@ namespace AasxPackageLogic
 
                 int storedI = i;
                 AddGroup(
-                    substack, $"Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
+                    substack, $"AasCore.Aas3_0_RC02.Extension {1 + i}: {AdminShellUtil.ShortenWithEllipses(extension.Name,30)}",
                     levelColors.SubSubSection.Bg, levelColors.SubSubSection.Fg, repo,
                     contextMenuText: "\u22ee",
                     menuHeaders: new[] {
@@ -829,7 +829,7 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var resu = this.MoveElementInListUpwards<Extension>(
+                                    var resu = this.MoveElementInListUpwards<AasCore.Aas3_0_RC02.Extension>(
                                         extensions, extensions[storedI]);
                                     if (resu > -1)
                                     {
@@ -837,7 +837,7 @@ namespace AasxPackageLogic
                                     }
                                     break;
                                 case 2:
-                                    var resd = this.MoveElementInListDownwards<Extension>(
+                                    var resd = this.MoveElementInListDownwards<AasCore.Aas3_0_RC02.Extension>(
                                         extensions, extensions[storedI]);
                                     if (resd > -1)
                                     {
@@ -848,7 +848,7 @@ namespace AasxPackageLogic
                                     var jsonStr = JsonConvert.SerializeObject(
                                         extensions[storedI], Formatting.Indented);
                                     this.context?.ClipboardSet(new AnyUiClipboardData(jsonStr));
-                                    Log.Singleton.Info("Extension serialized to clipboard.");
+                                    Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension serialized to clipboard.");
                                     break;
                                 case 4:
                                     try
@@ -856,11 +856,11 @@ namespace AasxPackageLogic
                                         var jsonInput = this.context?.ClipboardGet()?.Text;
                                         action = PasteExtensionTextIntoExisting(jsonInput, extensions[storedI]);
                                         if (action)
-                                            Log.Singleton.Info("Extension taken from clipboard.");
+                                            Log.Singleton.Info("AasCore.Aas3_0_RC02.Extension taken from clipboard.");
                                     }
                                     catch (Exception ex)
                                     {
-                                        Log.Singleton.Error(ex, "while accessing Extension data in clipboard");
+                                        Log.Singleton.Error(ex, "while accessing AasCore.Aas3_0_RC02.Extension data in clipboard");
                                     }
                                     break;
 
@@ -904,7 +904,7 @@ namespace AasxPackageLogic
                         substack, repo, extension.SemanticId, "semanticId:", "Create data element!",
                         v =>
                         {
-                            extension.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            extension.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -933,7 +933,7 @@ namespace AasxPackageLogic
 
 
                 AddKeyValueExRef(
-                    substack, "valueType", extension, Stringification.ToString(extension.ValueType), null, repo,
+                    substack, "valueType", extension, AasCore.Aas3_0_RC02.Stringification.ToString(extension.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
                     //comboBoxItems: AasCore.Aas3_0_RC02.DataElement.ValueTypeItems,
                     //TODO:jtikekar change
@@ -950,7 +950,7 @@ namespace AasxPackageLogic
                     //"dayTimeDuration", "yearMonthDuration", "float", "hexBinary", "string", "langString", "time" },
                     setValue: v =>
                     {
-                        var vt = Stringification.DataTypeDefXsdFromString((string)v);
+                        var vt = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString((string)v);
                         if (vt.HasValue)
                             extension.ValueType = vt.Value;
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
@@ -973,8 +973,8 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                                caption: $"Edit Extension '{"" + extension.Name}'",
-                                                mimeType: Stringification.ToString(extension.ValueType),
+                                                caption: $"Edit AasCore.Aas3_0_RC02.Extension '{"" + extension.Name}'",
+                                                mimeType: AasCore.Aas3_0_RC02.Stringification.ToString(extension.ValueType),
                                                 text: extension.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {
@@ -997,7 +997,7 @@ namespace AasxPackageLogic
                         substack, this.repo, extension.RefersTo, "refersTo:", "Create data element!",
                         v =>
                         {
-                            extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -1011,7 +1011,7 @@ namespace AasxPackageLogic
                             (buttonNdx) =>
                             {
                                 if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
-                                    extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
+                                    extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
 
                                 if (buttonNdx == 1 && extension.RefersTo != null)
                                     extension.RefersTo = null;
@@ -1075,15 +1075,15 @@ namespace AasxPackageLogic
                     frontPanel, 0, 0,
                     margin: new AnyUiThickness(4, 2, 2, 2),
                     padding: new AnyUiThickness(2, -1, 0, -1),
-                    text: "" + Stringification.ToString(refkeys.Type),
+                    text: "" + AasCore.Aas3_0_RC02.Stringification.ToString(refkeys.Type),
                     minWidth: 100,
-                    items: Enum.GetValues(typeof(ReferenceTypes)).OfType<ReferenceTypes>().Select((rt) => Stringification.ToString(rt)).ToArray(),
+                    items: Enum.GetValues(typeof(AasCore.Aas3_0_RC02.ReferenceTypes)).OfType<AasCore.Aas3_0_RC02.ReferenceTypes>().Select((rt) => AasCore.Aas3_0_RC02.Stringification.ToString(rt)).ToArray(),
                     isEditable: false,
                     verticalContentAlignment: AnyUiVerticalAlignment.Center),
                 (o) =>
                 {
                     if (o is string os)
-                        refkeys.Type = Stringification.ReferenceTypesFromString(os).Value;
+                        refkeys.Type = AasCore.Aas3_0_RC02.Stringification.ReferenceTypesFromString(os).Value;
                     return new AnyUiLambdaActionNone();
                 },
                 takeOverLambda: takeOverLambdaAction);
@@ -1128,7 +1128,7 @@ namespace AasxPackageLogic
                             padding: new AnyUiThickness(2, -2, 2, -2)),
                             (o) =>
                             {
-                                refkeys.ReferredSemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                                refkeys.ReferredSemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                                 return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
@@ -1187,10 +1187,10 @@ namespace AasxPackageLogic
 
         private bool PasteValueReferencePairTextIntoExisting(
             string jsonInput,
-            ValueReferencePair pCurr)
+            AasCore.Aas3_0_RC02.ValueReferencePair pCurr)
         {
             var node = System.Text.Json.Nodes.JsonNode.Parse(jsonInput);
-            var pIn = Jsonization.Deserialize.ValueReferencePairFrom(node);
+            var pIn = AasCore.Aas3_0_RC02.Jsonization.Deserialize.ValueReferencePairFrom(node);
             if (pCurr != null && pIn != null)
             {
                 pCurr.Value = pIn.Value;
@@ -1206,7 +1206,7 @@ namespace AasxPackageLogic
         public void ValueListHelper(
             AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack, ModifyRepo repo, string key,
-            List<ValueReferencePair> valuePairs,
+            List<AasCore.Aas3_0_RC02.ValueReferencePair> valuePairs,
             AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
@@ -1221,9 +1221,9 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                         {
-                            valuePairs.Add(new ValueReferencePair(
+                            valuePairs.Add(new AasCore.Aas3_0_RC02.ValueReferencePair(
                                 "", 
-                                new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> { 
+                                new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> { 
                                     new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "") 
                                 })));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
@@ -1233,7 +1233,7 @@ namespace AasxPackageLogic
                         {
                             try
                             {
-                                var pNew = new ValueReferencePair("", null);
+                                var pNew = new AasCore.Aas3_0_RC02.ValueReferencePair("", null);
                                 var jsonInput = this.context?.ClipboardGet()?.Text;
                                 if (PasteValueReferencePairTextIntoExisting(jsonInput, pNew))
                                 {
@@ -1275,19 +1275,19 @@ namespace AasxPackageLogic
                             // do it
                             for (int i = 0; i < valuePairs.Count; i++)
                             {
-                                var eds = new EmbeddedDataSpecification(
+                                var eds = new AasCore.Aas3_0_RC02.EmbeddedDataSpecification(
                                     ExtendIDataSpecificationContent.GetReferencForIec61360(),
-                                    new DataSpecificationIec61360(
+                                    new AasCore.Aas3_0_RC02.DataSpecificationIec61360(
                                         preferredName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
                                         shortName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
                                         definition: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
-                                        dataType: DataTypeIec61360.StringTranslatable));
+                                        dataType: AasCore.Aas3_0_RC02.DataTypeIec61360.StringTranslatable));
 
-                                var cd = new ConceptDescription(
+                                var cd = new AasCore.Aas3_0_RC02.ConceptDescription(
                                     id: valuePairs[i].ValueId?.GetAsIdentifier(),
                                     idShort: "" + valuePairs[i].Value,
                                     displayName: ExtendLangStringSet.Create("EN?", "" + valuePairs[i].Value),
-                                    embeddedDataSpecifications: new List<EmbeddedDataSpecification> { eds }) ;
+                                    embeddedDataSpecifications: new List<AasCore.Aas3_0_RC02.EmbeddedDataSpecification> { eds }) ;
 
                                 env?.Add(cd);
                             }
@@ -1330,7 +1330,7 @@ namespace AasxPackageLogic
                                     action = true;
                                     break;
                                 case 1:
-                                    var resu = this.MoveElementInListUpwards<ValueReferencePair>(
+                                    var resu = this.MoveElementInListUpwards<AasCore.Aas3_0_RC02.ValueReferencePair>(
                                         valuePairs, valuePairs[storedI]);
                                     if (resu > -1)
                                     {
@@ -1338,7 +1338,7 @@ namespace AasxPackageLogic
                                     }
                                     break;
                                 case 2:
-                                    var resd = this.MoveElementInListDownwards<ValueReferencePair>(
+                                    var resd = this.MoveElementInListDownwards<AasCore.Aas3_0_RC02.ValueReferencePair>(
                                         valuePairs, valuePairs[storedI]);
                                     if (resd > -1)
                                     {
@@ -1349,7 +1349,7 @@ namespace AasxPackageLogic
                                     //var jsonStr = JsonConvert.SerializeObject(
                                     //    valuePairs[storedI], Formatting.Indented);
 
-                                    var jsonStr = Jsonization.Serialize.ToJsonObject(valuePairs[storedI])
+                                    var jsonStr = AasCore.Aas3_0_RC02.Jsonization.Serialize.ToJsonObject(valuePairs[storedI])
                                             .ToJsonString(new System.Text.Json.JsonSerializerOptions() { 
                                                 WriteIndented = true
                                             });
@@ -1396,14 +1396,14 @@ namespace AasxPackageLogic
                         substack, repo, vp.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            vp.ValueId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            vp.ValueId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     AddKeyReference(substack, "valueId", vp.ValueId, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
-                        addExistingEntities: Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription),
+                        addExistingEntities: AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription),
                         addFromKnown: true, showRefSemId: false,
                         relatedReferable: relatedReferable);
                 }

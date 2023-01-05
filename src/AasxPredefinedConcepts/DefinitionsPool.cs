@@ -58,7 +58,7 @@ namespace AasxPredefinedConcepts
         {
             get
             {
-                if (Ref is IIdentifiable id)
+                if (Ref is AasCore.Aas3_0_RC02.IIdentifiable id)
                     return "" + id.Id?.ToString();
                 return "";
             }

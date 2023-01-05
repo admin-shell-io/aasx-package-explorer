@@ -138,7 +138,7 @@ namespace AasxIntegrationBase.AasForms
                         if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                         {
                             dc.instance.Touch();
-                            dc.refElem.Value = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                            dc.refElem.Value = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, rsel.resultKeys);
                             this.theViewModel.StoredReference = dc.refElem.Value;
                         }
                     };

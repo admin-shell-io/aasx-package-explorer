@@ -44,7 +44,7 @@ namespace AasxPluginExportTable
             if (sme.Qualifiers != null)
             {
                 if (sm.Qualifiers == null)
-                    sm.Qualifiers = new List<Qualifier>();
+                    sm.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
                 sm.Qualifiers.AddRange(sme.Qualifiers.Copy());
             }
         }

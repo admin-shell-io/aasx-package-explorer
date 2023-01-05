@@ -391,7 +391,7 @@ namespace AasxBammRdfImExport
 
                     var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, semantic);
                     var mp = new AasCore.Aas3_0_RC02.Property(
-                        DataTypeDefXsd.String, idShort: property_Name, semanticId: msemanticID);
+                        AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: property_Name, semanticId: msemanticID);
                     mp.Value = property_ExampleValue;
                     sm.Add(mp);
                 }
@@ -462,7 +462,7 @@ namespace AasxBammRdfImExport
                     );
                     var msemanticID = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, semantic);
                     var mp =  new AasCore.Aas3_0_RC02.Property(
-                        DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
+                        AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: name, semanticId: msemanticID);
                     mp.Value = description;
                     et.Add(mp);
 

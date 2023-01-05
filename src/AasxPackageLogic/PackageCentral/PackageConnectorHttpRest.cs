@@ -166,7 +166,7 @@ namespace AasxPackageLogic.PackageCentral
         // Functions required by the connector
         //
 
-        public async Task<Tuple<AssetAdministrationShell, AssetInformation>> GetAasAssetCore(string index)
+        public async Task<Tuple<AasCore.Aas3_0_RC02.AssetAdministrationShell, AasCore.Aas3_0_RC02.AssetInformation>> GetAasAssetCore(string index)
         {
             // access
             if (!IsValid())
@@ -185,19 +185,19 @@ namespace AasxPackageLogic.PackageCentral
             var jsonNode = JsonNode.Parse(await response.Content.ReadAsStringAsync());
 
             // proudly to the parsing
-            AssetAdministrationShell aas = null;
-            AssetInformation asset = null;
+            AasCore.Aas3_0_RC02.AssetAdministrationShell aas = null;
+            AasCore.Aas3_0_RC02.AssetInformation asset = null;
 
             if (frame.ContainsKey("AAS"))
                 //TODO:jtikekar TEST
                 //aas = AdminShellSerializationHelper.DeserializeFromJSON<AssetAdministrationShell>(frame["AAS"]);
-                aas = Jsonization.Deserialize.AssetAdministrationShellFrom(jsonNode["AAS"]);
+                aas = AasCore.Aas3_0_RC02.Jsonization.Deserialize.AssetAdministrationShellFrom(jsonNode["AAS"]);
             if (frame.ContainsKey("AssetInformation"))
                 //asset = AdminShellSerializationHelper.DeserializeFromJSON<AssetInformation>(frame["AssetInformation"]);
-                asset = Jsonization.Deserialize.AssetInformationFrom(jsonNode["AssetInformation"]);
+                asset = AasCore.Aas3_0_RC02.Jsonization.Deserialize.AssetInformationFrom(jsonNode["AssetInformation"]);
 
             // result
-            return new Tuple<AssetAdministrationShell, AssetInformation>(aas, asset);
+            return new Tuple<AasCore.Aas3_0_RC02.AssetAdministrationShell, AssetInformation>(aas, asset);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <returns>True, if an event was emitted</returns>
         public async Task<bool> SimulateUpdateValuesEventByGetAsync(
-            Submodel rootSubmodel,
+            AasCore.Aas3_0_RC02.Submodel rootSubmodel,
             AasCore.Aas3_0_RC02.BasicEventElement sourceEvent,
             AasCore.Aas3_0_RC02.IReferable requestedElement,
             DateTime timestamp,
@@ -218,7 +218,7 @@ namespace AasxPackageLogic.PackageCentral
                     "connection not valid!");
 
             // first check (only allow two types of elements!)
-            var reqSm = requestedElement as Submodel;
+            var reqSm = requestedElement as AasCore.Aas3_0_RC02.Submodel;
             var reqSme = requestedElement as AasCore.Aas3_0_RC02.ISubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
                 || requestedElement == null || (reqSm == null && reqSme == null))
@@ -333,7 +333,7 @@ namespace AasxPackageLogic.PackageCentral
                             // goal (2)
                             if (wrappers != null)
                             {
-                                var x = wrappers.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, kl), keyIndex: 0);
+                                var x = wrappers.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, kl), keyIndex: 0);
                                 if (x is AasCore.Aas3_0_RC02.Property prop)
                                 {
                                     if (tuple.Value != null)
@@ -613,7 +613,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, targetKl));
             }
 
             // try evaluate parent of target?
@@ -623,7 +623,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
                 //parent = Env?.AasEnv?.FindReferableByReference(parentKl);
-                parent = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, parentKl));
+                parent = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, parentKl));
             }
 
             // create
@@ -659,7 +659,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 // need to care for parents inside
                 // TODO (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic
-                if (dataRef is Submodel drsm)
+                if (dataRef is AasCore.Aas3_0_RC02.Submodel drsm)
                     drsm.SetAllParents();
                 if (dataRef is AasCore.Aas3_0_RC02.ISubmodelElement drsme)
                     //Submodel.SetParentsForSME(parent, drsme);
@@ -677,13 +677,13 @@ namespace AasxPackageLogic.PackageCentral
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if ((parent is Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
+                if ((parent is AasCore.Aas3_0_RC02.Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
                     && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme
                     && change.CreateAtIndex < 0)
                 {
                     switch(parent)
                     {
-                        case Submodel submodel:
+                        case AasCore.Aas3_0_RC02.Submodel submodel:
                             {
                                 submodel.SubmodelElements ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 submodel.SubmodelElements.Add(sme);
@@ -733,8 +733,8 @@ namespace AasxPackageLogic.PackageCentral
                 }
                 else
                 // add to AAS
-                if (parent is AssetAdministrationShell parentAas
-                    && dataRef is Submodel sm
+                if (parent is AasCore.Aas3_0_RC02.AssetAdministrationShell parentAas
+                    && dataRef is AasCore.Aas3_0_RC02.Submodel sm
                     && Env?.AasEnv != null)
                 {
                     Env.AasEnv.Submodels.Add(sm);
@@ -779,7 +779,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if ((parent is Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
+                if ((parent is AasCore.Aas3_0_RC02.Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
                     && target is AasCore.Aas3_0_RC02.ISubmodelElement sme)
                 {
                     // Note: assumption is, that Remove() will not throw exception,
@@ -788,7 +788,7 @@ namespace AasxPackageLogic.PackageCentral
                     change.FoundReferable = target;
                     switch (parent)
                     {
-                        case Submodel submodel:
+                        case AasCore.Aas3_0_RC02.Submodel submodel:
                             {
                                 if (submodel.SubmodelElements != null)
                                 {
@@ -835,10 +835,10 @@ namespace AasxPackageLogic.PackageCentral
                 // Note: this implementation requires, that path consists of:
                 //       <AAS> , <SM>
                 // TODO (MIHO, 2021-05-21): make sure, this is required by the specification!
-                if (parent is AssetAdministrationShell parentAas
+                if (parent is AasCore.Aas3_0_RC02.AssetAdministrationShell parentAas
                     && parentAas.Submodels != null
                     && targetKl.Count >= 1
-                    && target is Submodel sm
+                    && target is AasCore.Aas3_0_RC02.Submodel sm
                     && Env?.AasEnv != null)
                 {
                     AasCore.Aas3_0_RC02.Reference smrefFound = null;
@@ -898,7 +898,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, targetKl));
             }
 
             // no target?
@@ -914,7 +914,7 @@ namespace AasxPackageLogic.PackageCentral
             value.FoundReferable = target;
 
             // try to update
-            if (target is AssetAdministrationShell)
+            if (target is AasCore.Aas3_0_RC02.AssetAdministrationShell)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
@@ -923,7 +923,7 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
-            if (target is Submodel)
+            if (target is AasCore.Aas3_0_RC02.Submodel)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +

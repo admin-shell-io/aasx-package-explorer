@@ -39,7 +39,7 @@ namespace AasxIntegrationBase
     /// <summary>
     /// This class holds annotation information for SubmodelElements, which is supposed
     /// to be rendered in various UI situations.
-    /// The arguments are supposed to be with a Qualifier "Annotation.Args"
+    /// The arguments are supposed to be with a AasCore.Aas3_0_RC02.Qualifier "Annotation.Args"
     /// </summary>
     public class AnnotatedElemArgs
     {
@@ -58,7 +58,7 @@ namespace AasxIntegrationBase
 
         /// <summary>
         /// If true, (multi-language) text shall be taken from the description of the SubmodelElement,
-        /// which features the Qualifier "Annotation.Args".
+        /// which features the AasCore.Aas3_0_RC02.Qualifier "Annotation.Args".
         /// </summary>
         public bool desc;
 
@@ -74,10 +74,10 @@ namespace AasxIntegrationBase
 
         /// <summary>
         /// Mirrored description from the SubmodelElement,
-        /// which features the Qualifier "Annotation.Args".
+        /// which features the AasCore.Aas3_0_RC02.Qualifier "Annotation.Args".
         /// </summary>
         [JsonIgnore]
-        public List<LangString> Description;
+        public List<AasCore.Aas3_0_RC02.LangString> Description;
 
         // ReSharper enable UnassignedField.Global
 

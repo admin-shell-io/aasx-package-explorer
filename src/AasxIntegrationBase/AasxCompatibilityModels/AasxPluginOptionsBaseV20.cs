@@ -37,7 +37,7 @@ namespace AasxCompatibilityModels.AasxIntegrationBase
     }
 
     //
-    // Extension: options (records) with lookup of semantic ids
+    // AasCore.Aas3_0_RC02.Extension: options (records) with lookup of semantic ids
     //
 
     /// <summary>

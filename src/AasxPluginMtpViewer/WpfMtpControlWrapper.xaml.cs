@@ -18,7 +18,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using AasxIntegrationBase;
 using AasxPredefinedConcepts;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -33,7 +33,7 @@ namespace AasxPluginMtpViewer
 
         private LogInstance theLog = null;
         private AdminShellPackageEnv thePackage = null;
-        private Submodel theSubmodel = null;
+        private AasCore.Aas3_0_RC02.Submodel theSubmodel = null;
         private AasxPluginMtpViewer.MtpViewerOptions theOptions = null;
         private PluginEventStack theEventStack = null;
 
@@ -46,7 +46,7 @@ namespace AasxPluginMtpViewer
         private WpfMtpControl.MtpVisualObjectLib activeVisualObjectLib = null;
         private WpfMtpControl.MtpData activeMtpData = null;
 
-        private File activeMtpFileElem = null;
+        private AasCore.Aas3_0_RC02.File activeMtpFileElem = null;
         private string activeMtpFileFn = null;
 
         public WpfMtpControl.MtpVisuOpcUaClient client = new WpfMtpControl.MtpVisuOpcUaClient();
@@ -68,7 +68,7 @@ namespace AasxPluginMtpViewer
 
         public void Start(
             AdminShellPackageEnv thePackage,
-            Submodel theSubmodel,
+            AasCore.Aas3_0_RC02.Submodel theSubmodel,
             AasxPluginMtpViewer.MtpViewerOptions theOptions,
             PluginEventStack eventStack,
             LogInstance log)
@@ -89,7 +89,7 @@ namespace AasxPluginMtpViewer
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as Submodel;
+            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
             var master = masterDockPanel as DockPanel;
             if (package == null || sm == null || master == null)
                 return null;
@@ -176,7 +176,7 @@ namespace AasxPluginMtpViewer
                 return false;
 
             // need to find the type Submodel
-            Submodel mtpTypeSm = null;
+            AasCore.Aas3_0_RC02.Submodel mtpTypeSm = null;
 
             // check, if the user pointed to the instance submodel
             if (this.theSubmodel.SemanticId.Matches(this.defsMtp.SEM_MtpInstanceSubmodel))
@@ -240,7 +240,7 @@ namespace AasxPluginMtpViewer
                 // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
                 // How to get from subModel to AAS?
                 var instanceAas = env.FindAasWithSubmodelId(this.theSubmodel.Id);
-                var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as AssetAdministrationShell;
+                var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as AasCore.Aas3_0_RC02.AssetAdministrationShell;
                 if (instanceAas?.DerivedFrom != null && typeAas != null)
                     foreach (var msm in env.FindAllSubmodelGroupedByAAS((aas, sm) =>
                     {
@@ -255,7 +255,7 @@ namespace AasxPluginMtpViewer
                 var dirLink = this.theSubmodel.SubmodelElements
                     .FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
                         this.defsMtp.CD_MtpTypeSubmodel?.GetReference(), MatchMode.Relaxed);
-                var dirLinkSm = env.FindReferableByReference(dirLink?.Value) as Submodel;
+                var dirLinkSm = env.FindReferableByReference(dirLink?.Value) as AasCore.Aas3_0_RC02.Submodel;
                 if (mtpTypeSm == null)
                     mtpTypeSm = dirLinkSm;
 
@@ -273,7 +273,7 @@ namespace AasxPluginMtpViewer
             // find file, remember Submodel element for it, find filename
             // (ConceptDescription)(no-local)[IRI]http://www.admin-shell.io/mtp/v1/MTPSUCLib/ModuleTypePackage
             this.activeMtpFileElem = mtpTypeSm.SubmodelElements?
-                .FindFirstSemanticIdAs<File>(this.defsMtp.CD_MtpFile.GetReference(),
+                .FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(this.defsMtp.CD_MtpFile.GetReference(),
                     MatchMode.Relaxed);
             var inputFn = this.activeMtpFileElem?.Value;
             if (inputFn == null)
@@ -371,7 +371,7 @@ namespace AasxPluginMtpViewer
                         // find AasCore.Aas3_0_RC02.Entity, check if self-contained
                         var foundRef = this.thePackage?.AasEnv?.FindReferableByReference(fileToEnt.Second);
                         if (foundRef is AasCore.Aas3_0_RC02.Entity foundEnt
-                            && foundEnt.EntityType == EntityType.SelfManagedEntity
+                            && foundEnt.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity
                             && foundEnt.GlobalAssetId != null)
                         {
                             // try activate

@@ -71,7 +71,7 @@ namespace AasxPredefinedConcepts.Convert
             // convert in place: detach old SMEs, change semanticId
             var smcOldHsu = sm.SubmodelElements;
             sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
-            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey() });
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -160,7 +160,7 @@ namespace AasxPredefinedConcepts.Convert
                     var property = smcDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsSg2.CD_VDI2770_DocumentClassId,
                             addSme: true);
                     property.Value = clid;
-                    property.ValueType = DataTypeDefXsd.String;
+                    property.ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
 
                     property = smcDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsSg2.CD_VDI2770_DocumentClassName,
                             addSme: true);
@@ -181,12 +181,12 @@ namespace AasxPredefinedConcepts.Convert
 
                     property = smcDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsSg2.CD_VDI2770_IsPrimaryDocumentId,
                             addSme: true);
-                    property.ValueType = DataTypeDefXsd.Boolean;
+                    property.ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.Boolean;
                     property.Value = idt.Equals("primary", StringComparison.OrdinalIgnoreCase) ? "True" : "False";
 
                     var referenceElement = smcDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.ReferenceElement>(defsSg2.CD_VDI2770_ReferencedObject,
                             addSme: true);
-                    referenceElement.Value = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
+                    referenceElement.Value = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
 
                     // DocumentVersion
 
@@ -230,7 +230,7 @@ namespace AasxPredefinedConcepts.Convert
                                 cdSrc[i].GetSingleKey());
                         if (asProp != null)
                         {
-                            target.Value = new List<LangString>() { new LangString("en?", "" + asProp.Value) };
+                            target.Value = new List<AasCore.Aas3_0_RC02.LangString>() { new AasCore.Aas3_0_RC02.LangString("en?", "" + asProp.Value) };
                         }
 
                         var asMLP = smcSource.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(

@@ -28,7 +28,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
@@ -112,7 +112,7 @@ namespace AasxPluginPlotting
 
         public static string EvalDisplayText(
                 string minmalText, AasCore.Aas3_0_RC02.ISubmodelElement sme,
-                ConceptDescription cd = null,
+                AasCore.Aas3_0_RC02.ConceptDescription cd = null,
                 bool addMinimalTxt = false,
                 string defaultLang = null,
                 bool useIdShort = true)

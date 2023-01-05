@@ -486,7 +486,7 @@ namespace AasxPackageLogic
                     foreach (XmlNode ni in nl)
                         if (ni.Attributes != null && ni.Attributes[langCodeAttrib] != null)
                         {
-                            var ls = new LangString(ni.Attributes["language_code"].InnerText, ni.InnerText);
+                            var ls = new AasCore.Aas3_0_RC02.LangString(ni.Attributes["language_code"].InnerText, ni.InnerText);
                             action(ls);
                         }
             }
@@ -504,9 +504,9 @@ namespace AasxPackageLogic
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
             var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
-            res.EmbeddedDataSpecifications = new List<EmbeddedDataSpecification>();
+            res.EmbeddedDataSpecifications = new List<AasCore.Aas3_0_RC02.EmbeddedDataSpecification>();
             res.EmbeddedDataSpecifications.Add(eds);
-            var ds = eds.DataSpecificationContent as DataSpecificationIec61360;
+            var ds = eds.DataSpecificationContent as AasCore.Aas3_0_RC02.DataSpecificationIec61360;
 
             // over all, first is significant
             for (int i = 0; i < input.Count; i++)
@@ -531,10 +531,10 @@ namespace AasxPackageLogic
                         res.IsCaseOf = new List<AasCore.Aas3_0_RC02.Reference>();
                     }
 
-                    res.IsCaseOf.Add(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, input[i].IRDI) }));
+                    res.IsCaseOf.Add(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, input[i].IRDI) }));
 
                     // administration
-                    res.Administration = new AdministrativeInformation();
+                    res.Administration = new AasCore.Aas3_0_RC02.AdministrativeInformation();
                     var n1 = node.SelectSingleNode("revision");
                     if (n1 != null)
                         res.Administration.Revision = "" + n1.InnerText;
@@ -542,9 +542,9 @@ namespace AasxPackageLogic
                     // short name -> TBD in future
                     FindChildLangStrings(node, "short_name", "label", "language_code", (ls) =>
                     {
-                        ds.ShortName = new List<LangString>
+                        ds.ShortName = new List<AasCore.Aas3_0_RC02.LangString>
                         {
-                            new LangString("EN?", ls.Text)
+                            new AasCore.Aas3_0_RC02.LangString("EN?", ls.Text)
                         };
                         res.IdShort = ls.Text;
                     });
@@ -557,7 +557,7 @@ namespace AasxPackageLogic
                         if (ndt != null)
                         {
                             // try find a match
-                            ds.DataType = Stringification.DataTypeIec61360FromString(ndt);
+                            ds.DataType = AasCore.Aas3_0_RC02.Stringification.DataTypeIec61360FromString(ndt);
                         }
                     }
 
@@ -574,7 +574,7 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.UnitId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.UnitId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, urefIrdi.Trim()) });
                                             ds.Unit = xiun.InnerText.Trim();
                                         }
                                 }
@@ -586,7 +586,7 @@ namespace AasxPackageLogic
                 FindChildLangStrings(node, "preferred_name", "label", "language_code", (ls) =>
                 {
                     if (ds.PreferredName == null)
-                        ds.PreferredName = new List<LangString>();
+                        ds.PreferredName = new List<AasCore.Aas3_0_RC02.LangString>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
                     ds.PreferredName.Add(ls);
@@ -595,7 +595,7 @@ namespace AasxPackageLogic
                 FindChildLangStrings(node, "definition", "text", "language_code", (ls) =>
                 {
                     if (ds.Definition == null)
-                        ds.PreferredName = new List<LangString>();
+                        ds.PreferredName = new List<AasCore.Aas3_0_RC02.LangString>();
 
                     // ReSharper disable PossibleNullReferenceException -- ignore a false positive
                     ds.Definition.Add(ls);
@@ -635,9 +635,9 @@ namespace AasxPackageLogic
                                 sn += part;
                             }
                             // set it
-                            ds.ShortName = new List<LangString>
+                            ds.ShortName = new List<AasCore.Aas3_0_RC02.LangString>
                             {
-                                new LangString("EN?", sn)
+                                new AasCore.Aas3_0_RC02.LangString("EN?", sn)
                             };
                         }
                     }

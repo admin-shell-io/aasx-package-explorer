@@ -21,7 +21,7 @@ using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -89,7 +89,7 @@ namespace AasxPluginExportTable.Uml
                 return "";
 
             if (sme is AasCore.Aas3_0_RC02.Property p)
-                return Stringification.ToString(p.ValueType);
+                return AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType);
 
             return sme.GetSelfDescription()?.AasElementName;
         }
@@ -171,7 +171,7 @@ namespace AasxPluginExportTable.Uml
                 ProcessEntity(rf, c);
         }
 
-        public void ProcessSubmodel(Submodel submodel)
+        public void ProcessSubmodel(AasCore.Aas3_0_RC02.Submodel submodel)
         {
             ProcessEntity(null, submodel);
         }

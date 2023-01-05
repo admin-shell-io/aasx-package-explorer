@@ -133,7 +133,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * first serializations converted
 * copy/paste via clipboard
 * rework of Qualifiers (References, ValueType, Kind, Value with multi-line)
-* rework of AssetInformation
+* rework of AasCore.Aas3_0_RC02.AssetInformation
 * remove Referable.Checksum
 * rework of AAS
 * check of Submodel

@@ -133,7 +133,7 @@ namespace AasxPackageExplorer
                 // check if a valuable item was selected
                 // new special case: "GlobalReference" allows to select all (2021-09-11)
                 var skip = DiaData.Filter != null &&
-                    DiaData.Filter.Trim().ToLower() == Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference).Trim().ToLower();
+                    DiaData.Filter.Trim().ToLower() == AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference).Trim().ToLower();
                 if (!skip)
                 {
                     var elemname = dataRef.GetSelfDescription().AasElementName;
@@ -210,7 +210,7 @@ namespace AasxPackageExplorer
                 return null;
             var res = filter;
             if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in Enum.GetNames(typeof(AasSubmodelElements)))
+                foreach (var s in Enum.GetNames(typeof(AasCore.Aas3_0_RC02.AasSubmodelElements)))
                     res += " " + s + " ";
             if (res.Trim().ToLower() == "all")
                 return null;

@@ -88,7 +88,7 @@ namespace AasxIntegrationBase.AasForms
         /// Preset for Referable.description
         /// </summary>
         [JsonProperty(Order = 7)]
-        public List<LangString> PresetDescription = null;
+        public List<AasCore.Aas3_0_RC02.LangString> PresetDescription = null;
 
         /// <summary>
         /// SemanticId of the SubmodelElement. Always required.
@@ -125,12 +125,12 @@ namespace AasxIntegrationBase.AasForms
 
 #if !DoNotUseAasxCompatibilityModels
 
-        public static List<LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
+        public static List<AasCore.Aas3_0_RC02.LangString> ConvertFromV20(AasxCompatibilityModels.AdminShellV20.Description desc)
         {
-            var res = new List<LangString>();
+            var res = new List<AasCore.Aas3_0_RC02.LangString>();
             if (desc?.langString != null)
                 foreach (var ls in desc.langString)
-                    res.Add(new LangString(ls?.lang, ls?.str));
+                    res.Add(new AasCore.Aas3_0_RC02.LangString(ls?.lang, ls?.str));
             return res;
         }
 
@@ -138,7 +138,7 @@ namespace AasxIntegrationBase.AasForms
         {
             if (key != null)
                 return new AasCore.Aas3_0_RC02.Key(
-                    Stringification.KeyTypesFromString(key.type) ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, key.value);
+                    AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(key.type) ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, key.value);
             return null;
         }
 
@@ -582,14 +582,14 @@ namespace AasxIntegrationBase.AasForms
 
         public AasCore.Aas3_0_RC02.Property GenerateDefault()
         {
-            var res = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
+            var res = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
             this.InitSme(res);
             if (this.presetValue != null)
                 res.Value = this.presetValue;
             if (this.allowedValueTypes.Length == 1)
             {
-                res.ValueType = Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
-                    ?? DataTypeDefXsd.String;
+                res.ValueType = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString(this.allowedValueTypes[0]) 
+                    ?? AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
             }
             return res;
         }

@@ -23,7 +23,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
 using ClosedXML.Excel;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -43,7 +43,7 @@ namespace AasxPluginExportTable.TimeSeries
 
         public static void ImportTimeSeriesFromFile(
             AasCore.Aas3_0_RC02.Environment env,
-            Submodel submodel,
+            AasCore.Aas3_0_RC02.Submodel submodel,
             ImportTimeSeriesRecord options,
             string fn, LogInstance log = null)
         {
@@ -247,7 +247,7 @@ namespace AasxPluginExportTable.TimeSeries
 
         protected bool WriteSeries(
             ImportTimeSeriesRecord options,
-            Submodel submodel)
+            AasCore.Aas3_0_RC02.Submodel submodel)
         {
             // access 
             if (options == null || submodel == null || _rows == null || _columnNames == null)
@@ -290,13 +290,13 @@ namespace AasxPluginExportTable.TimeSeries
                     .Set("en", "To be defined");
 
                 smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordCount, addSme: true)?
-                    .Set(DataTypeDefXsd.Integer, "" + chunk.Count);
+                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + chunk.Count);
 
                 smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_StartTime, addSme: true)?
-                    .Set(DataTypeDefXsd.DateTime, "");
+                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.DateTime, "");
 
                 smcSegment.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_EndTime, addSme: true)?
-                    .Set(DataTypeDefXsd.DateTime, "");
+                    .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.DateTime, "");
 
                 // Time Stamps? == TimeSeriesVariable
 
@@ -309,7 +309,7 @@ namespace AasxPluginExportTable.TimeSeries
                     // attributes for this
 
                     smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set(DataTypeDefXsd.Integer, "" + (0));
+                        .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + (0));
 
                     smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_UtcTime, addSme: true, isTemplate: true);
 
@@ -338,10 +338,10 @@ namespace AasxPluginExportTable.TimeSeries
                     // attributes for this
 
                     smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set(DataTypeDefXsd.Integer, "" + (1 + di));
+                        .Set(AasCore.Aas3_0_RC02.DataTypeDefXsd.Integer, "" + (1 + di));
 
-                    var dp = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.Double, idShort: "DataPoint");
-                    dp.Kind = ModelingKind.Template;
+                    var dp = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.Double, idShort: "DataPoint");
+                    dp.Kind = AasCore.Aas3_0_RC02.ModelingKind.Template;
                     smcVar.Value.Add(dp);
 
                     var va = smcVar.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Blob>(defs.CD_ValueArray, addSme: true);

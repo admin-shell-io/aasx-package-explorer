@@ -30,7 +30,7 @@ namespace AasxPackageExplorer
     public class QualifierPreset
     {
         public string name = "";
-        public Qualifier qualifier = new Qualifier("", DataTypeDefXsd.String);
+        public AasCore.Aas3_0_RC02.Qualifier qualifier = new AasCore.Aas3_0_RC02.Qualifier("", AasCore.Aas3_0_RC02.DataTypeDefXsd.String);
     }
 
     // ReSharper enable ClassNeverInstantiated.Global

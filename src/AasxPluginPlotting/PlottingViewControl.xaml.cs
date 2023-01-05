@@ -21,7 +21,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
@@ -40,7 +40,7 @@ namespace AasxPluginPlotting
         }
 
         private AdminShellPackageEnv _package = null;
-        private Submodel _submodel = null;
+        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
         private PlottingOptions _options = null;
         private PluginEventStack _pluginEvents = null;
         private AasEventMsgStack _eventStack = new AasEventMsgStack();
@@ -53,7 +53,7 @@ namespace AasxPluginPlotting
 
         public void Start(
             AdminShellPackageEnv package,
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             PlottingOptions options,
             PluginEventStack pluginEvents,
             LogInstance log)
@@ -552,7 +552,7 @@ namespace AasxPluginPlotting
             public string DataSetId = "";
             public TimeSeriesTimeAxis TimeAxis;
             public AasCore.Aas3_0_RC02.Property DataPoint;
-            public ConceptDescription DataPointCD;
+            public AasCore.Aas3_0_RC02.ConceptDescription DataPointCD;
 
             public PlotArguments Args = null;
 
@@ -1695,7 +1695,7 @@ namespace AasxPluginPlotting
             }
         }
 
-        protected void TimeSeriesStartFromSubmodel(Submodel sm)
+        protected void TimeSeriesStartFromSubmodel(AasCore.Aas3_0_RC02.Submodel sm)
         {
             // access
             if (sm?.SubmodelElements == null)

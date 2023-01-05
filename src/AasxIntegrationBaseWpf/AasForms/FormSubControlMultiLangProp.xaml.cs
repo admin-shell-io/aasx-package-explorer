@@ -195,10 +195,10 @@ namespace AasxIntegrationBase.AasForms
             {
                 // add
                 if (dc.prop.Value == null)
-                    dc.prop.Value = new List<LangString>();
+                    dc.prop.Value = new List<AasCore.Aas3_0_RC02.LangString>();
 
                 dc.instance.Touch();
-                dc.prop.Value.Add(new LangString("", ""));
+                dc.prop.Value.Add(new AasCore.Aas3_0_RC02.LangString("", ""));
 
                 // show
                 UpdateDisplay();

@@ -20,7 +20,7 @@ using AasxIntegrationBase.AasForms;
 using AasxIntegrationBaseGdi;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -38,7 +38,7 @@ namespace AasxPluginImageMap
 
         private LogInstance _log = new LogInstance();
         private AdminShellPackageEnv _package = null;
-        private Submodel _submodel = null;
+        private AasCore.Aas3_0_RC02.Submodel _submodel = null;
         private ImageMapOptions _options = null;
         private PluginEventStack _eventStack = null;
         private AnyUiStackPanel _panel = null;
@@ -79,7 +79,7 @@ namespace AasxPluginImageMap
         public void Start(
             LogInstance log,
             AdminShellPackageEnv thePackage,
-            Submodel theSubmodel,
+            AasCore.Aas3_0_RC02.Submodel theSubmodel,
             ImageMapOptions theOptions,
             PluginEventStack eventStack,
             AnyUiStackPanel panel,
@@ -107,7 +107,7 @@ namespace AasxPluginImageMap
         {
             // access
             var package = opackage as AdminShellPackageEnv;
-            var sm = osm as Submodel;
+            var sm = osm as AasCore.Aas3_0_RC02.Submodel;
             var panel = opanel as AnyUiStackPanel;
             if (package == null || sm == null || panel == null)
                 return null;
@@ -131,7 +131,7 @@ namespace AasxPluginImageMap
         private void RenderFullView(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             AdminShellPackageEnv package,
-            Submodel sm)
+            AasCore.Aas3_0_RC02.Submodel sm)
         {
             // test trivial access
             if (_options == null || _submodel?.SemanticId == null)
@@ -151,7 +151,7 @@ namespace AasxPluginImageMap
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk,
             IEnumerable<ImageMapOptionsOptionsRecord> foundRecs,
             AdminShellPackageEnv package,
-            Submodel sm)
+            AasCore.Aas3_0_RC02.Submodel sm)
         {
             // make an outer grid, very simple grid of two rows: header & body
             var outer = view.Add(uitk.AddSmallGrid(rows: 7, cols: 1, colWidths: new[] { "*" }));
@@ -266,7 +266,7 @@ namespace AasxPluginImageMap
 
                         // if not, have a look to the AasCore.Aas3_0_RC02.Entity itself
                         if ((targetRf == null || targetRf.Count() < 1)
-                            && ent.EntityType == EntityType.SelfManagedEntity
+                            && ent.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity
                             && ent.GlobalAssetId != null && ent.GlobalAssetId.Count() > 0)
                             targetRf = ent.GlobalAssetId;
 
@@ -361,7 +361,7 @@ namespace AasxPluginImageMap
 
             // image
             // file?
-            var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<File>(
+            var fe = _submodel.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
                 AasxPredefinedConcepts.ImageMap.Static.CD_ImageFile,
                 MatchMode.Relaxed);
             if (fe?.Value == null)
@@ -631,7 +631,7 @@ namespace AasxPluginImageMap
         protected class DataPointInfo
         {
             public string Value;
-            public DataTypeDefXsd ValueType;
+            public AasCore.Aas3_0_RC02.DataTypeDefXsd ValueType;
             public ImageMapArguments Args;
 
             public static DataPointInfo CreateFrom(AasCore.Aas3_0_RC02.ISubmodelElement sme)
@@ -647,7 +647,7 @@ namespace AasxPluginImageMap
                     return new DataPointInfo()
                     {
                         Value = mlp.Value?.GetDefaultString(),
-                        ValueType = DataTypeDefXsd.String
+                        ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.String
                     };
 
                 return null;
@@ -657,8 +657,8 @@ namespace AasxPluginImageMap
             {
                 // try to convert to double
                 if ((forceDouble 
-                    || ValueType == DataTypeDefXsd.Float 
-                    || ValueType == DataTypeDefXsd.Double))
+                    || ValueType == AasCore.Aas3_0_RC02.DataTypeDefXsd.Float 
+                    || ValueType == AasCore.Aas3_0_RC02.DataTypeDefXsd.Double))
                 {
                     if (double.TryParse("" + Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double dbl))
                     {

@@ -264,8 +264,8 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AasIds != null)
                     foreach (var id in fi.AasIds)
                     {
-                        var aas = new AssetAdministrationShell("", new AssetInformation(AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                        aas.Description = new List<LangString>() { new LangString("en?", "" + fi.Description) };
+                        var aas = new AasCore.Aas3_0_RC02.AssetAdministrationShell("", new AssetInformation(AasCore.Aas3_0_RC02.AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
+                        aas.Description = new List<AasCore.Aas3_0_RC02.LangString>() { new AasCore.Aas3_0_RC02.LangString("en?", "" + fi.Description) };
                         aas.Id = id;
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
                     }
@@ -274,9 +274,9 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AssetIds != null)
                     foreach (var id in fi.AssetIds)
                     {
-                        var asset = new AssetInformation(AssetKind.Instance);
+                        var asset = new AasCore.Aas3_0_RC02.AssetInformation(AasCore.Aas3_0_RC02.AssetKind.Instance);
                         //TODO:jtikekar globalAssetId or SpecficAssetId??
-                        asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id) });
+                        asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id) });
                         //asset.identification = new Identification(
                         //    Identification.IRI, "" + id);
                     }

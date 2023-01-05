@@ -17,7 +17,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
@@ -335,7 +335,7 @@ namespace AasxPackageExplorer
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
                     // data
-                    AssetAdministrationShell aas = null;
+                    AasCore.Aas3_0_RC02.AssetAdministrationShell aas = null;
                     if (vesmref.Parent is VisualElementAdminShell xpaas)
                         aas = xpaas.theAas;
 

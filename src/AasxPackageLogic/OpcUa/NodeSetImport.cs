@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -62,7 +62,7 @@ namespace AasxPackageLogic
         static Dictionary<string, Int16> semanticIDPool;
 
         public static void ImportNodeSetToSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
+            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
             AasCore.Aas3_0_RC02.Reference smref)
         {
 #if OLD_V20_CODE
@@ -282,7 +282,7 @@ namespace AasxPackageLogic
 
             // modeluri
             msemanticID = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, ModelUri + "models/modeluri"));
-            var mp = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "ModelUri", semanticId: msemanticID);
+            var mp = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "ModelUri", semanticId: msemanticID);
             mp.Value = ModelUri;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
