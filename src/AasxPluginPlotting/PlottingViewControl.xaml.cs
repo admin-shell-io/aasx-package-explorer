@@ -25,7 +25,6 @@ using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using ScottPlot;
-using AdminShellNS.Extenstions;
 
 // ReSharper disable CompareOfFloatsByEqualityOperator
 

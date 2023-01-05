@@ -18,7 +18,6 @@ using System.Windows;
 using System.Xml;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
-using AdminShellNS.Extenstions;
 using Extensions;
 using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;

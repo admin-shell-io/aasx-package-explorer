@@ -21,8 +21,10 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -35,9 +37,9 @@ namespace AasxPluginExportTable.Uml
     public static class ExportUml
     {
         public static void ExportUmlToFile(
-            AdminShell.AdministrationShellEnv env,
-            AdminShell.Submodel submodel,
-            ExportUmlOptions options,
+            AasCore.Aas3_0_RC02.Environment env,
+            Submodel submodel,
+            ExportUmlRecord options,
             string fn)
         {
             // access
@@ -46,11 +48,11 @@ namespace AasxPluginExportTable.Uml
 
             // which writer?
             IBaseWriter writer = null;
-            if (options.Format == ExportUmlOptions.ExportFormat.Xmi11)
+            if (options.Format == ExportUmlRecord.ExportFormat.Xmi11)
                 writer = new Xmi11Writer();
-            if (options.Format == ExportUmlOptions.ExportFormat.Xmi21)
+            if (options.Format == ExportUmlRecord.ExportFormat.Xmi21)
                 writer = new Xmi21Writer();
-            if (options.Format == ExportUmlOptions.ExportFormat.PlantUml)
+            if (options.Format == ExportUmlRecord.ExportFormat.PlantUml)
                 writer = new PlantUmlWriter();
 
             if (writer != null)

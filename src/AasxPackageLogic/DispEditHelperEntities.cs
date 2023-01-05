@@ -22,7 +22,6 @@ using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AdminShellNS.Display;
-using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 

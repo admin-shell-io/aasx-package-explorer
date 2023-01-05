@@ -8,7 +8,6 @@ This source code may use other Open Source software components (see LICENSE.txt)
 */
 
 using AasCore.Aas3_0_RC02;
-using AdminShellNS.Extenstions;
 using Extensions;
 using System;
 using System.Collections;

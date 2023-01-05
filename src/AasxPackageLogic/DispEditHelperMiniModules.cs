@@ -20,7 +20,6 @@ using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
-using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;

@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AdminShellNS;
 
-namespace AdminShellNS.Extenstions
+namespace Extensions
 {
     public static class ExtendModelKind
     {

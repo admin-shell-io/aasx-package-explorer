@@ -1,12 +1,12 @@
-﻿using AdminShellNS.Extenstions.ArrayExtensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Extensions.ArrayExtensions;
 
-namespace AdminShellNS.Extenstions
+namespace Extensions
 {
     public static class ExtendObject
     {
@@ -22,6 +22,7 @@ namespace AdminShellNS.Extenstions
         {
             return InternalCopy(originalObject, new Dictionary<Object, Object>(new ReferenceEqualityComparer()));
         }
+
         private static Object InternalCopy(Object originalObject, IDictionary<Object, Object> visited)
         {
             if (originalObject == null) return null;

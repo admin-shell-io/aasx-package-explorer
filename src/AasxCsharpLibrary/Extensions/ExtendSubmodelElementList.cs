@@ -1,6 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Display;
-using AdminShellNS.Extenstions;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

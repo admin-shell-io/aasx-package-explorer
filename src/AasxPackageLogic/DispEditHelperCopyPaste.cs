@@ -15,7 +15,6 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
 using AdminShellNS.Display;
-using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;

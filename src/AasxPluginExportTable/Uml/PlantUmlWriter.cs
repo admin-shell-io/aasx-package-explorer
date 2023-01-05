@@ -20,8 +20,10 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.Uml
 {
@@ -39,7 +41,7 @@ namespace AasxPluginExportTable.Uml
             public bool Valid => Id.HasContent();
         }
 
-        public void StartDoc(ExportUmlOptions options)
+        public void StartDoc(ExportUmlRecord options)
         {
             if (options != null)
                 _options = options;
@@ -82,36 +84,33 @@ namespace AasxPluginExportTable.Uml
                 _builder.AppendLine(line);
         }
 
-        public UmlHandle AddClass(AdminShell.Referable rf)
+        public UmlHandle AddClass(IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
-            if (!(rf is AdminShell.IEnumerateChildren rfec))
-                return null;
-            var features = rfec.EnumerateChildren().ToList();
+            var features = rf.EnumerateChildren().ToList();
 
             // add
             var classId = RegisterObject(rf);
             var stereotype = EvalFeatureType(rf);
             if (stereotype.HasContent())
                 stereotype = "<<" + stereotype + ">>";
-            Writeln($"class {FormatAs(rf.idShort, classId)} {stereotype} {{");
+            Writeln($"class {FormatAs(rf.IdShort, classId)} {stereotype} {{");
 
-            foreach (var smw in features)
-                if (smw?.submodelElement is AdminShell.SubmodelElement sme)
-                {
-                    var type = EvalFeatureType(sme);
-                    var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
-                    var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
+            foreach (var sme in features)
+            {
+                var type = EvalFeatureType(sme);
+                var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
+                var initialValue = EvalInitialValue(sme, _options.LimitInitialValue);
 
-                    var ln = $"  +{sme.idShort}";
-                    if (type.HasContent())
-                        ln += $" : {type}";
-                    if (multiplicity.HasContent())
-                        ln += $" [{multiplicity}]";
-                    if (initialValue.HasContent())
-                        ln += $" = \"{initialValue}\"";
-                    Writeln(ln);
-                }
+                var ln = $"  +{sme.IdShort}";
+                if (type.HasContent())
+                    ln += $" : {type}";
+                if (multiplicity.HasContent())
+                    ln += $" [{multiplicity}]";
+                if (initialValue.HasContent())
+                    ln += $" = \"{initialValue}\"";
+                Writeln(ln);
+            }
 
             Writeln($"}}");
             Writeln("");
@@ -120,7 +119,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public UmlHandle ProcessEntity(
-            AdminShell.Referable parent, AdminShell.Referable rf)
+            IReferable parent, IReferable rf)
         {
             // access
             if (rf == null)
@@ -130,35 +129,31 @@ namespace AasxPluginExportTable.Uml
             var dstTuple = AddClass(rf);
 
             // recurse
-            if (rf is AdminShell.IEnumerateChildren rfec)
-            {
-                var childs = rfec.EnumerateChildren();
-                if (childs != null)
-                    foreach (var c in childs)
-                        if (c?.submodelElement is AdminShell.SubmodelElement sme)
-                        {
-                            // create further entities
-                            var srcTuple = ProcessEntity(rf, sme);
+            var childs = rf.EnumerateChildren();
+            if (childs != null)
+                foreach (var sme in childs)
+                {
+                    // create further entities
+                    var srcTuple = ProcessEntity(rf, sme);
 
-                            // make associations (often, srcTuple will be null, because not a class!)
-                            if (srcTuple?.Valid == true && dstTuple?.Valid == true)
-                            {
-                                var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
-                                if (multiplicity.HasContent())
-                                    multiplicity = "\"" + multiplicity + "\"";
-                                Writeln(post: true,
-                                    line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
-                                          $": \"{ClearName(sme.idShort)}\"");
-                            }
-                        }
-            }
+                    // make associations (often, srcTuple will be null, because not a class!)
+                    if (srcTuple?.Valid == true && dstTuple?.Valid == true)
+                    {
+                        var multiplicity = EvalUmlMultiplicity(sme, noOne: true);
+                        if (multiplicity.HasContent())
+                            multiplicity = "\"" + multiplicity + "\"";
+                        Writeln(post: true,
+                            line: $"{dstTuple.Id} *-- {multiplicity} {srcTuple.Id} " +
+                                    $": \"{ClearName(sme.IdShort)}\"");
+                    }
+                }
 
             return dstTuple;
         }
 
-        public void ProcessSubmodel(AdminShell.Submodel submodel)
+        public void ProcessSubmodel(Submodel submodel)
         {
-            Writeln("mainframe SMT " + submodel.idShort);
+            Writeln("mainframe SMT " + submodel.IdShort);
             Writeln("");
 
             ProcessEntity(null, submodel);
@@ -173,7 +168,7 @@ namespace AasxPluginExportTable.Uml
         {
             _builder.AppendLine("@enduml");
             var text = _builder.ToString();
-            File.WriteAllText(fn, text);
+            System.IO.File.WriteAllText(fn, text);
         }
     }
 }

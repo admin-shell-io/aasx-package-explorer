@@ -24,7 +24,6 @@ using Extensions;
 using Newtonsoft.Json;
 using WpfMtpControl;
 using WpfMtpControl.DataSources;
-using AdminShellNS.Extenstions;
 
 namespace AasxPluginMtpViewer
 {

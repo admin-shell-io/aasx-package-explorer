@@ -14,7 +14,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable
 {
@@ -29,9 +31,9 @@ namespace AasxPluginExportTable
         //
 
         protected LogInstance _log;
-        protected ExportTableRecord _job;
-        protected AdminShell.Submodel _sm;
-        protected AdminShell.AdministrationShellEnv _env;
+        protected ImportExportTableRecord _job;
+        protected Submodel _sm;
+        protected AasCore.Aas3_0_RC02.Environment _env;
         protected ExportTableOptions _options;
 
         protected List<ImportCellMatcherBase> _matcherTop;
@@ -39,9 +41,9 @@ namespace AasxPluginExportTable
 
         public ImportPopulateByTable(
             LogInstance log,
-            ExportTableRecord job,
-            AdminShell.Submodel sm,
-            AdminShell.AdministrationShellEnv env,
+            ImportExportTableRecord job,
+            Submodel sm,
+            AasCore.Aas3_0_RC02.Environment env,
             ExportTableOptions options)
         {
             // context
@@ -54,8 +56,8 @@ namespace AasxPluginExportTable
             // prepare Submodel
             if (sm == null || _job.Top == null || _job.Body == null)
                 return;
-            if (sm.submodelElements == null)
-                sm.submodelElements = new AdminShell.SubmodelElementWrapperCollection();
+            if (sm.SubmodelElements == null)
+                sm.SubmodelElements = new List<ISubmodelElement>();
 
             // prepare matchers
             _matcherTop = _job.Top.Select((s) => ImportCellMatcherBase.Create(s)).ToList();
@@ -67,7 +69,7 @@ namespace AasxPluginExportTable
             get
             {
                 return true == _job?.IsValid()
-                    && _sm?.submodelElements != null
+                    && _sm?.SubmodelElements != null
                     && _env != null;
             }
         }
@@ -119,8 +121,8 @@ namespace AasxPluginExportTable
 
         protected class ContextResult
         {
-            public AdminShell.Referable Elem;
-            public AdminShell.SubmodelElementWrapperCollection Wrappers;
+            public IReferable Elem;
+            public List<ISubmodelElement> Childs;
         }
 
         protected class FilteredElementName
@@ -128,7 +130,8 @@ namespace AasxPluginExportTable
             public string Name = "";
             public string ValueType = "";
 
-            public AdminShell.SubmodelElementWrapper.AdequateElementEnum NameEnum;
+            public bool IsSubmodel;
+            public AasSubmodelElements? SmeEnum;
 
             public static FilteredElementName Parse(string str)
             {
@@ -174,21 +177,22 @@ namespace AasxPluginExportTable
                     };
 
                 // now check, if something meaningful was found
-                if (res.Name.Trim().ToLower() == AdminShell.Key.Submodel.ToLower())
+                if (res.Name.Trim().ToLower() == "submodel")
                 {
                     // successful special case
-                    res.Name = AdminShell.Key.Submodel;
+                    res.Name = "Submodel";
+                    res.IsSubmodel = true;
                     return res;
                 }
 
                 // has to be a SME type
-                var ae = AdminShell.SubmodelElementWrapper.GetAdequateEnum2(res.Name, useShortName: true);
-                if (ae == AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+                var ae = ExtendISubmodelElement.AasSubmodelElementsFromStringOrAbbrev(res.Name);
+                if (ae.HasValue)
                     return null;
 
                 // ok, nice
-                res.Name = AdminShell.SubmodelElementWrapper.GetAdequateName(ae);
-                res.NameEnum = ae;
+                res.Name = Stringification.ToString(ae);
+                res.SmeEnum = ae.Value;
                 return res;
             }
         }
@@ -208,20 +212,21 @@ namespace AasxPluginExportTable
             var fen = FilteredElementName.Parse(context.ParentElemName);
             if (fen == null)
                 return null;
-            if (fen.Name != AdminShell.Key.Submodel
-                && fen.NameEnum != AdminShell.SubmodelElementWrapper.AdequateElementEnum.Unknown
-                && fen.NameEnum != AdminShell.SubmodelElementWrapper.AdequateElementEnum.SubmodelElementCollection)
+            if (!fen.IsSubmodel
+                && !fen.SmeEnum.HasValue
+                && fen.SmeEnum != AasSubmodelElements.SubmodelElement
+                && fen.SmeEnum != AasSubmodelElements.SubmodelElementCollection)
                 return null;
 
             // special case: directly into the (existing) Submodel
             ContextResult res = null;
-            if (fen.Name == AdminShell.Key.Submodel)
+            if (fen.IsSubmodel)
             {
                 // prepare the result (already)
                 res = new ContextResult()
                 {
                     Elem = _sm,
-                    Wrappers = _sm.submodelElements
+                    Childs = _sm.SubmodelElements
                 };
 
                 // kind of manually take over data
@@ -235,35 +240,36 @@ namespace AasxPluginExportTable
             // ok, if not, then ordinary case: create a SME and add it (somewhere) to the SM
             // this ALREADY should take over the most of the data
             // Note: value data is not required, as fixed to SMC!
-            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(fen.NameEnum, context.Parent);
-            if (!(sme is AdminShell.SubmodelElementCollection smesmc))
+
+            var sme = AdminShellUtil.CreateSubmodelElementFromEnum(fen.SmeEnum.Value, context.Parent);
+            if (!(sme is SubmodelElementCollection smesmc))
                 return null;
 
-            smesmc.value = new AdminShell.SubmodelElementWrapperCollection();
+            smesmc.Value = new List<ISubmodelElement>();
 
             res = new ContextResult()
             {
                 Elem = sme,
-                Wrappers = smesmc.value
+                Childs = smesmc.Value
             };
 
             // try to act within the hierarchy
             // does only search SME but no SM, however, this is not a flaw, as adding to SM is the default
-            if (actInHierarchy && context.ParentParentName.HasContent() && context.Parent.idShort.HasContent())
+            if (actInHierarchy && context.ParentParentName.HasContent() && context.Parent.IdShort.HasContent())
             {
-                foreach (var rootsmc in _sm.submodelElements.FindDeep<AdminShell.SubmodelElementCollection>((testsmc) =>
+                foreach (var rootsmc in _sm.SubmodelElements.FindDeep<SubmodelElementCollection>((testsmc) =>
                 {
                     // first condition is, that the parents match!
-                    if (!testsmc.idShort.HasContent() || testsmc.parent == null)
+                    if (!testsmc.IdShort.HasContent() || testsmc.Parent == null)
                         return false;
 
                     // try testing of allowed parent names
-                    if (!(testsmc.parent is AdminShell.Referable testsmcpar))
+                    if (!(testsmc.Parent is IReferable testsmcpar))
                         return false;
-                    var test1 = context.ParentParentName.ToLower().Contains(testsmcpar.idShort.ToLower().Trim());
+                    var test1 = context.ParentParentName.ToLower().Contains(testsmcpar.IdShort.ToLower().Trim());
                     var test2 = false;
-                    if (_idShortToParentName.ContainsKey(testsmcpar.idShort))
-                        foreach (var pn in _idShortToParentName[testsmcpar.idShort])
+                    if (_idShortToParentName.ContainsKey(testsmcpar.IdShort))
+                        foreach (var pn in _idShortToParentName[testsmcpar.IdShort])
                             test2 = test2 || context.ParentParentName.ToLower().Contains(pn.ToLower().Trim());
 
                     if (!(test1 || test2))
@@ -271,16 +277,16 @@ namespace AasxPluginExportTable
 
                     // next is, that some part of of given idShort match the idShort of children
                     // of investigated SMC
-                    var parts = context.Parent.idShort.Split(new[] { ',', ';', '|' },
+                    var parts = context.Parent.IdShort.Split(new[] { ',', ';', '|' },
                                     StringSplitOptions.RemoveEmptyEntries);
                     foreach (var part in parts)
-                        if (part?.Trim().ToLower() == testsmc.idShort.Trim().ToLower())
+                        if (part?.Trim().ToLower() == testsmc.IdShort.Trim().ToLower())
                             return true;
 
                     // or, maybe more meaningful, if the semantic ids are the same?
-                    if (context.Parent.semanticId?.IsEmpty == false
-                        && testsmc.semanticId?.IsEmpty == false
-                        && testsmc.semanticId.Matches(context.Parent.semanticId, AdminShell.Key.MatchMode.Relaxed))
+                    if (context.Parent.SemanticId?.IsEmpty() == false
+                        && testsmc.SemanticId?.IsEmpty() == false
+                        && testsmc.SemanticId.Matches(context.Parent.SemanticId, MatchMode.Relaxed))
                         return true;
 
                     // not found
@@ -290,11 +296,11 @@ namespace AasxPluginExportTable
                     // rootsmc contains a valid SMC to the above criteria
                     // NOTHING needs to be added; found SMC needs to be given back
                     res.Elem = rootsmc;
-                    res.Wrappers = rootsmc.value;
+                    res.Childs = rootsmc.Value;
 
                     // this seems to be a valid ParentName, which is now "renamed" by the idShort
                     // of the SMC
-                    _idShortToParentName.Add(rootsmc.idShort, context.Parent.idShort);
+                    _idShortToParentName.Add(rootsmc.IdShort, context.Parent.IdShort);
 
                     // need to adopt the rootsmc further by parent information??
                     ;
@@ -314,47 +320,45 @@ namespace AasxPluginExportTable
             ContextResult refTop)
         {
             // access
-            if (context?.Sme == null || refTop?.Wrappers == null)
+            if (context?.Sme == null || refTop?.Childs == null)
                 return null;
 
             // make sure, there is an 'ordniary' SME to create
             var fen = FilteredElementName.Parse(context.SmeElemName);
             if (fen == null)
                 return null;
-            if (fen.NameEnum == AdminShellV20.SubmodelElementWrapper.AdequateElementEnum.Unknown)
+            if (!fen.SmeEnum.HasValue)
                 return null;
 
             // create, add
-            var sme = AdminShell.SubmodelElementWrapper.CreateAdequateType(fen.NameEnum, context.Sme);
-            refTop.Wrappers.Add(sme);
-            sme.parent = refTop.Elem; // unfortunately required, ass Wrapper.Add() cannot set parent
+            var sme = AdminShellUtil.CreateSubmodelElementFromEnum(fen.SmeEnum.Value, context.Sme);
+            refTop.Childs.Add(sme);
+            sme.Parent = refTop.Elem; // unfortunately required, as Wrapper.Add() cannot set parent
             var res = new ContextResult() { Elem = sme };
 
             // allow a selection a values
-            if (sme is AdminShell.Property prop)
+            if (sme is Property prop)
             {
-                prop.value = context.SmeValue;
+                prop.Value = context.SmeValue;
 
                 // demux
-                prop.valueType = fen.ValueType;
-                if (!fen.ValueType.HasContent() && context.SmeValueType.HasContent())
-                    prop.valueType = context.SmeValueType;
+                prop.ValueType = Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? DataTypeDefXsd.String;
             }
 
-            if (sme is AdminShell.MultiLanguageProperty mlp)
+            if (sme is MultiLanguageProperty mlp)
             {
-                mlp.value = new AdminShell.LangStringSet(AdminShell.LangStr.LANG_DEFAULT, context.SmeValue);
+                mlp.Value = ExtendLangStringSet.Create(ExtendLangString.LANG_DEFAULT, context.SmeValue);
             }
 
-            if (sme is AdminShell.File file)
+            if (sme is File file)
             {
-                file.value = context.SmeValue;
+                file.Value = context.SmeValue;
             }
 
-            if (sme is AdminShell.SubmodelElementCollection smc)
+            if (sme is SubmodelElementCollection smc)
             {
-                smc.value = new AdminShell.SubmodelElementWrapperCollection();
-                res.Wrappers = smc.value;
+                smc.Value = new List<ISubmodelElement>();
+                res.Childs = smc.Value;
             }
 
             // ok
@@ -363,45 +367,41 @@ namespace AasxPluginExportTable
 
         protected ContextResult CreateBodyCD(
             ImportCellMatchContextBase context,
-            AdminShell.AdministrationShellEnv env)
+            AasCore.Aas3_0_RC02.Environment env)
         {
             // access
             if (context?.Sme == null || context?.CD == null || env == null || _options == null)
                 return null;
 
             // first test, if the CD already exists
-            var test = env.FindConceptDescription(context.Sme.semanticId);
+            var test = env.FindConceptDescriptionByReference(context.Sme.SemanticId);
             if (test != null)
                 return new ContextResult() { Elem = test };
 
             // a semanticId is required to link the Sme and the CD together
-            if (context.Sme.semanticId == null || context.Sme.semanticId.Count < 1)
+            if (context.Sme.SemanticId == null || context.Sme.SemanticId.Count() < 1)
             {
                 // generate a new one for SME + CD
                 // this modifies the SME!
-                var id = new AdminShell.Identification(
-                    AdminShell.Identification.IRI,
-                    AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription));
-
-                context.Sme.semanticId = new AdminShell.SemanticId(
-                    new AdminShell.Key(AdminShell.Key.ConceptDescription, true, id.idType, id.id));
+                var id = AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription);
+                context.Sme.SemanticId = ExtendReference.CreateFromKey(KeyTypes.GlobalReference, id);
             }
 
             // create, add
-            var cd = new AdminShell.ConceptDescription(context?.CD);
+            var cd = context?.CD?.Copy();
             env.ConceptDescriptions.Add(cd);
             var res = new ContextResult() { Elem = cd };
 
             // link CD to SME
-            var sid = context.Sme.semanticId.GetAsExactlyOneKey();
+            var sid = context.Sme.SemanticId.GetAsExactlyOneKey();
             if (sid == null)
                 // should not happen, see above
                 return null;
-            cd.identification = new AdminShell.Identification(sid.idType, sid.value);
+            cd.Id = sid.Value;
 
             // some further attributes
-            if (!cd.idShort.HasContent())
-                cd.idShort = context.Sme.idShort;
+            if (!cd.IdShort.HasContent())
+                cd.IdShort = context.Sme.IdShort;
 
             // ok
             return res;

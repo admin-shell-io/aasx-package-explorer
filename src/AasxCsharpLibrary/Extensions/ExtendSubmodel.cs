@@ -1,7 +1,6 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using AdminShellNS.Display;
-using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

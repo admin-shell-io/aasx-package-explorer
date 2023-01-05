@@ -1,6 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
 using AdminShellNS.Exceptions;
-using AdminShellNS.Extenstions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,10 +47,7 @@ namespace Extensions
                         new List<Key> { new Key(type, value) });
             res.Type = res.GuessType();
             return res;
-        }
-
-
-        
+        }        
 
         /// <summary>
         /// Formaly a static constructor.
@@ -69,6 +65,27 @@ namespace Extensions
             return res;
         }
 
+        // TODO (Jui, 2023-01-05): Check why the generic Copy<T> does not apply here?!
+        public static Reference Copy(this Reference original)
+        {
+            var res = new Reference(original.Type, new List<Key>());
+            if (original != null)
+                foreach (var o in original.Keys)
+                    res.Add(o.Copy());
+            return res;
+        }
+
+
+        public static Reference Parse(string input)
+        {
+            var res = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+            if (input == null)
+                return res;
+
+            res.Keys = ExtendKeyList.Parse(input);
+            res.Type = res.GuessType();
+            return res;
+        }
 
         //This is alternative for operator overloding method +, as operator overloading cannot be done in extension classes
         public static Reference Add(this Reference a, Reference b)

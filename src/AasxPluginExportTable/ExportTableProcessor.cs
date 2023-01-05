@@ -18,12 +18,14 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 
 // ReSharper disable PossiblyMistakenUseOfParamsMethod .. issue, even if according to samples of Word API
 
@@ -39,16 +41,16 @@ namespace AasxPluginExportTable
         /// <summary>
         /// This element carries data from either SM or SME.
         /// </summary>
-        public AdminShell.Referable Parent;
+        public IReferable Parent;
 
-        public AdminShell.Submodel sm;
-        public AdminShell.SubmodelElement sme;
-        public AdminShell.ConceptDescription cd;
+        public Submodel sm;
+        public ISubmodelElement sme;
+        public ConceptDescription cd;
 
         public ExportTableAasEntitiesItem(
-            int depth, AdminShell.Submodel sm = null, AdminShell.SubmodelElement sme = null,
-            AdminShell.ConceptDescription cd = null,
-            AdminShell.Referable parent = null)
+            int depth, Submodel sm = null, ISubmodelElement sme = null,
+            ConceptDescription cd = null,
+            IReferable parent = null)
         {
             this.depth = depth;
             this.sm = sm;
@@ -63,91 +65,17 @@ namespace AasxPluginExportTable
 
     }
 
-    public class ExportTableRecord
+    public class ExportTableProcessor
     {
-        //
-        // Types
-        //
-
-        public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
-        public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
-
-        //
-        // Members
-        //
-
-        public string Name = "";
-
-        public int Format = 0;
-
-        public int RowsTop = 1, RowsBody = 1, RowsGap = 2, Cols = 1;
-
-        [JsonIgnore]
-        public int RealRowsTop { get { return 1 + RowsTop; } }
-
-        [JsonIgnore]
-        public int RealRowsBody { get { return 1 + RowsBody; } }
-
-        [JsonIgnore]
-        public int RealCols { get { return 1 + Cols; } }
-
-        public bool ReplaceFailedMatches = false;
-        public string FailText = "";
-
-        public bool ActInHierarchy = false;
-
-        // Note: the records contains elements for 1 + Rows, 1 + Columns fields
-        public List<string> Top = new List<string>();
-        public List<string> Body = new List<string>();
-
-        public bool IsValid()
-        {
-            return RowsTop >= 1 && RowsBody >= 1 && Cols >= 1
-                && Top != null && Top.Count >= RealRowsTop * RealCols
-                && Body != null && Body.Count >= RealRowsBody * RealCols;
-        }
+        protected ImportExportTableRecord Record = null;
 
         //
         // Constructurs
         //
 
-        public ExportTableRecord() { }
-
-        public ExportTableRecord(
-            int rowsTop, int rowsBody, int cols, string name = "", IEnumerable<string> header = null,
-            IEnumerable<string> elements = null)
+        public ExportTableProcessor(ImportExportTableRecord record)
         {
-            this.RowsTop = rowsTop;
-            this.RowsBody = rowsBody;
-            this.Cols = cols;
-            if (name != null)
-                this.Name = name;
-            if (header != null)
-                foreach (var h in header)
-                    this.Top.Add(h);
-            if (elements != null)
-                foreach (var e in elements)
-                    this.Body.Add(e);
-        }
-
-        public void SaveToFile(string fn)
-        {
-            using (StreamWriter file = File.CreateText(fn))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, this);
-            }
-        }
-
-        public static ExportTableRecord LoadFromFile(string fn)
-        {
-            using (StreamReader file = File.OpenText(fn))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                var res = (ExportTableRecord)serializer.Deserialize(file, typeof(ExportTableRecord));
-                return res;
-            }
+            Record = record;
         }
 
         //
@@ -169,25 +97,29 @@ namespace AasxPluginExportTable
 
         public CellRecord GetTopCell(int row, int col)
         {
-            var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Top == null || i >= this.Top.Count)
+            if (Record == null)
                 return null;
-            var cr = new CellRecord(this.Top[i]);
+            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            if (row < 0 || col < 0 || Record.Top == null || i >= Record.Top.Count)
+                return null;
+            var cr = new CellRecord(Record.Top[i]);
             cr.TextWithHeaders =
-                this.Top[0] + " " + this.Top[(1 + row) * (1 + this.Cols)] + " " +
-                this.Top[1 + col] + " " + cr.Text;
+                Record.Top[0] + " " + Record.Top[(1 + row) * (1 + Record.Cols)] + " " +
+                Record.Top[1 + col] + " " + cr.Text;
             return cr;
         }
 
         public CellRecord GetBodyCell(int row, int col)
         {
-            var i = (1 + row) * (1 + this.Cols) + (1 + col);
-            if (row < 0 || col < 0 || this.Body == null || i >= this.Body.Count)
+            if (Record == null)
                 return null;
-            var cr = new CellRecord(this.Body[i]);
+            var i = (1 + row) * (1 + Record.Cols) + (1 + col);
+            if (row < 0 || col < 0 || Record.Body == null || i >= Record.Body.Count)
+                return null;
+            var cr = new CellRecord(Record.Body[i]);
             cr.TextWithHeaders =
-                this.Body[0] + " " + this.Body[(1 + row) * (1 + this.Cols)] + " " +
-                this.Body[1 + col] + " " + cr.Text;
+                Record.Body[0] + " " + Record.Body[(1 + row) * (1 + Record.Cols)] + " " +
+                Record.Body[1 + col] + " " + cr.Text;
             return cr;
         }
 
@@ -201,7 +133,7 @@ namespace AasxPluginExportTable
             // Member
             //
 
-            ExportTableRecord Record = null;
+            ImportExportTableRecord Record = null;
             public ExportTableAasEntitiesItem Item = null;
 
             public ItemProcessor() { }
@@ -210,7 +142,7 @@ namespace AasxPluginExportTable
 
             public int NumberReplacements = 0;
 
-            public ItemProcessor(ExportTableRecord record, ExportTableAasEntitiesItem item)
+            public ItemProcessor(ImportExportTableRecord record, ExportTableAasEntitiesItem item)
             {
                 this.Record = record;
                 this.Item = item;
@@ -233,14 +165,14 @@ namespace AasxPluginExportTable
                 repDict[tag] = value;
             }
 
-            private void repLangStr(string head, AdminShell.LangStr ls)
+            private void repLangStr(string head, LangString ls)
             {
                 if (ls == null)
                     return;
-                rep(head + "@" + "" + ls.lang, "" + ls.str);
+                rep(head + "@" + "" + ls.Language, "" + ls.Text);
             }
 
-            private void repListOfLangStr(string head, List<AdminShell.LangStr> lss)
+            private void repListOfLangStr(string head, List<LangString> lss)
             {
                 if (lss == null)
                     return;
@@ -253,50 +185,47 @@ namespace AasxPluginExportTable
                     repLangStr(head, ls);
             }
 
-            private void repReferable(string head, AdminShell.Referable rf)
+            private void repReferable(string head, IReferable rf)
             {
                 //-9- {Referable}.{idShort, category, description, description[@en..], elementName, 
                 //     elementAbbreviation, parent}
-                if (rf.idShort != null)
-                    rep(head + "idShort", rf.idShort);
-                if (rf.category != null)
-                    rep(head + "category", rf.category);
-                if (rf.description != null)
-                    repListOfLangStr(head + "description", rf.description.langString);
-                rep(head + "elementName", "" + rf.GetElementName());
+                if (rf.IdShort != null)
+                    rep(head + "idShort", rf.IdShort);
+                if (rf.Category != null)
+                    rep(head + "category", rf.Category);
+                if (rf.Description != null)
+                    repListOfLangStr(head + "description", rf.Description);
+                rep(head + "elementName", "" + rf.GetSelfDescription()?.AasElementName);
                 rep(head + "elementAbbreviation", "" + rf.GetSelfDescription()?.ElementAbbreviation);
 
-                if (rf is AdminShell.SubmodelElement rfsme)
+                if (rf is ISubmodelElement rfsme)
                 {
                     rep(head + "elementShort", "" +
-                        AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
-                    if (!(rf is AdminShell.Property || rf is AdminShell.SubmodelElementCollection))
-                        rep(head + "elementShort2", "" +
-                            AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(rfsme));
+                        rf.GetSelfDescription()?.ElementAbbreviation);
                 }
-                if (rf is AdminShell.Referable rfpar)
-                    rep(head + "parent", "" + ((rfpar.idShort != null) ? rfpar.idShort : "-"));
+                if (rf is IReferable rfpar)
+                    rep(head + "parent", "" + ((rfpar.IdShort != null) ? rfpar.IdShort : "-"));
             }
 
-            private void repModelingKind(string head, AdminShell.ModelingKind k)
+            private void repModelingKind(string head, ModelingKind? k)
             {
-                if (k == null)
+                if (!k.HasValue)
                     return;
 
                 //-9- {Referable}.kind
-                rep(head + "kind", "" + k.kind);
+                rep(head + "kind", "" + k.ToString());
             }
 
-            private void repQualifiable(string head, AdminShell.QualifierCollection qualifiers)
+            private void repQualifiable(string head, List<Qualifier> qualifiers)
             {
                 if (qualifiers == null)
                     return;
 
                 //-9- {Qualifiable}.qualifiers
-                rep(head + "qualifiers", "" + qualifiers.ToString(1));
+                rep(head + "qualifiers", "" + qualifiers.ToStringExtended(1));
             }
 
-            private void repMultiplicty(string head, AdminShell.QualifierCollection qualifiers)
+            private void repMultiplicty(string head, List<Qualifier> qualifiers)
             {
                 // access
                 if (qualifiers == null)
@@ -308,7 +237,7 @@ namespace AasxPluginExportTable
                 if (q != null)
                 {
                     foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                        if (("" + q.value) == Enum.GetName(typeof(FormMultiplicity), m))
+                        if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
                         {
                             multiStr = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
                         }
@@ -318,32 +247,30 @@ namespace AasxPluginExportTable
                 rep(head + "multiplicity", "" + multiStr);
             }
 
-            private void repIdentifiable(string head, AdminShell.Identifiable ifi)
+            private void repIdentifiable(string head, IIdentifiable ifi)
             {
                 if (ifi == null)
                     return;
-                if (ifi.identification != null)
+                if (ifi.Id != null)
                 {
                     //-9- {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}
-                    rep(head + "identification", "[" + ifi.identification.idType + "]" + ifi.identification.id);
-                    rep(head + "identification.idType", "" + ifi.identification.idType);
-                    rep(head + "identification.id", "" + ifi.identification.id);
+                    rep(head + "identification", ifi.Id);
                 }
-                if (ifi.administration != null)
+                if (ifi.Administration != null)
                 {
-                    rep(head + "administration.version", "" + ifi.administration.version);
-                    rep(head + "administration.revision", "" + ifi.administration.revision);
+                    rep(head + "administration.version", "" + ifi.Administration.Version);
+                    rep(head + "administration.revision", "" + ifi.Administration.Revision);
                 }
             }
 
-            private void repReference(string head, string refName, AdminShell.Reference rid)
+            private void repReference(string head, string refName, Reference rid)
             {
                 if (rid == null || refName == null || rid.Keys == null)
                     return;
 
                 // add together
                 //-9- {Reference}
-                rep(head + refName + "", "" + rid.ToString(1));
+                rep(head + refName + "", "" + rid.ToStringExtended(1));
 
                 // add the single parts of the sid
                 for (int ki = 0; ki < rid.Keys.Count; ki++)
@@ -353,13 +280,11 @@ namespace AasxPluginExportTable
                     {
                         // in nice form
                         //-9- {Reference}[0..n]
-                        rep(head + refName + $"[{ki}]", "" + k.ToString(1));
+                        rep(head + refName + $"[{ki}]", "" + k.ToStringExtended(1));
                         // but also in separate parts
                         //-9- {Reference}[0..n].{type, local, idType, value}
-                        rep(head + refName + $"[{ki}].type", "" + k.type);
-                        rep(head + refName + $"[{ki}].local", (!k.local) ? "no-local" : "local");
-                        rep(head + refName + $"[{ki}].idType", "" + k.idType);
-                        rep(head + refName + $"[{ki}].value", "" + k.value);
+                        rep(head + refName + $"[{ki}].type", "" + k.Type);
+                        rep(head + refName + $"[{ki}].value", "" + k.Value);
                     }
                 }
             }
@@ -376,7 +301,7 @@ namespace AasxPluginExportTable
                 repDict = new Dictionary<string, string>();
 
                 // some general replacements
-                rep("nl", "" + Environment.NewLine);
+                rep("nl", "" + System.Environment.NewLine);
                 rep("br", "\r");
                 rep("tab", "\t");
 
@@ -394,27 +319,27 @@ namespace AasxPluginExportTable
                     rep("indent", "" + (new string('~', Math.Max(0, this.Item.depth))));
 
                     //-1- {Parent}
-                    if (par is AdminShell.Submodel parsm)
+                    if (par is Submodel parsm)
                     {
                         var head = "Parent.";
                         repReferable(head, parsm);
-                        repModelingKind(head, parsm.kind);
-                        repQualifiable(head, parsm.qualifiers);
-                        repMultiplicty(head, parsm.qualifiers);
+                        repModelingKind(head, parsm.Kind);
+                        repQualifiable(head, parsm.Qualifiers);
+                        repMultiplicty(head, parsm.Qualifiers);
                         repIdentifiable(head, parsm);
                         //-1- {Reference} = {semanticId, isCaseOf, unitId}
-                        repReference(head, "semanticId", parsm.semanticId);
+                        repReference(head, "semanticId", parsm.SemanticId);
                     }
 
-                    if (par is AdminShell.SubmodelElement parsme)
+                    if (par is ISubmodelElement parsme)
                     {
                         var head = "Parent.";
                         repReferable(head, parsme);
-                        repModelingKind(head, parsme.kind);
-                        repQualifiable(head, parsme.qualifiers);
-                        repMultiplicty(head, parsme.qualifiers);
+                        repModelingKind(head, parsme.Kind);
+                        repQualifiable(head, parsme.Qualifiers);
+                        repMultiplicty(head, parsme.Qualifiers);
                         //-1- {Reference} = {semanticId, isCaseOf, unitId}
-                        repReference(head, "semanticId", parsme.semanticId);
+                        repReference(head, "semanticId", parsme.SemanticId);
                     }
 
                     //-1- {Referable} = {SM, SME, CD}
@@ -422,121 +347,125 @@ namespace AasxPluginExportTable
                     {
                         var head = "SM.";
                         repReferable(head, sm);
-                        repModelingKind(head, sm.kind);
-                        repQualifiable(head, sm.qualifiers);
-                        repMultiplicty(head, sm.qualifiers);
+                        repModelingKind(head, sm.Kind);
+                        repQualifiable(head, sm.Qualifiers);
+                        repMultiplicty(head, sm.Qualifiers);
                         repIdentifiable(head, sm);
                         //-1- {Reference} = {semanticId, isCaseOf, unitId}
-                        repReference(head, "semanticId", sm.semanticId);
+                        repReference(head, "semanticId", sm.SemanticId);
                     }
 
                     if (sme != null)
                     {
                         var head = "SME.";
                         repReferable(head, sme);
-                        repModelingKind(head, sme.kind);
-                        repQualifiable(head, sme.qualifiers);
-                        repMultiplicty(head, sme.qualifiers);
-                        repReference(head, "semanticId", sme.semanticId);
+                        repModelingKind(head, sme.Kind);
+                        repQualifiable(head, sme.Qualifiers);
+                        repMultiplicty(head, sme.Qualifiers);
+                        repReference(head, "semanticId", sme.SemanticId);
 
                         //-2- SME.value
 
-                        if (sme is AdminShell.Property)
+                        if (sme is Property p)
                         {
-                            var p = sme as AdminShell.Property;
                             //-2- Property.{value, valueType, valueId}
-                            rep("Property.value", "" + p.value);
-                            rep("Property.valueType", "" + p.valueType);
-                            if (p.valueId != null)
-                                rep("Property.valueId", "" + p.valueId.ToString(1));
+                            rep("Property.value", "" + p.Value);
+                            rep("Property.valueType", "" + p.ValueType);
+                            if (p.ValueId != null)
+                                rep("Property.valueId", "" + p.ValueId.ToStringExtended(1));
 
-                            rep("SME.value", "" + p.value);
+                            rep("SME.value", "" + p.Value);
                         }
 
-                        if (sme is AdminShell.MultiLanguageProperty)
+                        if (sme is MultiLanguageProperty mlp)
                         {
-                            var mlp = sme as AdminShell.MultiLanguageProperty;
                             //-2- MultiLanguageProperty.{value, vlaueId}
-                            repListOfLangStr("MultiLanguageProperty.value", mlp.value?.langString);
-                            if (mlp.valueId != null)
-                                rep("MultiLanguageProperty.valueId", "" + mlp.valueId.ToString(1));
+                            repListOfLangStr("MultiLanguageProperty.value", mlp.Value);
+                            if (mlp.ValueId != null)
+                                rep("MultiLanguageProperty.valueId", "" + mlp.ValueId.ToStringExtended(1));
 
-                            repListOfLangStr("SME.value", mlp.value?.langString);
+                            repListOfLangStr("SME.value", mlp.Value);
                         }
 
-                        if (sme is AdminShell.Range)
+                        if (sme is AasCore.Aas3_0_RC02.Range r)
                         {
-                            var r = sme as AdminShell.Range;
                             //-2- Range.{valueType, min, max}
-                            rep("Range.valueType", "" + r.valueType);
-                            rep("Range.min", "" + r.min);
-                            rep("Range.max", "" + r.min);
+                            rep("Range.valueType", "" + r.ValueType);
+                            rep("Range.min", "" + r.Min);
+                            rep("Range.max", "" + r.Max);
 
-                            rep("SME.value", "" + r.min + " .. " + r.max);
+                            rep("SME.value", "" + r.Min + " .. " + r.Max);
                         }
 
-                        if (sme is AdminShell.Blob)
+                        if (sme is Blob b)
                         {
-                            var b = sme as AdminShell.Blob;
                             //-2- Blob.{mimeType, value}
-                            rep("Blob.mimeType", "" + b.mimeType);
-                            rep("Blob.value", "" + b.value);
+                            rep("Blob.mimeType", "" + b.ContentType);
+                            rep("Blob.value", "" + b.Value);
 
-                            rep("SME.value", "" + ("" + b.value).Length + " bytes");
+                            rep("SME.value", "" + ("" + b.Value).Length + " bytes");
                         }
 
-                        if (sme is AdminShell.File)
+                        if (sme is AasCore.Aas3_0_RC02.File f)
                         {
-                            var f = sme as AdminShell.File;
                             //-2- File.{mimeType, value}
-                            rep("File.mimeType", "" + f.mimeType);
-                            rep("File.value", "" + f.value);
+                            rep("File.mimeType", "" + f.ContentType);
+                            rep("File.value", "" + f.Value);
 
-                            rep("SME.value", "" + f.value);
+                            rep("SME.value", "" + f.Value);
                         }
 
-                        if (sme is AdminShell.ReferenceElement)
+                        if (sme is ReferenceElement re)
                         {
-                            var re = sme as AdminShell.ReferenceElement;
                             //-2- ReferenceElement.value
-                            rep("ReferenceElement.value", "" + re.value?.ToString(1));
+                            rep("ReferenceElement.value", "" + re.Value?.ToStringExtended(1));
 
-                            rep("SME.value", "" + re.value?.ToString(1));
+                            rep("SME.value", "" + re.Value?.ToStringExtended(1));
                         }
 
-                        if (sme is AdminShell.RelationshipElement)
+                        if (sme is RelationshipElement rele)
                         {
-                            var re = sme as AdminShell.RelationshipElement;
                             //-2- RelationshipElement.{first, second}
-                            rep("RelationshipElement.first", "" + re.first?.ToString(1));
-                            rep("RelationshipElement.second", "" + re.second?.ToString(1));
+                            rep("RelationshipElement.first", "" + rele.First?.ToStringExtended(1));
+                            rep("RelationshipElement.second", "" + rele.Second?.ToStringExtended(1));
 
-                            rep("SME.value", "" + re.first?.ToString(1) + " -> " + re.second?.ToString(1));
+                            rep("SME.value", "" + rele.First?.ToStringExtended(1) 
+                                + " -> " + rele.Second?.ToStringExtended(1));
                         }
 
-                        if (sme is AdminShell.SubmodelElementCollection)
+                        if (sme is SubmodelElementCollection smc)
                         {
-                            var smc = sme as AdminShell.SubmodelElementCollection;
-                            //-2- SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}
+                            //-2- SubmodelElementCollection.{value = #elements}
                             rep(
                                 "SubmodelElementCollection.value", "" +
-                                ((smc.value != null)
-                                    ? smc.value.Count
+                                ((smc.Value != null)
+                                    ? smc.Value.Count
                                     : 0) +
                                 " elements");
-                            rep("SubmodelElementCollection.ordered", "" + smc.ordered);
-                            rep("SubmodelElementCollection.allowDuplicates", "" + smc.allowDuplicates);
 
-                            rep("SME.value", "" + ((smc.value != null) ? smc.value.Count : 0) + " elements");
+                            rep("SME.value", "" + ((smc.Value != null) ? smc.Value.Count : 0) + " elements");
                         }
 
-                        if (sme is AdminShell.Entity)
+                        if (sme is SubmodelElementList sml)
                         {
-                            var ent = sme as AdminShell.Entity;
+                            //-2- SubmodelElementList.{value = #elements, orderRelevant}
+                            rep(
+                                "SubmodelElementList.value", "" +
+                                ((sml.Value != null)
+                                    ? sml.Value.Count
+                                    : 0) +
+                                " elements");
+                            rep("SubmodelElementList.orderRelevant", "" + sml.OrderRelevant);
+
+                            rep("SME.value", "" + ((sml.Value != null) ? sml.Value.Count : 0) + " elements");
+                        }
+
+                        if (sme is Entity ent)
+                        {
                             //-2- Entity.{entityType, asset}
-                            rep("Entity.entityType", "" + ent.entityType);
-                            if (ent.assetRef != null)
-                                rep("Entity.asset", "" + ent.assetRef.ToString(1));
+                            rep("Entity.entityType", "" + Stringification.ToString(ent.EntityType));
+                            if (ent.GlobalAssetId != null)
+                                rep("Entity.globalAssetId", "" + ent.GlobalAssetId.ToStringExtended(1));
                         }
                     }
 
@@ -554,24 +483,24 @@ namespace AasxPluginExportTable
                         {
                             //-2- CD.{preferredName[@en..], shortName[@en..], anyName, unit, unitId,
                             // sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
-                            repListOfLangStr(head + "preferredName", iec.preferredName);
-                            repListOfLangStr(head + "shortName", iec.shortName);
-                            rep(head + "unit", "" + iec.unit);
-                            repReference(head, "unitId", AdminShell.Reference.CreateNew(iec.unitId?.Keys));
-                            rep(head + "sourceOfDefinition", "" + iec.sourceOfDefinition);
-                            rep(head + "symbol", "" + iec.symbol);
-                            rep(head + "dataType", "" + iec.dataType);
-                            repListOfLangStr(head + "definition", iec.definition);
-                            rep(head + "valueFormat", "" + iec.valueFormat);
+                            repListOfLangStr(head + "preferredName", iec.PreferredName);
+                            repListOfLangStr(head + "shortName", iec.ShortName);
+                            rep(head + "unit", "" + iec.Unit);
+                            repReference(head, "unitId", iec.UnitId);
+                            rep(head + "sourceOfDefinition", "" + iec.SourceOfDefinition);
+                            rep(head + "symbol", "" + iec.Symbol);
+                            rep(head + "dataType", "" + Stringification.ToString(iec.DataType));
+                            repListOfLangStr(head + "definition", iec.Definition);
+                            rep(head + "valueFormat", "" + iec.ValueFormat);
 
                             // do a bit for anyName
                             string anyName = null;
-                            if (iec.preferredName != null)
-                                anyName = iec.preferredName.GetDefaultStr();
-                            if (anyName == null && iec.shortName != null)
-                                anyName = iec.shortName.GetDefaultStr();
+                            if (iec.PreferredName != null)
+                                anyName = iec.PreferredName.GetDefaultString();
+                            if (anyName == null && iec.ShortName != null)
+                                anyName = iec.ShortName.GetDefaultString();
                             if (anyName == null)
-                                anyName = cd.idShort;
+                                anyName = cd.IdShort;
                             if (anyName != null)
                                 rep(head + "anyName", "" + anyName);
                         }
@@ -714,7 +643,7 @@ namespace AasxPluginExportTable
             string tab = "\t")
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             using (var f = new StreamWriter(fn))
@@ -724,12 +653,12 @@ namespace AasxPluginExportTable
                 foreach (var entities in iterateAasEntities)
                 {
                     // top
-                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
-                    for (int ri = 0; ri < this.RowsTop; ri++)
+                    var proc = new ItemProcessor(Record, entities.FirstOrDefault());
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
                     {
                         var line = "";
 
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get cell record
                             var cr = GetTopCell(ri, ci);
@@ -750,18 +679,18 @@ namespace AasxPluginExportTable
                     foreach (var item in entities)
                     {
                         // create processing
-                        proc = new ItemProcessor(this, item);
+                        proc = new ItemProcessor(Record, item);
                         proc.Start();
                         proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
 
                         var lines = new List<string>();
 
                         // all elements
-                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
                         {
                             var line = "";
 
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetBodyCell(ri, ci);
@@ -785,7 +714,7 @@ namespace AasxPluginExportTable
                     }
 
                     // empty rows
-                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
                         f.WriteLine("");
                 }
             }
@@ -800,7 +729,7 @@ namespace AasxPluginExportTable
         public bool ExportLaTex(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             using (var f = new StreamWriter(fn))
@@ -893,7 +822,8 @@ namespace AasxPluginExportTable
         public bool ExportExcel(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid() || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
+            if (Record?.IsValid() != true
+                || !fn.HasContent() || iterateAasEntities == null || iterateAasEntities.Count < 1)
                 return false;
 
             //
@@ -922,12 +852,12 @@ namespace AasxPluginExportTable
                 if (true)
                 {
                     // in order to access the parent information, take the first entity
-                    var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                    var proc = new ItemProcessor(Record, entities.FirstOrDefault());
                     proc.Start();
 
-                    for (int ri = 0; ri < this.RowsTop; ri++)
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
                     {
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get cell record
                             var cr = GetTopCell(ri, ci);
@@ -940,7 +870,7 @@ namespace AasxPluginExportTable
                         }
                     }
 
-                    rowIdx += this.RowsTop;
+                    rowIdx += Record.RowsTop;
                 }
 
                 // elements
@@ -949,13 +879,13 @@ namespace AasxPluginExportTable
                     foreach (var item in entities)
                     {
                         // create processing
-                        var proc = new ItemProcessor(this, item);
+                        var proc = new ItemProcessor(Record, item);
                         proc.Start();
 
                         // all elements
-                        for (int ri = 0; ri < this.RowsBody; ri++)
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
                         {
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetBodyCell(ri, ci);
@@ -972,12 +902,12 @@ namespace AasxPluginExportTable
                         if (proc.NumberReplacements > 0)
                         {
                             // advance
-                            rowIdx += this.RowsBody;
+                            rowIdx += Record.RowsBody;
                         }
                         else
                         {
                             // delete this out
-                            var rng = ws.Range(rowIdx, 1, rowIdx + this.RowsBody - 1, 1 + this.Cols - 1);
+                            var rng = ws.Range(rowIdx, 1, rowIdx + Record.RowsBody - 1, 1 + Record.Cols - 1);
                             rng.Clear();
                         }
                     }
@@ -989,7 +919,7 @@ namespace AasxPluginExportTable
                     if (rowIdx > startRowIdx + 1)
                     {
                         // do a explicit process of overall table cell
-                        var proc = new ItemProcessor(this, null);
+                        var proc = new ItemProcessor(Record, null);
                         proc.Start();
                         var cr = GetTopCell(0, 0);
                         proc.ProcessCellRecord(cr);
@@ -997,7 +927,7 @@ namespace AasxPluginExportTable
                         // borders?
                         if (cr.Frame != null)
                         {
-                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + this.Cols - 1);
+                            var rng = ws.Range(startRowIdx, 1, rowIdx - 1, 1 + Record.Cols - 1);
 
                             if (cr.Frame == "1")
                             {
@@ -1019,10 +949,10 @@ namespace AasxPluginExportTable
                         }
 
                         // column widths
-                        ws.Columns(1, this.Cols).AdjustToContents();
+                        ws.Columns(1, Record.Cols).AdjustToContents();
 
                         // custom column width
-                        for (int ci = 0; ci < this.Cols; ci++)
+                        for (int ci = 0; ci < Record.Cols; ci++)
                         {
                             // get the cell width from the very first top row
                             var cr2 = GetTopCell(0, ci);
@@ -1039,7 +969,7 @@ namespace AasxPluginExportTable
 
                 // leave some lines blank
 
-                rowIdx += Math.Max(0, RowsGap);
+                rowIdx += Math.Max(0, Record.RowsGap);
             }
 
             //
@@ -1160,7 +1090,7 @@ namespace AasxPluginExportTable
         public bool ExportWord(string fn, List<ExportTableAasEntitiesList> iterateAasEntities)
         {
             // access
-            if (!IsValid())
+            if (Record?.IsValid() != true)
                 return false;
 
             // Create Document
@@ -1193,7 +1123,7 @@ namespace AasxPluginExportTable
                     // do a process on overall table cells
                     if (true)
                     {
-                        var proc = new ItemProcessor(this, null);
+                        var proc = new ItemProcessor(Record, null);
                         proc.Start();
                         var cr = GetTopCell(0, 0);
                         proc.ProcessCellRecord(cr);
@@ -1261,16 +1191,16 @@ namespace AasxPluginExportTable
                     if (true)
                     {
                         // in order to access the parent information, take the first entity
-                        var proc = new ItemProcessor(this, entities.FirstOrDefault());
+                        var proc = new ItemProcessor(Record, entities.FirstOrDefault());
                         proc.Start();
 
-                        for (int ri = 0; ri < this.RowsTop; ri++)
+                        for (int ri = 0; ri < Record.RowsTop; ri++)
                         {
                             // new row
                             TableRow tr = table.AppendChild(new TableRow());
 
                             // over cells
-                            for (int ci = 0; ci < this.Cols; ci++)
+                            for (int ci = 0; ci < Record.Cols; ci++)
                             {
                                 // get cell record
                                 var cr = GetTopCell(ri, ci);
@@ -1290,21 +1220,21 @@ namespace AasxPluginExportTable
                         foreach (var item in entities)
                         {
                             // create processing
-                            var proc = new ItemProcessor(this, item);
+                            var proc = new ItemProcessor(Record, item);
                             proc.Start();
 
                             // remember rows in order to can deleten them later
                             var newRows = new List<TableRow>();
 
                             // all elements
-                            for (int ri = 0; ri < this.RowsBody; ri++)
+                            for (int ri = 0; ri < Record.RowsBody; ri++)
                             {
                                 // new row
                                 TableRow tr = table.AppendChild(new TableRow());
                                 newRows.Add(tr);
 
                                 // over cells
-                                for (int ci = 0; ci < this.Cols; ci++)
+                                for (int ci = 0; ci < Record.Cols; ci++)
                                 {
                                     // get cell record
                                     var cr = GetBodyCell(ri, ci);
@@ -1332,7 +1262,7 @@ namespace AasxPluginExportTable
                     }
 
                     // empty rows
-                    for (int i = 0; i < Math.Max(0, RowsGap); i++)
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
                         body.AppendChild(new Paragraph(new Run(new Text(" "))));
 
                 }

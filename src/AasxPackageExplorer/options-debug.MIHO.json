@@ -94,10 +94,6 @@
       "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
       "Args": []
     },
-    {
-      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net472\\AasxPluginExportTable.dll",
-      "Args": []
-    },
     */
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
@@ -133,6 +129,10 @@
     },
     {
       "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
       "Args": []
     }
     /* ,    

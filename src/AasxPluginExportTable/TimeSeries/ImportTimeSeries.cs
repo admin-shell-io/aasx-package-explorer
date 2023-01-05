@@ -21,9 +21,11 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using ClosedXML.Excel;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.TimeSeries
 {
@@ -40,9 +42,9 @@ namespace AasxPluginExportTable.TimeSeries
         //
 
         public static void ImportTimeSeriesFromFile(
-            AdminShell.AdministrationShellEnv env,
-            AdminShell.Submodel submodel,
-            ImportTimeSeriesOptions options,
+            AasCore.Aas3_0_RC02.Environment env,
+            Submodel submodel,
+            ImportTimeSeriesRecord options,
             string fn, LogInstance log = null)
         {
             // access
@@ -58,7 +60,7 @@ namespace AasxPluginExportTable.TimeSeries
                 // which importer?
                 var imp = new ImportTimeSeries();
 
-                if (options.Format == ImportTimeSeriesOptions.FormatEnum.Excel)
+                if (options.Format == ImportTimeSeriesRecord.FormatEnum.Excel)
                 {
                     imp._log = log;
                     imp._provider = ImportTableExcelProvider.CreateProviders(fn).FirstOrDefault();
@@ -164,7 +166,7 @@ namespace AasxPluginExportTable.TimeSeries
         protected IImportTableProvider _provider = null;
 
         protected bool ImportExcel(
-            ImportTimeSeriesOptions options)
+            ImportTimeSeriesRecord options)
         {
             // access
             if (_provider == null || options == null)
@@ -194,7 +196,7 @@ namespace AasxPluginExportTable.TimeSeries
             var rowI = options.RowData - 1;
             while (true)
             {
-                // tra gather delta
+                // try gather delta
                 double ofs = 0.0;
                 if (options.ColTime > 0)
                 {
@@ -244,8 +246,8 @@ namespace AasxPluginExportTable.TimeSeries
         }
 
         protected bool WriteSeries(
-            ImportTimeSeriesOptions options,
-            AdminShell.Submodel submodel)
+            ImportTimeSeriesRecord options,
+            Submodel submodel)
         {
             // access 
             if (options == null || submodel == null || _rows == null || _columnNames == null)
@@ -256,24 +258,24 @@ namespace AasxPluginExportTable.TimeSeries
 
             // set semanticId
             if (options.SetSmSemantic)
-                submodel.semanticId = new AdminShell.SemanticId(defs.SM_TimeSeriesData?.semanticId);
+                submodel.SemanticId = defs.SM_TimeSeriesData?.SemanticId?.Copy();
 
             // time series
-            var smcTimeSeries = submodel.submodelElements.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+            var smcTimeSeries = submodel.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
                     defs.CD_TimeSeries, addSme: true);
 
             // attributes for this
 
-            smcTimeSeries.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
+            smcTimeSeries.Value.CreateSMEForCD<MultiLanguageProperty>(defs.CD_Name, addSme: true)?
                 .Set("en", "To be defined");
 
-            smcTimeSeries.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
+            smcTimeSeries.Value.CreateSMEForCD<MultiLanguageProperty>(defs.CD_Description, addSme: true)?
                 .Set("en", "To be defined");
 
             while (true)
             {
                 // segment
-                var smcSegment = smcTimeSeries.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                var smcSegment = smcTimeSeries.Value.CreateSMEForCD<SubmodelElementCollection>(
                     defs.CD_TimeSeriesSegment, addSme: true);
 
                 // chunk of records (idea: simply copy!)
@@ -281,42 +283,43 @@ namespace AasxPluginExportTable.TimeSeries
 
                 // attributes for this
 
-                smcSegment.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(defs.CD_Name, addSme: true)?
+                smcSegment.Value.CreateSMEForCD<MultiLanguageProperty>(defs.CD_Name, addSme: true)?
                     .Set("en", "To be defined");
 
-                smcSegment.value.CreateSMEForCD<AdminShell.MultiLanguageProperty>(defs.CD_Description, addSme: true)?
+                smcSegment.Value.CreateSMEForCD<MultiLanguageProperty>(defs.CD_Description, addSme: true)?
                     .Set("en", "To be defined");
 
-                smcSegment.value.CreateSMEForCD<AdminShell.Property>(defs.CD_RecordCount, addSme: true)?
-                    .Set("int", "" + chunk.Count);
+                smcSegment.Value.CreateSMEForCD<Property>(defs.CD_RecordCount, addSme: true)?
+                    .Set(DataTypeDefXsd.Integer, "" + chunk.Count);
 
-                smcSegment.value.CreateSMEForCD<AdminShell.Property>(defs.CD_StartTime, addSme: true)?
-                    .Set("dateTime", "");
+                smcSegment.Value.CreateSMEForCD<Property>(defs.CD_StartTime, addSme: true)?
+                    .Set(DataTypeDefXsd.DateTime, "");
 
-                smcSegment.value.CreateSMEForCD<AdminShell.Property>(defs.CD_EndTime, addSme: true)?
-                    .Set("dateTime", "");
+                smcSegment.Value.CreateSMEForCD<Property>(defs.CD_EndTime, addSme: true)?
+                    .Set(DataTypeDefXsd.DateTime, "");
 
                 // Time Stamps? == TimeSeriesVariable
 
                 if (options.ColTime >= 1)
                 {
                     // variable
-                    var smcVar = smcSegment.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                    var smcVar = smcSegment.Value.CreateSMEForCD<SubmodelElementCollection>(
                         defs.CD_TimeSeriesVariable, idShort: "TimeSeriesVariable_TimeStamps", addSme: true);
 
                     // attributes for this
 
-                    smcVar.value.CreateSMEForCD<AdminShell.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set("int", "" + (0));
+                    smcVar.Value.CreateSMEForCD<Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
+                        .Set(DataTypeDefXsd.Integer, "" + (0));
 
-                    smcVar.value.CreateSMEForCD<AdminShell.Property>(defs.CD_UtcTime, addSme: true, isTemplate: true);
+                    smcVar.Value.CreateSMEForCD<Property>(defs.CD_UtcTime, addSme: true, isTemplate: true);
 
-                    var va = smcVar.value.CreateSMEForCD<AdminShell.Blob>(defs.CD_ValueArray, addSme: true);
+                    var va = smcVar.Value.CreateSMEForCD<Blob>(defs.CD_ValueArray, addSme: true);
                     if (va != null)
                     {
-                        va.value = chunk.GenerateJsonColumn(
-                            colIndex: -1, // for time stamp
-                            indexOffset: 0);
+                        va.Value = Encoding.Default.GetBytes(
+                            chunk.GenerateJsonColumn(
+                                colIndex: -1, // for time stamp
+                                indexOffset: 0));
                     }
                 }
 
@@ -329,24 +332,25 @@ namespace AasxPluginExportTable.TimeSeries
                     var ids = $"TimeSeriesVariable_{(1 + di).ToString("D2")}";
                     if (options.RowHeader >= 1 && _columnNames.Count > di)
                         ids += "_" + _columnNames[di];
-                    var smcVar = smcSegment.value.CreateSMEForCD<AdminShell.SubmodelElementCollection>(
+                    var smcVar = smcSegment.Value.CreateSMEForCD<SubmodelElementCollection>(
                         defs.CD_TimeSeriesVariable, idShort: ids, addSme: true);
 
                     // attributes for this
 
-                    smcVar.value.CreateSMEForCD<AdminShell.Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
-                        .Set("int", "" + (1 + di));
+                    smcVar.Value.CreateSMEForCD<Property>(defs.CD_RecordId, addSme: true, isTemplate: true)?
+                        .Set(DataTypeDefXsd.Integer, "" + (1 + di));
 
-                    var dp = AdminShell.Property.CreateNew("DataPoint");
-                    dp.kind = AdminShell.ModelingKind.CreateAsTemplate();
-                    smcVar.value.Add(dp);
+                    var dp = new Property(DataTypeDefXsd.Double, idShort: "DataPoint");
+                    dp.Kind = ModelingKind.Template;
+                    smcVar.Value.Add(dp);
 
-                    var va = smcVar.value.CreateSMEForCD<AdminShell.Blob>(defs.CD_ValueArray, addSme: true);
+                    var va = smcVar.Value.CreateSMEForCD<Blob>(defs.CD_ValueArray, addSme: true);
                     if (va != null)
                     {
-                        va.value = chunk.GenerateJsonColumn(
-                            colIndex: di,
-                            indexOffset: 0);
+                        va.Value = Encoding.Default.GetBytes(
+                            chunk.GenerateJsonColumn(
+                                colIndex: di,
+                                indexOffset: 0));
                     }
                 }
 

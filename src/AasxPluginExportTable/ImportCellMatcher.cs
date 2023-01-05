@@ -14,7 +14,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
+using AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable
 {
@@ -29,8 +31,8 @@ namespace AasxPluginExportTable
         /// Parent denotes the container, in which the SMEs are to be found (the "table head").
         /// SME are expressed by single table rows.
         /// </summary>
-        public AdminShell.SubmodelElement Parent, Sme;
-        public AdminShell.ConceptDescription CD;
+        public ISubmodelElement Parent, Sme;
+        public ConceptDescription CD;
 
         /// <summary>
         /// For identification purposes, the parent even of the parent is to be specified.
@@ -70,11 +72,19 @@ namespace AasxPluginExportTable
             SmeParentName = "";
             ParentValue = "";
             SmeValue = "";
-            Parent = new AdminShell.SubmodelElement();
-            Sme = new AdminShell.SubmodelElement();
-            CD = new AdminShell.ConceptDescription();
-            CD.identification = null;
-            CD.CreateDataSpecWithContentIec61360();
+            Parent = new Property(DataTypeDefXsd.String);
+            Sme = new Property(DataTypeDefXsd.String);
+            CD = new ConceptDescription("");
+            
+            // CD.CreateDataSpecWithContentIec61360();
+            CD.AddEmbeddedDataSpecification(
+                new EmbeddedDataSpecification(
+                    new Reference(ReferenceTypes.GlobalReference, new List<Key> {
+                        ExtendIDataSpecificationContent.GetKeyForIec61360()
+                    }),
+                    new DataSpecificationIec61360(new List<LangString>() {
+                        new LangString("EN?", "")
+                    })));
         }
     }
 
@@ -188,21 +198,21 @@ namespace AasxPluginExportTable
             Preset = preset;
         }
 
-        private AdminShell.SemanticId CreateSemanticId(string cell)
+        private Reference CreateSemanticId(string cell)
         {
             if (!cell.HasContent())
                 return null;
 
-            var key = AdminShell.Key.Parse(cell, AdminShell.Key.ConceptDescription,
+            var key = ExtendKey.Parse(cell, KeyTypes.ConceptDescription,
                         allowFmtAll: true);
             if (key == null)
                 return null;
 
-            return new AdminShell.SemanticId(key);
+            return ExtendReference.CreateFromKey(key);
         }
 
         private bool MatchEntity(
-            AdminShell.SubmodelElement elem, string preset, string cell,
+            ISubmodelElement elem, string preset, string cell,
             ref string parentName, ref string elemName, ref string valueStr,
             bool allowMultiplicity = false)
         {
@@ -221,21 +231,19 @@ namespace AasxPluginExportTable
                 parentName = commit(cell);
 
             if (preset == "idShort")
-                elem.idShort = commit(cell);
+                elem.IdShort = commit(cell);
 
             if (preset == "category")
-                elem.category = commit(cell);
+                elem.Category = commit(cell);
 
             if (preset == "kind")
-                elem.kind = new AdminShell.ModelingKind(commit(cell));
+                elem.Kind = Stringification.ModelingKindFromString(commit(cell));
 
             if (preset == "semanticId")
-                elem.semanticId = CreateSemanticId(commit(cell));
+                elem.SemanticId = CreateSemanticId(commit(cell));
 
             if (preset == "description")
-                elem.description = new AdminShell.Description(
-                    new AdminShell.LangStringSet(
-                        AdminShell.ListOfLangStr.Parse(commit(cell))));
+                elem.Description = ExtendLangStringSet.Parse(commit(cell));
 
             if (preset == "value")
                 valueStr = commit(cell);
@@ -251,18 +259,23 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShell.SubmodelElementWrapper.AdequateElementNames
-                                    .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
-                    if (x != null && vt.Trim().ToLower() == x.ToLower())
+                foreach (var x in AdminShellUtil.GetEnumValues<AasSubmodelElements>())
+                    // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
+                    if (vt.Trim().ToString().ToLower() == x.ToString().ToLower())
                         return true;
 
                 // very special case
                 if (vt.Trim() == "n/a")
                     return true;
 
+                // stringify
+                var vtd = Stringification.DataTypeDefXsdFromString(vt) ?? DataTypeDefXsd.String;
+
                 // set
-                if (elem is AdminShell.Property prop)
-                    prop.valueType = vt;
+                if (elem is Property prop)
+                    prop.ValueType = vtd;
+                if (elem is AasCore.Aas3_0_RC02.Range rng)
+                    rng.ValueType = vtd;
             }
 
             // very special
@@ -276,9 +289,7 @@ namespace AasxPluginExportTable
                     multival = "ZeroToMany";
                 if (tricell == "1..*" || tricell == "[1..*]" || tricell == "OneToMany")
                     multival = "OneToMany";
-                if (elem.qualifiers == null)
-                    elem.qualifiers = new AdminShell.QualifierCollection();
-                elem.qualifiers.Add(new AdminShell.Qualifier() { type = "Multiplicity", value = multival });
+                elem.Add(new Qualifier(type: "Multiplicity", valueType: DataTypeDefXsd.String, value: multival));
                 return true;
             }
 
@@ -294,9 +305,9 @@ namespace AasxPluginExportTable
                         StringSplitOptions.RemoveEmptyEntries);
                     foreach (var qp in qparts)
                     {
-                        var q = AdminShell.Qualifier.Parse(qp);
+                        var q = ExtendQualifier.Parse(qp);
                         if (q != null)
-                            elem.qualifiers.Add(q);
+                            elem.Add(q);
                     }
                 }
             }
@@ -323,9 +334,9 @@ namespace AasxPluginExportTable
                     vt = m.Groups[1].ToString();
 
                 // exclude SMEs
-                foreach (var x in AdminShell.SubmodelElementWrapper.AdequateElementNames
-                                    .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
-                    if (x != null && vt.Trim().ToLower() == x.ToLower())
+                foreach (var x in AdminShellUtil.GetEnumValues<AasSubmodelElements>())
+                    // .Union(AdminShell.SubmodelElementWrapper.AdequateElementShortName))
+                    if (vt.Trim().ToLower() == x.ToString().ToLower())
                         return;
 
                 // very special case
@@ -337,7 +348,7 @@ namespace AasxPluginExportTable
             }
         }
 
-        private bool MatchEntity(AdminShell.ConceptDescription cd, string preset, string cell)
+        private bool MatchEntity(ConceptDescription cd, string preset, string cell)
         {
             // access
             if (cd == null || preset == null || cell == null)
@@ -348,32 +359,27 @@ namespace AasxPluginExportTable
             Func<string, string> commit = (s) => { res = true; return s; };
 
             if (preset == "preferredName")
-                cd.IEC61360Content.preferredName = new AdminShell.LangStringSetIEC61360(
-                    AdminShell.ListOfLangStr.Parse(commit(cell)));
+                cd.GetIEC61360().PreferredName = ExtendLangStringSet.Parse(commit(cell));
 
             if (preset == "shortName")
-                cd.IEC61360Content.shortName = new AdminShell.LangStringSetIEC61360(
-                    AdminShell.ListOfLangStr.Parse(commit(cell)));
+                cd.GetIEC61360().ShortName = ExtendLangStringSet.Parse(commit(cell));
 
             if (preset == "definition")
-                cd.IEC61360Content.definition = new AdminShell.LangStringSetIEC61360(
-                    AdminShell.ListOfLangStr.Parse(commit(cell)));
-
+                cd.GetIEC61360().Definition = ExtendLangStringSet.Parse(commit(cell));
             if (preset == "unit")
-                cd.IEC61360Content.unit = commit(cell);
+                cd.GetIEC61360().Unit = commit(cell);
 
             if (preset == "unitId")
-                cd.IEC61360Content.unitId = AdminShell.UnitId.CreateNew(
-                    AdminShell.Reference.Parse(commit(cell)));
+                cd.GetIEC61360().UnitId = ExtendReference.Parse(commit(cell));
 
             if (preset == "sourceOfDefinition")
-                cd.IEC61360Content.sourceOfDefinition = commit(cell);
+                cd.GetIEC61360().SourceOfDefinition = commit(cell);
 
             if (preset == "symbol")
-                cd.IEC61360Content.symbol = commit(cell);
+                cd.GetIEC61360().Symbol = commit(cell);
 
             if (preset == "dataType")
-                cd.IEC61360Content.dataType = commit(cell);
+                cd.GetIEC61360().DataType = Stringification.DataTypeIec61360FromString(commit(cell));
 
             return res;
         }

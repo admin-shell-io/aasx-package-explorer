@@ -1,4 +1,5 @@
 ﻿using AasCore.Aas3_0_RC02;
+using AasxCompatibilityModels;
 using AdminShellNS;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Extensions
 {
@@ -130,119 +132,52 @@ namespace Extensions
             return key.Type == KeyTypes.GlobalReference || key.Type == KeyTypes.AssetAdministrationShell || key.Type == KeyTypes.Submodel;
         }
 
-
-
-        // ---------------------------------------------------------------------------------------------------------------
-        #region KeyList
-
-        public static bool IsEmpty(this List<Key> keys)
+        public static Key Parse(string cell, KeyTypes typeIfNotSet = KeyTypes.GlobalReference,
+                bool allowFmtAll = false, bool allowFmt0 = false,
+                bool allowFmt1 = false, bool allowFmt2 = false)
         {
-            return keys.Count < 1;
-        }
+            // access and defaults?
+            if (cell == null || cell.Trim().Length < 1)
+                return null;
 
-        public static bool Matches(this List<Key> keys, List<Key> other, MatchMode matchMode = MatchMode.Strict)
-        {
-            if (other == null || other.Count != keys.Count)
-                return false;
-
-            var same = true;
-            for (int i = 0; i < keys.Count; i++)
-                same = same && keys[i].Matches(other[i], matchMode);
-
-            return same;
-        }
-
-        public static List<Key> ReplaceLastKey(this List<Key> keys,List<Key> newKeys)
-        {
-            var res = new List<Key>(keys);
-            if (res.Count < 1 || newKeys == null || newKeys.Count < 1)
-                return res;
-
-            res.Remove(res.Last());
-            res.AddRange(newKeys);
-            return res;
-        }
-
-        public static bool StartsWith(this List<Key> keyList, List<Key> otherKeyList)
-        {
-            if (otherKeyList == null || otherKeyList.Count == 0)
-                return false;
-
-            // simply test element-wise
-            for (int i = 0; i < otherKeyList.Count; i++)
+            // format == 1
+            if (allowFmtAll || allowFmt1)
             {
-                // does head have more elements than this list?
-                if (i >= keyList.Count)
-                    return false;
-
-                if (!otherKeyList[i].Matches(keyList[i]))
-                    return false;
-            }
-
-            // ok!
-            return true;
-        }
-
-        public static bool StartsWith(this List<Key> keyList,List<Key> head, bool emptyIsTrue = false,
-                MatchMode matchMode = MatchMode.Relaxed)
-        {
-            // access
-            if (head == null)
-                return false;
-            if (head.Count == 0)
-                return emptyIsTrue;
-
-            // simply test element-wise
-            for (int i = 0; i < head.Count; i++)
-            {
-                // does head have more elements than this list?
-                if (i >= keyList.Count)
-                    return false;
-
-                if (!head[i].Matches(keyList[i], matchMode))
-                    return false;
-            }
-
-            // ok!
-            return true;
-        }
-
-        public static string ToStringExtended(this List<Key> keys, int format = 1, string delimiter = ",")
-        {
-            return string.Join(delimiter, keys.Select((k) => k.ToStringExtended(format)));
-        }
-
-        public static void Validate(this List<Key> keys, AasValidationRecordList results,
-                IReferable container)
-        {
-            // access
-            if (results == null || keys == null || container == null)
-                return;
-
-            // iterate thru
-            var idx = 0;
-            while (idx < keys.Count)
-            {
-                var act = keys[idx].Validate(results, container);
-                if (act == AasValidationAction.ToBeDeleted)
+                var m = Regex.Match(cell, @"\((\w+)\)( ?)(.*)$");
+                if (m.Success)
                 {
-                    keys.RemoveAt(idx);
-                    continue;
+                    return new Key(
+                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference, 
+                            m.Groups[3].ToString());
                 }
-                idx++;
             }
-        }
 
-        public static bool MatchesSetOfTypes(this List<Key> key, IEnumerable<KeyTypes> set)
-        {
-            var res = true;
-            foreach (var kt in key)
-                if (!key.MatchesSetOfTypes(set))
-                    res = false;
-            return res;
-        }
+            // format == 2
+            if (allowFmtAll || allowFmt2)
+            {
+                var m = Regex.Match(cell, @"( ?)(.*)$");
+                if (m.Success)
+                {
+                    return new Key(
+                            typeIfNotSet, m.Groups[2].ToString());
+                }
+            }
 
-        #endregion
+            // format == 0
+            if (allowFmtAll || allowFmt0)
+            {
+                var m = Regex.Match(cell, @"\[(\w+),( ?)(.*)\]");
+                if (m.Success)
+                {
+                    return new Key(
+                            Stringification.KeyTypesFromString(m.Groups[1].ToString()) ?? KeyTypes.GlobalReference,
+                            m.Groups[3].ToString());
+                }
+            }
+
+            // no
+            return null;
+        }
 
         // -------------------------------------------------------------------------------------------------------------
         #region Handling with enums for KeyTypes

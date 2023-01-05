@@ -19,7 +19,6 @@ using AasxIntegrationBase.AasForms;
 using AnyUi;
 using Newtonsoft.Json;
 using Extensions;
-using AdminShellNS.Extenstions;
 
 namespace AasxPluginGenericForms
 {

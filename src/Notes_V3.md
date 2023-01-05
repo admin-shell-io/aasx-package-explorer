@@ -63,6 +63,7 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * AssetKind/NotApplicable
 * AssetInformation.assetType missing?
 * mapping between Enum:KeyTpes and various other types, such as Enum:AasSubmodelElements
+* DataTypeDefXsd.Integer and DataTypeDefXsd.Int??
 
 * places which deserve a factory/ mapping approach:
   GetKeyType()

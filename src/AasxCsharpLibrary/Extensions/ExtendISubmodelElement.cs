@@ -2,7 +2,6 @@
 using AasCore.Aas3_0_RC02;
 using AasxCompatibilityModels;
 using AdminShellNS.Display;
-using AdminShellNS.Extenstions;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -1361,6 +1360,115 @@ namespace Extensions
             return elem;
         }
 
-    
+        //
+        // Factories
+        //
+
+        private static readonly Dictionary<AasSubmodelElements, string> AasSubmodelElementsToAbbrev = (
+            new Dictionary<AasSubmodelElements, string>()
+            {
+                { AasSubmodelElements.AnnotatedRelationshipElement, "RelA" },
+                { AasSubmodelElements.BasicEventElement, "BEvt" },
+                { AasSubmodelElements.Blob, "Blob" },
+                { AasSubmodelElements.Capability, "Cap" },
+                { AasSubmodelElements.DataElement, "DE" },
+                { AasSubmodelElements.Entity, "Ent" },
+                { AasSubmodelElements.EventElement, "Evt" },
+                { AasSubmodelElements.File, "File" },
+                { AasSubmodelElements.MultiLanguageProperty, "MLP" },
+                { AasSubmodelElements.Operation, "Opr" },
+                { AasSubmodelElements.Property, "Prop" },
+                { AasSubmodelElements.Range, "Range" },
+                { AasSubmodelElements.ReferenceElement, "Ref" },
+                { AasSubmodelElements.RelationshipElement, "Rel" },
+                { AasSubmodelElements.SubmodelElement, "SME" },
+                { AasSubmodelElements.SubmodelElementList, "SML" },
+                { AasSubmodelElements.SubmodelElementCollection, "SMC" }
+            });
+
+        /// <summary>
+        /// Retrieve the string abbreviation of <paramref name="that" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="that" /> is not a valid literal, return <c>null</c>.
+        /// </remarks>
+        public static string? ToString(AasSubmodelElements? that)
+        {
+            if (!that.HasValue)
+            {
+                return null;
+            }
+            else
+            {
+                if (AasSubmodelElementsToAbbrev.TryGetValue(that.Value, out string? value))
+                {
+                    return value;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        private static readonly Dictionary<string, AasSubmodelElements> _aasSubmodelElementsFromAbbrev = (
+            new Dictionary<string, AasSubmodelElements>()
+            {
+                { "RelA", AasSubmodelElements.AnnotatedRelationshipElement },
+                { "BEvt", AasSubmodelElements.BasicEventElement },
+                { "Blob", AasSubmodelElements.Blob },
+                { "Cap", AasSubmodelElements.Capability },
+                { "DE", AasSubmodelElements.DataElement },
+                { "Ent", AasSubmodelElements.Entity },
+                { "Evt", AasSubmodelElements.EventElement },
+                { "File", AasSubmodelElements.File },
+                { "MLP", AasSubmodelElements.MultiLanguageProperty },
+                { "Opr", AasSubmodelElements.Operation },
+                { "Prop", AasSubmodelElements.Property },
+                { "Range", AasSubmodelElements.Range },
+                { "Ref", AasSubmodelElements.ReferenceElement },
+                { "Rel", AasSubmodelElements.RelationshipElement },
+                { "SME", AasSubmodelElements.SubmodelElement },
+                { "SML", AasSubmodelElements.SubmodelElementList },
+                { "SMC", AasSubmodelElements.SubmodelElementCollection }
+            });
+
+        /// <summary>
+        /// Parse the string abbreviation of <see cref="AasSubmodelElements" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="text" /> is not a valid string representation
+        /// of a literal of <see cref="AasSubmodelElements" />,
+        /// return <c>null</c>.
+        /// </remarks>
+        public static AasSubmodelElements? AasSubmodelElementsFromAbbrev(string text)
+        {
+            if (_aasSubmodelElementsFromAbbrev.TryGetValue(text, out AasSubmodelElements value))
+            {
+                return value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Parse the string representation or the abbreviation of <see cref="AasSubmodelElements" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="text" /> is not a valid string representation
+        /// of a literal of <see cref="AasSubmodelElements" />,
+        /// return <c>null</c>.
+        /// </remarks>
+        public static AasSubmodelElements? AasSubmodelElementsFromStringOrAbbrev(string text)
+        {
+            var res = Stringification.AasSubmodelElementsFromString(text);
+            if (res.HasValue)
+                return res;
+
+            return AasSubmodelElementsFromAbbrev(text);
+        }
+
     }
 }

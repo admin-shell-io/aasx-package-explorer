@@ -9,6 +9,9 @@ namespace Extensions
 {
     public static class ExtendLangString
     {
+        // constants
+        public static string LANG_DEFAULT = "en";
+
         // MIHO: not required, see ExtendLangStringSte
         //public static string GetDefaultString(this List<LangString> langStrings, string defaultLang = null)
         //{

@@ -1,9 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
+
+    <!-- force NuGet / Build to put required.dll and more to bin folder -->
+    <!-- Drawback: puts all other *.dll as well :-( -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
   </PropertyGroup>
   <ItemGroup>
     <None Update="AasxPluginExportTable.plugin">
@@ -23,6 +28,7 @@
     <ProjectReference Include="..\AasxIntegrationBaseWpf\AasxIntegrationBaseWpf.csproj" />
     <ProjectReference Include="..\AasxIntegrationBase\AasxIntegrationBase.csproj" />
     <ProjectReference Include="..\AasxPredefinedConcepts\AasxPredefinedConcepts.csproj" />
+    <ProjectReference Include="..\AasxServer.DomainModelV3_0_RC02\AasCore.Aas3_0_RC02.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="LICENSE.TXT">
@@ -30,19 +36,11 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ClosedXML" Version="0.96.0" />
-    <PackageReference Include="DocumentFormat.OpenXml" Version="2.18.0" />
-    <PackageReference Include="ExcelNumberFormat" Version="1.1.0" />
-    <PackageReference Include="FastMember" Version="1.5.0" />
+    <PackageReference Include="ClosedXML" Version="0.94.2" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.7.2" />
+    <PackageReference Include="ExcelNumberFormat" Version="1.0.3" />
+    <PackageReference Include="FastMember" Version="1.3.0" />
     <PackageReference Include="JetBrains.Annotations" Version="2022.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="ImportTimeSeriesFlyout.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-    <Page Update="ExportUmlFlyout.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+</ItemGroup>
 </Project>

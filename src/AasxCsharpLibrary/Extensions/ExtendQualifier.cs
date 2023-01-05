@@ -1,8 +1,10 @@
 ﻿using AasCore.Aas3_0_RC02;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Extensions
@@ -98,6 +100,31 @@ namespace Extensions
             return qualifier;
         }
 
+        // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
+        // ReSharper disable RedundantArgumentDefaultValue
+        public static string ToStringExtended(this Qualifier q, 
+            int format = 0, string delimiter = ",")
+        {
+            var res = "" + q.Type;
+            if (res == "")
+                res += "" + q.SemanticId?.ToStringExtended(format, delimiter);
+
+            if (q.Value != null)
+                res += " = " + q.Value;
+            else if (q.ValueId != null)
+                res += " = " + q.ValueId?.ToStringExtended(format, delimiter);
+
+            return res;
+        }
+        // ReSharper enable MethodOverloadWithOptionalParameter
+        // ReSharper enable RedundantArgumentDefaultValue
+
+        //
+        //
+        // List<Qualifier>
+        //
+        //
+
         #region QualifierCollection
 
         public static Qualifier FindQualifierOfType(this List<Qualifier> qualifiers, string qualifierType)
@@ -116,6 +143,48 @@ namespace Extensions
             }
 
             return null;
+        }
+
+        // ReSharper disable MethodOverloadWithOptionalParameter .. this seems to work, anyhow
+        // ReSharper disable RedundantArgumentDefaultValue
+        public static string ToStringExtended(this List<Qualifier> qualifiers, 
+            int format = 0, string delimiter = ";", string referencesDelimiter = ",")
+        {
+            var res = "";
+            foreach (var q in qualifiers)
+            {
+                if (res != "")
+                    res += delimiter;
+                res += q.ToStringExtended(format, referencesDelimiter);
+            }
+            return res;
+        }
+        // ReSharper enable MethodOverloadWithOptionalParameter
+        // ReSharper enable RedundantArgumentDefaultValue
+
+        public static Qualifier FindType(this List<Qualifier> qualifiers, string type)
+        {
+            if (type == null)
+                return null;
+            foreach (var q in qualifiers)
+                if (q != null && q.Type != null && q.Type.Trim() == type.Trim())
+                    return q;
+            return null;
+        }
+
+        public static Qualifier Parse(string input)
+        {
+            var m = Regex.Match(input, @"\s*([^,]*)(,[^=]+){0,1}\s*=\s*([^,]*)(,.+){0,1}\s*");
+            if (!m.Success)
+                return null;
+
+            return new Qualifier(
+                valueType: DataTypeDefXsd.String,
+                type: m.Groups[1].ToString().Trim(),
+                semanticId: ExtendReference.Parse(m.Groups[1].ToString().Trim()),
+                value: m.Groups[3].ToString().Trim(),
+                valueId: ExtendReference.Parse(m.Groups[1].ToString().Trim())
+            );
         }
 
         #endregion

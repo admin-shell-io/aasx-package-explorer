@@ -33,7 +33,6 @@ using System.Xml.Serialization;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
-using AdminShellNS.Extenstions;
 
 // ReSharper disable MethodHasAsyncOverload
 

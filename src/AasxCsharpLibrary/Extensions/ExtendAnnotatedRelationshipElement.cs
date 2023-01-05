@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
-using AdminShellNS.Extenstions;
+using Extensions;
 using AdminShellNS.Display;
 
 namespace Extensions

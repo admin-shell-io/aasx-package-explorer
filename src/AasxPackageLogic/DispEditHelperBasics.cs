@@ -23,7 +23,6 @@ using AasxIntegrationBase.AdminShellEvents;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AdminShellNS.DiaryData;
-using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 using Newtonsoft.Json;

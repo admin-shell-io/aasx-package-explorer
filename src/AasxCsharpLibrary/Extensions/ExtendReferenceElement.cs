@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AAS = AasCore.Aas3_0_RC02;
-using AdminShellNS.Extenstions;
 using AasCore.Aas3_0_RC02;
 
 namespace Extensions

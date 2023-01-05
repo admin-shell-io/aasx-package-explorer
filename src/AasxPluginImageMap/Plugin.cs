@@ -19,7 +19,6 @@ using Newtonsoft.Json;
 using AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
-using AdminShellNS.Extenstions;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {

@@ -34,7 +34,6 @@ using AasxWpfControlLibrary;
 using AasxWpfControlLibrary.PackageCentral;
 using AdminShellNS;
 using AdminShellNS.DiaryData;
-using AdminShellNS.Extenstions;
 using AnyUi;
 using Extensions;
 using Microsoft.Win32;

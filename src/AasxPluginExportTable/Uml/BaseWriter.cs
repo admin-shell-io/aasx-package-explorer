@@ -20,15 +20,17 @@ using System.Xml;
 using System.Xml.Schema;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AasForms;
-using AdminShellNS;
 using Newtonsoft.Json;
+using AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 
 namespace AasxPluginExportTable.Uml
 {
     public interface IBaseWriter
     {
-        void StartDoc(ExportUmlOptions options);
-        void ProcessSubmodel(AdminShell.Submodel submodel);
+        void StartDoc(ExportUmlRecord options);
+        void ProcessSubmodel(Submodel submodel);
         void ProcessPost();
         void SaveDoc(string fn);
     }
@@ -42,7 +44,7 @@ namespace AasxPluginExportTable.Uml
         // Members
         //
 
-        protected ExportUmlOptions _options = new ExportUmlOptions();
+        protected ExportUmlRecord _options = new ExportUmlRecord();
 
         //
         // Ids
@@ -61,15 +63,15 @@ namespace AasxPluginExportTable.Uml
 
         // TODO (MIHO, 2021-12-24): check if to refactor multiplicity handling as utility
 
-        public string EvalUmlMultiplicity(AdminShell.SubmodelElement sme, bool noOne = false)
+        public string EvalUmlMultiplicity(ISubmodelElement sme, bool noOne = false)
         {
             var one = AasFormConstants.FormMultiplicityAsUmlCardinality[(int)FormMultiplicity.One];
             string res = one;
-            var q = sme?.qualifiers?.FindType("Multiplicity");
+            var q = sme?.Qualifiers?.FindType("Multiplicity");
             if (q != null)
             {
                 foreach (var m in (FormMultiplicity[])Enum.GetValues(typeof(FormMultiplicity)))
-                    if (("" + q.value) == Enum.GetName(typeof(FormMultiplicity), m))
+                    if (("" + q.Value) == Enum.GetName(typeof(FormMultiplicity), m))
                         res = "" + AasFormConstants.FormMultiplicityAsUmlCardinality[(int)m];
             }
 
@@ -86,28 +88,27 @@ namespace AasxPluginExportTable.Uml
             return new Tuple<string, string>("" + multiplicity[0], "" + multiplicity[3]);
         }
 
-        public string EvalFeatureType(AdminShell.Referable rf)
+        public string EvalFeatureType(IReferable rf)
         {
-            if (rf is AdminShell.SubmodelElement sme)
+            if (rf is ISubmodelElement sme)
             {
-                if (sme is AdminShell.Property p && p.valueType.HasContent())
-                    return p.valueType;
+                if (sme is Property p)
+                    return Stringification.ToString(p.ValueType);
 
-                return AdminShell.SubmodelElementWrapper.GetElementNameByAdequateType(sme);
             }
 
-            return rf.GetElementName();
+            return rf.GetSelfDescription().AasElementName;
         }
 
-        public string EvalInitialValue(AdminShell.SubmodelElement sme, int limitToChars = -1)
+        public string EvalInitialValue(ISubmodelElement sme, int limitToChars = -1)
         {
             // access
             if (sme == null || limitToChars == 0)
                 return "";
 
             var res = "";
-            if (sme is AdminShell.Property || sme is AdminShell.Range
-                || sme is AdminShell.MultiLanguageProperty)
+            if (sme is Property || sme is AasCore.Aas3_0_RC02.Range
+                || sme is MultiLanguageProperty)
                 res = sme.ValueAsText();
 
             if (limitToChars != -1 && res.Length > limitToChars)
