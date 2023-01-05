@@ -43,12 +43,12 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public AasCore.Aas3_0_RC02.Reference Reference;
+        public Aas.Reference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
         /// </summary>
-        public AasCore.Aas3_0_RC02.IClass LiveObject;
+        public Aas.IClass LiveObject;
     }
 
     public class IndexOfSignificantAasElements
@@ -58,21 +58,21 @@ namespace AasxPackageLogic.PackageCentral
 
         public IndexOfSignificantAasElements() { }
 
-        public IndexOfSignificantAasElements(AasCore.Aas3_0_RC02.Environment env)
+        public IndexOfSignificantAasElements(Aas.Environment env)
         {
             Index(env);
         }
 
         public void Add(
             SignificantAasElement kind,
-            AasCore.Aas3_0_RC02.Submodel sm,
-            List<AasCore.Aas3_0_RC02.IReferable> parents,
-            AasCore.Aas3_0_RC02.ISubmodelElement sme)
+            Aas.Submodel sm,
+            List<Aas.IReferable> parents,
+            Aas.ISubmodelElement sme)
         {
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                //AasCore.Aas3_0_RC02.Reference = sm?.GetReference()
+                //Aas.Reference = sm?.GetReference()
                 //    + parents?.GetReference()
                 //    + sme?.GetReference(includeParents: false)
                 Reference = sm?.GetReference().Add(parents?.GetReference()).Add(sme?.GetModelReference())
@@ -80,7 +80,7 @@ namespace AasxPackageLogic.PackageCentral
             _records.Add(kind, r);
         }
 
-        public void Index(AasCore.Aas3_0_RC02.Environment env)
+        public void Index(Aas.Environment env)
         {
             // trivial
             if (env == null)
@@ -88,7 +88,7 @@ namespace AasxPackageLogic.PackageCentral
             _records = new MultiValueDictionary<SignificantAasElement, SignificantAasElemRecord>();
 
             // find all Submodels in use, but no one twice
-            var visited = new Dictionary<AasCore.Aas3_0_RC02.Submodel, bool>();
+            var visited = new Dictionary<Aas.Submodel, bool>();
             foreach (var sm in env.FindAllSubmodelGroupedByAAS())
                 if (!visited.ContainsKey(sm))
                     visited.Add(sm, true);
@@ -97,7 +97,7 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var sm in visited.Keys)
                 sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                 {
-                    if (sme is AasCore.Aas3_0_RC02.BasicEventElement)
+                    if (sme is Aas.BasicEventElement)
                     {
                         if (true == sme.SemanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.GetReference(),
@@ -119,7 +119,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         public IEnumerable<SignificantAasElemRecord> Retrieve(
-            AasCore.Aas3_0_RC02.Environment env,
+            Aas.Environment env,
             SignificantAasElement kind)
         {
             if (env == null || true != _records.ContainsKey(kind))

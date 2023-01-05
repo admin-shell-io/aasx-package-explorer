@@ -86,7 +86,7 @@ namespace AasxPackageLogic
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            AasCore.Aas3_0_RC02.Reference targetReference,
+            Aas.Reference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -94,7 +94,7 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public AasCore.Aas3_0_RC02.Reference targetReference;
+        public Aas.Reference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
     }
@@ -110,7 +110,7 @@ namespace AasxPackageLogic
         public string Filter;
 
         // out
-        public List<AasCore.Aas3_0_RC02.Key> ResultKeys;
+        public List<Aas.Key> ResultKeys;
         public VisualElementGeneric ResultVisualElement;
 
         public AnyUiDialogueDataSelectAasEntity(
@@ -150,7 +150,7 @@ namespace AasxPackageLogic
         // (the presets will be provided by the technology implementation)
 
         // out
-        public AasCore.Aas3_0_RC02.Qualifier ResultQualifier = null;
+        public Aas.Qualifier ResultQualifier = null;
 
         public AnyUiDialogueDataSelectQualifierPreset(
             string caption = "",

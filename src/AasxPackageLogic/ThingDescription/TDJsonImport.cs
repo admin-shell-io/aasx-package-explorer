@@ -35,8 +35,8 @@ namespace AasxPackageExplorer
         }
 
         // TD DataSchema Sub classes
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildArraySchema(
-                AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken arrayJObject)
+        public static Aas.SubmodelElementCollection BuildArraySchema(
+                Aas.SubmodelElementCollection dsCollection, JToken arrayJObject)
         {
             foreach (var temp in arrayJObject)
             {
@@ -52,7 +52,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("items"))
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection items = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection items = new Aas.SubmodelElementCollection();
                     if ((arrayJObject["items"].Type).ToString() == "Array")
                     {
                         int i = 0;
@@ -60,7 +60,7 @@ namespace AasxPackageExplorer
                         {
                             string jProperty = x.ToString();
                             JObject _jObject = JObject.Parse(jProperty);
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _item = BuildAbstractDataSchema
+                            Aas.SubmodelElementCollection _item = BuildAbstractDataSchema
                                                                         (_jObject, "item" + (i).ToString(), "item");
                             i = i + 1;
                             _item.SemanticId = createSemanticID("item");
@@ -71,7 +71,7 @@ namespace AasxPackageExplorer
                     {
                         string jItem = (arrayJObject["items"]).ToString();
                         JObject _jObject = JObject.Parse(jItem);
-                        AasCore.Aas3_0_RC02.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1", "item");
+                        Aas.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1", "item");
                         _item.SemanticId = createSemanticID("item");
                         items.Add(_item);
                     }
@@ -84,8 +84,8 @@ namespace AasxPackageExplorer
 
             return dsCollection;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildNumberSchema(
-            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken numberJObject)
+        public static Aas.SubmodelElementCollection BuildNumberSchema(
+            Aas.SubmodelElementCollection dsCollection, JToken numberJObject)
         {
             foreach (var temp in numberJObject)
             {
@@ -117,8 +117,9 @@ namespace AasxPackageExplorer
             }
             return dsCollection;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildIntegerSchema(
-            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken interJObject)
+                      
+        public static Aas.SubmodelElementCollection BuildIntegerSchema(
+            Aas.SubmodelElementCollection dsCollection, JToken interJObject)
         {
             foreach (var temp in interJObject)
             {
@@ -150,8 +151,8 @@ namespace AasxPackageExplorer
             }
             return dsCollection;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildStringSchema(
-            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken stringjObject)
+        public static Aas.SubmodelElementCollection BuildStringSchema(
+            Aas.SubmodelElementCollection dsCollection, JToken stringjObject)
         {
             foreach (var temp in stringjObject)
             {
@@ -186,8 +187,8 @@ namespace AasxPackageExplorer
 
             return dsCollection;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildObjectSchema(
-            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken objectjObject)
+        public static Aas.SubmodelElementCollection BuildObjectSchema(
+            Aas.SubmodelElementCollection dsCollection, JToken objectjObject)
         {
             foreach (var temp in objectjObject)
             {
@@ -195,14 +196,14 @@ namespace AasxPackageExplorer
                 string key = objectElement.Name.ToString();
                 if (key == ("required"))
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection requireds = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection requireds = new Aas.SubmodelElementCollection();
                     requireds.IdShort = "required";
                     requireds.AddDescription("en", "Defines which members of the object type are mandatory.");
-                    requireds.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                    requireds.Qualifiers = new List<Aas.Qualifier>();
                     int i = 1;
                     foreach (var x in objectjObject["required"])
                     {
-                        AasCore.Aas3_0_RC02.Qualifier _required = createAASQualifier("required", x.ToString());
+                        Aas.Qualifier _required = createAASQualifier("required", x.ToString());
                         _required.Type = "required" + i.ToString();
                         requireds.Qualifiers.Add(_required);
                         i = i + 1;
@@ -211,19 +212,19 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("properties"))
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection _properties = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection _properties = new Aas.SubmodelElementCollection();
                     _properties.IdShort = "properties";
                     _properties.Category = "PARAMETER";
                     //_properties.ordered = false;
                     //_properties.allowDuplicates = false;
-                    _properties.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                    _properties.Kind = Aas.ModelingKind.Instance;
                     _properties.SemanticId = createSemanticID("properties");
-                    _properties.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                    _properties.Qualifiers = new List<Aas.Qualifier>();
                     foreach (var temp1 in objectjObject["properties"])
                     {
                         JProperty x = (JProperty)temp1;
                         JObject _propertyJobject = JObject.FromObject(x.Value);
-                        AasCore.Aas3_0_RC02.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(
+                        Aas.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(
                                                                     _propertyJobject, x.Name.ToString(), "property");
                         _propertyC.SemanticId = createSemanticID("property");
                         _properties.Add(_propertyC);
@@ -236,14 +237,14 @@ namespace AasxPackageExplorer
             return dsCollection;
         }
 
-        // AAS SubmodelMultiLanguage Property
-        public static AasCore.Aas3_0_RC02.MultiLanguageProperty BuildMultiLanguageProperty(
-            string idShort, List<AasCore.Aas3_0_RC02.LangString> texts, string description)
+        // AAS SubmodelMultiLanguage Aas.Property
+        public static Aas.MultiLanguageProperty BuildMultiLanguageProperty(
+            string idShort, List<Aas.LangString> texts, string description)
         {
-            AasCore.Aas3_0_RC02.MultiLanguageProperty _multiLanguageProperty = new AasCore.Aas3_0_RC02.MultiLanguageProperty();
+            Aas.MultiLanguageProperty _multiLanguageProperty = new Aas.MultiLanguageProperty();
             _multiLanguageProperty.IdShort = idShort;
             _multiLanguageProperty.Category = "PARAMETER";
-            _multiLanguageProperty.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            _multiLanguageProperty.Kind = Aas.ModelingKind.Instance;
             foreach (var text in texts)
             {
                 _multiLanguageProperty.Value.Add(text);
@@ -253,30 +254,30 @@ namespace AasxPackageExplorer
         }
 
         // TD Forms
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAdditionalResponse(JObject jobject, string idshort)
+        public static Aas.SubmodelElementCollection BuildAdditionalResponse(JObject jobject, string idshort)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection arCollection = new()
+            Aas.SubmodelElementCollection arCollection = new()
             {
                 IdShort = idshort,
                 Category = "PARAMETER",
                 //arCollection.ordered = false;
                 //arCollection.allowDuplicates = false;
-                Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance
+                Kind = Aas.ModelingKind.Instance
             };
             arCollection.AddDescription("en", "Communication metadata describing the expected response message " +
                 "                              for additional responses.");
-            arCollection.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            arCollection.Qualifiers = new List<Aas.Qualifier>();
             if (jobject.ContainsKey("success"))
             {
-                arCollection.Qualifiers.Add(new AasCore.Aas3_0_RC02.Qualifier("success", AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: jobject["success"].ToString()));
+                arCollection.Qualifiers.Add(new Aas.Qualifier("success", Aas.DataTypeDefXsd.String, value: jobject["success"].ToString()));
             }
             if (jobject.ContainsKey("contentType"))
             {
-                arCollection.Qualifiers.Add(new AasCore.Aas3_0_RC02.Qualifier("contentTypeschema", AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: jobject["contentType"].ToString()));
+                arCollection.Qualifiers.Add(new Aas.Qualifier("contentTypeschema", Aas.DataTypeDefXsd.String, value: jobject["contentType"].ToString()));
             }
             if (jobject.ContainsKey("schema"))
             {
-                arCollection.Qualifiers.Add(new AasCore.Aas3_0_RC02.Qualifier("schema", AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: jobject["schema"].ToString()));
+                arCollection.Qualifiers.Add(new Aas.Qualifier("schema", Aas.DataTypeDefXsd.String, value: jobject["schema"].ToString()));
             }
             return arCollection;
         }
@@ -284,16 +285,16 @@ namespace AasxPackageExplorer
         // ConstructCommon Elements
 
         // TD DataSchema
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAbstractDataSchema(
+        public static Aas.SubmodelElementCollection BuildAbstractDataSchema(
             JObject dsjObject, string idShort, string type)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection abstractDS = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection abstractDS = new Aas.SubmodelElementCollection();
             abstractDS.IdShort = idShort;
             abstractDS.Category = "PARAMETER";
             //abstractDS.ordered = false;
             //abstractDS.allowDuplicates = false;
-            abstractDS.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
-            abstractDS.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            abstractDS.Kind = Aas.ModelingKind.Instance;
+            abstractDS.Qualifiers = new List<Aas.Qualifier>();
             abstractDS.SemanticId = createSemanticID(type);
             string[] qualList = { "const","default",
                                           "unit", "readOnly", "writeOnly","format","@type" };
@@ -320,15 +321,15 @@ namespace AasxPackageExplorer
                 }
                 if (key == "titles")
                 {
-                    List<AasCore.Aas3_0_RC02.LangString> titleList = new List<AasCore.Aas3_0_RC02.LangString>();
+                    List<Aas.LangString> titleList = new List<Aas.LangString>();
                     foreach (var temp2 in dsELement.Value)
                     {
                         JProperty x = (JProperty)temp2;
-                        AasCore.Aas3_0_RC02.LangString title = new AasCore.Aas3_0_RC02.LangString(
+                        Aas.LangString title = new Aas.LangString(
                                                             (x.Name).ToString(), (x.Value).ToString());
                         titleList.Add(title);
                     }
-                    AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(
+                    Aas.MultiLanguageProperty mlp = BuildMultiLanguageProperty(
                                                           key, titleList, "Provides multi-language " +
                                                           "human-readable titles (e.g., display a text for " +
                                                           "UI representation in different languages)");
@@ -336,15 +337,15 @@ namespace AasxPackageExplorer
                 }
                 if (key == "oneOf")
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection oneOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection oneOf = new Aas.SubmodelElementCollection();
                     oneOf.IdShort = "oneOf";
                     oneOf.Category = "PARAMETER";
                     //oneOf.ordered = false;
                     //oneOf.allowDuplicates = false;
-                    oneOf.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                    oneOf.Kind = Aas.ModelingKind.Instance;
                     oneOf.AddDescription("en", "Used to ensure that the data is valid " +
                                                 "against one of the specified schemas in the array.");
-                    oneOf.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                    oneOf.Qualifiers = new List<Aas.Qualifier>();
                     int i = 0;
                     foreach (var ds in dsjObject["oneOf"])
                     {
@@ -392,19 +393,19 @@ namespace AasxPackageExplorer
                 {
                     if (dsArrayList.Contains(key))
                     {
-                        AasCore.Aas3_0_RC02.SubmodelElementCollection arrayCollection = new
-                                                        AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                        Aas.SubmodelElementCollection arrayCollection = new
+                                                        Aas.SubmodelElementCollection();
                         arrayCollection.IdShort = key;
                         arrayCollection.Category = "PARAMETER";
                         //arrayCollection.ordered = false;
                         //arrayCollection.allowDuplicates = false;
-                        arrayCollection.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                        arrayCollection.Kind = Aas.ModelingKind.Instance;
                         arrayCollection.AddDescription("en", TDSemanticId.getarrayListDesc(key));
-                        arrayCollection.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                        arrayCollection.Qualifiers = new List<Aas.Qualifier>();
                         int index = 1;
                         foreach (var x in dsELement.Value)
                         {
-                            AasCore.Aas3_0_RC02.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(),
+                            Aas.Qualifier _arrayCQual = createAASQualifier(key + index.ToString(),
                                 (x).ToString());
                             arrayCollection.Qualifiers.Add(_arrayCQual);
                             index = index + 1;
@@ -425,19 +426,19 @@ namespace AasxPackageExplorer
         }
 
         // TD Interaction Avoidance
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAbstractInteractionAvoidance(
+        public static Aas.SubmodelElementCollection BuildAbstractInteractionAvoidance(
             JObject jObject, string idShort, string type)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(
+            Aas.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(
                                                         jObject, idShort, type);
             if (jObject.ContainsKey("uriVariables"))
             {
-                AasCore.Aas3_0_RC02.SubmodelElementCollection _uriVariables = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                Aas.SubmodelElementCollection _uriVariables = new Aas.SubmodelElementCollection();
                 _uriVariables.IdShort = "uriVariables";
                 _uriVariables.Category = "PARAMETER";
                 //_uriVariables.ordered = false;
                 //_uriVariables.allowDuplicates = false;
-                _uriVariables.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                _uriVariables.Kind = Aas.ModelingKind.Instance;
                 _uriVariables.SemanticId = createSemanticID("uriVariables");
                 foreach (var temp in jObject["uriVariables"])
                 {
@@ -456,10 +457,10 @@ namespace AasxPackageExplorer
         }
 
         // TD Properties
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDProperty(
+        public static Aas.SubmodelElementCollection BuildTDProperty(
                                                 JObject _propertyJObject, string propertyName)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(
+            Aas.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(
                                                                 _propertyJObject, propertyName, "property");
             _tdProperty.SemanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
@@ -479,14 +480,14 @@ namespace AasxPackageExplorer
             }
             return _tdProperty;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDProperties(JObject tdObject)
+        public static Aas.SubmodelElementCollection BuildTDProperties(JObject tdObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection tdProperties = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection tdProperties = new Aas.SubmodelElementCollection();
             tdProperties.IdShort = "properties";
             tdProperties.Category = "PARAMETER";
             //tdProperties.ordered = false;
             //tdProperties.allowDuplicates = false;
-            tdProperties.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            tdProperties.Kind = Aas.ModelingKind.Instance;
             tdProperties.AddDescription("en", "Properties definion of the thing Description");
             tdProperties.SemanticId = createSemanticID("properties");
             foreach (var temp in tdObject["properties"])
@@ -499,9 +500,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Events
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
+        public static Aas.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(
+            Aas.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(
                 _eventJObject, actionName, "event");
             _tdEvent.SemanticId = createSemanticID("event");
             string[] dsList = { "subscription", "data", "cancellation" };
@@ -516,14 +517,14 @@ namespace AasxPackageExplorer
             }
             return _tdEvent;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDEvents(JObject jObject)
+        public static Aas.SubmodelElementCollection BuildTDEvents(JObject jObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection tdEvents = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection tdEvents = new Aas.SubmodelElementCollection();
             tdEvents.IdShort = "events";
             tdEvents.Category = "PARAMETER";
             //tdEvents.ordered = false;
             //tdEvents.allowDuplicates = false;
-            tdEvents.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            tdEvents.Kind = Aas.ModelingKind.Instance;
             tdEvents.AddDescription("en", "All Event-based Interaction Affordances of the Thing.");
             tdEvents.SemanticId = createSemanticID("events");
             foreach (var temp in jObject["events"])
@@ -535,14 +536,14 @@ namespace AasxPackageExplorer
         }
 
         // TD Actions
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDActions(JObject jObject)
+        public static Aas.SubmodelElementCollection BuildTDActions(JObject jObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection tdActions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection tdActions = new Aas.SubmodelElementCollection();
             tdActions.IdShort = "actions";
             tdActions.Category = "PARAMETER";
             //tdActions.ordered = false;
             //tdActions.allowDuplicates = false;
-            tdActions.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            tdActions.Kind = Aas.ModelingKind.Instance;
             tdActions.AddDescription("en", "All Action-based Interaction Affordances of the Thing.");
             tdActions.SemanticId = createSemanticID("actions");
             foreach (var temp in jObject["actions"])
@@ -553,9 +554,9 @@ namespace AasxPackageExplorer
             }
             return tdActions;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
+        public static Aas.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(
+            Aas.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(
                 _actionJObject, actionName, "action");
             _tdAction.SemanticId = createSemanticID("action");
             string[] dsList = { "input", "output" };
@@ -577,19 +578,19 @@ namespace AasxPackageExplorer
         }
 
         // TD Links
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDLink(JObject linkJObject, string idShort)
+        public static Aas.SubmodelElementCollection BuildTDLink(JObject linkJObject, string idShort)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdLink = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection _tdLink = new Aas.SubmodelElementCollection();
             _tdLink.IdShort = idShort;
             _tdLink.Category = "PARAMETER";
             //_tdLink.ordered = false;
             //_tdLink.allowDuplicates = false;
-            _tdLink.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            _tdLink.Kind = Aas.ModelingKind.Instance;
             _tdLink.AddDescription("en", "A link can be viewed as a statement of the form link" +
                 "context has a relation type resource at link target, " +
                 "where the optional target attributes may further describe the resource");
             _tdLink.SemanticId = createSemanticID("link");
-            _tdLink.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            _tdLink.Qualifiers = new List<Aas.Qualifier>();
             string[] linkElemList = { "href", "type", "rel", "anchor", "sizes" };
             foreach (var temp in (JToken)linkJObject)
             {
@@ -602,14 +603,14 @@ namespace AasxPackageExplorer
             }
             return _tdLink;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDLinks(JObject jObject)
+        public static Aas.SubmodelElementCollection BuildTDLinks(JObject jObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection tdLinks = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection tdLinks = new Aas.SubmodelElementCollection();
             tdLinks.IdShort = "links";
             tdLinks.Category = "PARAMETER";
             //tdLinks.ordered = false;
             //tdLinks.allowDuplicates = false;
-            tdLinks.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            tdLinks.Kind = Aas.ModelingKind.Instance;
             tdLinks.AddDescription("en", "Provides Web links to arbitrary resources that relate to" +
                                     "the specified Thing Description.");
             tdLinks.SemanticId = createSemanticID("links");
@@ -623,16 +624,16 @@ namespace AasxPackageExplorer
         }
 
         // TD Security Definition
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildSecurityDefinition(
+        public static Aas.SubmodelElementCollection BuildSecurityDefinition(
                     JObject jObject, string definitionName)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _securityDefinition = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection _securityDefinition = new Aas.SubmodelElementCollection();
             _securityDefinition.IdShort = definitionName;
             _securityDefinition.Category = "PARAMETER";
             //_securityDefinition.ordered = false;
             //_securityDefinition.allowDuplicates = false;
-            _securityDefinition.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
-            _securityDefinition.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            _securityDefinition.Kind = Aas.ModelingKind.Instance;
+            _securityDefinition.Qualifiers = new List<Aas.Qualifier>();
             if (jObject.ContainsKey("@type")) // needs to be discussed with Mr. Sebastian. When input is an array 
                                               // requires an example
             {
@@ -664,18 +665,18 @@ namespace AasxPackageExplorer
                     {
                         if ((jObject["oneOf"].Type).ToString() == "Array")
                         {
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _oneOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                            Aas.SubmodelElementCollection _oneOf = new Aas.SubmodelElementCollection();
                             _oneOf.IdShort = "oneOf";
                             _oneOf.Category = "PARAMETER";
                             //_oneOf.ordered = false;
                             //_oneOf.allowDuplicates = false;
-                            _oneOf.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                            _oneOf.Kind = Aas.ModelingKind.Instance;
                             _oneOf.AddDescription("en", "	Array of two or more strings identifying other" +
                                 "named security scheme definitions, any one of which, when satisfied, " +
                                 "will allow access. Only one may be chosen for use.");
                             _oneOf.SemanticId = createSemanticID("oneOf");
                             int index = 1;
-                            _oneOf.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                            _oneOf.Qualifiers = new List<Aas.Qualifier>();
                             foreach (var x in jObject["oneOf"])
                             {
                                 _oneOf.Qualifiers.Add(createAASQualifier("oneOf" + (index).ToString(), (x).ToString()));
@@ -693,17 +694,17 @@ namespace AasxPackageExplorer
                     {
                         if ((jObject["allOf"].Type).ToString() == "Array")
                         {
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _allOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                            Aas.SubmodelElementCollection _allOf = new Aas.SubmodelElementCollection();
                             _allOf.IdShort = "oneOf";
                             _allOf.Category = "PARAMETER";
                             //_allOf.ordered = false;
                             //_allOf.allowDuplicates = false;
-                            _allOf.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                            _allOf.Kind = Aas.ModelingKind.Instance;
                             _allOf.AddDescription("en", "Array of two or more strings identifying other" +
                                 "named security scheme definitions, all of which must be satisfied for access.");
                             _allOf.SemanticId = createSemanticID("allOf");
                             int index = 1;
-                            _allOf.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                            _allOf.Qualifiers = new List<Aas.Qualifier>();
                             foreach (var x in jObject["allOf"])
                             {
                                 _allOf.Qualifiers.Add(createAASQualifier("allOf" + (index).ToString(),
@@ -824,12 +825,12 @@ namespace AasxPackageExplorer
                         }
                         if ((jObject["scopes"].Type).ToString() == "Array")
                         {
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _scopes = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                            Aas.SubmodelElementCollection _scopes = new Aas.SubmodelElementCollection();
                             _scopes.IdShort = "scopes";
                             _scopes.Category = "PARAMETER";
                             //_scopes.ordered = false;
                             //_scopes.allowDuplicates = false;
-                            _scopes.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                            _scopes.Kind = Aas.ModelingKind.Instance;
                             _scopes.AddDescription("en", "Set of authorization scope identifiers " +
                                 "provided as an array. These are provided in tokens returned " +
                                 "by an authorization server and associated with forms in order to " +
@@ -837,7 +838,7 @@ namespace AasxPackageExplorer
                                 "associated with a form should be chosen from those defined in an " +
                                 "OAuth2SecurityScheme active on that form.");
                             _scopes.SemanticId = createSemanticID("scopes");
-                            _scopes.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                            _scopes.Qualifiers = new List<Aas.Qualifier>();
                             int index = 1;
                             foreach (var x in jObject["scopes"])
                             {
@@ -853,19 +854,19 @@ namespace AasxPackageExplorer
             }
             return _securityDefinition;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDSecurityDefinitions(JObject jObject)
+        public static Aas.SubmodelElementCollection BuildTDSecurityDefinitions(JObject jObject)
         {
 
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _securityDefinitions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection _securityDefinitions = new Aas.SubmodelElementCollection();
             _securityDefinitions.IdShort = "securityDefinitions";
             _securityDefinitions.Category = "PARAMETER";
             //_securityDefinitions.ordered = false;
             //_securityDefinitions.allowDuplicates = false;
-            _securityDefinitions.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            _securityDefinitions.Kind = Aas.ModelingKind.Instance;
             _securityDefinitions.AddDescription("en", "Set of named security configurations" +
                 "(definitions only). Not actually applied unless names are used in a security name-value pair.");
             _securityDefinitions.SemanticId = createSemanticID("securityDefinitions");
-            _securityDefinitions.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            _securityDefinitions.Qualifiers = new List<Aas.Qualifier>();
             foreach (var temp in jObject["securityDefinitions"])
             {
                 JProperty x1 = (JProperty)temp;
@@ -876,18 +877,18 @@ namespace AasxPackageExplorer
         }
 
         // TD Forms
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDForm(JObject formjObject, string idShort)
+        public static Aas.SubmodelElementCollection BuildTDForm(JObject formjObject, string idShort)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection tdForm = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection tdForm = new Aas.SubmodelElementCollection();
             tdForm.IdShort = idShort;
             tdForm.Category = "PARAMETER";
             //tdForm.ordered = false;
             //tdForm.allowDuplicates = false;
-            tdForm.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            tdForm.Kind = Aas.ModelingKind.Instance;
             tdForm.AddDescription("en", "Hypermedia controls that describe how an operation can be performed." +
                                         " Form is a  serializations of Protocol Bindings");
             tdForm.SemanticId = createSemanticID("form");
-            tdForm.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            tdForm.Qualifiers = new List<Aas.Qualifier>();
             string[] qualList = { "href", "contentType", "contentCoding", "subprotocol", "security", "scopes", "op" };
             string[] qualArrayList = { "security", "scopes", "op" };
 
@@ -897,12 +898,12 @@ namespace AasxPackageExplorer
                 string key = formElement.Name.ToString();
                 if (key == "response") // Need to check 
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection _response = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection _response = new Aas.SubmodelElementCollection();
                     _response.IdShort = "response";
                     _response.Category = "PARAMETER";
                     //_response.ordered = false;
                     //_response.allowDuplicates = false;
-                    _response.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                    _response.Kind = Aas.ModelingKind.Instance;
                     _response.AddDescription("en", "This optional term can be used if, e.g., the output" +
                         "communication metadata differ from input metadata (e.g., output contentType differ" +
                         "from the input contentType). The response name contains metadata that is only valid for" +
@@ -912,12 +913,12 @@ namespace AasxPackageExplorer
                 }
                 else if (key == "additionalResponses") // Need to check 
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection _response = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                    Aas.SubmodelElementCollection _response = new Aas.SubmodelElementCollection();
                     _response.IdShort = "additionalResponses";
                     _response.Category = "PARAMETER";
                     //_response.ordered = false;
                     //_response.allowDuplicates = false;
-                    _response.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                    _response.Kind = Aas.ModelingKind.Instance;
                     _response.AddDescription("en", "This optional term can be used if additional" +
                         "expected responses are possible, e.g. for error reporting. Each additional" +
                         "response needs to be distinguished from others in some way (for example, by" +
@@ -943,19 +944,19 @@ namespace AasxPackageExplorer
                 {
                     if (qualArrayList.Contains(formElement.Name))
                     {
-                        AasCore.Aas3_0_RC02.SubmodelElementCollection _arrayElement = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                        Aas.SubmodelElementCollection _arrayElement = new Aas.SubmodelElementCollection();
                         _arrayElement.IdShort = key;
                         _arrayElement.Category = "PARAMETER";
                         //_arrayElement.ordered = false;
                         //_arrayElement.allowDuplicates = false;
-                        _arrayElement.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                        _arrayElement.Kind = Aas.ModelingKind.Instance;
                         _arrayElement.AddDescription("en", TDSemanticId.getarrayListDescription(key));
                         _arrayElement.SemanticId = createSemanticID(key);
-                        _arrayElement.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                        _arrayElement.Qualifiers = new List<Aas.Qualifier>();
                         int index = 0;
                         foreach (var x in formjObject[key])
                         {
-                            AasCore.Aas3_0_RC02.Qualifier _formQualifier = createAASQualifier(key, (x).ToString());
+                            Aas.Qualifier _formQualifier = createAASQualifier(key, (x).ToString());
                             _formQualifier.Type = key + index.ToString();
                             _arrayElement.Qualifiers.Add(_formQualifier);
 
@@ -982,14 +983,14 @@ namespace AasxPackageExplorer
             }
             return tdForm;
         }
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildForms(JObject tdJObject)
+        public static Aas.SubmodelElementCollection BuildForms(JObject tdJObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection forms = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection forms = new Aas.SubmodelElementCollection();
             forms.IdShort = "forms";
             forms.Category = "PARAMETER";
             //forms.ordered = false;
             //forms.allowDuplicates = false;
-            forms.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            forms.Kind = Aas.ModelingKind.Instance;
             forms.AddDescription("en", "Set of form hypermedia controls that describe how an operation" +
                                            "can be performed." +
                                         "Forms are serializations of Protocol Bindings");
@@ -1002,22 +1003,22 @@ namespace AasxPackageExplorer
         }
 
         // AAS Semantic ID
-        public static AasCore.Aas3_0_RC02.Reference createSemanticID(string tdType)
+        public static Aas.Reference createSemanticID(string tdType)
         {
-            //AasCore.Aas3_0_RC02.Key tdSemanticKey = new AasCore.Aas3_0_RC02.Key();
+            //Aas.Key tdSemanticKey = new Key();
             //tdSemanticKey.Type = "GlobalReference";
             //tdSemanticKey.local = true;
             //tdSemanticKey.idType = "IRI";
             //tdSemanticKey.Value = TDSemanticId.getSemanticID(tdType);
-            AasCore.Aas3_0_RC02.Reference tdSemanticId = new(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(tdType), TDSemanticId.getSemanticID(tdType)) });
+            Aas.Reference tdSemanticId = new(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(tdType), TDSemanticId.getSemanticID(tdType)) });
 
             return tdSemanticId;
         }
 
-        // AAS Qualifier
-        public static AasCore.Aas3_0_RC02.Qualifier createAASQualifier(string qualifierType, string qualifierValue)
+        // AAS Aas.Qualifier
+        public static Aas.Qualifier createAASQualifier(string qualifierType, string qualifierValue)
         {
-            AasCore.Aas3_0_RC02.Qualifier aasQualifier = new AasCore.Aas3_0_RC02.Qualifier(qualifierType, AasCore.Aas3_0_RC02.DataTypeDefXsd.String, value: qualifierValue);
+            Aas.Qualifier aasQualifier = new Aas.Qualifier(qualifierType, Aas.DataTypeDefXsd.String, value: qualifierValue);
             if (TDSemanticId.getSemanticID(qualifierType) != "empty")
             {
                 aasQualifier.SemanticId = createSemanticID(qualifierType);
@@ -1026,15 +1027,15 @@ namespace AasxPackageExplorer
         }
 
 
-        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildschemaDefinitions(JObject tdJObject)
+        public static Aas.SubmodelElementCollection BuildschemaDefinitions(JObject tdJObject)
         {
-            AasCore.Aas3_0_RC02.SubmodelElementCollection _schemaDefinitions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+            Aas.SubmodelElementCollection _schemaDefinitions = new Aas.SubmodelElementCollection();
             _schemaDefinitions.IdShort = "schemaDefinitions";
             _schemaDefinitions.Category = "PARAMETER";
-            _schemaDefinitions.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+            _schemaDefinitions.Kind = Aas.ModelingKind.Instance;
             _schemaDefinitions.AddDescription("en", "Set of named data schemas." +
                                 "To be used in a schema name-value pair inside an AdditionalExpectedResponse object.");
-            _schemaDefinitions.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+            _schemaDefinitions.Qualifiers = new List<Aas.Qualifier>();
             //_schemaDefinitions.SemanticId = createSemanticID("schemaDefinitions");
             _schemaDefinitions.SemanticId = createSemanticID("schemaDefinitions");
             foreach (var sdKey in tdJObject["schemaDefinitions"])
@@ -1046,8 +1047,8 @@ namespace AasxPackageExplorer
             return _schemaDefinitions;
         }
         public static JObject ImportTDJsontoSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Reference smref)
+            string inputFn, Aas.Environment env, Aas.Submodel sm,
+            Aas.Reference smref)
         {
             JObject exportData = new JObject();
             try
@@ -1060,7 +1061,7 @@ namespace AasxPackageExplorer
                 {
                     tdJObject = JObject.FromObject(JToken.ReadFrom(jsonTextReader));
                 }
-                sm.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                sm.Qualifiers = new List<Aas.Qualifier>();
                 foreach (var tempThing in (JToken)tdJObject)
                 {
                     JProperty thingE = (JProperty)tempThing;
@@ -1082,15 +1083,15 @@ namespace AasxPackageExplorer
                     }
                     if (key == "titles")
                     {
-                        List<AasCore.Aas3_0_RC02.LangString> titleList = new List<AasCore.Aas3_0_RC02.LangString>();
+                        List<Aas.LangString> titleList = new List<Aas.LangString>();
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AasCore.Aas3_0_RC02.LangString title = new AasCore.Aas3_0_RC02.LangString((x.Name).ToString(),
+                            Aas.LangString title = new Aas.LangString((x.Name).ToString(),
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                        Aas.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
                             "Provides multi-language human-readable titles (e.g., display a text for UI" +
                             "representation in different languages)");
                         sm.Add(mlp);
@@ -1100,7 +1101,7 @@ namespace AasxPackageExplorer
                     {
                         string id = thingE.Value.ToString();
                         sm.Id = id;
-                        smref.Keys[0] = new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, id);
+                        smref.Keys[0] = new Aas.Key(Aas.KeyTypes.Submodel, id);
                     }
                     if (key == "properties")
                     {
@@ -1128,15 +1129,15 @@ namespace AasxPackageExplorer
                     }
                     if (key == "titles")
                     {
-                        List<AasCore.Aas3_0_RC02.LangString> titleList = new List<AasCore.Aas3_0_RC02.LangString>();
+                        List<Aas.LangString> titleList = new List<Aas.LangString>();
                         foreach (var temp in thingE.Value)
                         {
                             JProperty x = (JProperty)temp;
-                            AasCore.Aas3_0_RC02.LangString title = new AasCore.Aas3_0_RC02.LangString((x.Name).ToString(),
+                            Aas.LangString title = new Aas.LangString((x.Name).ToString(),
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                        Aas.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
                             "Provides multi-language human-readable titles (e.g., display a text for UI " +
                             "representation in different languages)");
                         sm.Add(mlp);
@@ -1150,7 +1151,7 @@ namespace AasxPackageExplorer
                         { intance = (versionObject["instance"]).ToString(); }
                         if (versionObject.ContainsKey("model"))
                         { model = (versionObject["model"]).ToString(); }
-                        sm.Administration = new AasCore.Aas3_0_RC02.AdministrativeInformation(version: intance, revision: model);
+                        sm.Administration = new Aas.AdministrativeInformation(version: intance, revision: model);
                     }
                     if (key == "schemaDefinitions")
                     {
@@ -1168,15 +1169,15 @@ namespace AasxPackageExplorer
                         };
                         if (key == "@context")
                         {
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _context = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                            Aas.SubmodelElementCollection _context = new Aas.SubmodelElementCollection();
                             _context.IdShort = key;
                             _context.Category = "PARAMETER";
                             //_context.ordered = false;
                             //_context.allowDuplicates = false;
-                            _context.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                            _context.Kind = Aas.ModelingKind.Instance;
                             _context.AddDescription("en", "JSON-LD keyword to label the object with semantic tags ");
                             _context.SemanticId = createSemanticID(key);
-                            _context.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                            _context.Qualifiers = new List<Aas.Qualifier>();
                             foreach (var temp in thingE.Value)
                             {
                                 if ((temp.Type).ToString() == "String")
@@ -1197,18 +1198,18 @@ namespace AasxPackageExplorer
                         }
                         if (tdArrayList.Contains(key))
                         {
-                            AasCore.Aas3_0_RC02.SubmodelElementCollection _profile = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
+                            Aas.SubmodelElementCollection _profile = new Aas.SubmodelElementCollection();
                             _profile.IdShort = key;
                             _profile.Category = "PARAMETER";
                             //_profile.ordered = false;
                             //_profile.allowDuplicates = false;
-                            _profile.Kind = AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                            _profile.Kind = Aas.ModelingKind.Instance;
                             _profile.AddDescription("en", secProfile[key].ToString());
-                            _profile.Qualifiers = new List<AasCore.Aas3_0_RC02.Qualifier>();
+                            _profile.Qualifiers = new List<Aas.Qualifier>();
                             int index = 1;
                             foreach (var x in thingE.Value)
                             {
-                                AasCore.Aas3_0_RC02.Qualifier _profileQual = createAASQualifier(key, (x).ToString());
+                                Aas.Qualifier _profileQual = createAASQualifier(key, (x).ToString());
                                 _profileQual.Type = key + index.ToString();
                                 _profile.Qualifiers.Add(_profileQual);
                                 index = index + 1;

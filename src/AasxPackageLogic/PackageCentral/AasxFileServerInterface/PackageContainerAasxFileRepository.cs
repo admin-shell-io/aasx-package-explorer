@@ -118,7 +118,7 @@ namespace AasxPackageLogic.PackageCentral.AasxFileServerInterface
                 // load
                 var packageEnv = new AdminShellPackageEnv(fileName);
 
-                // for each Admin Shell and then each AssetInformation
+                // for each Admin Shell and then each Aas.AssetInformation
                 var packageContainer = new PackageContainerRepoItem()
                 {
                     ContainerOptions = PackageContainerOptionsBase.CreateDefault(Options.Curr),

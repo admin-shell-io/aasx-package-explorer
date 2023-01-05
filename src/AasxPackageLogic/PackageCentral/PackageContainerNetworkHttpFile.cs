@@ -301,7 +301,7 @@ namespace AasxPackageLogic.PackageCentral
                 }
                 else
                 {
-                    Log.Singleton.Error("DownloadFromSource Server gave: Operation not allowed!");
+                    Log.Singleton.Error("DownloadFromSource Server gave: Aas.Operation not allowed!");
                     throw new PackageContainerException($"Server operation not allowed!");
                 }
             }
@@ -445,7 +445,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Log.Singleton.Error("UploadToServerAsync Server gave: Operation not allowed!");
+                    Log.Singleton.Error("UploadToServerAsync Server gave: Aas.Operation not allowed!");
                     throw new PackageContainerException($"Server operation not allowed!");
                 }
             }

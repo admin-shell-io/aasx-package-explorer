@@ -335,7 +335,7 @@ namespace AasxPackageExplorer
                 else if (entity is VisualElementSubmodelRef vesmref)
                 {
                     // data
-                    AasCore.Aas3_0_RC02.AssetAdministrationShell aas = null;
+                    Aas.AssetAdministrationShell aas = null;
                     if (vesmref.Parent is VisualElementAdminShell xpaas)
                         aas = xpaas.theAas;
 

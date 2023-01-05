@@ -62,7 +62,7 @@ namespace AasxPackageExplorer
 
             // fill combo box
             ComboBoxFilter.Items.Add("All");
-            foreach (var x in Enum.GetNames(typeof(AasCore.Aas3_0_RC02.KeyTypes)))
+            foreach (var x in Enum.GetNames(typeof(Aas.KeyTypes)))
                 ComboBoxFilter.Items.Add(x);
 
             // select an item
@@ -128,12 +128,12 @@ namespace AasxPackageExplorer
             //
             // IReferable
             //
-            if (siMdo is AasCore.Aas3_0_RC02.IReferable dataRef)
+            if (siMdo is Aas.IReferable dataRef)
             {
                 // check if a valuable item was selected
                 // new special case: "GlobalReference" allows to select all (2021-09-11)
                 var skip = DiaData.Filter != null &&
-                    DiaData.Filter.Trim().ToLower() == AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference).Trim().ToLower();
+                    DiaData.Filter.Trim().ToLower() == Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference).Trim().ToLower();
                 if (!skip)
                 {
                     var elemname = dataRef.GetSelfDescription().AasElementName;
@@ -151,9 +151,9 @@ namespace AasxPackageExplorer
             //
             // other special cases
             //
-            if (siMdo is AasCore.Aas3_0_RC02.Reference smref && CheckFilter("submodelref"))
+            if (siMdo is Aas.Reference smref && CheckFilter("submodelref"))
             {
-                DiaData.ResultKeys = new List<AasCore.Aas3_0_RC02.Key>();
+                DiaData.ResultKeys = new List<Aas.Key>();
                 DiaData.ResultKeys.AddRange(smref.Keys);
                 return true;
             }
@@ -169,7 +169,7 @@ namespace AasxPackageExplorer
                     DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
 
                     // .. enriched by a last element
-                    DiaData.ResultKeys.Add(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
+                    DiaData.ResultKeys.Add(new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag));
 
                     // ok
                     return true;
@@ -210,7 +210,7 @@ namespace AasxPackageExplorer
                 return null;
             var res = filter;
             if (res.Trim().ToLower() == "submodelelement")
-                foreach (var s in Enum.GetNames(typeof(AasCore.Aas3_0_RC02.AasSubmodelElements)))
+                foreach (var s in Enum.GetNames(typeof(Aas.AasSubmodelElements)))
                     res += " " + s + " ";
             if (res.Trim().ToLower() == "all")
                 return null;

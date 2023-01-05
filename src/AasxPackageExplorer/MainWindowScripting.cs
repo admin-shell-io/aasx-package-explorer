@@ -37,7 +37,8 @@ using AnyUi;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;using Aas = AasCore.Aas3_0_RC02;
+using Newtonsoft.Json.Serialization;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -214,11 +215,11 @@ namespace AasxPackageExplorer
             // available elements in the environment
             var firstAas = pm.AssetAdministrationShells.FirstOrDefault();
 
-            AasCore.Aas3_0_RC02.Submodel firstSm = null;
+            Aas.Submodel firstSm = null;
             if (firstAas != null && firstAas.Submodels != null && firstAas.Submodels.Count > 0)
                 firstSm = pm.FindSubmodel(firstAas.Submodels[0]);
 
-            AasCore.Aas3_0_RC02.ISubmodelElement firstSme = null;
+            Aas.ISubmodelElement firstSme = null;
             if (firstSm != null && firstSm.SubmodelElements != null && firstSm.SubmodelElements.Count > 0)
                 firstSme = firstSm.SubmodelElements[0];
 
@@ -245,7 +246,7 @@ namespace AasxPackageExplorer
             {
                 // just return as Referable
                 return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(
-                    siThis?.GetDereferencedMainDataObject() as AasCore.Aas3_0_RC02.IReferable,
+                    siThis?.GetDereferencedMainDataObject() as Aas.IReferable,
                     siThis?.GetMainDataObject()
                 );
             }
@@ -418,7 +419,7 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        AasCore.Aas3_0_RC02.IReferable IAasxScriptRemoteInterface.Select(object[] args)
+        Aas.IReferable IAasxScriptRemoteInterface.Select(object[] args)
         {
             // access
             if (args == null || args.Length < 1

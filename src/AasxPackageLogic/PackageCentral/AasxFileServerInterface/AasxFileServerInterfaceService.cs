@@ -49,7 +49,7 @@ namespace AasxPackageLogic.PackageCentral
             }
         }
 
-        //This method retrieved all the packages and corresponsing AASs and AssetInformation related information form the File Server.
+        //This method retrieved all the packages and corresponsing AASs and Aas.AssetInformation related information form the File Server.
         internal List<PackageContainerRepoItem> GeneratePackageRepository()
         {
             var output = new List<PackageContainerRepoItem>();
@@ -59,7 +59,7 @@ namespace AasxPackageLogic.PackageCentral
 
                 foreach (var packageDescription in response)
                 {
-                    //Get AAS and AssetInformation
+                    //Get AAS and Aas.AssetInformation
                     foreach (var aasId in packageDescription.AasIds)
                     {
                         try
@@ -69,7 +69,7 @@ namespace AasxPackageLogic.PackageCentral
                             var aas = aasAndAsset.aas;
                             if (aas != null)
                             {
-                                //Get AssetInformation
+                                //Get Aas.AssetInformation
                                 try
                                 {
                                     var asset = aasAndAsset.asset;
@@ -206,7 +206,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 if (httpResp.StatusCode == (int)System.Net.HttpStatusCode.OK)
                 {
-                    var headerDict = httpResp.Headers.ToDictionary(x => x.AasCore.Aas3_0_RC02.Key, x => string.Join(",", x.Value));
+                    var headerDict = httpResp.Headers.ToDictionary(x => x.Aas.Key, x => string.Join(",", x.Value));
                     headerDict.TryGetValue("X-FileName", out string fileName);
                     headerDict.TryGetValue("Content-Length", out string contentLength);
                     long.TryParse(contentLength, out long fileSize);

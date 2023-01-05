@@ -915,8 +915,8 @@ namespace AasxPackageLogic
         }
 
         public void AddKeyListLangStr(
-            AnyUiStackPanel view, string key, List<AasCore.Aas3_0_RC02.LangString> langStr, ModifyRepo repo = null,
-            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
+            AnyUiStackPanel view, string key, List<Aas.LangString> langStr, ModifyRepo repo = null,
+            Aas.IReferable relatedReferable = null)
         {
             // sometimes needless to show
             if (repo == null && (langStr == null || langStr.Count < 1))
@@ -977,7 +977,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var ls = new AasCore.Aas3_0_RC02.LangString("","");
+                        var ls = new Aas.LangString("","");
                         langStr?.Add(ls);
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
@@ -1072,7 +1072,7 @@ namespace AasxPackageLogic
             view.Children.Add(g);
         }
 
-        public List<AasCore.Aas3_0_RC02.Key> SmartSelectAasEntityKeys(
+        public List<Aas.Key> SmartSelectAasEntityKeys(
             PackageCentral.PackageCentral packages,
             PackageCentral.PackageCentral.Selector selector, string filter = null)
         {
@@ -1103,7 +1103,7 @@ namespace AasxPackageLogic
 
         public bool SmartSelectEclassEntity(
             AnyUiDialogueDataSelectEclassEntity.SelectMode mode, ref string resIRDI,
-            ref AasCore.Aas3_0_RC02.ConceptDescription resCD)
+            ref Aas.ConceptDescription resCD)
         {
             var res = false;
 
@@ -1121,22 +1121,22 @@ namespace AasxPackageLogic
         /// <summary>
         /// Asks the user for SME element type, allowing exclusion of types.
         /// </summary>
-        public AasCore.Aas3_0_RC02.AasSubmodelElements SelectAdequateEnum(
-            string caption, AasCore.Aas3_0_RC02.AasSubmodelElements[] excludeValues = null,
-            AasCore.Aas3_0_RC02.AasSubmodelElements[] includeValues = null,
+        public Aas.AasSubmodelElements SelectAdequateEnum(
+            string caption, Aas.AasSubmodelElements[] excludeValues = null,
+            Aas.AasSubmodelElements[] includeValues = null,
             AasxMenuActionTicket ticket = null)
         {
             // prepare a list
             var fol = new List<AnyUiDialogueListItem>();
             foreach (var en in AdminShellUtil.GetAdequateEnums(excludeValues, includeValues))
-                fol.Add(new AnyUiDialogueListItem(Enum.GetName(typeof(AasCore.Aas3_0_RC02.AasSubmodelElements), en), en));
+                fol.Add(new AnyUiDialogueListItem(Enum.GetName(typeof(Aas.AasSubmodelElements), en), en));
 
             // argument in ticket?
             var arg = ticket?["Kind"] as string;
             if (arg != null)
                 foreach (var foli in fol)
                     if (foli.Text.Trim().ToLower() == arg.Trim().ToLower())
-                        return (AasCore.Aas3_0_RC02.AasSubmodelElements)foli.Tag;
+                        return (Aas.AasSubmodelElements)foli.Tag;
 
             // prompt for this list
             var uc = new AnyUiDialogueDataSelectFromList(
@@ -1144,20 +1144,20 @@ namespace AasxPackageLogic
             uc.ListOfItems = fol;
             this.context.StartFlyoverModal(uc);
             if (uc.Result && uc.ResultItem != null && uc.ResultItem.Tag != null &&
-                    uc.ResultItem.Tag is AasCore.Aas3_0_RC02.AasSubmodelElements)
+                    uc.ResultItem.Tag is Aas.AasSubmodelElements)
             {
                 // to which?
-                var en = (AasCore.Aas3_0_RC02.AasSubmodelElements)uc.ResultItem.Tag;
+                var en = (Aas.AasSubmodelElements)uc.ResultItem.Tag;
                 return en;
             }
 
-            return AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement;
+            return Aas.AasSubmodelElements.SubmodelElement;
         }
 
         /// <summary>
         /// Asks the user, to which SME to refactor to, create the new SME and returns it.
         /// </summary>
-        public AasCore.Aas3_0_RC02.ISubmodelElement SmartRefactorSme(AasCore.Aas3_0_RC02.ISubmodelElement oldSme)
+        public Aas.ISubmodelElement SmartRefactorSme(Aas.ISubmodelElement oldSme)
         {
             // access
             if (oldSme == null)
@@ -1166,7 +1166,7 @@ namespace AasxPackageLogic
             // ask
             var en = SelectAdequateEnum(
                 $"Refactor {oldSme.GetSelfDescription().AasElementName} '{"" + oldSme.IdShort}' to new element type ..");
-            if (en == AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement)
+            if (en == Aas.AasSubmodelElements.SubmodelElement)
                 return null;
 
             if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
@@ -1208,8 +1208,8 @@ namespace AasxPackageLogic
             Func<List<string>, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Func<List<string>, AnyUiLambdaActionBase> noEditJumpLambda = null,
-            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
-            Action<AasCore.Aas3_0_RC02.IReferable> emitCustomEvent = null)
+            Aas.IReferable relatedReferable = null,
+            Action<Aas.IReferable> emitCustomEvent = null)
         {
             AddKeyListGeneric<string, List<string>>(
                 view, key, keys, repo, packages, selector,
@@ -1227,15 +1227,15 @@ namespace AasxPackageLogic
                 emitCustomEvent: emitCustomEvent,
                 addElemLambda: (o) =>
                 {
-                    //if (o is AasCore.Aas3_0_RC02.IIdentifiable id)
+                    //if (o is Aas.IIdentifiable id)
                     //    keys.Add(new Identifier(id.Id));
-                    //if (o is AasCore.Aas3_0_RC02.Key k)
+                    //if (o is Key k)
                     //    keys.Add(k.Value);
 
                     //TODO: jtikekar Test
-                    if (o is AasCore.Aas3_0_RC02.IIdentifiable id)
+                    if (o is Aas.IIdentifiable id)
                         keys.Add(id.Id);
-                    if (o is AasCore.Aas3_0_RC02.Key k)
+                    if (o is Aas.Key k)
                         keys.Add(k.Value);
                 },
                 getItem1Lambda: null,
@@ -1263,8 +1263,8 @@ namespace AasxPackageLogic
             Func<LIST, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
             Func<LIST, AnyUiLambdaActionBase> noEditJumpLambda = null,
-            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
-            Action<AasCore.Aas3_0_RC02.IReferable> emitCustomEvent = null,
+            Aas.IReferable relatedReferable = null,
+            Action<Aas.IReferable> emitCustomEvent = null,
             Action<object> addElemLambda = null,
             Func<T, object> getItem1Lambda = null,
             Func<T, object> getItem2Lambda = null,
@@ -1383,7 +1383,7 @@ namespace AasxPackageLogic
 
                             if (uc.Result &&
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
-                                && pe.Ref is AasCore.Aas3_0_RC02.IIdentifiable id
+                                && pe.Ref is Aas.IIdentifiable id
                                 && id.Id != null)
                                 addElemLambda?.Invoke(id);
 
@@ -1405,11 +1405,11 @@ namespace AasxPackageLogic
                         (o) =>
                         {
                             string resIRDI = null;
-                            AasCore.Aas3_0_RC02.ConceptDescription resCD = null;
+                            Aas.ConceptDescription resCD = null;
                             if (this.SmartSelectEclassEntity(
                                     AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
                             {
-                                addElemLambda?.Invoke(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, resIRDI));
+                                addElemLambda?.Invoke(new Aas.Key(Aas.KeyTypes.GlobalReference, resIRDI));
                             }
 
                             emitCustomEvent?.Invoke(relatedReferable);
@@ -1450,7 +1450,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var k = new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.FragmentReference, ""); //Default
+                        var k = new Aas.Key(Aas.KeyTypes.FragmentReference, ""); //Default
                         addElemLambda?.Invoke(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);
@@ -1585,7 +1585,7 @@ namespace AasxPackageLogic
                                     margin: new AnyUiThickness(2, 2, 2, 2),
                                     text: "" + item,
                                     minWidth: 100,
-                                    items: Enum.GetNames(typeof(AasCore.Aas3_0_RC02.KeyTypes)),
+                                    items: Enum.GetNames(typeof(Aas.KeyTypes)),
                                     isEditable: false,
                                     verticalContentAlignment: AnyUiVerticalAlignment.Center),
                                 (o) =>
@@ -1706,19 +1706,19 @@ namespace AasxPackageLogic
 
         public void AddKeyListKeys(
             AnyUiStackPanel view, string key,
-            List<AasCore.Aas3_0_RC02.Key> keys,
+            List<Aas.Key> keys,
             ModifyRepo repo = null,
             PackageCentral.PackageCentral packages = null,
             PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromKnown = false,
-            string[] addPresetNames = null, List<AasCore.Aas3_0_RC02.Key>[] addPresetKeyLists = null,
-            Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> jumpLambda = null,
+            string[] addPresetNames = null, List<Aas.Key>[] addPresetKeyLists = null,
+            Func<List<Aas.Key>, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
-            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
-            Action<AasCore.Aas3_0_RC02.IReferable> emitCustomEvent = null,
+            Func<List<Aas.Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            Aas.IReferable relatedReferable = null,
+            Action<Aas.IReferable> emitCustomEvent = null,
             AnyUiPanel frontPanel = null,
             AnyUiPanel footerPanel = null,
             bool topContextMenu = false,
@@ -1803,12 +1803,12 @@ namespace AasxPackageLogic
                 Func<object, AnyUiLambdaActionBase> lambdaEclassIrdi = (o) =>
                 {
                     string resIRDI = null;
-                    AasCore.Aas3_0_RC02.ConceptDescription resCD = null;
+                    Aas.ConceptDescription resCD = null;
                     if (this.SmartSelectEclassEntity(
                             AnyUiDialogueDataSelectEclassEntity.SelectMode.IRDI, ref resIRDI, ref resCD))
                     {
                         keys.Add(
-                            new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, resIRDI));
+                            new Aas.Key(Aas.KeyTypes.GlobalReference, resIRDI));
                     }
 
                     emitCustomEvent?.Invoke(relatedReferable);
@@ -1846,10 +1846,10 @@ namespace AasxPackageLogic
 
                             if (uc.Result &&
                                 uc.ResultItem is AasxPredefinedConcepts.DefinitionsPoolReferableEntity pe
-                                && pe.Ref is AasCore.Aas3_0_RC02.IIdentifiable id
+                                && pe.Ref is Aas.IIdentifiable id
                                 && id.Id != null)
                                 // DECISION: references to concepts are always GlobalReferences
-                                keys.Add(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id.Id));
+                                keys.Add(new Aas.Key(Aas.KeyTypes.GlobalReference, id.Id));
 
                             emitCustomEvent?.Invoke(relatedReferable);
 
@@ -1881,8 +1881,8 @@ namespace AasxPackageLogic
 
                             // some special cases
                             if (!Options.Curr.ModelRefCd && k2 != null && k2.Count == 1
-                                && k2[0].Type == AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription)
-                                k2[0].Type = AasCore.Aas3_0_RC02.KeyTypes.GlobalReference;
+                                && k2[0].Type == Aas.KeyTypes.ConceptDescription)
+                                k2[0].Type = Aas.KeyTypes.GlobalReference;
 
                             if (k2 != null)
                                 keys.AddRange(k2);
@@ -1903,7 +1903,7 @@ namespace AasxPackageLogic
                         content: "Add blank"),
                     (o) =>
                     {
-                        var k = new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, ""); //TODO:jtikekar default key
+                        var k = new Aas.Key(Aas.KeyTypes.GlobalReference, ""); //TODO:jtikekar default key
                         keys.Add(k);
 
                         emitCustomEvent?.Invoke(relatedReferable);
@@ -2084,12 +2084,12 @@ namespace AasxPackageLogic
                                 padding: new AnyUiThickness(2, -1, 0, -1),
                                 text: "" + keys[currentI].Type,
                                 minWidth: 100,
-                                items: Enum.GetNames(typeof(AasCore.Aas3_0_RC02.KeyTypes)),
+                                items: Enum.GetNames(typeof(Aas.KeyTypes)),
                                 isEditable: false,
                                 verticalContentAlignment: AnyUiVerticalAlignment.Center),
                             (o) =>
                             {
-                                keys[currentI].Type = (AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString((string)o);
+                                keys[currentI].Type = (Aas.KeyTypes)Aas.Stringification.KeyTypesFromString((string)o);
                                 emitCustomEvent?.Invoke(relatedReferable);
                                 return new AnyUiLambdaActionNone();
                             },
@@ -2154,11 +2154,11 @@ namespace AasxPackageLogic
                                                 action = true;
                                                 break;
                                             case 1:
-                                                MoveElementInListUpwards<AasCore.Aas3_0_RC02.Key>(keys, keys[currentI]);
+                                                MoveElementInListUpwards<Aas.Key>(keys, keys[currentI]);
                                                 action = true;
                                                 break;
                                             case 2:
-                                                MoveElementInListDownwards<AasCore.Aas3_0_RC02.Key>(keys, keys[currentI]);
+                                                MoveElementInListDownwards<Aas.Key>(keys, keys[currentI]);
                                                 action = true;
                                                 break;
                                         }
@@ -2345,14 +2345,14 @@ namespace AasxPackageLogic
             List<T> list,
             T entity, T existing,
             bool makeUniqueIfNeeded = false)
-            where T : AasCore.Aas3_0_RC02.ISubmodelElement
+            where T : Aas.ISubmodelElement
         {
             // access
             if (list == null || list.Count < 1 || entity == null)
                 return -1;
 
             // make unqiue
-            if (makeUniqueIfNeeded && !(list as List<AasCore.Aas3_0_RC02.ISubmodelElement>)
+            if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
                     this.MakeNewReferableUnique(entity);
 
@@ -2364,14 +2364,14 @@ namespace AasxPackageLogic
             List<T> list,
             T entity, T existing,
             bool makeUniqueIfNeeded = false)
-            where T : AasCore.Aas3_0_RC02.ISubmodelElement
+            where T : Aas.ISubmodelElement
         {
             // access
             if (list == null || list.Count < 1 || entity == null)
                 return -1;
 
             // make unqiue
-            if (makeUniqueIfNeeded && !(list as List<AasCore.Aas3_0_RC02.ISubmodelElement>)
+            if (makeUniqueIfNeeded && !(list as List<Aas.ISubmodelElement>)
                 .CheckIdShortIsUnique(entity.IdShort))
                     this.MakeNewReferableUnique(entity);
 
@@ -2387,17 +2387,17 @@ namespace AasxPackageLogic
             AnyUiPanel stack, ModifyRepo repo, List<T> list, T entity,
             object alternativeFocus, string label = "Entities:",
             object nextFocus = null, PackCntChangeEventData sendUpdateEvent = null, bool preventMove = false,
-            AasCore.Aas3_0_RC02.IReferable explicitParent = null,
+            Aas.IReferable explicitParent = null,
             AasxMenu superMenu = null)
         {
             if (nextFocus == null)
                 nextFocus = entity;
 
             // pick out referable
-            AasCore.Aas3_0_RC02.IReferable entityRf = null;
-            if (entity is AasCore.Aas3_0_RC02.ISubmodelElement smw)
+            Aas.IReferable entityRf = null;
+            if (entity is Aas.ISubmodelElement smw)
                 entityRf = smw;
-            if (entity is AasCore.Aas3_0_RC02.IReferable rf)
+            if (entity is Aas.IReferable rf)
                 entityRf = rf;
 
             AddAction(
@@ -2490,8 +2490,8 @@ namespace AasxPackageLogic
         //
 
         public void IdentifyTargetsForEclassImportOfCDs(
-            AasCore.Aas3_0_RC02.Environment env, List<AasCore.Aas3_0_RC02.ISubmodelElement> elems,
-            ref List<AasCore.Aas3_0_RC02.ISubmodelElement> targets)
+            Aas.Environment env, List<Aas.ISubmodelElement> elems,
+            ref List<Aas.ISubmodelElement> targets)
         {
             if (env == null || targets == null || elems == null)
                 return;
@@ -2499,7 +2499,7 @@ namespace AasxPackageLogic
             {
                 // sort all the non-fitting
                 if (elem.SemanticId != null && !elem.SemanticId.IsEmpty() && elem.SemanticId.Keys.Count == 1
-                    && elem.SemanticId.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription
+                    && elem.SemanticId.Keys[0].Type == Aas.KeyTypes.ConceptDescription
                     && elem.SemanticId.Keys[0].Value.StartsWith("0173"))
                 {
                     // already in CDs?
@@ -2510,17 +2510,17 @@ namespace AasxPackageLogic
                 }
 
                 // recursion?
-                if (elem is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                if (elem is Aas.SubmodelElementCollection)
                 {
-                    var childs = new List<AasCore.Aas3_0_RC02.ISubmodelElement>(
-                        (elem as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value);
+                    var childs = new List<Aas.ISubmodelElement>(
+                        (elem as Aas.SubmodelElementCollection).Value);
                     IdentifyTargetsForEclassImportOfCDs(env, childs, ref targets);
                 }
             }
         }
 
-        public bool ImportEclassCDsForTargets(AasCore.Aas3_0_RC02.Environment env, object startMainDataElement,
-                List<AasCore.Aas3_0_RC02.ISubmodelElement> targets)
+        public bool ImportEclassCDsForTargets(Aas.Environment env, object startMainDataElement,
+                List<Aas.ISubmodelElement> targets)
         {
             // need dialogue and data
             if (env == null || targets == null)
@@ -2578,7 +2578,7 @@ namespace AasxPackageLogic
 
                     // add?
                     if (null == env.FindConceptDescriptionByReference(
-                            new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, newcd.Id)})))
+                            new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id)})))
                     {
                         env.ConceptDescriptions.Add(newcd);
 
@@ -2610,8 +2610,8 @@ namespace AasxPackageLogic
         /// the source SMEs shall be adopted.</param>
         /// <returns>Tuple (#no valid id, #already present, #added) </returns>
         public Tuple<int, int, int> ImportCDsFromSmSme(
-            AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable root,
+            Aas.Environment env,
+            Aas.IReferable root,
             bool recurseChilds = false,
             bool repairSemIds = false)
         {
@@ -2627,7 +2627,7 @@ namespace AasxPackageLogic
             // Part 0 : define a lambda
             //
 
-            Action<AasCore.Aas3_0_RC02.Reference, AasCore.Aas3_0_RC02.IReferable> actionAddCD = (newid, rf) =>
+            Action<Aas.Reference, Aas.IReferable> actionAddCD = (newid, rf) =>
             {
                 if (newid == null || newid.Count() < 1)
                 {
@@ -2638,16 +2638,16 @@ namespace AasxPackageLogic
                     // repair semanticId
                     if (repairSemIds)
                     {
-                        if (rf is AasCore.Aas3_0_RC02.Submodel rfsm && rfsm.SemanticId != null
+                        if (rf is Aas.Submodel rfsm && rfsm.SemanticId != null
                             && rfsm.SemanticId.Count() >= 1)
                         {
-                            rfsm.SemanticId.Keys[0].Type = AasCore.Aas3_0_RC02.KeyTypes.Submodel;
+                            rfsm.SemanticId.Keys[0].Type = Aas.KeyTypes.Submodel;
                         }
 
-                        if (rf is AasCore.Aas3_0_RC02.ISubmodelElement rfsme && rfsme.SemanticId != null
+                        if (rf is Aas.ISubmodelElement rfsme && rfsme.SemanticId != null
                             && rfsme.SemanticId.Count() >= 1)
                         {
-                            rfsme.SemanticId.Keys[0].Type = AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription;
+                            rfsme.SemanticId.Keys[0].Type = Aas.KeyTypes.ConceptDescription;
                         }
                     }
 
@@ -2667,7 +2667,7 @@ namespace AasxPackageLogic
                     else
                     {
                         // create such CD
-                        var cd = new AasCore.Aas3_0_RC02.ConceptDescription(cdid);
+                        var cd = new Aas.ConceptDescription(cdid);
                         if (rf != null)
                         {
                             cd.IdShort = rf.IdShort;
@@ -2690,8 +2690,8 @@ namespace AasxPackageLogic
             //
 
 
-            if (root is AasCore.Aas3_0_RC02.IHasSemantics rsmid)
-                actionAddCD(rsmid.SemanticId, root as AasCore.Aas3_0_RC02.IReferable);
+            if (root is Aas.IHasSemantics rsmid)
+                actionAddCD(rsmid.SemanticId, root as Aas.IReferable);
 
 
             //
@@ -2699,8 +2699,8 @@ namespace AasxPackageLogic
             //
 
             if (recurseChilds)
-                foreach (var child in root.Descend().OfType<AasCore.Aas3_0_RC02.ISubmodelElement>())
-                    if (child is AasCore.Aas3_0_RC02.IHasSemantics rsmid2)
+                foreach (var child in root.Descend().OfType<Aas.ISubmodelElement>())
+                    if (child is Aas.IHasSemantics rsmid2)
                         actionAddCD(rsmid2.SemanticId, child);
 
             // done
@@ -2796,13 +2796,13 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
-        /// Care for a pseudo-unqiue identification of the IReferable.
+        /// Care for a pseudo-unqiue identification of the Aas.IReferable.
         /// Unique identification will be established by adding something such as "---74937434739"
         /// Note: not in <c>cs</c>, as considered part of business logic.
         /// Note: if <c>idShort</c> has content, will add unique content.
         /// </summary>
-        /// <param name="rf">given IReferable</param>
-        public void MakeNewReferableUnique(AasCore.Aas3_0_RC02.IReferable rf)
+        /// <param name="rf">given Aas.IReferable</param>
+        public void MakeNewReferableUnique(Aas.IReferable rf)
         {
             // access
             if (rf == null)
@@ -2840,7 +2840,7 @@ namespace AasxPackageLogic
         /// Note: if <c>identification</c> has content, will add unique content.
         /// </summary>
         /// <param name="idf">given Identifiable</param>
-        public void MakeNewIdentifiableUnique(AasCore.Aas3_0_RC02.IIdentifiable idf)
+        public void MakeNewIdentifiableUnique(Aas.IIdentifiable idf)
         {
             // access
             if (idf == null)
@@ -2879,11 +2879,11 @@ namespace AasxPackageLogic
         /// </summary>
         public class DiaryReference
         {
-            public List<AasCore.Aas3_0_RC02.Key> OriginalPath;
+            public List<Aas.Key> OriginalPath;
 
             public DiaryReference() { }
 
-            public DiaryReference(AasCore.Aas3_0_RC02.IReferable rf)
+            public DiaryReference(Aas.IReferable rf)
             {
                 //OriginalPath = rf?.GetReference()?.Keys;
                 OriginalPath = rf?.GetReference()?.Keys;
@@ -2926,10 +2926,10 @@ namespace AasxPackageLogic
         /// <summary>
         /// Takes that diary information and correctly translate this to transaction of the AAS and its elements
         /// </summary>
-        public void AddDiaryEntry(AasCore.Aas3_0_RC02.IReferable rf, DiaryEntryBase de,
+        public void AddDiaryEntry(Aas.IReferable rf, DiaryEntryBase de,
             DiaryReference diaryReference = null,
             bool allChildrenAffected = false,
-            AasCore.Aas3_0_RC02.IReferable explicitParent = null)
+            Aas.IReferable explicitParent = null)
         {
             // trivial
             if (de == null)
@@ -2941,7 +2941,7 @@ namespace AasxPackageLogic
                 // create
                 var evi = new AasPayloadStructuralChangeItem(
                     DateTime.UtcNow, desc.Reason,
-                    path: (rf as AasCore.Aas3_0_RC02.IReferable)?.GetReference()?.Keys,
+                    path: (rf as Aas.IReferable)?.GetReference()?.Keys,
                     createAtIndex: desc.CreateAtIndex,
                     // Assumption: models will be serialized correctly
                     data: JsonConvert.SerializeObject(rf));
@@ -2951,7 +2951,7 @@ namespace AasxPackageLogic
 
                 // attach where?
                 var attachRf = rf;
-                if (rf != null && rf.Parent is AasCore.Aas3_0_RC02.IReferable parRf)
+                if (rf != null && rf.Parent is Aas.IReferable parRf)
                     attachRf = parRf;
                 if (explicitParent != null)
                     attachRf = explicitParent;
@@ -2962,25 +2962,25 @@ namespace AasxPackageLogic
             }
 
             // update value?
-            if (rf != null && de is DiaryEntryUpdateValue && rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+            if (rf != null && de is DiaryEntryUpdateValue && rf is Aas.ISubmodelElement sme)
             {
                 // create
                 var evi = new AasPayloadUpdateValueItem(
-                    path: (rf as AasCore.Aas3_0_RC02.IReferable)?.GetReference()?.Keys,
+                    path: (rf as Aas.IReferable)?.GetReference()?.Keys,
                     value: sme.ValueAsText());
 
                 // TODO (MIHO, 2021-08-17): check if more SME types to serialize
 
-                if (sme is AasCore.Aas3_0_RC02.Property p)
+                if (sme is Aas.Property p)
                     evi.ValueId = p.ValueId;
 
-                if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+                if (sme is Aas.MultiLanguageProperty mlp)
                 {
                     evi.Value = mlp.Value;
                     evi.ValueId = mlp.ValueId;
                 }
 
-                if (sme is AasCore.Aas3_0_RC02.Range rng)
+                if (sme is Aas.Range rng)
                     evi.Value = new[] { rng.Min, rng.Max };
 
                 // add 

@@ -2166,9 +2166,9 @@ namespace AasxPackageExplorer
         /// <returns>Success</returns>
         public bool MenuSelectEnvSubmodel(
             AasxMenuActionTicket ticket,
-            out AasCore.Aas3_0_RC02.Environment env,
-            out AasCore.Aas3_0_RC02.Submodel sm,
-            out AasCore.Aas3_0_RC02.Reference smr,
+            out Aas.Environment env,
+            out Aas.Submodel sm,
+            out Aas.Reference smr,
             string msg)
         {
             env = null;
@@ -2511,8 +2511,8 @@ namespace AasxPackageExplorer
                 ticket?.StartExec();
 
                 // which item selected?
-                AasCore.Aas3_0_RC02.Environment env = _packageCentral.Main.AasEnv;
-                AasCore.Aas3_0_RC02.AssetAdministrationShell aas = null;
+                Aas.Environment env = _packageCentral.Main.AasEnv;
+                Aas.AssetAdministrationShell aas = null;
                 if (DisplayElements.SelectedItem != null)
                 {
                     if (DisplayElements.SelectedItem is VisualElementAdminShell aasItem)
@@ -2785,7 +2785,7 @@ namespace AasxPackageExplorer
                 return;
 
             // check
-            var rf = ticket.DereferencedMainDataObject as AasCore.Aas3_0_RC02.IReferable;
+            var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
             if (rf == null)
             {
                 _logic?.LogErrorToTicket(ticket,

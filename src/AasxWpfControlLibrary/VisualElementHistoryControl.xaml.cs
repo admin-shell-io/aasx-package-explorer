@@ -32,10 +32,10 @@ namespace AasxPackageExplorer
     {
         public VisualElementGeneric VisualElement = null;
         public string ReferableAasId = null;
-        public AasCore.Aas3_0_RC02.Reference ReferableReference = null;
+        public Aas.Reference ReferableReference = null;
 
         public VisualElementHistoryItem(VisualElementGeneric VisualElement,
-            string ReferableAasId = null, AasCore.Aas3_0_RC02.Reference ReferableReference = null)
+            string ReferableAasId = null, Aas.Reference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
             this.ReferableAasId = ReferableAasId;
@@ -92,19 +92,19 @@ namespace AasxPackageExplorer
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
                 // success implies IGetReference as well
-                return derefdo is AasCore.Aas3_0_RC02.IReferable;
+                return derefdo is Aas.IReferable;
             }, includeThis: true).FirstOrDefault();
 
             // check, if ve can identify a IReferable, to which a symbolic link can be done ..
             string aasid = null;
-            AasCore.Aas3_0_RC02.Reference refref = null;
+            Aas.Reference refref = null;
 
             if (veAas != null && veRef != null)
             {
                 aasid = (veAas as VisualElementAdminShell)?.theAas?.Id;
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
-                refref = (derefdo as AasCore.Aas3_0_RC02.IReferable)?.GetReference();
+                refref = (derefdo as Aas.IReferable)?.GetReference();
             }
 
             // some more special cases
@@ -118,7 +118,7 @@ namespace AasxPackageExplorer
             // in case of plug in, make it more specific
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
-                refref = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
+                refref = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
             }
 
             // add, only if not already there

@@ -63,7 +63,7 @@ namespace AasxPackageLogic
 
             /// <summary>
             /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
-            /// Applicable on: Submodel
+            /// Applicable on: Aas.Submodel
             /// </summary>
             public int timer = 1000;
         }
@@ -74,8 +74,8 @@ namespace AasxPackageLogic
             public double Phase;
         }
 
-        protected Dictionary<AasCore.Aas3_0_RC02.IReferable, AnimateState> _states =
-            new Dictionary<AasCore.Aas3_0_RC02.IReferable, AnimateState>();
+        protected Dictionary<Aas.IReferable, AnimateState> _states =
+            new Dictionary<Aas.IReferable, AnimateState>();
 
         public void Clear()
         {
@@ -83,7 +83,7 @@ namespace AasxPackageLogic
         }
 
         public AnimateState GetState(
-            AasCore.Aas3_0_RC02.IReferable rf,
+            Aas.IReferable rf,
             bool createIfNeeded = false)
         {
             if (rf == null)
@@ -118,8 +118,8 @@ namespace AasxPackageLogic
         }
 
         public void Animate(
-            AasCore.Aas3_0_RC02.Property prop,
-            Action<AasCore.Aas3_0_RC02.Property, IAasDiaryEntry> emitEvent) 
+            Aas.Property prop,
+            Action<Aas.Property, IAasDiaryEntry> emitEvent) 
         {
             // prop needs to exists and have qualifiers
             var ext = prop.HasExtensionOfName("Animate.Args");

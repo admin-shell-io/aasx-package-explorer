@@ -218,12 +218,12 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Performs a signing of a Submodel or SubmodelElement
+        /// Performs a signing of a Aas.Submodel or SubmodelElement
         /// </summary>
         public bool Tool_Security_Sign(
-            AasCore.Aas3_0_RC02.Submodel rootSm,
-            AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
-            AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel rootSm,
+            Aas.ISubmodelElement rootSme,
+            Aas.Environment env,
             bool useX509)
         {
             // access
@@ -231,9 +231,9 @@ namespace AasxPackageExplorer
                 return false;
 
             // ported from MainWindow_CommandBindings
-            AasCore.Aas3_0_RC02.Submodel sm = null;
-            AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
-            AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
+            Aas.Submodel sm = null;
+            Aas.SubmodelElementCollection smc = null;
+            Aas.SubmodelElementCollection smcp = null;
             if (rootSm != null)
             {
                 sm = rootSm;
@@ -241,20 +241,20 @@ namespace AasxPackageExplorer
             if (rootSme != null)
             {
                 var smee = rootSme;
-                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                if (smee is Aas.SubmodelElementCollection)
                 {
-                    smc = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                    smc = smee as Aas.SubmodelElementCollection;
                     var p = smee.Parent;
-                    if (p is AasCore.Aas3_0_RC02.Submodel)
-                        sm = p as AasCore.Aas3_0_RC02.Submodel;
-                    if (p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
-                        smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                    if (p is Aas.Submodel)
+                        sm = p as Aas.Submodel;
+                    if (p is Aas.SubmodelElementCollection)
+                        smcp = p as Aas.SubmodelElementCollection;
                 }
             }
             if (sm == null && smcp == null)
                 return false;
 
-            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> existing = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
+            List<Aas.SubmodelElementCollection> existing = new List<Aas.SubmodelElementCollection>();
             if (smc == null)
             {
                 for (int i = 0; i < sm.SubmodelElements.Count; i++)
@@ -262,11 +262,11 @@ namespace AasxPackageExplorer
                     var sme = sm.SubmodelElements[i];
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
+                    if (sme is Aas.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
+                        existing.Add(sme as Aas.SubmodelElementCollection);
                         sm.Remove(sme);
                         i--; // check next
                     }
@@ -279,11 +279,11 @@ namespace AasxPackageExplorer
                     var sme = smc.Value[i];
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
+                    if (sme is Aas.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
+                        existing.Add(sme as Aas.SubmodelElementCollection);
                         smc.Remove(sme);
                         i--; // check next
                     }
@@ -292,14 +292,14 @@ namespace AasxPackageExplorer
 
             if (useX509)
             {
-                AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
-                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJson");
-                AasCore.Aas3_0_RC02.Property canonical = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
-                AasCore.Aas3_0_RC02.Property subject = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "subject");
-                AasCore.Aas3_0_RC02.SubmodelElementCollection x5c = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "x5c");
-                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "algorithm");
-                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "sigT");
-                AasCore.Aas3_0_RC02.Property signature = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "signature");
+                Aas.SubmodelElementCollection smec = new Aas.SubmodelElementCollection(idShort: "signature");
+                Aas.Property json = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "submodelJson");
+                Aas.Property canonical = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
+                Aas.Property subject = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "subject");
+                Aas.SubmodelElementCollection x5c = new Aas.SubmodelElementCollection(idShort: "x5c");
+                Aas.Property algorithm = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "algorithm");
+                Aas.Property sigT = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "sigT");
+                Aas.Property signature = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "signature");
                 smec.Add(json);
                 smec.Add(canonical);
                 smec.Add(subject);
@@ -361,7 +361,7 @@ namespace AasxPackageExplorer
                     int j = 1;
                     foreach (X509ChainElement element in ch.ChainElements)
                     {
-                        AasCore.Aas3_0_RC02.Property c = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "certificate_" + j++);
+                        Aas.Property c = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "certificate_" + j++);
                         c.Value = Convert.ToBase64String(element.Certificate.GetRawCertData());
                         x5c.Add(c);
                     }
@@ -386,14 +386,14 @@ namespace AasxPackageExplorer
             }
             else // Verifiable Credential
             {
-                AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
-                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJson");
-                AasCore.Aas3_0_RC02.Property jsonld = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "submodelJsonLD");
-                AasCore.Aas3_0_RC02.Property vc = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "vc");
-                AasCore.Aas3_0_RC02.Property epvc = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "endpointVC");
-                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "algorithm");
-                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "sigT");
-                AasCore.Aas3_0_RC02.Property proof = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "proof");
+                Aas.SubmodelElementCollection smec = new Aas.SubmodelElementCollection(idShort: "signature");
+                Aas.Property json = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "submodelJson");
+                Aas.Property jsonld = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "submodelJsonLD");
+                Aas.Property vc = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "vc");
+                Aas.Property epvc = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "endpointVC");
+                Aas.Property algorithm = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "algorithm");
+                Aas.Property sigT = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "sigT");
+                Aas.Property proof = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "proof");
                 smec.Add(json);
                 smec.Add(jsonld);
                 smec.Add(vc);
@@ -499,9 +499,9 @@ namespace AasxPackageExplorer
         /// Validates a certificate
         /// </summary>
         public bool Tool_Security_ValidateCertificate(
-            AasCore.Aas3_0_RC02.Submodel rootSm,
-            AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
-            AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel rootSm,
+            Aas.ISubmodelElement rootSme,
+            Aas.Environment env,
             AasxMenuActionTicket ticket = null)
         {
             // access
@@ -511,11 +511,11 @@ namespace AasxPackageExplorer
             var resOk = true;
 
             // ported from MainWindow_CommandBindings
-            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> existing = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
-            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> validate = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
-            AasCore.Aas3_0_RC02.Submodel sm = null;
-            AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
-            AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
+            List<Aas.SubmodelElementCollection> existing = new List<Aas.SubmodelElementCollection>();
+            List<Aas.SubmodelElementCollection> validate = new List<Aas.SubmodelElementCollection>();
+            Aas.Submodel sm = null;
+            Aas.SubmodelElementCollection smc = null;
+            Aas.SubmodelElementCollection smcp = null;
             bool smcIsSignature = false;
             if (rootSm != null)
             {
@@ -524,9 +524,9 @@ namespace AasxPackageExplorer
             if (rootSme != null)
             {
                 var smee = rootSme;
-                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                if (smee is Aas.SubmodelElementCollection)
                 {
-                    smc = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                    smc = smee as Aas.SubmodelElementCollection;
                     var len = "signature".Length;
                     var idShort = smc.IdShort;
                     if (idShort.Length >= len &&
@@ -535,10 +535,10 @@ namespace AasxPackageExplorer
                         smcIsSignature = true;
                     }
                     var p = smc.Parent;
-                    if (smcIsSignature && p is AasCore.Aas3_0_RC02.Submodel)
-                        sm = p as AasCore.Aas3_0_RC02.Submodel;
-                    if (smcIsSignature && p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
-                        smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                    if (smcIsSignature && p is Aas.Submodel)
+                        sm = p as Aas.Submodel;
+                    if (smcIsSignature && p is Aas.SubmodelElementCollection)
+                        smcp = p as Aas.SubmodelElementCollection;
                     if (!smcIsSignature)
                         smcp = smc;
                 }
@@ -552,11 +552,11 @@ namespace AasxPackageExplorer
                 {
                     var len = "signature".Length;
                     var idShort = smee.IdShort;
-                    if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
+                    if (smee is Aas.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(smee as AasCore.Aas3_0_RC02.SubmodelElementCollection);
+                        existing.Add(smee as Aas.SubmodelElementCollection);
                     }
                 }
             }
@@ -566,11 +566,11 @@ namespace AasxPackageExplorer
                 {
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
+                    if (sme is Aas.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
+                        existing.Add(sme as Aas.SubmodelElementCollection);
                     }
                 }
             }
@@ -631,11 +631,11 @@ namespace AasxPackageExplorer
                 }
                 foreach (var smec in validate)
                 {
-                    AasCore.Aas3_0_RC02.SubmodelElementCollection x5c = null;
-                    AasCore.Aas3_0_RC02.Property subject = null;
-                    AasCore.Aas3_0_RC02.Property algorithm = null;
-                    AasCore.Aas3_0_RC02.Property digest = null; // legacy
-                    AasCore.Aas3_0_RC02.Property signature = null;
+                    Aas.SubmodelElementCollection x5c = null;
+                    Aas.Property subject = null;
+                    Aas.Property algorithm = null;
+                    Aas.Property digest = null; // legacy
+                    Aas.Property signature = null;
 
                     foreach (var sme in smec.Value)
                     {
@@ -643,20 +643,20 @@ namespace AasxPackageExplorer
                         switch (smee.IdShort)
                         {
                             case "x5c":
-                                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
-                                    x5c = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
+                                if (smee is Aas.SubmodelElementCollection)
+                                    x5c = smee as Aas.SubmodelElementCollection;
                                 break;
                             case "subject":
-                                subject = smee as AasCore.Aas3_0_RC02.Property;
+                                subject = smee as Aas.Property;
                                 break;
                             case "algorithm":
-                                algorithm = smee as AasCore.Aas3_0_RC02.Property;
+                                algorithm = smee as Aas.Property;
                                 break;
                             case "digest":
-                                digest = smee as AasCore.Aas3_0_RC02.Property;
+                                digest = smee as Aas.Property;
                                 break;
                             case "signature":
-                                signature = smee as AasCore.Aas3_0_RC02.Property;
+                                signature = smee as Aas.Property;
                                 break;
                         }
                     }
@@ -685,7 +685,7 @@ namespace AasxPackageExplorer
                         {
                             for (int i = 0; i < x5c.Value.Count; i++)
                             {
-                                var p = x5c.Value[i] as AasCore.Aas3_0_RC02.Property;
+                                var p = x5c.Value[i] as Aas.Property;
                                 var cert = new X509Certificate2(Convert.FromBase64String(p.Value));
                                 if (i == 0)
                                 {
@@ -896,12 +896,12 @@ namespace AasxPackageExplorer
         /// Populates an existingSubmodel with values from OPC UA.
         /// </summary>
         public void Tool_OpcUaClientRead(
-            AasCore.Aas3_0_RC02.Submodel sm,
+            Aas.Submodel sm,
             AasxMenuActionTicket ticket = null)
         {
             try
             {
-                // Durch das Submodel iterieren
+                // Durch das Aas.Submodel iterieren
                 {
                     int count = sm.Qualifiers.Count;
                     if (count != 0)
@@ -992,10 +992,10 @@ namespace AasxPackageExplorer
                         i = 0;
                         while (i < count)
                         {
-                            if (sm.SubmodelElements[i] is AasCore.Aas3_0_RC02.Property)
+                            if (sm.SubmodelElements[i] is Aas.Property)
                             {
                                 // access data
-                                var p = sm.SubmodelElements[i] as AasCore.Aas3_0_RC02.Property;
+                                var p = sm.SubmodelElements[i] as Aas.Property;
                                 var nodeName = "" + Path + p?.IdShort;
 
                                 // do read() via plug-in
@@ -1024,19 +1024,19 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Reads a Submodel from JSON and add/ replaces it in a AAS / environment
+        /// Reads a Aas.Submodel from JSON and add/ replaces it in a AAS / environment
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_ReadSubmodel(
-            AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Environment env,
+            Aas.Submodel sm,
+            Aas.Environment env,
             string sourceFn,
             AasxMenuActionTicket ticket = null)
         {
             // access
             if (sm == null || env == null)
             {
-                LogErrorToTicket(ticket, "Read Submodel: invalid Submodel or Environment.");
+                LogErrorToTicket(ticket, "Read Aas.Submodel: invalid Aas.Submodel or Environment.");
                 return;
             }
 
@@ -1045,13 +1045,13 @@ namespace AasxPackageExplorer
                 // locate AAS?
                 var aas = env.FindAasWithSubmodelId(sm.Id);
 
-                // de-serialize Submodel
-                AasCore.Aas3_0_RC02.Submodel submodel = null;
+                // de-serialize Aas.Submodel
+                Aas.Submodel submodel = null;
 
                 using (var file = System.IO.File.OpenRead(sourceFn))
                 {
                     var node = System.Text.Json.Nodes.JsonNode.Parse(file);
-                    submodel = AasCore.Aas3_0_RC02.Jsonization.Deserialize.SubmodelFrom(node);
+                    submodel = Aas.Jsonization.Deserialize.SubmodelFrom(node);
                 }
 
                 // need id for idempotent behaviour
@@ -1062,7 +1062,7 @@ namespace AasxPackageExplorer
                     return;
                 }
 
-                // add Submodel
+                // add Aas.Submodel
                 var existingSm = env.FindSubmodelById(submodel.Id);
                 if (existingSm != null)
                     env.Submodels.Remove(existingSm);
@@ -1070,7 +1070,7 @@ namespace AasxPackageExplorer
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, submodel.Id));
+                var newsmr = ExtendReference.CreateFromKey(new Aas.Key(Aas.KeyTypes.Submodel, submodel.Id));
                 var existsmr = aas.HasSubmodelReference(newsmr);
                 if (!existsmr)
                     aas.AddSubmodelReference(newsmr);
@@ -1083,18 +1083,18 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Writes a Submodel to JSON.
+        /// Writes a Aas.Submodel to JSON.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelWrite(
-            AasCore.Aas3_0_RC02.Submodel sm,
+            Aas.Submodel sm,
             string targetFn,
             AasxMenuActionTicket ticket = null)
         {
             // access
             if (sm == null)
             {
-                LogErrorToTicket(ticket, "Write Submodel: invalid Submodel.");
+                LogErrorToTicket(ticket, "Write Aas.Submodel: invalid Aas.Submodel.");
                 return;
             }
 
@@ -1114,18 +1114,18 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Puts a Submodel to URL.
+        /// Puts a Aas.Submodel to URL.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelPut(
-            AasCore.Aas3_0_RC02.Submodel sm,
+            Aas.Submodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {
             // access
             if (sm == null)
             {
-                LogErrorToTicket(ticket, "Put Submodel: invalid Submodel.");
+                LogErrorToTicket(ticket, "Put Aas.Submodel: invalid Aas.Submodel.");
                 return;
             }
 
@@ -1145,19 +1145,19 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Gets a Submodel to URL.
+        /// Gets a Aas.Submodel to URL.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelGet(
-            AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.Submodel sm,
+            Aas.Environment env,
+            Aas.Submodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {
             // access
             if (sm == null || env == null)
             {
-                LogErrorToTicket(ticket, "Get Submodel: invalid Submodel or Environment.");
+                LogErrorToTicket(ticket, "Get Aas.Submodel: invalid Aas.Submodel or Environment.");
                 return;
             }
 
@@ -1176,15 +1176,15 @@ namespace AasxPackageExplorer
 
             var aas = env.FindAasWithSubmodelId(sm.Id);
 
-            // de-serialize Submodel
-            Submodel submodel = null;
+            // de-serialize Aas.Submodel
+            Aas.Submodel submodel = null;
 
             try
             {
                 using (var file = System.IO.File.OpenRead(smJson))
                 {
                     var node = System.Text.Json.Nodes.JsonNode.Parse(file);
-                    submodel = AasCore.Aas3_0_RC02.Jsonization.Deserialize.SubmodelFrom(node);
+                    submodel = Jsonization.Deserialize.SubmodelFrom(node);
                 }
             }
             catch (Exception ex)
@@ -1200,7 +1200,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            // add Submodel
+            // add Aas.Submodel
             var existingSm = env.FindSubmodelById(submodel.Id);
             if (existingSm != null)
                 env.Submodels.Remove(existingSm);
@@ -1208,7 +1208,7 @@ namespace AasxPackageExplorer
 
             // add SubmodelRef to AAS
             // access the AAS
-            var newsmr = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, submodel.Id));
+            var newsmr = ExtendReference.CreateFromKey(new Key(Aas.KeyTypes.Submodel, submodel.Id));
             var existsmr = aas.HasSubmodelReference(newsmr);
             if (!existsmr)
             {

@@ -112,7 +112,7 @@ namespace AasxPackageLogic
         }
 
         /// <summary>
-        /// In case of a reference, get the data object behind it. For a SubmodelRef, it will be the Submodel
+        /// In case of a reference, get the data object behind it. For a SubmodelRef, it will be the Aas.Submodel
         /// </summary>
         /// <returns></returns>
         public virtual object GetDereferencedMainDataObject()
@@ -317,21 +317,21 @@ namespace AasxPackageLogic
             return Parent?.Members?.FindSibling(this);
         }
 
-        public List<AasCore.Aas3_0_RC02.Key> BuildKeyListToTop(
+        public List<Aas.Key> BuildKeyListToTop(
             bool includeAas = false)
         {
             // prepare result
-            var res = new List<AasCore.Aas3_0_RC02.Key>();
+            var res = new List<Aas.Key>();
             var ve = this;
             while (ve != null)
             {
                 if (ve is VisualElementSubmodelRef smr)
                 {
-                    // import special case, as Submodel ref is important part of the chain!
+                    // import special case, as Aas.Submodel ref is important part of the chain!
                     if (smr.theSubmodel != null)
                         res.Insert(
                             0,
-                            new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(smr.theSubmodel.GetSelfDescription().AasElementName), smr.theSubmodel.Id));
+                            new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(smr.theSubmodel.GetSelfDescription().AasElementName), smr.theSubmodel.Id));
 
                     // include aas
                     if (includeAas && ve.Parent is VisualElementAdminShell veAas
@@ -339,27 +339,27 @@ namespace AasxPackageLogic
                     {
                         res.Insert(
                             0,
-                            new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.AssetAdministrationShell, veAas.theAas.Id));
+                            new Aas.Key(Aas.KeyTypes.AssetAdministrationShell, veAas.theAas.Id));
                     }
 
                     break;
                 }
                 else
-                if (ve.GetMainDataObject() is AasCore.Aas3_0_RC02.IIdentifiable iddata)
+                if (ve.GetMainDataObject() is Aas.IIdentifiable iddata)
                 {
                     // a Identifiable will terminate the list of keys
                     res.Insert(
                         0,
-                        new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(iddata.GetSelfDescription().AasElementName), iddata.Id));
+                        new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(iddata.GetSelfDescription().AasElementName), iddata.Id));
                     break;
                 }
                 else
-                if (ve.GetMainDataObject() is AasCore.Aas3_0_RC02.IReferable rf)
+                if (ve.GetMainDataObject() is Aas.IReferable rf)
                 {
                     // add a key and go up ..
                     res.Insert(
                         0,
-                        new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)AasCore.Aas3_0_RC02.Stringification.KeyTypesFromString(rf.GetSelfDescription().AasElementName), rf.IdShort));
+                        new Aas.Key((Aas.KeyTypes)Aas.Stringification.KeyTypesFromString(rf.GetSelfDescription().AasElementName), rf.IdShort));
                 }
                 else
                 // uups!
@@ -507,20 +507,20 @@ namespace AasxPackageLogic
 
         public static string[] ItemTypeNames = new string[] {
             "Environment", "AdministrationShells", "ConceptDescriptions", "Package", "Orphan Submodels",
-            "All Submodels", "Supplementary files", "Value AasCore.Aas3_0_RC02.Reference", "Empty", "Dummy" };
+            "All Submodels", "Supplementary files", "Value Aas.Reference", "Empty", "Dummy" };
 
         public enum ConceptDescSortOrder { None = 0, IdShort, Id, BySubmodel, BySme }
 
         public string thePackageSourceFn;
         public AdminShellPackageEnv thePackage = null;
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
+        public Aas.Environment theEnv = null;
         public ItemType theItemType = ItemType.Env;
         private object _mainDataObject;
         private static ConceptDescSortOrder _cdSortOrder = ConceptDescSortOrder.None;
 
         public VisualElementEnvironmentItem(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Environment env, ItemType itemType,
+            Aas.Environment env, ItemType itemType,
             string packageSourceFn = null,
             object mainDataObject = null)
         : base()
@@ -594,12 +594,12 @@ namespace AasxPackageLogic
     public class VisualElementAdminShell : VisualElementGeneric
     {
         public AdminShellPackageEnv thePackage = null;
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.AssetAdministrationShell theAas = null;
+        public Aas.Environment theEnv = null;
+        public Aas.AssetAdministrationShell theAas = null;
 
         public VisualElementAdminShell(
             VisualElementGeneric parent, TreeViewLineCache cache, AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.AssetAdministrationShell aas)
+            Aas.Environment env, Aas.AssetAdministrationShell aas)
             : base()
         {
             this.Parent = parent;
@@ -639,13 +639,13 @@ namespace AasxPackageLogic
 
     public class VisualElementAsset : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.AssetAdministrationShell theAas = null;
-        public AasCore.Aas3_0_RC02.AssetInformation theAsset = null;
+        public Aas.Environment theEnv = null;
+        public Aas.AssetAdministrationShell theAas = null;
+        public Aas.AssetInformation theAsset = null;
 
         public VisualElementAsset(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.AssetAdministrationShell aas, AasCore.Aas3_0_RC02.AssetInformation asset)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.AssetAdministrationShell aas, Aas.AssetInformation asset)
             : base()
         {
             this.Parent = parent;
@@ -682,15 +682,15 @@ namespace AasxPackageLogic
 
     public class VisualElementSubmodelRef : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
+        public Aas.Environment theEnv = null;
         public AdminShellPackageEnv thePackage = null;
-        public AasCore.Aas3_0_RC02.Reference theSubmodelRef = null;
-        public AasCore.Aas3_0_RC02.Submodel theSubmodel = null;
+        public Aas.Reference theSubmodelRef = null;
+        public Aas.Submodel theSubmodel = null;
 
         public VisualElementSubmodelRef(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Reference smr, AasCore.Aas3_0_RC02.Submodel sm)
+            Aas.Reference smr, Aas.Submodel sm)
             : base()
         {
             this.Parent = parent;
@@ -725,12 +725,12 @@ namespace AasxPackageLogic
             if (theSubmodel != null)
             {
                 var ci = theSubmodel.ToCaptionInfo();
-                this.Caption = ((theSubmodel.Kind != null && theSubmodel.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
+                this.Caption = ((theSubmodel.Kind != null && theSubmodel.Kind == Aas.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
                 this.Info = ci.Item2;
             }
             else
             {
-                this.Caption = "Missing Submodel for Reference!";
+                this.Caption = "Missing Aas.Submodel for Aas.Reference!";
                 this.Info = "->" + ((this.theSubmodelRef == null) ? "<null>" : this.theSubmodelRef.ToString());
             }
         }
@@ -739,12 +739,12 @@ namespace AasxPackageLogic
 
     public class VisualElementSubmodel : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.Submodel theSubmodel = null;
+        public Aas.Environment theEnv = null;
+        public Aas.Submodel theSubmodel = null;
 
         public VisualElementSubmodel(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.Submodel sm)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.Submodel sm)
             : base()
         {
             this.Parent = parent;
@@ -772,7 +772,7 @@ namespace AasxPackageLogic
             if (theSubmodel != null)
             {
                 var ci = theSubmodel.ToCaptionInfo();
-                this.Caption = ((theSubmodel.Kind != null && theSubmodel.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
+                this.Caption = ((theSubmodel.Kind != null && theSubmodel.Kind == Aas.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
                 this.Info = ci.Item2;
             }
         }
@@ -781,12 +781,12 @@ namespace AasxPackageLogic
 
     public class VisualElementReference : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.Reference theReference = null;
+        public Aas.Environment theEnv = null;
+        public Aas.Reference theReference = null;
 
         public VisualElementReference(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.Reference rf)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.Reference rf)
             : base()
         {
             this.Parent = parent;
@@ -822,17 +822,17 @@ namespace AasxPackageLogic
 
     public class VisualElementSubmodelElement : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.IReferable theContainer = null;
-        public AasCore.Aas3_0_RC02.ISubmodelElement theWrapper = null;
+        public Aas.Environment theEnv = null;
+        public Aas.IReferable theContainer = null;
+        public Aas.ISubmodelElement theWrapper = null;
 
-        private AasCore.Aas3_0_RC02.ConceptDescription _cachedCD = null;
+        private Aas.ConceptDescription _cachedCD = null;
 
-        public AasCore.Aas3_0_RC02.ConceptDescription CachedCD { get { return _cachedCD; } }
+        public Aas.ConceptDescription CachedCD { get { return _cachedCD; } }
 
         public VisualElementSubmodelElement(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ISubmodelElement wrap)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.ISubmodelElement wrap)
             : base()
         {
             this.Parent = parent;
@@ -857,7 +857,7 @@ namespace AasxPackageLogic
             return theWrapper;
         }
 
-        public static void EnrichInfoString(AasCore.Aas3_0_RC02.ISubmodelElement sme, ref string info, ref bool showCDinfo)
+        public static void EnrichInfoString(Aas.ISubmodelElement sme, ref string info, ref bool showCDinfo)
         {
             // access
             if (sme == null || info == null)
@@ -866,7 +866,7 @@ namespace AasxPackageLogic
             // case specific
             switch (sme)
             {
-                case AasCore.Aas3_0_RC02.Property smep:
+                case Aas.Property smep:
                     if (smep.Value != null && smep.Value != "")
                         info += "= " + smep.Value;
                     else if (smep.ValueId != null && !smep.ValueId.IsEmpty())
@@ -874,38 +874,38 @@ namespace AasxPackageLogic
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.Range rng:
+                case Aas.Range rng:
                     var txtMin = rng.Min == null ? "{}" : rng.Min.ToString();
                     var txtMax = rng.Max == null ? "{}" : rng.Max.ToString();
                     info += $"= {txtMin} .. {txtMax}";
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.MultiLanguageProperty mlp:
+                case Aas.MultiLanguageProperty mlp:
                     if (mlp.Value != null)
                         info += "\u2192 " + mlp.Value.GetDefaultString();
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.File smef:
+                case Aas.File smef:
                     if (smef.Value != null && smef.Value != "")
                         info += "\u21d2 " + smef.Value;
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.ReferenceElement smere:
+                case Aas.ReferenceElement smere:
                     if (smere.Value != null && !smere.Value.IsEmpty())
                         info += "\u21e8 " + smere.Value.ToStringExtended(1);
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.SubmodelElementCollection smc:
+                case Aas.SubmodelElementCollection smc:
                     if (smc.Value != null)
                         info += "(" + smc.Value.Count + " elements)";
                     showCDinfo = true;
                     break;
 
-                case AasCore.Aas3_0_RC02.SubmodelElementList sml:
+                case Aas.SubmodelElementList sml:
                     if (sml.Value != null)
                         info += "(" + sml.Value.Count + " elements)";
                     showCDinfo = true;
@@ -931,13 +931,13 @@ namespace AasxPackageLogic
                 showCDinfo = true;
 
                 // decode
-                this.Caption = ((sme.Kind != null && sme.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
+                this.Caption = ((sme.Kind != null && sme.Kind == Aas.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
                 this.Info = ciinfo;
 
                 // Show CD / unikts ..
                 if (showCDinfo)
                 {
-                    // cache ConceptDescription?
+                    // cache Aas.ConceptDescription?
                     if (sme.SemanticId != null && sme.SemanticId.Keys != null)
                     {
                         if (this._cachedCD == null)
@@ -995,14 +995,14 @@ namespace AasxPackageLogic
 
     public class VisualElementOperationVariable : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.IReferable theContainer = null;
-        public AasCore.Aas3_0_RC02.OperationVariable theOpVar = null;
+        public Aas.Environment theEnv = null;
+        public Aas.IReferable theContainer = null;
+        public Aas.OperationVariable theOpVar = null;
         public OperationVariableDirection theDir = OperationVariableDirection.In;
 
         public VisualElementOperationVariable(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.OperationVariable opvar,
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.OperationVariable opvar,
             OperationVariableDirection dir)
             : base()
         {
@@ -1065,12 +1065,12 @@ namespace AasxPackageLogic
 
     public class VisualElementConceptDescription : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.ConceptDescription theCD = null;
+        public Aas.Environment theEnv = null;
+        public Aas.ConceptDescription theCD = null;
 
         public VisualElementConceptDescription(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.ConceptDescription cd)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.ConceptDescription cd)
             : base()
         {
             this.Parent = parent;
@@ -1137,9 +1137,9 @@ namespace AasxPackageLogic
 #if _not_required
         public class ComparerUsedSubmodel : IComparer<VisualElementGeneric>
         {
-            private MultiValueDictionary<ConceptDescription, Submodel> _cdToSm;
+            private MultiValueDictionary<ConceptDescription, Aas.Submodel> _cdToSm;
 
-            public ComparerUsedSubmodel(MultiValueDictionary<ConceptDescription, Submodel> 
+            public ComparerUsedSubmodel(MultiValueDictionary<ConceptDescription, Aas.Submodel> 
                 cdToSm)
             {
                 _cdToSm = cdToSm;
@@ -1175,13 +1175,13 @@ namespace AasxPackageLogic
 
     public class VisualElementValueRefPair : VisualElementGeneric
     {
-        public AasCore.Aas3_0_RC02.Environment theEnv = null;
-        public AasCore.Aas3_0_RC02.ConceptDescription theCD = null;
-        public AasCore.Aas3_0_RC02.ValueReferencePair theVLP = null;
+        public Aas.Environment theEnv = null;
+        public Aas.ConceptDescription theCD = null;
+        public Aas.ValueReferencePair theVLP = null;
 
         public VisualElementValueRefPair(
-            VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.ConceptDescription cd, AasCore.Aas3_0_RC02.ValueReferencePair vlp)
+            VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
+            Aas.ConceptDescription cd, Aas.ValueReferencePair vlp)
             : base()
         {
             this.Parent = parent;
@@ -1272,7 +1272,7 @@ namespace AasxPackageLogic
     public class VisualElementPluginExtension : VisualElementGeneric
     {
         public AdminShellPackageEnv thePackage = null;
-        public AasCore.Aas3_0_RC02.IReferable theReferable = null;
+        public Aas.IReferable theReferable = null;
 
         public Plugins.PluginInstance thePlugin = null;
         public AasxIntegrationBase.AasxPluginResultVisualExtension theExt = null;
@@ -1281,7 +1281,7 @@ namespace AasxPackageLogic
             VisualElementGeneric parent,
             TreeViewLineCache cache,
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.IReferable referable,
+            Aas.IReferable referable,
             Plugins.PluginInstance plugin,
             AasxIntegrationBase.AasxPluginResultVisualExtension ext)
             : base()
@@ -1346,11 +1346,11 @@ namespace AasxPackageLogic
         private VisualElementEnvironmentItem
             tiPackage = null, tiEnv = null, tiShells = null, tiCDs = null;
 
-        private MultiValueDictionary<AasCore.Aas3_0_RC02.ConceptDescription, VisualElementGeneric> _cdReferred =
-            new MultiValueDictionary<AasCore.Aas3_0_RC02.ConceptDescription, VisualElementGeneric>();
+        private MultiValueDictionary<Aas.ConceptDescription, VisualElementGeneric> _cdReferred =
+            new MultiValueDictionary<Aas.ConceptDescription, VisualElementGeneric>();
 
-        private MultiValueDictionary<AasCore.Aas3_0_RC02.ConceptDescription, AasCore.Aas3_0_RC02.Submodel> _cdToSm =
-            new MultiValueDictionary<AasCore.Aas3_0_RC02.ConceptDescription, AasCore.Aas3_0_RC02.Submodel>();
+        private MultiValueDictionary<Aas.ConceptDescription, Aas.Submodel> _cdToSm =
+            new MultiValueDictionary<Aas.ConceptDescription, Aas.Submodel>();
 
         public ListOfVisualElement()
         {
@@ -1394,8 +1394,8 @@ namespace AasxPackageLogic
         }
 
         private VisualElementConceptDescription GenerateVisualElementsForSingleCD(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.ConceptDescription cd, VisualElementGeneric parent)
+            TreeViewLineCache cache, Aas.Environment env,
+            Aas.ConceptDescription cd, VisualElementGeneric parent)
         {
             // access
             if (cache == null || cd == null || parent == null) 
@@ -1437,9 +1437,9 @@ namespace AasxPackageLogic
         }
 
         private VisualElementGeneric GenerateVisualElementsFromShellEnvAddElements(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.Submodel sm, VisualElementGeneric parent,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ISubmodelElement el,
+            TreeViewLineCache cache, Aas.Environment env,
+            Aas.Submodel sm, VisualElementGeneric parent,
+            Aas.IReferable parentContainer, Aas.ISubmodelElement el,
             VisualElementGeneric useExistingVE = null)
         {
             var ti = useExistingVE;
@@ -1469,24 +1469,24 @@ namespace AasxPackageLogic
             }
 
             // Recurse: SMC
-            if (el is AasCore.Aas3_0_RC02.SubmodelElementCollection elc && elc.Value != null)
+            if (el is Aas.SubmodelElementCollection elc && elc.Value != null)
                 foreach (var elcc in elc.Value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, elc, elcc);
 
             // Recurse: SML
-            if (el is AasCore.Aas3_0_RC02.SubmodelElementList ell && ell.Value != null)
+            if (el is Aas.SubmodelElementList ell && ell.Value != null)
                 foreach (var elll in ell.Value)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ell, elll);
 
             // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
-            if (el is AasCore.Aas3_0_RC02.Entity ele && ele.Statements != null)
+            if (el is Aas.Entity ele && ele.Statements != null)
                 foreach (var eles in ele.Statements)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 
-            // Recurse: Operation
-            if (el is AasCore.Aas3_0_RC02.Operation elo)
+            // Recurse: Aas.Operation
+            if (el is Aas.Operation elo)
             {
                 foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
                 {
@@ -1526,8 +1526,8 @@ namespace AasxPackageLogic
                 }
             }
 
-            // Recurse: AnnotatedRelationshipElement
-            if (el is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement ela && ela.Annotations != null)
+            // Recurse: Aas.AnnotatedRelationshipElement
+            if (el is Aas.AnnotatedRelationshipElement ela && ela.Annotations != null)
                 foreach (var elaa in ela.Annotations)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);
 
@@ -1536,8 +1536,8 @@ namespace AasxPackageLogic
         }
 
         private void GenerateInnerElementsForSubmodelRef(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env, AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Submodel sm,
+            TreeViewLineCache cache, Aas.Environment env, AdminShellPackageEnv package,
+            Aas.Submodel sm,
             VisualElementSubmodelRef tiSm)
         {
             // access
@@ -1574,10 +1574,10 @@ namespace AasxPackageLogic
         }
 
         private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
-            AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Reference smr,
+            Aas.Submodel sm,
+            Aas.Reference smr,
             VisualElementGeneric parent,
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env, AdminShellPackageEnv package = null)
+            TreeViewLineCache cache, Aas.Environment env, AdminShellPackageEnv package = null)
         {
             // trivial
             if (smr == null || sm == null)
@@ -1603,8 +1603,8 @@ namespace AasxPackageLogic
         }
 
         private VisualElementAdminShell GenerateVisuElemForAAS(
-            AasCore.Aas3_0_RC02.AssetAdministrationShell aas,
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env, AdminShellPackageEnv package = null,
+            Aas.AssetAdministrationShell aas,
+            TreeViewLineCache cache, Aas.Environment env, AdminShellPackageEnv package = null,
             bool editMode = false)
         {
             // trivial
@@ -1686,7 +1686,7 @@ namespace AasxPackageLogic
         }
 
         private void GenerateInnerElementsForConceptDescriptions(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
+            TreeViewLineCache cache, Aas.Environment env,
             VisualElementEnvironmentItem tiCDs,
             VisualElementGeneric root,
             bool doSort = true)
@@ -1746,13 +1746,13 @@ namespace AasxPackageLogic
 
                 if (tiCDs.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySubmodel)
                 {
-                    tiCDs.Info = "(only CD not referenced by any Submodel)";
+                    tiCDs.Info = "(only CD not referenced by any Aas.Submodel)";
                 }
             }
         }
 
         public void AddVisualElementsFromShellEnv(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env, AdminShellPackageEnv package = null,
+            TreeViewLineCache cache, Aas.Environment env, AdminShellPackageEnv package = null,
             string packageSourceFn = null,
             bool editMode = false, int expandMode = 0, bool lazyLoadingFirst = false)
         {
@@ -1872,7 +1872,7 @@ namespace AasxPackageLogic
                     // show all Submodels
                     foreach (var sm in env.Submodels)
                     {
-                        // Submodel
+                        // Aas.Submodel
                         var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, env, sm);
                         tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
                         tiAllSubmodels.Members.Add(tiSm);
@@ -1954,7 +1954,7 @@ namespace AasxPackageLogic
         }
 
         private void SetElementToLazyLoading(
-            TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env, AdminShellPackageEnv package,
+            TreeViewLineCache cache, Aas.Environment env, AdminShellPackageEnv package,
             VisualElementGeneric parent)
         {
             var tiDummy = new VisualElementEnvironmentItem(parent, cache, package, env,
@@ -2109,20 +2109,20 @@ namespace AasxPackageLogic
 
         public class SupplementaryReferenceInformation
         {
-            public AasCore.Aas3_0_RC02.Reference CleanReference;
+            public Aas.Reference CleanReference;
 
             public string SearchPluginTag = null;
         }
 
-        public static SupplementaryReferenceInformation StripSupplementaryReferenceInformation(AasCore.Aas3_0_RC02.Reference rf)
+        public static SupplementaryReferenceInformation StripSupplementaryReferenceInformation(Aas.Reference rf)
         {
             // in any case, provide record
             var sri = new SupplementaryReferenceInformation();
-            sri.CleanReference = new AasCore.Aas3_0_RC02.Reference(rf.Type, new List<AasCore.Aas3_0_RC02.Key>(rf.Keys));
+            sri.CleanReference = new Aas.Reference(rf.Type, new List<Aas.Key>(rf.Keys));
 
             // plug-in?
             var srl = sri.CleanReference.Keys.Last();
-            if (srl?.Type == AasCore.Aas3_0_RC02.KeyTypes.FragmentReference
+            if (srl?.Type == Aas.KeyTypes.FragmentReference
                 && srl?.Value?.StartsWith("Plugin:") == true)
             {
                 sri.SearchPluginTag = srl.Value.Substring("Plugin:".Length);
@@ -2222,11 +2222,11 @@ namespace AasxPackageLogic
             else if (entity is VisualElementSubmodelElement vesme)
             {
                 var parVe = entity.Parent;
-                var currRf = vesme.GetDereferencedMainDataObject() as AasCore.Aas3_0_RC02.IReferable;
+                var currRf = vesme.GetDereferencedMainDataObject() as Aas.IReferable;
                 while (parVe != null && currRf != null)
                 {
                     var parMdo = parVe?.GetDereferencedMainDataObject();
-                    if (parMdo is AasCore.Aas3_0_RC02.IReferable parMdoRf)
+                    if (parMdo is Aas.IReferable parMdoRf)
                     {
                         // set parent
                         currRf.Parent = parMdoRf;
@@ -2245,14 +2245,14 @@ namespace AasxPackageLogic
             else if (entity is VisualElementOperationVariable vepv)
             {
                 // try access element itself
-                if (vepv.GetMainDataObject() is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+                if (vepv.GetMainDataObject() is Aas.ISubmodelElement sme)
                 {
                     // be careful
                     sme.Parent = null;
 
                     // try get parent data
                     if (entity.Parent is VisualElementSubmodelElement parVe
-                        && parVe.GetMainDataObject() is AasCore.Aas3_0_RC02.Operation parVeOp)
+                        && parVe.GetMainDataObject() is Aas.Operation parVeOp)
                     {
                         // set parent
                         sme.Parent = parVeOp;
@@ -2385,8 +2385,8 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.Create)
             {
-                if (data.ParentElem is AasCore.Aas3_0_RC02.AssetAdministrationShell parentAas
-                    && data.ThisElem is AasCore.Aas3_0_RC02.Submodel thisSm)
+                if (data.ParentElem is Aas.AssetAdministrationShell parentAas
+                    && data.ThisElem is Aas.Submodel thisSm)
                 {
                     // try find according visual elements by business objects == Referables
                     // presumably, this is only one AAS Element
@@ -2411,7 +2411,7 @@ namespace AasxPackageLogic
                             parentVE.Members.Add(tiSm);
                     }
 
-                    // additionally, there might be also as pure Submodel item
+                    // additionally, there might be also as pure Aas.Submodel item
                     foreach (var tiAllSubmodels in FindAllVisualElement((ve) =>
                         (ve is VisualElementEnvironmentItem veei
                          && veei.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels)))
@@ -2426,10 +2426,10 @@ namespace AasxPackageLogic
                     return true;
                 }
                 else
-                if (data.ParentElem is AasCore.Aas3_0_RC02.Submodel parentSm
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ISubmodelElement thisSme)
+                if (data.ParentElem is Aas.Submodel parentSm
+                    && data.ThisElem is Aas.ISubmodelElement thisSme)
                 {
-                    // try specifically SubmodelRef visual elements by Submodel business object,
+                    // try specifically SubmodelRef visual elements by Aas.Submodel business object,
                     // as these are the carriers of child information
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementSubmodelRef>(
                         parentSm, alsoDereferenceObjects: true))
@@ -2445,16 +2445,16 @@ namespace AasxPackageLogic
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, parentSm, parentVE,
-                            data.ParentElem as AasCore.Aas3_0_RC02.IReferable, foundSmw);
+                            data.ParentElem as Aas.IReferable, foundSmw);
                     }
 
                     // just good
                     return true;
                 }
                 else
-                if (data.ParentElem is AasCore.Aas3_0_RC02.IReferable parentMgr
+                if (data.ParentElem is Aas.IReferable parentMgr
                     //&& data.ParentElem is IEnumerateChildren parentEnum
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ISubmodelElement thisSme2)
+                    && data.ThisElem is Aas.ISubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject(
@@ -2464,7 +2464,7 @@ namespace AasxPackageLogic
                             continue;
 
                         // try find wrapper for sme 
-                        AasCore.Aas3_0_RC02.ISubmodelElement foundSmw = null;
+                        Aas.ISubmodelElement foundSmw = null;
                         foreach (var smw in parentMgr.EnumerateChildren())
                             if (smw == thisSme2)
                             {
@@ -2476,10 +2476,10 @@ namespace AasxPackageLogic
                             continue;
 
                         // add to parent
-                        // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
+                        // TODO (MIHO, 2021-06-11): Aas.Submodel needs to be set in the long run
                         var ti = GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, null, parentVE,
-                            data.ParentElem as AasCore.Aas3_0_RC02.IReferable, foundSmw);
+                            data.ParentElem as Aas.IReferable, foundSmw);
 
                         // animate
                         if (ti != null)
@@ -2501,20 +2501,20 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.Delete)
             {
-                if (data.ParentElem is AasCore.Aas3_0_RC02.IReferable parentMgr
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+                if (data.ParentElem is Aas.IReferable parentMgr
+                    && data.ThisElem is Aas.ISubmodelElement sme)
                 {
                     return 0 < UpdateByEventTryDeleteGenericVE(data);
                 }
 
-                if (data.ParentElem is AasCore.Aas3_0_RC02.AssetAdministrationShell aas
-                    && data.ThisElem is AasCore.Aas3_0_RC02.Reference smr)
+                if (data.ParentElem is Aas.AssetAdministrationShell aas
+                    && data.ThisElem is Aas.Reference smr)
                 {
                     return 0 < UpdateByEventTryDeleteGenericVE(data);
                 }
 
-                if (data.ParentElem is AasCore.Aas3_0_RC02.Environment
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ConceptDescription cd)
+                if (data.ParentElem is Environment
+                    && data.ThisElem is Aas.ConceptDescription cd)
                 {
                     // as the CD might be rendered below mayn different elements (SME, SM, LoCD, ..)
                     // brutally delete all occurences
@@ -2546,20 +2546,20 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.MoveToIndex)
             {
-                if (data.ParentElem is AasCore.Aas3_0_RC02.IReferable parentMgr
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+                if (data.ParentElem is Aas.IReferable parentMgr
+                    && data.ThisElem is Aas.ISubmodelElement sme)
                 {
                     return 0 < UpdateByEventTryMoveGenericVE(data);
                 }
 
-                if (data.ParentElem is AasCore.Aas3_0_RC02.AssetAdministrationShell aas
-                    && data.ThisElem is AasCore.Aas3_0_RC02.Reference smref)
+                if (data.ParentElem is Aas.AssetAdministrationShell aas
+                    && data.ThisElem is Aas.Reference smref)
                 {
                     return 0 < UpdateByEventTryMoveGenericVE(data);
                 }
 
-                if (data.ParentElem is List<AasCore.Aas3_0_RC02.ConceptDescription> cds
-                    && data.ThisElem is AasCore.Aas3_0_RC02.ConceptDescription cd)
+                if (data.ParentElem is List<Aas.ConceptDescription> cds
+                    && data.ThisElem is Aas.ConceptDescription cd)
                 {
                     return 0 < UpdateByEventTryMoveGenericVE(data);
                 }
@@ -2571,7 +2571,7 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.ValueUpdateSingle)
             {
-                if (data.ThisElem is AasCore.Aas3_0_RC02.ISubmodelElement sme)
+                if (data.ThisElem is Aas.ISubmodelElement sme)
                 {
                     // find the correct parent(s)
                     foreach (var ve in FindAllVisualElementOnMainDataObject(
@@ -2594,7 +2594,7 @@ namespace AasxPackageLogic
 
             if (data.Reason == PackCntChangeEventReason.StructuralUpdate)
             {
-                if (data.ThisElem is AasCore.Aas3_0_RC02.Environment 
+                if (data.ThisElem is Environment 
                     && data.ThisElemLocation == PackCntChangeEventLocation.ListOfConceptDescriptions)
                 {
                     //// find the correct parent(s)

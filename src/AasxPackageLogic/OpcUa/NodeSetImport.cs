@@ -62,8 +62,8 @@ namespace AasxPackageLogic
         static Dictionary<string, Int16> semanticIDPool;
 
         public static void ImportNodeSetToSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Reference smref)
+            string inputFn, Aas.Environment env, Aas.Submodel sm,
+            Aas.Reference smref)
         {
 #if OLD_V20_CODE
             XmlTextReader reader = new XmlTextReader(inputFn);
@@ -267,61 +267,61 @@ namespace AasxPackageLogic
                 }
             }
 
-            var outerSme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "OuterCollection");
+            var outerSme = new Aas.SubmodelElementCollection(idShort: "OuterCollection");
             sm.Add(outerSme);
-            var innerSme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "InnerCollection");
+            var innerSme = new Aas.SubmodelElementCollection(idShort: "InnerCollection");
             sm.Add(innerSme);
-            var conceptSme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "ConceptDescriptionCollection");
+            var conceptSme = new Aas.SubmodelElementCollection(idShort: "ConceptDescriptionCollection");
             sm.Add(conceptSme);
 
             // store models information
-            var msemanticID = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, ModelUri + "models"));
-            var msme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "Models", semanticId: msemanticID);
-            msme.SemanticId.Keys.Add(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "Models"));
+            var msemanticID = ExtendReference.CreateFromKey(new Key(Aas.KeyTypes.GlobalReference, ModelUri + "models"));
+            var msme = new Aas.SubmodelElementCollection(idShort: "Models", semanticId: msemanticID);
+            msme.SemanticId.Keys.Add(new Key(Aas.KeyTypes.GlobalReference, "Models"));
             innerSme.Add(msme);
 
             // modeluri
-            msemanticID = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, ModelUri + "models/modeluri"));
-            var mp = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, idShort: "ModelUri", semanticId: msemanticID);
+            msemanticID = ExtendReference.CreateFromKey(new Key(Aas.KeyTypes.GlobalReference, ModelUri + "models/modeluri"));
+            var mp = new Aas.Property(Aas.DataTypeDefXsd.String, idShort: "ModelUri", semanticId: msemanticID);
             mp.Value = ModelUri;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluriversion
-            msemanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            msemanticID = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "models/modeluriversion");
-            mp = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew("ModelUriVersion", null, msemanticID);
+            mp = AdminShell.Aas.Property.CreateNew("ModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriVersion;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluripublicationdate
-            msemanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            msemanticID = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "models/modeluripublicationdate");
-            mp = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew("ModelUriPublicationDate", null, msemanticID);
+            mp = AdminShell.Aas.Property.CreateNew("ModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = ModelUriPublicationDate;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // requiredmodeluri
-            msemanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            msemanticID = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluri");
-            mp = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew("RequiredModelUri", null, msemanticID);
+            mp = AdminShell.Aas.Property.CreateNew("RequiredModelUri", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUri;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluriversion
-            msemanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            msemanticID = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluriversion");
-            mp = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew("RequiredModelUriVersion", null, msemanticID);
+            mp = AdminShell.Aas.Property.CreateNew("RequiredModelUriVersion", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriVersion;
             msme.Add(mp);
             addLeaf(conceptSme, mp);
             // modeluripublicationdate
-            msemanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            msemanticID = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "models/requiredmodeluripublicationdate");
-            mp = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew("RequiredModelUriPublicationDate", null, msemanticID);
+            mp = AdminShell.Aas.Property.CreateNew("RequiredModelUriPublicationDate", null, msemanticID);
             mp.valueType = "string";
             mp.value = RequiredModelUriPublicationDate;
             msme.Add(mp);
@@ -329,9 +329,9 @@ namespace AasxPackageLogic
 
             // iterate through independent root trees
             // store UADataType to UADataTypeCollection in the end
-            var semanticIDDataTypes = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+            var semanticIDDataTypes = AdminShell.Aas.Key.CreateNew(
                 "GlobalReference", false, "IRI", ModelUri + "UADataTypeCollection");
-            var smeDataTypes = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: 
+            var smeDataTypes = new Aas.SubmodelElementCollection(idShort: 
                 "UADataTypeCollection", null, semanticIDDataTypes);
 
             foreach (UaNode n in roots)
@@ -341,12 +341,12 @@ namespace AasxPackageLogic
                 {
                     name = n.SymbolicName;
                 }
-                var semanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + name);
+                var semanticID = AdminShell.Aas.Key.CreateNew("GlobalReference", false, "IRI", ModelUri + name);
                 if ((n.children != null && n.children.Count != 0) ||
                     (n.fields != null && n.fields.Count != 0))
                 {
-                    var sme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: name, null, semanticID);
-                    sme.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
+                    var sme = new Aas.SubmodelElementCollection(idShort: name, null, semanticID);
+                    sme.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
                     switch (n.UAObjectTypeName)
                     {
                         case "UADataType":
@@ -366,13 +366,13 @@ namespace AasxPackageLogic
                     foreach (UaField f in n.fields)
                     {
                         sme.semanticId.Keys.Add(
-                            AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+                            AdminShell.Aas.Key.CreateNew(
                                 "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
 
-                        semanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+                        semanticID = AdminShell.Aas.Key.CreateNew(
                             "GlobalReference", false, "IRI", ModelUri + name + "/" + f.name);
 
-                        var p = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew(f.name, null, semanticID);
+                        var p = AdminShell.Aas.Property.CreateNew(f.name, null, semanticID);
                         p.valueType = "string";
                         p.value = f.value;
                         sme.Add(p);
@@ -408,20 +408,20 @@ namespace AasxPackageLogic
 
 #if OLD_V20_CODE
         public static void createSubmodelElements(
-            UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.AasCore.Aas3_0_RC02.SubmodelElementCollection smec,
-            AdminShell.SubmodelRef smref, string path, AdminShell.AasCore.Aas3_0_RC02.SubmodelElementCollection concepts)
+            UaNode n, AdminShell.AdministrationShellEnv env, AdminShell.Aas.SubmodelElementCollection smec,
+            AdminShell.SubmodelRef smref, string path, AdminShell.Aas.SubmodelElementCollection concepts)
         {
             String name = n.BrowseName;
             if (n.SymbolicName != null && n.SymbolicName != "")
             {
                 name = n.SymbolicName;
             }
-            var semanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("GlobalReference", false, "IRI", path + name);
+            var semanticID = AdminShell.Aas.Key.CreateNew("GlobalReference", false, "IRI", path + name);
             if ((n.children != null && n.children.Count != 0) ||
                 (n.fields != null && n.fields.Count != 0))
             {
-                var sme = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: name, null, semanticID);
-                sme.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
+                var sme = new Aas.SubmodelElementCollection(idShort: name, null, semanticID);
+                sme.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
                 smec.Add(sme);
                 if (n.Value != "")
                 {
@@ -432,10 +432,10 @@ namespace AasxPackageLogic
                 foreach (UaField f in n.fields)
                 {
                     sme.semanticId.Keys.Add(
-                        AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+                        AdminShell.Aas.Key.CreateNew(
                             "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
-                    semanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("GlobalReference", false, "IRI", path + name + "/" + f.name);
-                    var p = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew(f.name, null, semanticID);
+                    semanticID = AdminShell.Aas.Key.CreateNew("GlobalReference", false, "IRI", path + name + "/" + f.name);
+                    var p = AdminShell.Aas.Property.CreateNew(f.name, null, semanticID);
                     p.valueType = "string";
                     p.value = f.value;
                     sme.Add(p);
@@ -479,19 +479,19 @@ namespace AasxPackageLogic
                 name += split[split.Length - 1];
                 semanticIDPool.Add(path + name, 0);
             }
-            var semanticID = AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("GlobalReference", false, "IRI", path + name);
+            var semanticID = AdminShell.Aas.Key.CreateNew("GlobalReference", false, "IRI", path + name);
 
             switch (n.UAObjectTypeName)
             {
                 case "UAReferenceType":
-                    se = AdminShell.AasCore.Aas3_0_RC02.RelationshipElement.CreateNew(name, null, semanticID);
+                    se = AdminShell.Aas.RelationshipElement.CreateNew(name, null, semanticID);
                     if (se == null) return null;
                     break;
                 default:
-                    se = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew(name, null, semanticID);
+                    se = AdminShell.Aas.Property.CreateNew(name, null, semanticID);
                     if (se == null) return null;
-                    (se as AdminShell.AasCore.Aas3_0_RC02.Property).valueType = "string";
-                    (se as AdminShell.AasCore.Aas3_0_RC02.Property).value = n.Value;
+                    (se as AdminShell.Aas.Property).valueType = "string";
+                    (se as AdminShell.Aas.Property).value = n.Value;
                     break;
             }
 
@@ -500,45 +500,45 @@ namespace AasxPackageLogic
                 se.category = "VARIABLE";
             }
 
-            se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
-            se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UANodeId", false, "OPC", n.NodeId));
+            se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UATypeName", false, "OPC", n.UAObjectTypeName));
+            se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UANodeId", false, "OPC", n.NodeId));
             if (n.ParentNodeId != null && n.ParentNodeId != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UAParentNodeId", false, "OPC", n.ParentNodeId));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UAParentNodeId", false, "OPC", n.ParentNodeId));
             if (n.BrowseName != null && n.BrowseName != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UABrowseName", false, "OPC", n.BrowseName));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UABrowseName", false, "OPC", n.BrowseName));
             if (n.DisplayName != null && n.DisplayName != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UADisplayName", false, "OPC", n.DisplayName));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UADisplayName", false, "OPC", n.DisplayName));
             if (n.NameSpace != null && n.NameSpace != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UANameSpace", false, "OPC", n.NameSpace));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UANameSpace", false, "OPC", n.NameSpace));
             if (n.SymbolicName != null && n.SymbolicName != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UASymbolicName", false, "OPC", n.SymbolicName));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UASymbolicName", false, "OPC", n.SymbolicName));
             if (n.DataType != null && n.DataType != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UADataType", false, "OPC", n.DataType));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UADataType", false, "OPC", n.DataType));
             if (n.Description != null && n.Description != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UADescription", false, "OPC", n.Description));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UADescription", false, "OPC", n.Description));
             foreach (string s in n.references)
             {
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UAReference", false, "OPC", s));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UAReference", false, "OPC", s));
             }
             if (n.DefinitionName != null && n.DefinitionName != "")
-                se.semanticId.Keys.Add(AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew("UADefinitionName", false, "OPC", n.DefinitionName));
+                se.semanticId.Keys.Add(AdminShell.Aas.Key.CreateNew("UADefinitionName", false, "OPC", n.DefinitionName));
             if (n.DefinitionNameSpace != null && n.DefinitionNameSpace != "")
                 se.semanticId.Keys.Add(
-                    AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+                    AdminShell.Aas.Key.CreateNew(
                         "UADefinitionNameSpace", false, "OPC", n.DefinitionNameSpace));
             foreach (UaField f in n.fields)
             {
                 se.semanticId.Keys.Add(
-                    AdminShell.AasCore.Aas3_0_RC02.Key.CreateNew(
+                    AdminShell.Aas.Key.CreateNew(
                         "UAField", false, "OPC", f.name + " = " + f.value + " : " + f.description));
             }
 
             return se;
         }
 
-        public static void addLeaf(AdminShell.AasCore.Aas3_0_RC02.SubmodelElementCollection concepts, AdminShell.SubmodelElement sme)
+        public static void addLeaf(AdminShell.Aas.SubmodelElementCollection concepts, AdminShell.SubmodelElement sme)
         {
-            var se = AdminShell.AasCore.Aas3_0_RC02.Property.CreateNew(sme.idShort, null, sme.semanticId[0]);
+            var se = AdminShell.Aas.Property.CreateNew(sme.idShort, null, sme.semanticId[0]);
             concepts.Add(se);
         }
 #endif

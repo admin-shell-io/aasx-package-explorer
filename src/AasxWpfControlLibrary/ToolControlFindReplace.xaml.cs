@@ -32,7 +32,7 @@ namespace AasxPackageExplorer
         public AasxSearchUtil.SearchOptions TheSearchOptions = new AasxSearchUtil.SearchOptions();
         public AasxSearchUtil.SearchResults TheSearchResults = new AasxSearchUtil.SearchResults();
 
-        public AasCore.Aas3_0_RC02.Environment TheAasEnv = null;
+        public Aas.Environment TheAasEnv = null;
 
         public IFlyoutProvider Flyout = null;
         public delegate void ResultSelectedDelegate(AasxSearchUtil.SearchResultItem resultItem);
@@ -56,7 +56,7 @@ namespace AasxPackageExplorer
         {
             InitializeComponent();
 
-            TheSearchOptions.AllowedAssemblies = new[] { typeof(AasCore.Aas3_0_RC02.Environment).Assembly };
+            TheSearchOptions.AllowedAssemblies = new[] { typeof(Aas.Environment).Assembly };
 
             // the combo box needs a special treatment in order to have it focussed ..
             ComboBoxToolsFindText.Loaded += (object sender, RoutedEventArgs e) =>
@@ -532,7 +532,7 @@ namespace AasxPackageExplorer
                 cm.Add(new DynamicContextItem(
                     "COLL", "", "Search Collection/ List", checkState: op.SearchCollection));
                 cm.Add(new DynamicContextItem(
-                    "PROP", "", "Search AasCore.Aas3_0_RC02.Property", checkState: op.SearchProperty));
+                    "PROP", "", "Search Aas.Property", checkState: op.SearchProperty));
                 cm.Add(new DynamicContextItem(
                     "MLPR", "", "Search Multilang.Prop.", checkState: op.SearchMultiLang));
                 cm.Add(new DynamicContextItem(

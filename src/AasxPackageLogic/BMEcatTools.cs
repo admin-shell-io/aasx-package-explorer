@@ -35,8 +35,8 @@ namespace AasxPackageExplorer
         static string[] names_LEVELTYPE = new string[] { "MIN", "MAX", "TYP", "NOM" };
 
         public static void ImportBMEcatToSubModel(
-            string inputFn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
-            AasCore.Aas3_0_RC02.Reference smref)
+            string inputFn, Aas.Environment env, Aas.Submodel sm,
+            Aas.Reference smref)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File
@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
             Boolean is_attribute = false;
             Boolean is_attribute_label = false;
             Boolean is_attribute_value = false;
-            AasCore.Aas3_0_RC02.SubmodelElementCollection[] propGroup = new AasCore.Aas3_0_RC02.SubmodelElementCollection[10];
+            Aas.SubmodelElementCollection[] propGroup = new Aas.SubmodelElementCollection[10];
 
             // GWIS XML Publication
             if (isPublication)
@@ -133,7 +133,7 @@ namespace AasxPackageExplorer
                             {
                                 if (subheadline != "")
                                 {
-                                    propGroup[0] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: subheadline);
+                                    propGroup[0] = new Aas.SubmodelElementCollection(idShort: subheadline);
                                     sm.Add(propGroup[0]);
                                 }
                             }
@@ -142,9 +142,9 @@ namespace AasxPackageExplorer
                                 if (attribute_label_id != "" && attribute_value != "")
                                 {
                                     sw.WriteLine(attribute_label_id + " | " + attribute_value);
-                                    //using (var cd = ConceptDescription.CreateNew(
+                                    //using (var cd = Aas.ConceptDescription.CreateNew(
                                     //    "" + attribute_label_id, Identification.IRDI, FT_ID))
-                                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
+                                    var cd = new Aas.ConceptDescription(FT_ID, idShort: "" + attribute_label_id);
                                     {
                                         env.ConceptDescriptions.Add(cd);
                                         cd.SetIEC61360Spec(
@@ -155,10 +155,10 @@ namespace AasxPackageExplorer
                                             definition: new[] { "EN", attribute_label_id }
                                         );
 
-                                        //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
+                                        //var p = Aas.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
-                                        //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
+                                        //    Key.GetFromRef(cd.GetCdReference()));
+                                        var p = new Aas.Property(Aas.DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -167,7 +167,7 @@ namespace AasxPackageExplorer
                                         {
                                             sm.Add(p);
                                         }
-                                        p.ValueType = AasCore.Aas3_0_RC02.DataTypeDefXsd.String;
+                                        p.ValueType = Aas.DataTypeDefXsd.String;
                                         p.Value = attribute_value;
                                     }
 
@@ -270,7 +270,7 @@ namespace AasxPackageExplorer
                                     {
                                         StackPointer_FID = 0;
                                     }
-                                    if (i_FVALUE > 0) // Property
+                                    if (i_FVALUE > 0) // Aas.Property
                                     {
                                         for (k = 0; k < i_FVALUE; k++)
                                         {
@@ -316,9 +316,9 @@ namespace AasxPackageExplorer
                                                 extendedname += " " + names_LEVELTYPE[k]; // MIN, MAX, ...
                                             }
 
-                                            //using (var cd = ConceptDescription.CreateNew(
+                                            //using (var cd = Aas.ConceptDescription.CreateNew(
                                             //   "" + extendedname, Identification.IRDI, FT_ID))
-                                            var cd = new AasCore.Aas3_0_RC02.ConceptDescription(FT_ID, idShort: "" + extendedname);
+                                            var cd = new Aas.ConceptDescription(FT_ID, idShort: "" + extendedname);
                                             {
                                                 env.ConceptDescriptions.Add(cd);
                                                 cd.SetIEC61360Spec(
@@ -329,10 +329,10 @@ namespace AasxPackageExplorer
                                                     definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
-                                                //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
+                                                //var p = Aas.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
-                                                //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new AasCore.Aas3_0_RC02.Property(AasCore.Aas3_0_RC02.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
+                                                //    Key.GetFromRef(cd.GetCdReference()));
+                                                var p = new Aas.Property(Aas.DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell
@@ -360,7 +360,7 @@ namespace AasxPackageExplorer
                                         if (StackPointer_FID == 0) // oberste Collection
                                         {
                                             Stack_FID[0] = FID;
-                                            propGroup[0] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: FT_NAME);
+                                            propGroup[0] = new Aas.SubmodelElementCollection(idShort: FT_NAME);
                                             sm.Add(propGroup[0]);
                                             StackPointer_FID++; // nächste Ebene
                                         }
@@ -372,7 +372,7 @@ namespace AasxPackageExplorer
                                                 {
                                                     StackPointer_FID = j + 1;
                                                     Stack_FID[StackPointer_FID] = FID;
-                                                    propGroup[StackPointer_FID] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: FT_NAME);
+                                                    propGroup[StackPointer_FID] = new Aas.SubmodelElementCollection(idShort: FT_NAME);
                                                     propGroup[StackPointer_FID - 1].Add(propGroup[StackPointer_FID]);
                                                     StackPointer_FID++; // nächste Ebene
                                                     break;

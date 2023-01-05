@@ -71,7 +71,7 @@ namespace AasxPackageLogic
                 return;
 
             //
-            // Dispatch (Sign and Validate either on Submodel / AAS level)
+            // Dispatch (Sign and Validate either on Aas.Submodel / AAS level)
             //
 
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt"))
@@ -93,12 +93,12 @@ namespace AasxPackageLogic
                             ticket.Submodel, ticket.SubmodelElement, ticket.Env, useX509) != true)
                         {
                             LogErrorToTicket(ticket,
-                                "Not able to execute tool for signing Submodel or SubmodelElement!");
+                                "Not able to execute tool for signing Aas.Submodel or SubmodelElement!");
                         }
                     }
                     catch (Exception ex)
                     {
-                        LogErrorToTicket(ticket, ex, "Signing Submodel/ SME");
+                        LogErrorToTicket(ticket, ex, "Signing Aas.Submodel/ SME");
                     }
 
                     // important to return here!
@@ -120,7 +120,7 @@ namespace AasxPackageLogic
                     }
                     catch (Exception ex)
                     {
-                        LogErrorToTicket(ticket, ex, "Validating certificate Submodel/ SME");
+                        LogErrorToTicket(ticket, ex, "Validating certificate Aas.Submodel/ SME");
                     }
 
                     // important to return here!
@@ -210,7 +210,7 @@ namespace AasxPackageLogic
                 if (ticket.Submodel == null)
                 {
                     LogErrorToTicket(ticket,
-                        "OPC UA Client read: No valid Submodel selected");
+                        "OPC UA Client read: No valid Aas.Submodel selected");
                     return;
                 }
 
@@ -225,7 +225,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Submodel Read: No valid Submodel, Env, source file selected");
+                        "Submodel Read: No valid Aas.Submodel, Env, source file selected");
                     return;
                 }
 
@@ -246,7 +246,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Submodel Write: No valid Submodel, Env, target file selected");
+                        "Submodel Write: No valid Aas.Submodel, Env, target file selected");
                     return;
                 }
 
@@ -272,7 +272,7 @@ namespace AasxPackageLogic
                     !(ticket["URL"] is string url) || url.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Submodel Put: No valid Submodel, Env, URL selected");
+                        "Submodel Put: No valid Aas.Submodel, Env, URL selected");
                     return;
                 }
 
@@ -296,7 +296,7 @@ namespace AasxPackageLogic
                     !(ticket["URL"] is string url) || url.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Submodel Get: No valid Submodel, Env, URL selected");
+                        "Submodel Get: No valid Aas.Submodel, Env, URL selected");
                     return;
                 }
 
@@ -320,7 +320,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "RDF Read: No valid Submodel, Env, source file selected");
+                        "RDF Read: No valid Aas.Submodel, Env, source file selected");
                     return;
                 }
 
@@ -345,7 +345,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "BMEcat import: No valid Submodel, Env, source file selected");
+                        "BMEcat import: No valid Aas.Submodel, Env, source file selected");
                     return;
                 }
 
@@ -369,7 +369,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "BMEcat import: No valid Submodel, Env, source file selected");
+                        "BMEcat import: No valid Aas.Submodel, Env, source file selected");
                     return;
                 }
 
@@ -393,7 +393,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "TD import: No valid Submodel, SubmodelEf, Env, source file selected");
+                        "TD import: No valid Aas.Submodel, SubmodelEf, Env, source file selected");
                     return;
                 }
 
@@ -430,7 +430,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Thing Description (TD) export: No valid Submodel, source file selected");
+                        "Thing Description (TD) export: No valid Aas.Submodel, source file selected");
                     return;
                 }
 
@@ -467,7 +467,7 @@ namespace AasxPackageLogic
                     !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "OPC UA Nodeset import: No valid Submodel, SubmodelEf, Env, source file selected");
+                        "OPC UA Nodeset import: No valid Aas.Submodel, SubmodelEf, Env, source file selected");
                     return;
                 }
 
@@ -493,7 +493,7 @@ namespace AasxPackageLogic
                 {
                     LogErrorToTicket(ticket,
                         "Import AML: No valid AAS-Env, package, source file selected or " +
-                        "a single Submodel, SubmodelElement selected");
+                        "a single Aas.Submodel, SubmodelElement selected");
                     return;
                 }
 
@@ -517,7 +517,7 @@ namespace AasxPackageLogic
                 {
                     LogErrorToTicket(ticket,
                         "Import AML: No valid AAS-Env, package, target file selected or " +
-                        "a single Submodel, SubmodelElement selected");
+                        "a single Aas.Submodel, SubmodelElement selected");
                     return;
                 }
 
@@ -544,7 +544,7 @@ namespace AasxPackageLogic
                 {
                     LogErrorToTicket(ticket,
                         "Import i4AAS based OPC UA mapping: No valid AAS-Env, package, target file " +
-                        "selected or a single Submodel, SubmodelElement selected");
+                        "selected or a single Aas.Submodel, SubmodelElement selected");
                     return;
                 }
 #if TODO
@@ -601,7 +601,7 @@ namespace AasxPackageLogic
                 {
                     LogErrorToTicket(ticket,
                         "Import i4AAS based OPC UA mapping: No valid AAS-Env, package, target file " +
-                        "selected or a single Submodel, SubmodelElement selected");
+                        "selected or a single Aas.Submodel, SubmodelElement selected");
                     return;
                 }
 #if TODO
@@ -630,7 +630,7 @@ namespace AasxPackageLogic
                     || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Export GenericForms: No valid AAS-Env, package, Submodel or target file selected");
+                        "Export GenericForms: No valid AAS-Env, package, Aas.Submodel or target file selected");
                     return;
                 }
 
@@ -654,7 +654,7 @@ namespace AasxPackageLogic
                     || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Export PredefinedConcepts: No valid AAS-Env, package, Submodel or target file selected");
+                        "Export PredefinedConcepts: No valid AAS-Env, package, Aas.Submodel or target file selected");
                     return;
                 }
 
@@ -677,7 +677,7 @@ namespace AasxPackageLogic
                 || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Import/ Export: No valid AAS-Env, Submodel or target file selected");
+                        "Import/ Export: No valid AAS-Env, Aas.Submodel or target file selected");
                     return;
                 }
 
@@ -729,7 +729,7 @@ namespace AasxPackageLogic
                 || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Export UML: No valid AAS-Env, Submodel or target file selected");
+                        "Export UML: No valid AAS-Env, Aas.Submodel or target file selected");
                     return;
                 }
 
@@ -778,7 +778,7 @@ namespace AasxPackageLogic
                 || !(ticket["File"] is string fn) || fn.HasContent() != true)
                 {
                     LogErrorToTicket(ticket,
-                        "Import time series: No valid AAS-Env, Submodel or target file selected");
+                        "Import time series: No valid AAS-Env, Aas.Submodel or target file selected");
                     return;
                 }
 
@@ -827,7 +827,7 @@ namespace AasxPackageLogic
                 || ticket.Submodel != null)
                 {
                     LogErrorToTicket(ticket,
-                        "New Submodel from plugin: No valid AAS-Env, AAS selected or individual " +
+                        "New Aas.Submodel from plugin: No valid AAS-Env, AAS selected or individual " +
                         "Submodel selected!");
                     return;
                 }
@@ -850,20 +850,20 @@ namespace AasxPackageLogic
                 if (record == null || record.Item1 == null
                     || record.Item2?.HasContent() != true)
                 {
-                    LogErrorToTicket(ticket, "New Submodel from plugin: " +
-                        "No name or selection given to which Submodel shall be generated.");
+                    LogErrorToTicket(ticket, "New Aas.Submodel from plugin: " +
+                        "No name or selection given to which Aas.Submodel shall be generated.");
                     return;
                 }
 
                 // try to invoke plugin to get submodel
-                AasCore.Aas3_0_RC02.Submodel smres = null;
-                List<AasCore.Aas3_0_RC02.ConceptDescription> cdres = null;
+                Aas.Submodel smres = null;
+                List<Aas.ConceptDescription> cdres = null;
                 try
                 {
                     var res = record.Item1.InvokeAction("generate-submodel", record.Item2) as AasxPluginResultBase;
                     if (res is AasxPluginResultBaseObject rbo)
                     {
-                        smres = rbo.obj as AasCore.Aas3_0_RC02.Submodel;
+                        smres = rbo.obj as Aas.Submodel;
                     }
                     if (res is AasxPluginResultGenerateSubmodel rgsm)
                     {
@@ -880,22 +880,22 @@ namespace AasxPackageLogic
                 if (smres == null)
                 {
                     LogErrorToTicket(ticket,
-                        "New Submodel from plugin: Error accessing plugins. Aborting.");
+                        "New Aas.Submodel from plugin: Error accessing plugins. Aborting.");
                     return;
                 }
 
                 try
                 {
-                    // Submodel needs an identification
+                    // Aas.Submodel needs an identification
                     smres.Id = "";
-                    if (smres.Kind == null || smres.Kind == AasCore.Aas3_0_RC02.ModelingKind.Instance)
+                    if (smres.Kind == null || smres.Kind == Aas.ModelingKind.Instance)
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
-                    // add Submodel
+                    // add Aas.Submodel
                     var smref = smres.GetReference().Copy();
                     ticket.AAS.AddSubmodelReference(smref);
                     ticket.Env.Submodels.Add(smres);
@@ -917,7 +917,7 @@ namespace AasxPackageLogic
                             nr++;
                         }
                         Log.Singleton.Info(
-                            $"added {nr} ConceptDescritions for Submodel {smres.IdShort}.");
+                            $"added {nr} ConceptDescritions for Aas.Submodel {smres.IdShort}.");
                     }
 
                     // give data bickt
@@ -925,14 +925,14 @@ namespace AasxPackageLogic
                 }
                 catch (Exception ex)
                 {
-                    Log.Singleton.Error(ex, "when adding Submodel to AAS");
+                    Log.Singleton.Error(ex, "when adding Aas.Submodel to AAS");
                 }
             }
 
             if (cmd == "convertelement")
             {
                 // arguments
-                var rf = ticket.DereferencedMainDataObject as AasCore.Aas3_0_RC02.IReferable;
+                var rf = ticket.DereferencedMainDataObject as Aas.IReferable;
                 if (ticket.Package == null
                     || rf == null)
                 {

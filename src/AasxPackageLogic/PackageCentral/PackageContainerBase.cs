@@ -78,7 +78,7 @@ namespace AasxPackageLogic.PackageCentral
         StartOfChanges,
 
         /// <summary>
-        /// A IReferable is created within the "typical" enumeration of another AasCore.Aas3_0_RC02.IReferable.
+        /// A Aas.IReferable is created within the "typical" enumeration of another Aas.IReferable.
         /// </summary>
         Create,
 
@@ -89,23 +89,23 @@ namespace AasxPackageLogic.PackageCentral
         MoveToIndex,
 
         /// <summary>
-        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a IReferable.
-        /// The IReferable is completely rebuild.
+        /// Multiple changes (dreate, delete, move) are summarized w.r.t to a Aas.IReferable.
+        /// The Aas.IReferable is completely rebuild.
         /// </summary>
         StructuralUpdate,
 
         /// <summary>
-        /// A IReferable is deleted
+        /// A Aas.IReferable is deleted
         /// </summary>
         Delete,
 
         /// <summary>
-        /// A value upatde of a single IReferable (not children) is performed
+        /// A value upatde of a single Aas.IReferable (not children) is performed
         /// </summary>
         ValueUpdateSingle,
 
         /// <summary>
-        /// A value upatde of a IReferable including possible children is performed
+        /// A value upatde of a Aas.IReferable including possible children is performed
         /// </summary>
         ValueUpdateHierarchy,
 
@@ -155,9 +155,9 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventReason Reason;
 
         /// <summary>
-        /// Changed AAS element itself (typically a IReferable, but could also be a SubmodelRef)
+        /// Changed AAS element itself (typically a Aas.IReferable, but could also be a SubmodelRef)
         /// </summary>
-        public AasCore.Aas3_0_RC02.IClass ThisElem;
+        public Aas.IClass ThisElem;
 
         /// <summary>
         /// Further information to <c>ThisElem</c>.
@@ -165,11 +165,11 @@ namespace AasxPackageLogic.PackageCentral
         public PackCntChangeEventLocation ThisElemLocation;
 
         /// <summary>
-        /// Parent object/ structure of the changed AAS element. Often a IReferable, but could also be a SubmodelRef.
+        /// Parent object/ structure of the changed AAS element. Often a Aas.IReferable, but could also be a SubmodelRef.
         /// Can be also <c>null</c>, if the type of the ThisObj is already indicating the parent structure (e.g. 
         /// for Assets, ConceptDescriptions, ..)
         /// </summary>
-        public AasCore.Aas3_0_RC02.IClass ParentElem;
+        public Aas.IClass ParentElem;
 
         /// <summary>
         /// If create, at which index; else: -1
@@ -193,14 +193,14 @@ namespace AasxPackageLogic.PackageCentral
         /// </summary>
         /// <param name="container">Identification of the container</param>
         /// <param name="reason">The reason</param>
-        /// <param name="thisRef">Changed IReferable itself</param>
-        /// <param name="parentRef">A IReferable, which contains the changed AasCore.Aas3_0_RC02.IReferable.</param>
+        /// <param name="thisRef">Changed Aas.IReferable itself</param>
+        /// <param name="parentRef">A Aas.IReferable, which contains the changed Aas.IReferable.</param>
         /// <param name="createAtIndex">If create, at which index; else: -1</param>
         /// <param name="info">Human readable information</param>
         public PackCntChangeEventData(PackageContainerBase container,
             PackCntChangeEventReason reason,
-            AasCore.Aas3_0_RC02.IReferable thisRef = null,
-            AasCore.Aas3_0_RC02.IReferable parentRef = null,
+            Aas.IReferable thisRef = null,
+            Aas.IReferable parentRef = null,
             int createAtIndex = -1,
             string info = null)
         {
@@ -389,7 +389,7 @@ namespace AasxPackageLogic.PackageCentral
         /* TODO (MIHO, 2021-08-17): check if to refactor/ move to another location 
          * and to extend to Submodels .. */
         public static bool UpdateSmeFromEventPayloadItem(
-            AasCore.Aas3_0_RC02.ISubmodelElement smeToModify,
+            Aas.ISubmodelElement smeToModify,
             AasPayloadUpdateValueItem vl)
         {
             // access
@@ -400,7 +400,7 @@ namespace AasxPackageLogic.PackageCentral
 
             // adopt
             // TODO (MIHO, 2021-08-17): add more type specific conversions?
-            if (smeToModify is AasCore.Aas3_0_RC02.Property prop)
+            if (smeToModify is Aas.Property prop)
             {
                 if (vl.Value is string vls)
                     prop.Value = vls;
@@ -409,16 +409,16 @@ namespace AasxPackageLogic.PackageCentral
                 changedSomething = true;
             }
 
-            if (smeToModify is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
+            if (smeToModify is Aas.MultiLanguageProperty mlp)
             {
-                if (vl.Value is List<AasCore.Aas3_0_RC02.LangString> lss)
+                if (vl.Value is List<Aas.LangString> lss)
                     mlp.Value = lss;
                 if (vl.ValueId != null)
                     mlp.ValueId = vl.ValueId;
                 changedSomething = true;
             }
 
-            if (smeToModify is AasCore.Aas3_0_RC02.Range rng)
+            if (smeToModify is Aas.Range rng)
             {
                 if (vl.Value is string[] sarr && sarr.Length >= 2)
                 {
@@ -428,7 +428,7 @@ namespace AasxPackageLogic.PackageCentral
                 changedSomething = true;
             }
 
-            if (smeToModify is AasCore.Aas3_0_RC02.Blob blob)
+            if (smeToModify is Aas.Blob blob)
             {
                 if (vl.Value is string vls)
                     blob.Value = Encoding.Default.GetBytes(vls);
@@ -461,10 +461,10 @@ namespace AasxPackageLogic.PackageCentral
                 if (pluv.Values != null
                     && !pluv.IsAlreadyUpdatedToAAS
                     && foundObservable is IEnumerateChildren
-                    && (foundObservable is AasCore.Aas3_0_RC02.Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement))
+                    && (foundObservable is Aas.Submodel || foundObservable is Aas.ISubmodelElement))
                 {
                     // will later access children ..
-                    var wrappers = ((foundObservable as AasCore.Aas3_0_RC02.IReferable).EnumerateChildren())?.ToList();
+                    var wrappers = ((foundObservable as Aas.IReferable).EnumerateChildren())?.ToList();
                     var changedSomething = false;
 
                     // go thru all value updates
@@ -477,14 +477,14 @@ namespace AasxPackageLogic.PackageCentral
                             // Note: currently only updating Properties
                             // TODO (MIHO, 2021-01-03): check to handle more SMEs for AasEventMsgUpdateValue
 
-                            AasCore.Aas3_0_RC02.ISubmodelElement smeToModify = null;
-                            if (vl.Path == null && foundObservable is AasCore.Aas3_0_RC02.Property fop)
+                            Aas.ISubmodelElement smeToModify = null;
+                            if (vl.Path == null && foundObservable is Aas.Property fop)
                                 smeToModify = fop;
                             else if (vl.Path != null && vl.Path.Count >= 1 && wrappers != null)
                             {
                                 var x = wrappers.FindReferableByReference(
-                                    new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
-                                if (x is AasCore.Aas3_0_RC02.Property fpp)
+                                    new Aas.Reference(Aas.ReferenceTypes.GlobalReference, vl.Path), keyIndex: 0);
+                                if (x is Aas.Property fpp)
                                     smeToModify = fpp;
                             }
 

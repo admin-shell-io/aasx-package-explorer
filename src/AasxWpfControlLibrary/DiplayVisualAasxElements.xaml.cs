@@ -484,14 +484,14 @@ namespace AasxPackageExplorer
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
-                if (mdo != null && mdo is AasCore.Aas3_0_RC02.IReferable)
+                if (mdo != null && mdo is Aas.IReferable)
                 {
-                    var mdoen = (mdo as AasCore.Aas3_0_RC02.IReferable).GetSelfDescription().AasElementName.Trim().ToLower();
+                    var mdoen = (mdo as Aas.IReferable).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
-                if (mdo != null && mdo is AasCore.Aas3_0_RC02.Reference)
+                if (mdo != null && mdo is Aas.Reference)
                 {
-                    var mdoen = (mdo as AasCore.Aas3_0_RC02.Reference).GetSelfDescription().AasElementName.Trim().ToLower();
+                    var mdoen = (mdo as Aas.Reference).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
                 return !isIn;

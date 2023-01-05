@@ -15,7 +15,7 @@ namespace AasxPackageLogic.PackageCentral
     /// <summary>
     /// This interface allows to find some <c>PackageContainerRepoItem</c> by asking for AAS or AssetId.
     /// It does not intend to be a full fledged query interface, but allow to retrieve what is usful for
-    /// automatic Reference link following etc.
+    /// automatic Aas.Reference link following etc.
     /// </summary>
     public interface IPackageContainerFind
     {

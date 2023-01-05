@@ -39,13 +39,13 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- AssetInformation
+        // --- Aas.AssetInformation
         //
         //
 
         public void DisplayOrEditAasEntityAssetInformation(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.AssetAdministrationShell aas, AasCore.Aas3_0_RC02.AssetInformation asset,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.AssetAdministrationShell aas, Aas.AssetInformation asset,
             object preferredNextFocus,
             bool editMode, ModifyRepo repo, AnyUiStackPanel stack, bool embedded = false,
             bool hintMode = false,
@@ -79,7 +79,7 @@ namespace AasxPackageLogic
                     stack, repo, asset.GlobalAssetId, "globalAssetId:", "Create data element!",
                     v =>
                     {
-                        asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                        asset.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                         this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -98,8 +98,8 @@ namespace AasxPackageLogic
                     {
                         if (i == 0)
                         {
-                            asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { 
-                                new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "" + AdminShellUtil.GenerateIdAccordingTemplate(
+                            asset.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { 
+                                new Aas.Key(Aas.KeyTypes.GlobalReference, "" + AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdAsset))
                             });
                             this.AddDiaryEntry(aas, new DiaryEntryStructChange());
@@ -116,8 +116,8 @@ namespace AasxPackageLogic
                                 text: "" + asset.GlobalAssetId?.GetAsIdentifier());
                             if (this.context.StartFlyoverModal(uc))
                             {
-                                asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { 
-                                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "" + uc.Text) 
+                                asset.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { 
+                                    new Aas.Key(Aas.KeyTypes.GlobalReference, "" + uc.Text) 
                                 });
                                 this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                 return new AnyUiLambdaActionRedrawAllElements(nextFocus: asset);
@@ -138,7 +138,7 @@ namespace AasxPackageLogic
                                 try
                                 {
                                     // rename
-                                    var lrf = env.RenameIdentifiable<AasCore.Aas3_0_RC02.AssetInformation>(
+                                    var lrf = env.RenameIdentifiable<Aas.AssetInformation>(
                                         asset.GlobalAssetId?.GetAsIdentifier(),
                                         uc.Text);
 
@@ -161,7 +161,7 @@ namespace AasxPackageLogic
 
                                 if (!res)
                                     this.context.MessageBoxFlyoutShow(
-                                        "The renaming of the Submodel or some referring elements " +
+                                        "The renaming of the Aas.Submodel or some referring elements " +
                                         "has not performed successfully! Please review your inputs and " +
                                         "the AAS structure for any inconsistencies.",
                                         "Warning",
@@ -232,7 +232,7 @@ namespace AasxPackageLogic
                 stack, repo, asset.DefaultThumbnail, $"defaultThumbnail:", $"Create empty Resource element!",
                 v =>
                 {
-                    asset.DefaultThumbnail = new AasCore.Aas3_0_RC02.Resource(""); //File replaced by resource in V3
+                    asset.DefaultThumbnail = new Aas.Resource(""); //File replaced by resource in V3
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
@@ -242,7 +242,7 @@ namespace AasxPackageLogic
                 // Note: parentContainer = null effectively seems to disable "unwanted" functionality
                 // DisplayOrEditAasEntitySubmodelElement(
                 //    packages: packages, env: env, parentContainer: null, wrapper: null,
-                //    sme: (AasCore.Aas3_0_RC02.ISubmodelElement)asset.DefaultThumbnail,
+                //    sme: (Aas.ISubmodelElement)asset.DefaultThumbnail,
                 //    editMode: editMode, repo: repo, stack: substack, hintMode: hintMode);
                 DisplayOrEditEntityFileResource(
                     substack, aas, repo, superMenu,
@@ -263,22 +263,22 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAasEnv(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
             VisualElementEnvironmentItem ve, bool editMode, AnyUiStackPanel stack,
             bool hintMode = false,
             AasxMenu superMenu = null)
         {
-            this.AddGroup(stack, "Environment of AssetInformation Administration Shells", this.levelColors.MainSection);
+            this.AddGroup(stack, "Environment of Aas.AssetInformation Administration Shells", this.levelColors.MainSection);
             if (env == null)
                 return;
 
             // automatically and silently fix errors
             if (env.AssetAdministrationShells == null)
-                env.AssetAdministrationShells = new List<AasCore.Aas3_0_RC02.AssetAdministrationShell>();
+                env.AssetAdministrationShells = new List<Aas.AssetAdministrationShell>();
             if (env.ConceptDescriptions == null)
-                env.ConceptDescriptions = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
+                env.ConceptDescriptions = new List<Aas.ConceptDescription>();
             if (env.Submodels == null)
-                env.Submodels = new List<AasCore.Aas3_0_RC02.Submodel>();
+                env.Submodels = new List<Aas.Submodel>();
 
             if (editMode &&
                 (ve.theItemType == VisualElementEnvironmentItem.ItemType.Env
@@ -301,16 +301,16 @@ namespace AasxPackageLogic
                             "created by adding them to associated to Administration Shells. " +
                             "Therefore, an Adminstration Shell shall exist before and shall be selected. " +
                             "You could then add Submodels by clicking " +
-                            "'Create new Submodel of kind Type/Instance' on the edit panel. " +
+                            "'Create new Aas.Submodel of kind Type/Instance' on the edit panel. " +
                             "This step is typically done after creating asset and Administration Shell."),
                     new HintCheck(
                         () => { return env.ConceptDescriptions == null || env.ConceptDescriptions.Count < 1; },
                         "There are no ConceptDescriptions in this AAS environment. " +
                             "Even if SubmodelElements can reference external concept descriptions, " +
                             "it is best practice to include (duplicates of the) concept descriptions " +
-                            "inside the AAS environment. You should consider adding a ConceptDescription " +
-                            "by clicking 'Add ConceptDescription' on the panel below or " +
-                            "adding a SubmodelElement to a Submodel. This step is typically done after " +
+                            "inside the AAS environment. You should consider adding a Aas.ConceptDescription " +
+                            "by clicking 'Add Aas.ConceptDescription' on the panel below or " +
+                            "adding a SubmodelElement to a Aas.Submodel. This step is typically done after " +
                             "creating assets and Administration Shell and when creating SubmodelElements."),
                 });
 
@@ -323,13 +323,13 @@ namespace AasxPackageLogic
                             "Adds an asset with blank information.")
                         .AddAction("add-aas", "Add AAS",
                             "Adds an AAS with blank information.")
-                        .AddAction("add-cd", "Add ConceptDescription",
-                            "Adds an ConceptDescription with blank information."),
+                        .AddAction("add-cd", "Add Aas.ConceptDescription",
+                            "Adds an Aas.ConceptDescription with blank information."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
-                            var aas = new AasCore.Aas3_0_RC02.AssetAdministrationShell("", null, submodels:new List<AasCore.Aas3_0_RC02.Reference>()); //TODO:jtikekar refere an Asset
+                            var aas = new Aas.AssetAdministrationShell("", null, submodels:new List<Aas.Reference>()); //TODO:jtikekar refere an Asset
                             aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdAas);
                             env.AssetAdministrationShells.Add(aas);
@@ -340,7 +340,7 @@ namespace AasxPackageLogic
 
                         if (buttonNdx == 1)
                         {
-                            var cd = new AasCore.Aas3_0_RC02.ConceptDescription("");
+                            var cd = new Aas.ConceptDescription("");
                             cd.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription);
                             env.ConceptDescriptions.Add(cd);
@@ -380,7 +380,7 @@ namespace AasxPackageLogic
                             {
                                 var rve = this.SmartSelectAasEntityVisualElement(
                                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                                    AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.AssetAdministrationShell)) as VisualElementAdminShell;
+                                    Aas.Stringification.ToString(Aas.KeyTypes.AssetAdministrationShell)) as VisualElementAdminShell;
 
                                 if (rve != null)
                                 {
@@ -389,10 +389,10 @@ namespace AasxPackageLogic
                                     var copySupplFiles = buttonNdx == 2;
 
                                     var potentialSupplFilesToCopy = new Dictionary<string, string>();
-                                    AasCore.Aas3_0_RC02.AssetAdministrationShell destAAS = null;
+                                    Aas.AssetAdministrationShell destAAS = null;
 
                                     var mdo = rve.GetMainDataObject();
-                                    if (mdo != null && mdo is AasCore.Aas3_0_RC02.AssetAdministrationShell sourceAAS)
+                                    if (mdo != null && mdo is Aas.AssetAdministrationShell sourceAAS)
                                     {
                                         //
                                         // copy AAS
@@ -400,7 +400,7 @@ namespace AasxPackageLogic
                                         try
                                         {
                                             // make a copy of the AAS itself
-                                            destAAS = (mdo as AasCore.Aas3_0_RC02.AssetAdministrationShell).Copy();
+                                            destAAS = (mdo as Aas.AssetAdministrationShell).Copy();
                                             if (createNewIds)
                                             {
                                                 destAAS.Id = AdminShellUtil.GenerateIdAccordingTemplate(
@@ -408,7 +408,7 @@ namespace AasxPackageLogic
 
                                                 if (destAAS.AssetInformation != null)
                                                 {
-                                                    destAAS.AssetInformation.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(
+                                                    destAAS.AssetInformation.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, AdminShellUtil.GenerateIdAccordingTemplate(
                                                                 Options.Curr.TemplateIdAsset))});
                                                 }
                                             }
@@ -418,7 +418,7 @@ namespace AasxPackageLogic
                                                 StructuralChangeReason.Create));
 
                                             // clear, copy Submodels?
-                                            destAAS.Submodels = new List<AasCore.Aas3_0_RC02.Reference>();
+                                            destAAS.Submodels = new List<Aas.Reference>();
                                             if (copyRecursively && sourceAAS.Submodels != null)
                                             {
                                                 foreach (var smr in sourceAAS.Submodels)
@@ -431,7 +431,7 @@ namespace AasxPackageLogic
                                                     // get hold of suppl file infos?
                                                     if (srcSub.SubmodelElements != null)
                                                         foreach (var f in
-                                                                srcSub.SubmodelElements.FindDeep<AasCore.Aas3_0_RC02.File>())
+                                                                srcSub.SubmodelElements.FindDeep<Aas.File>())
                                                         {
                                                             if (f != null && f.Value != null &&
                                                                     f.Value.StartsWith("/") &&
@@ -460,10 +460,10 @@ namespace AasxPackageLogic
                                                         // means: we have to generate a new submodel ref 
                                                         // by using template mechanism
                                                         var tid = Options.Curr.TemplateIdSubmodelInstance;
-                                                        if (srcSub.Kind != null && srcSub.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template)
+                                                        if (srcSub.Kind != null && srcSub.Kind == Aas.ModelingKind.Template)
                                                             tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                                        // create Submodel as deep copy 
+                                                        // create Aas.Submodel as deep copy 
                                                         // with new id from scratch
                                                         var dstSub = srcSub.Copy();
                                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
@@ -536,7 +536,7 @@ namespace AasxPackageLogic
                     || ve.theItemType == VisualElementEnvironmentItem.ItemType.ConceptDescriptions)
                 {
                     // Cut, copy, paste within list of Assets
-                    this.DispPlainListOfIdentifiablePasteHelper<AasCore.Aas3_0_RC02.IIdentifiable>(
+                    this.DispPlainListOfIdentifiablePasteHelper<Aas.IIdentifiable>(
                         stack, repo, this.theCopyPaste,
                         label: "Buffer:",
                         lambdaPasteInto: (cpi, del) =>
@@ -550,7 +550,7 @@ namespace AasxPackageLogic
 
                                 // divert
                                 object res = null;
-                                if (cpiid.entity is AasCore.Aas3_0_RC02.AssetAdministrationShell itaas)
+                                if (cpiid.entity is Aas.AssetAdministrationShell itaas)
                                 {
                                     // new 
                                     var aas = itaas.Copy();
@@ -560,7 +560,7 @@ namespace AasxPackageLogic
                                     res = aas;
 
                                     // delete
-                                    if (del && cpiid.parentContainer is List<AasCore.Aas3_0_RC02.AssetAdministrationShell> aasold
+                                    if (del && cpiid.parentContainer is List<Aas.AssetAdministrationShell> aasold
                                         && aasold.Contains(itaas))
                                     {
                                         aasold.Remove(itaas);
@@ -569,7 +569,7 @@ namespace AasxPackageLogic
                                     }
                                 }
                                 else
-                                if (cpiid.entity is AasCore.Aas3_0_RC02.ConceptDescription itcd)
+                                if (cpiid.entity is Aas.ConceptDescription itcd)
                                 {
                                     // new 
                                     var cd = itcd.Copy();
@@ -579,7 +579,7 @@ namespace AasxPackageLogic
                                     res = cd;
 
                                     // delete
-                                    if (del && cpiid.parentContainer is List<AasCore.Aas3_0_RC02.ConceptDescription> cdold
+                                    if (del && cpiid.parentContainer is List<Aas.ConceptDescription> cdold
                                         && cdold.Contains(itcd))
                                     {
                                         cdold.Remove(itcd);
@@ -600,7 +600,7 @@ namespace AasxPackageLogic
 
                                 // divert
                                 object res = null;
-                                if (cpism.sm is AasCore.Aas3_0_RC02.Submodel itsm)
+                                if (cpism.sm is Aas.Submodel itsm)
                                 {
                                     // new 
                                     var asset = itsm.Copy();
@@ -610,7 +610,7 @@ namespace AasxPackageLogic
                                     res = asset;
 
                                     // delete
-                                    if (del && cpism.parentContainer is List<AasCore.Aas3_0_RC02.Submodel> smold
+                                    if (del && cpism.parentContainer is List<Aas.Submodel> smold
                                         && smold.Contains(itsm))
                                     {
                                         smold.Remove(itsm);
@@ -648,7 +648,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                     this.AddAction(
-                        stack, "Copy from existing ConceptDescription:",
+                        stack, "Copy from existing Aas.ConceptDescription:",
                         repo: repo,
                         superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -664,11 +664,11 @@ namespace AasxPackageLogic
                                 if (rve != null)
                                 {
                                     var mdo = rve.GetMainDataObject();
-                                    if (mdo != null && mdo is AasCore.Aas3_0_RC02.ConceptDescription)
+                                    if (mdo != null && mdo is Aas.ConceptDescription)
                                     {
-                                        var clone = (mdo as AasCore.Aas3_0_RC02.ConceptDescription).Copy();
+                                        var clone = (mdo as Aas.ConceptDescription).Copy();
                                         if (env.ConceptDescriptions == null)
-                                            env.ConceptDescriptions = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
+                                            env.ConceptDescriptions = new List<Aas.ConceptDescription>();
                                         this.MakeNewIdentifiableUnique(clone);
                                         env.ConceptDescriptions.Add(clone);
                                         this.AddDiaryEntry(clone,
@@ -695,7 +695,7 @@ namespace AasxPackageLogic
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                             minWidth: 250,
                             items: new[] {
-                            "List index", "idShort", "Identification", "By Submodel",
+                            "List index", "idShort", "Identification", "By Aas.Submodel",
                             "By SubmodelElements"
                         }),
                         (o) =>
@@ -810,7 +810,7 @@ namespace AasxPackageLogic
 
                                 if (env?.ConceptDescriptions == null)
                                 {
-                                    Log.Singleton.Info(".. no ConceptDescription!");
+                                    Log.Singleton.Info(".. no Aas.ConceptDescription!");
                                     return new AnyUiLambdaActionNone();
                                 }
 
@@ -931,14 +931,14 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return env.AssetAdministrationShells.Count < 1; },
-                            "There are no AssetAdministrationShell entities in the environment. " +
+                            "There are no Aas.AssetAdministrationShell entities in the environment. " +
                                 "Select the 'Administration Shells' item on the middle panel and " +
                                 "select 'Add AAS' to add a new entity."),
                         new HintCheck(
                             () => { return env.ConceptDescriptions.Count < 1; },
                             "There are no embedded ConceptDescriptions in the environment. " +
-                                "It is a good practive to have those. Select or add an AssetAdministrationShell, " +
-                                "Submodel and SubmodelElement and add a ConceptDescription.",
+                                "It is a good practive to have those. Select or add an Aas.AssetAdministrationShell, " +
+                                "Submodel and SubmodelElement and add a Aas.ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice),
                     });
 
@@ -1036,8 +1036,8 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityAas(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.AssetAdministrationShell aas,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.AssetAdministrationShell aas,
             bool editMode, AnyUiStackPanel stack, bool hintMode = false, 
             AasxMenu superMenu = null)
         {
@@ -1051,14 +1051,14 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
                 // Up/ down/ del
-                this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.AssetAdministrationShell>(
+                this.EntityListUpDownDeleteHelper<Aas.AssetAdministrationShell>(
                     stack, repo, env.AssetAdministrationShells, aas, env, "AAS:",
                     superMenu: superMenu);
 
                 // Cut, copy, paste within list of AASes
-                this.DispPlainIdentifiableCutCopyPasteHelper<AasCore.Aas3_0_RC02.AssetAdministrationShell>(
+                this.DispPlainIdentifiableCutCopyPasteHelper<Aas.AssetAdministrationShell>(
                     stack, repo, this.theCopyPaste,
-                    env.AssetAdministrationShells, aas, (o) => { return (o as AasCore.Aas3_0_RC02.AssetAdministrationShell).Copy(); },
+                    env.AssetAdministrationShells, aas, (o) => { return (o as Aas.AssetAdministrationShell).Copy(); },
                     label: "Buffer:",
                     checkPasteInfo: (cpb) => cpb?.Items?.AllOfElementType<CopyPasteItemSubmodel>() == true,
                     doPasteInto: (cpi, del) =>
@@ -1077,7 +1077,7 @@ namespace AasxPackageLogic
                         var newsmr = item.smref.Copy();
                         aas.Submodels.Add(newsmr);
 
-                        // special case: Submodel does not exist, as pasting was from external
+                        // special case: Aas.Submodel does not exist, as pasting was from external
                         if (env?.Submodels != null && item.sm != null)
                         {
                             var smtest = env.FindSubmodel(newsmr);
@@ -1090,7 +1090,7 @@ namespace AasxPackageLogic
                         }
 
                         // delete
-                        if (del && item.parentContainer is AasCore.Aas3_0_RC02.AssetAdministrationShell aasold
+                        if (del && item.parentContainer is Aas.AssetAdministrationShell aasold
                             && aasold.Submodels.Contains(item.smref))
                             aasold.Submodels.Remove(item.smref);
 
@@ -1106,7 +1106,7 @@ namespace AasxPackageLogic
                             () => { return aas.Submodels.Count < 1;  },
                             "You have no Submodels referenced by this Administration Shell. " +
                                 "This is rather unusual, as the Submodels are the actual carriers of information. " +
-                                "Most likely, you want to click 'Create new Submodel of kind Instance'. " +
+                                "Most likely, you want to click 'Create new Aas.Submodel of kind Instance'. " +
                                 "You might also consider to load another AASX as auxiliary AASX " +
                                 "(see 'File' menu) to copy structures from.",
                             severityLevel: HintCheck.Severity.Notice)
@@ -1116,18 +1116,18 @@ namespace AasxPackageLogic
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("ref-existing", "Reference to existing Submodel",
-                            "Links the SubmodelReference to an existing Submodel.")
-                        .AddAction("create-template", "Create new Submodel of kind Template",
-                            "Creates a new Submodel of kind Template and link to this SubmodelReference.")
-                        .AddAction("create-instance", "Create new Submodel of kind Instance",
-                            "Creates a new Submodel of kind Instance and link to this SubmodelReference."),
+                        .AddAction("ref-existing", "Reference to existing Aas.Submodel",
+                            "Links the SubmodelReference to an existing Aas.Submodel.")
+                        .AddAction("create-template", "Create new Aas.Submodel of kind Template",
+                            "Creates a new Aas.Submodel of kind Template and link to this SubmodelReference.")
+                        .AddAction("create-instance", "Create new Aas.Submodel of kind Instance",
+                            "Creates a new Aas.Submodel of kind Instance and link to this SubmodelReference."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
                             if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
-                                    "This operation creates a reference to an existing Submodel. " +
+                                    "This operation creates a reference to an existing Aas.Submodel. " +
                                         "By this, two AAS will share exactly the same data records. " +
                                         "Changing one will cause the other AAS's information to change as well. " +
                                         "This operation is rather special. Do you want to proceed?",
@@ -1135,14 +1135,14 @@ namespace AasxPackageLogic
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
 
-                            // select existing Submodel
+                            // select existing Aas.Submodel
                             var ks = this.SmartSelectAasEntityKeys(packages,
                                         PackageCentral.PackageCentral.Selector.Main,
                                         "Submodel");
                             if (ks != null)
                             {
                                 // create ref
-                                var smr = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>(ks));
+                                var smr = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>(ks));
                                 aas.Submodels.Add(smr);
 
                                 // event for AAS
@@ -1157,7 +1157,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1 || buttonNdx == 2)
                         {
                             // create new submodel
-                            var submodel = new AasCore.Aas3_0_RC02.Submodel("");
+                            var submodel = new Aas.Submodel("");
                             aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 (buttonNdx == 1) ? Options.Curr.TemplateIdSubmodelTemplate
                                 : Options.Curr.TemplateIdSubmodelInstance);
@@ -1170,14 +1170,14 @@ namespace AasxPackageLogic
                             {
                                 submodel.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelTemplate);
-                                submodel.Kind = AasCore.Aas3_0_RC02.ModelingKind.Template;
+                                submodel.Kind = Aas.ModelingKind.Template;
                             }
                             else
                                 submodel.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                     Options.Curr.TemplateIdSubmodelInstance);
 
                             // create ref
-                            var smr = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, submodel.Id)});
+                            var smr = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.Submodel, submodel.Id)});
                             aas.Submodels.Add(smr);
 
                             // event for AAS
@@ -1198,15 +1198,15 @@ namespace AasxPackageLogic
                         severityLevel: HintCheck.Severity.Notice)
                 });
                 this.AddAction(
-                    stack, "Copy from existing Submodel:",
+                    stack, "Copy from existing Aas.Submodel:",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
-                            "Copy selected Submodel without children from another AAS, " +
+                            "Copy selected Aas.Submodel without children from another AAS, " +
                             "caring for ConceptDescriptions.")
                         .AddAction("copy-recurse", "Copy recursively",
-                            "Copy selected Submodel and children from another AAS, " +
+                            "Copy selected Aas.Submodel and children from another AAS, " +
                             "caring for ConceptDescriptions."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1219,7 +1219,7 @@ namespace AasxPackageLogic
                             if (rve != null)
                             {
                                 var mdo = rve.GetMainDataObject();
-                                if (mdo != null && mdo is AasCore.Aas3_0_RC02.Reference)
+                                if (mdo != null && mdo is Aas.Reference)
                                 {
                                     // we have 2 different use cases: 
                                     // (1) copy between AAS ENVs, 
@@ -1228,12 +1228,12 @@ namespace AasxPackageLogic
                                     {
                                         // use case (1) copy between AAS ENVs
                                         var clone = env.CopySubmodelRefAndCD(
-                                            rve.theEnv, mdo as AasCore.Aas3_0_RC02.Reference, copySubmodel: true,
+                                            rve.theEnv, mdo as Aas.Reference, copySubmodel: true,
                                             copyCD: true, shallowCopy: buttonNdx == 0);
                                         if (clone == null)
                                             return new AnyUiLambdaActionNone();
                                         if (aas.Submodels == null)
-                                            aas.Submodels = new List<AasCore.Aas3_0_RC02.Reference>();
+                                            aas.Submodels = new List<Aas.Reference>();
                                         aas.Submodels.Add(clone);
                                         this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                         return new AnyUiLambdaActionRedrawAllElements(
@@ -1244,16 +1244,16 @@ namespace AasxPackageLogic
                                         // use case (2) copy in one AAS ENV!
 
                                         // need access to source submodel
-                                        var srcSub = rve.theEnv.FindSubmodel(mdo as AasCore.Aas3_0_RC02.Reference);
+                                        var srcSub = rve.theEnv.FindSubmodel(mdo as Aas.Reference);
                                         if (srcSub == null)
                                             return new AnyUiLambdaActionNone();
 
                                         // means: we have to generate a new submodel ref by using template mechanism
                                         var tid = Options.Curr.TemplateIdSubmodelInstance;
-                                        if (srcSub.Kind != null && srcSub.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template)
+                                        if (srcSub.Kind != null && srcSub.Kind == Aas.ModelingKind.Template)
                                             tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                        // create Submodel as deep copy 
+                                        // create Aas.Submodel as deep copy 
                                         // with new id from scratch
                                         var dstSub = srcSub.Copy();
                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
@@ -1268,7 +1268,7 @@ namespace AasxPackageLogic
 
                                         // .. and AAS
                                         if (aas.Submodels == null)
-                                            aas.Submodels = new List<AasCore.Aas3_0_RC02.Reference>();
+                                            aas.Submodels = new List<Aas.Reference>();
                                         aas.Submodels.Add(dstRef);
                                         this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                                         return new AnyUiLambdaActionRedrawAllElements(
@@ -1303,13 +1303,13 @@ namespace AasxPackageLogic
                 new HintCheck(
                     () =>
                     {
-                        return asset != null && asset.AssetKind== AasCore.Aas3_0_RC02.AssetKind.Instance &&
+                        return asset != null && asset.AssetKind == Aas.AssetKind.Instance &&
                             ( aas.DerivedFrom == null || aas.DerivedFrom.Keys.Count < 1);
                     },
                     "You have decided to create an AAS for kind = 'Instance'. " +
                         "You might derive this from another AAS of kind = 'Instance' or " +
                         "from another AAS of kind = 'Type'. It is perfectly fair to create " +
-                        "an AssetAdministrationShell with no 'derivedFrom' relation! " +
+                        "an Aas.AssetAdministrationShell with no 'derivedFrom' relation! " +
                         "However, for example, if you're an supplier of products which stem from a series-type, " +
                         "you might want to maintain a relation of the AAS's of the individual prouct instances " +
                         "to the AAS of the series type.",
@@ -1319,18 +1319,18 @@ namespace AasxPackageLogic
                 stack, repo, aas.DerivedFrom, "derivedFrom:", "Create data element!",
                 v =>
                 {
-                    aas.DerivedFrom = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, 
-                        new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.AssetAdministrationShell, "")});
+                    aas.DerivedFrom = new Aas.Reference(Aas.ReferenceTypes.ModelReference, 
+                        new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.AssetAdministrationShell, "")});
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
             {
                 this.AddGroup(stack, "Derived From", this.levelColors.SubSection);
 
-                Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
+                Func<List<Aas.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)), translateAssetToAAS: true);
+                        new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)), translateAssetToAAS: true);
                 };
 
                 this.AddKeyReference(
@@ -1355,7 +1355,7 @@ namespace AasxPackageLogic
             // Asset linked with AAS
             //
 
-            // show group only if no AssetInformation is available because
+            // show group only if no Aas.AssetInformation is available because
             // else DisplayOrEditAasEntityAsset will do
             if (aas.AssetInformation == null)
                 this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
@@ -1364,7 +1364,7 @@ namespace AasxPackageLogic
                 stack, repo, aas.AssetInformation, "AssetInformation:", "Create data element!",
                 v =>
                 {
-                    aas.AssetInformation = new AasCore.Aas3_0_RC02.AssetInformation(AasCore.Aas3_0_RC02.AssetKind.Type);
+                    aas.AssetInformation = new Aas.AssetInformation(Aas.AssetKind.Type);
                     this.AddDiaryEntry(aas, new DiaryEntryStructChange());
                     return new AnyUiLambdaActionRedrawEntity();
                 }))
@@ -1379,31 +1379,31 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Submodel Ref
+        // --- Aas.Submodel Ref
         //
         //
 
         public void DisplayOrEditAasEntitySubmodelOrRef(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.AssetAdministrationShell aas,
-            AasCore.Aas3_0_RC02.Reference smref, AasCore.Aas3_0_RC02.Submodel submodel, bool editMode,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.AssetAdministrationShell aas,
+            Aas.Reference smref, Aas.Submodel submodel, bool editMode,
             AnyUiStackPanel stack, bool hintMode = false,
             AasxMenu superMenu = null)
         {
-            // This panel renders first the SubmodelReference and then the Submodel, below
+            // This panel renders first the SubmodelReference and then the Aas.Submodel, below
             if (smref != null)
             {
                 this.AddGroup(stack, "SubmodelReference", this.levelColors.MainSection);
 
-                Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
+                Func<List<Aas.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
                  {
                      return new AnyUiLambdaActionNavigateTo(
-                         new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)), alsoDereferenceObjects: false);
+                         new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)), alsoDereferenceObjects: false);
                  };
 
                 this.AddKeyListKeys(
                     stack, "submodelRef", smref.Keys, repo,
-                    packages, PackageCentral.PackageCentral.Selector.Main, "Reference Submodel ",
+                    packages, PackageCentral.PackageCentral.Selector.Main, "Reference Aas.Submodel ",
                     takeOverLambdaAction: new AnyUiLambdaActionRedrawAllElements(smref),
                     jumpLambda: lambda, relatedReferable: aas);
             }
@@ -1421,7 +1421,7 @@ namespace AasxPackageLogic
                     ParentElem = aas
                 };
 
-                this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.Reference>(
+                this.EntityListUpDownDeleteHelper<Aas.Reference>(
                     stack, repo, aas.Submodels, smref, aas, "Reference:", sendUpdateEvent: evTemplate,
                     explicitParent: aas);
             }
@@ -1430,7 +1430,7 @@ namespace AasxPackageLogic
             if (editMode && smref == null && submodel != null)
             {
                 this.AddGroup(
-                    stack, "Editing of entities (environment's Submodel collection)",
+                    stack, "Editing of entities (environment's Aas.Submodel collection)",
                     this.levelColors.MainSection);
 
                 AddAction(stack, "Submodel:",
@@ -1443,7 +1443,7 @@ namespace AasxPackageLogic
                     {
                         if (buttonNdx == 0)
                             if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
-                                     "Delete selected Submodel? This operation can not be reverted!", "AAS-ENV",
+                                     "Delete selected Aas.Submodel? This operation can not be reverted!", "AAS-ENV",
                                      AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                             {
                                 if (env.Submodels.Contains(submodel))
@@ -1461,8 +1461,8 @@ namespace AasxPackageLogic
             if (editMode && smref != null && submodel != null && aas != null)
             {
                 // cut/ copy / paste
-                this.DispSubmodelCutCopyPasteHelper<AasCore.Aas3_0_RC02.Reference>(stack, repo, this.theCopyPaste,
-                    aas.Submodels, smref, (sr) => { return new AasCore.Aas3_0_RC02.Reference(sr.Type, new List<AasCore.Aas3_0_RC02.Key>(sr.Keys)); },
+                this.DispSubmodelCutCopyPasteHelper<Aas.Reference>(stack, repo, this.theCopyPaste,
+                    aas.Submodels, smref, (sr) => { return new Aas.Reference(sr.Type, new List<Aas.Key>(sr.Keys)); },
                     smref, submodel, superMenu: superMenu,
                     label: "Buffer:",
                     checkEquality: (r1, r2) =>
@@ -1475,7 +1475,7 @@ namespace AasxPackageLogic
                     {
                         if (cpi is CopyPasteItemSubmodel item)
                         {
-                            // special case: Submodel does not exist, as pasting was from external
+                            // special case: Aas.Submodel does not exist, as pasting was from external
                             if (env?.Submodels != null && item.smref != null && item.sm != null)
                             {
                                 var smtest = env.FindSubmodel(item.smref);
@@ -1494,7 +1494,7 @@ namespace AasxPackageLogic
             if (editMode && smref == null && submodel != null && env != null)
             {
                 // cut/ copy / paste
-                this.DispSubmodelCutCopyPasteHelper<AasCore.Aas3_0_RC02.Submodel>(stack, repo, this.theCopyPaste,
+                this.DispSubmodelCutCopyPasteHelper<Aas.Submodel>(stack, repo, this.theCopyPaste,
                     env.Submodels, submodel, (sm) => { return sm.Copy(); },
                     null, submodel, superMenu: superMenu,
                     label: "Buffer:");
@@ -1506,7 +1506,7 @@ namespace AasxPackageLogic
                 this.AddHintBubble(stack, hintMode, new[] {
                     new HintCheck(
                         () => { return submodel.SubmodelElements == null || submodel.SubmodelElements.Count < 1; },
-                        "This Submodel currently has no SubmodelElements, yet. " +
+                        "This Aas.Submodel currently has no SubmodelElements, yet. " +
                             "These are the actual carriers of information. " +
                             "You could create them by clicking the 'Add ..' buttons below. " +
                             "Subsequently, when having a SubmodelElement established, " +
@@ -1517,12 +1517,12 @@ namespace AasxPackageLogic
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-prop", "Add Aas.Property",
+                            "Adds a new Aas.Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
+                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
+                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -1532,26 +1532,26 @@ namespace AasxPackageLogic
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
                             // which adequate type?
-                            var en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement;
+                            var en = Aas.AasSubmodelElements.SubmodelElement;
                             if (buttonNdx == 0)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.Property;
+                                en = Aas.AasSubmodelElements.Property;
                             if (buttonNdx == 1)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.MultiLanguageProperty;
+                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
                             if (buttonNdx == 2)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection;
+                                en = Aas.AasSubmodelElements.SubmodelElementCollection;
                             if (buttonNdx == 3)
                                 en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
 
                             // ok?
-                            if (en != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement)
+                            if (en != Aas.AasSubmodelElements.SubmodelElement)
                             {
-                                AasCore.Aas3_0_RC02.ISubmodelElement sme2 =
+                                Aas.ISubmodelElement sme2 =
                                     AdminShellUtil.CreateSubmodelElementFromEnum(en);
 
                                 // add
-                                AasCore.Aas3_0_RC02.ISubmodelElement smw = sme2;
+                                Aas.ISubmodelElement smw = sme2;
                                 if (submodel.SubmodelElements == null)
-                                    submodel.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                                    submodel.SubmodelElements = new List<Aas.ISubmodelElement>();
                                 submodel.SubmodelElements.Add(smw);
 
                                 // emit event
@@ -1576,10 +1576,10 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("copy-single", "Copy single",
-                            "Copy selected Submodel without children from another AAS, " +
+                            "Copy selected Aas.Submodel without children from another AAS, " +
                             "caring for ConceptDescriptions.")
                         .AddAction("copy-recurse", "Copy recursively",
-                            "Copy selected Submodel and children from another AAS, " +
+                            "Copy selected Aas.Submodel and children from another AAS, " +
                             "caring for ConceptDescriptions."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1592,17 +1592,17 @@ namespace AasxPackageLogic
                             if (rve != null && env != null)
                             {
                                 var mdo = rve.GetMainDataObject();
-                                if (mdo != null && mdo is AasCore.Aas3_0_RC02.ISubmodelElement)
+                                if (mdo != null && mdo is Aas.ISubmodelElement)
                                 {
                                     var clone = env.CopySubmodelElementAndCD(
-                                        rve.theEnv, mdo as AasCore.Aas3_0_RC02.ISubmodelElement,
+                                        rve.theEnv, mdo as Aas.ISubmodelElement,
                                         copyCD: true, shallowCopy: buttonNdx == 0);
 
                                     this.MakeNewReferableUnique(clone);
 
                                     if (submodel.SubmodelElements == null)
                                         submodel.SubmodelElements =
-                                            new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                                            new List<Aas.ISubmodelElement>();
 
                                     // ReSharper disable once PossibleNullReferenceException -- ignore a false positive
                                     submodel.SubmodelElements.Add(clone);
@@ -1622,10 +1622,10 @@ namespace AasxPackageLogic
                     });
 
                 // create ConceptDescriptions for ECLASS
-                var targets = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                var targets = new List<Aas.ISubmodelElement>();
                 if (submodel.SubmodelElements != null)
                     this.IdentifyTargetsForEclassImportOfCDs(
-                        env, new List<AasCore.Aas3_0_RC02.ISubmodelElement>(submodel.SubmodelElements),
+                        env, new List<Aas.ISubmodelElement>(submodel.SubmodelElements),
                         ref targets);
                 this.AddHintBubble(
                     stack, hintMode,
@@ -1689,26 +1689,26 @@ namespace AasxPackageLogic
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Kind attributes of " +
-                                        "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                        "the Aas.Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Setting Kind",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
 
                             submodel.Kind = (buttonNdx == 0)
-                                ? AasCore.Aas3_0_RC02.ModelingKind.Template
-                                : AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                                ? Aas.ModelingKind.Template
+                                : Aas.ModelingKind.Instance;
 
                             submodel.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                             {
                                 // set
                                 sme.Kind = (buttonNdx == 0)
-                                    ? AasCore.Aas3_0_RC02.ModelingKind.Template
-                                    : AasCore.Aas3_0_RC02.ModelingKind.Instance;
+                                    ? Aas.ModelingKind.Template
+                                    : Aas.ModelingKind.Instance;
                                 // recurse
                                 return true;
                             });
 
-                            // emit event for Submodel and children
+                            // emit event for Aas.Submodel and children
                             this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
@@ -1719,7 +1719,7 @@ namespace AasxPackageLogic
                             if (ticket?.ScriptMode != true
                                 && AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will affect all Qualifers of " +
-                                    "the Submodel and all of its SubmodelElements. Do you want to proceed?",
+                                    "the Aas.Submodel and all of its SubmodelElements. Do you want to proceed?",
                                     "Remove qualifiers",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
@@ -1736,7 +1736,7 @@ namespace AasxPackageLogic
                                 return true;
                             });
 
-                            // emit event for Submodel and children
+                            // emit event for Aas.Submodel and children
                             this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
@@ -1750,16 +1750,16 @@ namespace AasxPackageLogic
             if (submodel != null)
             {
 
-                // Submodel
+                // Aas.Submodel
                 this.AddGroup(stack, "Submodel", this.levelColors.MainSection);
 
-                // IReferable
+                // Aas.IReferable
                 this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
                     stack, submodel,
-                    (submodel.Kind == AasCore.Aas3_0_RC02.ModelingKind.Template)
+                    (submodel.Kind == Aas.ModelingKind.Template)
                         ? Options.Curr.TemplateIdSubmodelTemplate
                         : Options.Curr.TemplateIdSubmodelInstance,
                     new DispEditHelperModules.DispEditInjectAction(
@@ -1780,7 +1780,7 @@ namespace AasxPackageLogic
                                     try
                                     {
                                         // rename
-                                        var lrf = env.RenameIdentifiable<AasCore.Aas3_0_RC02.Submodel>(
+                                        var lrf = env.RenameIdentifiable<Aas.Submodel>(
                                             submodel.Id, uc.Text);
 
                                         // use this information to emit events
@@ -1802,7 +1802,7 @@ namespace AasxPackageLogic
 
                                     if (!res)
                                         this.context.MessageBoxFlyoutShow(
-                                            "The renaming of the Submodel or some referring elements " +
+                                            "The renaming of the Aas.Submodel or some referring elements " +
                                             "has not performed successfully! Please review your inputs and " +
                                             "the AAS structure for any inconsistencies.",
                                             "Warning",
@@ -1812,14 +1812,14 @@ namespace AasxPackageLogic
                             }
                             return new AnyUiLambdaActionNone();
                         }));
-                //checkForIri: submodel.Kind != null && submodel.Kind == ModelingKind.Instance);
+                //checkForIri: submodel.Kind != null && submodel.Kind == Aas.ModelingKind.Instance);
 
                 // HasKind
                 this.DisplayOrEditEntityModelingKind(
                     stack, submodel.Kind,
                     (k) => { submodel.Kind = k; },
                     instanceExceptionStatement:
-                        "Exception: if you want to declare a Submodel, which is been standardised " +
+                        "Exception: if you want to declare a Aas.Submodel, which is been standardised " +
                         "by you or a standardisation body.",
                     relatedReferable: submodel);
 
@@ -1829,8 +1829,8 @@ namespace AasxPackageLogic
                     "with kind=Type (within the same or another Administration Shell) or " +
                     "it can be an external reference to an external standard " +
                     "defining the semantics of the submodel (for example an PDF if a standard).",
-                    addExistingEntities: AasCore.Aas3_0_RC02.KeyTypes.Referable + " " + AasCore.Aas3_0_RC02.KeyTypes.Submodel + " " +
-                        AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
+                    addExistingEntities: Aas.KeyTypes.Referable + " " + Aas.KeyTypes.Submodel + " " +
+                        Aas.KeyTypes.ConceptDescription,
                     relatedReferable: submodel);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
@@ -1857,8 +1857,8 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditAasEntityConceptDescription(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ConceptDescription cd, bool editMode,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.ConceptDescription cd, bool editMode,
             ModifyRepo repo,
             AnyUiStackPanel stack, bool embedded = false, bool hintMode = false, bool preventMove = false,
             AasxMenu superMenu = null)
@@ -1878,7 +1878,7 @@ namespace AasxPackageLogic
                     ParentElem = env
                 };
 
-                this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.ConceptDescription>(
+                this.EntityListUpDownDeleteHelper<Aas.ConceptDescription>(
                     stack, repo, env.ConceptDescriptions, cd, env, "CD:", sendUpdateEvent: evTemplate,
                     preventMove: preventMove,
                     superMenu: superMenu);
@@ -1888,13 +1888,13 @@ namespace AasxPackageLogic
             if (editMode && env != null)
             {
                 // cut/ copy / paste
-                this.DispPlainIdentifiableCutCopyPasteHelper<AasCore.Aas3_0_RC02.ConceptDescription>(
+                this.DispPlainIdentifiableCutCopyPasteHelper<Aas.ConceptDescription>(
                     stack, repo, this.theCopyPaste,
-                    env.ConceptDescriptions, cd, (o) => { return (o as AasCore.Aas3_0_RC02.ConceptDescription).Copy(); },
+                    env.ConceptDescriptions, cd, (o) => { return (o as Aas.ConceptDescription).Copy(); },
                     label: "Buffer:", superMenu: superMenu);
             }
 
-            // IReferable
+            // Aas.IReferable
             this.DisplayOrEditEntityReferable(
                 stack, cd,
                 new DispEditHelperModules.DispEditInjectAction(
@@ -1909,15 +1909,15 @@ namespace AasxPackageLogic
                         var ds = cd.GetIEC61360();
                         if (ds != null && (ds.ShortName == null || ds.ShortName.Count < 1))
                         {
-                            ds.ShortName = new List<AasCore.Aas3_0_RC02.LangString>();
-                            ds.ShortName.Add(new AasCore.Aas3_0_RC02.LangString("EN?", cd.IdShort));
+                            ds.ShortName = new List<Aas.LangString>();
+                            ds.ShortName.Add(new Aas.LangString("EN?", cd.IdShort));
                             this.AddDiaryEntry(cd, new DiaryEntryStructChange());
                             la = new AnyUiLambdaActionRedrawEntity();
                         }
 
-                        if (parentContainer != null & parentContainer is AasCore.Aas3_0_RC02.ISubmodelElement)
+                        if (parentContainer != null & parentContainer is Aas.ISubmodelElement)
                         {
-                            var sme = parentContainer as AasCore.Aas3_0_RC02.ISubmodelElement;
+                            var sme = parentContainer as Aas.ISubmodelElement;
                             if (sme.IdShort == null || sme.IdShort.Trim() == "")
                             {
                                 sme.IdShort = cd.IdShort;
@@ -1952,7 +1952,7 @@ namespace AasxPackageLogic
                             try
                             {
                                 // rename
-                                var lrf = env.RenameIdentifiable<AasCore.Aas3_0_RC02.ConceptDescription>(
+                                var lrf = env.RenameIdentifiable<Aas.ConceptDescription>(
                                     cd.Id, uc.Text);
 
                                 // use this information to emit events
@@ -1974,7 +1974,7 @@ namespace AasxPackageLogic
 
                             if (!res)
                                 this.context.MessageBoxFlyoutShow(
-                                    "The renaming of the ConceptDescription or some referring elements has not " +
+                                    "The renaming of the Aas.ConceptDescription or some referring elements has not " +
                                         "performed successfully! Please review your inputs and the AAS " +
                                         "structure for any inconsistencies.",
                                         "Warning",
@@ -2015,7 +2015,7 @@ namespace AasxPackageLogic
                 (ds) => { cd.EmbeddedDataSpecifications = ds; },
                 addPresetNames: new[] { "IEC61360" },
                 addPresetKeyLists: new[] {
-                    new List<AasCore.Aas3_0_RC02.Key>(){ 
+                    new List<Aas.Key>(){ 
                         ExtendListOfEmbeddedDataSpecification.GetKeyForIec61360() } },
                 dataSpecRefsAreUsual: true, relatedReferable: cd);
 
@@ -2031,7 +2031,7 @@ namespace AasxPackageLogic
                         "Providing an embeddedDataSpecification, e.g. IEC61360 data specification content, " +
                             "is mandatory. This holds the descriptive information " +
                             "of an concept and allows for an off-line understanding of the meaning " +
-                            "of an concept/ ISubmodelElement. Please create this data element.",
+                            "of an concept/ Aas.ISubmodelElement. Please create this data element.",
                         breakIfTrue: true),
                 });
             var Iec61360spec = cd.EmbeddedDataSpecifications.FindFirstIEC61360Spec();
@@ -2041,7 +2041,7 @@ namespace AasxPackageLogic
                     c))
             {
                 this.DisplayOrEditEntityDataSpecificationIEC61360(
-                    stack, Iec61360spec.DataSpecificationContent as DataSpecificationIec61360, 
+                    stack, Iec61360spec.DataSpecificationContent as Aas.DataSpecificationIec61360, 
                     relatedReferable: cd);
             }
 
@@ -2053,8 +2053,8 @@ namespace AasxPackageLogic
                 (v) => { cd.EmbeddedDataSpecifications = v; },
                 addPresetNames: new[] { "IEC61360", "Physical Unit" },
                 addPresetKeyLists: new[] {
-                    new List<AasCore.Aas3_0_RC02.Key>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() },
-                    new List<AasCore.Aas3_0_RC02.Key>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() }
+                    new List<Aas.Key>(){ ExtendIDataSpecificationContent.GetKeyForIec61360() },
+                    new List<Aas.Key>(){ ExtendIDataSpecificationContent.GetKeyForPhysicalUnit() }
                 },
                 relatedReferable: cd, superMenu: superMenu);
 
@@ -2062,8 +2062,8 @@ namespace AasxPackageLogic
         }
 
         public void DisplayOrEditAasEntityValueReferencePair(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ConceptDescription cd, AasCore.Aas3_0_RC02.ValueReferencePair vlp, bool editMode,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.ConceptDescription cd, Aas.ValueReferencePair vlp, bool editMode,
             ModifyRepo repo,
             AnyUiStackPanel stack, bool embedded = false, bool hintMode = false)
         {
@@ -2083,18 +2083,18 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Operation Variable
+        // --- Aas.Operation Variable
         //
         //
 
         public void DisplayOrEditAasEntityOperationVariable(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.OperationVariable ov, bool editMode,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.OperationVariable ov, bool editMode,
             AnyUiStackPanel stack, bool hintMode = false,
             AasxMenu superMenu = null)
         {
             //
-            // Submodel Element GENERAL
+            // Aas.Submodel Element GENERAL
             //
 
             // OperationVariable is a must!
@@ -2106,39 +2106,39 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Editing of entities", this.levelColors.MainSection);
 
                 //// entities
-                //if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.Operation)
+                //if (parentContainer != null && parentContainer is Aas.Operation)
                 //    // hope is OK to refer to two lists!
                 //    for (int i = 0; i < 3; i++)
-                //        if ((parentContainer as AasCore.Aas3_0_RC02.Operation)[i].Contains(ov))
+                //        if ((parentContainer as Aas.Operation)[i].Contains(ov))
                 //        {
                 //            this.EntityListUpDownDeleteHelper<OperationVariable>(
                 //                stack, repo,
-                //                (parentContainer as AasCore.Aas3_0_RC02.Operation)[i],
+                //                (parentContainer as Aas.Operation)[i],
                 //                ov, env, "OperationVariable:");
                 //            break;
                 //        }
 
                 // entities
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.Operation operation)
+                if (parentContainer != null && parentContainer is Aas.Operation operation)
                 {
                     // hope is OK to refer to two lists!
                     if(operation.InputVariables.Contains(ov))
                     {
-                        this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.OperationVariable>(
+                        this.EntityListUpDownDeleteHelper<Aas.OperationVariable>(
                                 stack, repo,
                                 operation.InputVariables,
                                 ov, env, "OperationVariable:");
                     }
                     else if(operation.OutputVariables.Contains(ov))
                     {
-                        this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.OperationVariable>(
+                        this.EntityListUpDownDeleteHelper<Aas.OperationVariable>(
                                 stack, repo,
                                 operation.OutputVariables,
                                 ov, env, "OperationVariable:");
                     }
                     else if(operation.InoutputVariables.Contains(ov))
                     {
-                        this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.OperationVariable>(
+                        this.EntityListUpDownDeleteHelper<Aas.OperationVariable>(
                                 stack, repo,
                                 operation.InputVariables,
                                 ov, env, "OperationVariable:");
@@ -2163,12 +2163,12 @@ namespace AasxPackageLogic
                             stack, "value:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
-                                .AddAction("add-prop", "Add Property",
-                                    "Adds a new Property to the containing collection.")
+                                .AddAction("add-prop", "Add Aas.Property",
+                                    "Adds a new Aas.Property to the containing collection.")
                                 .AddAction("add-mlp", "Add MultiLang.Prop.",
-                                    "Adds a new MultiLanguageProperty to the containing collection.")
+                                    "Adds a new Aas.MultiLanguageProperty to the containing collection.")
                                 .AddAction("add-smc", "Add Collection",
-                                    "Adds a new SubmodelElementCollection to the containing collection.")
+                                    "Adds a new Aas.SubmodelElementCollection to the containing collection.")
                                 .AddAction("add-named", "Add other ..",
                                     "Adds a selected kind of SubmodelElement to the containing collection.",
                                     args: new AasxMenuListOfArgDefs()
@@ -2178,31 +2178,31 @@ namespace AasxPackageLogic
                                 if (buttonNdx >= 0 && buttonNdx <= 3)
                                 {
                                     // which adequate type?
-                                    var en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement;
+                                    var en = Aas.AasSubmodelElements.SubmodelElement;
                                     if (buttonNdx == 0)
-                                        en = AasCore.Aas3_0_RC02.AasSubmodelElements.Property;
+                                        en = Aas.AasSubmodelElements.Property;
                                     if (buttonNdx == 1)
-                                        en = AasCore.Aas3_0_RC02.AasSubmodelElements.MultiLanguageProperty;
+                                        en = Aas.AasSubmodelElements.MultiLanguageProperty;
                                     if (buttonNdx == 2)
-                                        en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection;
+                                        en = Aas.AasSubmodelElements.SubmodelElementCollection;
                                     if (buttonNdx == 3)
                                         en = this.SelectAdequateEnum(
                                             "Select SubmodelElement to create ..",
                                             excludeValues: new[] {
-                                                AasCore.Aas3_0_RC02.AasSubmodelElements.Operation });
+                                                Aas.AasSubmodelElements.Operation });
 
                                     // ok?
-                                    if (en != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement)
+                                    if (en != Aas.AasSubmodelElements.SubmodelElement)
                                     {
                                         // create
-                                        AasCore.Aas3_0_RC02.ISubmodelElement sme2 =
+                                        Aas.ISubmodelElement sme2 =
                                             AdminShellUtil.CreateSubmodelElementFromEnum(en);
 
                                         // add
                                         var smw = sme2;
                                         ov.Value = smw;
 
-                                        // emit event (for parent container, e.g. Operation)
+                                        // emit event (for parent container, e.g. Aas.Operation)
                                         this.AddDiaryEntry(parentContainer,
                                             new DiaryEntryStructChange(StructuralChangeReason.Create));
 
@@ -2237,7 +2237,7 @@ namespace AasxPackageLogic
                                     {
                                         ov.Value = null;
 
-                                        // emit event (for parent container, e.g. Operation)
+                                        // emit event (for parent container, e.g. Aas.Operation)
                                         this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
@@ -2270,14 +2270,14 @@ namespace AasxPackageLogic
                                     if (rve != null)
                                     {
                                         var mdo = rve.GetMainDataObject();
-                                        if (mdo != null && mdo is AasCore.Aas3_0_RC02.ISubmodelElement)
+                                        if (mdo != null && mdo is Aas.ISubmodelElement)
                                         {
                                             var clone = env.CopySubmodelElementAndCD(
-                                                rve.theEnv, mdo as AasCore.Aas3_0_RC02.ISubmodelElement,
+                                                rve.theEnv, mdo as Aas.ISubmodelElement,
                                                 copyCD: true,
                                                 shallowCopy: buttonNdx == 0);
 
-                                            // emit event (for parent container, e.g. Operation)
+                                            // emit event (for parent container, e.g. Aas.Operation)
                                             this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
                                             ov.Value = clone;
@@ -2290,7 +2290,7 @@ namespace AasxPackageLogic
                             });
                     }
 
-                    // value == ISubmodelElement is displayed
+                    // value == Aas.ISubmodelElement is displayed
                     this.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", this.levelColors.SubSection);
                     var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
@@ -2307,19 +2307,19 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Submodel Element
+        // --- Aas.Submodel Element
         //
         //
 
         public void DisplayOrEditAasEntitySubmodelElement(
-            PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env,
-            AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ISubmodelElement wrapper,
-            AasCore.Aas3_0_RC02.ISubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            PackageCentral.PackageCentral packages, Aas.Environment env,
+            Aas.IReferable parentContainer, Aas.ISubmodelElement wrapper,
+            Aas.ISubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
             bool hintMode = false, bool nestedCds = false,
             AasxMenu superMenu = null)
         {
             //
-            // Submodel Element GENERAL
+            // Aas.Submodel Element GENERAL
             //
 
             // if wrapper present, must point to the sme
@@ -2353,29 +2353,29 @@ namespace AasxPackageLogic
                 };
 
                 // entities helper
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.Submodel && wrapper != null)
-                    this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.ISubmodelElement>(
-                        horizStack, repo, (parentContainer as AasCore.Aas3_0_RC02.Submodel).SubmodelElements, wrapper, env,
+                if (parentContainer != null && parentContainer is Aas.Submodel && wrapper != null)
+                    this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
+                        horizStack, repo, (parentContainer as Aas.Submodel).SubmodelElements, wrapper, env,
                         "SubmodelElement:", nextFocus: wrapper, sendUpdateEvent: evTemplate,
                         superMenu: superMenu);
 
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
+                if (parentContainer != null && parentContainer is Aas.SubmodelElementCollection &&
                         wrapper != null)
-                    this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.ISubmodelElement>(
-                        horizStack, repo, (parentContainer as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value,
+                    this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
+                        horizStack, repo, (parentContainer as Aas.SubmodelElementCollection).Value,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate,
                         superMenu: superMenu);
 
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.Entity && wrapper != null)
-                    this.EntityListUpDownDeleteHelper<AasCore.Aas3_0_RC02.ISubmodelElement>(
-                        horizStack, repo, (parentContainer as AasCore.Aas3_0_RC02.Entity).Statements,
+                if (parentContainer != null && parentContainer is Aas.Entity && wrapper != null)
+                    this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
+                        horizStack, repo, (parentContainer as Aas.Entity).Statements,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate,
                         superMenu: superMenu);
 
                 // refactor?
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.IReferable)
+                if (parentContainer != null && parentContainer is Aas.IReferable)
                     this.AddAction(
                         horizStack, "Refactoring:",
                         repo: repo, superMenu: superMenu,
@@ -2388,7 +2388,7 @@ namespace AasxPackageLogic
                             {
                                 // which?
                                 var refactorSme = this.SmartRefactorSme(sme);
-                                var parMgr = (parentContainer as AasCore.Aas3_0_RC02.IReferable);
+                                var parMgr = (parentContainer as Aas.IReferable);
 
                                 // ok?
                                 if (refactorSme != null && parMgr != null)
@@ -2424,13 +2424,13 @@ namespace AasxPackageLogic
             // ReSharper enable ConditionIsAlwaysTrueOrFalse
             {
                 // guess kind or instances
-                AasCore.Aas3_0_RC02.ModelingKind? parentKind = AasCore.Aas3_0_RC02.ModelingKind.Template;
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.Submodel)
-                    parentKind = (parentContainer as AasCore.Aas3_0_RC02.Submodel).Kind;
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.SubmodelElementCollection)
-                    parentKind = (parentContainer as AasCore.Aas3_0_RC02.SubmodelElementCollection).Kind;
-                if (parentContainer != null && parentContainer is AasCore.Aas3_0_RC02.SubmodelElementList)
-                    parentKind = (parentContainer as AasCore.Aas3_0_RC02.SubmodelElementList).Kind;
+                Aas.ModelingKind? parentKind = Aas.ModelingKind.Template;
+                if (parentContainer != null && parentContainer is Aas.Submodel)
+                    parentKind = (parentContainer as Aas.Submodel).Kind;
+                if (parentContainer != null && parentContainer is Aas.SubmodelElementCollection)
+                    parentKind = (parentContainer as Aas.SubmodelElementCollection).Kind;
+                if (parentContainer != null && parentContainer is Aas.SubmodelElementList)
+                    parentKind = (parentContainer as Aas.SubmodelElementList).Kind;
 
                 // relating to CDs
                 this.AddHintBubble(
@@ -2439,31 +2439,31 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return sme.SemanticId == null || sme.SemanticId.IsEmpty(); },
                             "The semanticId (see below) is empty. " +
-                                "This SubmodelElement ist currently not assigned to any ConceptDescription. " +
+                                "This SubmodelElement ist currently not assigned to any Aas.ConceptDescription. " +
                                 "However, it is recommended to do such assignemt. " +
                                 "With the 'Assign ..' buttons below you might create and/or assign " +
-                                "the SubmodelElement to an ConceptDescription.",
+                                "the SubmodelElement to an Aas.ConceptDescription.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
                 // CDs, dynamic menu items
                 var cdmenu = new AasxMenu()
                         .AddAction("assign-existing", "Use existing",
-                            "Assign the SubmodelElement to an semanticId of an existing ConceptDescription.")
+                            "Assign the SubmodelElement to an semanticId of an existing Aas.ConceptDescription.")
                         .AddAction("create-empty", "Create empty",
-                            "Creates an empty ConceptDescription and assigns the SubmodelElement to it.")
+                            "Creates an empty Aas.ConceptDescription and assigns the SubmodelElement to it.")
                         .AddAction("create-eclass", "Create \U0001f844 ECLASS",
-                            "Selects an concept from ECLASS, creates an ConceptDescription and " +
+                            "Selects an concept from ECLASS, creates an Aas.ConceptDescription and " +
                             "assigns the SubmodelElement to it.")
                         .AddAction("create-this", "Create \U0001f844 this",
-                            "Creates an ConceptDescription from this element and " +
+                            "Creates an Aas.ConceptDescription from this element and " +
                             "assigns the SubmodelElement to it.");
 
                 // TODO: MIHO, check again
                 if (sme.EnumeratesChildren())
                 {
                     cdmenu.AddAction("create-all", "Create \U0001f844 all",
-                            "Creates ConceptDescription(s) for this element and all subsequent children " +
+                            "Creates Aas.ConceptDescription(s) for this element and all subsequent children " +
                             "and assigns the SubmodelElement(s) to it.");
                 }
 
@@ -2481,7 +2481,7 @@ namespace AasxPackageLogic
                             if (ks != null)
                             {
                                 // set the semantic id
-                                sme.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>(ks));
+                                sme.SemanticId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>(ks));
 
                                 // if empty take over shortName
                                 var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
@@ -2506,16 +2506,16 @@ namespace AasxPackageLogic
                         if (buttonNdx == 1)
                         {
                             // create empty CD
-                            var cd = new AasCore.Aas3_0_RC02.ConceptDescription(AdminShellUtil.GenerateIdAccordingTemplate(
+                            var cd = new Aas.ConceptDescription(AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdConceptDescription));
 
 
                             // store in AAS enviroment
                             env.ConceptDescriptions.Add(cd);
 
-                            // go over to ISubmodelElement
+                            // go over to Aas.ISubmodelElement
                             // set the semantic id
-                            sme.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) });
+                            sme.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) });
 
                             // can set kind?
                             if (parentKind != null && sme.Kind == null)
@@ -2545,7 +2545,7 @@ namespace AasxPackageLogic
 
                             // select
                             string resIRDI = null;
-                            AasCore.Aas3_0_RC02.ConceptDescription resCD = null;
+                            Aas.ConceptDescription resCD = null;
                             if (this.SmartSelectEclassEntity(
                                 AnyUiDialogueDataSelectEclassEntity.SelectMode.ConceptDescription,
                                 ref resIRDI, ref resCD))
@@ -2555,12 +2555,12 @@ namespace AasxPackageLogic
                                 if (resCD != null)
                                 {
                                     var newcd = resCD;
-                                    if (null == env.FindConceptDescriptionByReference(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, newcd.Id) })))
+                                    if (null == env.FindConceptDescriptionByReference(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, newcd.Id) })))
                                         env.ConceptDescriptions.Add(newcd);
                                 }
 
                                 // set the semantic key
-                                sme.SemanticId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, resIRDI) });
+                                sme.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, resIRDI) });
 
                                 // if empty take over shortName
                                 var cd = env.FindConceptDescriptionByReference(sme.SemanticId);
@@ -2613,14 +2613,14 @@ namespace AasxPackageLogic
                     });
 
                 // create ConceptDescriptions for ECLASS
-                var targets = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+                var targets = new List<Aas.ISubmodelElement>();
                 this.IdentifyTargetsForEclassImportOfCDs(
-                    env, new List<AasCore.Aas3_0_RC02.ISubmodelElement>(new[] { sme }), ref targets);
+                    env, new List<Aas.ISubmodelElement>(new[] { sme }), ref targets);
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck( () => { return targets.Count > 0;  },
-                        "Consider importing a ConceptDescription from ECLASS for the existing SubmodelElement.",
+                        "Consider importing a Aas.ConceptDescription from ECLASS for the existing SubmodelElement.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
                 this.AddAction(
@@ -2642,18 +2642,18 @@ namespace AasxPackageLogic
 
             }
 
-            if (editMode && (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection 
-                || sme is AasCore.Aas3_0_RC02.SubmodelElementList || sme is AasCore.Aas3_0_RC02.Entity))
+            if (editMode && (sme is Aas.SubmodelElementCollection 
+                || sme is Aas.SubmodelElementList || sme is Aas.Entity))
             {
                 this.AddGroup(stack, "Editing of sub-ordinate entities", this.levelColors.MainSection);
 
-                List<AasCore.Aas3_0_RC02.ISubmodelElement> listOfSME = null;
-                if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection)
-                    listOfSME = (sme as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value;
-                if (sme is AasCore.Aas3_0_RC02.SubmodelElementList)
-                    listOfSME = (sme as AasCore.Aas3_0_RC02.SubmodelElementList).Value;
-                if (sme is AasCore.Aas3_0_RC02.Entity)
-                    listOfSME = (sme as AasCore.Aas3_0_RC02.Entity).Statements;
+                List<Aas.ISubmodelElement> listOfSME = null;
+                if (sme is Aas.SubmodelElementCollection)
+                    listOfSME = (sme as Aas.SubmodelElementCollection).Value;
+                if (sme is Aas.SubmodelElementList)
+                    listOfSME = (sme as Aas.SubmodelElementList).Value;
+                if (sme is Aas.Entity)
+                    listOfSME = (sme as Aas.Entity).Statements;
 
                 this.AddHintBubble(
                     stack, hintMode,
@@ -2671,12 +2671,12 @@ namespace AasxPackageLogic
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-prop", "Add Aas.Property",
+                            "Adds a new Aas.Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
+                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
+                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -2686,21 +2686,21 @@ namespace AasxPackageLogic
                         if (buttonNdx >= 0 && buttonNdx <= 3)
                         {
                             // which adequate type?
-                            var en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement;
+                            var en = Aas.AasSubmodelElements.SubmodelElement;
                             if (buttonNdx == 0)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.Property;
+                                en = Aas.AasSubmodelElements.Property;
                             if (buttonNdx == 1)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.MultiLanguageProperty;
+                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
                             if (buttonNdx == 2)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection;
+                                en = Aas.AasSubmodelElements.SubmodelElementCollection;
                             if (buttonNdx == 3)
                                 en = this.SelectAdequateEnum("Select SubmodelElement to create ..", ticket: ticket);
 
                             // ok?
-                            if (en != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement)
+                            if (en != Aas.AasSubmodelElements.SubmodelElement)
                             {
                                 // create
-                                AasCore.Aas3_0_RC02.ISubmodelElement sme2 =
+                                Aas.ISubmodelElement sme2 =
                                     AdminShellUtil.CreateSubmodelElementFromEnum(en);
 
                                 // add
@@ -2743,15 +2743,15 @@ namespace AasxPackageLogic
                             if (rve != null)
                             {
                                 var mdo = rve.GetMainDataObject();
-                                if (mdo != null && mdo is AasCore.Aas3_0_RC02.ISubmodelElement)
+                                if (mdo != null && mdo is Aas.ISubmodelElement)
                                 {
                                     var clone = env.CopySubmodelElementAndCD(
-                                        rve.theEnv, mdo as AasCore.Aas3_0_RC02.ISubmodelElement, copyCD: true,
+                                        rve.theEnv, mdo as Aas.ISubmodelElement, copyCD: true,
                                         shallowCopy: buttonNdx == 0);
 
-                                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smesmc)
+                                    if (sme is Aas.SubmodelElementCollection smesmc)
                                         smesmc.Value.Add(clone);
-                                    if (sme is AasCore.Aas3_0_RC02.Entity smeent)
+                                    if (sme is Aas.Entity smeent)
                                         smeent.Statements.Add(clone);
 
                                     // emit event
@@ -2767,7 +2767,7 @@ namespace AasxPackageLogic
                     });
             }
 
-            AasCore.Aas3_0_RC02.ConceptDescription jumpToCD = null;
+            Aas.ConceptDescription jumpToCD = null;
             if (sme?.SemanticId != null && sme.SemanticId.Keys.Count > 0)
                 jumpToCD = env?.FindConceptDescriptionByReference(sme.SemanticId);
 
@@ -2779,7 +2779,7 @@ namespace AasxPackageLogic
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("navigate-cd", "ConceptDescription",
-                            "Finds the associated ConceptDescription by semanticId and visually selects it."),
+                            "Finds the associated Aas.ConceptDescription by semanticId and visually selects it."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -2790,7 +2790,7 @@ namespace AasxPackageLogic
                     });
             }
 
-            if (editMode && sme is AasCore.Aas3_0_RC02.Operation smo)
+            if (editMode && sme is Aas.Operation smo)
             {
                 this.AddGroup(stack, "Editing of sub-ordinate entities", this.levelColors.MainSection);
 
@@ -2829,8 +2829,8 @@ namespace AasxPackageLogic
                             {
                                 // prepare
                                 //TODO: jtikekar not a good solution to add null SME
-                                ovl ??= new List<AasCore.Aas3_0_RC02.OperationVariable>();
-                                var ov = new AasCore.Aas3_0_RC02.OperationVariable(null); 
+                                ovl ??= new List<Aas.OperationVariable>();
+                                var ov = new Aas.OperationVariable(null); 
                                 ovl.Add(ov);
                                 smo.SetVars(dir, ovl);
 
@@ -2910,7 +2910,7 @@ namespace AasxPackageLogic
                                 if (rve != null)
                                 {
                                     var mdo = rve.GetMainDataObject();
-                                    if (mdo != null && mdo is AasCore.Aas3_0_RC02.OperationVariable mdov && mdov.Value != null)
+                                    if (mdo != null && mdo is Aas.OperationVariable mdov && mdov.Value != null)
                                     {
                                         smo.AddChild(mdov.Value.Copy(),
                                             new EnumerationPlacmentOperationVariable() { Direction = dir });
@@ -2931,7 +2931,7 @@ namespace AasxPackageLogic
 
             }
 
-            if (editMode && sme is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement are)
+            if (editMode && sme is Aas.AnnotatedRelationshipElement are)
             {
                 this.AddGroup(stack, "Editing of sub-ordinate entities", this.levelColors.MainSection);
 
@@ -2950,12 +2950,12 @@ namespace AasxPackageLogic
                     stack, "annotation:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Property",
-                            "Adds a new Property to the containing collection.")
+                        .AddAction("add-prop", "Add Aas.Property",
+                            "Adds a new Aas.Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
-                            "Adds a new MultiLanguageProperty to the containing collection.")
+                            "Adds a new Aas.MultiLanguageProperty to the containing collection.")
                         .AddAction("add-smc", "Add Collection",
-                            "Adds a new SubmodelElementCollection to the containing collection.")
+                            "Adds a new Aas.SubmodelElementCollection to the containing collection.")
                         .AddAction("add-named", "Add other ..",
                             "Adds a selected kind of SubmodelElement to the containing collection.",
                             args: new AasxMenuListOfArgDefs()
@@ -2966,37 +2966,37 @@ namespace AasxPackageLogic
                         {
                             // TODO MICHA: check elems!!!!
                             // which adequate type?
-                            var en = AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement;
+                            var en = Aas.AasSubmodelElements.SubmodelElement;
                             if (buttonNdx == 0)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.Property;
+                                en = Aas.AasSubmodelElements.Property;
                             if (buttonNdx == 1)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.MultiLanguageProperty;
+                                en = Aas.AasSubmodelElements.MultiLanguageProperty;
                             if (buttonNdx == 2)
-                                en = AasCore.Aas3_0_RC02.AasSubmodelElements.Range;
+                                en = Aas.AasSubmodelElements.Range;
                             if (buttonNdx == 3)
                                 en = this.SelectAdequateEnum(
                                     "Select SubmodelElement to create ..",
-                                    includeValues: new AasCore.Aas3_0_RC02.AasSubmodelElements[] {
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElementCollection, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.RelationshipElement, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.AnnotatedRelationshipElement, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.Capability, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.Operation, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.BasicEventElement, 
-                                        AasCore.Aas3_0_RC02.AasSubmodelElements.Entity},
+                                    includeValues: new Aas.AasSubmodelElements[] {
+                                        Aas.AasSubmodelElements.SubmodelElementCollection, 
+                                        Aas.AasSubmodelElements.RelationshipElement, 
+                                        Aas.AasSubmodelElements.AnnotatedRelationshipElement, 
+                                        Aas.AasSubmodelElements.Capability, 
+                                        Aas.AasSubmodelElements.Operation, 
+                                        Aas.AasSubmodelElements.BasicEventElement, 
+                                        Aas.AasSubmodelElements.Entity},
                                     ticket: ticket);
 
                             // ok?
-                            if (en != AasCore.Aas3_0_RC02.AasSubmodelElements.SubmodelElement)
+                            if (en != Aas.AasSubmodelElements.SubmodelElement)
                             {
                                 // create, add
-                                AasCore.Aas3_0_RC02.ISubmodelElement sme2 =
+                                Aas.ISubmodelElement sme2 =
                                     AdminShellUtil.CreateSubmodelElementFromEnum(en);
 
                                 if (are.Annotations == null)
-                                    are.Annotations = new List<AasCore.Aas3_0_RC02.IDataElement>();
+                                    are.Annotations = new List<Aas.IDataElement>();
 
-                                are.Annotations.Add((AasCore.Aas3_0_RC02.IDataElement)sme2);
+                                are.Annotations.Add((Aas.IDataElement)sme2);
 
                                 // emit event
                                 this.AddDiaryEntry(are, new DiaryEntryStructChange(), allChildrenAffected: true);
@@ -3033,12 +3033,12 @@ namespace AasxPackageLogic
                             if (rve != null)
                             {
                                 var mdo = rve.GetMainDataObject();
-                                if (mdo != null && mdo is AasCore.Aas3_0_RC02.IDataElement)
+                                if (mdo != null && mdo is Aas.IDataElement)
                                 {
-                                    var clonesmw = (mdo as AasCore.Aas3_0_RC02.IDataElement).Copy();
+                                    var clonesmw = (mdo as Aas.IDataElement).Copy();
 
                                     if (are.Annotations == null)
-                                        are.Annotations = new List<AasCore.Aas3_0_RC02.IDataElement>();
+                                        are.Annotations = new List<Aas.IDataElement>();
 
                                     // ReSharper disable once PossibleNullReferenceException  -- ignore a false positive
                                     are.Annotations.Add(clonesmw);
@@ -3063,7 +3063,7 @@ namespace AasxPackageLogic
                     $"Submodel Element ({"" + sme?.GetSelfDescription().AasElementName})",
                     this.levelColors.MainSection);
 
-                // IReferable
+                // Aas.IReferable
                 this.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                         auxTitles: new[] { "Sync" },
@@ -3082,9 +3082,9 @@ namespace AasxPackageLogic
                                     var ds = cd.EmbeddedDataSpecifications.GetIEC61360Content();
                                     if (ds != null && (ds.ShortName == null || ds.ShortName.Count < 1))
                                     {
-                                        ds.ShortName = new List<AasCore.Aas3_0_RC02.LangString>
+                                        ds.ShortName = new List<Aas.LangString>
                                         {
-                                            new AasCore.Aas3_0_RC02.LangString("EN?", sme.IdShort)
+                                            new Aas.LangString("EN?", sme.IdShort)
                                         };
                                     }
                                         
@@ -3111,11 +3111,11 @@ namespace AasxPackageLogic
                     "Only by this means, an automatic system can identify and " +
                     "understand the meaning of the SubmodelElements and, for example, " +
                     "its unit or logical datatype. " +
-                    "The semanticId shall reference to a ConceptDescription within the AAS environment " +
+                    "The semanticId shall reference to a Aas.ConceptDescription within the AAS environment " +
                     "or an external repository, such as IEC CDD or ECLASS or " +
                     "a company / consortia repository.",
                     checkForCD: true,
-                    addExistingEntities: AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription.ToString(),
+                    addExistingEntities: Aas.KeyTypes.ConceptDescription.ToString(),
                     cpb: theCopyPaste, relatedReferable: sme);
 
                 // Qualifiable: qualifiers are MULTIPLE structures with possible references. 
@@ -3130,7 +3130,7 @@ namespace AasxPackageLogic
                 (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme, superMenu: superMenu);
 
                 //
-                // ConceptDescription <- via semantic ID ?!
+                // Aas.ConceptDescription <- via semantic ID ?!
                 //
 
                 if (sme.SemanticId != null && sme.SemanticId.Keys.Count > 0 && !nestedCds)
@@ -3154,28 +3154,28 @@ namespace AasxPackageLogic
             }
 
             //
-            // Submodel Element VALUES
+            // Aas.Submodel Element VALUES
             //
-            if (sme is AasCore.Aas3_0_RC02.Property)
+            if (sme is Aas.Property)
             {
-                var p = sme as AasCore.Aas3_0_RC02.Property;
+                var p = sme as Aas.Property;
                 this.AddGroup(stack, "Property", this.levelColors.MainSection);
 
                 this.AddHintBubble(
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return p?.ValueType == null || AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType).Trim().Length < 1; },
+                            () => { return p?.ValueType == null || Aas.Stringification.ToString(p.ValueType).Trim().Length < 1; },
                             "Please check, if you can provide a value type for the concept. " +
                                 "Value types are provided by built-in types of XML Schema Definition 1.1.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
                 AddKeyValueExRef(
-                    stack, "valueType", p, AasCore.Aas3_0_RC02.Stringification.ToString(p.ValueType), null, repo,
+                    stack, "valueType", p, Aas.Stringification.ToString(p.ValueType), null, repo,
                     v =>
                     {
-                        var vt = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString((string)v);
+                        var vt = Aas.Stringification.DataTypeDefXsdFromString((string)v);
                         if (vt.HasValue)
                             p.ValueType = vt.Value;
                         this.AddDiaryEntry(p, new DiaryEntryStructChange());
@@ -3191,7 +3191,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return p.Value == null || p.Value.Trim().Length < 1; },
-                            "The value of the Property. " +
+                            "The value of the Aas.Property. " +
                                 "Please provide a string representation " +
                                 "(in case of numbers: without quotes, '.' as decimal separator, " +
                                 "in XML number representation).",
@@ -3220,7 +3220,7 @@ namespace AasxPackageLogic
                         if (buttonNdx == 0)
                         {
                             var uc = new AnyUiDialogueDataTextEditor(
-                                caption: $"Edit Property '{"" + p.IdShort}'",
+                                caption: $"Edit Aas.Property '{"" + p.IdShort}'",
                                 text: p.Value);
                             if (this.context.StartFlyoverModal(uc))
                             {
@@ -3251,7 +3251,7 @@ namespace AasxPackageLogic
                         stack, repo, p.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            p.ValueId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            p.ValueId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(p, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3260,14 +3260,14 @@ namespace AasxPackageLogic
                     this.AddKeyListKeys(
                         stack, "valueId", p.ValueId.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference),
+                        Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference),
                         relatedReferable: p,
                         emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
-            else if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty)
+            else if (sme is Aas.MultiLanguageProperty)
             {
-                var mlp = sme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
+                var mlp = sme as Aas.MultiLanguageProperty;
                 this.AddGroup(stack, "MultiLanguageProperty", this.levelColors.MainSection);
 
                 // Value
@@ -3288,7 +3288,7 @@ namespace AasxPackageLogic
                         stack, repo, mlp.Value, "value:", "Create data element!",
                         v =>
                         {
-                            mlp.Value = new List<AasCore.Aas3_0_RC02.LangString>();
+                            mlp.Value = new List<Aas.LangString>();
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3300,7 +3300,7 @@ namespace AasxPackageLogic
                         stack, repo, mlp.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            mlp.ValueId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            mlp.ValueId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(mlp, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3309,14 +3309,14 @@ namespace AasxPackageLogic
                     this.AddKeyListKeys(
                         stack, "valueId", mlp.ValueId.Keys, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo,
-                        AasCore.Aas3_0_RC02.Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference),
+                        Aas.Stringification.ToString(Aas.KeyTypes.GlobalReference),
                         relatedReferable: mlp,
                         emitCustomEvent: (rf) => { this.AddDiaryEntry(rf, new DiaryEntryUpdateValue()); });
                 }
             }
-            else if (sme is AasCore.Aas3_0_RC02.Range)
+            else if (sme is Aas.Range)
             {
-                var rng = sme as AasCore.Aas3_0_RC02.Range;
+                var rng = sme as Aas.Range;
                 this.AddGroup(stack, "Range", this.levelColors.MainSection);
 
                 this.AddHintBubble(
@@ -3329,10 +3329,10 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
                 AddKeyValueExRef(
-                    stack, "valueType", rng, AasCore.Aas3_0_RC02.Stringification.ToString(rng.ValueType), null, repo,
+                    stack, "valueType", rng, Aas.Stringification.ToString(rng.ValueType), null, repo,
                     v =>
                     {
-                        rng.ValueType = (AasCore.Aas3_0_RC02.DataTypeDefXsd)AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString((string)v);
+                        rng.ValueType = (Aas.DataTypeDefXsd)Aas.Stringification.DataTypeDefXsdFromString((string)v);
                         this.AddDiaryEntry(rng, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
@@ -3346,12 +3346,12 @@ namespace AasxPackageLogic
                     stack, hintMode,
                     new[] {
                         new HintCheck(
-                            () => { return (rng.Kind == null || rng.Kind == AasCore.Aas3_0_RC02.ModelingKind.Instance) && mine && maxe; },
+                            () => { return (rng.Kind == null || rng.Kind == Aas.ModelingKind.Instance) && mine && maxe; },
                             "Please provide either min or max.",
                             severityLevel: HintCheck.Severity.High),
                         new HintCheck(
                             () => { return mine; },
-                            "The value of the minimum of the Range. " +
+                            "The value of the minimum of the Aas.Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be negative infinite.",
@@ -3372,7 +3372,7 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return maxe; },
-                            "The value of the maximum of the Range. " +
+                            "The value of the maximum of the Aas.Range. " +
                                 "Please provide a string representation (without quotes, '.' as decimal separator, " +
                                 "in XML number representation). " +
                                 "If the min value is missing then the value is assumed to be positive infinite.",
@@ -3388,7 +3388,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
             }
-            else if (sme is AasCore.Aas3_0_RC02.File fl)
+            else if (sme is Aas.File fl)
             {
                 this.AddGroup(stack, "File", this.levelColors.MainSection);
 
@@ -3401,7 +3401,7 @@ namespace AasxPackageLogic
                         fl.ContentType = ct;
                     }, fl);
             }
-            else if (sme is AasCore.Aas3_0_RC02.Blob blb)
+            else if (sme is Aas.Blob blb)
             {
                 this.AddGroup(stack, "Blob", this.levelColors.MainSection);
 
@@ -3463,7 +3463,7 @@ namespace AasxPackageLogic
                     comboBoxItems: AdminShellUtil.GetPopularMimeTypes());
 
             }
-            else if (sme is AasCore.Aas3_0_RC02.ReferenceElement rfe)
+            else if (sme is Aas.ReferenceElement rfe)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
@@ -3477,7 +3477,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => { return rfe.Value == null || rfe.Value.IsEmpty(); },
                             "Please choose the target of the reference. " +
-                                "You refer to any IReferable, if local within the AAS environment or outside. " +
+                                "You refer to any Aas.IReferable, if local within the AAS environment or outside. " +
                                 "The semantics of your reference shall be described " +
                                 "by the concept referred by semanticId.",
                             severityLevel: HintCheck.Severity.Notice)
@@ -3486,15 +3486,15 @@ namespace AasxPackageLogic
                         stack, repo, rfe.Value, "Target reference:", "Create data element!",
                         v =>
                         {
-                            rfe.Value = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            rfe.Value = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(rfe, new DiaryEntryUpdateValue());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
+                    Func<List<Aas.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)), translateAssetToAAS: true);
+                            new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)), translateAssetToAAS: true);
                     };
                     this.AddKeyReference(stack, "value", rfe.Value, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
@@ -3508,7 +3508,7 @@ namespace AasxPackageLogic
                 }
             }
             else
-            if (sme is AasCore.Aas3_0_RC02.RelationshipElement rele)
+            if (sme is Aas.RelationshipElement rele)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
@@ -3517,10 +3517,10 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "" + sme.GetSelfDescription().AasElementName, this.levelColors.MainSection);
 
                 // re-use lambda
-                Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
+                Func<List<Aas.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
                 {
                     return new AnyUiLambdaActionNavigateTo(
-                        new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)), translateAssetToAAS: true);
+                        new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)), translateAssetToAAS: true);
                 };
 
                 // members
@@ -3542,7 +3542,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.First, "First relation:", "Create data element!",
                         v =>
                         {
-                            rele.First = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            rele.First = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3579,7 +3579,7 @@ namespace AasxPackageLogic
                         stack, repo, rele.Second, "Second relation:", "Create data element!",
                         v =>
                         {
-                            rele.Second = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            rele.Second = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(rele, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3597,16 +3597,16 @@ namespace AasxPackageLogic
                 }
 
                 // specifically for annotated relationship?
-                if (sme is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement /* arele */)
+                if (sme is Aas.AnnotatedRelationshipElement /* arele */)
                 {
                 }
             }
-            else if (sme is AasCore.Aas3_0_RC02.Capability)
+            else if (sme is Aas.Capability)
             {
                 this.AddGroup(stack, "Capability", this.levelColors.MainSection);
                 this.AddKeyValue(stack, "Value", "Right now, Capability does not have further value elements.");
             }
-            else if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smc)
+            else if (sme is Aas.SubmodelElementCollection smc)
             {
                 this.AddGroup(stack, "SubmodelElementCollection", this.levelColors.MainSection);
                 if (smc.Value != null)
@@ -3614,7 +3614,7 @@ namespace AasxPackageLogic
                 else
                     this.AddKeyValue(stack, "Values", "Please add elements via editing of sub-ordinate entities");
             }
-            else if (sme is AasCore.Aas3_0_RC02.SubmodelElementList sml)
+            else if (sme is Aas.SubmodelElementList sml)
             {
                 this.AddGroup(stack, "SubmodelElementList", this.levelColors.MainSection);
                 if (sml.Value != null)
@@ -3638,21 +3638,21 @@ namespace AasxPackageLogic
                             () => stats?.AllChildSmeTypeMatch == false,
                             "Constraint AASd-108 violated: All first level child elements in a " +
                             "SubmodelElementList shall have the same submodel element type as specified " +
-                            "in SubmodelElementList/typeValueListElement.")
+                            "in Aas.SubmodelElementList/typeValueListElement.")
                     });
                 this.AddKeyValueExRef(
-                    stack, "typeValueListElement", sml, AasCore.Aas3_0_RC02.Stringification.ToString(sml.TypeValueListElement),
+                    stack, "typeValueListElement", sml, Aas.Stringification.ToString(sml.TypeValueListElement),
                     null, repo,
                     v =>
                     {
-                        var tvle = AasCore.Aas3_0_RC02.Stringification.AasSubmodelElementsFromString(v as string);
+                        var tvle = Aas.Stringification.AasSubmodelElementsFromString(v as string);
                         if (tvle.HasValue)
                             sml.TypeValueListElement = tvle.Value;
                         this.AddDiaryEntry(sml, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
                     comboBoxIsEditable: editMode, comboBoxMinWidth: 190,
-                    comboBoxItems: Enum.GetNames(typeof(AasCore.Aas3_0_RC02.AasSubmodelElements)));
+                    comboBoxItems: Enum.GetNames(typeof(Aas.AasSubmodelElements)));
 
                 // ValueType for the list
 
@@ -3661,17 +3661,17 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => stats?.AllChildValueTypeMatch == false,
-                            "Constraint AASd-109 violated: If SubmodelElementList/typeValueListElement " +
-                            "equal to Property or Range, SubmodelElementList/valueTypeListElement shall " +
-                            "be set and all first level child elements in the SubmodelElementList shall " +
-                            "have the the value type as specified in SubmodelElementList/valueTypeListElement")
+                            "Constraint AASd-109 violated: If Aas.SubmodelElementList/typeValueListElement " +
+                            "equal to Aas.Property or Aas.Range, Aas.SubmodelElementList/valueTypeListElement shall " +
+                            "be set and all first level child elements in the Aas.SubmodelElementList shall " +
+                            "have the the value type as specified in Aas.SubmodelElementList/valueTypeListElement")
                     });
                 this.AddKeyValueExRef(
-                    stack, "valueTypeListElement", sml, AasCore.Aas3_0_RC02.Stringification.ToString(sml.ValueTypeListElement), 
+                    stack, "valueTypeListElement", sml, Aas.Stringification.ToString(sml.ValueTypeListElement), 
                     null, repo,
                     v =>
                     {
-                        sml.ValueTypeListElement = AasCore.Aas3_0_RC02.Stringification.DataTypeDefXsdFromString((string)v);
+                        sml.ValueTypeListElement = Aas.Stringification.DataTypeDefXsdFromString((string)v);
                         this.AddDiaryEntry(sml, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
@@ -3700,7 +3700,7 @@ namespace AasxPackageLogic
                         stack, repo, sml.SemanticIdListElement, "semanticIdListElement:", "Create data element!",
                         v =>
                         {
-                            sml.SemanticIdListElement = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            sml.SemanticIdListElement = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(sml, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3737,9 +3737,9 @@ namespace AasxPackageLogic
                 //    statement: "Semantic Id the submodel elements contained in the list match to.",
                 //    addExistingEntities: AdminShell.Key.AllElements);
             }
-            else if (sme is AasCore.Aas3_0_RC02.Operation)
+            else if (sme is Aas.Operation)
             {
-                var p = sme as AasCore.Aas3_0_RC02.Operation;
+                var p = sme as Aas.Operation;
                 this.AddGroup(stack, "Operation", this.levelColors.MainSection);
                 if (p.InputVariables != null)
                     this.AddKeyValue(stack, "# of input vars.", "" + p.InputVariables.Count);
@@ -3748,9 +3748,9 @@ namespace AasxPackageLogic
                 if (p.InoutputVariables != null)
                     this.AddKeyValue(stack, "# of in/out vars.", "" + p.InoutputVariables.Count);
             }
-            else if (sme is AasCore.Aas3_0_RC02.Entity)
+            else if (sme is Aas.Entity)
             {
-                var ent = sme as AasCore.Aas3_0_RC02.Entity;
+                var ent = sme as Aas.Entity;
                 this.AddGroup(stack, "Entity", this.levelColors.MainSection);
 
                 if (ent.Statements != null)
@@ -3770,20 +3770,20 @@ namespace AasxPackageLogic
                 //                return ent?.EntityType == null;
                                     
                 //            },
-                //            "EntityType needs to be either CoManagedEntity (no assigned AssetInformation reference) " +
-                //                "or SelfManagedEntity (with assigned AssetInformation reference)",
+                //            "EntityType needs to be either CoManagedEntity (no assigned Aas.AssetInformation reference) " +
+                //                "or SelfManagedEntity (with assigned Aas.AssetInformation reference)",
                 //            severityLevel: HintCheck.Severity.High)
                 //    });
 
                 AddKeyValueExRef(
-                    stack, "entityType", ent, AasCore.Aas3_0_RC02.Stringification.ToString(ent.EntityType), null, repo,
+                    stack, "entityType", ent, Aas.Stringification.ToString(ent.EntityType), null, repo,
                     v =>
                     {
-                        ent.EntityType = (AasCore.Aas3_0_RC02.EntityType)AasCore.Aas3_0_RC02.Stringification.EntityTypeFromString((string)v);
+                        ent.EntityType = (Aas.EntityType)Aas.Stringification.EntityTypeFromString((string)v);
                         this.AddDiaryEntry(ent, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionNone();
                     },
-                    comboBoxItems: Enum.GetNames(typeof(AasCore.Aas3_0_RC02.EntityType)),
+                    comboBoxItems: Enum.GetNames(typeof(Aas.EntityType)),
                     comboBoxIsEditable: true);
 
                 // GlobalAssetId
@@ -3796,7 +3796,7 @@ namespace AasxPackageLogic
                         new HintCheck(
                             () => {
                                 return ent?.EntityType != null &&
-                                    ent.EntityType == AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity &&
+                                    ent.EntityType == Aas.EntityType.SelfManagedEntity &&
                                     (ent.GlobalAssetId == null || ent.GlobalAssetId.Keys.Count < 1);
                             },
                             "Please choose the global identifier for the SelfManagedEntity.",
@@ -3806,15 +3806,15 @@ namespace AasxPackageLogic
                         stack, repo, ent.GlobalAssetId, "globalAssetId:", "Create data element!",
                         v =>
                         {
-                            ent.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            ent.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(ent, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
-                    Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
+                    Func<List<Aas.Key>, AnyUiLambdaActionBase> lambda = (kl) =>
                     {
                         return new AnyUiLambdaActionNavigateTo(
-                            new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)), translateAssetToAAS: true);
+                            new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)), translateAssetToAAS: true);
                     };
                     AddKeyReference(
                         stack, "globalAssetId", ent.GlobalAssetId, repo, packages,
@@ -3854,7 +3854,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
             }
-            else if (sme is AasCore.Aas3_0_RC02.BasicEventElement bev)
+            else if (sme is Aas.BasicEventElement bev)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);
@@ -3868,17 +3868,17 @@ namespace AasxPackageLogic
                     new[] {
                         new HintCheck(
                             () => { return bev.Observed == null || bev.Observed.IsEmpty(); },
-                                "Please choose the Referabe, e.g. Submodel, SubmodelElementCollection or " +
+                                "Please choose the Referabe, e.g. Aas.Submodel, Aas.SubmodelElementCollection or " +
                                 "DataElement which is being observed. " + System.Environment.NewLine +
-                                "You could refer to any IReferable, however it recommended restrict the scope " +
-                                "to the local AAS or even within a Submodel.",
+                                "You could refer to any Aas.IReferable, however it recommended restrict the scope " +
+                                "to the local AAS or even within a Aas.Submodel.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
                 if (this.SafeguardAccess(
                         stack, repo, bev.Observed, "observed:", "Create data element!",
                         v =>
                         {
-                            bev.Observed = new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
+                            bev.Observed = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>());
                             this.AddDiaryEntry(bev, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -3889,7 +3889,7 @@ namespace AasxPackageLogic
                         addPresetKeyLists: bufferKeys.Item2,
                         jumpLambda: (kl) =>
                         {
-                            return new AnyUiLambdaActionNavigateTo(new AasCore.Aas3_0_RC02.Reference(AasCore.Aas3_0_RC02.ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)));
+                            return new AnyUiLambdaActionNavigateTo(new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>(kl)));
                         },
                         relatedReferable: bev);
                 }
@@ -3933,7 +3933,7 @@ namespace AasxPackageLogic
                                 source: bev.GetModelReference(),
                                 sourceSemanticId: bev.SemanticId,
                                 observableReference: bev.Observed,
-                                observableSemanticId: (observable as AasCore.Aas3_0_RC02.IHasSemantics)?.SemanticId);
+                                observableSemanticId: (observable as Aas.IHasSemantics)?.SemanticId);
 
                             // specific payload?
                             if (PayloadsRaw != null)
@@ -3964,7 +3964,7 @@ namespace AasxPackageLogic
         //Vies no more supported in V3
         //public void DisplayOrEditAasEntityView(
         //    PackageCentral.PackageCentral packages,
-        //    AasCore.Aas3_0_RC02.Environment env, AssetAdministrationShell shell,
+        //    Environment env, Aas.AssetAdministrationShell shell,
         //    View view, bool editMode, AnyUiStackPanel stack,
         //    bool hintMode = false)
         //{
@@ -3990,7 +3990,7 @@ namespace AasxPackageLogic
         //                    severityLevel: HintCheck.Severity.Notice)
         //        });
         //        this.AddAction(
-        //            stack, "containedElements:", new[] { "Add Reference to AasCore.Aas3_0_RC02.ISubmodelElement", }, repo,
+        //            stack, "containedElements:", new[] { "Add Aas.Reference to Aas.ISubmodelElement", }, repo,
         //            (buttonNdx) =>
         //            {
         //                if (buttonNdx == 0)
@@ -4019,7 +4019,7 @@ namespace AasxPackageLogic
         //        stack.Children.Add(g);
         //    }
 
-        //    // AasCore.Aas3_0_RC02.IReferable
+        //    // Aas.IReferable
         //    this.DisplayOrEditEntityReferable(stack, view, categoryUsual: false);
 
         //    // HasSemantics
@@ -4027,7 +4027,7 @@ namespace AasxPackageLogic
         //        (sid) => { view.SemanticId = sid; },
         //        "Only by adding this, a computer can distinguish, for what the view is really meant for.",
         //        checkForCD: false,
-        //        addExistingEntities: AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
+        //        addExistingEntities: Aas.KeyTypes.ConceptDescription,
         //        relatedReferable: view);
 
         //    // HasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
@@ -4039,7 +4039,7 @@ namespace AasxPackageLogic
 
         //View no more supported in V3
         //public void DisplayOrEditAasEntityViewReference(
-        //    PackageCentral.PackageCentral packages, AasCore.Aas3_0_RC02.Environment env, View view,
+        //    PackageCentral.PackageCentral packages, Environment env, View view,
         //    ContainedElementRef reference, bool editMode, AnyUiStackPanel stack)
         //{
         //    //
