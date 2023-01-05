@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfNameplate(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Nameplate.SemanticId.GetAsExactlyOneKey(),
                 MatchMode.Relaxed))
                 res.Add(new ConvertOfferNameplateHsuToZveiV10(this,
@@ -61,7 +61,7 @@ namespace AasxPredefinedConcepts.Convert
             var defsV10 = AasxPredefinedConcepts.ZveiNameplateV10.Static;
 
             // access Submodel (again)
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm == null || sm.SubmodelElements == null ||
                     true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsHSU.SM_Nameplate.SemanticId.GetAsExactlyOneKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
@@ -93,9 +93,9 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsV10.GetAllReferables())
-                    if (rf is ConceptDescription conceptDescription)
+                    if (rf is AasCore.Aas3_0_RC02.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
-                            new ConceptDescription(
+                            new AasCore.Aas3_0_RC02.ConceptDescription(
                                 conceptDescription.Id, conceptDescription.Extensions, 
                                 conceptDescription.Category, conceptDescription.IdShort, 
                                 conceptDescription.DisplayName, conceptDescription.Description, 
@@ -190,7 +190,7 @@ namespace AasxPredefinedConcepts.Convert
                 mkNameProp.Value = "" + mkName;
 
                 // file
-                smcV10mk.Value.CopyOneSMEbyCopy<File>(defsV10.CD_MarkingFile,
+                smcV10mk.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.File>(defsV10.CD_MarkingFile,
                     smcHSUmk.Value, defsHSU.CD_File,
                     createDefault: true, addSme: true, idShort: "ManufacturerName");
 

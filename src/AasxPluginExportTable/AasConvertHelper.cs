@@ -14,7 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AasxIntegrationBase;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -22,7 +22,7 @@ namespace AasxPluginExportTable
 {
     public static class AasConvertHelper
     {
-        public static void TakeOverSmeToSm(AasCore.Aas3_0_RC02.ISubmodelElement sme, Submodel sm)
+        public static void TakeOverSmeToSm(AasCore.Aas3_0_RC02.ISubmodelElement sme, AasCore.Aas3_0_RC02.Submodel sm)
         {
             // access
             if (sme == null || sm == null)

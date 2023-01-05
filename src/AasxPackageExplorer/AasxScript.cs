@@ -21,7 +21,7 @@ using System.Threading;
 using System.Windows;
 using System.Diagnostics;
 using System.IO;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 

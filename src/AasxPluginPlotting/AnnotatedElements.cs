@@ -29,7 +29,7 @@ using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxPredefinedConcepts;
 using AasxPredefinedConcepts.ConceptModel;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -123,7 +123,7 @@ namespace AasxIntegrationBase
                         if (a == null)
                             continue;
 
-                        if (a.desc && rf is Submodel sm)
+                        if (a.desc && rf is AasCore.Aas3_0_RC02.Submodel sm)
                             a.Description = sm.Description;
 
                         if (a.desc && rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)

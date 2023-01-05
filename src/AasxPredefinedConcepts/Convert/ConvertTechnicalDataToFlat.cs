@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                             new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferTechnicalDataToFlat(this,
                         $"Convert Submodel '{"" + sm.IdShort}' from Technical Data to flat Submodel"));
@@ -60,7 +60,7 @@ namespace AasxPredefinedConcepts.Convert
                                 new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
             // access Submodel (again)
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm == null || sm.SubmodelElements == null
                 || true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsTD.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 return false;

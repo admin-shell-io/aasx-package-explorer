@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts.ConceptModel
 
         public Version ActiveVersion = Version.Unknown;
 
-        public Submodel
+        public AasCore.Aas3_0_RC02.Submodel
             SM_TechnicalData;
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_GeneralInformation,
             CD_ManufacturerName,
             CD_ManufacturerLogo,
@@ -52,7 +52,7 @@ namespace AasxPredefinedConcepts.ConceptModel
             CD_TextStatement,
             CD_ValidDate;
 
-        public ConceptModelZveiTechnicalData(Submodel sm)
+        public ConceptModelZveiTechnicalData(AasCore.Aas3_0_RC02.Submodel sm)
         {
             InitFromSubmodel(sm);
         }
@@ -127,7 +127,7 @@ namespace AasxPredefinedConcepts.ConceptModel
             }
         }
 
-        public void InitFromSubmodel(Submodel sm)
+        public void InitFromSubmodel(AasCore.Aas3_0_RC02.Submodel sm)
         {
             var defsV10 = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());

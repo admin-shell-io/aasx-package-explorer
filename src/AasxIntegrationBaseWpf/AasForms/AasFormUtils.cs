@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -21,7 +21,7 @@ namespace AasxIntegrationBase.AasForms
     {
         private static void RecurseExportAsTemplate(
             List<AasCore.Aas3_0_RC02.ISubmodelElement> smwc, FormDescListOfElement tels,
-            AasCore.Aas3_0_RC02.Environment env = null, List<ConceptDescription> cds = null)
+            AasCore.Aas3_0_RC02.Environment env = null, List<AasCore.Aas3_0_RC02.ConceptDescription> cds = null)
         {
             // access
             if (smwc == null || tels == null)
@@ -153,7 +153,7 @@ namespace AasxIntegrationBase.AasForms
                             {
                                 // add clone
                                 cds.Add(
-                                    new ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
+                                    new AasCore.Aas3_0_RC02.ConceptDescription(masterCd.Id, masterCd.Extensions, masterCd.Category, 
                                         masterCd.IdShort, masterCd.DisplayName, masterCd.Description, 
                                         masterCd.Checksum, masterCd.Administration, 
                                         masterCd.EmbeddedDataSpecifications, masterCd.IsCaseOf));
@@ -205,7 +205,7 @@ namespace AasxIntegrationBase.AasForms
             System.IO.File.WriteAllText(fn, json);
         }
 
-        public static void ExportAsTemplate(Submodel sm, string fn)
+        public static void ExportAsTemplate(AasCore.Aas3_0_RC02.Submodel sm, string fn)
         {
             // access
             if (fn == null || sm == null || sm.SubmodelElements == null)
@@ -237,7 +237,7 @@ namespace AasxIntegrationBase.AasForms
             public string FormTag = "";
             public string FormTitle = "";
             public FormDescSubmodel FormSubmodel = null;
-            public List<ConceptDescription> ConceptDescriptions = null;
+            public List<AasCore.Aas3_0_RC02.ConceptDescription> ConceptDescriptions = null;
         }
 
         [DisplayName("Options", noTypeLookup: true)]
@@ -248,7 +248,7 @@ namespace AasxIntegrationBase.AasForms
         }
 
         public static void ExportAsGenericFormsOptions(
-            AasCore.Aas3_0_RC02.Environment env, Submodel sm, string fn)
+            AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.SubmodelElements == null)
@@ -263,7 +263,7 @@ namespace AasxIntegrationBase.AasForms
             tsm.SubmodelElements = new FormDescListOfElement();
 
             // will collect a list of CDs
-            var cds = new List<ConceptDescription>();
+            var cds = new List<AasCore.Aas3_0_RC02.ConceptDescription>();
 
             // ok, export all SubmodelElems into tsm
             RecurseExportAsTemplate(sm.SubmodelElements, tsm.SubmodelElements, env, cds);

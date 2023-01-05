@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
 using Extensions;
@@ -39,7 +39,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate.SetOfDocumentation(
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_Document.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferDocumentationHsuToSg2(this,
                             $"Convert Submodel '{"" + sm.IdShort}' for Documentation HSU to SG2"));
@@ -63,7 +63,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
 
             // access Submodel (again)
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm == null || sm.SubmodelElements == null ||
                     true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsHsu.SM_Document.SemanticId.GetAsExactlyOneKey()))
                 return false;
@@ -94,10 +94,10 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsSg2.GetAllReferables())
-                    if (rf is ConceptDescription conceptDescription)
+                    if (rf is AasCore.Aas3_0_RC02.ConceptDescription conceptDescription)
                     {
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
-                                new ConceptDescription(
+                                new AasCore.Aas3_0_RC02.ConceptDescription(
                                     conceptDescription.Id, conceptDescription.Extensions, 
                                     conceptDescription.Category, conceptDescription.IdShort, 
                                     conceptDescription.DisplayName, conceptDescription.Description, 
@@ -258,8 +258,8 @@ namespace AasxPredefinedConcepts.Convert
                                 defsHsu.CD_VDI2770_OrganisationOfficialName.GetSingleKey())?.Value;
 
                     // 1 file?
-                    var fl = smcSource.Value.FindFirstSemanticIdAs<File>(defsHsu.CD_File.GetSingleKey());
-                    var file = smcDocVersion.Value.CreateSMEForCD<File>(defsSg2.CD_VDI2770_DigitalFile, addSme: true);
+                    var fl = smcSource.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(defsHsu.CD_File.GetSingleKey());
+                    var file = smcDocVersion.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.File>(defsSg2.CD_VDI2770_DigitalFile, addSme: true);
                     file.ContentType = fl?.ContentType;
                     file.Value = fl?.Value;
 

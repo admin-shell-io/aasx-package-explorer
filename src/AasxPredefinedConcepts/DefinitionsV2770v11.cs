@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -30,10 +30,10 @@ namespace AasxPredefinedConcepts
 
         public const string Vdi2770Sys = "VDI2770:2020";
 
-        public Submodel
+        public AasCore.Aas3_0_RC02.Submodel
             SM_ManufacturerDocumentation;
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_Document,
             CD_DocumentId,
             CD_DocumentDomainId,

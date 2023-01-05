@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -152,20 +152,20 @@ namespace AasxPredefinedConcepts
 #if !DoNotUseAasxCompatibilityModels
                 if (ReadVersion == V20Tag)
                 {
-                    if (typeof(T) == typeof(Submodel))
+                    if (typeof(T) == typeof(AasCore.Aas3_0_RC02.Submodel))
                     {
                         var old = JsonConvert.DeserializeObject
                             <AasxCompatibilityModels.AdminShellV20.Submodel>(entry.contents);
                         if (old != null)
-                            res = new Submodel("").ConvertFromV20(old) as T;
+                            res = new AasCore.Aas3_0_RC02.Submodel("").ConvertFromV20(old) as T;
                     }
 
-                    if (typeof(T) == typeof(ConceptDescription))
+                    if (typeof(T) == typeof(AasCore.Aas3_0_RC02.ConceptDescription))
                     {
                         var old = JsonConvert.DeserializeObject
                             <AasxCompatibilityModels.AdminShellV20.ConceptDescription>(entry.contents);
                         if (old != null)
-                            res = new ConceptDescription("").ConvertFromV20(old) as T;
+                            res = new AasCore.Aas3_0_RC02.ConceptDescription("").ConvertFromV20(old) as T;
                     }
                 }
 #endif
@@ -183,7 +183,7 @@ namespace AasxPredefinedConcepts
             return res;
         }
 
-        public static ConceptDescription CreateSparseConceptDescription(
+        public static AasCore.Aas3_0_RC02.ConceptDescription CreateSparseConceptDescription(
             string lang,
             string idType,
             string idShort,
@@ -196,7 +196,7 @@ namespace AasxPredefinedConcepts
                 return null;
 
             // create CD
-            var cd = new ConceptDescription(id, idShort:idShort);
+            var cd = new AasCore.Aas3_0_RC02.ConceptDescription(id, idShort:idShort);
             var dsiec = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();
             var dsc = dsiec.DataSpecificationContent as AasCore.Aas3_0_RC02.DataSpecificationIec61360;
             dsc.PreferredName = new List<AasCore.Aas3_0_RC02.LangString>();
@@ -244,8 +244,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(Submodel);
-                var isCD = fi.FieldType == typeof(ConceptDescription);
+                var isSM = fi.FieldType == typeof(AasCore.Aas3_0_RC02.Submodel);
+                var isCD = fi.FieldType == typeof(AasCore.Aas3_0_RC02.ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;
@@ -262,13 +262,13 @@ namespace AasxPredefinedConcepts
                 // access library
                 if (isSM)
                 {
-                    var sm = this.RetrieveReferable<Submodel>(libName);
+                    var sm = this.RetrieveReferable<AasCore.Aas3_0_RC02.Submodel>(libName);
                     fi.SetValue(this, sm);
                     this.theReflectedReferables.Add(sm);
                 }
                 if (isCD)
                 {
-                    var cd = this.RetrieveReferable<ConceptDescription>(libName);
+                    var cd = this.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(libName);
                     fi.SetValue(this, cd);
                     this.theReflectedReferables.Add(cd);
                 }
@@ -290,8 +290,8 @@ namespace AasxPredefinedConcepts
 
                 // test
                 var ok = false;
-                var isSM = fi.FieldType == typeof(Submodel);
-                var isCD = fi.FieldType == typeof(ConceptDescription);
+                var isSM = fi.FieldType == typeof(AasCore.Aas3_0_RC02.Submodel);
+                var isCD = fi.FieldType == typeof(AasCore.Aas3_0_RC02.ConceptDescription);
 
                 if (useAttributes && fi.GetCustomAttribute(typeof(RetrieveReferableForField)) != null)
                     ok = true;

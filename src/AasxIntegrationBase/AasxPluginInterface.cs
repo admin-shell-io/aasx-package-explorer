@@ -7,10 +7,10 @@ This source code is licensed under the Apache License 2.0 (see LICENSE.txt).
 This source code may use other Open Source software components (see LICENSE.txt).
 */
 
-using AasCore.Aas3_0_RC02;
-using AnyUi;
 using System;
 using System.Collections.Generic;
+using Aas = AasCore.Aas3_0_RC02;
+using AnyUi;
 
 // ReSharper disable ClassNeverInstantiated.Global
 
@@ -51,8 +51,8 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultGenerateSubmodel : AasxPluginResultBase
     {
-        public Submodel sm;
-        public List<ConceptDescription> cds;
+        public AasCore.Aas3_0_RC02.Submodel sm;
+        public List<AasCore.Aas3_0_RC02.ConceptDescription> cds;
     }
 
     public interface IPushApplicationEvent

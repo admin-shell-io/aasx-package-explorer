@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -203,7 +203,7 @@ namespace AasxIntegrationBase
                 // quite late: investigate, if we accepted findings from the 
                 // type of business element
                 var isColl = (businessObject is AasCore.Aas3_0_RC02.AssetAdministrationShell
-                        || businessObject is Submodel
+                        || businessObject is AasCore.Aas3_0_RC02.Submodel
                         || businessObject is AasCore.Aas3_0_RC02.SubmodelElementCollection);
 
                 var isProp = (businessObject is AasCore.Aas3_0_RC02.Property);

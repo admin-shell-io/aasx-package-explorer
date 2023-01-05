@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -135,7 +135,7 @@ namespace AasxPluginBomStructure
             currRef.Keys.RemoveAt(currRef.Keys.Count - 1);
         }
 
-        public void Index(ConceptDescription cd)
+        public void Index(AasCore.Aas3_0_RC02.ConceptDescription cd)
         {
             // access
             if (cd == null)
@@ -146,7 +146,7 @@ namespace AasxPluginBomStructure
             dict.Add(ComputeHashOnReference(currRef), cd);
         }
 
-        public void Index(Submodel sm)
+        public void Index(AasCore.Aas3_0_RC02.Submodel sm)
         {
             // access
             if (sm == null)

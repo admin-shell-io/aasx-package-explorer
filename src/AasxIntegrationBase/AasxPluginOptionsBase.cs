@@ -19,7 +19,7 @@ using AasxCompatibilityModels;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 
 // ReSharper disable AssignNullToNotNullAttribute .. a bit unclear, why issues here
 

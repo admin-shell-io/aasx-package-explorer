@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsVDI2770.SetOfDefsVDI2770(
                     new AasxPredefinedConcepts.DefinitionsVDI2770());
 
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferDocumentationSg2ToHsu(this,
                             $"Convert Submodel '{"" + sm.IdShort}' for Documentation SG2 to HSU"));
@@ -67,7 +67,7 @@ namespace AasxPredefinedConcepts.Convert
                     new AasxPredefinedConcepts.DefinitionsZveiDigitalTypeplate());
 
             // access Submodel (again)
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm == null || sm.SubmodelElements == null ||
                     true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsSg2.SM_VDI2770_Documentation.SemanticId.GetAsExactlyOneKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
@@ -99,9 +99,9 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsHsu.GetAllReferables())
-                    if (rf is ConceptDescription conceptDescription)
+                    if (rf is AasCore.Aas3_0_RC02.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
-                            new ConceptDescription(
+                            new AasCore.Aas3_0_RC02.ConceptDescription(
                                 conceptDescription.Id, conceptDescription.Extensions, 
                                 conceptDescription.Category, conceptDescription.IdShort, 
                                 conceptDescription.DisplayName, conceptDescription.Description, 
@@ -271,7 +271,7 @@ namespace AasxPredefinedConcepts.Convert
                         property = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(defsHsu.CD_VDI2770_FileId, addSme: true);
                         property.Value = "";
 
-                        var fl = smcVer.Value.FindFirstSemanticIdAs<File>(
+                        var fl = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.File>(
                                 defsSg2.CD_VDI2770_DigitalFile.GetSingleKey());
                         if (fl != null)
                         {
@@ -283,7 +283,7 @@ namespace AasxPredefinedConcepts.Convert
                                 addSme: true);
                             property.Value = "" + fl.ContentType;
 
-                            File file = smcHsuDoc.Value.CreateSMEForCD<File>(defsHsu.CD_File, addSme: true);
+                            var file = smcHsuDoc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.File>(defsHsu.CD_File, addSme: true);
                             file.ContentType = fl.ContentType;
                             file.Value = fl.Value;
 

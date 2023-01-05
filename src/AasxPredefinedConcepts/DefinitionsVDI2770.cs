@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -98,10 +98,10 @@ namespace AasxPredefinedConcepts
 
         public class SetOfDefsVDI2770
         {
-            public Submodel
+            public AasCore.Aas3_0_RC02.Submodel
                 SM_VDI2770_Documentation;
 
-            public ConceptDescription
+            public AasCore.Aas3_0_RC02.ConceptDescription
                 CD_VDI2770_Document,
                 CD_VDI2770_DocumentIdValue,
                 CD_VDI2770_DocumentClassId,
@@ -129,45 +129,45 @@ namespace AasxPredefinedConcepts
 
             public SetOfDefsVDI2770(AasxDefinitionBase bs)
             {
-                this.SM_VDI2770_Documentation = bs.RetrieveReferable<Submodel>("SM_VDI2770_Documentation");
+                this.SM_VDI2770_Documentation = bs.RetrieveReferable<AasCore.Aas3_0_RC02.Submodel>("SM_VDI2770_Documentation");
 
-                this.CD_VDI2770_Document = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Document");
-                this.CD_VDI2770_DocumentIdValue = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_Document = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Document");
+                this.CD_VDI2770_DocumentIdValue = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentIdValue");
-                this.CD_VDI2770_DocumentClassId = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentClassId = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentClassId");
-                this.CD_VDI2770_DocumentClassName = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentClassName = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentClassName");
-                this.CD_VDI2770_DocumentClassificationSystem = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentClassificationSystem = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentClassificationSystem");
-                this.CD_VDI2770_OrganizationName = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_OrganizationName = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_OrganizationName");
-                this.CD_VDI2770_OrganizationOfficialName = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_OrganizationOfficialName = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_OrganizationOfficialName");
-                this.CD_VDI2770_DocumentVersion = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentVersion = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentVersion");
-                this.CD_VDI2770_Language = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Language");
-                this.CD_VDI2770_Title = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Title");
-                this.CD_VDI2770_Date = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Date");
-                this.CD_VDI2770_DocumentVersionIdValue = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_Language = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Language");
+                this.CD_VDI2770_Title = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Title");
+                this.CD_VDI2770_Date = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Date");
+                this.CD_VDI2770_DocumentVersionIdValue = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentVersionIdValue");
-                this.CD_VDI2770_DigitalFile = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DigitalFile = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DigitalFile");
 
                 /* new, Birgit */
-                this.CD_VDI2770_DocumentId = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentId = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentId");
-                this.CD_VDI2770_IsPrimaryDocumentId = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_IsPrimaryDocumentId = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_IsPrimaryDocumentId");
-                this.CD_VDI2770_DocumentVersionId = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_DocumentVersionId = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_DocumentVersionId");
-                this.CD_VDI2770_Summary = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Summary");
-                this.CD_VDI2770_Keywords = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Keywords");
-                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_Summary = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Summary");
+                this.CD_VDI2770_Keywords = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Keywords");
+                this.CD_VDI2770_StatusValue = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_StatusValue");
-                this.CD_VDI2770_Role = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_Role");
-                this.CD_VDI2770_DomainId = bs.RetrieveReferable<ConceptDescription>("CD_VDI2770_DomainId");
-                this.CD_VDI2770_ReferencedObject = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_VDI2770_Role = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_Role");
+                this.CD_VDI2770_DomainId = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_VDI2770_DomainId");
+                this.CD_VDI2770_ReferencedObject = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_VDI2770_ReferencedObject");
             }
 

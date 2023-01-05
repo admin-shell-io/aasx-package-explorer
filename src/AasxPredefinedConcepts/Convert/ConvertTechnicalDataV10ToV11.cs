@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -38,7 +38,7 @@ namespace AasxPredefinedConcepts.Convert
             var defs = new AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs(
                     new AasxPredefinedConcepts.DefinitionsZveiTechnicalData());
 
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm != null && true == sm.SemanticId.GetAsExactlyOneKey()?.Matches(defs.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 res.Add(new ConvertOfferTechnicalDataV10ToV11(this,
                             $"Convert Submodel '{"" + sm.IdShort}' for Technical Data (ZVEI) V1.0 to V1.1"));
@@ -129,7 +129,7 @@ namespace AasxPredefinedConcepts.Convert
             var defsV11 = AasxPredefinedConcepts.ZveiTechnicalDataV11.Static;
 
             // access Submodel (again)
-            var sm = currentReferable as Submodel;
+            var sm = currentReferable as AasCore.Aas3_0_RC02.Submodel;
             if (sm == null || sm.SubmodelElements == null ||
                     true != sm.SemanticId.GetAsExactlyOneKey()?.Matches(defsV10.SM_TechnicalData.SemanticId.GetAsExactlyOneKey()))
                 /* disable line above to allow more models, such as MCAD/ECAD */
@@ -161,9 +161,9 @@ namespace AasxPredefinedConcepts.Convert
             // add (all) new CDs?
             if (addNewCDs)
                 foreach (var rf in defsV11.GetAllReferables())
-                    if (rf is ConceptDescription conceptDescription)
+                    if (rf is AasCore.Aas3_0_RC02.ConceptDescription conceptDescription)
                         package.AasEnv.ConceptDescriptions.AddConceptDescriptionOrReturnExisting(
-                                new ConceptDescription(
+                                new AasCore.Aas3_0_RC02.ConceptDescription(
                                     conceptDescription.Id, conceptDescription.Extensions, 
                                     conceptDescription.Category, conceptDescription.IdShort, 
                                     conceptDescription.DisplayName, conceptDescription.Description, 
@@ -184,7 +184,7 @@ namespace AasxPredefinedConcepts.Convert
                     smcV10gi.Value, defsV10.CD_ManufacturerName,
                     createDefault: true, addSme: true);
 
-                smcV11gi.Value.CopyOneSMEbyCopy<File>(defsV11.CD_ManufacturerLogo,
+                smcV11gi.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.File>(defsV11.CD_ManufacturerLogo,
                     smcV10gi.Value, defsV10.CD_ManufacturerLogo,
                     createDefault: true, addSme: true);
 
@@ -196,7 +196,7 @@ namespace AasxPredefinedConcepts.Convert
                     smcV10gi.Value, defsV10.CD_ManufacturerOrderCode,
                     createDefault: true, addSme: true);
 
-                smcV11gi.Value.CopyManySMEbyCopy<File>(defsV11.CD_ProductImage,
+                smcV11gi.Value.CopyManySMEbyCopy<AasCore.Aas3_0_RC02.File>(defsV11.CD_ProductImage,
                     smcV10gi.Value, defsV10.CD_ProductImage,
                     createDefault: true);
             }

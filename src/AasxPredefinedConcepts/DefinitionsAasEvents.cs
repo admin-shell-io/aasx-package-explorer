@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // reSharper disable UnusedType.Global
@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts
     {
         public static AasEvents Static = new AasEvents();
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_StructureChangeOutwards,
             CD_UpdateValueOutwards;
 
