@@ -16,7 +16,7 @@ using System.Text;
 
 namespace AasxBammRdfImExport.RDFentities
 {
-    public class Property
+    public class BammProperty
     {
         private string name;
         private string preferredName;

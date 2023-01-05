@@ -49,14 +49,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceSubmodelElementCollection instance;
             public FormDescSubmodelElementCollection desc;
-            public SubmodelElementCollection smec;
+            public AasCore.Aas3_0_RC02.SubmodelElementCollection smec;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceSubmodelElementCollection;
                 dc.desc = dc.instance?.desc as FormDescSubmodelElementCollection;
-                dc.smec = dc.instance?.sme as SubmodelElementCollection;
+                dc.smec = dc.instance?.sme as AasCore.Aas3_0_RC02.SubmodelElementCollection;
 
                 if (dc.instance == null || dc.desc == null || dc.smec == null)
                     return null;

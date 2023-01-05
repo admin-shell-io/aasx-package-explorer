@@ -204,7 +204,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private void ExportTable_EnumerateSubmodel(
             List<ExportTableAasEntitiesList> list, AasCore.Aas3_0_RC02.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            Submodel sm, ISubmodelElement sme)
+            Submodel sm, AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             // check
             if (list == null || env == null || sm == null)
@@ -214,7 +214,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // Submodel or SME ??
             //
 
-            IReferable coll = null;
+            AasCore.Aas3_0_RC02.IReferable coll = null;
             if (sme == null)
             {
                 // yield SM
@@ -227,8 +227,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             else
             {
                 // simple check for SME collection
-                if (sme is IReferable)
-                    coll = (sme as IReferable);
+                if (sme is AasCore.Aas3_0_RC02.IReferable)
+                    coll = (sme as AasCore.Aas3_0_RC02.IReferable);
             }
 
             // prepare listItem
@@ -257,11 +257,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // add
                     listItem.Add(new ExportTableAasEntitiesItem(depth, sm, sme2, cd,
-                        parent: coll as IReferable));
+                        parent: coll as AasCore.Aas3_0_RC02.IReferable));
 
                     // go directly deeper?
                     if (!broadSearch && ci != null &&
-                        ci is IReferable)
+                        ci is AasCore.Aas3_0_RC02.IReferable)
                         ExportTable_EnumerateSubmodel(
                             list, env, broadSearch: false, actInHierarchy,
                             depth: 1 + depth, sm: sm, sme: ci);
@@ -272,7 +272,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 if (coll != null)
                     foreach (var ci in coll.EnumerateChildren())
-                        if (ci != null && ci is IReferable)
+                        if (ci != null && ci is AasCore.Aas3_0_RC02.IReferable)
                             ExportTable_EnumerateSubmodel(
                                 list, env, broadSearch: true, actInHierarchy,
                                 depth: 1 + depth, sm: sm, sme: ci);

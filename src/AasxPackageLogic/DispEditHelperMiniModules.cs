@@ -77,7 +77,7 @@ namespace AasxPackageLogic
         public void QualifierHelper(
             AnyUiStackPanel stack, ModifyRepo repo,
             List<Qualifier> qualifiers,
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             if (editMode)
@@ -259,7 +259,7 @@ namespace AasxPackageLogic
                         substack, repo, qual.SemanticId, "semanticId:", "Create data element!",
                         v =>
                         {
-                            qual.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            qual.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -370,7 +370,7 @@ namespace AasxPackageLogic
                         substack, repo, qual.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            qual.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            qual.ValueId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -398,7 +398,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // Key Value Pairs
+        // AasCore.Aas3_0_RC02.Key Value Pairs
         //
 
         private bool PasteIKVPTextIntoExisting(
@@ -434,7 +434,7 @@ namespace AasxPackageLogic
         public void IdentifierKeyValueSinglePairHelper(
             AnyUiStackPanel substack, ModifyRepo repo,
             SpecificAssetId pair,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (substack == null || pair == null)
@@ -454,7 +454,7 @@ namespace AasxPackageLogic
                     substack, repo, pair.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        pair.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        pair.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -500,7 +500,7 @@ namespace AasxPackageLogic
                     substack, repo, pair.ExternalSubjectId, "externalSubjectId:", "Create data element!",
                     v =>
                     {
-                        pair.ExternalSubjectId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        pair.ExternalSubjectId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -517,7 +517,7 @@ namespace AasxPackageLogic
             AnyUiStackPanel stack, ModifyRepo repo,
             List<SpecificAssetId> pairs,
             string key = "IdentifierKeyValuePairs",
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             bool constrainToOne = false)
         {
             if (editMode)
@@ -712,7 +712,7 @@ namespace AasxPackageLogic
             AnyUiStackPanel stack, ModifyRepo repo,
             List<Extension> extensions,
             Action<List<Extension>> setOutput,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (extensions == null)
@@ -740,7 +740,7 @@ namespace AasxPackageLogic
                             if (pfn == null || !System.IO.File.Exists(pfn))
                             {
                                 Log.Singleton.Error(
-                                    $"JSON file for IReferable.extension presets not defined nor existing ({pfn}).");
+                                    $"JSON file for AasCore.Aas3_0_RC02.IReferable.extension presets not defined nor existing ({pfn}).");
                                 return new AnyUiLambdaActionNone();
                             }
                             try
@@ -904,7 +904,7 @@ namespace AasxPackageLogic
                         substack, repo, extension.SemanticId, "semanticId:", "Create data element!",
                         v =>
                         {
-                            extension.SemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            extension.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -935,7 +935,7 @@ namespace AasxPackageLogic
                 AddKeyValueExRef(
                     substack, "valueType", extension, Stringification.ToString(extension.ValueType), null, repo,
                     comboBoxIsEditable: editMode,
-                    //comboBoxItems: DataElement.ValueTypeItems,
+                    //comboBoxItems: AasCore.Aas3_0_RC02.DataElement.ValueTypeItems,
                     //TODO:jtikekar change
                     comboBoxItems: ExtendStringification.DataTypeXsdToStringArray().ToArray(),
                     comboBoxMinWidth: 190,
@@ -986,7 +986,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                // refersTo are MULTIPLE ModelReference<IReferable>. That is: multiple x multiple keys!
+                // refersTo are MULTIPLE ModelReference<AasCore.Aas3_0_RC02.IReferable>. That is: multiple x multiple keys!
                 this.AddHintBubble(substack, hintMode, new[] {
                 new HintCheck(
                     () => extension.RefersTo?.IsValid() == true,
@@ -997,7 +997,7 @@ namespace AasxPackageLogic
                         substack, this.repo, extension.RefersTo, "refersTo:", "Create data element!",
                         v =>
                         {
-                            extension.RefersTo = new Reference(ReferenceTypes.ModelReference, new List<Key>());
+                            extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
@@ -1007,11 +1007,11 @@ namespace AasxPackageLogic
                         // let the user control the number of references
                         this.AddAction(
                             substack, "refersTo:",
-                            new[] { "Add Reference", "Delete last reference" }, repo,
+                            new[] { "Add AasCore.Aas3_0_RC02.Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
                             {
                                 if (buttonNdx == 0 && extension.RefersTo?.IsValid() != true)
-                                    extension.RefersTo = new Reference(ReferenceTypes.ModelReference, new List<Key>());
+                                    extension.RefersTo = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>());
 
                                 if (buttonNdx == 1 && extension.RefersTo != null)
                                     extension.RefersTo = null;
@@ -1046,19 +1046,19 @@ namespace AasxPackageLogic
 
         public void AddKeyReference(
             AnyUiStackPanel view, string key,
-            Reference refkeys,
+            AasCore.Aas3_0_RC02.Reference refkeys,
             ModifyRepo repo = null,
             PackageCentral.PackageCentral packages = null,
             PackageCentral.PackageCentral.Selector selector = PackageCentral.PackageCentral.Selector.Main,
             string addExistingEntities = null,
             bool addEclassIrdi = false,
             bool addFromKnown = false,
-            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
-            Func<List<Key>, AnyUiLambdaActionBase> jumpLambda = null,
+            string[] addPresetNames = null, List<AasCore.Aas3_0_RC02.Key>[] addPresetKeyLists = null,
+            Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> jumpLambda = null,
             AnyUiLambdaActionBase takeOverLambdaAction = null,
-            Func<List<Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
-            IReferable relatedReferable = null,
-            Action<IReferable> emitCustomEvent = null,
+            Func<List<AasCore.Aas3_0_RC02.Key>, AnyUiLambdaActionBase> noEditJumpLambda = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
+            Action<AasCore.Aas3_0_RC02.IReferable> emitCustomEvent = null,
             bool showRefSemId = true,
             Func<int, AnyUiLambdaActionBase> auxButtonLambda = null,
             string[] auxButtonTitles = null, string[] auxButtonToolTips = null,
@@ -1128,7 +1128,7 @@ namespace AasxPackageLogic
                             padding: new AnyUiThickness(2, -2, 2, -2)),
                             (o) =>
                             {
-                                refkeys.ReferredSemanticId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                refkeys.ReferredSemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                                 return new AnyUiLambdaActionRedrawEntity();
                             });
                     }
@@ -1207,7 +1207,7 @@ namespace AasxPackageLogic
             AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack, ModifyRepo repo, string key,
             List<ValueReferencePair> valuePairs,
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             if (editMode)
@@ -1223,8 +1223,8 @@ namespace AasxPackageLogic
                         {
                             valuePairs.Add(new ValueReferencePair(
                                 "", 
-                                new Reference(ReferenceTypes.GlobalReference, new List<Key> { 
-                                    new Key(KeyTypes.GlobalReference, "") 
+                                new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> { 
+                                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "") 
                                 })));
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         }
@@ -1259,7 +1259,7 @@ namespace AasxPackageLogic
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("create-cds", "CDs \U0001f844 pairs",
-                            "For each Value /Reference pair, create a separate ConceptDescription."),
+                            "For each Value /AasCore.Aas3_0_RC02.Reference pair, create a separate ConceptDescription."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -1267,7 +1267,7 @@ namespace AasxPackageLogic
                             // make sure
                             if (AnyUiMessageBoxResult.Yes != this.context.MessageBoxFlyoutShow(
                                     "This operation will create additional ConceptDescriptions for each " +
-                                    "pair of Value and Reference. Do you want to proceed?",
+                                    "pair of Value and AasCore.Aas3_0_RC02.Reference. Do you want to proceed?",
                                     "Create CDs",
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
@@ -1396,14 +1396,14 @@ namespace AasxPackageLogic
                         substack, repo, vp.ValueId, "valueId:", "Create data element!",
                         v =>
                         {
-                            vp.ValueId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                            vp.ValueId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                             this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                             return new AnyUiLambdaActionRedrawEntity();
                         }))
                 {
                     AddKeyReference(substack, "valueId", vp.ValueId, repo,
                         packages, PackageCentral.PackageCentral.Selector.MainAuxFileRepo, 
-                        addExistingEntities: Stringification.ToString(KeyTypes.ConceptDescription),
+                        addExistingEntities: Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription),
                         addFromKnown: true, showRefSemId: false,
                         relatedReferable: relatedReferable);
                 }

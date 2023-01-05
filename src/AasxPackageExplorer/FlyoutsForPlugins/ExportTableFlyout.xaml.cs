@@ -77,9 +77,9 @@ namespace AasxPackageExplorer
                 @"All placeholders delimited by %{..}%, {} = set arithmetics, [] = optional
                 {Referable}.{idShort, category, description[@en..], elementName, elementShort, elementShort2, elementAbbreviation, kind, parent}, {Referable|Identifiable} = {SM, SME, CD}, depth, indent}
                 {Identifiable}.{identification[.{idType, id}], administration.{ version, revision}}, {Qualifiable}.qualifiers, {Qualifiable}.multiplicity
-                {Reference}, {Reference}[0..n], {Reference}[0..n].{type, local, idType, value}, {Reference} = {semanticId, isCaseOf, unitId}
-                SME.value, Property.{value, valueType, valueId}, MultiLanguageProperty.{value, vlaueId}, Range.{valueType, min, max}, Blob.{mimeType, value}, File.{mimeType, value}, ReferenceElement.value, 
-                RelationshipElement.{first, second}, SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}, Entity.{entityType, asset}
+                {AasCore.Aas3_0_RC02.Reference}, {AasCore.Aas3_0_RC02.Reference}[0..n], {AasCore.Aas3_0_RC02.Reference}[0..n].{type, local, idType, value}, {AasCore.Aas3_0_RC02.Reference} = {semanticId, isCaseOf, unitId}
+                SME.value, AasCore.Aas3_0_RC02.Property.{value, valueType, valueId}, AasCore.Aas3_0_RC02.MultiLanguageProperty.{value, vlaueId}, Range.{valueType, min, max}, AasCore.Aas3_0_RC02.Blob.{mimeType, value}, File.{mimeType, value}, AasCore.Aas3_0_RC02.ReferenceElement.value, 
+                AasCore.Aas3_0_RC02.RelationshipElement.{first, second}, AasCore.Aas3_0_RC02.SubmodelElementCollection.{value = #elements, ordered, allowDuplicates}, AasCore.Aas3_0_RC02.Entity.{entityType, asset}
                 CD.{preferredName[@en..], shortName[@en..], unit, unitId, sourceOfDefinition, symbol, dataType, definition[@en..], valueFormat}
                 Special: %*% = match any, %stop% = stop if non-empty, %seq={ascii}% = split sequence by char {ascii}, %opt% = optional match
                 Commands for header cells include: %fg={color}%, %bg={color}% with {color} = {#a030a0, Red, blue, ..}, %halign={left, center, right}%, %valign={top, center, bottom}%,

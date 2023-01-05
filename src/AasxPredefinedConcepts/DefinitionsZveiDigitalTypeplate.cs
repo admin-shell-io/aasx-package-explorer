@@ -85,9 +85,9 @@ namespace AasxPredefinedConcepts
                     "CD_CRUUSLabelingPresent");
             }
 
-            public IReferable[] GetAllReferables()
+            public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
             {
-                return new IReferable[] {
+                return new AasCore.Aas3_0_RC02.IReferable[] {
                     SM_Nameplate,
                     CD_ManufacturerName,
                     CD_ManufacturerProductDesignation,
@@ -213,9 +213,9 @@ namespace AasxPredefinedConcepts
 
             }
 
-            public IReferable[] GetAllReferables()
+            public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
             {
-                return new IReferable[] {
+                return new AasCore.Aas3_0_RC02.IReferable[] {
                     SM_Identification,
                     CD_ManufacturerName,
                     CD_GLNOfManufacturer,
@@ -353,9 +353,9 @@ namespace AasxPredefinedConcepts
 
             }
 
-            public IReferable[] GetAllReferables()
+            public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
             {
-                return new IReferable[] {
+                return new AasCore.Aas3_0_RC02.IReferable[] {
                     SM_Document,
                     CD_DocumentationItem,
                     CD_DocumentType,

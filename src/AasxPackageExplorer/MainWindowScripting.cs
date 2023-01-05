@@ -197,7 +197,7 @@ namespace AasxPackageExplorer
             "First", "Next", "Prev", "idShort", "semanticId"
         };
 
-        protected Tuple<IReferable, object> SelectEvalObject(
+        protected Tuple<AasCore.Aas3_0_RC02.IReferable, object> SelectEvalObject(
             ScriptSelectRefType refType, ScriptSelectAdressMode adrMode)
         {
             //
@@ -219,7 +219,7 @@ namespace AasxPackageExplorer
             if (firstAas != null && firstAas.Submodels != null && firstAas.Submodels.Count > 0)
                 firstSm = pm.FindSubmodel(firstAas.Submodels[0]);
 
-            ISubmodelElement firstSme = null;
+            AasCore.Aas3_0_RC02.ISubmodelElement firstSme = null;
             if (firstSm != null && firstSm.SubmodelElements != null && firstSm.SubmodelElements.Count > 0)
                 firstSme = firstSm.SubmodelElements[0];
 
@@ -245,8 +245,8 @@ namespace AasxPackageExplorer
             if (refType == ScriptSelectRefType.This)
             {
                 // just return as Referable
-                return new Tuple<IReferable, object>(
-                    siThis?.GetDereferencedMainDataObject() as IReferable,
+                return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(
+                    siThis?.GetDereferencedMainDataObject() as AasCore.Aas3_0_RC02.IReferable,
                     siThis?.GetMainDataObject()
                 );
             }
@@ -264,7 +264,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error("Script: Select: No AssetAdministrationShells available!");
                         return null;
                     }
-                    return new Tuple<IReferable, object>(firstAas, firstAas);
+                    return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(firstAas, firstAas);
                 }
 
                 if (refType == ScriptSelectRefType.SM)
@@ -278,7 +278,7 @@ namespace AasxPackageExplorer
                             Log.Singleton.Error("Script: AAS selected, but no Submodel found!");
                             return null;
                         }
-                        return new Tuple<IReferable, object>(sm, smr);
+                        return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(sm, smr);
                     }
 
                     if (firstAas != null)
@@ -290,7 +290,7 @@ namespace AasxPackageExplorer
                             Log.Singleton.Error("Script: first AAS taken, but no Submodel found!");
                             return null;
                         }
-                        return new Tuple<IReferable, object>(sm, smr);
+                        return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(sm, smr);
                     }
                 }
 
@@ -301,12 +301,12 @@ namespace AasxPackageExplorer
                     {
                         var sme = siSM?.theSubmodel?.SubmodelElements.FirstOrDefault();
                         if (sme != null)
-                            return new Tuple<IReferable, object>(sme, sme);
+                            return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(sme, sme);
                     }
 
                     if (firstSme != null)
                     {
-                        return new Tuple<IReferable, object>(firstSme, firstSme);
+                        return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(firstSme, firstSme);
                     }
                 }
             }
@@ -328,7 +328,7 @@ namespace AasxPackageExplorer
                         return null;
                     }
                     var aas = pm?.AssetAdministrationShells[idx.Value + 1];
-                    return new Tuple<IReferable, object>(aas, aas);
+                    return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(aas, aas);
                 }
 
                 if (refType == ScriptSelectRefType.SM)
@@ -359,7 +359,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error("Script: For next SM, a SubmodelRef does not have a SM!");
                         return null;
                     }
-                    return new Tuple<IReferable, object>(sm, smr);
+                    return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(sm, smr);
                 }
             }
 
@@ -380,7 +380,7 @@ namespace AasxPackageExplorer
                         return null;
                     }
                     var aas = pm?.AssetAdministrationShells[idx.Value - 1];
-                    return new Tuple<IReferable, object>(aas, aas);
+                    return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(aas, aas);
                 }
 
                 if (refType == ScriptSelectRefType.SM)
@@ -411,7 +411,7 @@ namespace AasxPackageExplorer
                         Log.Singleton.Error("Script: For prev SM, a SubmodelRef does not have a SM!");
                         return null;
                     }
-                    return new Tuple<IReferable, object>(sm, smr);
+                    return new Tuple<AasCore.Aas3_0_RC02.IReferable, object>(sm, smr);
                 }
             }
 
@@ -419,7 +419,7 @@ namespace AasxPackageExplorer
             return null;
         }
 
-        IReferable IAasxScriptRemoteInterface.Select(object[] args)
+        AasCore.Aas3_0_RC02.IReferable IAasxScriptRemoteInterface.Select(object[] args)
         {
             // access
             if (args == null || args.Length < 1

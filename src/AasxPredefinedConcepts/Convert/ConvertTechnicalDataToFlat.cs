@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -47,7 +47,7 @@ namespace AasxPredefinedConcepts.Convert
         }
 
         public override bool ExecuteOffer(
-            AdminShellPackageEnv package, IReferable currentReferable,
+            AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
             ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -67,11 +67,11 @@ namespace AasxPredefinedConcepts.Convert
 
             // convert in place: detach old SMEs, change semanticId
             var smcOldTD = sm.SubmodelElements;
-            sm.SubmodelElements = new List<ISubmodelElement>();
-            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
+            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/sandbox/technical-data-flat/sm") });
 
             // find all technical properties
-            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcTDP in smcOldTD.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 defsTD.CD_TechnicalProperties.GetSingleKey()))
             {
                 // access
@@ -79,10 +79,10 @@ namespace AasxPredefinedConcepts.Convert
                     continue;
 
                 // now, take this as root for a recurse find ..
-                foreach (var oldSme in smcTDP.Value.FindDeep<ISubmodelElement>((o) => true))
+                foreach (var oldSme in smcTDP.Value.FindDeep<AasCore.Aas3_0_RC02.ISubmodelElement>((o) => true))
                 {
                     // no collections!
-                    if (oldSme is SubmodelElementCollection)
+                    if (oldSme is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                         continue;
 
                     // simply add to new

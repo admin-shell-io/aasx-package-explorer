@@ -44,7 +44,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("===============================================================");
 
                 var usedCds = new Dictionary<string, ConceptDescription>();
-                foreach (var sme in sm.SubmodelElements?.FindDeep<ISubmodelElement>())
+                foreach (var sme in sm.SubmodelElements?.FindDeep<AasCore.Aas3_0_RC02.ISubmodelElement>())
                 {
                     // for SME, try to lookup CD
                     if (sme.SemanticId == null)

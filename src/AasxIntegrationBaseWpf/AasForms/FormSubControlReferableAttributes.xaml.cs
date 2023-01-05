@@ -42,7 +42,7 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceBase instance;
             public FormDescReferable desc;
-            public IReferable rf;
+            public AasCore.Aas3_0_RC02.IReferable rf;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {

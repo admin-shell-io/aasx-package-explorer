@@ -32,11 +32,11 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "AASX Package Explorer";
 
-            // IReferable
+            // AasCore.Aas3_0_RC02.IReferable
             CD_AasxLoadedNavigateTo = CreateSparseConceptDescription("en", "IRI",
                 "AasxLoadedNavigateTo",
                 "http://admin-shell.io/aasx-package-explorer/main/AasxLoadedNavigateTo/1/0",
-                "Specifies a ReferenceElement, to which the Package Explorer will refer directly " +
+                "Specifies a AasCore.Aas3_0_RC02.ReferenceElement, to which the Package Explorer will refer directly " +
                 "after loading. Can be situated in any Submodel, but on first hierarchy level.");
 
             // reflect

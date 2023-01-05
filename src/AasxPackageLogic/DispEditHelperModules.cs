@@ -98,11 +98,11 @@ namespace AasxPackageLogic
         }
 
         //
-        // IReferable
+        // AasCore.Aas3_0_RC02.IReferable
         //
 
         public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
-            IReferable referable,
+            AasCore.Aas3_0_RC02.IReferable referable,
             DispEditInjectAction injectToIdShort = null,
             HintCheck[] addHintsCategory = null,
             bool categoryUsual = false)
@@ -282,7 +282,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityListOfExtension(AnyUiStackPanel stack,
             List<Extension> extensions,
             Action<List<Extension>> setOutput,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -428,18 +428,18 @@ namespace AasxPackageLogic
         }
 
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
-            List<Reference> references,
-            Action<List<Reference>> setOutput,
-            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
+            List<AasCore.Aas3_0_RC02.Reference> references,
+            Action<List<AasCore.Aas3_0_RC02.Reference>> setOutput,
+            string[] addPresetNames = null, List<AasCore.Aas3_0_RC02.Key>[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
                 return;
 
             // members
-            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
+            this.AddGroup(stack, "HasDataSpecification (AasCore.Aas3_0_RC02.Reference):", levelColors.SubSection);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
@@ -454,7 +454,7 @@ namespace AasxPackageLogic
                     stack, this.repo, references, "DataSpecification:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new List<Reference>());
+                        setOutput?.Invoke(new List<AasCore.Aas3_0_RC02.Reference>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -463,11 +463,11 @@ namespace AasxPackageLogic
                     // let the user control the number of references
                     this.AddAction(
                         stack, "Specifications:",
-                        new[] { "Add Reference", "Delete last reference" }, repo,
+                        new[] { "Add AasCore.Aas3_0_RC02.Reference", "Delete last reference" }, repo,
                         (buttonNdx) =>
                         {
                             if (buttonNdx == 0)
-                                references.Add(new Reference(ReferenceTypes.GlobalReference, new List<Key>()));
+                                references.Add(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()));
 
                             if (buttonNdx == 1)
                             {
@@ -490,7 +490,7 @@ namespace AasxPackageLogic
                         this.AddHintBubble(stack, hintMode, new[] {
                             new HintCheck(
                                 () => references[i]?.IsValid() != true,
-                                "A Reference without Keys makes no sense.")});
+                                "A AasCore.Aas3_0_RC02.Reference without Keys makes no sense.")});
                         
                         this.AddKeyReference(
                             stack, String.Format("dataSpec.[{0}]", i), references[i], repo,
@@ -511,9 +511,9 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityHasDataSpecificationReferences(AnyUiStackPanel stack,
             List<EmbeddedDataSpecification>? hasDataSpecification,
             Action<List<EmbeddedDataSpecification>> setOutput,
-            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
+            string[] addPresetNames = null, List<AasCore.Aas3_0_RC02.Key>[] addPresetKeyLists = null,
             bool dataSpecRefsAreUsual = false,
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             // access
@@ -521,7 +521,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(stack, "HasDataSpecification (Reference):", levelColors.SubSection);
+            this.AddGroup(stack, "HasDataSpecification (AasCore.Aas3_0_RC02.Reference):", levelColors.SubSection);
 
             // hasDataSpecification are MULTIPLE references. That is: multiple x multiple keys!
             this.AddHintBubble(stack, hintMode, new[] {
@@ -553,7 +553,7 @@ namespace AasxPackageLogic
                         stack, "Specifications:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add Reference",
+                            .AddAction("add-reference", "Add AasCore.Aas3_0_RC02.Reference",
                                 "Adds a reference to a data specification.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
@@ -562,7 +562,7 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new EmbeddedDataSpecification(
-                                        new Reference(ReferenceTypes.GlobalReference, new List<Key>()),
+                                        new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()),
                                         null));
 
                             if (buttonNdx == 1)
@@ -610,7 +610,7 @@ namespace AasxPackageLogic
                             v =>
                             {
                                 hasDataSpecification[currentI].DataSpecification =
-                                new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                                 return new AnyUiLambdaActionRedrawEntity();
                             }))
                         {
@@ -643,8 +643,8 @@ namespace AasxPackageLogic
             AasCore.Aas3_0_RC02.Environment env, AnyUiStackPanel stack,
             List<EmbeddedDataSpecification> hasDataSpecification,
             Action<List<EmbeddedDataSpecification>> setOutput,
-            string[] addPresetNames = null, List<Key>[] addPresetKeyLists = null,
-            IReferable relatedReferable = null,
+            string[] addPresetNames = null, List<AasCore.Aas3_0_RC02.Key>[] addPresetKeyLists = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             // access
@@ -662,7 +662,7 @@ namespace AasxPackageLogic
                         () => { return hasDataSpecification == null ||
                             hasDataSpecification.Count < 1; },
                         "For ConceptDescriptions, the main data carrier lies in the embedded data specification. " +
-                        "In these elements, a Reference to a data specification is combined with content " +
+                        "In these elements, a AasCore.Aas3_0_RC02.Reference to a data specification is combined with content " +
                         "attributes, which are attached to the ConceptDescription. These attributes hold the " +
                         "descriptive information on a concept and thus allow for an off-line understanding of " +
                         "the meaning of a concept/ SubmodelElement. Multiple data specifications " +
@@ -690,13 +690,13 @@ namespace AasxPackageLogic
                             if (buttonNdx == 0)
                                 hasDataSpecification.Add(
                                     new EmbeddedDataSpecification(
-                                        new Reference(ReferenceTypes.GlobalReference, new List<Key>()),
+                                        new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()),
                                         null));
 
                             if (buttonNdx == 1)
                                 hasDataSpecification.Add(
                                     new EmbeddedDataSpecification(
-                                        new Reference(ReferenceTypes.GlobalReference, new List<Key> { 
+                                        new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> { 
                                             ExtendIDataSpecificationContent.GetKeyForIec61360() 
                                         }),
                                         new DataSpecificationIec61360(new List<LangString>() { 
@@ -722,9 +722,9 @@ namespace AasxPackageLogic
                     for (int i = 0; i < hasDataSpecification.Count; i++)
                     {
                         // indicate
-                        this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
+                        this.AddGroup(stack, $"dataSpec.[{i}] / AasCore.Aas3_0_RC02.Reference:", levelColors.SubSection);
 
-                        // Reference
+                        // AasCore.Aas3_0_RC02.Reference
                         int currentI = i;
                         if (SafeguardAccess(
                             stack, this.repo, hasDataSpecification[i].DataSpecification,
@@ -732,7 +732,7 @@ namespace AasxPackageLogic
                             v =>
                             {
                                 hasDataSpecification[currentI].DataSpecification =
-                                    new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                                    new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                                 return new AnyUiLambdaActionRedrawEntity();
                             }))
                         {
@@ -765,8 +765,8 @@ namespace AasxPackageLogic
                             stack, hintMode, new[] {
                             new HintCheck(
                                 () => cntByDs == ExtendIDataSpecificationContent.ContentTypes.NoInfo,
-                                "No valid data specification Reference could be identified. Thus, no content " +
-                                "attributes could be provided. Check the Reference.")
+                                "No valid data specification AasCore.Aas3_0_RC02.Reference could be identified. Thus, no content " +
+                                "attributes could be provided. Check the AasCore.Aas3_0_RC02.Reference.")
                             });
 
                         // indicate new section
@@ -793,7 +793,7 @@ namespace AasxPackageLogic
                                     breakIfTrue: true),
                                 new HintCheck(
                                     () => cntMismatch,
-                                    "Mismatch between data specification Reference and stored content " +
+                                    "Mismatch between data specification AasCore.Aas3_0_RC02.Reference and stored content " +
                                     "of data specification.")
                                 });
 
@@ -832,11 +832,11 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntityListOfReferences(AnyUiStackPanel stack,
-            List<Reference> references,
-            Action<List<Reference>> setOutput,
+            List<AasCore.Aas3_0_RC02.Reference> references,
+            Action<List<AasCore.Aas3_0_RC02.Reference>> setOutput,
             string entityName,
-            string[] addPresetNames = null, Key[] addPresetKeys = null,
-            IReferable relatedReferable = null,
+            string[] addPresetNames = null, AasCore.Aas3_0_RC02.Key[] addPresetKeys = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             // access
@@ -848,7 +848,7 @@ namespace AasxPackageLogic
                     stack, this.repo, references, $"{entityName}:", "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new List<Reference>());
+                        setOutput?.Invoke(new List<AasCore.Aas3_0_RC02.Reference>());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -861,14 +861,14 @@ namespace AasxPackageLogic
                         stack, $"{entityName}:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
-                            .AddAction("add-reference", "Add Reference",
+                            .AddAction("add-reference", "Add AasCore.Aas3_0_RC02.Reference",
                                 "Adds a reference to the list.")
                             .AddAction("delete-reference", "Delete last reference",
                                 "Deletes the last reference in the list."),
                         ticketAction: (buttonNdx, ticket) =>
                         {
                             if (buttonNdx == 0)
-                                references.Add(new Reference(ReferenceTypes.ModelReference, new List<Key>()));
+                                references.Add(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>()));
 
                             if (buttonNdx == 1 && references.Count > 0)
                                 references.RemoveAt(references.Count - 1);
@@ -899,7 +899,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityAssetKind(AnyUiStackPanel stack,
             AssetKind kind,
             Action<AssetKind> setOutput,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -943,7 +943,7 @@ namespace AasxPackageLogic
             ModelingKind? kind,
             Action<ModelingKind> setOutput,
             string instanceExceptionStatement = null,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -990,12 +990,12 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntitySemanticId(AnyUiStackPanel stack,
-            IHasSemantics semElem,
+            AasCore.Aas3_0_RC02.IHasSemantics semElem,
             string statement = null,
             bool checkForCD = false,
             string addExistingEntities = null,
             CopyPasteBuffer cpb = null,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null || semElem == null)
@@ -1020,7 +1020,7 @@ namespace AasxPackageLogic
                             breakIfTrue: true),
                         new HintCheck(
                                 () => { return checkForCD &&
-                                    semElem.SemanticId.Keys[0].Type != KeyTypes.GlobalReference; },
+                                    semElem.SemanticId.Keys[0].Type != AasCore.Aas3_0_RC02.KeyTypes.GlobalReference; },
                                 "The semanticId usually features a GlobalReference to a concept " +
                                 "within a respective concept repository.",
                                 severityLevel: HintCheck.Severity.Notice)
@@ -1034,7 +1034,7 @@ namespace AasxPackageLogic
                     stack, repo, semElem.SemanticId, "semanticId:", "Create data element!",
                     v =>
                     {
-                        semElem.SemanticId =  new Reference(ReferenceTypes.GlobalReference, new List<Key>()); 
+                        semElem.SemanticId =  new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()); 
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -1048,7 +1048,7 @@ namespace AasxPackageLogic
                     addPresetKeyLists: bufferKeys.Item2,
                     jumpLambda: (kl) =>
                     {
-                        return new AnyUiLambdaActionNavigateTo(new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)));
+                        return new AnyUiLambdaActionNavigateTo(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)));
                     },
                     relatedReferable: relatedReferable,
                     auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
@@ -1083,7 +1083,7 @@ namespace AasxPackageLogic
                     stack, this.repo, semElem.SupplementalSemanticIds, "supplementalSemanticId:", "Create data element!",
                     v =>
                     {
-                        semElem.SupplementalSemanticIds = new List<Reference>();
+                        semElem.SupplementalSemanticIds = new List<AasCore.Aas3_0_RC02.Reference>();
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
@@ -1097,7 +1097,7 @@ namespace AasxPackageLogic
                         {
                             if (buttonNdx == 0)
                                 semElem.SupplementalSemanticIds.Add(
-                                    new Reference(ReferenceTypes.GlobalReference, new List<Key>()));
+                                    new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()));
 
                             if (buttonNdx == 1)
                             {
@@ -1130,7 +1130,7 @@ namespace AasxPackageLogic
                             addPresetKeyLists: bufferKeys.Item2,
                             jumpLambda: (kl) =>
                             {
-                                return new AnyUiLambdaActionNavigateTo(new Reference(ReferenceTypes.ModelReference, new List<Key>(kl)));
+                                return new AnyUiLambdaActionNavigateTo(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>(kl)));
                             },
                             relatedReferable: relatedReferable,
                             auxContextHeader: new[] { "\u2573", "Delete referredSemanticId" },
@@ -1160,7 +1160,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityQualifierCollection(AnyUiStackPanel stack,
             List<Qualifier> qualifiers,
             Action<List<Qualifier>> setOutput,
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             // access
@@ -1219,7 +1219,7 @@ namespace AasxPackageLogic
             List<SpecificAssetId> pairs,
             Action<List<SpecificAssetId>> setOutput,
             string key = "IdentifierKeyValuePairs",
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -1248,7 +1248,7 @@ namespace AasxPackageLogic
             SpecificAssetId pair,
             Action<SpecificAssetId> setOutput,
             string key = "IdentifierKeyValuePair",
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             string[] auxContextHeader = null, Func<object, AnyUiLambdaActionBase> auxContextLambda = null)
         {
             // access
@@ -1283,7 +1283,7 @@ namespace AasxPackageLogic
             AasCore.Aas3_0_RC02.Environment env,
             AnyUiStackPanel stack,
             DataSpecificationIec61360 dsiec,
-            IReferable relatedReferable = null,
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null,
             AasxMenu superMenu = null)
         {
             // access
@@ -1396,7 +1396,7 @@ namespace AasxPackageLogic
                     stack, repo, dsiec.UnitId, "unitId:", "Create data element!",
                     v =>
                     {
-                        dsiec.UnitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>());
+                        dsiec.UnitId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>());
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
@@ -1409,7 +1409,7 @@ namespace AasxPackageLogic
                 this.AddKeyReference(
                     stack, "unitId", dsiec.UnitId, repo,
                     packages, PackageCentral.PackageCentral.Selector.MainAux,
-                    addExistingEntities: Stringification.ToString(KeyTypes.GlobalReference), 
+                    addExistingEntities: Stringification.ToString(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference), 
                     addEclassIrdi: true, 
                     relatedReferable: relatedReferable);
             }
@@ -1533,7 +1533,7 @@ namespace AasxPackageLogic
                             breakIfTrue: true),
                         new HintCheck(
                             () => { return dsiec.ValueList.ValueReferencePairs.Count < 2; },
-                            "Please add multiple pairs of name and Reference.",
+                            "Please add multiple pairs of name and AasCore.Aas3_0_RC02.Reference.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
             if (SafeguardAccess(
@@ -1621,7 +1621,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditEntityDataSpecificationPhysicalUnit(
             AnyUiStackPanel stack,
             DataSpecificationPhysicalUnit dspu,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null || dspu == null)
@@ -1896,10 +1896,10 @@ namespace AasxPackageLogic
         // TODO (MIHO, 2022-12-26): seems not to be used
 #if OLD
         public void DisplayOrEditEntitySubmodelRef(AnyUiStackPanel stack,
-            Reference smref,
-            Action<Reference> setOutput,
+            AasCore.Aas3_0_RC02.Reference smref,
+            Action<AasCore.Aas3_0_RC02.Reference> setOutput,
             string entityName,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)
@@ -1917,12 +1917,12 @@ namespace AasxPackageLogic
                     "Create data element!",
                     v =>
                     {
-                        setOutput?.Invoke(new Reference(ReferenceTypes.GlobalReference, new List<Key>()));
+                        setOutput?.Invoke(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>()));
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
             {
                 this.AddGroup(
-                    stack, $"{entityName} - Reference to describing Submodel:",
+                    stack, $"{entityName} - AasCore.Aas3_0_RC02.Reference to describing Submodel:",
                     levelColors.SubSection);
                 this.AddKeyListKeys(
                     stack, $"{entityName}:", smref.Keys,
@@ -1937,12 +1937,12 @@ namespace AasxPackageLogic
         // 
 
         public void DisplayOrEditEntityFileResource(AnyUiStackPanel stack,
-            IReferable containingObject,
+            AasCore.Aas3_0_RC02.IReferable containingObject,
             ModifyRepo repo, AasxMenu superMenu,
             string valuePath,
             string valueContent,
             Action<string, string> setOutput,
-            IReferable relatedReferable = null)
+            AasCore.Aas3_0_RC02.IReferable relatedReferable = null)
         {
             // access
             if (stack == null)

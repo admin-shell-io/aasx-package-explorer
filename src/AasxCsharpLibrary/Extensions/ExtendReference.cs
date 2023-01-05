@@ -245,6 +245,19 @@ namespace Extensions
             return rf.Keys.Last(); 
         }
 
+        public static string ListOfValues(this Reference rf, string delim)
+        {
+            string res = "";
+            if (rf.Keys != null)
+                foreach (var x in rf.Keys)
+                {
+                    if (x == null)
+                        continue;
+                    if (res != "") res += delim;
+                    res += x.Value;
+                }
+            return res;
+        }
     }
 
 }

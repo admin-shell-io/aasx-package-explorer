@@ -49,10 +49,10 @@ namespace AasxPluginBomStructure
         public static Microsoft.Msagl.Drawing.Color AssetBorderColor =
             new Microsoft.Msagl.Drawing.Color(128, 128, 128);
 
-        private Dictionary<IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
-            new Dictionary<IReferable, Microsoft.Msagl.Drawing.Node>();
-        private Dictionary<IReferable, RelationshipElement> referableByRelation =
-            new Dictionary<IReferable, RelationshipElement>();
+        private Dictionary<AasCore.Aas3_0_RC02.IReferable, Microsoft.Msagl.Drawing.Node> referableToNode =
+            new Dictionary<AasCore.Aas3_0_RC02.IReferable, Microsoft.Msagl.Drawing.Node>();
+        private Dictionary<AasCore.Aas3_0_RC02.IReferable, AasCore.Aas3_0_RC02.RelationshipElement> referableByRelation =
+            new Dictionary<AasCore.Aas3_0_RC02.IReferable, AasCore.Aas3_0_RC02.RelationshipElement>();
 
         private AasCore.Aas3_0_RC02.Environment _env;
         private BomStructureOptionsRecordList _bomRecords;
@@ -74,7 +74,7 @@ namespace AasxPluginBomStructure
             _refStore.Index(env);
         }
 
-        public IReferable FindReferableByReference(Reference r)
+        public AasCore.Aas3_0_RC02.IReferable FindReferableByReference(AasCore.Aas3_0_RC02.Reference r)
         {
             if (_refStore == null)
                 return this._env?.FindReferableByReference(r);
@@ -143,7 +143,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 1)
             {
-                tb.Text = "Entity (self-managed)";
+                tb.Text = "AasCore.Aas3_0_RC02.Entity (self-managed)";
             }
 
             // Co Managed
@@ -165,10 +165,10 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 2)
             {
-                tb.Text = "Entity (co-managed)";
+                tb.Text = "AasCore.Aas3_0_RC02.Entity (co-managed)";
             }
 
-            // Property
+            // AasCore.Aas3_0_RC02.Property
             if (column == 1 && c != null && type == 3)
             {
                 var r = new System.Windows.Shapes.Rectangle();
@@ -187,7 +187,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 3)
             {
-                tb.Text = "Property";
+                tb.Text = "AasCore.Aas3_0_RC02.Property";
             }
 
             // Asset
@@ -226,7 +226,7 @@ namespace AasxPluginBomStructure
             }
             if (column == 2 && tb != null && type == 5)
             {
-                tb.Text = "Property \u2b64  Entity";
+                tb.Text = "AasCore.Aas3_0_RC02.Property \u2b64  AasCore.Aas3_0_RC02.Entity";
             }
 
             // normal Rel
@@ -429,8 +429,8 @@ namespace AasxPluginBomStructure
         public void RecurseOnLayout(
             int pass,
             Microsoft.Msagl.Drawing.Graph graph,
-            IReferable parentRef,
-            List<ISubmodelElement> smec,
+            AasCore.Aas3_0_RC02.IReferable parentRef,
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> smec,
             int depth = 1, TextWriter textWriter = null)
         {
             // access
@@ -448,7 +448,7 @@ namespace AasxPluginBomStructure
                         "{0} Recurse pass {1} SME {2}",
                         new String(' ', depth), pass, "" + sme.IdShort);
 
-                if (sme is RelationshipElement rel)
+                if (sme is AasCore.Aas3_0_RC02.RelationshipElement rel)
                 {
                     // for adding Nodes to the graph, we need in advance the knowledge, if a property
                     // is connected by a BOM relationship ..
@@ -549,7 +549,7 @@ namespace AasxPluginBomStructure
                     }
                 }
 
-                if (sme is Property prop)
+                if (sme is AasCore.Aas3_0_RC02.Property prop)
                 {
                     // add as a Node to the graph?
                     if (pass == 2 && referableByRelation.ContainsKey(prop))
@@ -580,7 +580,7 @@ namespace AasxPluginBomStructure
                         referableToNode[prop] = node;
                     }
 
-                    // draw a link from the parent (Entity or SMC) to this node
+                    // draw a link from the parent (AasCore.Aas3_0_RC02.Entity or SMC) to this node
                     if (pass == 3 && parentRef != null)
                     {
                         // get nodes
@@ -606,7 +606,7 @@ namespace AasxPluginBomStructure
                     }
                 }
 
-                if (sme is Entity ent)
+                if (sme is AasCore.Aas3_0_RC02.Entity ent)
                 {
                     // add Nodes?
                     if (pass == 2)
@@ -663,7 +663,7 @@ namespace AasxPluginBomStructure
                     RecurseOnLayout(pass, graph, sme, ent.Statements, depth + 1, textWriter);
                 }
 
-                if (sme is SubmodelElementCollection innerSmc)
+                if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection innerSmc)
                 {
                     // recurse
                     RecurseOnLayout(

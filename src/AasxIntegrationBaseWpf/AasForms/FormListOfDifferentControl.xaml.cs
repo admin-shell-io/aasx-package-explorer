@@ -223,7 +223,7 @@ namespace AasxIntegrationBase.AasForms
                     GridHeader.Background = new System.Windows.Media.SolidColorBrush(
                         System.Windows.Media.Color.FromRgb(0xf0, 0xf0, 0xf0));
                     TextBlockHeaderFormTitle.Text = (dc.smecDesc.FormTitle.Trim().Length < 1)
-                        ? "SubmodelElementCollection"
+                        ? "AasCore.Aas3_0_RC02.SubmodelElementCollection"
                         : dc.smecDesc.FormTitle;
                     TextBlockHeaderFormInfo.Text = dc.smecDesc.FormInfo;
                 }

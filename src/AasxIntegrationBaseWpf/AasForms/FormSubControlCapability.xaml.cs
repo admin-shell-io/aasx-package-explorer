@@ -48,14 +48,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceCapability instance;
             public FormDescCapability desc;
-            public Capability refElem;
+            public AasCore.Aas3_0_RC02.Capability refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceCapability;
                 dc.desc = dc.instance?.desc as FormDescCapability;
-                dc.refElem = dc.instance?.sme as Capability;
+                dc.refElem = dc.instance?.sme as AasCore.Aas3_0_RC02.Capability;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;

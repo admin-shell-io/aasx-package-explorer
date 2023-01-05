@@ -30,7 +30,7 @@ namespace AasxPredefinedConcepts
         /// </summary>
         public class ModuleTypePackage : AasxDefinitionBase
         {
-            public Reference
+            public AasCore.Aas3_0_RC02.Reference
                 SEM_MtpSubmodel,
                 SEM_MtpInstanceSubmodel;
 
@@ -50,15 +50,15 @@ namespace AasxPredefinedConcepts
                 // info
                 this.DomainInfo = "Module Type Package (MTP)";
 
-                // IReferable
-                SEM_MtpSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
+                // AasCore.Aas3_0_RC02.IReferable
+                SEM_MtpSubmodel = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/submodel") });
 
-                SEM_MtpInstanceSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
+                SEM_MtpInstanceSubmodel = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://www.admin-shell.io/mtp/v1/mtp-instance-submodel") });
 
                 CD_MtpTypeSubmodel = CreateSparseConceptDescription("en", "IRI",
                     "MtpTypeSubmodel",
                     "http://www.admin-shell.io/mtp/v1/New/MtpTypeSubmodel",
-                    @"Direct Reference to MTP Type Submodel.");
+                    @"Direct AasCore.Aas3_0_RC02.Reference to MTP Type Submodel.");
 
                 CD_SourceList = CreateSparseConceptDescription("en", "IRI",
                     "SourceList",
@@ -84,13 +84,13 @@ namespace AasxPredefinedConcepts
                 CD_IdentifierRenaming = CreateSparseConceptDescription("en", "IRI",
                     "IdentifierRenaming",
                     "http://www.admin-shell.io/mtp/v1/New/IdentifierRenaming",
-                    "Specifies a renaming of OPC UA identifiers for nodes. Designates a SubmodelElementCollection " +
+                    "Specifies a renaming of OPC UA identifiers for nodes. Designates a AasCore.Aas3_0_RC02.SubmodelElementCollection " +
                     "containing two Properties for OldText and NewText for string replacement.");
 
                 CD_NamespaceRenaming = CreateSparseConceptDescription("en", "IRI",
                     "NamespaceRenaming",
                     "http://www.admin-shell.io/mtp/v1/New/NamespaceRenaming",
-                    "Specifies a renaming of OPC UA namespaces for nodes. Designates a SubmodelElementCollection " +
+                    "Specifies a renaming of OPC UA namespaces for nodes. Designates a AasCore.Aas3_0_RC02.SubmodelElementCollection " +
                     "containing two Properties for OldText and NewText for string replacement.");
 
                 CD_RenamingOldText = CreateSparseConceptDescription("en", "IRI",

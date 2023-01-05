@@ -120,14 +120,14 @@ namespace AasxPluginGenericForms
 
             rec.FormSubmodel = new FormDescSubmodel(
                 "Submodel Root",
-                new Key(KeyTypes.Submodel, "www.exmaple.com/sms/1112"),
+                new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "www.exmaple.com/sms/1112"),
                 "Example",
                 "Information string");
 
             rec.FormSubmodel.Add(new FormDescProperty(
-                formText: "Sample Property",
+                formText: "Sample AasCore.Aas3_0_RC02.Property",
                 multiplicity: FormMultiplicity.OneToMany,
-                smeSemanticId: new Key(KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
+                smeSemanticId: new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, "www.example.com/cds/1113"),
                 presetIdShort: "SampleProp{0:0001}",
                 valueType: "string",
                 presetValue: "123"));
@@ -135,7 +135,7 @@ namespace AasxPluginGenericForms
             return opt;
         }
 
-        public GenericFormsOptionsRecord MatchRecordsForSemanticId(Reference sem)
+        public GenericFormsOptionsRecord MatchRecordsForSemanticId(AasCore.Aas3_0_RC02.Reference sem)
         {
             // check for a record in options, that matches Submodel
             GenericFormsOptionsRecord res = null;

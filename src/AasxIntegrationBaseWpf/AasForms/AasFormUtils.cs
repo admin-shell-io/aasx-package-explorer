@@ -20,7 +20,7 @@ namespace AasxIntegrationBase.AasForms
     public static class AasFormUtils
     {
         private static void RecurseExportAsTemplate(
-            List<ISubmodelElement> smwc, FormDescListOfElement tels,
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> smwc, FormDescListOfElement tels,
             AasCore.Aas3_0_RC02.Environment env = null, List<ConceptDescription> cds = null)
         {
             // access
@@ -32,13 +32,13 @@ namespace AasxIntegrationBase.AasForms
                 if (smw != null && smw != null)
                 {
                     FormDescSubmodelElement tsme = null;
-                    if (smw is Property p)
+                    if (smw is AasCore.Aas3_0_RC02.Property p)
                     {
                         tsme = new FormDescProperty(
                             "" + p.IdShort, FormMultiplicity.One, p.SemanticId?.GetAsExactlyOneKey(),
                             "" + p.IdShort, valueType: Stringification.ToString(p.ValueType));
                     }
-                    if (smw is MultiLanguageProperty mlp)
+                    if (smw is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
                     {
                         tsme = new FormDescMultiLangProp(
                             "" + mlp.IdShort, FormMultiplicity.One, mlp.SemanticId?.GetAsExactlyOneKey(),
@@ -50,25 +50,25 @@ namespace AasxIntegrationBase.AasForms
                             "" + fl.IdShort, FormMultiplicity.One, fl.SemanticId?.GetAsExactlyOneKey(),
                             "" + fl.IdShort);
                     }
-                    if (smw is ReferenceElement rf)
+                    if (smw is AasCore.Aas3_0_RC02.ReferenceElement rf)
                     {
                         tsme = new FormDescReferenceElement(
                             "" + rf.IdShort, FormMultiplicity.One, rf.SemanticId?.GetAsExactlyOneKey(),
                             "" + rf.IdShort);
                     }
-                    if (smw is RelationshipElement re)
+                    if (smw is AasCore.Aas3_0_RC02.RelationshipElement re)
                     {
                         tsme = new FormDescRelationshipElement(
                             "" + re.IdShort, FormMultiplicity.One, re.SemanticId?.GetAsExactlyOneKey(),
                             "" + re.IdShort);
                     }
-                    if (smw is Capability cap)
+                    if (smw is AasCore.Aas3_0_RC02.Capability cap)
                     {
                         tsme = new FormDescCapability(
                             "" + cap.IdShort, FormMultiplicity.One, cap.SemanticId?.GetAsExactlyOneKey(),
                             "" + cap.IdShort);
                     }
-                    if (smw is SubmodelElementCollection smec)
+                    if (smw is AasCore.Aas3_0_RC02.SubmodelElementCollection smec)
                     {
                         tsme = new FormDescSubmodelElementCollection(
                             "" + smec.IdShort, FormMultiplicity.One, smec.SemanticId?.GetAsExactlyOneKey(),
@@ -162,9 +162,9 @@ namespace AasxIntegrationBase.AasForms
                     }
 
                     // recurse
-                    if (smw is SubmodelElementCollection)
+                    if (smw is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                         RecurseExportAsTemplate(
-                            (smw as SubmodelElementCollection).Value,
+                            (smw as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value,
                             (tsme as FormDescSubmodelElementCollection).value, env, cds);
                 }
         }

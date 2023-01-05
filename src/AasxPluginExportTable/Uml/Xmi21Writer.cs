@@ -152,7 +152,7 @@ namespace AasxPluginExportTable.Uml
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<ISubmodelElement> features)
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
@@ -167,7 +167,7 @@ namespace AasxPluginExportTable.Uml
 
                 var attribute = CreateAppendElement(featureContainer, "ownedAttribute",
                     new[] {
-                        "xmi:type", "uml:Property",
+                        "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
                         "xmi:id", attrId,
                         "name", "" + sme.IdShort,
                         "visibility", "public",
@@ -195,7 +195,7 @@ namespace AasxPluginExportTable.Uml
             }
         }
 
-        public XmiHandle AddClass(IReferable rf)
+        public XmiHandle AddClass(AasCore.Aas3_0_RC02.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -216,7 +216,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public XmiHandle ProcessEntity(
-            IReferable parent, IReferable rf)
+            AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
         {
             // access
             if (rf == null)
@@ -265,7 +265,7 @@ namespace AasxPluginExportTable.Uml
 
                     var attribute = CreateAppendElement(job.SrcTuple.Elem, "ownedAttribute",
                         new[] {
-                            "xmi:type", "uml:Property",
+                            "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
                             "xmi:id", assocAttrId,
                             "visibility", "public",
                             "association", assocId,
@@ -309,7 +309,7 @@ namespace AasxPluginExportTable.Uml
 
                     var ownedEnd1 = CreateAppendElement(assoc, "ownedEnd",
                         new[] {
-                            "xmi:type", "uml:Property",
+                            "xmi:type", "uml:AasCore.Aas3_0_RC02.Property",
                             "xmi:id", ownEndId,
                             "visibility", "public",
                             "association", assocId,

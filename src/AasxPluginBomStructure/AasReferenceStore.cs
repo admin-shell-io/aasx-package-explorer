@@ -41,7 +41,7 @@ namespace AasxPluginBomStructure
         protected MultiValueDictionary<uint, T> dict =
             new MultiValueDictionary<uint, T>();
 
-        protected uint ComputeHashOnReference(Reference r)
+        protected uint ComputeHashOnReference(AasCore.Aas3_0_RC02.Reference r)
         {
             // access
             if (r == null || r.Keys == null)
@@ -78,7 +78,7 @@ namespace AasxPluginBomStructure
             return sum;
         }
 
-        public void Index(Reference rf, T elem)
+        public void Index(AasCore.Aas3_0_RC02.Reference rf, T elem)
         {
             // access
             if (elem == null || rf == null)
@@ -89,7 +89,7 @@ namespace AasxPluginBomStructure
         }
 
         public T FindElementByReference(
-            Reference r,
+            AasCore.Aas3_0_RC02.Reference r,
             MatchMode matchMode = MatchMode.Strict)
         {
             var hk = ComputeHashOnReference(r);
@@ -98,7 +98,7 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as IReferable)?.GetReference();
+                var xx = (test as AasCore.Aas3_0_RC02.IReferable)?.GetReference();
                 if (xx != null && xx.Matches(r, matchMode))
                     return test;
             }
@@ -108,9 +108,9 @@ namespace AasxPluginBomStructure
 
     }
 
-    public class AasReferableStore : AasReferenceStore<IReferable>
+    public class AasReferableStore : AasReferenceStore<AasCore.Aas3_0_RC02.IReferable>
     {
-        private void RecurseIndexSME(Reference currRef, ISubmodelElement sme)
+        private void RecurseIndexSME(AasCore.Aas3_0_RC02.Reference currRef, AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             // access
             if (currRef == null || sme == null)
@@ -118,8 +118,8 @@ namespace AasxPluginBomStructure
 
             // add to the currRef
             currRef.Keys.Add(
-                new Key(
-                    sme.GetSelfDescription().KeyType ?? KeyTypes.GlobalReference, sme.IdShort));
+                new AasCore.Aas3_0_RC02.Key(
+                    sme.GetSelfDescription().KeyType ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, sme.IdShort));
 
             // index
             var hk = ComputeHashOnReference(currRef);

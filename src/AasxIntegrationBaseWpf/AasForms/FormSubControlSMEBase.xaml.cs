@@ -43,7 +43,7 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceSubmodelElement instance;
             public FormDescSubmodelElement desc;
-            public ISubmodelElement sme;
+            public AasCore.Aas3_0_RC02.ISubmodelElement sme;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {

@@ -161,7 +161,7 @@ namespace AasxIntegrationBase
             public override string ToString()
             {
                 var idn = "";
-                if (businessObject is IReferable rf)
+                if (businessObject is AasCore.Aas3_0_RC02.IReferable rf)
                     idn = "." + rf.IdShort;
                 return "" + qualifiedNameHead + idn + "." + metaModelName;
             }
@@ -204,11 +204,11 @@ namespace AasxIntegrationBase
                 // type of business element
                 var isColl = (businessObject is AssetAdministrationShell
                         || businessObject is Submodel
-                        || businessObject is SubmodelElementCollection);
+                        || businessObject is AasCore.Aas3_0_RC02.SubmodelElementCollection);
 
-                var isProp = (businessObject is Property);
+                var isProp = (businessObject is AasCore.Aas3_0_RC02.Property);
 
-                var isMLP = (businessObject is MultiLanguageProperty);
+                var isMLP = (businessObject is AasCore.Aas3_0_RC02.MultiLanguageProperty);
 
 
                 if (!options.SearchCollection && isColl)
@@ -302,9 +302,9 @@ namespace AasxIntegrationBase
 
             // try to get element name of an AAS entity
             string elName = null;
-            if (obj is IReferable)
+            if (obj is AasCore.Aas3_0_RC02.IReferable)
             {
-                elName = (obj as IReferable).GetSelfDescription()?.AasElementName;
+                elName = (obj as AasCore.Aas3_0_RC02.IReferable).GetSelfDescription()?.AasElementName;
                 businessObject = obj;
             }
 

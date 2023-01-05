@@ -82,13 +82,13 @@ namespace AasxPluginExportTable.Uml
             Package = CreateAppendElement(pack, UMLNS, "Namespace.ownedElement2");
         }
 
-        public string EvalFeatureType(ISubmodelElement sme)
+        public string EvalFeatureType(AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             // access
             if (sme == null)
                 return "";
 
-            if (sme is Property p)
+            if (sme is AasCore.Aas3_0_RC02.Property p)
                 return Stringification.ToString(p.ValueType);
 
             return sme.GetSelfDescription()?.AasElementName;
@@ -96,7 +96,7 @@ namespace AasxPluginExportTable.Uml
 
         public void AddFeatures(
             XmlElement featureContainer,
-            List<ISubmodelElement> features)
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> features)
         {
             if (featureContainer == null || features == null)
                 return;
@@ -106,8 +106,8 @@ namespace AasxPluginExportTable.Uml
                 var type = EvalFeatureType(sme);
                 var multiplicity = EvalMultiplicityBounds(EvalUmlMultiplicity(sme));
                 var initialValue = "";
-                if (sme is Property || sme is AasCore.Aas3_0_RC02.Range
-                    || sme is MultiLanguageProperty)
+                if (sme is AasCore.Aas3_0_RC02.Property || sme is AasCore.Aas3_0_RC02.Range
+                    || sme is AasCore.Aas3_0_RC02.MultiLanguageProperty)
                     initialValue = sme.ValueAsText();
 
                 var attribute = CreateAppendElement(featureContainer, UMLNS, "Attribute",
@@ -137,7 +137,7 @@ namespace AasxPluginExportTable.Uml
             }
         }
 
-        public void AddClass(IReferable rf)
+        public void AddClass(AasCore.Aas3_0_RC02.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -157,7 +157,7 @@ namespace AasxPluginExportTable.Uml
             AddFeatures(featureContainer, features);
         }
 
-        public void ProcessEntity(IReferable parent, IReferable rf)
+        public void ProcessEntity(AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
         {
             // access
             if (rf == null)

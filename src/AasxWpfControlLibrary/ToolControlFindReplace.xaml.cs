@@ -533,7 +533,7 @@ namespace AasxPackageExplorer
                 cm.Add(new DynamicContextItem(
                     "COLL", "", "Search Collection/ List", checkState: op.SearchCollection));
                 cm.Add(new DynamicContextItem(
-                    "PROP", "", "Search Property", checkState: op.SearchProperty));
+                    "PROP", "", "Search AasCore.Aas3_0_RC02.Property", checkState: op.SearchProperty));
                 cm.Add(new DynamicContextItem(
                     "MLPR", "", "Search Multilang.Prop.", checkState: op.SearchMultiLang));
                 cm.Add(new DynamicContextItem(

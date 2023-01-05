@@ -62,7 +62,7 @@ namespace AasxIntegrationBase.AasForms
         /// Check if <c>smw.IdShort</c>c> contains something like "{0:00}" and iterate index to make it unique
         /// </summary>
         public static void MakeIdShortUnique(
-            List<ISubmodelElement> collection, ISubmodelElement sme)
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> collection, AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             // access
             if (collection == null || sme == null)
@@ -317,12 +317,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
-            List<ISubmodelElement> elements,
+        public List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> elements,
             AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // will be a list of newly added elements (for tracing)
-            var res = new List<ISubmodelElement>();
+            var res = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
 
             // each description / instance pair
             foreach (var pair in this)
@@ -371,7 +371,7 @@ namespace AasxIntegrationBase.AasForms
         /// Instances based on source elements are missing when updating.
         /// </summary>
         [JsonIgnore]
-        protected List<ISubmodelElement> InitialSourceElements = null;
+        protected List<AasCore.Aas3_0_RC02.ISubmodelElement> InitialSourceElements = null;
 
         /// <summary>
         /// Clears <c>Instances</c>, <c>InitialSourceElements</c> and further dynamically data-
@@ -430,7 +430,7 @@ namespace AasxIntegrationBase.AasForms
         /// the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<AasCore.Aas3_0_RC02.ISubmodelElement> sourceElements = null)
         {
             // access
             var desc = this.workingDesc as FormDescSubmodelElement;
@@ -468,7 +468,7 @@ namespace AasxIntegrationBase.AasForms
 
             // prepare list of original source elements
             if (this.InitialSourceElements == null)
-                this.InitialSourceElements = new List<ISubmodelElement>();
+                this.InitialSourceElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
             foreach (var inst in this.SubInstances)
                 if (inst != null && inst is FormInstanceSubmodelElement &&
                     (inst as FormInstanceSubmodelElement).sourceSme != null)
@@ -478,12 +478,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the form description and adds or updates its instances into a list of SubmodelElements.
         /// </summary>
-        public List<ISubmodelElement> AddOrUpdateSameElementsToCollection(
-            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
+        public List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateSameElementsToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             // access
-            var res = new List<ISubmodelElement>();
+            var res = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
             if (this.SubInstances == null || this.workingDesc == null)
                 return null;
 
@@ -514,14 +514,14 @@ namespace AasxIntegrationBase.AasForms
                     // the Same-Instance was already prepared, however it needs to be eventually
                     // filled with the new elements
                     var smecInst = ins as FormInstanceSubmodelElementCollection;
-                    var sourceSmec = smecInst?.sourceSme as SubmodelElementCollection;
+                    var sourceSmec = smecInst?.sourceSme as AasCore.Aas3_0_RC02.SubmodelElementCollection;
 
-                    List<ISubmodelElement> newElems = null;
+                    List<AasCore.Aas3_0_RC02.ISubmodelElement> newElems = null;
                     bool addMode = false;
                     if (sourceSmec == null)
                     {
                         // will become a NEW SMEC !
-                        newElems = new List<ISubmodelElement>();
+                        newElems = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                         addMode = true;
                     }
                     else
@@ -536,14 +536,14 @@ namespace AasxIntegrationBase.AasForms
 
                     if (newElems != null && newElems.Count > 0)
                     {
-                        var smec = smecInst?.sme as SubmodelElementCollection;
+                        var smec = smecInst?.sme as AasCore.Aas3_0_RC02.SubmodelElementCollection;
 
                         // really add a new instances of the SMEC
                         if (addMode && smecInst != null && smec != null)
                         {
                             // add
                             if (smec.Value == null)
-                                smec.Value = new List<ISubmodelElement>();
+                                smec.Value = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                             smec.Value.AddRange(newElems);
 
                             // make smec unique
@@ -764,7 +764,7 @@ namespace AasxIntegrationBase.AasForms
         public static AnyUiGrid RenderAnyUiHead(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
-            IReferable rf,
+            AasCore.Aas3_0_RC02.IReferable rf,
             int? extraRows = null,
             Func<object, AnyUiLambdaActionBase> plusButtonLambda = null,
             Func<object, AnyUiLambdaActionBase> expandButtonLambda = null)
@@ -836,7 +836,7 @@ namespace AasxIntegrationBase.AasForms
         public static AnyUiGrid RenderAnyUiRefAttribs(
             AnyUiStackPanel view, AnyUiSmallWidgetToolkit uitk, PluginOperationContextBase opctx,
             FormDescReferable desc,
-            IReferable rf,
+            AasCore.Aas3_0_RC02.IReferable rf,
             IFormInstanceParent current,
             Action touch = null,
             bool editIdShort = false,
@@ -1042,7 +1042,7 @@ namespace AasxIntegrationBase.AasForms
         /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<AasCore.Aas3_0_RC02.ISubmodelElement> sourceElements = null)
         {
             if (this.PairInstances != null)
                 foreach (var pair in this.PairInstances)
@@ -1054,8 +1054,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
-            List<ISubmodelElement> elements,
+        public List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> elements,
             AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false,
             bool editSource = false)
@@ -1132,14 +1132,14 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// The SME which is maintained by the instance
         /// </summary>
-        public ISubmodelElement sme = null;
+        public AasCore.Aas3_0_RC02.ISubmodelElement sme = null;
 
         /// <summary>
         /// This links to a SME, from which the instance was read/ edited.
         /// </summary>
-        public ISubmodelElement sourceSme = null;
+        public AasCore.Aas3_0_RC02.ISubmodelElement sourceSme = null;
 
-        protected void InitReferable(FormDescSubmodelElement desc, ISubmodelElement source)
+        protected void InitReferable(FormDescSubmodelElement desc, AasCore.Aas3_0_RC02.ISubmodelElement source)
         {
             if (desc == null || sme == null)
                 return;
@@ -1180,12 +1180,12 @@ namespace AasxIntegrationBase.AasForms
         /// Render the instance into a list (right now, exactly one!) of SubmodelElements.
         /// Might be overridden in subclasses.
         /// </summary>
-        public virtual List<ISubmodelElement> AddOrUpdateSmeToCollection(
-            List<ISubmodelElement> collectionNewElements,
+        public virtual List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateSmeToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> collectionNewElements,
             AdminShellPackageEnv packageEnv = null, bool addFilesToPackage = false)
         {
             // typically, there will be only one SME
-            var res = new List<ISubmodelElement>();
+            var res = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
 
             // SME present?
             if (sme != null)
@@ -1223,7 +1223,7 @@ namespace AasxIntegrationBase.AasForms
 
         public FormInstanceSubmodelElementCollection(
             FormInstanceListOfSame parentInstance,
-            FormDescSubmodelElementCollection parentDesc, ISubmodelElement source = null)
+            FormDescSubmodelElementCollection parentDesc, AasCore.Aas3_0_RC02.ISubmodelElement source = null)
         {
             // way back to description
             this.desc = parentDesc;
@@ -1231,7 +1231,7 @@ namespace AasxIntegrationBase.AasForms
             var smecDesc = this.desc as FormDescSubmodelElementCollection;
 
             // initialize Referable
-            var smec = new SubmodelElementCollection();
+            var smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             this.sme = smec;
             InitReferable(parentDesc, source);
 
@@ -1246,7 +1246,7 @@ namespace AasxIntegrationBase.AasForms
 
             // check, if a source is present
             this.sourceSme = source;
-            var smecSource = this.sourceSme as SubmodelElementCollection;
+            var smecSource = this.sourceSme as AasCore.Aas3_0_RC02.SubmodelElementCollection;
             if (smecSource != null)
             {
                 if (this.PairInstances != null)
@@ -1275,8 +1275,8 @@ namespace AasxIntegrationBase.AasForms
         /// Build a new instance, based on the description data
         /// </summary>
 
-        public override List<ISubmodelElement> AddOrUpdateSmeToCollection(
-            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
+        public override List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateSmeToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             // SMEC as Refrable
@@ -1295,7 +1295,7 @@ namespace AasxIntegrationBase.AasForms
         /// of the description/ form.
         /// If not, the display functionality will finally care about creating them.
         /// </summary>
-        public void PresetInstancesBasedOnSource(List<ISubmodelElement> sourceElements = null)
+        public void PresetInstancesBasedOnSource(List<AasCore.Aas3_0_RC02.ISubmodelElement> sourceElements = null)
         {
             if (this.PairInstances != null)
                 foreach (var pair in this.PairInstances)
@@ -1307,8 +1307,8 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// Render the list of form elements into a list of SubmodelElements.
         /// </summary>
-        public List<ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
-            List<ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
+        public List<AasCore.Aas3_0_RC02.ISubmodelElement> AddOrUpdateDifferentElementsToCollection(
+            List<AasCore.Aas3_0_RC02.ISubmodelElement> elements, AdminShellPackageEnv packageEnv = null,
             bool addFilesToPackage = false)
         {
             if (this.PairInstances != null)
@@ -1366,20 +1366,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceProperty(
             FormInstanceListOfSame parentInstance, FormDescProperty parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var p = new Property(DataTypeDefXsd.String);
+            var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
             this.sme = p;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var pSource = this.sourceSme as Property;
+            var pSource = this.sourceSme as AasCore.Aas3_0_RC02.Property;
             if (pSource != null)
             {
                 // take over
@@ -1423,8 +1423,8 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var p = this.sme as Property;
-            var pSource = this.sourceSme as Property;
+            var p = this.sme as AasCore.Aas3_0_RC02.Property;
+            var pSource = this.sourceSme as AasCore.Aas3_0_RC02.Property;
             if (p != null && Touched && pSource != null && editSource)
             {
                 pSource.ValueType = p.ValueType;
@@ -1442,12 +1442,12 @@ namespace AasxIntegrationBase.AasForms
         {
             // access to master
             var pMasterInst = masterInst as FormInstanceProperty;
-            var pMaster = pMasterInst?.sme as Property;
+            var pMaster = pMasterInst?.sme as AasCore.Aas3_0_RC02.Property;
             if (pMaster?.Value == null)
                 return;
 
             // accues to this
-            var pThis = this.sme as Property;
+            var pThis = this.sme as AasCore.Aas3_0_RC02.Property;
             if (pThis == null)
                 return;
 
@@ -1486,7 +1486,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var prop = sme as Property;
+            var prop = sme as AasCore.Aas3_0_RC02.Property;
             var pDesc = desc as FormDescProperty;
             if (prop == null || pDesc == null)
                 return;
@@ -1575,20 +1575,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceMultiLangProp(
             FormInstanceListOfSame parentInstance, FormDescMultiLangProp parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var mlp = new MultiLanguageProperty();
+            var mlp = new AasCore.Aas3_0_RC02.MultiLanguageProperty();
             this.sme = mlp;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var mlpSource = this.sourceSme as MultiLanguageProperty;
+            var mlpSource = this.sourceSme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
             if (mlpSource != null)
             {
                 // take over
@@ -1617,8 +1617,8 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var mlp = this.sme as MultiLanguageProperty;
-            var mlpSource = this.sourceSme as MultiLanguageProperty;
+            var mlp = this.sme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
+            var mlpSource = this.sourceSme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
             if (mlp != null && Touched && mlpSource != null && editSource)
             {
                 if (mlp.Value != null)
@@ -1635,7 +1635,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var mlp = sme as MultiLanguageProperty;
+            var mlp = sme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
             if (mlp == null)
                 return;
 
@@ -1743,7 +1743,7 @@ namespace AasxIntegrationBase.AasForms
 
         public FormInstanceFile(
             FormInstanceListOfSame parentInstance, FormDescFile parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
@@ -1928,20 +1928,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceReferenceElement(
             FormInstanceListOfSame parentInstance, FormDescReferenceElement parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new ReferenceElement();
+            var re = new AasCore.Aas3_0_RC02.ReferenceElement();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as ReferenceElement;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.ReferenceElement;
             if (reSource != null)
             {
                 // take over
@@ -1970,8 +1970,8 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as ReferenceElement;
-            var reSource = this.sourceSme as ReferenceElement;
+            var re = this.sme as AasCore.Aas3_0_RC02.ReferenceElement;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.ReferenceElement;
             if (re != null && Touched && reSource != null && editSource)
             {
                 if (re.Value != null)
@@ -1988,13 +1988,13 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var refe = sme as ReferenceElement;
+            var refe = sme as AasCore.Aas3_0_RC02.ReferenceElement;
             if (refe == null)
                 return;
 
             // Intended layout:
             // Grid
-            //   Reference info    [Clear]
+            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
             //   """"""""""""""    [Select]
 
             var g = view.Add(
@@ -2065,20 +2065,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceRelationshipElement(
             FormInstanceListOfSame parentInstance, FormDescRelationshipElement parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new RelationshipElement(null, null);
+            var re = new AasCore.Aas3_0_RC02.RelationshipElement(null, null);
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as RelationshipElement;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.RelationshipElement;
             if (reSource != null)
             {
                 // take over
@@ -2109,8 +2109,8 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as RelationshipElement;
-            var reSource = this.sourceSme as RelationshipElement;
+            var re = this.sme as AasCore.Aas3_0_RC02.RelationshipElement;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
                 if (re.First != null) 
@@ -2129,17 +2129,17 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var rele = sme as RelationshipElement;
+            var rele = sme as AasCore.Aas3_0_RC02.RelationshipElement;
             if (rele == null)
                 return;
 
             // Intended layout:
             // Grid
             //   first
-            //   Reference info    [Clear]
+            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
             //   """"""""""""""    [Select]
             //   second
-            //   Reference info    [Clear]
+            //   AasCore.Aas3_0_RC02.Reference info    [Clear]
             //   """"""""""""""    [Select]
 
             var g = view.Add(
@@ -2150,7 +2150,7 @@ namespace AasxIntegrationBase.AasForms
             {
                 // selektor
                 var valGet = (i == 0) ? rele.First : rele.Second;
-                Action<Reference> valSet = (rf) => rele.First = rf;
+                Action<AasCore.Aas3_0_RC02.Reference> valSet = (rf) => rele.First = rf;
                 if (i == 1)
                     valSet = (rf) => rele.Second = rf;
                 var name = (new[] { "first", "second" })[i];
@@ -2230,20 +2230,20 @@ namespace AasxIntegrationBase.AasForms
     {
         public FormInstanceCapability(
             FormInstanceListOfSame parentInstance, FormDescCapability parentDesc,
-            ISubmodelElement source = null, bool deepCopy = false)
+            AasCore.Aas3_0_RC02.ISubmodelElement source = null, bool deepCopy = false)
         {
             // way back to description
             this.parentInstance = parentInstance;
             this.desc = parentDesc;
 
             // initialize Referable
-            var re = new Capability();
+            var re = new AasCore.Aas3_0_RC02.Capability();
             this.sme = re;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var reSource = this.sourceSme as Capability;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.Capability;
             if (reSource != null)
             {
                 // take over
@@ -2271,8 +2271,8 @@ namespace AasxIntegrationBase.AasForms
             // refer to base (SME) function, but not caring about result
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
-            var re = this.sme as RelationshipElement;
-            var reSource = this.sourceSme as RelationshipElement;
+            var re = this.sme as AasCore.Aas3_0_RC02.RelationshipElement;
+            var reSource = this.sourceSme as AasCore.Aas3_0_RC02.RelationshipElement;
             if (re != null && Touched && reSource != null && editSource)
             {
                 if (re.First != null)

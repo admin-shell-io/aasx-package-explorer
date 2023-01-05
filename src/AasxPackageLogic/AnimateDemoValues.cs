@@ -74,8 +74,8 @@ namespace AasxPackageLogic
             public double Phase;
         }
 
-        protected Dictionary<IReferable, AnimateState> _states =
-            new Dictionary<IReferable, AnimateState>();
+        protected Dictionary<AasCore.Aas3_0_RC02.IReferable, AnimateState> _states =
+            new Dictionary<AasCore.Aas3_0_RC02.IReferable, AnimateState>();
 
         public void Clear()
         {
@@ -83,7 +83,7 @@ namespace AasxPackageLogic
         }
 
         public AnimateState GetState(
-            IReferable rf,
+            AasCore.Aas3_0_RC02.IReferable rf,
             bool createIfNeeded = false)
         {
             if (rf == null)
@@ -118,8 +118,8 @@ namespace AasxPackageLogic
         }
 
         public void Animate(
-            Property prop,
-            Action<Property, IAasDiaryEntry> emitEvent) 
+            AasCore.Aas3_0_RC02.Property prop,
+            Action<AasCore.Aas3_0_RC02.Property, IAasDiaryEntry> emitEvent) 
         {
             // prop needs to exists and have qualifiers
             var ext = prop.HasExtensionOfName("Animate.Args");

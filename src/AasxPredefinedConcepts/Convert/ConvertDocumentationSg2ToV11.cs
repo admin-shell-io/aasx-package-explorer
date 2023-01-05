@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -46,7 +46,7 @@ namespace AasxPredefinedConcepts.Convert
             return res;
         }
 
-        public override bool ExecuteOffer(AdminShellPackageEnv package, IReferable currentReferable,
+        public override bool ExecuteOffer(AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -68,8 +68,8 @@ namespace AasxPredefinedConcepts.Convert
 
             // convert in place: detach old SMEs, change semanticId
             var smcOldSg2 = sm.SubmodelElements;
-            sm.SubmodelElements = new List<ISubmodelElement>();
-            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { defsV11.SM_ManufacturerDocumentation.SemanticId.GetAsExactlyOneKey() });
+            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsV11.SM_ManufacturerDocumentation.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -103,7 +103,7 @@ namespace AasxPredefinedConcepts.Convert
                                 conceptDescription.IsCaseOf));
 
             // ok, go thru the old == SG2 records
-            foreach (var smcDoc in smcOldSg2.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcDoc in smcOldSg2.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsSg2.CD_VDI2770_Document.GetSingleKey()))
             {
                 // access
@@ -111,7 +111,7 @@ namespace AasxPredefinedConcepts.Convert
                     continue;
 
                 // look immediately for DocumentVersion, as only with this there is a valid List item
-                foreach (var smcVer in smcDoc.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                foreach (var smcVer in smcDoc.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             defsSg2.CD_VDI2770_DocumentVersion.GetSingleKey()))
                 {
                     // access
@@ -121,125 +121,125 @@ namespace AasxPredefinedConcepts.Convert
                     // make new V11 Document
                     // ReSharper disable once ConvertToUsingDeclaration
                     // Document Item
-                    //using (var smcV11Doc = SubmodelElementCollection.CreateNew("" + smcDoc.IdShort,
+                    //using (var smcV11Doc = AasCore.Aas3_0_RC02.SubmodelElementCollection.CreateNew("" + smcDoc.IdShort,
                     //            smcDoc.Category,
-                    //            Key.GetFromRef(defsV11.CD_Document.GetCdReference())))
-                    var smcV11Doc = new SubmodelElementCollection(idShort: "" + smcDoc.IdShort, category: smcDoc.Category, semanticId: defsV11.CD_Document.GetCdReference());
+                    //            AasCore.Aas3_0_RC02.Key.GetFromRef(defsV11.CD_Document.GetCdReference())))
+                    var smcV11Doc = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "" + smcDoc.IdShort, category: smcDoc.Category, semanticId: defsV11.CD_Document.GetCdReference());
                     {
                         // Document itself
                         smcV11Doc.Description = smcDoc.Description;
                         sm.SubmodelElements.Add(smcV11Doc);
 
                         // Domain?
-                        var s1 = smcDoc.Value.FindFirstSemanticIdAs<Property>(
+                        var s1 = smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                     defsSg2.CD_VDI2770_DomainId.GetSingleKey(),
                                     MatchMode.Relaxed)?.Value;
-                        var s2 = smcDoc.Value.FindFirstSemanticIdAs<Property>(
+                        var s2 = smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                     defsSg2.CD_VDI2770_DocumentId.GetSingleKey(),
                                     MatchMode.Relaxed)?.Value;
                         if (s1 != null || s2 != null)
                         {
-                            var smcV11Dom = smcV11Doc.Value.CreateSMEForCD<SubmodelElementCollection>(
+                            var smcV11Dom = smcV11Doc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_DocumentDomainId, addSme: true);
 
-                            var prop = smcV11Dom.Value.CreateSMEForCD<Property>(
+                            var prop = smcV11Dom.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_DocumentDomainId, addSme: true);
                             prop.Value = "" + s1;
 
-                            prop = smcV11Dom.Value.CreateSMEForCD<Property>(
+                            prop = smcV11Dom.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_DocumentId, addSme: true);
                             prop.Value = "" + s2;
                         }
 
                         // Classification (3 properties)
-                        s1 = smcDoc.Value.FindFirstSemanticIdAs<Property>(
+                        s1 = smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassificationSystem.GetSingleKey(),
                                     MatchMode.Relaxed)?.Value;
-                        s2 = smcDoc.Value.FindFirstSemanticIdAs<Property>(
+                        s2 = smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassId.GetSingleKey(),
                                     MatchMode.Relaxed)?.Value;
-                        var s3 = smcDoc.Value.FindFirstSemanticIdAs<Property>(
+                        var s3 = smcDoc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                     defsSg2.CD_VDI2770_DocumentClassName.GetSingleKey(),
                                     MatchMode.Relaxed)?.Value;
                         if (s2 != null || s3 != null)
                         {
-                            var smcV11Cls = smcV11Doc.Value.CreateSMEForCD<SubmodelElementCollection>(
+                            var smcV11Cls = smcV11Doc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_DocumentClassification, addSme: true);
 
-                            var prop = smcV11Cls.Value.CreateSMEForCD<Property>(
+                            var prop = smcV11Cls.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_ClassificationSystem, addSme: true);
                             prop.Value = "" + s1;
 
-                            prop = smcV11Cls.Value.CreateSMEForCD<Property>(
+                            prop = smcV11Cls.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_ClassId, addSme: true);
                             prop.Value = "" + s2;
 
-                            prop = smcV11Cls.Value.CreateSMEForCD<Property>(
+                            prop = smcV11Cls.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_ClassName, addSme: true);
                             prop.Value = "" + s3;
                         }
 
                         // Document Version
-                        var smcV11Ver = smcV11Doc.Value.CreateSMEForCD<SubmodelElementCollection>(
+                        var smcV11Ver = smcV11Doc.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_DocumentVersion, addSme: true);
 
-                        foreach (var o in smcVer.Value.FindAllSemanticIdAs<Property>(
+                        foreach (var o in smcVer.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_Language.GetSingleKey(),
                                 MatchMode.Relaxed))
                         {
-                            var prop = smcV11Ver.Value.CreateSMEForCD<Property>(
+                            var prop = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                 defsV11.CD_Language, addSme: true);
                             prop.Value = "" + o;
                         }
 
-                        var property = smcV11Ver.Value.CreateSMEForCD<Property>(
+                        var property = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                             defsV11.CD_DocumentVersionId, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_DocumentVersionIdValue.GetSingleKey(),
                                 MatchMode.Relaxed)?.Value;
 
-                        var mlp1 = smcVer.Value.FindFirstSemanticIdAs<MultiLanguageProperty>(
+                        var mlp1 = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Title.GetSingleKey(),
                                     MatchMode.Relaxed);
                         if (mlp1 != null)
-                            smcV11Ver.Value.CreateSMEForCD<MultiLanguageProperty>(
+                            smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                 defsV11.CD_Title, addSme: true).Value = mlp1.Value;
 
-                        mlp1 = smcVer.Value.FindFirstSemanticIdAs<MultiLanguageProperty>(
+                        mlp1 = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Summary.GetSingleKey(),
                                     MatchMode.Relaxed);
                         if (mlp1 != null)
-                            smcV11Ver.Value.CreateSMEForCD<MultiLanguageProperty>(
+                            smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                 defsV11.CD_Summary, addSme: true).Value = mlp1.Value;
 
-                        mlp1 = smcVer.Value.FindFirstSemanticIdAs<MultiLanguageProperty>(
+                        mlp1 = smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                     defsSg2.CD_VDI2770_Keywords.GetSingleKey(),
                                     MatchMode.Relaxed);
                         if (mlp1 != null)
-                            smcV11Ver.Value.CreateSMEForCD<MultiLanguageProperty>(
+                            smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.MultiLanguageProperty>(
                                 defsV11.CD_KeyWords, addSme: true).Value = mlp1.Value;
 
-                        property = smcV11Ver.Value.CreateSMEForCD<Property>(
+                        property = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                             defsV11.CD_SetDate, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_Date.GetSingleKey(),
                                 MatchMode.Relaxed)?.Value;
 
-                        property = smcV11Ver.Value.CreateSMEForCD<Property>(
+                        property = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                             defsV11.CD_StatusValue, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_StatusValue.GetSingleKey(),
                                 MatchMode.Relaxed)?.Value;
 
-                        property = smcV11Ver.Value.CreateSMEForCD<Property>(
+                        property = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                             defsV11.CD_OrganizationName, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_OrganizationName.GetSingleKey(),
                                 MatchMode.Relaxed)?.Value;
 
-                        property = smcV11Ver.Value.CreateSMEForCD<Property>(
+                        property = smcV11Ver.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                             defsV11.CD_OrganizationOfficialName, addSme: true);
-                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<Property>(
+                        property.Value = "" + smcVer.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                                 defsSg2.CD_VDI2770_OrganizationOfficialName.GetSingleKey(),
                                 MatchMode.Relaxed)?.Value;
 

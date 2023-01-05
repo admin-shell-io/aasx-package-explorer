@@ -551,7 +551,7 @@ namespace AasxPluginPlotting
         {
             public string DataSetId = "";
             public TimeSeriesTimeAxis TimeAxis;
-            public Property DataPoint;
+            public AasCore.Aas3_0_RC02.Property DataPoint;
             public ConceptDescription DataPointCD;
 
             public PlotArguments Args = null;
@@ -789,7 +789,7 @@ namespace AasxPluginPlotting
 
         public class TimeSeriesData
         {
-            public SubmodelElementCollection SourceTimeSeries;
+            public AasCore.Aas3_0_RC02.SubmodelElementCollection SourceTimeSeries;
 
             public PlotArguments Args;
 
@@ -828,7 +828,7 @@ namespace AasxPluginPlotting
 
         public class ListOfTimeSeriesData : List<TimeSeriesData>
         {
-            public TimeSeriesData FindDataSetBySource(SubmodelElementCollection smcts)
+            public TimeSeriesData FindDataSetBySource(AasCore.Aas3_0_RC02.SubmodelElementCollection smcts)
             {
                 if (smcts == null)
                     return null;
@@ -1455,33 +1455,33 @@ namespace AasxPluginPlotting
             return null;
         }
 
-        protected Tuple<TimeSeriesTimeAxis, Property>
+        protected Tuple<TimeSeriesTimeAxis, AasCore.Aas3_0_RC02.Property>
             DetectTimeSpecifier(
                 ZveiTimeSeriesDataV10 pcts,
                 MatchMode mm,
-                SubmodelElementCollection smc)
+                AasCore.Aas3_0_RC02.SubmodelElementCollection smc)
         {
             // access
             if (smc?.Value == null || pcts == null)
                 return null;
 
             // detect
-            Property prop = null;
-            prop = smc.Value.FindFirstSemanticIdAs<Property>(pcts.CD_UtcTime.GetReference(), mm);
+            AasCore.Aas3_0_RC02.Property prop = null;
+            prop = smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(pcts.CD_UtcTime.GetReference(), mm);
             if (prop != null)
-                return new Tuple<TimeSeriesTimeAxis, Property>(TimeSeriesTimeAxis.Utc, prop);
+                return new Tuple<TimeSeriesTimeAxis, AasCore.Aas3_0_RC02.Property>(TimeSeriesTimeAxis.Utc, prop);
 
-            prop = smc.Value.FindFirstSemanticIdAs<Property>(pcts.CD_TaiTime.GetReference(), mm);
+            prop = smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(pcts.CD_TaiTime.GetReference(), mm);
             if (prop != null)
-                return new Tuple<TimeSeriesTimeAxis, Property>(TimeSeriesTimeAxis.Tai, prop);
+                return new Tuple<TimeSeriesTimeAxis, AasCore.Aas3_0_RC02.Property>(TimeSeriesTimeAxis.Tai, prop);
 
-            prop = smc.Value.FindFirstSemanticIdAs<Property>(pcts.CD_Time.GetReference(), mm);
+            prop = smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(pcts.CD_Time.GetReference(), mm);
             if (prop != null)
-                return new Tuple<TimeSeriesTimeAxis, Property>(TimeSeriesTimeAxis.Plain, prop);
+                return new Tuple<TimeSeriesTimeAxis, AasCore.Aas3_0_RC02.Property>(TimeSeriesTimeAxis.Plain, prop);
 
-            prop = smc.Value.FindFirstSemanticIdAs<Property>(pcts.CD_TimeDuration.GetReference(), mm);
+            prop = smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(pcts.CD_TimeDuration.GetReference(), mm);
             if (prop != null)
-                return new Tuple<TimeSeriesTimeAxis, Property>(TimeSeriesTimeAxis.Plain, prop);
+                return new Tuple<TimeSeriesTimeAxis, AasCore.Aas3_0_RC02.Property>(TimeSeriesTimeAxis.Plain, prop);
 
             // no
             return null;
@@ -1496,7 +1496,7 @@ namespace AasxPluginPlotting
             ZveiTimeSeriesDataV10 pcts,
             MatchMode mm,
             TimeSeriesData tsd,
-            SubmodelElementCollection smcseg)
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcseg)
         {
             // access
             if (pcts == null || smcseg == null)
@@ -1525,17 +1525,17 @@ namespace AasxPluginPlotting
             };
 
             // find variables?
-            foreach (var smcvar in smcseg.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcvar in smcseg.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 pcts.CD_TimeSeriesVariable.GetReference(), mm))
             {
                 // makes only sense with record id
-                var recid = "" + smcvar.Value.FindFirstSemanticIdAs<Property>(
+                var recid = "" + smcvar.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                     pcts.CD_RecordId.GetReference(), mm)?.Value?.Trim();
                 if (recid.Length < 1)
                     continue;
 
                 // add need a value array as well!
-                var valarr = "" + smcvar.Value.FindFirstSemanticIdAs<Blob>(
+                var valarr = "" + smcvar.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Blob>(
                     pcts.CD_ValueArray.GetReference(), mm)?.Value;
                 if (valarr.Length < 1)
                     continue;
@@ -1554,7 +1554,7 @@ namespace AasxPluginPlotting
                         ds.TimeAxis = timeSpec.Item1;
 
                     // find a DataPoint description?
-                    var pdp = smcvar.Value.FindFirstAnySemanticId<Property>(tsvAllowed, mm,
+                    var pdp = smcvar.Value.FindFirstAnySemanticId<AasCore.Aas3_0_RC02.Property>(tsvAllowed, mm,
                         invertAllowed: true);
                     if (pdp != null && ds.DataPoint == null)
                     {
@@ -1571,11 +1571,11 @@ namespace AasxPluginPlotting
             }
 
             // find records?
-            foreach (var smcrec in smcseg.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcrec in smcseg.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 pcts.CD_TimeSeriesRecord.GetReference(), mm))
             {
                 // makes only sense with a numerical record id
-                var recid = "" + smcrec.Value.FindFirstSemanticIdAs<Property>(
+                var recid = "" + smcrec.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                     pcts.CD_RecordId.GetReference(), mm)?.Value?.Trim();
                 if (recid.Length < 1)
                     continue;
@@ -1588,7 +1588,7 @@ namespace AasxPluginPlotting
 
                 // but, in this case, the dataset id's and data comes from individual
                 // data points
-                foreach (var pdp in smcrec.Value.FindAllSemanticId<Property>(tsrAllowed,
+                foreach (var pdp in smcrec.Value.FindAllSemanticId<AasCore.Aas3_0_RC02.Property>(tsrAllowed,
                         invertedAllowed: true))
                 {
                     // the dataset id is?
@@ -1663,24 +1663,24 @@ namespace AasxPluginPlotting
             ZveiTimeSeriesDataV10 pcts,
             MatchMode mm,
             TimeSeriesData tsd,
-            SubmodelElementCollection smcseg)
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcseg)
         {
             // access
             if (pcts == null || smcseg == null)
                 return;
 
             // find variables?
-            foreach (var smcvar in smcseg.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcvar in smcseg.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 pcts.CD_TimeSeriesVariable.GetReference(), mm))
             {
                 // makes only sense with record id (required to identify data set)
-                var recid = "" + smcvar.Value.FindFirstSemanticIdAs<Property>(
+                var recid = "" + smcvar.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                     pcts.CD_RecordId.GetReference(), mm)?.Value?.Trim();
                 if (recid.Length < 1)
                     continue;
 
                 // add need a value array as well!
-                var valarr = "" + smcvar.Value.FindFirstSemanticIdAs<Blob>(
+                var valarr = "" + smcvar.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Blob>(
                     pcts.CD_ValueArray.GetReference(), mm)?.Value;
                 if (valarr.Length < 1)
                     continue;
@@ -1707,7 +1707,7 @@ namespace AasxPluginPlotting
             _timeSeriesData.Clear();
 
             // find SMC for TimeSeries itself -> this will result in a plot
-            foreach (var smcts in sm.SubmodelElements.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcts in sm.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 pcts.CD_TimeSeries.GetReference(), mm))
             {
                 // make initial data for time series
@@ -1719,12 +1719,12 @@ namespace AasxPluginPlotting
 
                 var tssReference = pcts.CD_TimeSeriesSegment.GetReference();
                 var smcAllValues = smcts.Value.
-                    FindAllSemanticIdAs<SubmodelElementCollection>(tssReference, mm);
+                    FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(tssReference, mm);
 
                 // If we have a SubmodelCollection where the TimeSeries data is at the properties level
                 // this loop iterates through it and adds the data to the time series plot. Otherwise, if no
                 // SubmodelCollections were found (count = 0), it will look one level deeper and check if elements
-                // from type SubmodelElementCollection are found there, adding them to the plot afterwards too.
+                // from type AasCore.Aas3_0_RC02.SubmodelElementCollection are found there, adding them to the plot afterwards too.
                 // resharper disable once PossibleMultipleEnumeration
                 if (smcAllValues.Count() != 0)
                 {
@@ -1739,10 +1739,10 @@ namespace AasxPluginPlotting
                 {
                     foreach (var v in smcts.Value)
                     {
-                        if (v is SubmodelElementCollection sme)
+                        if (v is AasCore.Aas3_0_RC02.SubmodelElementCollection sme)
                         {
                             smcAllValues = sme.Value.
-                                FindAllSemanticIdAs<SubmodelElementCollection>(tssReference, mm);
+                                FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(tssReference, mm);
                             // find segements
                             foreach (var smcseg in smcAllValues)
                             {
@@ -1822,7 +1822,7 @@ namespace AasxPluginPlotting
 
                         // ok, search thru ALL events
                         foreach (var uvi in _eventStack.AllValueItems())
-                            if (uvi.Item2.FoundReferable == pi.SME && pi.SME is Property prop)
+                            if (uvi.Item2.FoundReferable == pi.SME && pi.SME is AasCore.Aas3_0_RC02.Property prop)
                             {
                                 // get a value
                                 var val = prop.ValueAsDouble();
@@ -1887,7 +1887,7 @@ namespace AasxPluginPlotting
             // search for updated value arrays and re-display the data set
             //
 
-            var segmentsToProcess = new Dictionary<SubmodelElementCollection, _segmentProcessType>();
+            var segmentsToProcess = new Dictionary<AasCore.Aas3_0_RC02.SubmodelElementCollection, _segmentProcessType>();
 
             foreach (var ev in _eventStack.All())
             {
@@ -1902,7 +1902,7 @@ namespace AasxPluginPlotting
                         foreach (var uvi in uv.Values)
                         {
                             // only interested, if a value array is updated
-                            if (!(uvi?.FoundReferable is Blob foundValArray)
+                            if (!(uvi?.FoundReferable is AasCore.Aas3_0_RC02.Blob foundValArray)
                                 || (true != foundValArray.SemanticId?.Matches(pcts.CD_ValueArray.GetReference(), mm)))
                                 continue;
 
@@ -1910,7 +1910,7 @@ namespace AasxPluginPlotting
                             var x = foundValArray.FindAllParentsWithSemanticId(
                                 pcts.CD_TimeSeriesSegment.GetReference().Copy(),
                                 passOverMiss: true).FirstOrDefault();
-                            if (!(x is SubmodelElementCollection foundSeg))
+                            if (!(x is AasCore.Aas3_0_RC02.SubmodelElementCollection foundSeg))
                                 continue;
 
                             // remember
@@ -1941,11 +1941,11 @@ namespace AasxPluginPlotting
                                 continue;
 
                             // find the segment
-                            var smcseg = ((sci.FoundReferable as ISubmodelElement)
+                            var smcseg = ((sci.FoundReferable as AasCore.Aas3_0_RC02.ISubmodelElement)
                                 .FindAllParentsWithSemanticId(
                                     pcts.CD_TimeSeriesSegment.GetReference().Copy(),
                                     includeThis: true)
-                                .FirstOrDefault()) as SubmodelElementCollection;
+                                .FirstOrDefault()) as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                             if (smcseg == null)
                                 continue;
 
@@ -1969,7 +1969,7 @@ namespace AasxPluginPlotting
                 var smcts = (smcseg.FindAllParentsWithSemanticId(
                                 pcts.CD_TimeSeries.GetReference().Copy(),
                                 includeThis: false)
-                            .FirstOrDefault()) as SubmodelElementCollection;
+                            .FirstOrDefault()) as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                 if (smcts == null)
                     continue;
 

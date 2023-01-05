@@ -84,7 +84,7 @@ namespace AasxPluginExportTable.Uml
                 _builder.AppendLine(line);
         }
 
-        public UmlHandle AddClass(IReferable rf)
+        public UmlHandle AddClass(AasCore.Aas3_0_RC02.IReferable rf)
         {
             // the Referable shall enumerate children (if not, then its not a class)
             var features = rf.EnumerateChildren().ToList();
@@ -119,7 +119,7 @@ namespace AasxPluginExportTable.Uml
         }
 
         public UmlHandle ProcessEntity(
-            IReferable parent, IReferable rf)
+            AasCore.Aas3_0_RC02.IReferable parent, AasCore.Aas3_0_RC02.IReferable rf)
         {
             // access
             if (rf == null)

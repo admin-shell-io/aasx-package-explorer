@@ -25,7 +25,7 @@ namespace AasxPredefinedConcepts
     {
         public static Plotting Static = new Plotting();
 
-        public Reference
+        public AasCore.Aas3_0_RC02.Reference
             SEM_PlottingSubmodel;
 
         public ConceptDescription
@@ -36,8 +36,8 @@ namespace AasxPredefinedConcepts
             // info
             this.DomainInfo = "Plugin Plotting";
 
-            // IReferable
-            SEM_PlottingSubmodel = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0") });
+            // AasCore.Aas3_0_RC02.IReferable
+            SEM_PlottingSubmodel = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, "http://admin-shell.io/aasx-package-explorer/plugins/Plotting/Submodel/1/0") });
 
 
             // dummy .. to be replaced later

@@ -442,8 +442,8 @@ namespace AasxPackageExplorer
             // use convenience function
             foreach (var sm in _packageCentral.Main.AasEnv.FindAllSubmodelGroupedByAAS())
             {
-                // check for ReferenceElement
-                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<ReferenceElement>(
+                // check for AasCore.Aas3_0_RC02.ReferenceElement
+                var navTo = sm?.SubmodelElements?.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.ReferenceElement>(
                     AasxPredefinedConcepts.PackageExplorer.Static.CD_AasxLoadedNavigateTo.GetSingleKey(),  //TODO:jtikekar Test
                     MatchMode.Relaxed);
                 if (navTo?.Value == null)
@@ -1179,7 +1179,7 @@ namespace AasxPackageExplorer
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Keys.Count == 1
-                    && rf.Keys.First().Type == KeyTypes.GlobalReference) //TODO:jtikekar KeyType.AssetInformation
+                    && rf.Keys.First().Type == AasCore.Aas3_0_RC02.KeyTypes.GlobalReference) //TODO:jtikekar KeyType.AssetInformation
                 {
                     // try to find possible environments containg the asset and try making
                     // replacement
@@ -1285,8 +1285,8 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
-            Reference requireReferable = null)
+        private async Task<AasCore.Aas3_0_RC02.IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
+            AasCore.Aas3_0_RC02.Reference requireReferable = null)
         {
             // access single file repo
             var fileRepo = _packageCentral.Repositories.FindRepository(fi);
@@ -1321,7 +1321,7 @@ namespace AasxPackageExplorer
             if (container != null)
             {
                 // .. try find business object!
-                IReferable bo = null;
+                AasCore.Aas3_0_RC02.IReferable bo = null;
                 if (requireReferable != null)
                     bo = container.Env?.AasEnv.FindReferableByReference(requireReferable);
 
@@ -1402,14 +1402,14 @@ namespace AasxPackageExplorer
         }
 
         private async Task UiHandleNavigateTo(
-            Reference targetReference,
+            AasCore.Aas3_0_RC02.Reference targetReference,
             bool alsoDereferenceObjects = true)
         {
             // access
             if (targetReference == null || targetReference.Keys.Count < 1)
                 return;
 
-            // make a copy of the Reference for searching
+            // make a copy of the AasCore.Aas3_0_RC02.Reference for searching
             VisualElementGeneric veFound = null;
             var work = targetReference.Copy();
 
@@ -1427,7 +1427,7 @@ namespace AasxPackageExplorer
                 while (work.Keys.Count > 0)
                 {
                     // try to find a business object in the package
-                    IReferable bo = null;
+                    AasCore.Aas3_0_RC02.IReferable bo = null;
                     if (_packageCentral.MainAvailable && _packageCentral.Main.AasEnv != null)
                         bo = _packageCentral.Main.AasEnv.FindReferableByReference(work);
 
@@ -1440,9 +1440,9 @@ namespace AasxPackageExplorer
                     {
                         // find?
                         PackageContainerRepoItem fi = null;
-                        if (work.Keys[0].Type == KeyTypes.GlobalReference) //TODO: jtikekar KeyTypes.AssetInformation
+                        if (work.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.GlobalReference) //TODO: jtikekar AasCore.Aas3_0_RC02.KeyTypes.AssetInformation
                             fi = _packageCentral.Repositories.FindByAssetId(work.Keys[0].Value.Trim());
-                        if (work.Keys[0].Type == KeyTypes.AssetAdministrationShell)
+                        if (work.Keys[0].Type == AasCore.Aas3_0_RC02.KeyTypes.AssetAdministrationShell)
                             fi = _packageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
 
                         bo = await LoadFromFileRepository(fi, work);
@@ -1717,7 +1717,7 @@ namespace AasxPackageExplorer
                     continue;
 
                 // which SME?
-                if (rec.LiveObject is Property prop)
+                if (rec.LiveObject is AasCore.Aas3_0_RC02.Property prop)
                 {
                     _mainTimer_AnimateDemoValues.Animate(prop,
                         emitEvent: (prop2, evi2) =>   
@@ -1769,7 +1769,7 @@ namespace AasxPackageExplorer
                     // valid?
                     if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)
                         continue;
-                    var refEv = rec.LiveObject as BasicEventElement;
+                    var refEv = rec.LiveObject as AasCore.Aas3_0_RC02.BasicEventElement;
                     if (refEv == null)
                         continue;
 
@@ -1778,7 +1778,7 @@ namespace AasxPackageExplorer
 
                     // some special cases
                     if (true == refEv.Observed?.Matches(
-                            KeyTypes.GlobalReference, "AASENV",
+                            AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, "AASENV",
                             MatchMode.Relaxed))
                     {
                         observable = env;
@@ -1810,7 +1810,7 @@ namespace AasxPackageExplorer
                         var storedI = i;
 
                         //if (observable is IRecurseOnReferables recurse)
-                        if (observable is IReferable referable)
+                        if (observable is AasCore.Aas3_0_RC02.IReferable referable)
                             referable.RecurseOnReferables(null,
                                 includeThis: true,
                                 lambda: (o, parents, rf) =>
@@ -1983,7 +1983,7 @@ namespace AasxPackageExplorer
                         rootSm.SetAllParents();
 
                         // check, if the Submodel has interesting events
-                        foreach (var ev in smrSel.theSubmodel.SubmodelElements.FindDeep<BasicEventElement>((x) =>
+                        foreach (var ev in smrSel.theSubmodel.SubmodelElements.FindDeep<AasCore.Aas3_0_RC02.BasicEventElement>((x) =>
                             (true == x?.SemanticId?.Matches(
                                 AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.Id
                                 ))))
@@ -2009,7 +2009,7 @@ namespace AasxPackageExplorer
                                                 connRest.SimulateUpdateValuesEventByGetAsync(
                                                     smrSel.theSubmodel,
                                                     ev,
-                                                    veSubject.GetDereferencedMainDataObject() as IReferable,
+                                                    veSubject.GetDereferencedMainDataObject() as AasCore.Aas3_0_RC02.IReferable,
                                                     timestamp: DateTime.Now,
                                                     topic: "MY-TOPIC",
                                                     subject: "ANY-SUBJECT");
@@ -2131,7 +2131,7 @@ namespace AasxPackageExplorer
                 // Update values?
                 //
                 var changedSomething = false;
-                if (foundObservable is Submodel || foundObservable is ISubmodelElement)
+                if (foundObservable is Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement)
                     foreach (var pluv in ev.GetPayloads<AasPayloadUpdateValue>())
                     {
                         changedSomething = changedSomething || (pluv.Values != null && pluv.Values.Count > 0);
@@ -2266,7 +2266,7 @@ namespace AasxPackageExplorer
                     var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
-                    IReferable bo = null;
+                    AasCore.Aas3_0_RC02.IReferable bo = null;
                     try
                     {
                         bo = await LoadFromFileRepository(fi, sri.CleanReference);
@@ -2577,10 +2577,10 @@ namespace AasxPackageExplorer
                     if (viselem != null && viselem.theEnv != null &&
                         viselem.theContainer != null && viselem.theContainer is Submodel &&
                         viselem.theWrapper != null && viselem.theWrapper != null &&
-                        viselem.theWrapper is Property)
+                        viselem.theWrapper is AasCore.Aas3_0_RC02.Property)
                     {
                         // access a valid property
-                        var p = viselem.theWrapper as Property;
+                        var p = viselem.theWrapper as AasCore.Aas3_0_RC02.Property;
                         if (p != null)
                         {
                             // use online connection

@@ -31,7 +31,7 @@ namespace AasxPluginExportTable
         /// Parent denotes the container, in which the SMEs are to be found (the "table head").
         /// SME are expressed by single table rows.
         /// </summary>
-        public ISubmodelElement Parent, Sme;
+        public AasCore.Aas3_0_RC02.ISubmodelElement Parent, Sme;
         public ConceptDescription CD;
 
         /// <summary>
@@ -72,14 +72,14 @@ namespace AasxPluginExportTable
             SmeParentName = "";
             ParentValue = "";
             SmeValue = "";
-            Parent = new Property(DataTypeDefXsd.String);
-            Sme = new Property(DataTypeDefXsd.String);
+            Parent = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
+            Sme = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String);
             CD = new ConceptDescription("");
             
             // CD.CreateDataSpecWithContentIec61360();
             CD.AddEmbeddedDataSpecification(
                 new EmbeddedDataSpecification(
-                    new Reference(ReferenceTypes.GlobalReference, new List<Key> {
+                    new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key> {
                         ExtendIDataSpecificationContent.GetKeyForIec61360()
                     }),
                     new DataSpecificationIec61360(new List<LangString>() {
@@ -198,12 +198,12 @@ namespace AasxPluginExportTable
             Preset = preset;
         }
 
-        private Reference CreateSemanticId(string cell)
+        private AasCore.Aas3_0_RC02.Reference CreateSemanticId(string cell)
         {
             if (!cell.HasContent())
                 return null;
 
-            var key = ExtendKey.Parse(cell, KeyTypes.ConceptDescription,
+            var key = ExtendKey.Parse(cell, AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
                         allowFmtAll: true);
             if (key == null)
                 return null;
@@ -212,7 +212,7 @@ namespace AasxPluginExportTable
         }
 
         private bool MatchEntity(
-            ISubmodelElement elem, string preset, string cell,
+            AasCore.Aas3_0_RC02.ISubmodelElement elem, string preset, string cell,
             ref string parentName, ref string elemName, ref string valueStr,
             bool allowMultiplicity = false)
         {
@@ -272,7 +272,7 @@ namespace AasxPluginExportTable
                 var vtd = Stringification.DataTypeDefXsdFromString(vt) ?? DataTypeDefXsd.String;
 
                 // set
-                if (elem is Property prop)
+                if (elem is AasCore.Aas3_0_RC02.Property prop)
                     prop.ValueType = vtd;
                 if (elem is AasCore.Aas3_0_RC02.Range rng)
                     rng.ValueType = vtd;
@@ -323,7 +323,7 @@ namespace AasxPluginExportTable
                 return;
 
             // lambda trick to lines of code
-            if (preset == "Property.valueType")
+            if (preset == "AasCore.Aas3_0_RC02.Property.valueType")
             {
                 // value type can be distorted in many ways, so commit in each case
                 var vt = cell;

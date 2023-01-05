@@ -95,9 +95,9 @@ namespace AasxPredefinedConcepts
                 this.CD_ValidDate = bs.RetrieveReferable<ConceptDescription>("CD_ValidDate");
             }
 
-            public IReferable[] GetAllReferables()
+            public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
             {
-                return new IReferable[] {
+                return new AasCore.Aas3_0_RC02.IReferable[] {
                     SM_TechnicalData,
                     CD_GeneralInformation,
                     CD_ManufacturerName,

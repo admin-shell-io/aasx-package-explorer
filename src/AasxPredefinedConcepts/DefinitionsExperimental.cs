@@ -53,7 +53,7 @@ namespace AasxPredefinedConcepts
                 // info
                 this.DomainInfo = "Interoperable Relations (experimental)";
 
-                // IReferable
+                // AasCore.Aas3_0_RC02.IReferable
                 CD_FileToNavigateElement = CreateSparseConceptDescription("en", "IRI",
                     "FileToNavigateElement",
                     "http://admin-shell.io/sandbox/CompositeComponent/General/FileToNavigateElement/1/0",
@@ -63,7 +63,7 @@ namespace AasxPredefinedConcepts
                 CD_FileToEntity = CreateSparseConceptDescription("en", "IRI",
                     "FileToEntity",
                     "http://admin-shell.io/sandbox/CompositeComponent/General/FileToEntity/1/0",
-                    "Links fragments of a File to an Entity element in the AAS.");
+                    "Links fragments of a File to an AasCore.Aas3_0_RC02.Entity element in the AAS.");
 
                 CD_IsPartOfForBOM = CreateSparseConceptDescription("en", "IRI",
                     "IsPartOfForBOM",
@@ -74,8 +74,8 @@ namespace AasxPredefinedConcepts
                 CD_EntityOfElectricalEngineering = CreateSparseConceptDescription("en", "IRI",
                     "EntityOfElectricalEngineering",
                     "http://admin-shell.io/sandbox/CompositeComponent/Electrical/EntityOfElectricalEngineering/1/0",
-                    @"States, that the Entity is part of the model for Electrical engineering.
-                    Note: Any Entity with a certain meaning to the Electrical engineering might be 
+                    @"States, that the AasCore.Aas3_0_RC02.Entity is part of the model for Electrical engineering.
+                    Note: Any AasCore.Aas3_0_RC02.Entity with a certain meaning to the Electrical engineering might be 
                     declared as EntityOfElectricalEngineering.");
 
                 CD_ElectricSinglePoleConnection = CreateSparseConceptDescription("en", "IRI",
@@ -87,12 +87,12 @@ namespace AasxPredefinedConcepts
                 CD_EntityOfFluidicEngineering = CreateSparseConceptDescription("en", "IRI",
                     "EntityOfFluidicEngineering",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/EntityOfFluidicEngineering/1/0",
-                    "States, that the Entity is part of the model for Fluidic engineering");
+                    "States, that the AasCore.Aas3_0_RC02.Entity is part of the model for Fluidic engineering");
 
                 CD_ConnectorTubePipe = CreateSparseConceptDescription("en", "IRI",
                     "ConnectorTubePipe",
                     "http://admin-shell.io/sandbox/CompositeComponent/Fluidic/ConnectorTubePipe/1/0",
-                    "Establishes a Property, which represents an connector (port, position for fitting) as a " +
+                    "Establishes a AasCore.Aas3_0_RC02.Property, which represents an connector (port, position for fitting) as a " +
                     "specific feature of an EntityOfFluidicEngineering.");
 
                 CD_TubePipeConnection = CreateSparseConceptDescription("en", "IRI",

@@ -34,7 +34,7 @@ namespace AasxPackageExplorer
     public interface IAasxScriptRemoteInterface
     {
         Task<int> Tool(object[] args);
-        IReferable Select(object[] args);
+        AasCore.Aas3_0_RC02.IReferable Select(object[] args);
         bool Location(object[] args);
     }
 

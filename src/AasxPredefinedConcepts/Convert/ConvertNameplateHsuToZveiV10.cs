@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -47,7 +47,7 @@ namespace AasxPredefinedConcepts.Convert
             return res;
         }
 
-        public override bool ExecuteOffer(AdminShellPackageEnv package, IReferable currentReferable,
+        public override bool ExecuteOffer(AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -69,8 +69,8 @@ namespace AasxPredefinedConcepts.Convert
 
             // convert in place: detach old SMEs, change semanticId
             var smHSU = sm.SubmodelElements;
-            sm.SubmodelElements = new List<ISubmodelElement>();
-            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { defsV10.SM_Nameplate.SemanticId.GetAsExactlyOneKey() });
+            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsV10.SM_Nameplate.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -105,87 +105,87 @@ namespace AasxPredefinedConcepts.Convert
 
             // Submodel level
 
-            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManNam,
+            sm.SubmodelElements.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_ManNam,
                 smHSU, defsHSU.CD_ManufacturerName,
                 createDefault: true, addSme: true, idShort: "ManufacturerName");
 
-            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManProDes,
+            sm.SubmodelElements.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_ManProDes,
                 smHSU, defsHSU.CD_ManufacturerProductDesignation,
                 createDefault: true, addSme: true, idShort: "ManufacturerProductDesignation");
 
             // Address (target cardinality: 1)
-            foreach (var smcHSUadd in smHSU.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcHSUadd in smHSU.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsHSU.CD_PhysicalAddress.GetSingleKey()))
             {
                 // make a new one
-                var smcV10add = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV10add = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV10.CD_Add, idShort: "Address", addSme: true);
 
                 // SME
-                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_Str,
+                smcV10add.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_Str,
                     smcHSUadd.Value, new[] {
                         defsHSU.CD_Street.GetSingleKey(),
-                    new Key(KeyTypes.ConceptDescription,
+                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/street")},
                     createDefault: true, addSme: true, idShort: "Street");
 
-                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_ZipCod,
+                smcV10add.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_ZipCod,
                     smcHSUadd.Value, new[] {
                         defsHSU.CD_Zip.GetSingleKey(),
-                    new Key(KeyTypes.ConceptDescription,
+                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/postalcode")},
                     createDefault: true, addSme: true, idShort: "Zipcode");
 
-                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_CitTow,
+                smcV10add.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_CitTow,
                     smcHSUadd.Value, new[] {
                         defsHSU.CD_CityTown.GetSingleKey(),
-                    new Key(KeyTypes.ConceptDescription,
+                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/city")},
                     createDefault: true, addSme: true, idShort: "CityTown");
 
-                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_StaCou,
+                smcV10add.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_StaCou,
                     smcHSUadd.Value, new[] {
                         defsHSU.CD_StateCounty.GetSingleKey(),
-                    new Key(KeyTypes.ConceptDescription,
+                    new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription,
                         "https://www.hsu-hh.de/aut/aas/statecounty")},
                     createDefault: true, addSme: true, idShort: "StateCounty");
 
-                smcV10add.Value.CopyOneSMEbyCopy<Property>(defsV10.CD_NatCod,
+                smcV10add.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_NatCod,
                     smcHSUadd.Value, defsHSU.CD_CountryCode,
                     createDefault: true, addSme: true, idShort: "NationalCode");
             }
 
             // Submodel level - continued
 
-            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_ManProFam,
+            sm.SubmodelElements.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_ManProFam,
                 smHSU, defsHSU.CD_ManufacturerProductFamily,
                 createDefault: true, addSme: true, idShort: "ManufacturerProductFamily");
 
-            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_SerNum,
+            sm.SubmodelElements.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_SerNum,
                 smHSU, defsHSU.CD_SerialNumber,
                 createDefault: true, addSme: true, idShort: "SerialNumber");
 
-            sm.SubmodelElements.CopyOneSMEbyCopy<Property>(defsV10.CD_YeaOfCon,
+            sm.SubmodelElements.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV10.CD_YeaOfCon,
                 smHSU, defsHSU.CD_YearOfConstruction,
                 createDefault: true, addSme: true, idShort: "YearOfConstruction");
 
             // Markings 
-            var smcV10mks = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+            var smcV10mks = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             defsV10.CD_Markings, idShort: "Markings", addSme: true);
 
             // each Marking
-            foreach (var smcHSUmk in smHSU.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcHSUmk in smHSU.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsHSU.CD_ProductMarking.GetSingleKey()))
             {
                 // make a new one
-                var smcV10mk = smcV10mks.Value.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV10mk = smcV10mks.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV10.CD_Marking, idShort: "" + smcHSUmk.IdShort, addSme: true);
 
-                // take over the name of the old collection in the distinct Property
+                // take over the name of the old collection in the distinct AasCore.Aas3_0_RC02.Property
                 var mkName = "" + smcHSUmk.IdShort;
                 if (mkName.StartsWith("Marking_"))
                     mkName = mkName.Substring(8);
-                var mkNameProp = smcV10mk.Value.CreateSMEForCD<Property>(
+                var mkNameProp = smcV10mk.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.Property>(
                                     defsV10.CD_MarkingName, idShort: "MarkingName", addSme: true);
                 mkNameProp.Value = "" + mkName;
 
@@ -194,10 +194,10 @@ namespace AasxPredefinedConcepts.Convert
                     smcHSUmk.Value, defsHSU.CD_File,
                     createDefault: true, addSme: true, idShort: "ManufacturerName");
 
-                // if there a other Property inside, assume, that their semantic ids shall
+                // if there a other AasCore.Aas3_0_RC02.Property inside, assume, that their semantic ids shall
                 // go into the valueId of the Name
 
-                foreach (var other in smcHSUmk.Value.FindAll((smw) => smw is Property))
+                foreach (var other in smcHSUmk.Value.FindAll((smw) => smw is AasCore.Aas3_0_RC02.Property))
                     if (mkNameProp != null
                         && other?.SemanticId != null
                         && !other.SemanticId.IsEmpty())

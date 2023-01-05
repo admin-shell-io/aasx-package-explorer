@@ -263,7 +263,7 @@ namespace AasxPluginDocumentShelf
                     uitk.AddSmallButtonTo(header, 0, 1,
                         margin: new AnyUiThickness(2), setHeight: 21,
                         padding: new AnyUiThickness(2, 0, 2, 0),
-                        content: "Add Entity .."),
+                        content: "Add AasCore.Aas3_0_RC02.Entity .."),
                     (o) =>
                     {
                         // mode change
@@ -653,7 +653,7 @@ namespace AasxPluginDocumentShelf
                     foreground: AnyUiBrushes.DarkBlue,
                     fontSize: 1.5f,
                     setBold: true,
-                    content: $"Entity");
+                    content: $"AasCore.Aas3_0_RC02.Entity");
 
                 AnyUiUIElement.RegisterControl(
                     uitk.AddSmallButtonTo(header, 0, 1,
@@ -801,7 +801,7 @@ namespace AasxPluginDocumentShelf
         #region Callbacks
         //===============
 
-        private List<ISubmodelElement> _updateSourceElements = null;
+        private List<AasCore.Aas3_0_RC02.ISubmodelElement> _updateSourceElements = null;
 
         private void DocumentEntity_MenuClick(DocumentEntity e, string menuItemHeader, object tag)
         {
@@ -843,14 +843,14 @@ namespace AasxPluginDocumentShelf
                 var semConf = DocuShelfSemanticConfig.CreateDefaultFor(_renderedVersion);
                 var found = false;
                 foreach (var smcDoc in
-                    _submodel.SubmodelElements.FindAllSemanticIdAs<SubmodelElementCollection>(
+                    _submodel.SubmodelElements.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         semConf.SemIdDocument))
                     if (smcDoc?.Value == e.SourceElementsDocument)
                     {
                         // identify as well the DocumentVersion
                         // (convert to List() because of Count() below)
                         var allVers =
-                            e.SourceElementsDocument.FindAllSemanticIdAs<SubmodelElementCollection>(
+                            e.SourceElementsDocument.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 semConf.SemIdDocumentVersion).ToList();
                         foreach (var smcVer in allVers)
                             if (smcVer?.Value == e.SourceElementsDocumentVersion)
@@ -1069,14 +1069,14 @@ namespace AasxPluginDocumentShelf
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    List<ISubmodelElement> currentElements = null;
+                    List<AasCore.Aas3_0_RC02.ISubmodelElement> currentElements = null;
                     if (_formDoc.InUpdateMode)
                     {
                         currentElements = _updateSourceElements;
                     }
                     else
                     {
-                        currentElements = new List<ISubmodelElement>();
+                        currentElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                     }
 
                     // create a sequence of SMEs
@@ -1096,7 +1096,7 @@ namespace AasxPluginDocumentShelf
                     // the InstSubmodel, which started the process, should have a "fresh" SMEC available
                     // make it unique in the Documentens Submodel
                     var newSmc = (_formDoc.FormInstance as FormInstanceSubmodelElementCollection)?.sme
-                            as SubmodelElementCollection;
+                            as AasCore.Aas3_0_RC02.SubmodelElementCollection;
 
                     // if not update, put them into the Document's Submodel
                     if (!_formDoc.InUpdateMode && currentElements != null && newSmc != null)
@@ -1237,12 +1237,12 @@ namespace AasxPluginDocumentShelf
             if (cmd == "ButtonAddEntity" && _formEntity.IdShort.HasContent())
             {
                 // add entity
-                _submodel?.SmeForWrite().CreateSMEForCD<Entity>(
+                _submodel?.SmeForWrite().CreateSMEForCD<AasCore.Aas3_0_RC02.Entity>(
                     AasxPredefinedConcepts.VDI2770v11.Static.CD_DocumentedEntity,
                     idShort: "" + _formEntity.IdShort.Trim(),
                     addSme: true);
 
-                _log?.Info($"Entity {_formEntity.IdShort} added.");
+                _log?.Info($"AasCore.Aas3_0_RC02.Entity {_formEntity.IdShort} added.");
 
                 // reset view
                 _formEntity = null;

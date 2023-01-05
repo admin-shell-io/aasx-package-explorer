@@ -58,7 +58,7 @@ namespace AasxPredefinedConcepts
 
         protected Library _library = new Library();
 
-        protected List<IReferable> theReflectedReferables = new List<IReferable>();
+        protected List<AasCore.Aas3_0_RC02.IReferable> theReflectedReferables = new List<AasCore.Aas3_0_RC02.IReferable>();
 
         public string DomainInfo = "";
 
@@ -137,7 +137,7 @@ namespace AasxPredefinedConcepts
             return _library[name];
         }
 
-        public T RetrieveReferable<T>(string name) where T : class, IReferable
+        public T RetrieveReferable<T>(string name) where T : class, AasCore.Aas3_0_RC02.IReferable
         {
             // entry
             var entry = this.RetrieveEntry(name);
@@ -189,7 +189,7 @@ namespace AasxPredefinedConcepts
             string idShort,
             string id,
             string definitionHereString,
-            Reference isCaseOf = null)
+            AasCore.Aas3_0_RC02.Reference isCaseOf = null)
         {
             // access
             if (idShort == null || idType == null || id == null)
@@ -206,7 +206,7 @@ namespace AasxPredefinedConcepts
 
             // options
             if (isCaseOf != null)
-                cd.IsCaseOf = new List<Reference>(new[] { isCaseOf });
+                cd.IsCaseOf = new List<AasCore.Aas3_0_RC02.Reference>(new[] { isCaseOf });
 
             // ok
             return cd;
@@ -221,7 +221,7 @@ namespace AasxPredefinedConcepts
         {
         }
 
-        public virtual IReferable[] GetAllReferables()
+        public virtual AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
         {
             return this.theReflectedReferables?.ToArray();
         }
@@ -234,7 +234,7 @@ namespace AasxPredefinedConcepts
                 return;
 
             // remember found Referables
-            this.theReflectedReferables = new List<IReferable>();
+            this.theReflectedReferables = new List<AasCore.Aas3_0_RC02.IReferable>();
 
             // reflection
             foreach (var fi in typeToReflect.GetFields())
@@ -306,7 +306,7 @@ namespace AasxPredefinedConcepts
                     continue;
 
                 // add
-                var rf = fi.GetValue(this) as IReferable;
+                var rf = fi.GetValue(this) as AasCore.Aas3_0_RC02.IReferable;
                 if (rf != null)
                     this.theReflectedReferables.Add(rf);
             }

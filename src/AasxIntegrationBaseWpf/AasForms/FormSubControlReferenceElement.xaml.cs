@@ -41,8 +41,8 @@ namespace AasxIntegrationBase.AasForms
         public class ViewModel : WpfViewModelBase
         {
             // data binded properties
-            private Reference storedReference = null;
-            public Reference StoredReference
+            private AasCore.Aas3_0_RC02.Reference storedReference = null;
+            public AasCore.Aas3_0_RC02.Reference StoredReference
             {
                 get
                 {
@@ -73,14 +73,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceReferenceElement instance;
             public FormDescReferenceElement desc;
-            public ReferenceElement refElem;
+            public AasCore.Aas3_0_RC02.ReferenceElement refElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceReferenceElement;
                 dc.desc = dc.instance?.desc as FormDescReferenceElement;
-                dc.refElem = dc.instance?.sme as ReferenceElement;
+                dc.refElem = dc.instance?.sme as AasCore.Aas3_0_RC02.ReferenceElement;
 
                 if (dc.instance == null || dc.desc == null || dc.refElem == null)
                     return null;
@@ -117,7 +117,7 @@ namespace AasxIntegrationBase.AasForms
             ButtonSelect.Click += (object sender6, RoutedEventArgs e6) =>
             {
                 // TEST
-                //// dc.refElem.Value = new AdminShellV20.Reference(new Key(Key.GlobalReference, true, Identification.IRI, "http://ccc.de"));
+                //// dc.refElem.Value = new AdminShellV20.Reference(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.Key.GlobalReference, true, Identification.IRI, "http://ccc.de"));
                 //// UpdateDisplay();
 
                 // try find topmost instance
@@ -138,7 +138,7 @@ namespace AasxIntegrationBase.AasForms
                         if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                         {
                             dc.instance.Touch();
-                            dc.refElem.Value = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                            dc.refElem.Value = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
                             this.theViewModel.StoredReference = dc.refElem.Value;
                         }
                     };

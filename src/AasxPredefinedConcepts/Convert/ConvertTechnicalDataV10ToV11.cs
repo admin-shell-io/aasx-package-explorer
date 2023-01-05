@@ -29,7 +29,7 @@ namespace AasxPredefinedConcepts.Convert
                 : base(provider, offerDisp) { }
         }
 
-        public override List<ConvertOfferBase> CheckForOffers(IReferable currentReferable)
+        public override List<ConvertOfferBase> CheckForOffers(AasCore.Aas3_0_RC02.IReferable currentReferable)
         {
             // collectResults
             var res = new List<ConvertOfferBase>();
@@ -49,8 +49,8 @@ namespace AasxPredefinedConcepts.Convert
         private void RecurseToCopyTechnicalProperties(
             AasxPredefinedConcepts.ZveiTechnicalDataV11 defsV11,
             AasxPredefinedConcepts.DefinitionsZveiTechnicalData.SetOfDefs defsV10,
-            SubmodelElementCollection smcDest,
-            SubmodelElementCollection smcSrc)
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcDest,
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcSrc)
         {
             // access
             if (defsV10 == null || defsV11 == null || smcDest?.Value == null || smcSrc?.Value == null)
@@ -66,20 +66,20 @@ namespace AasxPredefinedConcepts.Convert
                 var special = false;
 
                 // Submodel Handling
-                if (sme is SubmodelElementCollection smcSectSrc)
+                if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smcSectSrc)
                 {
                     // what to create?
-                    SubmodelElementCollection smcSectDst = null;
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection smcSectDst = null;
 
                     if (smcSectSrc.SemanticId?.MatchesExactlyOneKey(defsV10.CD_MainSection.GetSingleKey()) == true)
-                        smcSectDst = smcDest.Value.CreateSMEForCD<SubmodelElementCollection>(
+                        smcSectDst = smcDest.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             defsV11.CD_MainSection, addSme: false);
 
                     if (smcSectSrc.SemanticId?.MatchesExactlyOneKey(defsV10.CD_SubSection.GetSingleKey()) == true)
-                        smcSectDst = smcDest.Value.CreateSMEForCD<SubmodelElementCollection>(
+                        smcSectDst = smcDest.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             defsV11.CD_SubSection, addSme: false);
 
-                    //smcSectDst ??= new SubmodelElementCollection(smcSectSrc, shallowCopy: true);
+                    //smcSectDst ??= new AasCore.Aas3_0_RC02.SubmodelElementCollection(smcSectSrc, shallowCopy: true);
                     smcSectDst ??= smcSectSrc.Copy();
 
                     //jtikekar: no need to add manually, should be taken care by cloning above.
@@ -115,7 +115,7 @@ namespace AasxPredefinedConcepts.Convert
             }
         }
 
-        public override bool ExecuteOffer(AdminShellPackageEnv package, IReferable currentReferable,
+        public override bool ExecuteOffer(AdminShellPackageEnv package, AasCore.Aas3_0_RC02.IReferable currentReferable,
                 ConvertOfferBase offerBase, bool deleteOldCDs, bool addNewCDs)
         {
             // access
@@ -137,8 +137,8 @@ namespace AasxPredefinedConcepts.Convert
 
             // convert in place: detach old SMEs, change semanticId
             var smcV10 = sm.SubmodelElements;
-            sm.SubmodelElements = new List<ISubmodelElement>();
-            sm.SemanticId = new Reference(ReferenceTypes.ModelReference, new List<Key>() { defsV11.SM_TechnicalData.SemanticId.GetAsExactlyOneKey() });
+            sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
+            sm.SemanticId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { defsV11.SM_TechnicalData.SemanticId.GetAsExactlyOneKey() });
 
             // delete (old) CDs
             if (deleteOldCDs)
@@ -172,15 +172,15 @@ namespace AasxPredefinedConcepts.Convert
                                     conceptDescription.IsCaseOf));
 
             // General Info (target cardinality: 1)
-            foreach (var smcV10gi in smcV10.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcV10gi in smcV10.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsV10.CD_GeneralInformation.GetSingleKey()))
             {
                 // make a new one
-                var smcV11gi = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV11gi = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_GeneralInformation, addSme: true);
 
                 // SME
-                smcV11gi.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ManufacturerName,
+                smcV11gi.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ManufacturerName,
                     smcV10gi.Value, defsV10.CD_ManufacturerName,
                     createDefault: true, addSme: true);
 
@@ -188,11 +188,11 @@ namespace AasxPredefinedConcepts.Convert
                     smcV10gi.Value, defsV10.CD_ManufacturerLogo,
                     createDefault: true, addSme: true);
 
-                smcV11gi.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ManufacturerPartNumber,
+                smcV11gi.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ManufacturerPartNumber,
                     smcV10gi.Value, defsV10.CD_ManufacturerPartNumber,
                     createDefault: true, addSme: true);
 
-                smcV11gi.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ManufacturerOrderCode,
+                smcV11gi.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ManufacturerOrderCode,
                     smcV10gi.Value, defsV10.CD_ManufacturerOrderCode,
                     createDefault: true, addSme: true);
 
@@ -202,42 +202,42 @@ namespace AasxPredefinedConcepts.Convert
             }
 
             // Product Classifications (target cardinality: 1)
-            foreach (var smcV10pcs in smcV10.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcV10pcs in smcV10.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsV10.CD_ProductClassifications.GetSingleKey()))
             {
                 // make a new one
-                var smcV11pcs = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV11pcs = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_ProductClassifications, addSme: true);
 
                 // Product Classification Items (target cardinality: 1..n)
-                foreach (var smcV10pci in smcV10pcs.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                foreach (var smcV10pci in smcV10pcs.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             defsV10.CD_ProductClassificationItem.GetSingleKey()))
                 {
                     // make a new one
-                    var smcV11pci = smcV11pcs.Value.CreateSMEForCD<SubmodelElementCollection>(
+                    var smcV11pci = smcV11pcs.Value.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_ProductClassificationItem, addSme: true);
 
                     // SME
-                    smcV11pci.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ProductClassificationSystem,
+                    smcV11pci.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ProductClassificationSystem,
                         smcV10pci.Value, defsV10.CD_ClassificationSystem,
                         createDefault: true, addSme: true);
 
-                    smcV11pci.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ClassificationSystemVersion,
+                    smcV11pci.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ClassificationSystemVersion,
                         smcV10pci.Value, defsV10.CD_SystemVersion,
                         createDefault: true, addSme: true);
 
-                    smcV11pci.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ProductClassId,
+                    smcV11pci.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ProductClassId,
                         smcV10pci.Value, defsV10.CD_ProductClass,
                         createDefault: true, addSme: true);
                 }
             }
 
             // TechnicalProperties (target cardinality: 1)
-            foreach (var smcV10prop in smcV10.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcV10prop in smcV10.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsV10.CD_TechnicalProperties.GetSingleKey()))
             {
                 // make a new one
-                var smcV11prop = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV11prop = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_TechnicalProperties, addSme: true);
 
                 // use recursion
@@ -245,19 +245,19 @@ namespace AasxPredefinedConcepts.Convert
             }
 
             // Further Info (target cardinality: 1)
-            foreach (var smcV10fi in smcV10.FindAllSemanticIdAs<SubmodelElementCollection>(
+            foreach (var smcV10fi in smcV10.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                         defsV10.CD_FurtherInformation.GetSingleKey()))
             {
                 // make a new one
-                var smcV11fi = sm.SubmodelElements.CreateSMEForCD<SubmodelElementCollection>(
+                var smcV11fi = sm.SubmodelElements.CreateSMEForCD<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                                 defsV11.CD_FurtherInformation, addSme: true);
 
                 // SME
-                smcV11fi.Value.CopyManySMEbyCopy<MultiLanguageProperty>(defsV11.CD_TextStatement,
+                smcV11fi.Value.CopyManySMEbyCopy<AasCore.Aas3_0_RC02.MultiLanguageProperty>(defsV11.CD_TextStatement,
                     smcV10fi.Value, defsV10.CD_TextStatement,
                     createDefault: true);
 
-                smcV11fi.Value.CopyOneSMEbyCopy<Property>(defsV11.CD_ValidDate,
+                smcV11fi.Value.CopyOneSMEbyCopy<AasCore.Aas3_0_RC02.Property>(defsV11.CD_ValidDate,
                     smcV10fi.Value, defsV10.CD_ValidDate,
                     createDefault: true, addSme: true);
             }

@@ -932,7 +932,7 @@ namespace AasxPackageLogic
             if (cmd == "convertelement")
             {
                 // arguments
-                var rf = ticket.DereferencedMainDataObject as IReferable;
+                var rf = ticket.DereferencedMainDataObject as AasCore.Aas3_0_RC02.IReferable;
                 if (ticket.Package == null
                     || rf == null)
                 {

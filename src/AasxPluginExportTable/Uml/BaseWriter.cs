@@ -63,7 +63,7 @@ namespace AasxPluginExportTable.Uml
 
         // TODO (MIHO, 2021-12-24): check if to refactor multiplicity handling as utility
 
-        public string EvalUmlMultiplicity(ISubmodelElement sme, bool noOne = false)
+        public string EvalUmlMultiplicity(AasCore.Aas3_0_RC02.ISubmodelElement sme, bool noOne = false)
         {
             var one = AasFormConstants.FormMultiplicityAsUmlCardinality[(int)FormMultiplicity.One];
             string res = one;
@@ -88,11 +88,11 @@ namespace AasxPluginExportTable.Uml
             return new Tuple<string, string>("" + multiplicity[0], "" + multiplicity[3]);
         }
 
-        public string EvalFeatureType(IReferable rf)
+        public string EvalFeatureType(AasCore.Aas3_0_RC02.IReferable rf)
         {
-            if (rf is ISubmodelElement sme)
+            if (rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)
             {
-                if (sme is Property p)
+                if (sme is AasCore.Aas3_0_RC02.Property p)
                     return Stringification.ToString(p.ValueType);
 
             }
@@ -100,15 +100,15 @@ namespace AasxPluginExportTable.Uml
             return rf.GetSelfDescription().AasElementName;
         }
 
-        public string EvalInitialValue(ISubmodelElement sme, int limitToChars = -1)
+        public string EvalInitialValue(AasCore.Aas3_0_RC02.ISubmodelElement sme, int limitToChars = -1)
         {
             // access
             if (sme == null || limitToChars == 0)
                 return "";
 
             var res = "";
-            if (sme is Property || sme is AasCore.Aas3_0_RC02.Range
-                || sme is MultiLanguageProperty)
+            if (sme is AasCore.Aas3_0_RC02.Property || sme is AasCore.Aas3_0_RC02.Range
+                || sme is AasCore.Aas3_0_RC02.MultiLanguageProperty)
                 res = sme.ValueAsText();
 
             if (limitToChars != -1 && res.Length > limitToChars)

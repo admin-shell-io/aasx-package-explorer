@@ -206,8 +206,8 @@ namespace AasxPackageLogic.PackageCentral
         /// <returns>True, if an event was emitted</returns>
         public async Task<bool> SimulateUpdateValuesEventByGetAsync(
             Submodel rootSubmodel,
-            BasicEventElement sourceEvent,
-            IReferable requestedElement,
+            AasCore.Aas3_0_RC02.BasicEventElement sourceEvent,
+            AasCore.Aas3_0_RC02.IReferable requestedElement,
             DateTime timestamp,
             string topic = null,
             string subject = null)
@@ -219,7 +219,7 @@ namespace AasxPackageLogic.PackageCentral
 
             // first check (only allow two types of elements!)
             var reqSm = requestedElement as Submodel;
-            var reqSme = requestedElement as ISubmodelElement;
+            var reqSme = requestedElement as AasCore.Aas3_0_RC02.ISubmodelElement;
             if (rootSubmodel == null || sourceEvent == null
                 || requestedElement == null || (reqSm == null && reqSme == null))
                 throw new PackageConnectorException("PackageConnector::SimulateUpdateValuesEventByGetAsync() " +
@@ -238,7 +238,7 @@ namespace AasxPackageLogic.PackageCentral
                     "element references cannot be determined!");
 
             //// try identify the original Observable
-            //// var origObservable = ISubmodelElement.FindReferableByReference(
+            //// var origObservable = AasCore.Aas3_0_RC02.ISubmodelElement.FindReferableByReference(
             ////    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
 
             // basically, can query updates of Submodel or SubmodelElements
@@ -256,8 +256,8 @@ namespace AasxPackageLogic.PackageCentral
                 // the query prepared here will fail deterministically, if the reqSme element type is not supported
                 // be the AAS server. Therefore, filter for element types, which are not expected to return a valid
                 // response
-                var reqSmeTypeSupported = reqSme is SubmodelElementCollection
-                    || reqSme is Property;
+                var reqSmeTypeSupported = reqSme is AasCore.Aas3_0_RC02.SubmodelElementCollection
+                    || reqSme is AasCore.Aas3_0_RC02.Property;
                 if (!reqSmeTypeSupported)
                     return false;
 
@@ -297,7 +297,7 @@ namespace AasxPackageLogic.PackageCentral
                 sourceSemanticId: sourceEvent.SemanticId,
                 observableReference: requestedReference,
                 //observableSemanticId: (requestedElement as IGetSemanticId).GetSemanticId(),
-                observableSemanticId: (requestedElement as IHasSemantics).SemanticId,
+                observableSemanticId: (requestedElement as AasCore.Aas3_0_RC02.IHasSemantics).SemanticId,
                 topic: topic, subject: subject,
                 payload: pluv);
 
@@ -308,7 +308,7 @@ namespace AasxPackageLogic.PackageCentral
             // that is: requestedElement!
             //var wrappers = ((requestedElement as IEnumerateChildren)?.EnumerateChildren())?.ToList();
             //TODO: jtikekar test for other than submodel
-            var wrappers = ((requestedElement as IReferable)?.EnumerateChildren())?.ToList();
+            var wrappers = ((requestedElement as AasCore.Aas3_0_RC02.IReferable)?.EnumerateChildren())?.ToList();
 
             // parse dynamic response object
             // Note: currently only updating Properties
@@ -324,8 +324,8 @@ namespace AasxPackageLogic.PackageCentral
                     foreach (var tuple in vallist)
                         if (tuple.path != null)
                         {
-                            // List<Key> from path
-                            var kl = new List<Key>() { new Key(KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
+                            // List<AasCore.Aas3_0_RC02.Key> from path
+                            var kl = new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.SubmodelElement, tuple.path.ToObject<string[]>()) };
                             // goal (1)
                             pluv.Values.Add(
                                 new AasPayloadUpdateValueItem(kl, "" + tuple.Value));
@@ -333,8 +333,8 @@ namespace AasxPackageLogic.PackageCentral
                             // goal (2)
                             if (wrappers != null)
                             {
-                                var x = wrappers.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, kl), keyIndex: 0);
-                                if (x is Property prop)
+                                var x = wrappers.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, kl), keyIndex: 0);
+                                if (x is AasCore.Aas3_0_RC02.Property prop)
                                 {
                                     if (tuple.Value != null)
                                         prop.Value = tuple.Value;
@@ -353,7 +353,7 @@ namespace AasxPackageLogic.PackageCentral
                     new AasPayloadUpdateValueItem(path: null, value: "" + val));
 
                 // goal (2)
-                if (reqSme is Property prop)
+                if (reqSme is AasCore.Aas3_0_RC02.Property prop)
                 {
                     if (val != null)
                         prop.Value = val;
@@ -528,10 +528,10 @@ namespace AasxPackageLogic.PackageCentral
                             "Cannot deserize payload StructuralChangeItem!");
 
                     // try determine tarket of {Observavle}/{path}
-                    IReferable target = null;
+                    AasCore.Aas3_0_RC02.IReferable target = null;
                     if (change.Path?.IsEmpty == false)
                     {
-                        List<Key> kl = null;
+                        List<AasCore.Aas3_0_RC02.Key> kl = null;
                         if (change.Path.First().IsAbsolute())
                             kl = change.Path;
                         else
@@ -550,20 +550,20 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem IReferable data!");
+                                "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
                         if (target is IManageSubmodelElements targetMgr
-                            && dataRef is ISubmodelElement sme
+                            && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme
                             && change.CreateAtIndex < 0)
                         {
                             targetMgr.Add(sme);
                         }
                         else
                         // at least for SMC, handle CreateAtIndex
-                        if (target is SubmodelElementCollection targetSmc
-                            && dataRef is ISubmodelElement sme2
+                        if (target is AasCore.Aas3_0_RC02.SubmodelElementCollection targetSmc
+                            && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme2
                             && change.CreateAtIndex >= 0
                             && targetSmc.Value != null
                             && change.CreateAtIndex < targetSmc.Value.Count)
@@ -602,28 +602,28 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new List<Key>();
-            IReferable target = null;
+            var targetKl = new List<AasCore.Aas3_0_RC02.Key>();
+            AasCore.Aas3_0_RC02.IReferable target = null;
             if (change.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new List<Key>(env.ObservableReference.Keys);
+                    targetKl = new List<AasCore.Aas3_0_RC02.Key>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(change.Path);
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, targetKl));
             }
 
             // try evaluate parent of target?
-            var parentKl = new List<Key>(targetKl);
-            IReferable parent = null;
+            var parentKl = new List<AasCore.Aas3_0_RC02.Key>(targetKl);
+            AasCore.Aas3_0_RC02.IReferable parent = null;
             if (parentKl.Count > 1)
             {
                 parentKl.RemoveAt(parentKl.Count - 1);
                 //parent = Env?.AasEnv?.FindReferableByReference(parentKl);
-                parent = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, parentKl));
+                parent = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, parentKl));
             }
 
             // create
@@ -634,7 +634,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot find parent IReferable! " + change.Path.ToString()));
+                        "Cannot find parent AasCore.Aas3_0_RC02.IReferable! " + change.Path.ToString()));
                     return;
                 }
 
@@ -643,7 +643,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Target IReferable already existing .. Aborting! " + change.Path.ToString()));
+                        "Target AasCore.Aas3_0_RC02.IReferable already existing .. Aborting! " + change.Path.ToString()));
                     return;
                 }
 
@@ -653,7 +653,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
-                        "Cannot deserize StructuralChangeItem IReferable data!"));
+                        "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!"));
                     return;
                 }
 
@@ -661,13 +661,13 @@ namespace AasxPackageLogic.PackageCentral
                 // TODO (MIHO, 2021-11-07): refactor use of SetParentsForSME to be generic
                 if (dataRef is Submodel drsm)
                     drsm.SetAllParents();
-                if (dataRef is ISubmodelElement drsme)
+                if (dataRef is AasCore.Aas3_0_RC02.ISubmodelElement drsme)
                     //Submodel.SetParentsForSME(parent, drsme);
                     ExtendSubmodel.SetParentsForSME(parent, drsme);
 
                 // paranoiac: make sure, that dataRef.IdShort matches last key of target (in case of SME)
-                if (dataRef is ISubmodelElement sme0
-                    && true != targetKl?.Last()?.Matches(new Key(KeyTypes.SubmodelElement, sme0.IdShort), MatchMode.Identification))
+                if (dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme0
+                    && true != targetKl?.Last()?.Matches(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.SubmodelElement, sme0.IdShort), MatchMode.Identification))
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Create " +
@@ -677,39 +677,39 @@ namespace AasxPackageLogic.PackageCentral
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if ((parent is Submodel || parent is AnnotatedRelationshipElement || parent is Entity || parent is SubmodelElementCollection || parent is SubmodelElementList)
-                    && dataRef is ISubmodelElement sme
+                if ((parent is Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
+                    && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme
                     && change.CreateAtIndex < 0)
                 {
                     switch(parent)
                     {
                         case Submodel submodel:
                             {
-                                submodel.SubmodelElements ??= new List<ISubmodelElement>();
+                                submodel.SubmodelElements ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 submodel.SubmodelElements.Add(sme);
                                 break;
                             }
-                        case SubmodelElementCollection submodelElementCollection:
+                        case AasCore.Aas3_0_RC02.SubmodelElementCollection submodelElementCollection:
                             {
-                                submodelElementCollection.Value ??= new List<ISubmodelElement>();
+                                submodelElementCollection.Value ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 submodelElementCollection.Value.Add(sme);
                                 break;
                             }
-                        case SubmodelElementList submodelElementList:
+                        case AasCore.Aas3_0_RC02.SubmodelElementList submodelElementList:
                             {
-                                submodelElementList.Value ??= new List<ISubmodelElement>();
+                                submodelElementList.Value ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 submodelElementList.Value.Add(sme);
                                 break;
                             }
-                        case AnnotatedRelationshipElement annotatedRelationshipElement:
+                        case AasCore.Aas3_0_RC02.AnnotatedRelationshipElement annotatedRelationshipElement:
                             {
-                                annotatedRelationshipElement.Annotations ??= new List<IDataElement>();
-                                annotatedRelationshipElement.Annotations.Add((IDataElement)sme);
+                                annotatedRelationshipElement.Annotations ??= new List<AasCore.Aas3_0_RC02.IDataElement>();
+                                annotatedRelationshipElement.Annotations.Add((AasCore.Aas3_0_RC02.IDataElement)sme);
                                 break;
                             }
-                        case Entity entity:
+                        case AasCore.Aas3_0_RC02.Entity entity:
                             {
-                                entity.Statements ??= new List<ISubmodelElement>();
+                                entity.Statements ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 entity.Statements.Add(sme);
                                 break;
                             }
@@ -720,8 +720,8 @@ namespace AasxPackageLogic.PackageCentral
                 }
                 else
                 // at least for SMC, handle CreateAtIndex
-                if (parent is SubmodelElementCollection parentSmc
-                    && dataRef is ISubmodelElement sme2
+                if (parent is AasCore.Aas3_0_RC02.SubmodelElementCollection parentSmc
+                    && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme2
                     && change.CreateAtIndex >= 0
                     && parentSmc.Value != null
                     && change.CreateAtIndex < parentSmc.Value.Count)
@@ -740,7 +740,7 @@ namespace AasxPackageLogic.PackageCentral
                     Env.AasEnv.Submodels.Add(sm);
                     if(parentAas.Submodels == null)
                     {
-                        parentAas.Submodels = new List<Reference>();
+                        parentAas.Submodels = new List<AasCore.Aas3_0_RC02.Reference>();
                     }
                     parentAas.Submodels.Add(sm?.GetReference());
                     change.FoundReferable = dataRef;
@@ -764,7 +764,7 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find target IReferable! " + change.Path.ToStringExtended()));
+                        "Cannot find target AasCore.Aas3_0_RC02.IReferable! " + change.Path.ToStringExtended()));
                     return;
                 }
 
@@ -773,14 +773,14 @@ namespace AasxPackageLogic.PackageCentral
                 {
                     handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                         info: "PackageConnector::PullEvents() Delete " +
-                        "Cannot find parent IReferable for target! " + change.Path.ToStringExtended()));
+                        "Cannot find parent AasCore.Aas3_0_RC02.IReferable for target! " + change.Path.ToStringExtended()));
                     return;
                 }
 
                 // go through some cases
                 // all SM, SME with dependent elements
-                if ((parent is Submodel || parent is AnnotatedRelationshipElement || parent is Entity || parent is SubmodelElementCollection || parent is SubmodelElementList)
-                    && target is ISubmodelElement sme)
+                if ((parent is Submodel || parent is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement || parent is AasCore.Aas3_0_RC02.Entity || parent is AasCore.Aas3_0_RC02.SubmodelElementCollection || parent is AasCore.Aas3_0_RC02.SubmodelElementList)
+                    && target is AasCore.Aas3_0_RC02.ISubmodelElement sme)
                 {
                     // Note: assumption is, that Remove() will not throw exception,
                     // if sme does not exist. Sadly, there is also no exception to 
@@ -796,7 +796,7 @@ namespace AasxPackageLogic.PackageCentral
                                 }
                                 break;
                             }
-                        case SubmodelElementCollection submodelElementCollection:
+                        case AasCore.Aas3_0_RC02.SubmodelElementCollection submodelElementCollection:
                             {
                                 if (submodelElementCollection.Value != null)
                                 {
@@ -804,7 +804,7 @@ namespace AasxPackageLogic.PackageCentral
                                 }
                                 break;
                             }
-                        case SubmodelElementList submodelElementList:
+                        case AasCore.Aas3_0_RC02.SubmodelElementList submodelElementList:
                             {
                                 if (submodelElementList.Value != null)
                                 {
@@ -812,17 +812,17 @@ namespace AasxPackageLogic.PackageCentral
                                 }
                                 break;
                             }
-                        case AnnotatedRelationshipElement annotatedRelationshipElement:
+                        case AasCore.Aas3_0_RC02.AnnotatedRelationshipElement annotatedRelationshipElement:
                             {
                                 if (annotatedRelationshipElement.Annotations != null)
                                 {
-                                    annotatedRelationshipElement.Annotations.Add((IDataElement)sme); 
+                                    annotatedRelationshipElement.Annotations.Add((AasCore.Aas3_0_RC02.IDataElement)sme); 
                                 }
                                 break;
                             }
-                        case Entity entity:
+                        case AasCore.Aas3_0_RC02.Entity entity:
                             {
-                                entity.Statements ??= new List<ISubmodelElement>();
+                                entity.Statements ??= new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                                 entity.Statements.Add(sme);
                                 break;
                             }
@@ -841,7 +841,7 @@ namespace AasxPackageLogic.PackageCentral
                     && target is Submodel sm
                     && Env?.AasEnv != null)
                 {
-                    Reference smrefFound = null;
+                    AasCore.Aas3_0_RC02.Reference smrefFound = null;
                     foreach (var smref in parentAas.Submodels)
                         if (smref.MatchesExactlyOneKey(targetKl.Last(), MatchMode.Relaxed))
                             smrefFound = smref;
@@ -887,18 +887,18 @@ namespace AasxPackageLogic.PackageCentral
                 return;
 
             // try determine tarket of "Observable"/"path"
-            var targetKl = new List<Key>();
-            IReferable target = null;
+            var targetKl = new List<AasCore.Aas3_0_RC02.Key>();
+            AasCore.Aas3_0_RC02.IReferable target = null;
             if (value.Path?.IsEmpty() == false)
             {
                 if (env.ObservableReference?.Keys != null)
-                    targetKl = new List<Key>(env.ObservableReference.Keys);
+                    targetKl = new List<AasCore.Aas3_0_RC02.Key>(env.ObservableReference.Keys);
 
                 targetKl.AddRange(value.Path);
 
                 if (targetKl.First().IsAbsolute())
                     //target = Env?.AasEnv?.FindReferableByReference(targetKl);
-                    target = Env?.AasEnv?.FindReferableByReference(new Reference(ReferenceTypes.GlobalReference, targetKl));
+                    target = Env?.AasEnv?.FindReferableByReference(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, targetKl));
             }
 
             // no target?
@@ -906,7 +906,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Cannot find target IReferable!"));
+                    "Cannot find target AasCore.Aas3_0_RC02.IReferable!"));
                 return;
             }
 
@@ -932,16 +932,16 @@ namespace AasxPackageLogic.PackageCentral
                 return;
             }
 
-            if (target is SubmodelElementCollection)
+            if (target is AasCore.Aas3_0_RC02.SubmodelElementCollection)
             {
                 handler?.Invoke(new PackCntChangeEventData(Container, PackCntChangeEventReason.Exception,
                     info: "PackageConnector::PullEvents() Update " +
-                    "Update of SubmodelElementCollection not implemented!"));
+                    "Update of AasCore.Aas3_0_RC02.SubmodelElementCollection not implemented!"));
                 // TODO (MIHO, 2021-05-28): to be implemented
                 return;
             }
 
-            if (target is ISubmodelElement sme)
+            if (target is AasCore.Aas3_0_RC02.ISubmodelElement sme)
             {
                 // use differentiated functionality
                 PackageContainerBase.UpdateSmeFromEventPayloadItem(sme, value);
@@ -1057,10 +1057,10 @@ namespace AasxPackageLogic.PackageCentral
                             "Cannot deserize payload StructuralChangeItem!");
 
                     // try determine tarket of {Observavle}/{path}
-                    IReferable target = null;
+                    AasCore.Aas3_0_RC02.IReferable target = null;
                     if (change.Path?.IsEmpty == false)
                     {
-                        List<Key> kl = null;
+                        List<AasCore.Aas3_0_RC02.Key> kl = null;
                         if (change.Path.First().IsAbsolute())
                             kl = change.Path;
                         else
@@ -1079,20 +1079,20 @@ namespace AasxPackageLogic.PackageCentral
                         var dataRef = change.GetDataAsReferable();
                         if (dataRef == null)
                             throw new PackageConnectorException($"PackageConnector::PullEvents() " +
-                                "Cannot deserize StructuralChangeItem IReferable data!");
+                                "Cannot deserize StructuralChangeItem AasCore.Aas3_0_RC02.IReferable data!");
 
                         // go through some cases
                         // all SM, SME with dependent elements
                         if (target is IManageSubmodelElements targetMgr
-                            && dataRef is ISubmodelElement sme
+                            && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme
                             && change.CreateAtIndex < 0)
                         {
                             targetMgr.Add(sme);
                         }
                         else
                         // at least for SMC, handle CreateAtIndex
-                        if (target is SubmodelElementCollection targetSmc
-                            && dataRef is ISubmodelElement sme2
+                        if (target is AasCore.Aas3_0_RC02.SubmodelElementCollection targetSmc
+                            && dataRef is AasCore.Aas3_0_RC02.ISubmodelElement sme2
                             && change.CreateAtIndex >= 0
                             && targetSmc.Value != null
                             && change.CreateAtIndex < targetSmc.Value.Count)

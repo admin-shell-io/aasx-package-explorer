@@ -68,7 +68,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginResultEventNavigateToReference : AasxPluginResultEventBase
     {
-        public Reference targetReference = null;
+        public AasCore.Aas3_0_RC02.Reference targetReference = null;
     }
 
     public class AasxPluginResultEventDisplayContentFile : AasxPluginResultEventBase
@@ -114,7 +114,7 @@ namespace AasxIntegrationBase
 
     public class AasxPluginEventReturnSelectAasEntity : AasxPluginEventReturnBase
     {
-        public List<Key> resultKeys = null;
+        public List<AasCore.Aas3_0_RC02.Key> resultKeys = null;
     }
 
     public class AasxPluginEventReturnSelectFile : AasxPluginEventReturnBase

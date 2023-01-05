@@ -106,12 +106,12 @@ namespace AasxIntegrationBase
 
         public AnnotatedElements() { }
 
-        public AnnotatedElements(IReferable root)
+        public AnnotatedElements(AasCore.Aas3_0_RC02.IReferable root)
         {
             Parse(root);
         }
 
-        public void Parse(IReferable root)
+        public void Parse(AasCore.Aas3_0_RC02.IReferable root)
         {
             root?.RecurseOnReferables(null,
                 includeThis: true,
@@ -126,7 +126,7 @@ namespace AasxIntegrationBase
                         if (a.desc && rf is Submodel sm)
                             a.Description = sm.Description;
 
-                        if (a.desc && rf is ISubmodelElement sme)
+                        if (a.desc && rf is AasCore.Aas3_0_RC02.ISubmodelElement sme)
                             a.Description = sme.Description;
 
                         _args.Add(a);

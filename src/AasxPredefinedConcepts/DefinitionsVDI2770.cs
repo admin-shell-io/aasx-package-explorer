@@ -40,7 +40,7 @@ namespace AasxPredefinedConcepts
             "02-03",    "Assemblies",
             "02-04",    "Certificates, declarations",
             "03-01",    "Commissioning, de-commissioning",
-            "03-02",    "Operation",
+            "03-02",    "AasCore.Aas3_0_RC02.Operation",
             "03-03",    "General safety",
             "03-04",    "Inspection, maintenance, testing",
             "03-05",    "Repair",
@@ -171,9 +171,9 @@ namespace AasxPredefinedConcepts
                     "CD_VDI2770_ReferencedObject");
             }
 
-            public IReferable[] GetAllReferables()
+            public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
             {
-                return new IReferable[] {
+                return new AasCore.Aas3_0_RC02.IReferable[] {
                     SM_VDI2770_Documentation,
                     CD_VDI2770_Document,
                     CD_VDI2770_DocumentIdValue,

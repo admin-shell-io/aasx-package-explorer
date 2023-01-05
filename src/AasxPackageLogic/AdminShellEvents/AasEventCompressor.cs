@@ -37,7 +37,7 @@ namespace AasxIntegrationBase.AdminShellEvents
 
         protected class TraceStateStructuralChangeOneModify : TraceStateBase
         {
-            public List<Key> CurrentPath;
+            public List<AasCore.Aas3_0_RC02.Key> CurrentPath;
         }
 
         protected TraceStateBase FollowTraceState(TraceStateBase stateIn, AasEventMsgEnvelope ev)
@@ -60,7 +60,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                 // get a current key
                 var rf = evplsc.Changes[0].GetDataAsReferable();
                 rf.Parent = null;
-                Key currKey = rf.GetReference()?.Keys.Last();
+                AasCore.Aas3_0_RC02.Key currKey = rf.GetReference()?.Keys.Last();
 
                 // Transition NULL -> structural change
                 if (currKey != null && stateIn == null)
@@ -68,8 +68,8 @@ namespace AasxIntegrationBase.AdminShellEvents
                     // start new state
                     var res = new TraceStateStructuralChangeOneModify()
                     {
-                        //CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(List<Key>.CreateNew(currKey))
-                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<Key>() { currKey})
+                        //CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(List<AasCore.Aas3_0_RC02.Key>.CreateNew(currKey))
+                        CurrentPath = evplsc.Changes[0].Path.ReplaceLastKey(new List<AasCore.Aas3_0_RC02.Key>() { currKey})
                     };
                     return res;
                 }
@@ -79,7 +79,7 @@ namespace AasxIntegrationBase.AdminShellEvents
                     && evplsc.Changes[0].Path.Matches(stateCurr.CurrentPath, MatchMode.Relaxed))
                 {
                     // happy path: continue state
-                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<Key>() { currKey });
+                    stateCurr.CurrentPath = stateCurr.CurrentPath.ReplaceLastKey(new List<AasCore.Aas3_0_RC02.Key>() { currKey });
                     return stateCurr;
                 }
             }

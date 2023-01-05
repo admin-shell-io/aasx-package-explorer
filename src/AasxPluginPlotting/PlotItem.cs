@@ -47,7 +47,7 @@ namespace AasxPluginPlotting
                 handler(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public ISubmodelElement SME = null;
+        public AasCore.Aas3_0_RC02.ISubmodelElement SME = null;
         public string ArgsStr = "";
         public PlotArguments Args = null;
 
@@ -120,7 +120,7 @@ namespace AasxPluginPlotting
 
         public PlotItem() { }
 
-        public PlotItem(ISubmodelElement sme, string args,
+        public PlotItem(AasCore.Aas3_0_RC02.ISubmodelElement sme, string args,
             string path, List<LangString> description, string lang)
         {
             SME = sme;
@@ -268,7 +268,7 @@ namespace AasxPluginPlotting
         public void UpdateValues(string lang = null)
         {
             foreach (var it in this)
-                if (it.SME is Property prop)
+                if (it.SME is AasCore.Aas3_0_RC02.Property prop)
                 {
                     var dbl = prop.ValueAsDouble();
                     it.SetValue(dbl, lang);
@@ -295,7 +295,7 @@ namespace AasxPluginPlotting
 
                 // select for SME type
                 /* TODO (MIHO, 2021-01-04): consider at least to include MLP, as well */
-                if (!(sme is Property prop))
+                if (!(sme is AasCore.Aas3_0_RC02.Property prop))
                     return true;
 
                 // build path
@@ -422,7 +422,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in groupPI)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip || !(pi.SME is Property prop))
+                    if (true == pi.Args?.skip || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
                         continue;
 
                     // value
@@ -682,7 +682,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // display at all?
-                    if (true == pi.Args?.skip || !(pi.SME is Property prop))
+                    if (true == pi.Args?.skip || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
                         continue;
 
                     // do this NOT for event sources items
@@ -739,7 +739,7 @@ namespace AasxPluginPlotting
                 foreach (var pi in grp)
                 {
                     // must be event source
-                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event || !(pi.SME is Property prop))
+                    if (pi.Args == null || pi.Args.src != PlotArguments.Source.Event || !(pi.SME is AasCore.Aas3_0_RC02.Property prop))
                         continue;
 
                     // found a hit?

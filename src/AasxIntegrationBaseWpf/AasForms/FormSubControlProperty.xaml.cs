@@ -44,14 +44,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceProperty instance;
             public FormDescProperty desc;
-            public Property prop;
+            public AasCore.Aas3_0_RC02.Property prop;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceProperty;
                 dc.desc = dc.instance?.desc as FormDescProperty;
-                dc.prop = dc.instance?.sme as Property;
+                dc.prop = dc.instance?.sme as AasCore.Aas3_0_RC02.Property;
 
                 if (dc.instance == null || dc.desc == null || dc.prop == null)
                     return null;

@@ -27,7 +27,7 @@ namespace AasxPackageLogic
         public static void ImportCSVtoSubModel(
             string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm /* , AdminShell.SubmodelRef smref*/)
         {
-            SubmodelElementCollection[] propGroup = new SubmodelElementCollection[10];
+            AasCore.Aas3_0_RC02.SubmodelElementCollection[] propGroup = new AasCore.Aas3_0_RC02.SubmodelElementCollection[10];
             int i_propGroup = 0;
 
             var parser = new Microsoft.VisualBasic.FileIO.TextFieldParser(inputFn);
@@ -69,15 +69,15 @@ namespace AasxPackageLogic
 
                 switch (rows[0])
                 {
-                    case "SubmodelElementCollection":
-                        propGroup[i_propGroup] = new SubmodelElementCollection(idShort: rows[1]); ;
+                    case "AasCore.Aas3_0_RC02.SubmodelElementCollection":
+                        propGroup[i_propGroup] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: rows[1]); ;
                         if (i_propGroup == 0)
                         {
                             sm.Add(propGroup[0]);
                             if (rows.Length > 3)
                             {
                                 if (rows[7] != "") propGroup[0].SemanticId =
-                                        ExtendReference.CreateFromKey(new Key(KeyTypes.GlobalReference, rows[7]));
+                                        ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, rows[7]));
                             }
                             propGroup[0].Kind = ModelingKind.Instance;
                         }
@@ -87,12 +87,12 @@ namespace AasxPackageLogic
                         }
                         i_propGroup++;
                         break;
-                    case "End-SubmodelElementCollection":
+                    case "End-AasCore.Aas3_0_RC02.SubmodelElementCollection":
                         if (i_propGroup != 0)
                             i_propGroup--;
                         break;
-                    case "Property":
-                        var p = new Property(DataTypeDefXsd.String, idShort: rows[1].Replace("-", "_"));
+                    case "AasCore.Aas3_0_RC02.Property":
+                        var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: rows[1].Replace("-", "_"));
                         p.Value = rows[2];
                         if (rows.Length > 3)
                         {
@@ -102,7 +102,7 @@ namespace AasxPackageLogic
                             if (rows[6] != "") p.AddDescription("de", rows[6]);
                             p.Kind = ModelingKind.Instance;
                             if (rows[7] != "")
-                                p.SemanticId = ExtendReference.CreateFromKey(new Key(KeyTypes.GlobalReference, rows[7]));
+                                p.SemanticId = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, rows[7]));
                         }
                         if (i_propGroup == 0)
                         {

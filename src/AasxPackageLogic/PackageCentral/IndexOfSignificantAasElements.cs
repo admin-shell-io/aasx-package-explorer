@@ -43,7 +43,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// This reference is (kind of long-lasting) stored in the <c>IndexOfSignificantAasElements</c>
         /// </summary>
-        public Reference Reference;
+        public AasCore.Aas3_0_RC02.Reference Reference;
 
         /// <summary>
         /// This object reference will be filled out upon retrieval!
@@ -66,13 +66,13 @@ namespace AasxPackageLogic.PackageCentral
         public void Add(
             SignificantAasElement kind,
             Submodel sm,
-            List<IReferable> parents,
-            ISubmodelElement sme)
+            List<AasCore.Aas3_0_RC02.IReferable> parents,
+            AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             var r = new SignificantAasElemRecord()
             {
                 Kind = kind,
-                //Reference = sm?.GetReference()
+                //AasCore.Aas3_0_RC02.Reference = sm?.GetReference()
                 //    + parents?.GetReference()
                 //    + sme?.GetReference(includeParents: false)
                 Reference = sm?.GetReference().Add(parents?.GetReference()).Add(sme?.GetModelReference())
@@ -97,7 +97,7 @@ namespace AasxPackageLogic.PackageCentral
             foreach (var sm in visited.Keys)
                 sm.RecurseOnSubmodelElements(null, (o, parents, sme) =>
                 {
-                    if (sme is BasicEventElement)
+                    if (sme is AasCore.Aas3_0_RC02.BasicEventElement)
                     {
                         if (true == sme.SemanticId?.Matches(
                             AasxPredefinedConcepts.AasEvents.Static.CD_UpdateValueOutwards.GetReference(),

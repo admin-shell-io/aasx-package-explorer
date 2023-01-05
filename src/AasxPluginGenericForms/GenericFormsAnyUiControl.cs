@@ -202,7 +202,7 @@ namespace AasxPluginGenericForms
                 {
                     // on this level of the hierarchy, shall a new SMEC be created or shall
                     // the existing source of elements be used?
-                    List<ISubmodelElement> currentElements = null;
+                    List<AasCore.Aas3_0_RC02.ISubmodelElement> currentElements = null;
                     if (_form.InUpdateMode)
                     {
                         currentElements = _submodel.SubmodelElements;

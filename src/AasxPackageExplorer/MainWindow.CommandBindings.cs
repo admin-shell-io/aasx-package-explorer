@@ -809,7 +809,7 @@ namespace AasxPackageExplorer
                 ticket.InvokeMessage = (err, msg) =>
                 {
                     return MessageBoxFlyoutShow(
-                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
+                        msg, "AasCore.Aas3_0_RC02.Operation", AnyUiMessageBoxButton.OKCancel,
                         err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
                 };
 
@@ -856,7 +856,7 @@ namespace AasxPackageExplorer
                 ticket.InvokeMessage = (err, msg) =>
                 {
                     return MessageBoxFlyoutShow(
-                        msg, "Operation", AnyUiMessageBoxButton.OKCancel,
+                        msg, "AasCore.Aas3_0_RC02.Operation", AnyUiMessageBoxButton.OKCancel,
                         err ? AnyUiMessageBoxImage.Error : AnyUiMessageBoxImage.Information);
                 };
 
@@ -2168,7 +2168,7 @@ namespace AasxPackageExplorer
             AasxMenuActionTicket ticket,
             out AasCore.Aas3_0_RC02.Environment env,
             out Submodel sm,
-            out Reference smr,
+            out AasCore.Aas3_0_RC02.Reference smr,
             string msg)
         {
             env = null;
@@ -2785,7 +2785,7 @@ namespace AasxPackageExplorer
                 return;
 
             // check
-            var rf = ticket.DereferencedMainDataObject as IReferable;
+            var rf = ticket.DereferencedMainDataObject as AasCore.Aas3_0_RC02.IReferable;
             if (rf == null)
             {
                 _logic?.LogErrorToTicket(ticket,

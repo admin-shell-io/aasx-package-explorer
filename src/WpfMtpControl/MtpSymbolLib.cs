@@ -30,7 +30,7 @@ namespace WpfMtpControl
         public string LibName = "";
 
         /// <summary>
-        /// Symbolic name of the symbol, as derived from the Xaml.Key property
+        /// Symbolic name of the symbol, as derived from the Xaml.AasCore.Aas3_0_RC02.Key property
         /// </summary>
         public string SymbolName = "";
 

@@ -285,7 +285,7 @@ namespace AasxIntegrationBase
                 foreach (var assi in src.AllowSubmodelSemanticId)
                     AllowSubmodelSemanticId.Add(
                         new AAS.Key(Stringification.KeyTypesFromString(assi?.type) 
-                            ?? KeyTypes.GlobalReference, assi.value));
+                            ?? AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, assi.value));
         }
 #endif
 
@@ -308,16 +308,16 @@ namespace AasxIntegrationBase
 #endif
 
 
-        private string GenerateIndexKey(Key key)
+        private string GenerateIndexKey(AasCore.Aas3_0_RC02.Key key)
         {
             if (key == null)
                 return null;
-            var k = new Key(key.Type, key.Value);
+            var k = new AasCore.Aas3_0_RC02.Key(key.Type, key.Value);
             var ndx = k?.ToStringExtended();
             return ndx;
         }
 
-        public void IndexRecord(Key key, AasxPluginOptionsRecordBase rec)
+        public void IndexRecord(AasCore.Aas3_0_RC02.Key key, AasxPluginOptionsRecordBase rec)
         {
             if (_recordLookup == null)
                 _recordLookup = new MultiValueDictionary<string, AasxPluginOptionsRecordBase>();
@@ -339,7 +339,7 @@ namespace AasxIntegrationBase
                         IndexRecord(a2, rec);
         }
 
-        public bool ContainsIndexKey(Key key)
+        public bool ContainsIndexKey(AasCore.Aas3_0_RC02.Key key)
         {
             // access
             var ndx = GenerateIndexKey(key);
@@ -349,7 +349,7 @@ namespace AasxIntegrationBase
             return _recordLookup.ContainsKey(ndx);
         }
 
-        public IEnumerable<T> LookupAllIndexKey<T>(Key key)
+        public IEnumerable<T> LookupAllIndexKey<T>(AasCore.Aas3_0_RC02.Key key)
             where T : AasxPluginOptionsRecordBase
         {
             // access

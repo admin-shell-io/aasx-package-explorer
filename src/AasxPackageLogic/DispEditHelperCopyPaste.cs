@@ -40,7 +40,7 @@ namespace AasxPackageLogic
 
             // Factory
 
-            public static CopyPasteItemBase FactoryConvertFrom(IReferable rf)
+            public static CopyPasteItemBase FactoryConvertFrom(AasCore.Aas3_0_RC02.IReferable rf)
             {
                 // try fake a copy paste item (order matters!)
                 CopyPasteItemBase res = CopyPasteItemSME.ConvertFrom(rf);
@@ -95,7 +95,7 @@ namespace AasxPackageLogic
                 this.entity = entity;
             }
 
-            public static CopyPasteItemIdentifiable ConvertFrom(IReferable rf)
+            public static CopyPasteItemIdentifiable ConvertFrom(AasCore.Aas3_0_RC02.IReferable rf)
             {
                 // access
                 var idf = rf as IIdentifiable;
@@ -115,7 +115,7 @@ namespace AasxPackageLogic
         public class CopyPasteItemSubmodel : CopyPasteItemBase
         {
             public object parentContainer = null;
-            public Reference smref = null;
+            public AasCore.Aas3_0_RC02.Reference smref = null;
             public Submodel sm = null;
 
             public override object GetMainDataObject() { return sm; }
@@ -125,7 +125,7 @@ namespace AasxPackageLogic
             public CopyPasteItemSubmodel(
                 object parentContainer,
                 object entity,
-                Reference smref,
+                AasCore.Aas3_0_RC02.Reference smref,
                 Submodel sm)
             {
                 this.parentContainer = parentContainer;
@@ -138,11 +138,11 @@ namespace AasxPackageLogic
             {
                 if (smref == null && sm?.Id != null)
                 {
-                    smref = new Reference(ReferenceTypes.ModelReference, new List<Key>() { new Key(KeyTypes.Submodel, sm.Id) });
+                    smref = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, sm.Id) });
                 }
             }
 
-            public static CopyPasteItemSubmodel ConvertFrom(IReferable rf)
+            public static CopyPasteItemSubmodel ConvertFrom(AasCore.Aas3_0_RC02.IReferable rf)
             {
                 // access
                 var sm = rf as Submodel;
@@ -163,9 +163,9 @@ namespace AasxPackageLogic
         public class CopyPasteItemSME : CopyPasteItemBase
         {
             public AasCore.Aas3_0_RC02.Environment env = null;
-            public IReferable parentContainer = null;
-            public ISubmodelElement wrapper = null;
-            public ISubmodelElement sme = null;
+            public AasCore.Aas3_0_RC02.IReferable parentContainer = null;
+            public AasCore.Aas3_0_RC02.ISubmodelElement wrapper = null;
+            public AasCore.Aas3_0_RC02.ISubmodelElement sme = null;
             public EnumerationPlacmentBase Placement = null;
 
             public override object GetMainDataObject() { return sme; }
@@ -175,8 +175,8 @@ namespace AasxPackageLogic
 
             public CopyPasteItemSME(
                 AasCore.Aas3_0_RC02.Environment env,
-                IReferable parentContainer, ISubmodelElement wrapper,
-                ISubmodelElement sme,
+                AasCore.Aas3_0_RC02.IReferable parentContainer, AasCore.Aas3_0_RC02.ISubmodelElement wrapper,
+                AasCore.Aas3_0_RC02.ISubmodelElement sme,
                 EnumerationPlacmentBase placement = null)
             {
                 this.env = env;
@@ -186,15 +186,15 @@ namespace AasxPackageLogic
                 this.Placement = placement;
             }
 
-            public static CopyPasteItemSME ConvertFrom(IReferable rf)
+            public static CopyPasteItemSME ConvertFrom(AasCore.Aas3_0_RC02.IReferable rf)
             {
                 // access
-                var sme = rf as ISubmodelElement;
+                var sme = rf as AasCore.Aas3_0_RC02.ISubmodelElement;
                 if (sme == null)
                     return null;
 
                 // new wrapper
-                ISubmodelElement wrapper;
+                AasCore.Aas3_0_RC02.ISubmodelElement wrapper;
                 wrapper = sme;
 
                 // create
@@ -238,19 +238,19 @@ namespace AasxPackageLogic
                 this.Items = null;
             }
 
-            public static Tuple<string[], List<Key>[]> PreparePresetsForListKeys(
+            public static Tuple<string[], List<AasCore.Aas3_0_RC02.Key>[]> PreparePresetsForListKeys(
                 CopyPasteBuffer cpb, string label = "Paste")
             {
                 // add from Copy Buffer
-                List<Key> bufferKey = null;
+                List<AasCore.Aas3_0_RC02.Key> bufferKey = null;
                 if (cpb != null && cpb.Valid && cpb.Items != null && cpb.Items.Count == 1)
                 {
                     if (cpb.Items[0] is CopyPasteItemIdentifiable cpbi && cpbi.entity?.Id != null)
-                        bufferKey = new List<Key>() { new Key((KeyTypes)Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id)};
+                        bufferKey = new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)Stringification.KeyTypesFromString(cpbi.entity.GetSelfDescription().AasElementName), cpbi.entity.Id)};
 
                     if (cpb.Items[0] is CopyPasteItemSubmodel cpbsm && cpbsm.sm?.SemanticId != null)
-                        //bufferKey = List<Key>.CreateNew(cpbsm.sm.GetReference()?.First);
-                        bufferKey = new List<Key>() { cpbsm.sm.GetReference().Keys.First()};
+                        //bufferKey = List<AasCore.Aas3_0_RC02.Key>.CreateNew(cpbsm.sm.GetReference()?.First);
+                        bufferKey = new List<AasCore.Aas3_0_RC02.Key>() { cpbsm.sm.GetReference().Keys.First()};
 
                     if (cpb.Items[0] is CopyPasteItemSME cpbsme && cpbsme.sme != null
                         && cpbsme.env.Submodels != null)
@@ -260,13 +260,13 @@ namespace AasxPackageLogic
                             sm?.SetAllParents();
 
                         // collect buffer list
-                        bufferKey = new List<Key>();
+                        bufferKey = new List<AasCore.Aas3_0_RC02.Key>();
                         cpbsme.sme.CollectReferencesByParent(bufferKey);
                     }
                 }
 
                 // result
-                return new Tuple<string[], List<Key>[]>(
+                return new Tuple<string[], List<AasCore.Aas3_0_RC02.Key>[]>(
                     (bufferKey == null) ? null : new[] { label },
                     (bufferKey == null) ? null : new[] { bufferKey }
                 );
@@ -357,8 +357,8 @@ namespace AasxPackageLogic
                     // try simple way
                     if (isSingleObject)
                     {
-                        // TODO (MIHO, 2021-06-22): think of converting IReferable to IAasElement
-                        var obj = AdminShellSerializationHelper.DeserializeFromJSON<IReferable>(cps);
+                        // TODO (MIHO, 2021-06-22): think of converting AasCore.Aas3_0_RC02.IReferable to IAasElement
+                        var obj = AdminShellSerializationHelper.DeserializeFromJSON<AasCore.Aas3_0_RC02.IReferable>(cps);
 
                         // try fake a copy paste item (order matters!)
                         var cpi = CopyPasteItemBase.FactoryConvertFrom(obj);
@@ -376,7 +376,7 @@ namespace AasxPackageLogic
                     {
                         // make array of object
                         //var objarr = AdminShellSerializationHelper
-                        //    .DeserializePureObjectFromJSON<List<IReferable>>(cps);
+                        //    .DeserializePureObjectFromJSON<List<AasCore.Aas3_0_RC02.IReferable>>(cps);
                         var node = System.Text.Json.Nodes.JsonNode.Parse(cps);
                         var objarr = ExtendIReferable.ListOfIReferableFrom(node);
                         if (objarr != null)
@@ -451,15 +451,15 @@ namespace AasxPackageLogic
 
             // differentiate
             if (item.parentContainer is Submodel pcsm && item.wrapper != null)
-                this.DeleteElementInList<ISubmodelElement>(
+                this.DeleteElementInList<AasCore.Aas3_0_RC02.ISubmodelElement>(
                     pcsm.SubmodelElements, item.wrapper, null);
 
-            if (item.parentContainer is SubmodelElementCollection pcsmc
+            if (item.parentContainer is AasCore.Aas3_0_RC02.SubmodelElementCollection pcsmc
                 && item.wrapper != null)
-                this.DeleteElementInList<ISubmodelElement>(
+                this.DeleteElementInList<AasCore.Aas3_0_RC02.ISubmodelElement>(
                     pcsmc.Value, item.wrapper, null);
 
-            if (item.parentContainer is Operation pcop && item.wrapper != null)
+            if (item.parentContainer is AasCore.Aas3_0_RC02.Operation pcop && item.wrapper != null)
             {
                 var placement = pcop.GetChildrenPlacement(item.sme) as
                     EnumerationPlacmentOperationVariable;
@@ -487,10 +487,10 @@ namespace AasxPackageLogic
             AnyUiPanel stack,
             ModifyRepo repo,
             AasCore.Aas3_0_RC02.Environment env,
-            IReferable parentContainer,
+            AasCore.Aas3_0_RC02.IReferable parentContainer,
             CopyPasteBuffer cpbInternal,
-            ISubmodelElement wrapper,
-            ISubmodelElement sme,
+            AasCore.Aas3_0_RC02.ISubmodelElement wrapper,
+            AasCore.Aas3_0_RC02.ISubmodelElement sme,
             string label = "Buffer:",
             AasxMenu superMenu = null)
         {
@@ -607,30 +607,30 @@ namespace AasxPackageLogic
                                 smw2.Parent = parentContainer;
 
                                 if (parentContainer is Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListBefore<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcsm.SubmodelElements, smw2, wrapper);
 
-                                if (parentContainer is SubmodelElementCollection pcsmc &&
+                                if (parentContainer is AasCore.Aas3_0_RC02.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListBefore<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcsmc.Value, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is Entity pcent &&
+                                if (parentContainer is AasCore.Aas3_0_RC02.Entity pcent &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListBefore<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcent.Statements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is AnnotatedRelationshipElement pcarel &&
+                                if (parentContainer is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
                                 {
-                                    var annotations = new List<ISubmodelElement>(pcarel.Annotations);
-                                    createAtIndex = this.AddElementInSmeListBefore<ISubmodelElement>(
+                                    var annotations = new List<AasCore.Aas3_0_RC02.ISubmodelElement>(pcarel.Annotations);
+                                    createAtIndex = this.AddElementInSmeListBefore<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         annotations, smw2, wrapper, makeUnique);
                                 }
                                     
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
-                                if (parentContainer is Operation pcop && wrapper != null)
+                                // TODO (Michael Hoffmeister, 2020-08-01): AasCore.Aas3_0_RC02.Operation complete?
+                                if (parentContainer is AasCore.Aas3_0_RC02.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
                                         EnumerationPlacmentOperationVariable;
@@ -651,28 +651,28 @@ namespace AasxPackageLogic
                                 smw2.Parent = parentContainer;
 
                                 if (parentContainer is Submodel pcsm && wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListAfter<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is SubmodelElementCollection pcsmc &&
+                                if (parentContainer is AasCore.Aas3_0_RC02.SubmodelElementCollection pcsmc &&
                                         wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                    createAtIndex = this.AddElementInSmeListAfter<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcsmc.Value, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is Entity pcent && wrapper != null)
-                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                if (parentContainer is AasCore.Aas3_0_RC02.Entity pcent && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         pcent.Statements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is AnnotatedRelationshipElement pcarel &&
+                                if (parentContainer is AasCore.Aas3_0_RC02.AnnotatedRelationshipElement pcarel &&
                                         wrapper != null)
                                 {
-                                    var annotations = new List<ISubmodelElement>(pcarel.Annotations);
-                                    createAtIndex = this.AddElementInSmeListAfter<ISubmodelElement>(
+                                    var annotations = new List<AasCore.Aas3_0_RC02.ISubmodelElement>(pcarel.Annotations);
+                                    createAtIndex = this.AddElementInSmeListAfter<AasCore.Aas3_0_RC02.ISubmodelElement>(
                                         annotations, smw2, wrapper, makeUnique);
                                 }
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
-                                if (parentContainer is Operation pcop && wrapper != null)
+                                // TODO (Michael Hoffmeister, 2020-08-01): AasCore.Aas3_0_RC02.Operation complete?
+                                if (parentContainer is AasCore.Aas3_0_RC02.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
                                         EnumerationPlacmentOperationVariable;
@@ -692,7 +692,7 @@ namespace AasxPackageLogic
                                 if (makeUnique)
                                 {
                                     var found = false;
-                                    foreach (var ch in sme.DescendOnce().OfType<ISubmodelElement>())
+                                    foreach (var ch in sme.DescendOnce().OfType<AasCore.Aas3_0_RC02.ISubmodelElement>())
                                         if (ch?.IdShort?.Trim() == smw2?.IdShort?.Trim())
                                             found = true;
                                     if (found)
@@ -740,7 +740,7 @@ namespace AasxPackageLogic
             List<T> parentContainer,
             T entity,
             Func<T, T> cloneEntity,
-            Reference smref,
+            AasCore.Aas3_0_RC02.Reference smref,
             Submodel sm,
             string label = "Buffer:",
             Func<T, T, bool> checkEquality = null,
@@ -844,7 +844,7 @@ namespace AasxPackageLogic
 
                             // determine, what to clone
                             object src = item.sm;
-                            if (typeof(T) == typeof(Reference))
+                            if (typeof(T) == typeof(AasCore.Aas3_0_RC02.Reference))
                                 src = item.smref;
 
                             if (src == null)
@@ -871,7 +871,7 @@ namespace AasxPackageLogic
                             nextBusObj = entity2;
 
                             // emit event
-                            this.AddDiaryEntry(entity2 as IReferable,
+                            this.AddDiaryEntry(entity2 as AasCore.Aas3_0_RC02.IReferable,
                                 new DiaryEntryStructChange(StructuralChangeReason.Create));
 
                             // different cases
@@ -889,7 +889,7 @@ namespace AasxPackageLogic
                                 this.DeleteElementInList<T>(
                                         item.parentContainer as List<T>, (T)src, null);
 
-                                this.AddDiaryEntry(src as IReferable,
+                                this.AddDiaryEntry(src as AasCore.Aas3_0_RC02.IReferable,
                                     new DiaryEntryStructChange(StructuralChangeReason.Delete));
                             }
                         }

@@ -36,7 +36,7 @@ namespace AasxPackageExplorer
 
         public static void ImportBMEcatToSubModel(
             string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
-            Reference smref)
+            AasCore.Aas3_0_RC02.Reference smref)
         {
             // Select between BMEcat and XML publication
             // Tag "<BMECAT" for BMEcat File
@@ -89,7 +89,7 @@ namespace AasxPackageExplorer
             Boolean is_attribute = false;
             Boolean is_attribute_label = false;
             Boolean is_attribute_value = false;
-            SubmodelElementCollection[] propGroup = new SubmodelElementCollection[10];
+            AasCore.Aas3_0_RC02.SubmodelElementCollection[] propGroup = new AasCore.Aas3_0_RC02.SubmodelElementCollection[10];
 
             // GWIS XML Publication
             if (isPublication)
@@ -133,7 +133,7 @@ namespace AasxPackageExplorer
                             {
                                 if (subheadline != "")
                                 {
-                                    propGroup[0] = new SubmodelElementCollection(idShort: subheadline);
+                                    propGroup[0] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: subheadline);
                                     sm.Add(propGroup[0]);
                                 }
                             }
@@ -155,10 +155,10 @@ namespace AasxPackageExplorer
                                             definition: new[] { "EN", attribute_label_id }
                                         );
 
-                                        //var p = Property.CreateNew(
+                                        //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
                                         //    cd.GetDefaultShortName(), "PARAMETER",
-                                        //    Key.GetFromRef(cd.GetCdReference()));
-                                        var p = new Property(DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id) }));
+                                        //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
+                                        var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, category: "PARAMETER", idShort: "", semanticId: new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
                                         if (is_subheadline)
                                         {
                                             propGroup[0].Add(p);
@@ -270,7 +270,7 @@ namespace AasxPackageExplorer
                                     {
                                         StackPointer_FID = 0;
                                     }
-                                    if (i_FVALUE > 0) // Property
+                                    if (i_FVALUE > 0) // AasCore.Aas3_0_RC02.Property
                                     {
                                         for (k = 0; k < i_FVALUE; k++)
                                         {
@@ -329,10 +329,10 @@ namespace AasxPackageExplorer
                                                     definition: new[] { "DE", extendedname, "EN", extendedname }
                                                 );
 
-                                                //var p = Property.CreateNew(
+                                                //var p = AasCore.Aas3_0_RC02.Property.CreateNew(
                                                 //    cd.GetDefaultShortName(), "PARAMETER",
-                                                //    Key.GetFromRef(cd.GetCdReference()));
-                                                var p = new Property(DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.ConceptDescription, cd.Id) }));
+                                                //    AasCore.Aas3_0_RC02.Key.GetFromRef(cd.GetCdReference()));
+                                                var p = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.Double, idShort: cd.GetDefaultShortName(), category: "PARAMETER", semanticId: new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.ConceptDescription, cd.Id) }));
                                                 p.Value = FVALUE[k];
 
                                                 if (StackPointer_FID == 0) // am Submodell
@@ -360,7 +360,7 @@ namespace AasxPackageExplorer
                                         if (StackPointer_FID == 0) // oberste Collection
                                         {
                                             Stack_FID[0] = FID;
-                                            propGroup[0] = new SubmodelElementCollection(idShort: FT_NAME);
+                                            propGroup[0] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: FT_NAME);
                                             sm.Add(propGroup[0]);
                                             StackPointer_FID++; // nächste Ebene
                                         }
@@ -372,7 +372,7 @@ namespace AasxPackageExplorer
                                                 {
                                                     StackPointer_FID = j + 1;
                                                     Stack_FID[StackPointer_FID] = FID;
-                                                    propGroup[StackPointer_FID] = new SubmodelElementCollection(idShort: FT_NAME);
+                                                    propGroup[StackPointer_FID] = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: FT_NAME);
                                                     propGroup[StackPointer_FID - 1].Add(propGroup[StackPointer_FID]);
                                                     StackPointer_FID++; // nächste Ebene
                                                     break;

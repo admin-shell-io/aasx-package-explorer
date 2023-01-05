@@ -206,7 +206,7 @@ namespace AasxPackageLogic.PackageCentral
             {
                 if (httpResp.StatusCode == (int)System.Net.HttpStatusCode.OK)
                 {
-                    var headerDict = httpResp.Headers.ToDictionary(x => x.Key, x => string.Join(",", x.Value));
+                    var headerDict = httpResp.Headers.ToDictionary(x => x.AasCore.Aas3_0_RC02.Key, x => string.Join(",", x.Value));
                     headerDict.TryGetValue("X-FileName", out string fileName);
                     headerDict.TryGetValue("Content-Length", out string contentLength);
                     long.TryParse(contentLength, out long fileSize);

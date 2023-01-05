@@ -293,7 +293,7 @@ namespace AasxPluginTechnicalData
             //           
 
             // section General
-            var smcGeneral = sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+            var smcGeneral = sm.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 theDefs.CD_GeneralInformation.GetSingleKey(), MatchMode.Relaxed);
             if (smcGeneral != null)
             {
@@ -306,15 +306,15 @@ namespace AasxPluginTechnicalData
                             .ValueAsText(defaultLang);
 
                 var prodCode = "" +
-                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                    smcGeneral.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                         theDefs.CD_ManufacturerOrderCode.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 var partNumber = "" +
-                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                    smcGeneral.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                         theDefs.CD_ManufacturerPartNumber.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 var manuName = "" +
-                    smcGeneral.Value.FindFirstSemanticIdAs<Property>(
+                    smcGeneral.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                         theDefs.CD_ManufacturerName.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 AnyUiBitmapInfo imageManuLogo = null;
@@ -418,7 +418,7 @@ namespace AasxPluginTechnicalData
             //
 
             var smcClassifications =
-                sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                sm.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                     theDefs.CD_ProductClassifications.GetSingleKey(), MatchMode.Relaxed);
             if (smcClassifications != null)
             {
@@ -426,23 +426,23 @@ namespace AasxPluginTechnicalData
 
                 var clr = new List<ClassificationRecord>();
                 foreach (var smc in
-                        smcClassifications.Value.FindAllSemanticIdAs<SubmodelElementCollection>(
+                        smcClassifications.Value.FindAllSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                             theDefs.CD_ProductClassificationItem.GetSingleKey(), 
                             MatchMode.Relaxed))
                 {
                     var sys = (
                         "" +
-                        smc.Value.FindFirstSemanticIdAs<Property>(
+                        smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                             theDefs.CD_ProductClassificationSystem.GetSingleKey(), 
                             MatchMode.Relaxed)?.Value).Trim();
                     var ver = (
                         "" +
-                        smc.Value.FindFirstSemanticIdAs<Property>(
+                        smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                             theDefs.CD_ClassificationSystemVersion.GetSingleKey(), 
                             MatchMode.Relaxed)?.Value).Trim();
                     var cls = (
                         "" +
-                        smc.Value.FindFirstSemanticIdAs<Property>(
+                        smc.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                             theDefs.CD_ProductClassId.GetSingleKey())?.Value).Trim();
 
                     if (sys != "" && cls != "")
@@ -555,7 +555,7 @@ namespace AasxPluginTechnicalData
 
         protected void TableAddPropertyRows_Recurse(
             ConceptModelZveiTechnicalData theDefs, string defaultLang, AdminShellPackageEnv package,
-            List<TripleRowData> rows, List<ISubmodelElement> smec, int depth = 0)
+            List<TripleRowData> rows, List<AasCore.Aas3_0_RC02.ISubmodelElement> smec, int depth = 0)
         {
             // access
             if (rows == null || smec == null)
@@ -614,7 +614,7 @@ namespace AasxPluginTechnicalData
                 }
 
                 // special function?
-                if (sme is SubmodelElementCollection &&
+                if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                         true == sme.SemanticId?.MatchesExactlyOneKey(
                             theDefs.CD_MainSection.GetSingleKey(), MatchMode.Relaxed))
                 {
@@ -630,10 +630,10 @@ namespace AasxPluginTechnicalData
                     // recurse into that (again, new group)
                     TableAddPropertyRows_Recurse(
                         theDefs, defaultLang, package, rows,
-                        (sme as SubmodelElementCollection).Value, depth + 1);
+                        (sme as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value, depth + 1);
                 }
                 else
-                if (sme is SubmodelElementCollection &&
+                if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                     true == sme.SemanticId?.MatchesExactlyOneKey(
                         theDefs.CD_SubSection.GetSingleKey(), MatchMode.Relaxed))
                 {
@@ -649,10 +649,10 @@ namespace AasxPluginTechnicalData
                     // recurse into that
                     TableAddPropertyRows_Recurse(
                         theDefs, defaultLang, package, rows,
-                        (sme as SubmodelElementCollection).Value, depth + 1);
+                        (sme as AasCore.Aas3_0_RC02.SubmodelElementCollection).Value, depth + 1);
                 }
                 else
-                if (sme is Property || sme is MultiLanguageProperty || sme is AasCore.Aas3_0_RC02.Range)
+                if (sme is AasCore.Aas3_0_RC02.Property || sme is AasCore.Aas3_0_RC02.MultiLanguageProperty || sme is AasCore.Aas3_0_RC02.Range)
                 {
                     rows.Add(new TripleRowData()
                     {
@@ -676,7 +676,7 @@ namespace AasxPluginTechnicalData
 
             // section Properties
             var smcProps =
-                sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+                sm.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                     theDefs.CD_TechnicalProperties.GetSingleKey(), MatchMode.Relaxed);
             if (smcProps == null)
                 return;
@@ -685,7 +685,7 @@ namespace AasxPluginTechnicalData
             var rows = new List<TripleRowData>();
             rows.Add(new TripleRowData()
             {
-                Name = "Property",
+                Name = "AasCore.Aas3_0_RC02.Property",
                 Semantics = "Semantics",
                 Value = "Value",
                 FontWeight = AnyUiFontWeight.Bold
@@ -717,12 +717,12 @@ namespace AasxPluginTechnicalData
             var validDate = "";
             var tsl = new List<string>();
 
-            var smcFurther = sm.SubmodelElements.FindFirstSemanticIdAs<SubmodelElementCollection>(
+            var smcFurther = sm.SubmodelElements.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.SubmodelElementCollection>(
                 theDefs.CD_FurtherInformation.GetSingleKey(), MatchMode.Relaxed);
             if (smcFurther != null)
             {
                 // single items
-                validDate = "" + smcFurther.Value.FindFirstSemanticIdAs<Property>(
+                validDate = "" + smcFurther.Value.FindFirstSemanticIdAs<AasCore.Aas3_0_RC02.Property>(
                     theDefs.CD_ValidDate.GetSingleKey(), MatchMode.Relaxed)?.Value;
 
                 // Lines

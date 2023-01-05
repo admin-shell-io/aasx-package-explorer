@@ -86,7 +86,7 @@ namespace AasxPackageLogic
     {
         public AnyUiLambdaActionNavigateTo() { }
         public AnyUiLambdaActionNavigateTo(
-            Reference targetReference,
+            AasCore.Aas3_0_RC02.Reference targetReference,
             bool translateAssetToAAS = false,
             bool alsoDereferenceObjects = true)
         {
@@ -94,7 +94,7 @@ namespace AasxPackageLogic
             this.translateAssetToAAS = translateAssetToAAS;
             this.alsoDereferenceObjects = alsoDereferenceObjects;
         }
-        public Reference targetReference;
+        public AasCore.Aas3_0_RC02.Reference targetReference;
         public bool translateAssetToAAS = false;
         public bool alsoDereferenceObjects = true;
     }
@@ -110,7 +110,7 @@ namespace AasxPackageLogic
         public string Filter;
 
         // out
-        public List<Key> ResultKeys;
+        public List<AasCore.Aas3_0_RC02.Key> ResultKeys;
         public VisualElementGeneric ResultVisualElement;
 
         public AnyUiDialogueDataSelectAasEntity(

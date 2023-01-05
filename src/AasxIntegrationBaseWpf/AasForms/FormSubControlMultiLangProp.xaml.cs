@@ -46,14 +46,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceMultiLangProp instance;
             public FormDescMultiLangProp desc;
-            public MultiLanguageProperty prop;
+            public AasCore.Aas3_0_RC02.MultiLanguageProperty prop;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceMultiLangProp;
                 dc.desc = dc.instance?.desc as FormDescMultiLangProp;
-                dc.prop = dc.instance?.sme as MultiLanguageProperty;
+                dc.prop = dc.instance?.sme as AasCore.Aas3_0_RC02.MultiLanguageProperty;
 
                 if (dc.instance == null || dc.desc == null || dc.prop == null)
                     return null;

@@ -653,12 +653,12 @@ namespace AasxIntegrationBase
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public Reference SubmodelRef;
+        public AasCore.Aas3_0_RC02.Reference SubmodelRef;
 
         /// <summary>
         /// Filled by the currently selected element.
         /// </summary>
-        public ISubmodelElement SubmodelElement;
+        public AasCore.Aas3_0_RC02.ISubmodelElement SubmodelElement;
 
         /// <summary>
         /// Gives the calling function the possibility to better handle messages

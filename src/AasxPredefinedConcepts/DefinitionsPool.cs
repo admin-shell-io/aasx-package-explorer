@@ -41,7 +41,7 @@ namespace AasxPredefinedConcepts
 
     public class DefinitionsPoolReferableEntity : DefinitionsPoolEntityBase
     {
-        public IReferable? Ref = null;
+        public AasCore.Aas3_0_RC02.IReferable? Ref = null;
         public string Name = "";
 
         public override string DisplayType
@@ -66,7 +66,7 @@ namespace AasxPredefinedConcepts
 
         public DefinitionsPoolReferableEntity() { }
 
-        public DefinitionsPoolReferableEntity(IReferable? Ref, string Domain = "", string Name = "")
+        public DefinitionsPoolReferableEntity(AasCore.Aas3_0_RC02.IReferable? Ref, string Domain = "", string Name = "")
         {
             this.Domain = Domain;
             this.Name = Name;
@@ -169,7 +169,7 @@ namespace AasxPredefinedConcepts
         // Methods
         //
 
-        public void IndexReferables(string Domain, IEnumerable<IReferable> indexRef)
+        public void IndexReferables(string Domain, IEnumerable<AasCore.Aas3_0_RC02.IReferable> indexRef)
         {
             foreach (var ir in indexRef)
             {

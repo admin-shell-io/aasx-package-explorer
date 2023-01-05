@@ -28,23 +28,23 @@ namespace AasxPackageExplorer
 {
     public static class TDJsonExport
     {
-        public static JObject createForms(ISubmodelElement formsSem)
+        public static JObject createForms(AasCore.Aas3_0_RC02.ISubmodelElement formsSem)
         {
             List<JObject> forms = new List<JObject>();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)formsSem.Copy();
-            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)formsSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
                 JObject formJObject = new JObject();
-                ISubmodelElement form = _tempChild;
+                AasCore.Aas3_0_RC02.ISubmodelElement form = _tempChild;
                 foreach (Qualifier smQualifier in form.Qualifiers)
                 {
                     formJObject[smQualifier.Type] = smQualifier.Value;
                 }
-                SubmodelElementCollection _formElementCollection = (SubmodelElementCollection)form.Copy();
-                foreach (ISubmodelElement _tempformElement in
+                AasCore.Aas3_0_RC02.SubmodelElementCollection _formElementCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)form.Copy();
+                foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempformElement in
                         _formElementCollection.EnumerateChildren())
                 {
-                    ISubmodelElement _formElement = _tempformElement;
+                    AasCore.Aas3_0_RC02.ISubmodelElement _formElement = _tempformElement;
                     if (_formElement.IdShort == "security")
                     {
                         List<string> securityList = new List<string>();
@@ -56,8 +56,8 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.IdShort == "scopes")
                     {
-                        SubmodelElementCollection _scopesCollection =
-                                    (SubmodelElementCollection)_formElement.Copy();
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _scopesCollection =
+                                    (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
                         List<string> scopesList = new List<string>();
                         foreach (Qualifier _scopeQual in _scopesCollection.Qualifiers)
                         {
@@ -67,9 +67,9 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.IdShort == "response")
                     {
-                        SubmodelElementCollection _response =
-                            (SubmodelElementCollection)_formElement.Copy();
-                        foreach (ISubmodelElement _tempResponse in _response.EnumerateChildren())
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _response =
+                            (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
+                        foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempResponse in _response.EnumerateChildren())
                         {
                             JObject contentTypeObject = new JObject();
                             contentTypeObject["contentType"] = (_tempResponse).ValueAsText();
@@ -78,10 +78,10 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.IdShort == "additionalResponses")
                     {
-                        SubmodelElementCollection _response =
-                            (SubmodelElementCollection)_formElement.Copy();
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _response =
+                            (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
                         JObject arJObject = new JObject();
-                        foreach (ISubmodelElement _tempResponse in _response.EnumerateChildren())
+                        foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempResponse in _response.EnumerateChildren())
                         {
                             if (_tempResponse.IdShort == "success")
                             {
@@ -98,8 +98,8 @@ namespace AasxPackageExplorer
                     }
                     else if (_formElement.IdShort == "op")
                     {
-                        SubmodelElementCollection _opCollection =
-                            (SubmodelElementCollection)_formElement.Copy();
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _opCollection =
+                            (AasCore.Aas3_0_RC02.SubmodelElementCollection)_formElement.Copy();
                         List<string> opList = new List<string>();
                         foreach (Qualifier _opQual in _opCollection.Qualifiers)
                         {
@@ -110,8 +110,8 @@ namespace AasxPackageExplorer
                     else
                     {
                         //formJObject[_formElement.IdShort] =
-                        //    _tempformElement.GetAs<Property>().Value.ToString();
-                        formJObject[_formElement.IdShort] = (_tempformElement as Property).Value.ToString();
+                        //    _tempformElement.GetAs<AasCore.Aas3_0_RC02.Property>().Value.ToString();
+                        formJObject[_formElement.IdShort] = (_tempformElement as AasCore.Aas3_0_RC02.Property).Value.ToString();
                     }
                 }
                 forms.Add(formJObject);
@@ -120,31 +120,31 @@ namespace AasxPackageExplorer
             formsjObject["forms"] = JToken.FromObject(forms);
             return formsjObject;
         }
-        public static JObject createuriVariables(ISubmodelElement uriSem)
+        public static JObject createuriVariables(AasCore.Aas3_0_RC02.ISubmodelElement uriSem)
         {
             JObject uriVarJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)uriSem.Copy();
-            foreach (ISubmodelElement _tempuriVarElement in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)uriSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempuriVarElement in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement _uriVariable = _tempuriVarElement;
+                AasCore.Aas3_0_RC02.ISubmodelElement _uriVariable = _tempuriVarElement;
                 uriVarJObject[_uriVariable.IdShort] = JToken.FromObject(createDataSchema(_uriVariable));
             }
             return uriVarJObject;
         }
-        public static JObject createArraySchema(ISubmodelElement sem)
+        public static JObject createArraySchema(AasCore.Aas3_0_RC02.ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
-            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)sem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement dsElement = _tempChild;
+                AasCore.Aas3_0_RC02.ISubmodelElement dsElement = _tempChild;
                 if (dsElement.IdShort == "items")
                 {
-                    SubmodelElementCollection _items = (SubmodelElementCollection)dsElement.Copy();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _items = (AasCore.Aas3_0_RC02.SubmodelElementCollection)dsElement.Copy();
                     List<JObject> itemsJObject = new List<JObject>();
-                    foreach (ISubmodelElement _itemTemp in _items.EnumerateChildren())
+                    foreach (AasCore.Aas3_0_RC02.ISubmodelElement _itemTemp in _items.EnumerateChildren())
                     {
-                        ISubmodelElement item = _itemTemp;
+                        AasCore.Aas3_0_RC02.ISubmodelElement item = _itemTemp;
                         JObject dsJObject = createDataSchema(item);
                         itemsJObject.Add(dsJObject);
                     }
@@ -161,21 +161,21 @@ namespace AasxPackageExplorer
             }
             return semJObject;
         }
-        public static JObject createObjectSchema(ISubmodelElement sem)
+        public static JObject createObjectSchema(AasCore.Aas3_0_RC02.ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
-            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)sem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement dsElement = _tempChild;
+                AasCore.Aas3_0_RC02.ISubmodelElement dsElement = _tempChild;
                 if (dsElement.IdShort == "properties")
                 {
-                    SubmodelElementCollection _properties =
-                        (SubmodelElementCollection)dsElement.Copy();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _properties =
+                        (AasCore.Aas3_0_RC02.SubmodelElementCollection)dsElement.Copy();
                     JObject propertiesJObject = new JObject();
-                    foreach (ISubmodelElement _itemTemp in _properties.EnumerateChildren())
+                    foreach (AasCore.Aas3_0_RC02.ISubmodelElement _itemTemp in _properties.EnumerateChildren())
                     {
-                        ISubmodelElement item = _itemTemp;
+                        AasCore.Aas3_0_RC02.ISubmodelElement item = _itemTemp;
                         JObject dsJObject = createDataSchema(item);
                         propertiesJObject[item.IdShort] = JToken.FromObject(dsJObject);
                     }
@@ -223,18 +223,18 @@ namespace AasxPackageExplorer
             }
             return enums;
         }
-        public static JObject createDataSchema(ISubmodelElement sem)
+        public static JObject createDataSchema(AasCore.Aas3_0_RC02.ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)sem.Copy();
             string dschemaType = "";
-            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement dsElement = _tempChild;
+                AasCore.Aas3_0_RC02.ISubmodelElement dsElement = _tempChild;
                 if (dsElement.IdShort == "titles")
                 {
                     JObject _titlesJObject = new JObject();
-                    MultiLanguageProperty mlp = (MultiLanguageProperty)dsElement.Copy();
+                    AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = (AasCore.Aas3_0_RC02.MultiLanguageProperty)dsElement.Copy();
                     var _titles = mlp.Value.Copy();
                     foreach (LangString _title in _titles)
                     {
@@ -245,11 +245,11 @@ namespace AasxPackageExplorer
                 if (dsElement.IdShort == "oneOf")
                 {
                     List<JObject> oneOfJObjects = new List<JObject>();
-                    SubmodelElementCollection _enumCOllection =
-                        (SubmodelElementCollection)dsElement.Copy();
-                    foreach (ISubmodelElement _temponeOf in _enumCOllection.EnumerateChildren())
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _enumCOllection =
+                        (AasCore.Aas3_0_RC02.SubmodelElementCollection)dsElement.Copy();
+                    foreach (AasCore.Aas3_0_RC02.ISubmodelElement _temponeOf in _enumCOllection.EnumerateChildren())
                     {
-                        ISubmodelElement _oneOf = _temponeOf;
+                        AasCore.Aas3_0_RC02.ISubmodelElement _oneOf = _temponeOf;
                         oneOfJObjects.Add(createDataSchema(_oneOf));
                     }
                     semJObject["oneOf"] = JToken.FromObject(oneOfJObjects);
@@ -362,13 +362,13 @@ namespace AasxPackageExplorer
 
             return semJObject;
         }
-        public static JObject createInteractionAvoidance(ISubmodelElement sem)
+        public static JObject createInteractionAvoidance(AasCore.Aas3_0_RC02.ISubmodelElement sem)
         {
             JObject semJObject = createDataSchema(sem);
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sem.Copy();
-            foreach (ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)sem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempChild in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement dsElement = _tempChild;
+                AasCore.Aas3_0_RC02.ISubmodelElement dsElement = _tempChild;
                 if (dsElement.IdShort == "forms")
                 {
                     semJObject["forms"] = createForms(dsElement)["forms"];
@@ -382,14 +382,14 @@ namespace AasxPackageExplorer
 
             return semJObject;
         }
-        public static JObject createTDProperties(ISubmodelElement propertiesSem)
+        public static JObject createTDProperties(AasCore.Aas3_0_RC02.ISubmodelElement propertiesSem)
         {
             JObject propertiesJObject = new JObject();
-            SubmodelElementCollection _tempCollection =
-                (SubmodelElementCollection)propertiesSem.Copy();
-            foreach (ISubmodelElement _tempProperty in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
+                (AasCore.Aas3_0_RC02.SubmodelElementCollection)propertiesSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempProperty in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement _propoerty = _tempProperty;
+                AasCore.Aas3_0_RC02.ISubmodelElement _propoerty = _tempProperty;
                 JObject propetyJObject = createInteractionAvoidance(_propoerty);
                 if (propetyJObject.ContainsKey("observable"))
                 {
@@ -399,18 +399,18 @@ namespace AasxPackageExplorer
             }
             return propertiesJObject;
         }
-        public static JObject createTDActions(ISubmodelElement actionsSem)
+        public static JObject createTDActions(AasCore.Aas3_0_RC02.ISubmodelElement actionsSem)
         {
             JObject actionsJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)actionsSem.Copy();
-            foreach (ISubmodelElement _tempAction in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)actionsSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempAction in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement _action = _tempAction;
+                AasCore.Aas3_0_RC02.ISubmodelElement _action = _tempAction;
                 JObject actionJObject = createInteractionAvoidance(_action);
-                SubmodelElementCollection _actionItems = (SubmodelElementCollection)_action.Copy();
-                foreach (ISubmodelElement _tempActionItem in _actionItems.EnumerateChildren())
+                AasCore.Aas3_0_RC02.SubmodelElementCollection _actionItems = (AasCore.Aas3_0_RC02.SubmodelElementCollection)_action.Copy();
+                foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempActionItem in _actionItems.EnumerateChildren())
                 {
-                    ISubmodelElement _actionItem = _tempActionItem;
+                    AasCore.Aas3_0_RC02.ISubmodelElement _actionItem = _tempActionItem;
                     if (_actionItem.IdShort == "input")
                     {
                         actionJObject["input"] = JToken.FromObject(createDataSchema(_actionItem));
@@ -431,20 +431,20 @@ namespace AasxPackageExplorer
             }
             return actionsJObject;
         }
-        public static JObject createTDEvents(ISubmodelElement eventsSem)
+        public static JObject createTDEvents(AasCore.Aas3_0_RC02.ISubmodelElement eventsSem)
         {
             JObject eventsJObject = new JObject();
-            SubmodelElementCollection _tempCollection =
-                (SubmodelElementCollection)eventsSem.Copy();
-            foreach (ISubmodelElement _tempEvent in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
+                (AasCore.Aas3_0_RC02.SubmodelElementCollection)eventsSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempEvent in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement _event = _tempEvent;
+                AasCore.Aas3_0_RC02.ISubmodelElement _event = _tempEvent;
                 JObject actionJObject = createInteractionAvoidance(_event);
-                SubmodelElementCollection _eventItems =
-                    (SubmodelElementCollection)_event.Copy();
-                foreach (ISubmodelElement _tempEventItem in _eventItems.EnumerateChildren())
+                AasCore.Aas3_0_RC02.SubmodelElementCollection _eventItems =
+                    (AasCore.Aas3_0_RC02.SubmodelElementCollection)_event.Copy();
+                foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempEventItem in _eventItems.EnumerateChildren())
                 {
-                    ISubmodelElement _eventItem = _tempEventItem;
+                    AasCore.Aas3_0_RC02.ISubmodelElement _eventItem = _tempEventItem;
                     if (_eventItem.IdShort == "subscription")
                     {
                         actionJObject["subscription"] = JToken.FromObject(createDataSchema(_eventItem));
@@ -462,13 +462,13 @@ namespace AasxPackageExplorer
             }
             return eventsJObject;
         }
-        public static JObject createTDLinks(ISubmodelElement linksSem)
+        public static JObject createTDLinks(AasCore.Aas3_0_RC02.ISubmodelElement linksSem)
         {
             List<JObject> links = new List<JObject>();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)linksSem.Copy();
-            foreach (ISubmodelElement _tempLink in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)linksSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempLink in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement link = _tempLink;
+                AasCore.Aas3_0_RC02.ISubmodelElement link = _tempLink;
                 JObject jObject = new JObject();
                 foreach (Qualifier linkItem in link.Qualifiers)
                 {
@@ -480,10 +480,10 @@ namespace AasxPackageExplorer
             linksJObject["links"] = JToken.FromObject(links);
             return linksJObject;
         }
-        public static JObject createTDSecurity(ISubmodelElement securitySem)
+        public static JObject createTDSecurity(AasCore.Aas3_0_RC02.ISubmodelElement securitySem)
         {
-            SubmodelElementCollection _tempCollection =
-                (SubmodelElementCollection)securitySem.Copy();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
+                (AasCore.Aas3_0_RC02.SubmodelElementCollection)securitySem.Copy();
             List<string> securityList = new List<string>();
             foreach (Qualifier _security in _tempCollection.Qualifiers)
             {
@@ -494,7 +494,7 @@ namespace AasxPackageExplorer
             return securityJObject;
         }
 
-        public static JObject createSecurityScheme(ISubmodelElement sschemaSem)
+        public static JObject createSecurityScheme(AasCore.Aas3_0_RC02.ISubmodelElement sschemaSem)
         {
             JObject sschemaJOBject = new JObject();
             foreach (Qualifier smQualifier in sschemaSem.Qualifiers)
@@ -525,16 +525,16 @@ namespace AasxPackageExplorer
 
             return sschemaJOBject;
         }
-        public static JObject createTDSecurityDefinitions(ISubmodelElement sdSem)
+        public static JObject createTDSecurityDefinitions(AasCore.Aas3_0_RC02.ISubmodelElement sdSem)
         {
             JObject securityDefinitionsJObject = new JObject();
-            SubmodelElementCollection _tempCollection = (SubmodelElementCollection)sdSem.Copy();
-            foreach (ISubmodelElement _tempSD in _tempCollection.EnumerateChildren())
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection = (AasCore.Aas3_0_RC02.SubmodelElementCollection)sdSem.Copy();
+            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _tempSD in _tempCollection.EnumerateChildren())
             {
-                ISubmodelElement _securityDefinition = _tempSD;
+                AasCore.Aas3_0_RC02.ISubmodelElement _securityDefinition = _tempSD;
                 JObject securityJObject = createSecurityScheme(_securityDefinition);
-                SubmodelElementCollection _securityDItems =
-                    (SubmodelElementCollection)_securityDefinition.Copy();
+                AasCore.Aas3_0_RC02.SubmodelElementCollection _securityDItems =
+                    (AasCore.Aas3_0_RC02.SubmodelElementCollection)_securityDefinition.Copy();
                 foreach (var temp in (JToken)securityJObject)
                 {
                     JProperty secObject = (JProperty)temp;
@@ -544,11 +544,11 @@ namespace AasxPackageExplorer
                         string securityScheme = (secObject.Value).ToString();
                         if (securityScheme == "combo")
                         {
-                            foreach (ISubmodelElement _temp_combosecurityDItems in
+                            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _temp_combosecurityDItems in
                                 _securityDItems.EnumerateChildren())
                             {
-                                SubmodelElementCollection csdItem =
-                                    (SubmodelElementCollection)_temp_combosecurityDItems.Copy();
+                                AasCore.Aas3_0_RC02.SubmodelElementCollection csdItem =
+                                    (AasCore.Aas3_0_RC02.SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
                                 foreach (Qualifier _csdQual in csdItem.Qualifiers)
                                 {
@@ -562,11 +562,11 @@ namespace AasxPackageExplorer
                         }
                         if (securityScheme == "oauth2")
                         {
-                            foreach (ISubmodelElement _temp_combosecurityDItems in
+                            foreach (AasCore.Aas3_0_RC02.ISubmodelElement _temp_combosecurityDItems in
                                 _securityDItems.EnumerateChildren())
                             {
-                                SubmodelElementCollection oauth2SDItem =
-                                    (SubmodelElementCollection)_temp_combosecurityDItems.Copy();
+                                AasCore.Aas3_0_RC02.SubmodelElementCollection oauth2SDItem =
+                                    (AasCore.Aas3_0_RC02.SubmodelElementCollection)_temp_combosecurityDItems.Copy();
                                 List<string> csdItemList = new List<string>();
                                 foreach (Qualifier _csdQual in oauth2SDItem.Qualifiers)
                                 {
@@ -583,11 +583,11 @@ namespace AasxPackageExplorer
             }
             return securityDefinitionsJObject;
         }
-        public static JObject createTDProfile(ISubmodelElement profileSem)
+        public static JObject createTDProfile(AasCore.Aas3_0_RC02.ISubmodelElement profileSem)
         {
             JObject profileJObject = new JObject();
-            SubmodelElementCollection _tempCollection =
-                (SubmodelElementCollection)profileSem.Copy();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tempCollection =
+                (AasCore.Aas3_0_RC02.SubmodelElementCollection)profileSem.Copy();
             List<string> profileList = new List<string>();
             foreach (Qualifier _profileQual in _tempCollection.Qualifiers)
             {
@@ -596,7 +596,7 @@ namespace AasxPackageExplorer
             profileJObject["profile"] = JToken.FromObject(profileList);
             return profileJObject;
         }
-        public static JObject createTDSchemaDefinitions(ISubmodelElement sem)
+        public static JObject createTDSchemaDefinitions(AasCore.Aas3_0_RC02.ISubmodelElement sem)
         {
             JObject semJObject = new JObject();
             return semJObject;
@@ -659,9 +659,9 @@ namespace AasxPackageExplorer
                 TDJson["id"] = sm.Id;
                 if (sm.SubmodelElements != null)
                 {
-                    foreach (ISubmodelElement tdElementWrapper in sm.SubmodelElements)
+                    foreach (AasCore.Aas3_0_RC02.ISubmodelElement tdElementWrapper in sm.SubmodelElements)
                     {
-                        ISubmodelElement tdElement = tdElementWrapper;
+                        AasCore.Aas3_0_RC02.ISubmodelElement tdElement = tdElementWrapper;
                         if (tdElement.IdShort == "@type")
                         {
                             List<object> typeList = new List<object>();
@@ -675,7 +675,7 @@ namespace AasxPackageExplorer
                         if (tdElement.IdShort == "titles")
                         {
                             JObject _titlesJObject = new JObject();
-                            MultiLanguageProperty mlp = (MultiLanguageProperty)tdElement.Copy();
+                            AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = (AasCore.Aas3_0_RC02.MultiLanguageProperty)tdElement.Copy();
                             var _titles = mlp.Value.Copy();
                             foreach (LangString _title in _titles)
                             {

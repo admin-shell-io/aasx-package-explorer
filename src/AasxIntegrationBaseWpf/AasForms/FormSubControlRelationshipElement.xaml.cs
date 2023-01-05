@@ -41,22 +41,22 @@ namespace AasxIntegrationBase.AasForms
         public class ViewModel : WpfViewModelBase
         {
             // data binded properties
-            private Reference storedFirst = null;
-            private Reference storedSecond = null;
+            private AasCore.Aas3_0_RC02.Reference storedFirst = null;
+            private AasCore.Aas3_0_RC02.Reference storedSecond = null;
 
-            public Reference StoredFirst
+            public AasCore.Aas3_0_RC02.Reference StoredFirst
             {
                 get { return storedFirst; }
                 set { storedFirst = value; OnPropertyChanged("InfoFirst"); }
             }
 
-            public Reference StoredSecond
+            public AasCore.Aas3_0_RC02.Reference StoredSecond
             {
                 get { return storedSecond; }
                 set { storedSecond = value; OnPropertyChanged("InfoSecond"); }
             }
 
-            public static string FormatReference(Reference rf)
+            public static string FormatReference(AasCore.Aas3_0_RC02.Reference rf)
             {
                 if (rf == null)
                     return "(no reference set)";
@@ -75,14 +75,14 @@ namespace AasxIntegrationBase.AasForms
         {
             public FormInstanceRelationshipElement instance;
             public FormDescRelationshipElement desc;
-            public RelationshipElement relElem;
+            public AasCore.Aas3_0_RC02.RelationshipElement relElem;
 
             public static IndividualDataContext CreateDataContext(object dataContext)
             {
                 var dc = new IndividualDataContext();
                 dc.instance = dataContext as FormInstanceRelationshipElement;
                 dc.desc = dc.instance?.desc as FormDescRelationshipElement;
-                dc.relElem = dc.instance?.sme as RelationshipElement;
+                dc.relElem = dc.instance?.sme as AasCore.Aas3_0_RC02.RelationshipElement;
 
                 if (dc.instance == null || dc.desc == null || dc.relElem == null)
                     return null;
@@ -152,7 +152,7 @@ namespace AasxIntegrationBase.AasForms
                             if (revt is AasxPluginEventReturnSelectAasEntity rsel && rsel.resultKeys != null)
                             {
                                 dc.instance.Touch();
-                                var newr = new Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
+                                var newr = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.ModelReference, rsel.resultKeys);
 
                                 if (storedII == 0)
                                 {

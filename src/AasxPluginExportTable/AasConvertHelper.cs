@@ -22,7 +22,7 @@ namespace AasxPluginExportTable
 {
     public static class AasConvertHelper
     {
-        public static void TakeOverSmeToSm(ISubmodelElement sme, Submodel sm)
+        public static void TakeOverSmeToSm(AasCore.Aas3_0_RC02.ISubmodelElement sme, Submodel sm)
         {
             // access
             if (sme == null || sm == null)

@@ -57,7 +57,7 @@ namespace AasxPluginExportTable
             if (sm == null || _job.Top == null || _job.Body == null)
                 return;
             if (sm.SubmodelElements == null)
-                sm.SubmodelElements = new List<ISubmodelElement>();
+                sm.SubmodelElements = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
 
             // prepare matchers
             _matcherTop = _job.Top.Select((s) => ImportCellMatcherBase.Create(s)).ToList();
@@ -121,8 +121,8 @@ namespace AasxPluginExportTable
 
         protected class ContextResult
         {
-            public IReferable Elem;
-            public List<ISubmodelElement> Childs;
+            public AasCore.Aas3_0_RC02.IReferable Elem;
+            public List<AasCore.Aas3_0_RC02.ISubmodelElement> Childs;
         }
 
         protected class FilteredElementName
@@ -242,10 +242,10 @@ namespace AasxPluginExportTable
             // Note: value data is not required, as fixed to SMC!
 
             var sme = AdminShellUtil.CreateSubmodelElementFromEnum(fen.SmeEnum.Value, context.Parent);
-            if (!(sme is SubmodelElementCollection smesmc))
+            if (!(sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smesmc))
                 return null;
 
-            smesmc.Value = new List<ISubmodelElement>();
+            smesmc.Value = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
 
             res = new ContextResult()
             {
@@ -257,14 +257,14 @@ namespace AasxPluginExportTable
             // does only search SME but no SM, however, this is not a flaw, as adding to SM is the default
             if (actInHierarchy && context.ParentParentName.HasContent() && context.Parent.IdShort.HasContent())
             {
-                foreach (var rootsmc in _sm.SubmodelElements.FindDeep<SubmodelElementCollection>((testsmc) =>
+                foreach (var rootsmc in _sm.SubmodelElements.FindDeep<AasCore.Aas3_0_RC02.SubmodelElementCollection>((testsmc) =>
                 {
                     // first condition is, that the parents match!
                     if (!testsmc.IdShort.HasContent() || testsmc.Parent == null)
                         return false;
 
                     // try testing of allowed parent names
-                    if (!(testsmc.Parent is IReferable testsmcpar))
+                    if (!(testsmc.Parent is AasCore.Aas3_0_RC02.IReferable testsmcpar))
                         return false;
                     var test1 = context.ParentParentName.ToLower().Contains(testsmcpar.IdShort.ToLower().Trim());
                     var test2 = false;
@@ -337,7 +337,7 @@ namespace AasxPluginExportTable
             var res = new ContextResult() { Elem = sme };
 
             // allow a selection a values
-            if (sme is Property prop)
+            if (sme is AasCore.Aas3_0_RC02.Property prop)
             {
                 prop.Value = context.SmeValue;
 
@@ -345,7 +345,7 @@ namespace AasxPluginExportTable
                 prop.ValueType = Stringification.DataTypeDefXsdFromString(fen.ValueType) ?? DataTypeDefXsd.String;
             }
 
-            if (sme is MultiLanguageProperty mlp)
+            if (sme is AasCore.Aas3_0_RC02.MultiLanguageProperty mlp)
             {
                 mlp.Value = ExtendLangStringSet.Create(ExtendLangString.LANG_DEFAULT, context.SmeValue);
             }
@@ -355,9 +355,9 @@ namespace AasxPluginExportTable
                 file.Value = context.SmeValue;
             }
 
-            if (sme is SubmodelElementCollection smc)
+            if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection smc)
             {
-                smc.Value = new List<ISubmodelElement>();
+                smc.Value = new List<AasCore.Aas3_0_RC02.ISubmodelElement>();
                 res.Childs = smc.Value;
             }
 
@@ -384,7 +384,7 @@ namespace AasxPluginExportTable
                 // generate a new one for SME + CD
                 // this modifies the SME!
                 var id = AdminShellUtil.GenerateIdAccordingTemplate(_options.TemplateIdConceptDescription);
-                context.Sme.SemanticId = ExtendReference.CreateFromKey(KeyTypes.GlobalReference, id);
+                context.Sme.SemanticId = ExtendReference.CreateFromKey(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id);
             }
 
             // create, add

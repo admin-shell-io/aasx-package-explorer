@@ -276,7 +276,7 @@ namespace AasxPackageLogic.PackageCentral
                     {
                         var asset = new AssetInformation(AssetKind.Instance);
                         //TODO:jtikekar globalAssetId or SpecficAssetId??
-                        asset.GlobalAssetId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, id) });
+                        asset.GlobalAssetId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, id) });
                         //asset.identification = new Identification(
                         //    Identification.IRI, "" + id);
                     }

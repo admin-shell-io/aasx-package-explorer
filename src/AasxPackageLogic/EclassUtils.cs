@@ -528,10 +528,10 @@ namespace AasxPackageLogic
                     // isCase of
                     if(res.IsCaseOf.IsNullOrEmpty())
                     {
-                        res.IsCaseOf = new List<Reference>();
+                        res.IsCaseOf = new List<AasCore.Aas3_0_RC02.Reference>();
                     }
 
-                    res.IsCaseOf.Add(new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, input[i].IRDI) }));
+                    res.IsCaseOf.Add(new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, input[i].IRDI) }));
 
                     // administration
                     res.Administration = new AdministrativeInformation();
@@ -574,7 +574,7 @@ namespace AasxPackageLogic
                                     foreach (var xiun in GetChildNodesByName(xi.ContentNode, "unitsml:UnitName"))
                                         if (xiun != null)
                                         {
-                                            ds.UnitId = new Reference(ReferenceTypes.GlobalReference, new List<Key>() { new Key(KeyTypes.GlobalReference, urefIrdi.Trim()) });
+                                            ds.UnitId = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.GlobalReference, urefIrdi.Trim()) });
                                             ds.Unit = xiun.InnerText.Trim();
                                         }
                                 }

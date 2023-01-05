@@ -35,8 +35,8 @@ namespace AasxPackageExplorer
         }
 
         // TD DataSchema Sub classes
-        public static SubmodelElementCollection BuildArraySchema(
-                SubmodelElementCollection dsCollection, JToken arrayJObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildArraySchema(
+                AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken arrayJObject)
         {
             foreach (var temp in arrayJObject)
             {
@@ -52,7 +52,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("items"))
                 {
-                    SubmodelElementCollection items = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection items = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     if ((arrayJObject["items"].Type).ToString() == "Array")
                     {
                         int i = 0;
@@ -60,7 +60,7 @@ namespace AasxPackageExplorer
                         {
                             string jProperty = x.ToString();
                             JObject _jObject = JObject.Parse(jProperty);
-                            SubmodelElementCollection _item = BuildAbstractDataSchema
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _item = BuildAbstractDataSchema
                                                                         (_jObject, "item" + (i).ToString(), "item");
                             i = i + 1;
                             _item.SemanticId = createSemanticID("item");
@@ -71,7 +71,7 @@ namespace AasxPackageExplorer
                     {
                         string jItem = (arrayJObject["items"]).ToString();
                         JObject _jObject = JObject.Parse(jItem);
-                        SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1", "item");
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _item = BuildAbstractDataSchema(_jObject, "item1", "item");
                         _item.SemanticId = createSemanticID("item");
                         items.Add(_item);
                     }
@@ -84,8 +84,8 @@ namespace AasxPackageExplorer
 
             return dsCollection;
         }
-        public static SubmodelElementCollection BuildNumberSchema(
-            SubmodelElementCollection dsCollection, JToken numberJObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildNumberSchema(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken numberJObject)
         {
             foreach (var temp in numberJObject)
             {
@@ -117,8 +117,8 @@ namespace AasxPackageExplorer
             }
             return dsCollection;
         }
-        public static SubmodelElementCollection BuildIntegerSchema(
-            SubmodelElementCollection dsCollection, JToken interJObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildIntegerSchema(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken interJObject)
         {
             foreach (var temp in interJObject)
             {
@@ -150,8 +150,8 @@ namespace AasxPackageExplorer
             }
             return dsCollection;
         }
-        public static SubmodelElementCollection BuildStringSchema(
-            SubmodelElementCollection dsCollection, JToken stringjObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildStringSchema(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken stringjObject)
         {
             foreach (var temp in stringjObject)
             {
@@ -186,8 +186,8 @@ namespace AasxPackageExplorer
 
             return dsCollection;
         }
-        public static SubmodelElementCollection BuildObjectSchema(
-            SubmodelElementCollection dsCollection, JToken objectjObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildObjectSchema(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection dsCollection, JToken objectjObject)
         {
             foreach (var temp in objectjObject)
             {
@@ -195,7 +195,7 @@ namespace AasxPackageExplorer
                 string key = objectElement.Name.ToString();
                 if (key == ("required"))
                 {
-                    SubmodelElementCollection requireds = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection requireds = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     requireds.IdShort = "required";
                     requireds.AddDescription("en", "Defines which members of the object type are mandatory.");
                     requireds.Qualifiers = new List<Qualifier>();
@@ -211,7 +211,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == ("properties"))
                 {
-                    SubmodelElementCollection _properties = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _properties = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     _properties.IdShort = "properties";
                     _properties.Category = "PARAMETER";
                     //_properties.ordered = false;
@@ -223,7 +223,7 @@ namespace AasxPackageExplorer
                     {
                         JProperty x = (JProperty)temp1;
                         JObject _propertyJobject = JObject.FromObject(x.Value);
-                        SubmodelElementCollection _propertyC = BuildAbstractDataSchema(
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _propertyC = BuildAbstractDataSchema(
                                                                     _propertyJobject, x.Name.ToString(), "property");
                         _propertyC.SemanticId = createSemanticID("property");
                         _properties.Add(_propertyC);
@@ -236,11 +236,11 @@ namespace AasxPackageExplorer
             return dsCollection;
         }
 
-        // AAS SubmodelMultiLanguage Property
-        public static MultiLanguageProperty BuildMultiLanguageProperty(
+        // AAS SubmodelMultiLanguage AasCore.Aas3_0_RC02.Property
+        public static AasCore.Aas3_0_RC02.MultiLanguageProperty BuildMultiLanguageProperty(
             string idShort, List<LangString> texts, string description)
         {
-            MultiLanguageProperty _multiLanguageProperty = new MultiLanguageProperty();
+            AasCore.Aas3_0_RC02.MultiLanguageProperty _multiLanguageProperty = new AasCore.Aas3_0_RC02.MultiLanguageProperty();
             _multiLanguageProperty.IdShort = idShort;
             _multiLanguageProperty.Category = "PARAMETER";
             _multiLanguageProperty.Kind = ModelingKind.Instance;
@@ -253,9 +253,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Forms
-        public static SubmodelElementCollection BuildAdditionalResponse(JObject jobject, string idshort)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAdditionalResponse(JObject jobject, string idshort)
         {
-            SubmodelElementCollection arCollection = new()
+            AasCore.Aas3_0_RC02.SubmodelElementCollection arCollection = new()
             {
                 IdShort = idshort,
                 Category = "PARAMETER",
@@ -284,10 +284,10 @@ namespace AasxPackageExplorer
         // ConstructCommon Elements
 
         // TD DataSchema
-        public static SubmodelElementCollection BuildAbstractDataSchema(
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAbstractDataSchema(
             JObject dsjObject, string idShort, string type)
         {
-            SubmodelElementCollection abstractDS = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection abstractDS = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             abstractDS.IdShort = idShort;
             abstractDS.Category = "PARAMETER";
             //abstractDS.ordered = false;
@@ -328,7 +328,7 @@ namespace AasxPackageExplorer
                                                             (x.Name).ToString(), (x.Value).ToString());
                         titleList.Add(title);
                     }
-                    MultiLanguageProperty mlp = BuildMultiLanguageProperty(
+                    AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(
                                                           key, titleList, "Provides multi-language " +
                                                           "human-readable titles (e.g., display a text for " +
                                                           "UI representation in different languages)");
@@ -336,7 +336,7 @@ namespace AasxPackageExplorer
                 }
                 if (key == "oneOf")
                 {
-                    SubmodelElementCollection oneOf = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection oneOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     oneOf.IdShort = "oneOf";
                     oneOf.Category = "PARAMETER";
                     //oneOf.ordered = false;
@@ -392,8 +392,8 @@ namespace AasxPackageExplorer
                 {
                     if (dsArrayList.Contains(key))
                     {
-                        SubmodelElementCollection arrayCollection = new
-                                                        SubmodelElementCollection();
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection arrayCollection = new
+                                                        AasCore.Aas3_0_RC02.SubmodelElementCollection();
                         arrayCollection.IdShort = key;
                         arrayCollection.Category = "PARAMETER";
                         //arrayCollection.ordered = false;
@@ -425,14 +425,14 @@ namespace AasxPackageExplorer
         }
 
         // TD Interaction Avoidance
-        public static SubmodelElementCollection BuildAbstractInteractionAvoidance(
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildAbstractInteractionAvoidance(
             JObject jObject, string idShort, string type)
         {
-            SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _interactionAffordance = BuildAbstractDataSchema(
                                                         jObject, idShort, type);
             if (jObject.ContainsKey("uriVariables"))
             {
-                SubmodelElementCollection _uriVariables = new SubmodelElementCollection();
+                AasCore.Aas3_0_RC02.SubmodelElementCollection _uriVariables = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                 _uriVariables.IdShort = "uriVariables";
                 _uriVariables.Category = "PARAMETER";
                 //_uriVariables.ordered = false;
@@ -456,10 +456,10 @@ namespace AasxPackageExplorer
         }
 
         // TD Properties
-        public static SubmodelElementCollection BuildTDProperty(
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDProperty(
                                                 JObject _propertyJObject, string propertyName)
         {
-            SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdProperty = BuildAbstractInteractionAvoidance(
                                                                 _propertyJObject, propertyName, "property");
             _tdProperty.SemanticId = createSemanticID("property");
             if (_propertyJObject.ContainsKey("observable"))
@@ -479,9 +479,9 @@ namespace AasxPackageExplorer
             }
             return _tdProperty;
         }
-        public static SubmodelElementCollection BuildTDProperties(JObject tdObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDProperties(JObject tdObject)
         {
-            SubmodelElementCollection tdProperties = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection tdProperties = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             tdProperties.IdShort = "properties";
             tdProperties.Category = "PARAMETER";
             //tdProperties.ordered = false;
@@ -499,9 +499,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Events
-        public static SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDEvent(JObject _eventJObject, string actionName)
         {
-            SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdEvent = BuildAbstractInteractionAvoidance(
                 _eventJObject, actionName, "event");
             _tdEvent.SemanticId = createSemanticID("event");
             string[] dsList = { "subscription", "data", "cancellation" };
@@ -516,9 +516,9 @@ namespace AasxPackageExplorer
             }
             return _tdEvent;
         }
-        public static SubmodelElementCollection BuildTDEvents(JObject jObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDEvents(JObject jObject)
         {
-            SubmodelElementCollection tdEvents = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection tdEvents = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             tdEvents.IdShort = "events";
             tdEvents.Category = "PARAMETER";
             //tdEvents.ordered = false;
@@ -535,9 +535,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Actions
-        public static SubmodelElementCollection BuildTDActions(JObject jObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDActions(JObject jObject)
         {
-            SubmodelElementCollection tdActions = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection tdActions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             tdActions.IdShort = "actions";
             tdActions.Category = "PARAMETER";
             //tdActions.ordered = false;
@@ -553,9 +553,9 @@ namespace AasxPackageExplorer
             }
             return tdActions;
         }
-        public static SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDAction(JObject _actionJObject, string actionName)
         {
-            SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdAction = BuildAbstractInteractionAvoidance(
                 _actionJObject, actionName, "action");
             _tdAction.SemanticId = createSemanticID("action");
             string[] dsList = { "input", "output" };
@@ -577,9 +577,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Links
-        public static SubmodelElementCollection BuildTDLink(JObject linkJObject, string idShort)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDLink(JObject linkJObject, string idShort)
         {
-            SubmodelElementCollection _tdLink = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _tdLink = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             _tdLink.IdShort = idShort;
             _tdLink.Category = "PARAMETER";
             //_tdLink.ordered = false;
@@ -602,9 +602,9 @@ namespace AasxPackageExplorer
             }
             return _tdLink;
         }
-        public static SubmodelElementCollection BuildTDLinks(JObject jObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDLinks(JObject jObject)
         {
-            SubmodelElementCollection tdLinks = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection tdLinks = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             tdLinks.IdShort = "links";
             tdLinks.Category = "PARAMETER";
             //tdLinks.ordered = false;
@@ -623,10 +623,10 @@ namespace AasxPackageExplorer
         }
 
         // TD Security Definition
-        public static SubmodelElementCollection BuildSecurityDefinition(
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildSecurityDefinition(
                     JObject jObject, string definitionName)
         {
-            SubmodelElementCollection _securityDefinition = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _securityDefinition = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             _securityDefinition.IdShort = definitionName;
             _securityDefinition.Category = "PARAMETER";
             //_securityDefinition.ordered = false;
@@ -664,7 +664,7 @@ namespace AasxPackageExplorer
                     {
                         if ((jObject["oneOf"].Type).ToString() == "Array")
                         {
-                            SubmodelElementCollection _oneOf = new SubmodelElementCollection();
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _oneOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                             _oneOf.IdShort = "oneOf";
                             _oneOf.Category = "PARAMETER";
                             //_oneOf.ordered = false;
@@ -693,7 +693,7 @@ namespace AasxPackageExplorer
                     {
                         if ((jObject["allOf"].Type).ToString() == "Array")
                         {
-                            SubmodelElementCollection _allOf = new SubmodelElementCollection();
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _allOf = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                             _allOf.IdShort = "oneOf";
                             _allOf.Category = "PARAMETER";
                             //_allOf.ordered = false;
@@ -824,7 +824,7 @@ namespace AasxPackageExplorer
                         }
                         if ((jObject["scopes"].Type).ToString() == "Array")
                         {
-                            SubmodelElementCollection _scopes = new SubmodelElementCollection();
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _scopes = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                             _scopes.IdShort = "scopes";
                             _scopes.Category = "PARAMETER";
                             //_scopes.ordered = false;
@@ -853,10 +853,10 @@ namespace AasxPackageExplorer
             }
             return _securityDefinition;
         }
-        public static SubmodelElementCollection BuildTDSecurityDefinitions(JObject jObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDSecurityDefinitions(JObject jObject)
         {
 
-            SubmodelElementCollection _securityDefinitions = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _securityDefinitions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             _securityDefinitions.IdShort = "securityDefinitions";
             _securityDefinitions.Category = "PARAMETER";
             //_securityDefinitions.ordered = false;
@@ -876,9 +876,9 @@ namespace AasxPackageExplorer
         }
 
         // TD Forms
-        public static SubmodelElementCollection BuildTDForm(JObject formjObject, string idShort)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildTDForm(JObject formjObject, string idShort)
         {
-            SubmodelElementCollection tdForm = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection tdForm = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             tdForm.IdShort = idShort;
             tdForm.Category = "PARAMETER";
             //tdForm.ordered = false;
@@ -897,7 +897,7 @@ namespace AasxPackageExplorer
                 string key = formElement.Name.ToString();
                 if (key == "response") // Need to check 
                 {
-                    SubmodelElementCollection _response = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _response = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     _response.IdShort = "response";
                     _response.Category = "PARAMETER";
                     //_response.ordered = false;
@@ -912,7 +912,7 @@ namespace AasxPackageExplorer
                 }
                 else if (key == "additionalResponses") // Need to check 
                 {
-                    SubmodelElementCollection _response = new SubmodelElementCollection();
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection _response = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                     _response.IdShort = "additionalResponses";
                     _response.Category = "PARAMETER";
                     //_response.ordered = false;
@@ -943,7 +943,7 @@ namespace AasxPackageExplorer
                 {
                     if (qualArrayList.Contains(formElement.Name))
                     {
-                        SubmodelElementCollection _arrayElement = new SubmodelElementCollection();
+                        AasCore.Aas3_0_RC02.SubmodelElementCollection _arrayElement = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                         _arrayElement.IdShort = key;
                         _arrayElement.Category = "PARAMETER";
                         //_arrayElement.ordered = false;
@@ -982,9 +982,9 @@ namespace AasxPackageExplorer
             }
             return tdForm;
         }
-        public static SubmodelElementCollection BuildForms(JObject tdJObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildForms(JObject tdJObject)
         {
-            SubmodelElementCollection forms = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection forms = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             forms.IdShort = "forms";
             forms.Category = "PARAMETER";
             //forms.ordered = false;
@@ -1002,14 +1002,14 @@ namespace AasxPackageExplorer
         }
 
         // AAS Semantic ID
-        public static Reference createSemanticID(string tdType)
+        public static AasCore.Aas3_0_RC02.Reference createSemanticID(string tdType)
         {
-            //Key tdSemanticKey = new Key();
+            //AasCore.Aas3_0_RC02.Key tdSemanticKey = new AasCore.Aas3_0_RC02.Key();
             //tdSemanticKey.Type = "GlobalReference";
             //tdSemanticKey.local = true;
             //tdSemanticKey.idType = "IRI";
             //tdSemanticKey.Value = TDSemanticId.getSemanticID(tdType);
-            Reference tdSemanticId = new(ReferenceTypes.GlobalReference, new List<Key>() { new Key((KeyTypes)Stringification.KeyTypesFromString(tdType), TDSemanticId.getSemanticID(tdType)) });
+            AasCore.Aas3_0_RC02.Reference tdSemanticId = new(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key((AasCore.Aas3_0_RC02.KeyTypes)Stringification.KeyTypesFromString(tdType), TDSemanticId.getSemanticID(tdType)) });
 
             return tdSemanticId;
         }
@@ -1026,9 +1026,9 @@ namespace AasxPackageExplorer
         }
 
 
-        public static SubmodelElementCollection BuildschemaDefinitions(JObject tdJObject)
+        public static AasCore.Aas3_0_RC02.SubmodelElementCollection BuildschemaDefinitions(JObject tdJObject)
         {
-            SubmodelElementCollection _schemaDefinitions = new SubmodelElementCollection();
+            AasCore.Aas3_0_RC02.SubmodelElementCollection _schemaDefinitions = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             _schemaDefinitions.IdShort = "schemaDefinitions";
             _schemaDefinitions.Category = "PARAMETER";
             _schemaDefinitions.Kind = ModelingKind.Instance;
@@ -1047,7 +1047,7 @@ namespace AasxPackageExplorer
         }
         public static JObject ImportTDJsontoSubModel(
             string inputFn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
-            Reference smref)
+            AasCore.Aas3_0_RC02.Reference smref)
         {
             JObject exportData = new JObject();
             try
@@ -1090,7 +1090,7 @@ namespace AasxPackageExplorer
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                        AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
                             "Provides multi-language human-readable titles (e.g., display a text for UI" +
                             "representation in different languages)");
                         sm.Add(mlp);
@@ -1100,7 +1100,7 @@ namespace AasxPackageExplorer
                     {
                         string id = thingE.Value.ToString();
                         sm.Id = id;
-                        smref.Keys[0] = new Key(KeyTypes.Submodel, id);
+                        smref.Keys[0] = new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, id);
                     }
                     if (key == "properties")
                     {
@@ -1136,7 +1136,7 @@ namespace AasxPackageExplorer
                                 (x.Value).ToString());
                             titleList.Add(title);
                         }
-                        MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
+                        AasCore.Aas3_0_RC02.MultiLanguageProperty mlp = BuildMultiLanguageProperty(key, titleList,
                             "Provides multi-language human-readable titles (e.g., display a text for UI " +
                             "representation in different languages)");
                         sm.Add(mlp);
@@ -1168,7 +1168,7 @@ namespace AasxPackageExplorer
                         };
                         if (key == "@context")
                         {
-                            SubmodelElementCollection _context = new SubmodelElementCollection();
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _context = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                             _context.IdShort = key;
                             _context.Category = "PARAMETER";
                             //_context.ordered = false;
@@ -1197,7 +1197,7 @@ namespace AasxPackageExplorer
                         }
                         if (tdArrayList.Contains(key))
                         {
-                            SubmodelElementCollection _profile = new SubmodelElementCollection();
+                            AasCore.Aas3_0_RC02.SubmodelElementCollection _profile = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
                             _profile.IdShort = key;
                             _profile.Category = "PARAMETER";
                             //_profile.ordered = false;

@@ -36,12 +36,12 @@ namespace AasxPluginBomStructure
 
         private Microsoft.Msagl.Drawing.Graph theGraph = null;
         private Microsoft.Msagl.WpfGraphControl.GraphViewer theViewer = null;
-        private IReferable theReferable = null;
+        private AasCore.Aas3_0_RC02.IReferable theReferable = null;
 
         private PluginEventStack eventStack = null;
 
-        private Dictionary<IReferable, int> preferredPresetIndex =
-            new Dictionary<IReferable, int>();
+        private Dictionary<AasCore.Aas3_0_RC02.IReferable, int> preferredPresetIndex =
+            new Dictionary<AasCore.Aas3_0_RC02.IReferable, int>();
 
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 
@@ -232,11 +232,11 @@ namespace AasxPluginBomStructure
                     if (x != null && x.DrawingObject != null && x.DrawingObject.UserData != null)
                     {
                         var us = x.DrawingObject.UserData;
-                        if (us is IReferable)
+                        if (us is AasCore.Aas3_0_RC02.IReferable)
                         {
                             // make event
-                            var refs = new List<Key>();
-                            (us as IReferable).CollectReferencesByParent(refs);
+                            var refs = new List<AasCore.Aas3_0_RC02.Key>();
+                            (us as AasCore.Aas3_0_RC02.IReferable).CollectReferencesByParent(refs);
 
                             // ok?
                             if (refs.Count > 0)
@@ -247,10 +247,10 @@ namespace AasxPluginBomStructure
                             }
                         }
 
-                        if (us is Reference)
+                        if (us is AasCore.Aas3_0_RC02.Reference)
                         {
                             var evt = new AasxPluginResultEventNavigateToReference();
-                            evt.targetReference = (us as Reference);
+                            evt.targetReference = (us as AasCore.Aas3_0_RC02.Reference);
                             this.eventStack.PushEvent(evt);
                         }
                     }

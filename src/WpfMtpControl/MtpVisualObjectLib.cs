@@ -113,7 +113,7 @@ namespace WpfMtpControl
         public Dictionary<string, string> eClassIRDIs = null;
 
         /// <summary>
-        /// Reference to symbol, which is used
+        /// AasCore.Aas3_0_RC02.Reference to symbol, which is used
         /// </summary>
         public MtpSymbol Symbol = null;
 

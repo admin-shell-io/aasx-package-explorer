@@ -222,7 +222,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public bool Tool_Security_Sign(
             Submodel rootSm,
-            ISubmodelElement rootSme,
+            AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
             AasCore.Aas3_0_RC02.Environment env,
             bool useX509)
         {
@@ -232,8 +232,8 @@ namespace AasxPackageExplorer
 
             // ported from MainWindow_CommandBindings
             Submodel sm = null;
-            SubmodelElementCollection smc = null;
-            SubmodelElementCollection smcp = null;
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
             if (rootSm != null)
             {
                 sm = rootSm;
@@ -241,20 +241,20 @@ namespace AasxPackageExplorer
             if (rootSme != null)
             {
                 var smee = rootSme;
-                if (smee is SubmodelElementCollection)
+                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                 {
-                    smc = smee as SubmodelElementCollection;
+                    smc = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                     var p = smee.Parent;
                     if (p is Submodel)
                         sm = p as Submodel;
-                    if (p is SubmodelElementCollection)
-                        smcp = p as SubmodelElementCollection;
+                    if (p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                        smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                 }
             }
             if (sm == null && smcp == null)
                 return false;
 
-            List<SubmodelElementCollection> existing = new List<SubmodelElementCollection>();
+            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> existing = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
             if (smc == null)
             {
                 for (int i = 0; i < sm.SubmodelElements.Count; i++)
@@ -262,11 +262,11 @@ namespace AasxPackageExplorer
                     var sme = sm.SubmodelElements[i];
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is SubmodelElementCollection &&
+                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as SubmodelElementCollection);
+                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
                         sm.Remove(sme);
                         i--; // check next
                     }
@@ -279,11 +279,11 @@ namespace AasxPackageExplorer
                     var sme = smc.Value[i];
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is SubmodelElementCollection &&
+                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as SubmodelElementCollection);
+                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
                         smc.Remove(sme);
                         i--; // check next
                     }
@@ -292,14 +292,14 @@ namespace AasxPackageExplorer
 
             if (useX509)
             {
-                SubmodelElementCollection smec = new SubmodelElementCollection(idShort: "signature");
-                Property json = new Property(DataTypeDefXsd.String, idShort: "submodelJson");
-                Property canonical = new Property(DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
-                Property subject = new Property(DataTypeDefXsd.String, idShort: "subject");
-                SubmodelElementCollection x5c = new SubmodelElementCollection(idShort: "x5c");
-                Property algorithm = new Property(DataTypeDefXsd.String, idShort: "algorithm");
-                Property sigT = new Property(DataTypeDefXsd.String, idShort: "sigT");
-                Property signature = new Property(DataTypeDefXsd.String, idShort: "signature");
+                AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
+                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJson");
+                AasCore.Aas3_0_RC02.Property canonical = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJsonCanonical");
+                AasCore.Aas3_0_RC02.Property subject = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "subject");
+                AasCore.Aas3_0_RC02.SubmodelElementCollection x5c = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "x5c");
+                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "algorithm");
+                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "sigT");
+                AasCore.Aas3_0_RC02.Property signature = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "signature");
                 smec.Add(json);
                 smec.Add(canonical);
                 smec.Add(subject);
@@ -361,7 +361,7 @@ namespace AasxPackageExplorer
                     int j = 1;
                     foreach (X509ChainElement element in ch.ChainElements)
                     {
-                        Property c = new Property(DataTypeDefXsd.String, idShort: "certificate_" + j++);
+                        AasCore.Aas3_0_RC02.Property c = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "certificate_" + j++);
                         c.Value = Convert.ToBase64String(element.Certificate.GetRawCertData());
                         x5c.Add(c);
                     }
@@ -386,14 +386,14 @@ namespace AasxPackageExplorer
             }
             else // Verifiable Credential
             {
-                SubmodelElementCollection smec = new SubmodelElementCollection(idShort: "signature");
-                Property json = new Property(DataTypeDefXsd.String, idShort: "submodelJson");
-                Property jsonld = new Property(DataTypeDefXsd.String, idShort: "submodelJsonLD");
-                Property vc = new Property(DataTypeDefXsd.String, idShort: "vc");
-                Property epvc = new Property(DataTypeDefXsd.String, idShort: "endpointVC");
-                Property algorithm = new Property(DataTypeDefXsd.String, idShort: "algorithm");
-                Property sigT = new Property(DataTypeDefXsd.String, idShort: "sigT");
-                Property proof = new Property(DataTypeDefXsd.String, idShort: "proof");
+                AasCore.Aas3_0_RC02.SubmodelElementCollection smec = new AasCore.Aas3_0_RC02.SubmodelElementCollection(idShort: "signature");
+                AasCore.Aas3_0_RC02.Property json = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJson");
+                AasCore.Aas3_0_RC02.Property jsonld = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "submodelJsonLD");
+                AasCore.Aas3_0_RC02.Property vc = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "vc");
+                AasCore.Aas3_0_RC02.Property epvc = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "endpointVC");
+                AasCore.Aas3_0_RC02.Property algorithm = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "algorithm");
+                AasCore.Aas3_0_RC02.Property sigT = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "sigT");
+                AasCore.Aas3_0_RC02.Property proof = new AasCore.Aas3_0_RC02.Property(DataTypeDefXsd.String, idShort: "proof");
                 smec.Add(json);
                 smec.Add(jsonld);
                 smec.Add(vc);
@@ -500,7 +500,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public bool Tool_Security_ValidateCertificate(
             Submodel rootSm,
-            ISubmodelElement rootSme,
+            AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
             AasCore.Aas3_0_RC02.Environment env,
             AasxMenuActionTicket ticket = null)
         {
@@ -511,11 +511,11 @@ namespace AasxPackageExplorer
             var resOk = true;
 
             // ported from MainWindow_CommandBindings
-            List<SubmodelElementCollection> existing = new List<SubmodelElementCollection>();
-            List<SubmodelElementCollection> validate = new List<SubmodelElementCollection>();
+            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> existing = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
+            List<AasCore.Aas3_0_RC02.SubmodelElementCollection> validate = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
             Submodel sm = null;
-            SubmodelElementCollection smc = null;
-            SubmodelElementCollection smcp = null;
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
+            AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
             bool smcIsSignature = false;
             if (rootSm != null)
             {
@@ -524,9 +524,9 @@ namespace AasxPackageExplorer
             if (rootSme != null)
             {
                 var smee = rootSme;
-                if (smee is SubmodelElementCollection)
+                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                 {
-                    smc = smee as SubmodelElementCollection;
+                    smc = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                     var len = "signature".Length;
                     var idShort = smc.IdShort;
                     if (idShort.Length >= len &&
@@ -537,8 +537,8 @@ namespace AasxPackageExplorer
                     var p = smc.Parent;
                     if (smcIsSignature && p is Submodel)
                         sm = p as Submodel;
-                    if (smcIsSignature && p is SubmodelElementCollection)
-                        smcp = p as SubmodelElementCollection;
+                    if (smcIsSignature && p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                        smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                     if (!smcIsSignature)
                         smcp = smc;
                 }
@@ -552,11 +552,11 @@ namespace AasxPackageExplorer
                 {
                     var len = "signature".Length;
                     var idShort = smee.IdShort;
-                    if (smee is SubmodelElementCollection &&
+                    if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(smee as SubmodelElementCollection);
+                        existing.Add(smee as AasCore.Aas3_0_RC02.SubmodelElementCollection);
                     }
                 }
             }
@@ -566,11 +566,11 @@ namespace AasxPackageExplorer
                 {
                     var len = "signature".Length;
                     var idShort = sme.IdShort;
-                    if (sme is SubmodelElementCollection &&
+                    if (sme is AasCore.Aas3_0_RC02.SubmodelElementCollection &&
                             idShort.Length >= len &&
                             idShort.Substring(0, len).ToLower() == "signature")
                     {
-                        existing.Add(sme as SubmodelElementCollection);
+                        existing.Add(sme as AasCore.Aas3_0_RC02.SubmodelElementCollection);
                     }
                 }
             }
@@ -631,11 +631,11 @@ namespace AasxPackageExplorer
                 }
                 foreach (var smec in validate)
                 {
-                    SubmodelElementCollection x5c = null;
-                    Property subject = null;
-                    Property algorithm = null;
-                    Property digest = null; // legacy
-                    Property signature = null;
+                    AasCore.Aas3_0_RC02.SubmodelElementCollection x5c = null;
+                    AasCore.Aas3_0_RC02.Property subject = null;
+                    AasCore.Aas3_0_RC02.Property algorithm = null;
+                    AasCore.Aas3_0_RC02.Property digest = null; // legacy
+                    AasCore.Aas3_0_RC02.Property signature = null;
 
                     foreach (var sme in smec.Value)
                     {
@@ -643,20 +643,20 @@ namespace AasxPackageExplorer
                         switch (smee.IdShort)
                         {
                             case "x5c":
-                                if (smee is SubmodelElementCollection)
-                                    x5c = smee as SubmodelElementCollection;
+                                if (smee is AasCore.Aas3_0_RC02.SubmodelElementCollection)
+                                    x5c = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                                 break;
                             case "subject":
-                                subject = smee as Property;
+                                subject = smee as AasCore.Aas3_0_RC02.Property;
                                 break;
                             case "algorithm":
-                                algorithm = smee as Property;
+                                algorithm = smee as AasCore.Aas3_0_RC02.Property;
                                 break;
                             case "digest":
-                                digest = smee as Property;
+                                digest = smee as AasCore.Aas3_0_RC02.Property;
                                 break;
                             case "signature":
-                                signature = smee as Property;
+                                signature = smee as AasCore.Aas3_0_RC02.Property;
                                 break;
                         }
                     }
@@ -685,7 +685,7 @@ namespace AasxPackageExplorer
                         {
                             for (int i = 0; i < x5c.Value.Count; i++)
                             {
-                                var p = x5c.Value[i] as Property;
+                                var p = x5c.Value[i] as AasCore.Aas3_0_RC02.Property;
                                 var cert = new X509Certificate2(Convert.FromBase64String(p.Value));
                                 if (i == 0)
                                 {
@@ -992,10 +992,10 @@ namespace AasxPackageExplorer
                         i = 0;
                         while (i < count)
                         {
-                            if (sm.SubmodelElements[i] is Property)
+                            if (sm.SubmodelElements[i] is AasCore.Aas3_0_RC02.Property)
                             {
                                 // access data
-                                var p = sm.SubmodelElements[i] as Property;
+                                var p = sm.SubmodelElements[i] as AasCore.Aas3_0_RC02.Property;
                                 var nodeName = "" + Path + p?.IdShort;
 
                                 // do read() via plug-in
@@ -1070,7 +1070,7 @@ namespace AasxPackageExplorer
 
                 // add SubmodelRef to AAS
                 // access the AAS
-                var newsmr = ExtendReference.CreateFromKey(new Key(KeyTypes.Submodel, submodel.Id));
+                var newsmr = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, submodel.Id));
                 var existsmr = aas.HasSubmodelReference(newsmr);
                 if (!existsmr)
                     aas.AddSubmodelReference(newsmr);
@@ -1208,7 +1208,7 @@ namespace AasxPackageExplorer
 
             // add SubmodelRef to AAS
             // access the AAS
-            var newsmr = ExtendReference.CreateFromKey(new Key(KeyTypes.Submodel, submodel.Id));
+            var newsmr = ExtendReference.CreateFromKey(new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.Submodel, submodel.Id));
             var existsmr = aas.HasSubmodelReference(newsmr);
             if (!existsmr)
             {

@@ -20,7 +20,7 @@ namespace AasxBammRdfImExport.RDFentities
         private string preferredName;
         private string description;
         private string language;
-        private List<Property> myList = new List<Property>();
+        private List<BammProperty> myList = new List<BammProperty>();
 
 
 
@@ -28,6 +28,6 @@ namespace AasxBammRdfImExport.RDFentities
         public string PreferredName { get => preferredName; set => preferredName = value; }
         public string Description { get => description; set => description = value; }
         public string Language { get => language; set => language = value; }
-        internal List<Property> MyList { get => myList; set => myList = value; }
+        internal List<BammProperty> MyList { get => myList; set => myList = value; }
     }
 }

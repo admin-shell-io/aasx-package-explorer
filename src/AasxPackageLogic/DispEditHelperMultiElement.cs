@@ -69,7 +69,7 @@ namespace AasxPackageLogic
                         foreach (var el in entities)
                         {
                             if (el is VisualElementSubmodelElement vesme
-                                && parentContainer is IReferable pcref)
+                                && parentContainer is AasCore.Aas3_0_RC02.IReferable pcref)
                             {
                                 var sme = vesme.theWrapper;
                                 EnumerationPlacmentBase placement = null;
@@ -88,7 +88,7 @@ namespace AasxPackageLogic
                                     null, vesm.theSubmodel));
 
                             if (el is VisualElementOperationVariable veopv
-                                && parentContainer is IReferable pcref2)
+                                && parentContainer is AasCore.Aas3_0_RC02.IReferable pcref2)
                                 if (veopv.theOpVar?.Value != null)
                                     cpb.Items.Add(new CopyPasteItemSME(env, pcref2,
                                         veopv.theOpVar.Value, veopv.theOpVar.Value));
@@ -315,13 +315,13 @@ namespace AasxPackageLogic
                 return;
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.IdShort &&
-                el is IReferable rf1)
+                el is AasCore.Aas3_0_RC02.IReferable rf1)
             {
                 rf1.IdShort = PerformWildcardReplace(rf1.IdShort, dia.Pattern);
             }
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.Description &&
-                el is IReferable rf2)
+                el is AasCore.Aas3_0_RC02.IReferable rf2)
             {
                 //var input = (rf2.Description?.LangStrings == null) ? "" : rf2.Description.LangStrings[dia.AttributeLang];
                 var rf2LangString = rf2.Description.Where(s => s.Language.Equals(dia.AttributeLang)).First();
@@ -336,7 +336,7 @@ namespace AasxPackageLogic
             }
 
             if (dia.AttributeToChange == AnyUiDialogueDataChangeElementAttributes.AttributeEnum.ValueText &&
-                el is ISubmodelElement sme)
+                el is AasCore.Aas3_0_RC02.ISubmodelElement sme)
             {
                 var nd = PerformWildcardReplace(sme.ValueAsText(dia.AttributeLang), dia.Pattern);
                 if (nd != null)
@@ -478,7 +478,7 @@ namespace AasxPackageLogic
                     && aas.Submodels != null)
                 {
                     // up down delete
-                    var bos = entities.GetListOfMapResults<Reference,
+                    var bos = entities.GetListOfMapResults<AasCore.Aas3_0_RC02.Reference,
                        VisualElementSubmodelRef>((ve) => ve?.theSubmodelRef);
                     EntityListMultipleUpDownDeleteHelper(stack, repo,
                         aas.Submodels, bos, indexInfo, reFocus: true, superMenu: superMenu);
@@ -491,22 +491,22 @@ namespace AasxPackageLogic
                 if (first is VisualElementSubmodelElement sme)
                 {
                     // up down delete
-                    var bos = entities.GetListOfMapResults<ISubmodelElement,
+                    var bos = entities.GetListOfMapResults<AasCore.Aas3_0_RC02.ISubmodelElement,
                         VisualElementSubmodelElement>((ve) => ve?.theWrapper);
 
                     if (bos.Count > 0 && parent is Submodel sm)
-                        EntityListMultipleUpDownDeleteHelper<ISubmodelElement>(stack, repo,
+                        EntityListMultipleUpDownDeleteHelper<AasCore.Aas3_0_RC02.ISubmodelElement>(stack, repo,
                             sm.SubmodelElements, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
-                    if (bos.Count > 0 && parent is SubmodelElementCollection smec)
-                        EntityListMultipleUpDownDeleteHelper<ISubmodelElement>(stack, repo,
+                    if (bos.Count > 0 && parent is AasCore.Aas3_0_RC02.SubmodelElementCollection smec)
+                        EntityListMultipleUpDownDeleteHelper<AasCore.Aas3_0_RC02.ISubmodelElement>(stack, repo,
                             smec.Value, bos, indexInfo, reFocus: true, superMenu: superMenu);
 
                     DispMultiElementCutCopyPasteHelper(stack, repo, sme.theEnv, parent, this.theCopyPaste, 
                         entities, superMenu: superMenu);
                 }
 
-                if (first is VisualElementOperationVariable opv && parent is Operation oppa)
+                if (first is VisualElementOperationVariable opv && parent is AasCore.Aas3_0_RC02.Operation oppa)
                 {
                     // sanity check: same dir?
                     var sameDir = true;
@@ -578,7 +578,7 @@ namespace AasxPackageLogic
                 // Change element attributes?
                 //
                 {
-                    var bos = entities.GetListOfBusinessObjects<IReferable>();
+                    var bos = entities.GetListOfBusinessObjects<AasCore.Aas3_0_RC02.IReferable>();
                     if (bos.Count > 0 &&
                         !(first is VisualElementSupplementalFile))
                     {

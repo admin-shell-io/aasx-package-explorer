@@ -32,10 +32,10 @@ namespace AasxPackageExplorer
     {
         public VisualElementGeneric VisualElement = null;
         public string ReferableAasId = null;
-        public Reference ReferableReference = null;
+        public AasCore.Aas3_0_RC02.Reference ReferableReference = null;
 
         public VisualElementHistoryItem(VisualElementGeneric VisualElement,
-            string ReferableAasId = null, Reference ReferableReference = null)
+            string ReferableAasId = null, AasCore.Aas3_0_RC02.Reference ReferableReference = null)
         {
             this.VisualElement = VisualElement;
             this.ReferableAasId = ReferableAasId;
@@ -87,38 +87,38 @@ namespace AasxPackageExplorer
             var veAas = ve.FindAllParents((v) => { return v is VisualElementAdminShell; },
                 includeThis: true).FirstOrDefault();
 
-            // for ve, find the IReferable to be ve or superordinate ..
+            // for ve, find the AasCore.Aas3_0_RC02.IReferable to be ve or superordinate ..
             var veRef = ve.FindAllParents((v) =>
             {
                 var derefdo = v?.GetDereferencedMainDataObject();
                 // success implies IGetReference as well
-                return derefdo is IReferable;
+                return derefdo is AasCore.Aas3_0_RC02.IReferable;
             }, includeThis: true).FirstOrDefault();
 
-            // check, if ve can identify a IReferable, to which a symbolic link can be done ..
+            // check, if ve can identify a AasCore.Aas3_0_RC02.IReferable, to which a symbolic link can be done ..
             string aasid = null;
-            Reference refref = null;
+            AasCore.Aas3_0_RC02.Reference refref = null;
 
             if (veAas != null && veRef != null)
             {
                 aasid = (veAas as VisualElementAdminShell)?.theAas?.Id;
 
                 var derefdo = veRef.GetDereferencedMainDataObject();
-                refref = (derefdo as IReferable)?.GetReference();
+                refref = (derefdo as AasCore.Aas3_0_RC02.IReferable)?.GetReference();
             }
 
             // some more special cases
             if (refref == null && ve is VisualElementConceptDescription vecd)
                 refref = vecd.theCD?.GetReference();
 
-            // found some referable Reference?
+            // found some referable AasCore.Aas3_0_RC02.Reference?
             if (refref == null)
                 return;
 
             // in case of plug in, make it more specific
             if (ve is VisualElementPluginExtension vepe && vepe.theExt?.Tag != null)
             {
-                refref = new Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
+                refref = new AasCore.Aas3_0_RC02.Reference(ReferenceTypes.GlobalReference, new List<AasCore.Aas3_0_RC02.Key>() { new AasCore.Aas3_0_RC02.Key(AasCore.Aas3_0_RC02.KeyTypes.FragmentReference, "Plugin:" + vepe.theExt.Tag) });
             }
 
             // add, only if not already there

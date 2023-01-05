@@ -67,7 +67,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// AssetInformation Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS List<Key> compatibility.
+        /// to ensure full AAS List<AasCore.Aas3_0_RC02.Key> compatibility.
         /// </summary>
         /// 
         [JsonProperty(PropertyName = "AssetIds")]
@@ -88,7 +88,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// AAS Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS List<Key> compatibility.
+        /// to ensure full AAS List<AasCore.Aas3_0_RC02.Key> compatibility.
         /// </summary>
         [JsonProperty(PropertyName = "AasIds")]
         private List<string> _aasIds = new List<string>();
@@ -103,7 +103,7 @@ namespace AasxPackageLogic.PackageCentral
         /// <summary>
         /// Submodel Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
-        /// to ensure full AAS List<Key> compatibility.
+        /// to ensure full AAS List<AasCore.Aas3_0_RC02.Key> compatibility.
         /// </summary>
         [JsonProperty(PropertyName = "SubmodelIds")]
         private List<string> _submodelIds = new List<string>();
