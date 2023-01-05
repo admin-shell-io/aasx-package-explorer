@@ -223,7 +223,7 @@ namespace AasxPackageLogic.PackageCentral
                 // load
                 var pkg = new AdminShellPackageEnv(fn);
 
-                // for each Admin Shell and then each Aas.AssetInformation
+                // for each Admin Shell and then each AssetInformation
                 this.AddByAasPackage(packageCentral, pkg, fn);
 
                 // close directly!

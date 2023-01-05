@@ -241,7 +241,7 @@ namespace AasxPackageLogic.PackageCentral
             //// var origObservable = Aas.ISubmodelElement.FindReferableByReference(
             ////    rootSubmodel.submodelElements, sourceEvent.observed, keyIndex: 0);
 
-            // basically, can query updates of Aas.Submodel or SubmodelElements
+            // basically, can query updates of Submodel or SubmodelElements
             string qst = null;
             if (reqSm != null && reqSm.IdShort.HasContent())
             {
@@ -471,7 +471,7 @@ namespace AasxPackageLogic.PackageCentral
                         Location = CombineQuery(_client.BaseAddress.ToString(), _endPointSegments,
                                     "server", "getaasx", aasi.Index),
                         //Description = $"\"{"" + x.Item1?.IdShort}\",\"{"" + x.Item2?.IdShort}\"",
-                        Description = $"\"{"" + x.Item1?.IdShort}\"", //No more IdShort in Aas.AssetInformation 
+                        Description = $"\"{"" + x.Item1?.IdShort}\"", //No more IdShort in AssetInformation 
                         Tag = "" + AdminShellUtil.ExtractPascalCasingLetters(x.Item1?.IdShort).SubstringMax(0, 3)
                     };
                     fi.AasIds.Add("" + x.Item1?.Id);

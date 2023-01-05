@@ -237,7 +237,7 @@ namespace AasxPluginMtpViewer
                             preLoadInfo.NamespaceRenaming.Add(new MtpDataSourceStringReplacement(oldtxt, newtxt));
                     }
 
-                // according spec from Sten Gruener, the AAS.derivedFrom relationship shall be exploited.
+                // according spec from Sten Gruener, the derivedFrom relationship shall be exploited.
                 // How to get from subModel to AAS?
                 var instanceAas = env.FindAasWithSubmodelId(this.theSubmodel.Id);
                 var typeAas = env.FindReferableByReference(instanceAas?.DerivedFrom) as Aas.AssetAdministrationShell;

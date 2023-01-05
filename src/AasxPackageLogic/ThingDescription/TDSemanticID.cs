@@ -44,7 +44,7 @@ namespace AasxPackageExplorer
 
             //Property
             ["properties"] = "https://www.w3.org/2019/wot/json-schema#properties",
-            ["property"] = "https://www.w3.org/2019/wot/td#PropertyAffordance",// Aas.Property Affordance
+            ["property"] = "https://www.w3.org/2019/wot/td#PropertyAffordance",// Property Affordance
             ["observable"] = "https://www.w3.org/2019/wot/td#isObservable",
 
             //action

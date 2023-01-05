@@ -237,7 +237,7 @@ namespace AasxPackageExplorer
             return dsCollection;
         }
 
-        // AAS SubmodelMultiLanguage Aas.Property
+        // AAS SubmodelMultiLanguage Property
         public static Aas.MultiLanguageProperty BuildMultiLanguageProperty(
             string idShort, List<Aas.LangString> texts, string description)
         {
@@ -1015,7 +1015,7 @@ namespace AasxPackageExplorer
             return tdSemanticId;
         }
 
-        // AAS Aas.Qualifier
+        // AAS Qualifier
         public static Aas.Qualifier createAASQualifier(string qualifierType, string qualifierValue)
         {
             Aas.Qualifier aasQualifier = new Aas.Qualifier(qualifierType, Aas.DataTypeDefXsd.String, value: qualifierValue);

@@ -35,7 +35,7 @@ namespace AasxIntegrationBase.AdminShellEvents
     public class AasEventMsgEnvelope : IAasPayloadItem
     {
         /// <summary>
-        /// Reference to the source Aas.EventElement, including identification of  AAS,  Submodel, SubmodelElements.
+        /// Reference to the source EventElement, including identification of  AAS,  Submodel, SubmodelElements.
         /// </summary>
         public Aas.Reference Source { get; set; }
 

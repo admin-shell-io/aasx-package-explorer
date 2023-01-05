@@ -241,7 +241,7 @@ namespace AasxPackageLogic
                     margin: new AnyUiThickness(2, 2, 2, 2),
                     padding: new AnyUiThickness(5, 0, 5, 0));
 
-                // Aas.Qualifier members
+                // Qualifier members
 
                 // SemanticId
 

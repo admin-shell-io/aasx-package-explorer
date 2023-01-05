@@ -65,7 +65,7 @@ namespace AasxPackageLogic.PackageCentral
         //
 
         /// <summary>
-        /// Aas.AssetInformation Ids of the respective AASX Package.
+        /// AssetInformation Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
         /// to ensure full AAS List<Key> compatibility.
         /// </summary>
@@ -101,7 +101,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         /// <summary>
-        /// Aas.Submodel Ids of the respective AASX Package.
+        /// Submodel Ids of the respective AASX Package.
         /// Note: to make this easy, only the value-strings of the Ids are maintained. A 2nd check needs
         /// to ensure full AAS List<Key> compatibility.
         /// </summary>
@@ -421,7 +421,7 @@ namespace AasxPackageLogic.PackageCentral
         }
 
         /// <summary>
-        /// This function accesses the AAS, Aas.AssetInformation and Aas.Submodel information of the environment and
+        /// This function accesses the AAS, AssetInformation and Aas.Submodel information of the environment and
         /// re-calculates the particulare lists of ids. If the tag and/ or description is empty, 
         /// it will also build a generated tag or descriptions
         /// </summary>

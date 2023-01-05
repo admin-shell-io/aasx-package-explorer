@@ -2796,12 +2796,12 @@ namespace AasxPackageLogic
         //
 
         /// <summary>
-        /// Care for a pseudo-unqiue identification of the Aas.IReferable.
+        /// Care for a pseudo-unqiue identification of the IReferable.
         /// Unique identification will be established by adding something such as "---74937434739"
         /// Note: not in <c>cs</c>, as considered part of business logic.
         /// Note: if <c>idShort</c> has content, will add unique content.
         /// </summary>
-        /// <param name="rf">given Aas.IReferable</param>
+        /// <param name="rf">given IReferable</param>
         public void MakeNewReferableUnique(Aas.IReferable rf)
         {
             // access

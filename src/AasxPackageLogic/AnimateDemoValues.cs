@@ -63,7 +63,7 @@ namespace AasxPackageLogic
 
             /// <summary>
             /// Specifies the timer interval in milli-seconds. Minimum value 100ms.
-            /// Applicable on: Aas.Submodel
+            /// Applicable on: Submodel
             /// </summary>
             public int timer = 1000;
         }

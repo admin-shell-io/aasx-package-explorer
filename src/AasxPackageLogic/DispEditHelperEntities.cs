@@ -39,7 +39,7 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Aas.AssetInformation
+        // --- AssetInformation
         //
         //
 
@@ -463,7 +463,7 @@ namespace AasxPackageLogic
                                                         if (srcSub.Kind != null && srcSub.Kind == Aas.ModelingKind.Template)
                                                             tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                                        // create Aas.Submodel as deep copy 
+                                                        // create Submodel as deep copy 
                                                         // with new id from scratch
                                                         var dstSub = srcSub.Copy();
                                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
@@ -1077,7 +1077,7 @@ namespace AasxPackageLogic
                         var newsmr = item.smref.Copy();
                         aas.Submodels.Add(newsmr);
 
-                        // special case: Aas.Submodel does not exist, as pasting was from external
+                        // special case: Submodel does not exist, as pasting was from external
                         if (env?.Submodels != null && item.sm != null)
                         {
                             var smtest = env.FindSubmodel(newsmr);
@@ -1135,7 +1135,7 @@ namespace AasxPackageLogic
                                     AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
                                 return new AnyUiLambdaActionNone();
 
-                            // select existing Aas.Submodel
+                            // select existing Submodel
                             var ks = this.SmartSelectAasEntityKeys(packages,
                                         PackageCentral.PackageCentral.Selector.Main,
                                         "Submodel");
@@ -1253,7 +1253,7 @@ namespace AasxPackageLogic
                                         if (srcSub.Kind != null && srcSub.Kind == Aas.ModelingKind.Template)
                                             tid = Options.Curr.TemplateIdSubmodelTemplate;
 
-                                        // create Aas.Submodel as deep copy 
+                                        // create Submodel as deep copy 
                                         // with new id from scratch
                                         var dstSub = srcSub.Copy();
                                         dstSub.Id = AdminShellUtil.GenerateIdAccordingTemplate(tid);
@@ -1355,7 +1355,7 @@ namespace AasxPackageLogic
             // Asset linked with AAS
             //
 
-            // show group only if no Aas.AssetInformation is available because
+            // show group only if no AssetInformation is available because
             // else DisplayOrEditAasEntityAsset will do
             if (aas.AssetInformation == null)
                 this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
@@ -1379,7 +1379,7 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Aas.Submodel Ref
+        // --- Submodel Ref
         //
         //
 
@@ -1390,7 +1390,7 @@ namespace AasxPackageLogic
             AnyUiStackPanel stack, bool hintMode = false,
             AasxMenu superMenu = null)
         {
-            // This panel renders first the SubmodelReference and then the Aas.Submodel, below
+            // This panel renders first the SubmodelReference and then the Submodel, below
             if (smref != null)
             {
                 this.AddGroup(stack, "SubmodelReference", this.levelColors.MainSection);
@@ -1475,7 +1475,7 @@ namespace AasxPackageLogic
                     {
                         if (cpi is CopyPasteItemSubmodel item)
                         {
-                            // special case: Aas.Submodel does not exist, as pasting was from external
+                            // special case: Submodel does not exist, as pasting was from external
                             if (env?.Submodels != null && item.smref != null && item.sm != null)
                             {
                                 var smtest = env.FindSubmodel(item.smref);
@@ -1708,7 +1708,7 @@ namespace AasxPackageLogic
                                 return true;
                             });
 
-                            // emit event for Aas.Submodel and children
+                            // emit event for Submodel and children
                             this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
@@ -1736,7 +1736,7 @@ namespace AasxPackageLogic
                                 return true;
                             });
 
-                            // emit event for Aas.Submodel and children
+                            // emit event for Submodel and children
                             this.AddDiaryEntry(submodel, new DiaryEntryStructChange(), allChildrenAffected: true);
 
                             return new AnyUiLambdaActionRedrawAllElements(nextFocus: smref, isExpanded: true);
@@ -1750,10 +1750,10 @@ namespace AasxPackageLogic
             if (submodel != null)
             {
 
-                // Aas.Submodel
+                // Submodel
                 this.AddGroup(stack, "Submodel", this.levelColors.MainSection);
 
-                // Aas.IReferable
+                // IReferable
                 this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
 
                 // Identifiable
@@ -1894,7 +1894,7 @@ namespace AasxPackageLogic
                     label: "Buffer:", superMenu: superMenu);
             }
 
-            // Aas.IReferable
+            // IReferable
             this.DisplayOrEditEntityReferable(
                 stack, cd,
                 new DispEditHelperModules.DispEditInjectAction(
@@ -2083,7 +2083,7 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Aas.Operation Variable
+        // --- Operation Variable
         //
         //
 
@@ -2094,7 +2094,7 @@ namespace AasxPackageLogic
             AasxMenu superMenu = null)
         {
             //
-            // Aas.Submodel Element GENERAL
+            // Submodel Element GENERAL
             //
 
             // OperationVariable is a must!
@@ -2202,7 +2202,7 @@ namespace AasxPackageLogic
                                         var smw = sme2;
                                         ov.Value = smw;
 
-                                        // emit event (for parent container, e.g. Aas.Operation)
+                                        // emit event (for parent container, e.g. Operation)
                                         this.AddDiaryEntry(parentContainer,
                                             new DiaryEntryStructChange(StructuralChangeReason.Create));
 
@@ -2237,7 +2237,7 @@ namespace AasxPackageLogic
                                     {
                                         ov.Value = null;
 
-                                        // emit event (for parent container, e.g. Aas.Operation)
+                                        // emit event (for parent container, e.g. Operation)
                                         this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
                                         return new AnyUiLambdaActionRedrawAllElements(nextFocus: ov);
@@ -2277,7 +2277,7 @@ namespace AasxPackageLogic
                                                 copyCD: true,
                                                 shallowCopy: buttonNdx == 0);
 
-                                            // emit event (for parent container, e.g. Aas.Operation)
+                                            // emit event (for parent container, e.g. Operation)
                                             this.AddDiaryEntry(parentContainer, new DiaryEntryStructChange());
 
                                             ov.Value = clone;
@@ -2290,7 +2290,7 @@ namespace AasxPackageLogic
                             });
                     }
 
-                    // value == Aas.ISubmodelElement is displayed
+                    // value == ISubmodelElement is displayed
                     this.AddGroup(
                         stack, "OperationVariable value (is a SubmodelElement)", this.levelColors.SubSection);
                     var substack = this.AddSubStackPanel(stack, "  "); // just a bit spacing to the left
@@ -2307,7 +2307,7 @@ namespace AasxPackageLogic
 
         //
         //
-        // --- Aas.Submodel Element
+        // --- Submodel Element
         //
         //
 
@@ -2319,7 +2319,7 @@ namespace AasxPackageLogic
             AasxMenu superMenu = null)
         {
             //
-            // Aas.Submodel Element GENERAL
+            // Submodel Element GENERAL
             //
 
             // if wrapper present, must point to the sme
@@ -2513,7 +2513,7 @@ namespace AasxPackageLogic
                             // store in AAS enviroment
                             env.ConceptDescriptions.Add(cd);
 
-                            // go over to Aas.ISubmodelElement
+                            // go over to ISubmodelElement
                             // set the semantic id
                             sme.SemanticId = new Aas.Reference(Aas.ReferenceTypes.ModelReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.ConceptDescription, cd.Id) });
 
@@ -3063,7 +3063,7 @@ namespace AasxPackageLogic
                     $"Submodel Element ({"" + sme?.GetSelfDescription().AasElementName})",
                     this.levelColors.MainSection);
 
-                // Aas.IReferable
+                // IReferable
                 this.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                         auxTitles: new[] { "Sync" },
@@ -3130,7 +3130,7 @@ namespace AasxPackageLogic
                 (ds) => { sme.EmbeddedDataSpecifications = ds; }, relatedReferable: sme, superMenu: superMenu);
 
                 //
-                // Aas.ConceptDescription <- via semantic ID ?!
+                // ConceptDescription <- via semantic ID ?!
                 //
 
                 if (sme.SemanticId != null && sme.SemanticId.Keys.Count > 0 && !nestedCds)
@@ -3154,7 +3154,7 @@ namespace AasxPackageLogic
             }
 
             //
-            // Aas.Submodel Element VALUES
+            // Submodel Element VALUES
             //
             if (sme is Aas.Property)
             {

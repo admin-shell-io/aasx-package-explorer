@@ -112,7 +112,7 @@ namespace AasxPackageLogic
         }
 
         /// <summary>
-        /// In case of a reference, get the data object behind it. For a SubmodelRef, it will be the Aas.Submodel
+        /// In case of a reference, get the data object behind it. For a SubmodelRef, it will be the Submodel
         /// </summary>
         /// <returns></returns>
         public virtual object GetDereferencedMainDataObject()
@@ -327,7 +327,7 @@ namespace AasxPackageLogic
             {
                 if (ve is VisualElementSubmodelRef smr)
                 {
-                    // import special case, as Aas.Submodel ref is important part of the chain!
+                    // import special case, as Submodel ref is important part of the chain!
                     if (smr.theSubmodel != null)
                         res.Insert(
                             0,
@@ -937,7 +937,7 @@ namespace AasxPackageLogic
                 // Show CD / unikts ..
                 if (showCDinfo)
                 {
-                    // cache Aas.ConceptDescription?
+                    // cache ConceptDescription?
                     if (sme.SemanticId != null && sme.SemanticId.Keys != null)
                     {
                         if (this._cachedCD == null)
@@ -1485,7 +1485,7 @@ namespace AasxPackageLogic
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles);
             // ReSharper enable ExpressionIsAlwaysNull
 
-            // Recurse: Aas.Operation
+            // Recurse: Operation
             if (el is Aas.Operation elo)
             {
                 foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
@@ -1526,7 +1526,7 @@ namespace AasxPackageLogic
                 }
             }
 
-            // Recurse: Aas.AnnotatedRelationshipElement
+            // Recurse: AnnotatedRelationshipElement
             if (el is Aas.AnnotatedRelationshipElement ela && ela.Annotations != null)
                 foreach (var elaa in ela.Annotations)
                     GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);
@@ -1872,7 +1872,7 @@ namespace AasxPackageLogic
                     // show all Submodels
                     foreach (var sm in env.Submodels)
                     {
-                        // Aas.Submodel
+                        // Submodel
                         var tiSm = new VisualElementSubmodel(tiAllSubmodels, cache, env, sm);
                         tiSm.SetIsExpandedIfNotTouched(expandMode > 1);
                         tiAllSubmodels.Members.Add(tiSm);
@@ -2411,7 +2411,7 @@ namespace AasxPackageLogic
                             parentVE.Members.Add(tiSm);
                     }
 
-                    // additionally, there might be also as pure Aas.Submodel item
+                    // additionally, there might be also as pure Submodel item
                     foreach (var tiAllSubmodels in FindAllVisualElement((ve) =>
                         (ve is VisualElementEnvironmentItem veei
                          && veei.theItemType == VisualElementEnvironmentItem.ItemType.AllSubmodels)))
@@ -2429,7 +2429,7 @@ namespace AasxPackageLogic
                 if (data.ParentElem is Aas.Submodel parentSm
                     && data.ThisElem is Aas.ISubmodelElement thisSme)
                 {
-                    // try specifically SubmodelRef visual elements by Aas.Submodel business object,
+                    // try specifically SubmodelRef visual elements by Submodel business object,
                     // as these are the carriers of child information
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementSubmodelRef>(
                         parentSm, alsoDereferenceObjects: true))
@@ -2476,7 +2476,7 @@ namespace AasxPackageLogic
                             continue;
 
                         // add to parent
-                        // TODO (MIHO, 2021-06-11): Aas.Submodel needs to be set in the long run
+                        // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
                         var ti = GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, null, parentVE,
                             data.ParentElem as Aas.IReferable, foundSmw);

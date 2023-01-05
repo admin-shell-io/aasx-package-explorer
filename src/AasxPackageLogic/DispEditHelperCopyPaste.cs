@@ -357,7 +357,7 @@ namespace AasxPackageLogic
                     // try simple way
                     if (isSingleObject)
                     {
-                        // TODO (MIHO, 2021-06-22): think of converting Aas.IReferable to IAasElement
+                        // TODO (MIHO, 2021-06-22): think of converting IReferable to IAasElement
                         var obj = AdminShellSerializationHelper.DeserializeFromJSON<Aas.IReferable>(cps);
 
                         // try fake a copy paste item (order matters!)
@@ -629,7 +629,7 @@ namespace AasxPackageLogic
                                 }
                                     
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): Aas.Operation complete?
+                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as
@@ -671,7 +671,7 @@ namespace AasxPackageLogic
                                         annotations, smw2, wrapper, makeUnique);
                                 }
 
-                                // TODO (Michael Hoffmeister, 2020-08-01): Aas.Operation complete?
+                                // TODO (Michael Hoffmeister, 2020-08-01): Operation complete?
                                 if (parentContainer is Aas.Operation pcop && wrapper != null)
                                 {
                                     var place = pcop.GetChildrenPlacement(wrapper) as

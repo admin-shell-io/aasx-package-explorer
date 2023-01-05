@@ -98,7 +98,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // Aas.IReferable
+        // IReferable
         //
 
         public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
@@ -724,7 +724,7 @@ namespace AasxPackageLogic
                         // indicate
                         this.AddGroup(stack, $"dataSpec.[{i}] / Reference:", levelColors.SubSection);
 
-                        // Aas.Reference
+                        // Reference
                         int currentI = i;
                         if (SafeguardAccess(
                             stack, this.repo, hasDataSpecification[i].DataSpecification,
@@ -1889,7 +1889,7 @@ namespace AasxPackageLogic
         }
 
         //
-        // special Aas.Submodel References
+        // special Submodel References
         // 
 
 

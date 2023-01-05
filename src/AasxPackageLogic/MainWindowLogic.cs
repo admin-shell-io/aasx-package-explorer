@@ -218,7 +218,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Performs a signing of a Aas.Submodel or SubmodelElement
+        /// Performs a signing of a Submodel or SubmodelElement
         /// </summary>
         public bool Tool_Security_Sign(
             Aas.Submodel rootSm,
@@ -901,7 +901,7 @@ namespace AasxPackageExplorer
         {
             try
             {
-                // Durch das Aas.Submodel iterieren
+                // Durch das Submodel iterieren
                 {
                     int count = sm.Qualifiers.Count;
                     if (count != 0)
@@ -1024,7 +1024,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Reads a Aas.Submodel from JSON and add/ replaces it in a AAS / environment
+        /// Reads a Submodel from JSON and add/ replaces it in a AAS / environment
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_ReadSubmodel(
@@ -1045,7 +1045,7 @@ namespace AasxPackageExplorer
                 // locate AAS?
                 var aas = env.FindAasWithSubmodelId(sm.Id);
 
-                // de-serialize Aas.Submodel
+                // de-serialize Submodel
                 Aas.Submodel submodel = null;
 
                 using (var file = System.IO.File.OpenRead(sourceFn))
@@ -1062,7 +1062,7 @@ namespace AasxPackageExplorer
                     return;
                 }
 
-                // add Aas.Submodel
+                // add Submodel
                 var existingSm = env.FindSubmodelById(submodel.Id);
                 if (existingSm != null)
                     env.Submodels.Remove(existingSm);
@@ -1083,7 +1083,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Writes a Aas.Submodel to JSON.
+        /// Writes a Submodel to JSON.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelWrite(
@@ -1114,7 +1114,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Puts a Aas.Submodel to URL.
+        /// Puts a Submodel to URL.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelPut(
@@ -1145,7 +1145,7 @@ namespace AasxPackageExplorer
         }
 
         /// <summary>
-        /// Gets a Aas.Submodel to URL.
+        /// Gets a Submodel to URL.
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelGet(
@@ -1176,7 +1176,7 @@ namespace AasxPackageExplorer
 
             var aas = env.FindAasWithSubmodelId(sm.Id);
 
-            // de-serialize Aas.Submodel
+            // de-serialize Submodel
             Aas.Submodel submodel = null;
 
             try
@@ -1200,7 +1200,7 @@ namespace AasxPackageExplorer
                 return;
             }
 
-            // add Aas.Submodel
+            // add Submodel
             var existingSm = env.FindSubmodelById(submodel.Id);
             if (existingSm != null)
                 env.Submodels.Remove(existingSm);

@@ -71,7 +71,7 @@ namespace AasxPackageLogic
                 return;
 
             //
-            // Dispatch (Sign and Validate either on Aas.Submodel / AAS level)
+            // Dispatch (Sign and Validate either on Submodel / AAS level)
             //
 
             if ((cmd == "sign" || cmd == "validatecertificate" || cmd == "encrypt"))
@@ -886,7 +886,7 @@ namespace AasxPackageLogic
 
                 try
                 {
-                    // Aas.Submodel needs an identification
+                    // Submodel needs an identification
                     smres.Id = "";
                     if (smres.Kind == null || smres.Kind == Aas.ModelingKind.Instance)
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
@@ -895,7 +895,7 @@ namespace AasxPackageLogic
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelTemplate);
 
-                    // add Aas.Submodel
+                    // add Submodel
                     var smref = smres.GetReference().Copy();
                     ticket.AAS.AddSubmodelReference(smref);
                     ticket.Env.Submodels.Add(smres);

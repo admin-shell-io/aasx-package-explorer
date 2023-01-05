@@ -270,7 +270,7 @@ namespace AasxPackageExplorer
                                     {
                                         StackPointer_FID = 0;
                                     }
-                                    if (i_FVALUE > 0) // Aas.Property
+                                    if (i_FVALUE > 0) // Property
                                     {
                                         for (k = 0; k < i_FVALUE; k++)
                                         {
