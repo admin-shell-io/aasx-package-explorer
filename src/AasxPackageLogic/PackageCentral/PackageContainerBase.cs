@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AdminShellNS;
@@ -461,7 +461,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (pluv.Values != null
                     && !pluv.IsAlreadyUpdatedToAAS
                     && foundObservable is IEnumerateChildren
-                    && (foundObservable is Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement))
+                    && (foundObservable is AasCore.Aas3_0_RC02.Submodel || foundObservable is AasCore.Aas3_0_RC02.ISubmodelElement))
                 {
                     // will later access children ..
                     var wrappers = ((foundObservable as AasCore.Aas3_0_RC02.IReferable).EnumerateChildren())?.ToList();

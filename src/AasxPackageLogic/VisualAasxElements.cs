@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Intrinsics.X86;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxCompatibilityModels;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
@@ -690,7 +690,7 @@ namespace AasxPackageLogic
         public VisualElementSubmodelRef(
             VisualElementGeneric parent, TreeViewLineCache cache, AasCore.Aas3_0_RC02.Environment env,
             AdminShellPackageEnv package,
-            AasCore.Aas3_0_RC02.Reference smr, Submodel sm)
+            AasCore.Aas3_0_RC02.Reference smr, AasCore.Aas3_0_RC02.Submodel sm)
             : base()
         {
             this.Parent = parent;
@@ -887,7 +887,7 @@ namespace AasxPackageLogic
                     showCDinfo = true;
                     break;
 
-                case File smef:
+                case AasCore.Aas3_0_RC02.File smef:
                     if (smef.Value != null && smef.Value != "")
                         info += "\u21d2 " + smef.Value;
                     showCDinfo = true;

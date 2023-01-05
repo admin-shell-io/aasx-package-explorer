@@ -19,7 +19,7 @@ using System.Text;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
 using AasxOpenIdClient;
@@ -197,7 +197,7 @@ namespace AasxPackageLogic.PackageCentral
                 asset = AasCore.Aas3_0_RC02.Jsonization.Deserialize.AssetInformationFrom(jsonNode["AssetInformation"]);
 
             // result
-            return new Tuple<AasCore.Aas3_0_RC02.AssetAdministrationShell, AssetInformation>(aas, asset);
+            return new Tuple<AasCore.Aas3_0_RC02.AssetAdministrationShell, AasCore.Aas3_0_RC02.AssetInformation>(aas, asset);
         }
 
         /// <summary>

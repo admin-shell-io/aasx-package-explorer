@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -65,7 +65,7 @@ namespace AasxPackageLogic.PackageCentral
 
         public void Add(
             SignificantAasElement kind,
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             List<AasCore.Aas3_0_RC02.IReferable> parents,
             AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
@@ -88,7 +88,7 @@ namespace AasxPackageLogic.PackageCentral
             _records = new MultiValueDictionary<SignificantAasElement, SignificantAasElemRecord>();
 
             // find all Submodels in use, but no one twice
-            var visited = new Dictionary<Submodel, bool>();
+            var visited = new Dictionary<AasCore.Aas3_0_RC02.Submodel, bool>();
             foreach (var sm in env.FindAllSubmodelGroupedByAAS())
                 if (!visited.ContainsKey(sm))
                     visited.Add(sm, true);

@@ -18,7 +18,7 @@ using AasxBammRdfImExport.RDFentities;
 using VDS.RDF;
 using VDS.RDF.Parsing;
 using VDS.RDF.Writing;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -30,7 +30,7 @@ namespace AasxBammRdfImExport
         public static AdminShellNS.AdminShellPackageEnv thePackageEnv;
 
         public static void ImportInto(
-            string rdffn, AasCore.Aas3_0_RC02.Environment env, Submodel sm,
+            string rdffn, AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm,
             AasCore.Aas3_0_RC02.Reference smref)
         {
             thePackageEnv = new AdminShellNS.AdminShellPackageEnv();
@@ -56,7 +56,7 @@ namespace AasxBammRdfImExport
             List<string> properties_list = new List<string>();
             List<string> properties_true_list = new List<string>();
             List<string> property_set_list = new List<string>();
-            AasCore.Aas3_0_RC02.Entity entity = new AasCore.Aas3_0_RC02.Entity(EntityType.SelfManagedEntity);
+            AasCore.Aas3_0_RC02.Entity entity = new AasCore.Aas3_0_RC02.Entity(AasCore.Aas3_0_RC02.EntityType.SelfManagedEntity);
             AasCore.Aas3_0_RC02.SubmodelElementCollection set_property = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             AasCore.Aas3_0_RC02.SubmodelElementCollection et = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
             AasCore.Aas3_0_RC02.SubmodelElementCollection entity_set = new AasCore.Aas3_0_RC02.SubmodelElementCollection();
@@ -375,7 +375,7 @@ namespace AasxBammRdfImExport
                 }
 
                 {
-                    var cd = new ConceptDescription(idShort: property_Name, id: semantic);
+                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(idShort: property_Name, id: semantic);
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
                         preferredNames: new[] { "EN", property_PreferredName },
@@ -447,7 +447,7 @@ namespace AasxBammRdfImExport
                 }
 
                 {
-                    var cd = new ConceptDescription(idShort: "" + name, id: semantic);
+                    var cd = new AasCore.Aas3_0_RC02.ConceptDescription(idShort: "" + name, id: semantic);
                     env.ConceptDescriptions.Add(cd);
                     cd.SetIEC61360Spec(
                         preferredNames: new[] { "EN", preferred_name },

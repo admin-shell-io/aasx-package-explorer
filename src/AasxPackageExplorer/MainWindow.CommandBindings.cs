@@ -27,7 +27,7 @@ using System.Windows.Input;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -2167,7 +2167,7 @@ namespace AasxPackageExplorer
         public bool MenuSelectEnvSubmodel(
             AasxMenuActionTicket ticket,
             out AasCore.Aas3_0_RC02.Environment env,
-            out Submodel sm,
+            out AasCore.Aas3_0_RC02.Submodel sm,
             out AasCore.Aas3_0_RC02.Reference smr,
             string msg)
         {

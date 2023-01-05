@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -28,46 +28,46 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiNameplateV10 Static = new ZveiNameplateV10();
 
-        public Submodel
+        public AasCore.Aas3_0_RC02.Submodel
             SM_Nameplate;
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_ManNam,
-        CD_ManProDes,
-        CD_Add,
-        CD_Dep,
-        CD_Str,
-        CD_ZipCod,
-        CD_POBox,
-        CD_ZipCodOfPOBox,
-        CD_CitTow,
-        CD_StaCou,
-        CD_NatCod,
-        CD_VATNum,
-        CD_AddRem,
-        CD_AddOfAddLin,
-        CD_Pho,
-        CD_TelNum,
-        CD_TypOfTel,
-        CD_Fax,
-        CD_FaxNum,
-        CD_TypOfFaxNum,
-        CD_Ema,
-        CD_EmaAdd,
-        CD_PubKey,
-        CD_TypOfEmaAdd,
-        CD_TypOfPubKey,
-        CD_ManProFam,
-        CD_SerNum,
-        CD_YeaOfCon,
-        CD_Markings,
-        CD_Marking,
-        CD_MarkingName,
-        CD_MarkingFile,
-        CD_MarkingAdditionalText,
-        CD_AssetSpecificProperties,
-        CD_GuidelineSpecificProperties,
-        CD_GuiForConDec;
+            CD_ManProDes,
+            CD_Add,
+            CD_Dep,
+            CD_Str,
+            CD_ZipCod,
+            CD_POBox,
+            CD_ZipCodOfPOBox,
+            CD_CitTow,
+            CD_StaCou,
+            CD_NatCod,
+            CD_VATNum,
+            CD_AddRem,
+            CD_AddOfAddLin,
+            CD_Pho,
+            CD_TelNum,
+            CD_TypOfTel,
+            CD_Fax,
+            CD_FaxNum,
+            CD_TypOfFaxNum,
+            CD_Ema,
+            CD_EmaAdd,
+            CD_PubKey,
+            CD_TypOfEmaAdd,
+            CD_TypOfPubKey,
+            CD_ManProFam,
+            CD_SerNum,
+            CD_YeaOfCon,
+            CD_Markings,
+            CD_Marking,
+            CD_MarkingName,
+            CD_MarkingFile,
+            CD_MarkingAdditionalText,
+            CD_AssetSpecificProperties,
+            CD_GuidelineSpecificProperties,
+            CD_GuiForConDec;
 
         public ZveiNameplateV10()
         {

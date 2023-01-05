@@ -13,7 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 // ReSharper disable UnassignedField.Global
@@ -28,10 +28,10 @@ namespace AasxPredefinedConcepts
     {
         public static ZveiTimeSeriesDataV10 Static = new ZveiTimeSeriesDataV10();
 
-        public Submodel
+        public AasCore.Aas3_0_RC02.Submodel
             SM_TimeSeriesData;
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_TimeSeries,
             CD_Name,
             CD_Description,

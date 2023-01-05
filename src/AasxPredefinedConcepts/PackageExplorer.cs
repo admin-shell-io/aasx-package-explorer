@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -24,7 +24,7 @@ namespace AasxPredefinedConcepts
     {
         public static PackageExplorer Static = new PackageExplorer();
 
-        public ConceptDescription
+        public AasCore.Aas3_0_RC02.ConceptDescription
             CD_AasxLoadedNavigateTo;
 
         public PackageExplorer()
