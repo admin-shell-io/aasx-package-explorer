@@ -2918,6 +2918,11 @@ namespace AasxPackageExplorer
                         dlgFileName = "new.docx";
                         dlgFilter = "Microsoft Word (*.docx)|*.docx|All files (*.*)|*.*";
                     }
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+                    {
+                        dlgFileName = "new.md";
+                        dlgFilter = "Markdown (*.md)|*.md|All files (*.*)|*.*";
+                    }
 
                     // store
                     ticket["Record"] = record;

@@ -307,6 +307,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                         success = proc.ExportExcel(fn, list);
                     if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
                         success = proc.ExportWord(fn, list);
+                    if (record.Format == (int)ImportExportTableRecord.FormatEnum.NarkdownGH)
+                        success = proc.ExportMarkdownGithub(fn, list);
                 }
                 catch (Exception ex)
                 {

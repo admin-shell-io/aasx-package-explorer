@@ -58,6 +58,17 @@ namespace AasxPluginExportTable
             this.cd = cd;
             this.Parent = parent;
         }
+
+        public IReferable GetHeadingReferable()
+        {
+            if (Parent != null)
+                return Parent;
+            if (sm != null)
+                return sm;
+            if (sme != null)
+                return sme;
+            return null;
+        }
     }
 
     public class ExportTableAasEntitiesList : List<ExportTableAasEntitiesItem>
@@ -85,7 +96,7 @@ namespace AasxPluginExportTable
         public class CellRecord
         {
             public string Fg = null, Bg = null, HorizAlign = null, VertAlign = null, Font = null, Frame = null,
-                Text = "", TextWithHeaders = "", Width = null;
+                Text = "", TextWithHeaders = "", Width = null, Md = "";
 
             public CellRecord() { }
 
@@ -624,6 +635,9 @@ namespace AasxPluginExportTable
                         case "width":
                             cr.Width = argtl;
                             break;
+                        case "md":
+                            cr.Md = argtl;
+                            break;
                     }
 
                     // in any case, replace the wohl match!
@@ -654,6 +668,8 @@ namespace AasxPluginExportTable
                 {
                     // top
                     var proc = new ItemProcessor(Record, entities.FirstOrDefault());
+                    proc.Start();
+                    proc.ReplaceNewlineWith = " "; // for TSF, this is not possible!
                     for (int ri = 0; ri < Record.RowsTop; ri++)
                     {
                         var line = "";
@@ -681,7 +697,7 @@ namespace AasxPluginExportTable
                         // create processing
                         proc = new ItemProcessor(Record, item);
                         proc.Start();
-                        proc.ReplaceNewlineWith = ""; // for TSF, this is not possible!
+                        proc.ReplaceNewlineWith = " "; // for TSF, this is not possible!
 
                         var lines = new List<string>();
 
@@ -1276,5 +1292,121 @@ namespace AasxPluginExportTable
             return true;
         }
 
+        //
+        // Markdown (GitHub syntax)
+        //
+
+        public bool ExportMarkdownGithub(
+            string fn,
+            List<ExportTableAasEntitiesList> iterateAasEntities)
+        {
+            // access
+            if (Record?.IsValid() != true)
+                return false;
+
+            using (var f = new StreamWriter(fn))
+            {
+                // Heading
+                f.WriteLine("# 3 Heading");
+                f.WriteLine();
+
+                // over entities
+                var headingIdx = 1;
+                foreach (var entities in iterateAasEntities)
+                {
+                    // top entity
+                    var topEnt = entities.FirstOrDefault();
+
+                    // Heading
+                    var hr = topEnt?.GetHeadingReferable();
+                    f.WriteLine($"## 3.{headingIdx++} {(hr != null ? hr.IdShort : "Heading")}");
+
+                    // one blank line is important for Markdown
+                    f.WriteLine();
+
+                    // top
+                    var proc = new ItemProcessor(Record, topEnt);
+                    proc.Start();
+                    proc.ReplaceNewlineWith = "<br/>";
+
+                    for (int ri = 0; ri < Record.RowsTop; ri++)
+                    {
+                        var line = "|";
+                        var headline = false;
+                        for (int ci = 0; ci < Record.Cols; ci++)
+                        {
+                            // get cell record
+                            var cr = GetTopCell(ri, ci);
+
+                            // process text
+                            proc.ProcessCellRecord(cr);
+
+                            // flags
+                            if (cr.Md.Contains("headline"))
+                                headline = true;
+
+                            // add
+                            line += " " + cr.Text + "|";
+                        }
+
+                        if (headline)
+                            f.WriteLine();
+
+                        f.WriteLine(line);
+
+                        // write dashes line
+                        if (headline)
+                        {
+                            // Markdown .. indicate table horizontal row
+                            f.Write("|");
+                            for (int ci = 0; ci < Record.Cols; ci++)
+                                f.Write(" :--- |");
+                            f.WriteLine();
+                        }
+                    }
+
+                    // elements
+                    foreach (var item in entities)
+                    {
+                        // create processing
+                        proc = new ItemProcessor(Record, item);
+                        proc.Start();
+                        proc.ReplaceNewlineWith = "<br/>";
+
+                        var lines = new List<string>();
+
+                        // all elements
+                        for (int ri = 0; ri < Record.RowsBody; ri++)
+                        {
+                            var line = "|";
+                            for (int ci = 0; ci < Record.Cols; ci++)
+                            {
+                                // get cell record
+                                var cr = GetBodyCell(ri, ci);
+
+                                // process text
+                                proc.ProcessCellRecord(cr);
+
+                                // add
+                                line += " " + cr.Text + "|";
+                            }
+
+                            lines.Add(line);
+                        }
+
+                        // export really?
+                        if (proc.NumberReplacements > 0)
+                            foreach (var line in lines)
+                                f.WriteLine(line);
+                    }
+
+                    // empty rows
+                    for (int i = 0; i < Math.Max(0, Record.RowsGap); i++)
+                        f.WriteLine("");
+                }
+            }
+
+            return true;
+        }
     }
 }

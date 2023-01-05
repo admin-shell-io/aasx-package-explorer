@@ -84,6 +84,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * PR606 / MIHO/TestDynamicMenues
 
+* PR547 / Export markdown for SM templates
+
 ## PRs to be integrated
 
 * from 10 Aug, some parts were already moved (Jui?), some parts not
@@ -166,3 +168,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * integrated #PR606 / MIHO/TestDynamicMenues
 * WebBrowser still sucking :-/
 * rework AasxBammRdfImExport
+* pointless attempt to get WebBrowser running
+  -> still not finding .ddls / binary files
+  -> also quick&dirty approach not working
+* rework AasxPluginExportTable
+* integrated PR547

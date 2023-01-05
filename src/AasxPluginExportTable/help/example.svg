@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentStyleType="text/css" height="859px" preserveAspectRatio="none" style="width:1268px;height:859px;background:#FFFFFF;" version="1.1" viewBox="0 0 1268 859" width="1268px" zoomAndPan="magnify"><defs/><g><rect fill="#FFFFFF" height="843.4531" style="stroke:#000000;stroke-width:1.0;" width="1252" x="10" y="10"/><path d="M133,10 L133,19.2969 L123,29.2969 L10,29.2969 " fill="none" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="113" x="13" y="23.9951">SMT Nameplate</text><!--MD5=[cc09acc6b4c88885d7451325169b8999]
+class ID00000001--><g id="elem_ID00000001"><rect codeLine="12" fill="#FFFFFF" height="357.9063" id="ID00000001" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="380" x="23" y="466.7969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="75" x="175.5" y="482.9355">«Submodel»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="79" x="173.5" y="498.7607">Nameplate</text><line style="stroke:#000000;stroke-width:1.0;" x1="24" x2="402" y1="507.0625" y2="507.0625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="191" x="29" y="524.0576">+URIOfTheProduct : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="189" x="29" y="540.3545">+ManufacturerName : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="290" x="29" y="556.6514">+ManufacturerProductDesignation : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="198" x="29" y="572.9482">+ContactInformation : SMC</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="281" x="29" y="589.2451">+ManufacturerProductRoot : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="292" x="29" y="605.542">+ManufacturerProductFamily : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="282" x="29" y="621.8389">+ManufacturerProductType : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="285" x="29" y="638.1357">+OrderCodeOfManufacturer : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="368" x="29" y="654.4326">+ProductArticleNumberOfManufacturer : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="207" x="29" y="670.7295">+SerialNumber : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="210" x="29" y="687.0264">+YearOfConstruction : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="240" x="29" y="703.3232">+DateOfManufacture : date [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="216" x="29" y="719.6201">+HardwareVersion : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="215" x="29" y="735.917">+FirmwareVersion : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="214" x="29" y="752.2139">+SoftwareVersion : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="227" x="29" y="768.5107">+CountryOfOrigin : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="194" x="29" y="784.8076">+CompanyLogo : File [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="161" x="29" y="801.1045">+Markings : SMC [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="271" x="29" y="817.4014">+AssetSpecificProperties : SMC [0..1]</text></g><!--MD5=[8dbe74ca9d5a94617ac4379f58e83992]
+class ID00000002--><g id="elem_ID00000002"><rect codeLine="34" fill="#FFFFFF" height="423.0938" id="ID00000002" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="299" x="485.5" y="137.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="615" y="153.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="143" x="563.5" y="169.2607">ContactInformation</text><line style="stroke:#000000;stroke-width:1.0;" x1="486.5" x2="783.5" y1="177.5625" y2="177.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="266" x="491.5" y="194.5576">+RoleOfContactPerson : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="149" x="491.5" y="210.8545">+NationalCode : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="176" x="491.5" y="227.1514">+Language : String [0..*]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="181" x="491.5" y="243.4482">+TimeZone : string [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="120" x="491.5" y="259.7451">+CityTown : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="163" x="491.5" y="276.042">+Company : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="185" x="491.5" y="292.3389">+Department : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="142" x="491.5" y="308.6357">+Phone : SMC [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="121" x="491.5" y="324.9326">+Fax : SMC [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="136" x="491.5" y="341.2295">+Email : SMC [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="257" x="491.5" y="357.5264">+IPCommunication{00} : SMC [0..*]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="100" x="491.5" y="373.8232">+Street : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="112" x="491.5" y="390.1201">+Zipcode : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="142" x="491.5" y="406.417">+POBox : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="220" x="491.5" y="422.7139">+ZipCodeOfPOBox : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="186" x="491.5" y="439.0107">+StateCounty : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="211" x="491.5" y="455.3076">+NameOfContact : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="168" x="491.5" y="471.6045">+FirstName : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="190" x="491.5" y="487.9014">+MiddleNames : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="128" x="491.5" y="504.1982">+Title : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="198" x="491.5" y="520.4951">+AcademicTitle : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="273" x="491.5" y="536.792">+FurtherDetailsOfContact : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="287" x="491.5" y="553.0889">+AddressOfAdditionalLink : String [0..1]</text></g><!--MD5=[dfd3d222808366cd61c3546669736049]
+class ID00000003--><g id="elem_ID00000003"><rect codeLine="60" fill="#FFFFFF" height="97.1563" id="ID00000003" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="252" x="933.5" y="44.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="60.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="45" x="1037" y="76.2607">Phone</text><line style="stroke:#000000;stroke-width:1.0;" x1="934.5" x2="1184.5" y1="84.5625" y2="84.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="187" x="939.5" y="101.5576">+TelephoneNumber : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="240" x="939.5" y="117.8545">+TypeOfTelephone : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="196" x="939.5" y="134.1514">+AvailableTime : MLP [0..1]</text></g><!--MD5=[b64edf0bde12e11a536f30e1ce2a53c8]
+class ID00000004--><g id="elem_ID00000004"><rect codeLine="66" fill="#FFFFFF" height="80.8594" id="ID00000004" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="256" x="931.5" y="176.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="192.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="24" x="1047.5" y="208.2607">Fax</text><line style="stroke:#000000;stroke-width:1.0;" x1="932.5" x2="1186.5" y1="216.5625" y2="216.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="134" x="937.5" y="233.5576">+FaxNumber : MLP</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="244" x="937.5" y="249.8545">+TypeOfFaxNumber : String [0..1]</text></g><!--MD5=[86efb6386320a4394c6ec742bb83eb01]
+class ID00000005--><g id="elem_ID00000005"><rect codeLine="71" fill="#FFFFFF" height="113.4531" id="ID00000005" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="271" x="924" y="292.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="308.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="39" x="1040" y="324.2607">Email</text><line style="stroke:#000000;stroke-width:1.0;" x1="925" x2="1194" y1="332.5625" y2="332.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="164" x="930" y="349.5576">+EmailAddress : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="165" x="930" y="365.8545">+PublicKey : MLP [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="259" x="930" y="382.1514">+TypeOfEmailAddress : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="218" x="930" y="398.4482">+TypeOfPublicKey : MLP [0..1]</text></g><!--MD5=[52d2d08d1315804497ee6bd0f202711f]
+class ID00000006--><g id="elem_ID00000006"><rect codeLine="78" fill="#FFFFFF" height="97.1563" id="ID00000006" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="288" x="915.5" y="440.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="456.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="162" x="978.5" y="472.2607">IPCommunication{00}</text><line style="stroke:#000000;stroke-width:1.0;" x1="916.5" x2="1202.5" y1="480.5625" y2="480.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="245" x="921.5" y="497.5576">+AddressOfAdditionalLink : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="276" x="921.5" y="513.8545">+TypeOfCommunication : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="196" x="921.5" y="530.1514">+AvailableTime : MLP [0..1]</text></g><!--MD5=[25a3730a54d2cdf4d751bbeac269803b]
+class ID00000007--><g id="elem_ID00000007"><rect codeLine="84" fill="#FFFFFF" height="64.5625" id="ID00000007" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="124" x="573" y="613.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="615" y="629.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="64" x="603" y="645.2607">Markings</text><line style="stroke:#000000;stroke-width:1.0;" x1="574" x2="696" y1="653.5625" y2="653.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="112" x="579" y="670.5576">+Marking : SMC</text></g><!--MD5=[9a280b3a1a73dd18506e2c43dde7c722]
+class ID00000008--><g id="elem_ID00000008"><rect codeLine="88" fill="#FFFFFF" height="146.0469" id="ID00000008" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="385" x="867" y="572.7969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="588.9355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="57" x="1031" y="604.7607">Marking</text><line style="stroke:#000000;stroke-width:1.0;" x1="868" x2="1251" y1="613.0625" y2="613.0625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="166" x="873" y="630.0576">+MarkingName : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="373" x="873" y="646.3545">+DesignationOfCertificateOrApproval : String [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="171" x="873" y="662.6514">+IssueDate : Date [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="181" x="873" y="678.9482">+ExpiryDate : Date [0..1]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="131" x="873" y="695.2451">+MarkingFile : File</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="271" x="873" y="711.542">+MarkingAdditionalText : String [0..*]</text></g><!--MD5=[8a89c3b3e0c5d8ab24a964e9ac166a1c]
+class ID00000009--><g id="elem_ID00000009"><rect codeLine="97" fill="#FFFFFF" height="80.8594" id="ID00000009" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="344" x="463" y="733.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="615" y="749.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="174" x="548" y="765.2607">AssetSpecificProperties</text><line style="stroke:#000000;stroke-width:1.0;" x1="464" x2="806" y1="773.5625" y2="773.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="332" x="469" y="790.5576">+GuidelineSpecificProperties{00} : SMC [1..*]</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="209" x="469" y="806.8545">+{arbitrary} : Property [1..*]</text></g><!--MD5=[8514ce6982bf17d1fb41743325349dda]
+class ID0000000A--><g id="elem_ID0000000A"><rect codeLine="102" fill="#FFFFFF" height="80.8594" id="ID0000000A" rx="2.5" ry="2.5" style="stroke:#000000;stroke-width:1.0;" width="335" x="892" y="754.2969"/><text fill="#000000" font-family="Verdana" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="40" x="1039.5" y="770.4355">«SMC»</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="237" x="941" y="786.2607">GuidelineSpecificProperties{00}</text><line style="stroke:#000000;stroke-width:1.0;" x1="893" x2="1226" y1="794.5625" y2="794.5625"/><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="323" x="898" y="811.5576">+GuidelineForConformityDeclaration : String</text><text fill="#000000" font-family="Verdana" font-size="14" lengthAdjust="spacing" textLength="189" x="898" y="827.8545">+{arbitrary} : String [1..*]</text></g><!--MD5=[71cdad56cbf58d7e46aa7eda86758fe1]
+reverse link ID00000002 to ID00000003--><g id="link_ID00000002_ID00000003"><path codeLine="107" d="M797.54,158.7969 C797.54,158.7969 1060,158.7969 1060,158.7969 C1060,158.7969 1060,151.3489 1060,141.4559 " fill="none" id="ID00000002-backto-ID00000003" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="784.54,158.7969,790.54,162.7969,796.54,158.7969,790.54,154.7969,784.54,158.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="40" x="896.44" y="171.8638">Phone</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="24" x="1034.3828" y="161.4185">0..1</text></g><!--MD5=[a2f2aacd4519422f468d18329568bc60]
+reverse link ID00000002 to ID00000004--><g id="link_ID00000002_ID00000004"><path codeLine="108" d="M797.663,216.7969 C797.663,216.7969 931.24,216.7969 931.24,216.7969 " fill="none" id="ID00000002-backto-ID00000004" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="784.663,216.7969,790.663,220.7969,796.663,216.7969,790.663,212.7969,784.663,216.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="23" x="840.451" y="229.8638">Fax</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="24" x="899.5695" y="229.2814">0..1</text></g><!--MD5=[48e746127e4ee1503576f518f30bd446]
+reverse link ID00000002 to ID00000005--><g id="link_ID00000002_ID00000005"><path codeLine="109" d="M797.663,348.7969 C797.663,348.7969 923.932,348.7969 923.932,348.7969 " fill="none" id="ID00000002-backto-ID00000005" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="784.663,348.7969,790.663,352.7969,796.663,348.7969,790.663,344.7969,784.663,348.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="35" x="824.797" y="361.8638">Email</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="24" x="891.8619" y="361.2652">0..1</text></g><!--MD5=[ca03d8b75d3c17fd1adde0b5096f07cc]
+reverse link ID00000002 to ID00000006--><g id="link_ID00000002_ID00000006"><path codeLine="110" d="M797.663,488.7969 C797.663,488.7969 915.464,488.7969 915.464,488.7969 " fill="none" id="ID00000002-backto-ID00000006" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="784.663,488.7969,790.663,492.7969,796.663,488.7969,790.663,484.7969,784.663,488.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="146" x="709.564" y="501.8638">IPCommunication{00}</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="23" x="884.4442" y="501.2499">0..*</text></g><!--MD5=[9216f464e726a8e9c00b65fbc349078b]
+reverse link ID00000001 to ID00000002--><g id="link_ID00000001_ID00000002"><path codeLine="111" d="M416.013,513.5469 C416.013,513.5469 485.249,513.5469 485.249,513.5469 " fill="none" id="ID00000001-backto-ID00000002" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="403.013,513.5469,409.013,517.5469,415.013,513.5469,409.013,509.5469,403.013,513.5469" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="124" x="325.631" y="526.6138">ContactInformation</text></g><!--MD5=[44e430915b7bccc3821176abbee654ee]
+reverse link ID00000007 to ID00000008--><g id="link_ID00000007_ID00000008"><path codeLine="112" d="M710.181,645.7969 C710.181,645.7969 866.928,645.7969 866.928,645.7969 " fill="none" id="ID00000007-backto-ID00000008" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="697.181,645.7969,703.181,649.7969,709.181,645.7969,703.181,641.7969,697.181,645.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="49" x="738.554" y="658.8638">Marking</text></g><!--MD5=[0f1595a22b06474e9a0575222678be10]
+reverse link ID00000001 to ID00000007--><g id="link_ID00000001_ID00000007"><path codeLine="113" d="M416.013,645.7969 C416.013,645.7969 572.518,645.7969 572.518,645.7969 " fill="none" id="ID00000001-backto-ID00000007" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="403.013,645.7969,409.013,649.7969,415.013,645.7969,409.013,641.7969,403.013,645.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="56" x="437.266" y="658.8638">Markings</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="24" x="540.837" y="658.6666">0..1</text></g><!--MD5=[49de14cb082853d37f64eb254f05b4e8]
+reverse link ID00000009 to ID0000000A--><g id="link_ID00000009_ID0000000A"><path codeLine="114" d="M820.048,784.2969 C820.048,784.2969 891.681,784.2969 891.681,784.2969 " fill="none" id="ID00000009-backto-ID0000000A" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="807.048,784.2969,813.048,788.2969,819.048,784.2969,813.048,780.2969,807.048,784.2969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="207" x="647.864" y="797.3638">GuidelineSpecificProperties{00}</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="23" x="861.116" y="796.243">1..*</text></g><!--MD5=[0032e0d7c5ad4516460c72ef35b373c3]
+reverse link ID00000001 to ID00000009--><g id="link_ID00000001_ID00000009"><path codeLine="115" d="M416.013,773.7969 C416.013,773.7969 462.774,773.7969 462.774,773.7969 " fill="none" id="ID00000001-backto-ID00000009" style="stroke:#000000;stroke-width:1.0;"/><polygon fill="#000000" points="403.013,773.7969,409.013,777.7969,415.013,773.7969,409.013,769.7969,403.013,773.7969" style="stroke:#000000;stroke-width:1.0;"/><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="150" x="288.394" y="769.8638">AssetSpecificProperties</text><text fill="#000000" font-family="Verdana" font-size="13" lengthAdjust="spacing" textLength="24" x="431.002" y="786.1859">0..1</text></g><!--MD5=[fd1e656c071e605a2a8e860b1de1e777]
+@startuml
+!theme plain
+left to right direction
+hide class circle
+hide class methods
+skinparam classAttributeIconSize 0
+' skinparam linetype polyline
+skinparam linetype ortho
+mainframe SMT
+
+mainframe SMT Nameplate
+
+class "Nameplate" as ID00000001 <<Submodel>> {
+  +URIOfTheProduct : String
+  +ManufacturerName : MLP
+  +ManufacturerProductDesignation : MLP
+  +ContactInformation : SMC
+  +ManufacturerProductRoot : MLP [0..1]
+  +ManufacturerProductFamily : MLP [0..1]
+  +ManufacturerProductType : MLP [0..1]
+  +OrderCodeOfManufacturer : MLP [0..1]
+  +ProductArticleNumberOfManufacturer : MLP [0..1]
+  +SerialNumber : String [0..1]
+  +YearOfConstruction : String
+  +DateOfManufacture : date [0..1]
+  +HardwareVersion : MLP [0..1]
+  +FirmwareVersion : MLP [0..1]
+  +SoftwareVersion : MLP [0..1]
+  +CountryOfOrigin : String [0..1]
+  +CompanyLogo : File [0..1]
+  +Markings : SMC [0..1]
+  +AssetSpecificProperties : SMC [0..1]
+}
+
+class "ContactInformation" as ID00000002 <<SMC>> {
+  +RoleOfContactPerson : String [0..1]
+  +NationalCode : MLP
+  +Language : String [0..*]
+  +TimeZone : string [0..1]
+  +CityTown : MLP
+  +Company : MLP [0..1]
+  +Department : MLP [0..1]
+  +Phone : SMC [0..1]
+  +Fax : SMC [0..1]
+  +Email : SMC [0..1]
+  +IPCommunication{00} : SMC [0..*]
+  +Street : MLP
+  +Zipcode : MLP
+  +POBox : MLP [0..1]
+  +ZipCodeOfPOBox : MLP [0..1]
+  +StateCounty : MLP [0..1]
+  +NameOfContact : MLP [0..1]
+  +FirstName : MLP [0..1]
+  +MiddleNames : MLP [0..1]
+  +Title : MLP [0..1]
+  +AcademicTitle : MLP [0..1]
+  +FurtherDetailsOfContact : MLP [0..1]
+  +AddressOfAdditionalLink : String [0..1]
+}
+
+class "Phone" as ID00000003 <<SMC>> {
+  +TelephoneNumber : MLP
+  +TypeOfTelephone : String [0..1]
+  +AvailableTime : MLP [0..1]
+}
+
+class "Fax" as ID00000004 <<SMC>> {
+  +FaxNumber : MLP
+  +TypeOfFaxNumber : String [0..1]
+}
+
+class "Email" as ID00000005 <<SMC>> {
+  +EmailAddress : String
+  +PublicKey : MLP [0..1]
+  +TypeOfEmailAddress : String [0..1]
+  +TypeOfPublicKey : MLP [0..1]
+}
+
+class "IPCommunication{00}" as ID00000006 <<SMC>> {
+  +AddressOfAdditionalLink : String
+  +TypeOfCommunication : String [0..1]
+  +AvailableTime : MLP [0..1]
+}
+
+class "Markings" as ID00000007 <<SMC>> {
+  +Marking : SMC
+}
+
+class "Marking" as ID00000008 <<SMC>> {
+  +MarkingName : String
+  +DesignationOfCertificateOrApproval : String [0..1]
+  +IssueDate : Date [0..1]
+  +ExpiryDate : Date [0..1]
+  +MarkingFile : File
+  +MarkingAdditionalText : String [0..*]
+}
+
+class "AssetSpecificProperties" as ID00000009 <<SMC>> {
+  +GuidelineSpecificProperties{00} : SMC [1..*]
+  +{arbitrary} : Property [1..*]
+}
+
+class "GuidelineSpecificProperties{00}" as ID0000000A <<SMC>> {
+  +GuidelineForConformityDeclaration : String
+  +{arbitrary} : String [1..*]
+}
+
+ID00000002 *- - "0..1" ID00000003 : "Phone"
+ID00000002 *- - "0..1" ID00000004 : "Fax"
+ID00000002 *- - "0..1" ID00000005 : "Email"
+ID00000002 *- - "0..*" ID00000006 : "IPCommunication{00}"
+ID00000001 *- -  ID00000002 : "ContactInformation"
+ID00000007 *- -  ID00000008 : "Marking"
+ID00000001 *- - "0..1" ID00000007 : "Markings"
+ID00000009 *- - "1..*" ID0000000A : "GuidelineSpecificProperties{00}"
+ID00000001 *- - "0..1" ID00000009 : "AssetSpecificProperties"
+@enduml
+
+@startuml
+
+
+
+
+
+
+
+<style>
+  root {
+    BackgroundColor white
+    FontColor black
+    FontName Verdana
+    HyperLinkColor blue
+    LineColor black
+    LineThickness 1
+    Margin 5
+  }
+  caption {
+    LineThickness 0
+  }
+  footer {
+    LineThickness 0
+  }
+  header {
+    LineThickness 0
+  }
+  node {
+    MaximumWidth 300
+  }
+  title {
+    FontSize 22
+    LineThickness 0
+  }
+</style>
+
+skinparam ArrowLollipopColor black
+skinparam BackgroundColor white
+skinparam DefaultFontName Verdana
+skinparam DefaultMonospacedFontName Courier
+skinparam LifelineStrategy nosolid
+skinparam ParticipantPadding 10
+skinparam SequenceLifeLineBorderColor black
+skinparam Shadowing false
+skinparam UseBetaStyle true
+
+skinparam Activity {
+  BackgroundColor white
+  BarColor black
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam Boundary {
+  FontColor black
+}
+skinparam Box {
+  Padding 5
+}
+skinparam CircledCharacter {
+  FontColor black
+  FontName Courier
+  Radius 9
+}
+skinparam Class {
+  BackgroundColor white
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassAttribute {
+  FontColor black
+  FontName Verdana
+}
+skinparam ClassStereotype {
+  FontColor black
+  FontName Verdana
+}
+skinparam Footer {
+  FontColor black
+  FontName Verdana
+}
+skinparam Header {
+  FontColor black
+  FontName Verdana
+}
+skinparam Hyperlink {
+  Color blue
+}
+skinparam IconPackage {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPrivate {
+  Color black
+  BackgroundColor white
+}
+skinparam IconProtected {
+  Color black
+  BackgroundColor white
+}
+skinparam IconPublic {
+  Color black
+  BackgroundColor white
+}
+skinparam Note {
+  FontColor black
+  FontName Verdana
+}
+skinparam Object {
+  BorderColor black
+}
+skinparam Package {
+  BorderColor black
+  FontColor black
+  FontName Verdana
+}
+skinparam State {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeA {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeC {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeE {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeI {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam StereotypeN {
+  BackgroundColor white
+  BorderColor black
+}
+skinparam UseCaseStereoType {
+  FontColor black
+  FontName Verdana
+}
+left to right direction
+hide class circle
+hide class methods
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+mainframe SMT
+
+mainframe SMT Nameplate
+
+class "Nameplate" as ID00000001 <<Submodel>> {
+  +URIOfTheProduct : String
+  +ManufacturerName : MLP
+  +ManufacturerProductDesignation : MLP
+  +ContactInformation : SMC
+  +ManufacturerProductRoot : MLP [0..1]
+  +ManufacturerProductFamily : MLP [0..1]
+  +ManufacturerProductType : MLP [0..1]
+  +OrderCodeOfManufacturer : MLP [0..1]
+  +ProductArticleNumberOfManufacturer : MLP [0..1]
+  +SerialNumber : String [0..1]
+  +YearOfConstruction : String
+  +DateOfManufacture : date [0..1]
+  +HardwareVersion : MLP [0..1]
+  +FirmwareVersion : MLP [0..1]
+  +SoftwareVersion : MLP [0..1]
+  +CountryOfOrigin : String [0..1]
+  +CompanyLogo : File [0..1]
+  +Markings : SMC [0..1]
+  +AssetSpecificProperties : SMC [0..1]
+}
+
+class "ContactInformation" as ID00000002 <<SMC>> {
+  +RoleOfContactPerson : String [0..1]
+  +NationalCode : MLP
+  +Language : String [0..*]
+  +TimeZone : string [0..1]
+  +CityTown : MLP
+  +Company : MLP [0..1]
+  +Department : MLP [0..1]
+  +Phone : SMC [0..1]
+  +Fax : SMC [0..1]
+  +Email : SMC [0..1]
+  +IPCommunication{00} : SMC [0..*]
+  +Street : MLP
+  +Zipcode : MLP
+  +POBox : MLP [0..1]
+  +ZipCodeOfPOBox : MLP [0..1]
+  +StateCounty : MLP [0..1]
+  +NameOfContact : MLP [0..1]
+  +FirstName : MLP [0..1]
+  +MiddleNames : MLP [0..1]
+  +Title : MLP [0..1]
+  +AcademicTitle : MLP [0..1]
+  +FurtherDetailsOfContact : MLP [0..1]
+  +AddressOfAdditionalLink : String [0..1]
+}
+
+class "Phone" as ID00000003 <<SMC>> {
+  +TelephoneNumber : MLP
+  +TypeOfTelephone : String [0..1]
+  +AvailableTime : MLP [0..1]
+}
+
+class "Fax" as ID00000004 <<SMC>> {
+  +FaxNumber : MLP
+  +TypeOfFaxNumber : String [0..1]
+}
+
+class "Email" as ID00000005 <<SMC>> {
+  +EmailAddress : String
+  +PublicKey : MLP [0..1]
+  +TypeOfEmailAddress : String [0..1]
+  +TypeOfPublicKey : MLP [0..1]
+}
+
+class "IPCommunication{00}" as ID00000006 <<SMC>> {
+  +AddressOfAdditionalLink : String
+  +TypeOfCommunication : String [0..1]
+  +AvailableTime : MLP [0..1]
+}
+
+class "Markings" as ID00000007 <<SMC>> {
+  +Marking : SMC
+}
+
+class "Marking" as ID00000008 <<SMC>> {
+  +MarkingName : String
+  +DesignationOfCertificateOrApproval : String [0..1]
+  +IssueDate : Date [0..1]
+  +ExpiryDate : Date [0..1]
+  +MarkingFile : File
+  +MarkingAdditionalText : String [0..*]
+}
+
+class "AssetSpecificProperties" as ID00000009 <<SMC>> {
+  +GuidelineSpecificProperties{00} : SMC [1..*]
+  +{arbitrary} : Property [1..*]
+}
+
+class "GuidelineSpecificProperties{00}" as ID0000000A <<SMC>> {
+  +GuidelineForConformityDeclaration : String
+  +{arbitrary} : String [1..*]
+}
+
+ID00000002 *- - "0..1" ID00000003 : "Phone"
+ID00000002 *- - "0..1" ID00000004 : "Fax"
+ID00000002 *- - "0..1" ID00000005 : "Email"
+ID00000002 *- - "0..*" ID00000006 : "IPCommunication{00}"
+ID00000001 *- -  ID00000002 : "ContactInformation"
+ID00000007 *- -  ID00000008 : "Marking"
+ID00000001 *- - "0..1" ID00000007 : "Markings"
+ID00000009 *- - "1..*" ID0000000A : "GuidelineSpecificProperties{00}"
+ID00000001 *- - "0..1" ID00000009 : "AssetSpecificProperties"
+@enduml
+
+PlantUML version 1.2022.13beta2(Unknown compile time)
+(GPL source distribution)
+Java Runtime: Java(TM) SE Runtime Environment
+JVM: Java HotSpot(TM) 64-Bit Server VM
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>

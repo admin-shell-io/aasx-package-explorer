@@ -25,8 +25,10 @@ namespace AasxIntegrationBase
         // Types
         //
 
-        public enum FormatEnum { TSF = 0, LaTex, Word, Excel }
-        public static string[] FormatNames = new string[] { "Tab separated", "LaTex", "Word", "Excel" };
+        public enum FormatEnum { TSF = 0, LaTex, Word, Excel, NarkdownGH }
+        public static string[] FormatNames = new string[] { 
+            "Tab separated", "LaTex", "Word", "Excel", "Markdown (GH)" 
+        };
 
         //
         // Members
