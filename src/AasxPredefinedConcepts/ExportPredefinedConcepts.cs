@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -22,7 +22,7 @@ namespace AasxPredefinedConcepts
 {
     public static class ExportPredefinedConcepts
     {
-        public static void Export(AasCore.Aas3_0_RC02.Environment env, Submodel sm, string fn)
+        public static void Export(AasCore.Aas3_0_RC02.Environment env, AasCore.Aas3_0_RC02.Submodel sm, string fn)
         {
             // access
             if (fn == null || env == null || sm == null || sm.IdShort == null || sm.SubmodelElements == null)
@@ -43,7 +43,7 @@ namespace AasxPredefinedConcepts
                 snippets.WriteLine("Phase (1) Check, which ConceptDescriptions need to be exported:");
                 snippets.WriteLine("===============================================================");
 
-                var usedCds = new Dictionary<string, ConceptDescription>();
+                var usedCds = new Dictionary<string, AasCore.Aas3_0_RC02.ConceptDescription>();
                 foreach (var sme in sm.SubmodelElements?.FindDeep<AasCore.Aas3_0_RC02.ISubmodelElement>())
                 {
                     // for SME, try to lookup CD

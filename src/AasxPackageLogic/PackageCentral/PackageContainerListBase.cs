@@ -14,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
@@ -264,7 +264,7 @@ namespace AasxPackageLogic.PackageCentral
                 if (fi.AasIds != null)
                     foreach (var id in fi.AasIds)
                     {
-                        var aas = new AasCore.Aas3_0_RC02.AssetAdministrationShell("", new AssetInformation(AasCore.Aas3_0_RC02.AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
+                        var aas = new AasCore.Aas3_0_RC02.AssetAdministrationShell("", new AasCore.Aas3_0_RC02.AssetInformation(AasCore.Aas3_0_RC02.AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
                         aas.Description = new List<AasCore.Aas3_0_RC02.LangString>() { new AasCore.Aas3_0_RC02.LangString("en?", "" + fi.Description) };
                         aas.Id = id;
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);

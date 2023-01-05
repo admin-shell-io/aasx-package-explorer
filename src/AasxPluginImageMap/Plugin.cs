@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Newtonsoft.Json;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -112,7 +112,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as Submodel;
+                var sm = args[0] as AasCore.Aas3_0_RC02.Submodel;
                 if (sm == null)
                     return null;
 
@@ -269,7 +269,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // generate (by hand)
-                var sm = new Submodel("");
+                var sm = new AasCore.Aas3_0_RC02.Submodel("");
                 sm.SemanticId = AasxPredefinedConcepts.ImageMap.Static.SEM_ImageMapSubmodel.Copy();
                 sm.IdShort = "ImageMap";
 

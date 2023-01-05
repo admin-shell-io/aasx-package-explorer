@@ -13,7 +13,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AdminShellNS;

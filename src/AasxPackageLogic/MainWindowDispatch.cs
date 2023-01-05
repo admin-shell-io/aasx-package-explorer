@@ -30,7 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -856,14 +856,14 @@ namespace AasxPackageLogic
                 }
 
                 // try to invoke plugin to get submodel
-                Submodel smres = null;
-                List<ConceptDescription> cdres = null;
+                AasCore.Aas3_0_RC02.Submodel smres = null;
+                List<AasCore.Aas3_0_RC02.ConceptDescription> cdres = null;
                 try
                 {
                     var res = record.Item1.InvokeAction("generate-submodel", record.Item2) as AasxPluginResultBase;
                     if (res is AasxPluginResultBaseObject rbo)
                     {
-                        smres = rbo.obj as Submodel;
+                        smres = rbo.obj as AasCore.Aas3_0_RC02.Submodel;
                     }
                     if (res is AasxPluginResultGenerateSubmodel rgsm)
                     {
@@ -888,7 +888,7 @@ namespace AasxPackageLogic
                 {
                     // Submodel needs an identification
                     smres.Id = "";
-                    if (smres.Kind == null || smres.Kind == ModelingKind.Instance)
+                    if (smres.Kind == null || smres.Kind == AasCore.Aas3_0_RC02.ModelingKind.Instance)
                         smres.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                             Options.Curr.TemplateIdSubmodelInstance);
                     else

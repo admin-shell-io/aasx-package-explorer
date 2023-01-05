@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Microsoft.IdentityModel.Tokens;
@@ -474,7 +474,7 @@ namespace AasxPackageLogic
 
         private static void FindChildLangStrings(
             XmlNode node, string childName, string childChildName, string langCodeAttrib,
-            Action<LangString> action)
+            Action<AasCore.Aas3_0_RC02.LangString> action)
         {
             if (node == null || action == null)
                 return;
@@ -492,7 +492,7 @@ namespace AasxPackageLogic
             }
         }
 
-        public static ConceptDescription GenerateConceptDescription(
+        public static AasCore.Aas3_0_RC02.ConceptDescription GenerateConceptDescription(
             List<EclassUtils.SearchItem> input, string targetIrdi)
         {
             // access
@@ -500,7 +500,7 @@ namespace AasxPackageLogic
                 return null;
 
             // new cd
-            var res = new ConceptDescription("");
+            var res = new AasCore.Aas3_0_RC02.ConceptDescription("");
 
             // MIHO 2020-10-02: fix bug, create IEC61360 content
             var eds = ExtendEmbeddedDataSpecification.CreateIec61360WithContent();

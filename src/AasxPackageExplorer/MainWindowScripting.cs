@@ -37,8 +37,7 @@ using AnyUi;
 using Jose;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using AasCore.Aas3_0_RC02;
+using Newtonsoft.Json.Serialization;using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -215,7 +214,7 @@ namespace AasxPackageExplorer
             // available elements in the environment
             var firstAas = pm.AssetAdministrationShells.FirstOrDefault();
 
-            Submodel firstSm = null;
+            AasCore.Aas3_0_RC02.Submodel firstSm = null;
             if (firstAas != null && firstAas.Submodels != null && firstAas.Submodels.Count > 0)
                 firstSm = pm.FindSubmodel(firstAas.Submodels[0]);
 

@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using AnyUi;
@@ -983,12 +983,12 @@ namespace AasxIntegrationBase.AasForms
         /// <summary>
         /// The Submodel is maintained by the instance
         /// </summary>
-        public Submodel sm = null;
+        public AasCore.Aas3_0_RC02.Submodel sm = null;
 
         /// <summary>
         /// This links to a Submodel, from which the instance was read/ edited.
         /// </summary>
-        public Submodel sourceSM = null;
+        public AasCore.Aas3_0_RC02.Submodel sourceSM = null;
 
         public FormInstanceListOfDifferent PairInstances = new FormInstanceListOfDifferent();
 
@@ -1010,13 +1010,13 @@ namespace AasxIntegrationBase.AasForms
             }
         }
 
-        public void InitReferable(FormDescSubmodel desc, Submodel source)
+        public void InitReferable(FormDescSubmodel desc, AasCore.Aas3_0_RC02.Submodel source)
         {
             if (desc == null)
                 return;
 
             // create sm here! (different than handling of SME!!)
-            this.sm = new Submodel("");
+            this.sm = new AasCore.Aas3_0_RC02.Submodel("");
             this.sourceSM = source;
 
             sm.IdShort = desc.PresetIdShort;
@@ -1750,13 +1750,13 @@ namespace AasxIntegrationBase.AasForms
             this.desc = parentDesc;
 
             // initialize Refwrable
-            var file = new File("");
+            var file = new AasCore.Aas3_0_RC02.File("");
             this.sme = file;
             InitReferable(parentDesc, source);
 
             // check, if a source is present
             this.sourceSme = source;
-            var fileSource = this.sourceSme as File;
+            var fileSource = this.sourceSme as AasCore.Aas3_0_RC02.File;
             if (fileSource != null)
             {
                 // take over
@@ -1786,8 +1786,8 @@ namespace AasxIntegrationBase.AasForms
             base.ProcessSmeForRender(packageEnv, addFilesToPackage, editSource);
 
             // access
-            var file = this.sme as File;
-            var fileSource = this.sourceSme as File;
+            var file = this.sme as AasCore.Aas3_0_RC02.File;
+            var fileSource = this.sourceSme as AasCore.Aas3_0_RC02.File;
 
             // need to do more than the base implementation!
             if (file != null)
@@ -1846,7 +1846,7 @@ namespace AasxIntegrationBase.AasForms
             PluginOperationContextBase opctx)
         {
             // access
-            var file = sme as File;
+            var file = sme as AasCore.Aas3_0_RC02.File;
             if (file == null)
                 return;
 

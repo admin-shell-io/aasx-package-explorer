@@ -9,7 +9,7 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
@@ -229,9 +229,9 @@ namespace AasxIntegrationBase.AasForms
         /// Needs to get a unique Identification.
         /// </summary>
         /// <returns></returns>
-        public Submodel GenerateDefault()
+        public AasCore.Aas3_0_RC02.Submodel GenerateDefault()
         {
-            var res = new Submodel("");
+            var res = new AasCore.Aas3_0_RC02.Submodel("");
 
             // is Referable
             this.InitReferable(res);
@@ -700,7 +700,7 @@ namespace AasxIntegrationBase.AasForms
 
         public AasCore.Aas3_0_RC02.ISubmodelElement GenerateDefault()
         {
-            var res = new File("");
+            var res = new AasCore.Aas3_0_RC02.File("");
             this.InitSme(res);
             if (this.presetMimeType != null)
                 res.ContentType = this.presetMimeType;

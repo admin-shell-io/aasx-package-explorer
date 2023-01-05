@@ -31,7 +31,7 @@ using Jose;
 using System.Threading;
 using AasxPackageLogic.PackageCentral;
 using Newtonsoft.Json.Serialization;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -221,7 +221,7 @@ namespace AasxPackageExplorer
         /// Performs a signing of a Submodel or SubmodelElement
         /// </summary>
         public bool Tool_Security_Sign(
-            Submodel rootSm,
+            AasCore.Aas3_0_RC02.Submodel rootSm,
             AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
             AasCore.Aas3_0_RC02.Environment env,
             bool useX509)
@@ -231,7 +231,7 @@ namespace AasxPackageExplorer
                 return false;
 
             // ported from MainWindow_CommandBindings
-            Submodel sm = null;
+            AasCore.Aas3_0_RC02.Submodel sm = null;
             AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
             AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
             if (rootSm != null)
@@ -245,8 +245,8 @@ namespace AasxPackageExplorer
                 {
                     smc = smee as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                     var p = smee.Parent;
-                    if (p is Submodel)
-                        sm = p as Submodel;
+                    if (p is AasCore.Aas3_0_RC02.Submodel)
+                        sm = p as AasCore.Aas3_0_RC02.Submodel;
                     if (p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                         smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                 }
@@ -499,7 +499,7 @@ namespace AasxPackageExplorer
         /// Validates a certificate
         /// </summary>
         public bool Tool_Security_ValidateCertificate(
-            Submodel rootSm,
+            AasCore.Aas3_0_RC02.Submodel rootSm,
             AasCore.Aas3_0_RC02.ISubmodelElement rootSme,
             AasCore.Aas3_0_RC02.Environment env,
             AasxMenuActionTicket ticket = null)
@@ -513,7 +513,7 @@ namespace AasxPackageExplorer
             // ported from MainWindow_CommandBindings
             List<AasCore.Aas3_0_RC02.SubmodelElementCollection> existing = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
             List<AasCore.Aas3_0_RC02.SubmodelElementCollection> validate = new List<AasCore.Aas3_0_RC02.SubmodelElementCollection>();
-            Submodel sm = null;
+            AasCore.Aas3_0_RC02.Submodel sm = null;
             AasCore.Aas3_0_RC02.SubmodelElementCollection smc = null;
             AasCore.Aas3_0_RC02.SubmodelElementCollection smcp = null;
             bool smcIsSignature = false;
@@ -535,8 +535,8 @@ namespace AasxPackageExplorer
                         smcIsSignature = true;
                     }
                     var p = smc.Parent;
-                    if (smcIsSignature && p is Submodel)
-                        sm = p as Submodel;
+                    if (smcIsSignature && p is AasCore.Aas3_0_RC02.Submodel)
+                        sm = p as AasCore.Aas3_0_RC02.Submodel;
                     if (smcIsSignature && p is AasCore.Aas3_0_RC02.SubmodelElementCollection)
                         smcp = p as AasCore.Aas3_0_RC02.SubmodelElementCollection;
                     if (!smcIsSignature)
@@ -896,7 +896,7 @@ namespace AasxPackageExplorer
         /// Populates an existingSubmodel with values from OPC UA.
         /// </summary>
         public void Tool_OpcUaClientRead(
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             AasxMenuActionTicket ticket = null)
         {
             try
@@ -1028,7 +1028,7 @@ namespace AasxPackageExplorer
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_ReadSubmodel(
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             AasCore.Aas3_0_RC02.Environment env,
             string sourceFn,
             AasxMenuActionTicket ticket = null)
@@ -1046,7 +1046,7 @@ namespace AasxPackageExplorer
                 var aas = env.FindAasWithSubmodelId(sm.Id);
 
                 // de-serialize Submodel
-                Submodel submodel = null;
+                AasCore.Aas3_0_RC02.Submodel submodel = null;
 
                 using (var file = System.IO.File.OpenRead(sourceFn))
                 {
@@ -1087,7 +1087,7 @@ namespace AasxPackageExplorer
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelWrite(
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             string targetFn,
             AasxMenuActionTicket ticket = null)
         {
@@ -1118,7 +1118,7 @@ namespace AasxPackageExplorer
         /// Note: check if there is a business case for this
         /// </summary>
         public void Tool_SubmodelPut(
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {
@@ -1150,7 +1150,7 @@ namespace AasxPackageExplorer
         /// </summary>
         public void Tool_SubmodelGet(
             AasCore.Aas3_0_RC02.Environment env,
-            Submodel sm,
+            AasCore.Aas3_0_RC02.Submodel sm,
             string url,
             AasxMenuActionTicket ticket = null)
         {

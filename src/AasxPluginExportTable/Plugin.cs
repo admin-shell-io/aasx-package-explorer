@@ -20,7 +20,7 @@ using AasxPluginExportTable.TimeSeries;
 using AasxPluginExportTable.Uml;
 using AnyUi;
 using JetBrains.Annotations;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 
@@ -147,7 +147,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 if (args[0] is ImportExportTableRecord record
                     && args[1] is string fn
                     && args[2] is AasCore.Aas3_0_RC02.Environment env
-                    && args[3] is Submodel sm
+                    && args[3] is AasCore.Aas3_0_RC02.Submodel sm
                     && args[4] is AasxMenuActionTicket ticket)
                 {
                     // the Submodel elements need to have parents
@@ -167,7 +167,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[0] is ExportUmlRecord record
                     && args[1] is string fn
                     && args[2] is AasCore.Aas3_0_RC02.Environment env
-                    && args[3] is Submodel sm)
+                    && args[3] is AasCore.Aas3_0_RC02.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -186,7 +186,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args[0] is ImportTimeSeriesRecord record
                     && args[1] is string fn
                     && args[1] is AasCore.Aas3_0_RC02.Environment env
-                    && args[2] is Submodel sm)
+                    && args[2] is AasCore.Aas3_0_RC02.Submodel sm)
                 {
                     // the Submodel elements need to have parents
                     sm.SetAllParents();
@@ -204,7 +204,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private void ExportTable_EnumerateSubmodel(
             List<ExportTableAasEntitiesList> list, AasCore.Aas3_0_RC02.Environment env,
             bool broadSearch, bool actInHierarchy, int depth,
-            Submodel sm, AasCore.Aas3_0_RC02.ISubmodelElement sme)
+            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.ISubmodelElement sme)
         {
             // check
             if (list == null || env == null || sm == null)
@@ -281,7 +281,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private void Export(ImportExportTableRecord record,
             string fn,
-            Submodel sm, AasCore.Aas3_0_RC02.Environment env,
+            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.Environment env,
             AasxMenuActionTicket ticket = null)
         {
             // prepare list of items to be exported
@@ -330,7 +330,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
         private void Import(ImportExportTableRecord record,
             string fn,
-            Submodel sm, AasCore.Aas3_0_RC02.Environment env,
+            AasCore.Aas3_0_RC02.Submodel sm, AasCore.Aas3_0_RC02.Environment env,
             AasxMenuActionTicket ticket = null)
         {
             // get the import file

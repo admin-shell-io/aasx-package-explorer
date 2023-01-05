@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using JetBrains.Annotations;
@@ -113,7 +113,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     return null;
 
                 // looking only for Submodels
-                var sm = args[0] as Submodel;
+                var sm = args[0] as AasCore.Aas3_0_RC02.Submodel;
                 if (sm == null)
                     return null;
 

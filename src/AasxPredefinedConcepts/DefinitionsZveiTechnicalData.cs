@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AasCore.Aas3_0_RC02;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 
 namespace AasxPredefinedConcepts
@@ -36,10 +36,10 @@ namespace AasxPredefinedConcepts
 
         public class SetOfDefs
         {
-            public Submodel
+            public AasCore.Aas3_0_RC02.Submodel
                 SM_TechnicalData;
 
-            public ConceptDescription
+            public AasCore.Aas3_0_RC02.ConceptDescription
                 CD_GeneralInformation,
                 CD_ManufacturerName,
                 CD_ManufacturerLogo,
@@ -62,37 +62,37 @@ namespace AasxPredefinedConcepts
 
             public SetOfDefs(AasxDefinitionBase bs)
             {
-                this.SM_TechnicalData = bs.RetrieveReferable<Submodel>("SM_TechnicalData");
+                this.SM_TechnicalData = bs.RetrieveReferable<AasCore.Aas3_0_RC02.Submodel>("SM_TechnicalData");
 
-                this.CD_GeneralInformation = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_GeneralInformation = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_GeneralInformation");
-                this.CD_ManufacturerName = bs.RetrieveReferable<ConceptDescription>("CD_ManufacturerName");
-                this.CD_ManufacturerLogo = bs.RetrieveReferable<ConceptDescription>("CD_ManufacturerLogo");
-                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ManufacturerName = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_ManufacturerName");
+                this.CD_ManufacturerLogo = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_ManufacturerLogo");
+                this.CD_ManufacturerProductDesignation = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ManufacturerProductDesignation");
-                this.CD_ManufacturerPartNumber = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ManufacturerPartNumber = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ManufacturerPartNumber");
-                this.CD_ManufacturerOrderCode = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ManufacturerOrderCode = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ManufacturerOrderCode");
-                this.CD_ProductImage = bs.RetrieveReferable<ConceptDescription>("CD_ProductImage");
-                this.CD_ProductClassifications = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ProductImage = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_ProductImage");
+                this.CD_ProductClassifications = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ProductClassifications");
-                this.CD_ProductClassificationItem = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ProductClassificationItem = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ProductClassificationItem");
-                this.CD_ClassificationSystem = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_ClassificationSystem = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_ClassificationSystem");
-                this.CD_SystemVersion = bs.RetrieveReferable<ConceptDescription>("CD_SystemVersion");
-                this.CD_ProductClass = bs.RetrieveReferable<ConceptDescription>("CD_ProductClass");
-                this.CD_TechnicalProperties = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_SystemVersion = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_SystemVersion");
+                this.CD_ProductClass = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_ProductClass");
+                this.CD_TechnicalProperties = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_TechnicalProperties");
-                this.CD_NonstandardizedProperty = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_NonstandardizedProperty = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_NonstandardizedProperty");
-                this.CD_MainSection = bs.RetrieveReferable<ConceptDescription>("CD_MainSection");
-                this.CD_SubSection = bs.RetrieveReferable<ConceptDescription>("CD_SubSection");
-                this.CD_FurtherInformation = bs.RetrieveReferable<ConceptDescription>(
+                this.CD_MainSection = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_MainSection");
+                this.CD_SubSection = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_SubSection");
+                this.CD_FurtherInformation = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>(
                     "CD_FurtherInformation");
-                this.CD_TextStatement = bs.RetrieveReferable<ConceptDescription>("CD_TextStatement");
-                this.CD_ValidDate = bs.RetrieveReferable<ConceptDescription>("CD_ValidDate");
+                this.CD_TextStatement = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_TextStatement");
+                this.CD_ValidDate = bs.RetrieveReferable<AasCore.Aas3_0_RC02.ConceptDescription>("CD_ValidDate");
             }
 
             public AasCore.Aas3_0_RC02.IReferable[] GetAllReferables()
