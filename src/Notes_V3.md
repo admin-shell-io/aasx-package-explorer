@@ -113,6 +113,26 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   => Ask Andreas/ Jui
   - JSON schema export taken over
 
+## Projects, currently unloaded
+
+These projects are not migrated or integrated, yet.
+
+* AasxCsharpLibrary.Tests
+* AasxAmlImExport
+* AasxDictionaryImport.Tests
+* AasxFileServerRestLibrary
+* AasxOpenidClient
+* AasxRestServerLibrary
+* AasxSchemaExport.Tests
+* AasxUaNetServer
+* AasxIntegrationEmptrySample
+* AasxRestConsoleServer
+* AasxToolkit
+* AasxToolkit.Tests
+* AasxUaNetConsoleServer
+* AasxPackageExplorer.GuiTests
+* AasxPackageExplorer.Tests
+* BlazorUI
 
 
 ## Done
@@ -194,3 +214,4 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * AasxFormatCst
 * AasxMqtt, AasxMqttClient
 * dictionary import works
+* Search/ Replace functioning, without need for attributes in AasCore!!

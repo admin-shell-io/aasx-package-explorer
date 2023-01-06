@@ -42,7 +42,8 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ComboBox x:Name="ComboBoxToolsFindText" Grid.Column="0" Margin="2" IsEditable="True" TabIndex="0" KeyUp="ComboBoxToolsFindText_KeyUp"/>
+            <ComboBox x:Name="ComboBoxToolsFindText" Grid.Column="0" Margin="2" IsEditable="True" TabIndex="0" KeyUp="ComboBoxToolsFindText_KeyUp"
+                      Loaded="ComboBoxToolsFindText_Loaded"/>
 
             <Button x:Name="ButtonToolsFindStart" Grid.Column="1" Content="Start" Margin="2" Padding="2,0,2,0" Click="ButtonToolsFind_Click" />
 

@@ -179,23 +179,111 @@ namespace AasxIntegrationBase
             }
         }
 
+        public class EmulateAttribute
+        {
+            public string MemberName;
+            public bool TextSearchable;
+
+            public EmulateAttribute(string memberName, bool textSearchable = false)
+            {
+                MemberName = memberName;
+                TextSearchable = textSearchable;
+            }
+        }
+
+        public static IEnumerable<EmulateAttribute> EnumerateEmulateAttributes (Aas.IClass obj)
+        {
+            if (obj is Aas.IReferable)
+            {
+                yield return new EmulateAttribute("Category", textSearchable: true);
+                yield return new EmulateAttribute("IdShort", textSearchable: true);
+                yield return new EmulateAttribute("Checksum", textSearchable: true);
+            }
+
+            if (obj is Aas.AdministrativeInformation)
+            {
+                yield return new EmulateAttribute("Version", textSearchable: true);
+                yield return new EmulateAttribute("Revision", textSearchable: true);
+            }
+
+            if (obj is Aas.IIdentifiable)
+            {
+                yield return new EmulateAttribute("Id", textSearchable: true);
+            }
+
+            if (obj is Aas.Property)
+            {
+                yield return new EmulateAttribute("Value", textSearchable: true);
+                yield return new EmulateAttribute("ValueType", textSearchable: true);
+            }
+            else
+            if (obj is Aas.Range)
+            {
+                yield return new EmulateAttribute("Min", textSearchable: true);
+                yield return new EmulateAttribute("Max", textSearchable: true);
+                yield return new EmulateAttribute("ValueType", textSearchable: true);
+            }
+            else
+            if (obj is Aas.File)
+            {
+                yield return new EmulateAttribute("ContentType", textSearchable: true);
+                yield return new EmulateAttribute("Value", textSearchable: true);
+            }
+            else
+            if (obj is Aas.Blob)
+            {
+                yield return new EmulateAttribute("ContentType", textSearchable: true);
+                yield return new EmulateAttribute("Value", textSearchable: true);
+            }
+
+
+            if (obj is Aas.Key)
+            {
+                yield return new EmulateAttribute("Type", textSearchable: true);
+                yield return new EmulateAttribute("Value", textSearchable: true);
+            }
+
+            if (obj is Aas.LangString)
+            {
+                yield return new EmulateAttribute("Language", textSearchable: true);
+                yield return new EmulateAttribute("Text", textSearchable: true);
+            }
+
+            if (obj is Aas.Qualifier)
+            {
+                yield return new EmulateAttribute("Type", textSearchable: true);
+                yield return new EmulateAttribute("Value", textSearchable: true);
+            }
+
+            if (obj is Aas.Extension)
+            {
+                yield return new EmulateAttribute("Name", textSearchable: true);
+                yield return new EmulateAttribute("Value", textSearchable: true);
+            }
+        }
+
         /// <summary>
         /// Internal function used by <c>EnumerateSearchable</c>
         /// </summary>
         public static void CheckSearchable(
             SearchResults results, SearchOptions options, string qualifiedNameHead, object businessObject,
             MemberInfo mi, object memberValue, object containingObject, Func<int> getMemberHash,
-            Action<bool, int> progress = null)
+            Action<bool, int> progress = null, LogInstance log = null)
         {
             // try get a speaking name
             var metaModelName = "<unknown>";
             var x1 = mi.GetCustomAttribute<Aas.Attributes.MetaModelName>();
             if (x1 != null && x1.name != null)
                 metaModelName = x1.name;
+            else
+            {
+                // as in AasCore we have "nice" names
+                metaModelName = mi.Name;
+            }
 
             // check if this object is searchable
             var x2 = mi.GetCustomAttribute<Aas.Attributes.TextSearchable>();
-            if (x2 != null)
+            if (x2 != null || memberValue is string)
             {
                 // what to check?
                 string foundText = "" + memberValue?.ToString();
@@ -249,6 +337,7 @@ namespace AasxIntegrationBase
                 // add?
                 if (found)
                 {
+                    // prepapre add
                     var sri = new SearchResultItem();
                     sri.searchOptions = options;
                     sri.qualifiedNameHead = qualifiedNameHead;
@@ -262,15 +351,40 @@ namespace AasxIntegrationBase
 
                     sri.foundMatch = foundMatch;
 
+                    // VERY VERY late: if bypassed the [TextSearchable] attribute test,
+                    // then do an EXPENSIVE test for white listed member names
+                    var white = false;
+                    if (x2 == null)
+                    {
+                        foreach (var x in EnumerateEmulateAttributes(containingObject as Aas.IClass))
+                            if (x.TextSearchable && x.MemberName.Equals(mi.Name, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                white = true;
+                                break;
+                            }
+                        if (!white)
+                            return;
+                    }
+
                     // avoid duplicates
                     if (!results.foundResults.Contains(sri))
+                    {
+                        log?.Info($"Add SearchResult {sri.ToString()}");
                         results.foundResults.Add(sri);
+                    }
 
                     // progress
                     progress?.Invoke(true, results.foundResults.Count % 50);
                 }
             }
         }
+
+        ////
+        //
+        // OLD
+        //
+        //
+#if OLD
 
         /// <summary>
         /// Uses reflection to investigate the members of a data structure, which is supposely a
@@ -492,6 +606,239 @@ namespace AasxIntegrationBase
             }
 
         }
+#endif
+        //
+        //
+        // NEW
+        //
+        //
+
+        /// <summary>
+        /// New search function using the features of the AasCore model with Descend().
+        /// Tries to avoid generic reflection.
+        /// </summary>
+        /// <param name="results">Found result items</param>
+        /// <param name="obj">Root of the data structures to be inspected</param>
+        /// <param name="qualifiedNameHead">used for recursion</param>
+        /// <param name="depth">used for recursion</param>
+        /// <param name="options">Search options</param>
+        /// <param name="businessObject">used for recursion</param>
+        /// <param name="progress">Progress is reported for any check of field/ property and for any addition</param>
+        public static void EnumerateSearchableNew(
+            SearchResults results, object obj, string qualifiedNameHead, int depth, SearchOptions options,
+            object businessObject = null,
+            Action<bool, int> progress = null,
+            LogInstance log = null)
+        {
+            // access
+            if (results == null || obj == null || options == null)
+                return;
+            Type objType = obj.GetType();
+
+            // depth
+            if (depth > options.MaxDepth)
+                return;
+
+            // try to get element name of an AAS entity
+            string elName = null;
+            if (obj is Aas.IReferable objrf)
+            {
+                elName = objrf.GetSelfDescription()?.AasElementName;
+                businessObject = obj;
+                log?.Info($"Encouter {elName}: {"" + (obj as Aas.ISubmodelElement)?.GetReference()?.ToStringExtended(1)}");
+            }
+            else 
+            if (obj is Aas.Environment)
+            {
+                elName = "Environment";
+                businessObject = obj;
+            }
+            //else
+            //if (obj is Aas.IClass objic2)
+            //{
+            //    elName = objic2.GetType().Name;
+            //    businessObject = obj;
+            //}
+
+            // enrich qualified name, accordingly
+            var qualifiedName = qualifiedNameHead;
+            if (elName != null)
+                qualifiedName = qualifiedName + (qualifiedName.Length > 0 ? "." : "") + elName;
+
+            // do NOT dive into objects, which are not in the right assembly
+            if (options.AllowedAssemblies == null || !options.AllowedAssemblies.Contains(objType.Assembly))
+                return;
+
+            // do not dive into enums
+            if (objType.IsEnum)
+                return;
+
+            // report a "false" progress
+            progress?.Invoke(false, 0);
+
+            // look at fields, first
+            var fields = objType.GetFields();
+            foreach (var fi in fields)
+            {
+                // get value(s)
+                var fieldValue = fi.GetValue(obj);
+                if (fieldValue == null)
+                    continue;
+                var valueElems = fieldValue as IList;
+                if (valueElems != null)
+                {
+                    // field is a collection 
+                }
+                else
+                {
+                    // field is a single entity .. check it
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, fi, fieldValue, obj,
+                        () => { return fieldValue.GetHashCode(); }, progress, log);
+                }
+            }
+
+            // properties & objects behind
+            var properties = objType.GetProperties();
+            foreach (var pi in properties)
+            {
+                var gip = pi.GetIndexParameters();
+                if (gip.Length > 0)
+                    // no indexed properties, yet
+                    continue;
+
+                // get value(s)
+                var propValue = pi.GetValue(obj, null);
+                if (propValue == null)
+                    continue;
+                var valueElems = propValue as IList;
+                if (valueElems != null)
+                {
+                    // property is a collection 
+                }
+                else
+                {
+                    // field is a single entity .. check it
+                    CheckSearchable(
+                        results, options, qualifiedName, businessObject, pi, propValue, obj,
+                        () => { return propValue.GetHashCode(); }, progress, log);
+                }
+            }
+
+            // use the AasCore provided DescendOnce() feature to dive in
+            if (obj is Aas.IClass objic)
+            {
+                if (obj is Aas.AssetAdministrationShell aas)
+                {
+                    ;
+                }
+                foreach (var child in objic.DescendOnce())
+                    EnumerateSearchableNew(results, child, qualifiedName, depth + 1, options, businessObject, progress, log);
+            }
+        }
+
+        /// <summary>
+        /// Internal function for <c>ReplaceInSearchable</c>
+        /// </summary>
+        /// <returns>New member object, if to set.</returns>
+        private static object ReplaceInSearchableMemberNew(
+            SearchOptions options,
+            SearchResultItem item,
+            string replaceText,
+            object member)
+        {
+            // access
+            if (options == null || item == null || replaceText == null || member == null)
+                return null;
+
+            // member type
+            if (!(member is string memstr))
+            {
+                throw new NotImplementedException("ReplaceInSearchableMember::No string member");
+            }
+
+            // regex?
+            if (options.IsRegex)
+            {
+                memstr = Regex.Replace(memstr, options.FindText, replaceText, options.CompiledRegOpt);
+                return memstr;
+            }
+            else
+            {
+                // plain text replacement
+
+                if (options.IsIgnoreCase)
+                {
+                    // https://stackoverflow.com/questions/6275980/string-replace-ignoring-case
+                    memstr = Regex.Replace(memstr, Regex.Escape(options.FindText), replaceText, RegexOptions.IgnoreCase);
+                }
+                else
+                {
+                    memstr = memstr.Replace(options.FindText, replaceText);
+                }
+
+                return memstr;
+            }
+        }
+
+        /// <summary>
+        /// Do a replacement according to the <c>options</c> in one search result item.
+        /// </summary>
+        public static void ReplaceInSearchableNew(
+            SearchOptions options,
+            SearchResultItem sri,
+            string replaceText)
+        {
+            // access
+            if (options == null || sri == null || replaceText == null)
+                return;
+
+            // access in item
+            var obj = sri.containingObject;
+            if (obj == null)
+                return;
+
+            // access the object
+            Type objType = obj.GetType();
+
+            // reflect thru this object
+            // look at fields, first
+            var fields = objType.GetFields();
+            foreach (var fi in fields)
+            {
+                // get value(s)
+                var fieldValue = fi.GetValue(obj);
+                if (fieldValue == null)
+                    continue;
+
+                // hash check on the fieldValue
+                if (fieldValue.GetHashCode() == sri.foundHash)
+                {
+                    var newval = ReplaceInSearchableMemberNew(options, sri, replaceText, fieldValue);
+                    if (newval != null)
+                        fi.SetValue(obj, newval);
+                }
+            }
+
+            // properties & objects behind
+            var properties = objType.GetProperties();
+            foreach (var pi in properties)
+            {
+                // get value(s)
+                var propValue = pi.GetValue(obj, null);
+                if (propValue == null)
+                    continue;
+
+                // hash check on the propValue
+                if (propValue.GetHashCode() == sri.foundHash)
+                {
+                    var newval = ReplaceInSearchableMemberNew(options, sri, replaceText, propValue);
+                    if (newval != null)
+                        pi.SetValue(obj, newval);
+                }
+            }
+        }
 
     }
+
 }

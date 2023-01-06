@@ -56,6 +56,8 @@ namespace AasxPackageExplorer
         {
             InitializeComponent();
 
+            TheSearchOptions.IsIgnoreCase = true;
+
             TheSearchOptions.AllowedAssemblies = new[] { typeof(Aas.Environment).Assembly };
 
             // the combo box needs a special treatment in order to have it focussed ..
@@ -184,7 +186,11 @@ namespace AasxPackageExplorer
                     Log.Singleton.Info("Searching for »{0}«", TheSearchOptions.FindText);
                     progressCount = 0;
                     TheSearchOptions.CompileOptions();
-                    AasxSearchUtil.EnumerateSearchable(TheSearchResults, TheAasEnv, "", 0, TheSearchOptions,
+                    if (TheAasEnv.Submodels != null)
+                        foreach (var sm in TheAasEnv.Submodels)
+                            sm?.SetAllParents();
+                    AasxSearchUtil.EnumerateSearchableNew(TheSearchResults, TheAasEnv, "", 0, TheSearchOptions,
+                        // log: Log.Singleton,
                         progress: (found, num) =>
                         {
                             if (ticket?.ScriptMode == true)
@@ -288,7 +294,7 @@ namespace AasxPackageExplorer
             // execution
             try
             {
-                AasxSearchUtil.ReplaceInSearchable(TheSearchOptions, sri, replaceText);
+                AasxSearchUtil.ReplaceInSearchableNew(TheSearchOptions, sri, replaceText);
             }
             catch (Exception ex)
             {
@@ -492,7 +498,7 @@ namespace AasxPackageExplorer
                     {
                         foreach (var sri in TheSearchResults.foundResults)
                         {
-                            AasxSearchUtil.ReplaceInSearchable(TheSearchOptions, sri, rt);
+                            AasxSearchUtil.ReplaceInSearchableNew(TheSearchOptions, sri, rt);
                             Log.Singleton.Info("In {0}, replaced (all) »{1}« with »{2}«.",
                                 sri?.ToString(),
                                 TheSearchOptions.FindText, rt);
@@ -564,6 +570,18 @@ namespace AasxPackageExplorer
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             this.ButtonToolsFindInfo.Text = "";
+        }
+
+        private void ComboBoxToolsFindText_Loaded(object sender, RoutedEventArgs e)
+        {
+            ComboBox cmBox = (System.Windows.Controls.ComboBox)sender;
+            var textBox = (cmBox.Template.FindName("PART_EditableTextBox",
+                           cmBox) as TextBox);
+            if (textBox != null)
+            {
+                textBox.Focus();
+                textBox.SelectionStart = textBox.Text.Length;
+            }
         }
     }
 }

@@ -283,6 +283,7 @@ namespace AasxPackageExplorer
                         .AddFromReflection(new AasxSearchUtil.SearchOptions())
                         .Add("Do", "Either do 'stay', 'forward' or 'all'."))
                 .AddWpf(name: "ToolsFindForward", header: "Find Forward", inputGesture: "F3", isHidden: true)
+                .AddWpf(name: "ToolsFindBackward", header: "Find Backward", inputGesture: "Shift+F3", isHidden: true)
                 .AddWpf(name: "ToolsReplaceStay", header: "Replace and stay", isHidden: true)
                 .AddWpf(name: "ToolsReplaceForward", header: "Replace and stay", isHidden: true)
                 .AddWpf(name: "ToolsReplaceAll", header: "Replace all", isHidden: true)

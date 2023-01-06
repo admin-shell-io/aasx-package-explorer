@@ -1041,6 +1041,7 @@ namespace AasxPackageExplorer
             DispEditEntityPanel.AddWishForOutsideAction(
                 new AnyUiLambdaActionRedrawAllElements(
                     nextFocus: resultItem.businessObject,
+                    isExpanded: true,
                     highlightField: new DispEditHighlight.HighlightFieldInfo(
                         resultItem.containingObject, resultItem.foundObject, resultItem.foundHash),
                     onlyReFocus: true));
