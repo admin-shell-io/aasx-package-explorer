@@ -598,7 +598,7 @@ namespace AasxIntegrationBase.AasForms
     [DisplayName("FormMultiLangProp")]
     public class FormDescMultiLangProp : FormDescSubmodelElement
     {
-        public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "zh", "kr" };
+        public static string[] DefaultLanguages = new string[] { "de", "en", "fr", "es", "it", "zh", "ko", "ja" };
 
         public FormDescMultiLangProp() { }
 

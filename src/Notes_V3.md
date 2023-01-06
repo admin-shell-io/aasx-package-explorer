@@ -91,6 +91,9 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   - Tests still unloaded
   - AasxSchema & AasxSchema.Tests
 
+* PR506 / Fix to incorrect language codes in langString menu
+  - XAML changes not applicable any more
+
 ## PRs to be integrated
 
 * from 10 Aug, some parts were already moved (Jui?), some parts not
