@@ -184,16 +184,17 @@ namespace Extensions
                 }
                 foreach (var sourceAas in sourceEnvironement.AdministrationShells)
                 {
+                    // first make the AAS
+                    var newAas = new AssetAdministrationShell(id: sourceAas.identification.id, null);
+                    newAas = newAas.ConvertFromV20(sourceAas);
+                    environment.AssetAdministrationShells.Add(newAas);
+                    
                     var sourceAsset = sourceEnvironement?.FindAsset(sourceAas.assetRef);
                     if (sourceAsset != null)
                     {
                         var newAssetInformation = new AssetInformation(AssetKind.Instance);
                         newAssetInformation = newAssetInformation.ConvertFromV20(sourceAsset);
-
-                        var newAas = new AssetAdministrationShell(id: sourceAas.identification.id, newAssetInformation);
-                        newAas = newAas.ConvertFromV20(sourceAas);
-
-                        environment.AssetAdministrationShells.Add(newAas);
+                        newAas.AssetInformation = newAssetInformation;
                     }
 
                 }
