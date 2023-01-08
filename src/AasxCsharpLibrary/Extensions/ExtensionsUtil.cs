@@ -43,6 +43,10 @@ namespace Extensions
                 var keyList = new List<Key>();
                 foreach (var refKey in sourceReference.Keys)
                 {
+                    // Fix, as Asset does not exist anymore
+                    if (refKey.type?.Trim().Equals("Asset", StringComparison.InvariantCultureIgnoreCase) == true)
+                        refKey.type = "GlobalReference";
+
                     var keyType = Stringification.KeyTypesFromString(refKey.type);
                     if (keyType != null)
                     {

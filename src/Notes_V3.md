@@ -32,6 +32,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * ImageMap does not display anything without background image
 * AasxPluginBomStructure still old plugin interface
 * for AnnotatedRel: check SelectAdequateEnum() for allowed elems
+* change file repo format with unsynchronized AAS/ AssetIds, its stupid
+* DocuShelf / Double click in WPF does not work
+
+* AREL NOT SHOWN!!
 
 * solve MANY issues marked with #if TODO
 
@@ -47,6 +51,12 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * AssetInformation: UML and table with different ordering of attributes
 * AssetInformation.assetType .. what is it?
 * Entity.GlobalAssetId is Reference (aas core) or Identifier (spec)?
+
+* Key.type does not exist anymore. So all business cases, where a RelationShip links
+  against an Asset instead of a (installation-specific) AAS are not possible anymore.
+  THIS IS VERY DISAPPOINTING!!!
+  => Remedy: Do an asset-id-match with every GlobalReference .. We're doing modeling and
+     DO NOT CARE ABOUT OUTSIDE WORLD!!
 
 ## Feature Requests to AAS core
 
@@ -218,3 +228,6 @@ These projects are not migrated or integrated, yet.
 * AasxMqtt, AasxMqttClient
 * dictionary import works
 * Search/ Replace functioning, without need for attributes in AasCore!!
+* Festo Plugins working
+* "Jump" function changed, as Asset is no longer IReferable nor Key
+  and therefore could only be searched by "GlobalReference"

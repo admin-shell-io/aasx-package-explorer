@@ -162,7 +162,7 @@ namespace AasxPackageLogic
                         inputGesture: "Shift+Ctrl+End")
                     .AddAction("aas-multi-elem-delete", "Delete",
                         "Deletes the currently selected element.",
-                        inputGesture: "Delete"),
+                        inputGesture: "Ctrl+Shift+Delete"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)
@@ -365,7 +365,7 @@ namespace AasxPackageLogic
                 ticketMenu: new AasxMenu()
                     .AddAction("aas-multi-elem-del", "Delete",
                         "Deletes currently selected element(s).",
-                        inputGesture: "Delete"),
+                        inputGesture: "Ctrl+Shift+Delete"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx == 0)

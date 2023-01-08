@@ -484,13 +484,22 @@ namespace AasxPackageExplorer
                 // this member is a leaf!!
                 var isIn = false;
                 var mdo = mem.GetMainDataObject();
-                if (mdo != null && mdo is Aas.IReferable)
+                if (mdo is Aas.IReferable mdorf)
                 {
-                    var mdoen = (mdo as Aas.IReferable).GetSelfDescription().AasElementName.Trim().ToLower();
+                    var mdoen = mdorf.GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
-                if (mdo != null && mdo is Aas.Reference)
+                else
+                if (mdo is Aas.IClass mdoic)
                 {
+                    // this special case was intruduced because of AssetInformation
+                    var mdoen = mdoic.GetType().Name.ToLower();
+                    isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
+                }
+                else
+                if (mdo is Aas.Reference)
+                {
+                    // very special case because of importance
                     var mdoen = (mdo as Aas.Reference).GetSelfDescription().AasElementName.Trim().ToLower();
                     isIn = fullFilterElementName.IndexOf(mdoen, StringComparison.Ordinal) >= 0;
                 }
@@ -840,7 +849,14 @@ namespace AasxPackageExplorer
             // access and check
             var tvi = e?.OriginalSource as TreeViewItem;
             var ve = tvi?.Header as VisualElementGeneric;
-            if (ve == null || !ve.NeedsLazyLoading)
+            if (ve == null )
+                return;
+
+            // select (but no callback!)
+            SelectSingleVisualElement(ve, preventFireItem: true);
+
+            // need lazy loading?
+            if (!ve.NeedsLazyLoading)
                 return;
 
             // try execute, may take some time

@@ -20,7 +20,7 @@ namespace Extensions
 
                 submodelElement.Parent = entity;
 
-                entity.Statements.Add((IDataElement)submodelElement);
+                entity.Statements.Add(submodelElement);
             }
         }
 

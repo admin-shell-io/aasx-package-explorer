@@ -251,34 +251,43 @@ namespace AasxPackageLogic.PackageCentral
             if (pkg == null)
                 return;
 
+            int num = 0;
+
             // all files
-            int i = 0;
             foreach (var fi in this.FileMap)
             {
                 // sure?
                 if (fi == null)
                     continue;
-                i++;
+
+                // slightly incorrect: treat fi.AasIds / fi.AssetIds as synchronized
+                // pairs
 
                 // aas
                 if (fi.AasIds != null)
-                    foreach (var id in fi.AasIds)
+                    for (int i=0; i<fi.AasIds.Count; i++)
                     {
-                        var aas = new Aas.AssetAdministrationShell("", new Aas.AssetInformation(Aas.AssetKind.Instance),idShort:String.Format("AAS{0:00}_{1}", i, fi.Tag));
-                        aas.Description = new List<Aas.LangString>() { new Aas.LangString("en?", "" + fi.Description) };
-                        aas.Id = id;
+                        // AAS
+                        var aasid = fi.AasIds[i];
+                        var aas = new Aas.AssetAdministrationShell(
+                            id: aasid,
+                            assetInformation: null,
+                            idShort: $"AAS{num++:00}_{fi.Tag}",
+                            description: new List<Aas.LangString>() { 
+                                new Aas.LangString("en?", "" + fi.Description) 
+                            });
                         pkg.AasEnv?.AssetAdministrationShells.Add(aas);
-                    }
 
-                // asset
-                if (fi.AssetIds != null)
-                    foreach (var id in fi.AssetIds)
-                    {
-                        var asset = new Aas.AssetInformation(Aas.AssetKind.Instance);
-                        //TODO:jtikekar globalAssetId or SpecficAssetId??
-                        asset.GlobalAssetId = new Aas.Reference(Aas.ReferenceTypes.GlobalReference, new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, id) });
-                        //asset.identification = new Identification(
-                        //    Identification.IRI, "" + id);
+                        // matching AssetId?
+                        if (fi.AssetIds != null && i < fi.AssetIds.Count)
+                        {
+                            aas.AssetInformation = new Aas.AssetInformation(
+                                Aas.AssetKind.Instance,
+                                globalAssetId: new Aas.Reference(Aas.ReferenceTypes.GlobalReference, 
+                                    new List<Aas.Key>() { new Aas.Key(Aas.KeyTypes.GlobalReference, fi.AssetIds[i]) 
+                                }
+                            ));
+                        }
                     }
             }
         }

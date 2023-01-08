@@ -579,6 +579,7 @@ namespace Extensions
             public AssetAdministrationShell AAS = null;
             public AssetInformation Asset = null;
             public Submodel Submodel = null;
+            public ConceptDescription CD = null;
 
             public int NrOfRootKeys = 0;
 
@@ -635,17 +636,53 @@ namespace Extensions
                 case KeyTypes.GlobalReference:
                 case KeyTypes.ConceptDescription:
                     {
-                        return environment.FindConceptDescriptionById(firstKeyId);
+                        // In meta model V3, multiple important things might by identified
+                        // by a flat GlobalReference :-(
+
+                        // find an Asset by that id?
+                        var keyedAas = environment.FindAasWithAssetInformation(firstKeyId);
+                        if (keyedAas?.AssetInformation != null)
+                        {
+                            // found an Asset
+
+                            // side info?
+                            if (rootInfo != null)
+                            {
+                                rootInfo.AAS = keyedAas;
+                                rootInfo.Asset = keyedAas?.AssetInformation;
+                                rootInfo.NrOfRootKeys = 1 + keyIndex;
+                            }
+
+                            // give back the AAS
+                            return keyedAas;
+                        }
+
+                        // Concept?Description
+                        var keyedCd = environment.FindConceptDescriptionById(firstKeyId);
+                        if (keyedCd != null)
+                        {
+                            // side info?
+                            if (rootInfo != null)
+                            {
+                                rootInfo.CD = keyedCd;
+                                rootInfo.NrOfRootKeys = 1 + keyIndex;
+                            }
+
+                            // give back the CD
+                            return keyedCd;
+                        }
+
+                        // Nope
+                        return null;
                     }
 
                 case KeyTypes.Submodel:
                     {
                         var submodel = environment.FindSubmodelById(firstKeyId);
-                        if (submodel == null || keyIndex >= keyList.Count - 1)
-                        {
-                            return submodel;
-                        }
-
+                        // No?
+                        if (submodel == null)
+                            return null;
+                        
                         // notice in side info
                         if (rootInfo != null)
                         {
@@ -666,6 +703,10 @@ namespace Extensions
                                 }
                             }
                         }
+
+                        // at the end of the journey?
+                        if (keyIndex >= keyList.Count - 1)
+                            return submodel;
 
                         return environment.FindReferableByReference(reference, ++keyIndex, submodel.SubmodelElements);
                     }

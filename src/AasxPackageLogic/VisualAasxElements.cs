@@ -345,6 +345,13 @@ namespace AasxPackageLogic
                     break;
                 }
                 else
+                if (ve.GetMainDataObject() is Aas.AssetInformation aif && aif.GlobalAssetId?.Keys != null)
+                {
+                    // super special case of V3: AssetInformation shall be a 1-Key GlobalReference
+                    res.AddRange(aif.GlobalAssetId.Keys);
+                    break;
+                }
+                else
                 if (ve.GetMainDataObject() is Aas.IIdentifiable iddata)
                 {
                     // a Identifiable will terminate the list of keys

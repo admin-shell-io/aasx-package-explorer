@@ -1438,7 +1438,7 @@ namespace AasxPackageLogic
                     ticketMenu: new AasxMenu()
                         .AddAction("aas-elem-del", "Delete",
                             "Deletes the currently selected element.",
-                        inputGesture: "Delete"),
+                        inputGesture: "Ctrl+Shift+Delete"),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
@@ -3508,7 +3508,7 @@ namespace AasxPackageLogic
                 }
             }
             else
-            if (sme is Aas.RelationshipElement rele)
+            if (sme is Aas.IRelationshipElement rele)
             {
                 // buffer Key for later
                 var bufferKeys = DispEditHelperCopyPaste.CopyPasteBuffer.PreparePresetsForListKeys(theCopyPaste);

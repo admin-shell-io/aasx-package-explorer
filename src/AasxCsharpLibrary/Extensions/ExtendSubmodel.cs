@@ -311,7 +311,8 @@ namespace Extensions
 
             foreach (var submodelElement in submodel.SubmodelElements)
             {
-                submodelElement.FindDeep<T>();
+                foreach (var x in submodelElement.FindDeep<T>())
+                    yield return x;
             }
         }
 

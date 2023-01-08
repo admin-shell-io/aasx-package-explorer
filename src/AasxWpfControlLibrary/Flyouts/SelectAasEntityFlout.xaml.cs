@@ -176,6 +176,14 @@ namespace AasxPackageExplorer
                 }
             }
 
+            if (si is VisualElementAsset veass && CheckFilter("AssetInformation")
+                && veass.theAsset != null)
+            {
+                // prepare data
+                DiaData.ResultKeys = si.BuildKeyListToTop(includeAas: true);
+                return true;
+            }
+
             if (si is VisualElementOperationVariable veov && CheckFilter("OperationVariable")
                 && veov.theOpVar?.Value != null)
             {
@@ -229,10 +237,15 @@ namespace AasxPackageExplorer
 
         private bool CheckFilter(string name)
         {
+            // special case
+            var ff = ApplyFullFilterString(DiaData?.Filter);
+            if (ff == null)
+                return true;
+
+            // regular
             return (
                 DiaData.Filter == null || name == null
-                || ApplyFullFilterString(DiaData.Filter).ToLower()
-                    .IndexOf($"{name.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
+                || ff.ToLower().IndexOf($"{name.ToLower().Trim()} ", StringComparison.Ordinal) >= 0);
         }
 
         private void DisplayElements_MouseDoubleClick(object sender, MouseButtonEventArgs e)

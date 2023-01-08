@@ -2419,7 +2419,7 @@ namespace AasxPackageLogic
                         inputGesture: "Shift+Ctrl+End")
                     .AddAction("aas-elem-delete", "Delete",
                         "Deletes the currently selected element.",
-                        inputGesture: "Delete"),
+                        inputGesture: "Ctrl+Shift+Delete"),
                 ticketAction: (buttonNdx, ticket) =>
                 {
                     if (buttonNdx >= 0 && buttonNdx <= 3)

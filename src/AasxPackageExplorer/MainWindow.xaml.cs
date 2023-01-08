@@ -1176,13 +1176,16 @@ namespace AasxPackageExplorer
             if (lab is AnyUiLambdaActionNavigateTo tempNavTo)
             {
                 // do some more adoptions
+                // MIHO: I think this "adopitons" were made for resident AAS environments directly
+                // staying in the RAM of the PackageCentral
+                // This is not the usual case of activation of "file repository"
                 var rf = tempNavTo.targetReference.Copy();
 
                 if (tempNavTo.translateAssetToAAS
                     && rf.Keys.Count == 1
                     && rf.Keys.First().Type == Aas.KeyTypes.GlobalReference) //TODO:jtikekar KeyType.AssetInformation
                 {
-                    // try to find possible environments containg the asset and try making
+                    // try to find possible environments containing the asset and try making
                     // replacement
                     foreach (var pe in _packageCentral.GetAllPackageEnv())
                     {
@@ -1286,7 +1289,13 @@ namespace AasxPackageExplorer
             }
         }
 
-        private async Task<Aas.IReferable> LoadFromFileRepository(PackageContainerRepoItem fi,
+        protected class LoadFromFileRepositoryInfo
+        {
+            public Aas.IReferable Referable;
+            public object BusinessObject;
+        }
+
+        private async Task<LoadFromFileRepositoryInfo> LoadFromFileRepository(PackageContainerRepoItem fi,
             Aas.Reference requireReferable = null)
         {
             // access single file repo
@@ -1322,12 +1331,20 @@ namespace AasxPackageExplorer
             if (container != null)
             {
                 // .. try find business object!
-                Aas.IReferable bo = null;
+                LoadFromFileRepositoryInfo res = new LoadFromFileRepositoryInfo();
                 if (requireReferable != null)
-                    bo = container.Env?.AasEnv.FindReferableByReference(requireReferable);
+                {
+                    var rri = new ExtendEnvironment.ReferableRootInfo();
+                    res.Referable = container.Env?.AasEnv.FindReferableByReference(requireReferable, rootInfo: rri);
+                    res.BusinessObject = res.Referable;
+
+                    // do some special decoding because auf Meta Model V3
+                    if (rri.Asset != null)
+                        res.BusinessObject = rri.Asset;
+                }
 
                 // only proceed, if business object was found .. else: close directly
-                if (requireReferable != null && bo == null)
+                if (requireReferable != null && res.Referable == null)
                     container.Close();
                 else
                 {
@@ -1353,7 +1370,7 @@ namespace AasxPackageExplorer
                 }
 
                 // return bo to focus
-                return bo;
+                return res;
             }
 
             return null;
@@ -1428,7 +1445,7 @@ namespace AasxPackageExplorer
                 while (work.Keys.Count > 0)
                 {
                     // try to find a business object in the package
-                    Aas.IReferable bo = null;
+                    object bo = null;
                     if (_packageCentral.MainAvailable && _packageCentral.Main.AasEnv != null)
                         bo = _packageCentral.Main.AasEnv.FindReferableByReference(work);
 
@@ -1446,7 +1463,8 @@ namespace AasxPackageExplorer
                         if (work.Keys[0].Type == Aas.KeyTypes.AssetAdministrationShell)
                             fi = _packageCentral.Repositories.FindByAasId(work.Keys[0].Value.Trim());
 
-                        bo = await LoadFromFileRepository(fi, work);
+                        var boInfo = await LoadFromFileRepository(fi, work);
+                        bo = boInfo?.BusinessObject;
                     }
 
                     // still yes?
@@ -2267,10 +2285,11 @@ namespace AasxPackageExplorer
                     var sri = ListOfVisualElement.StripSupplementaryReferenceInformation(hi.ReferableReference);
 
                     // load it (safe)
-                    Aas.IReferable bo = null;
+                    object bo = null;
                     try
                     {
-                        bo = await LoadFromFileRepository(fi, sri.CleanReference);
+                        var boInfo = await LoadFromFileRepository(fi, sri.CleanReference);
+                        bo = boInfo?.BusinessObject;
                     }
                     catch (Exception ex)
                     {

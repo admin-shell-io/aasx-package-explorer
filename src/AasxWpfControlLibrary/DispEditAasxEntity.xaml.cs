@@ -580,59 +580,60 @@ namespace AasxPackageExplorer
 
                 theMasterPanel.Children.Add(spwpf);
 
+                // OLD_to_be_removed
                 // register key shortcuts
-                var num = _displayContext.PrepareNameList(stack);
-                if (num > 0)
-                {
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Up,
-                        "Move current AAS element up by one position.");
+                //var num = _displayContext.PrepareNameList(stack);
+                //if (num > 0)
+                //{
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-move-up", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Up,
+                //        "Move current AAS element up by one position.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Down,
-                        "Move current AAS element down by one position.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-move-down", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Down,
+                //        "Move current AAS element down by one position.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Home,
-                        "Move current AAS element to the first position of the respective list.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-move-top", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Home,
+                //        "Move current AAS element to the first position of the respective list.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.End,
-                        "Move current AAS element to the last position of the respective list.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-move-end", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.End,
+                //        "Move current AAS element to the last position of the respective list.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Delete,
-                        "Delete current AAS element in the respective list. Shift key skips dialogue.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-delete", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Delete,
+                //        "Delete current AAS element in the respective list. Shift key skips dialogue.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.X,
-                        "Transfers current AAS element into paste buffer and deletes in respective list.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-cut", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.X,
+                //        "Transfers current AAS element into paste buffer and deletes in respective list.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.C,
-                        "Copies current AAS element into paste buffer for later pasting.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-copy", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.C,
+                //        "Copies current AAS element into paste buffer for later pasting.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.V,
-                        "Copy existing paste buffer into the child list of the current AAS element.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-paste-into", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.V,
+                //        "Copy existing paste buffer into the child list of the current AAS element.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.W,
-                        "Copy existing paste buffer above the current AAS element in the same list.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-paste-above", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.W,
+                //        "Copy existing paste buffer above the current AAS element in the same list.");
 
-                    _displayContext.RegisterKeyShortcut(
-                        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Y,
-                        "Copy existing paste buffer below the current AAS element in the same list.");
+                //    _displayContext.RegisterKeyShortcut(
+                //        "aas-elem-paste-below", ModifierKeys.Shift | ModifierKeys.Control, System.Windows.Input.Key.Y,
+                //        "Copy existing paste buffer below the current AAS element in the same list.");
 
-                }
+                //}
             }
 
             // keep the stack
             _lastRenderedRootElement = stack;
 #endif
 
-            // return render hints
-            return renderHints;
+                // return render hints
+                return renderHints;
         }
 
         public Tuple<AnyUiDisplayContextWpf, AnyUiUIElement> GetLastRenderedRoot()

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Microsoft.Win32.SafeHandles;
 
 namespace Extensions
 {
@@ -196,7 +197,6 @@ namespace Extensions
             return outputReference;
         }
 
-
         public static IEnumerable<T> FindDeep<T>(this ISubmodelElement submodelElement)
         {
             if (submodelElement is T)
@@ -204,48 +204,42 @@ namespace Extensions
                 yield return (T)submodelElement;
             }
 
-            if (submodelElement is SubmodelElementCollection submodelElementCollection)
-            {
-                foreach (var collectionElement in submodelElementCollection.Value)
-                {
-                    yield return (T)collectionElement.FindDeep<T>();
-                }
-            }
+            foreach (var x in submodelElement.Descend().OfType<T>())
+                yield return x;
 
-            if (submodelElement is AnnotatedRelationshipElement annotatedRelationshipElement)
-            {
-                foreach (var annotation in annotatedRelationshipElement.Annotations)
-                {
-                    yield return (T)annotation.FindDeep<T>();
-                }
-            }
+            //if (submodelElement is SubmodelElementList sml && sml.Value != null)
+            //    foreach (var ce in sml.Value)
+            //        if (ce != null)
+            //            foreach (var x in ce.FindDeep<T>())
+            //                yield return x;
 
-            if (submodelElement is Entity entity)
-            {
-                foreach (var statement in entity.Statements)
-                {
-                    yield return (T)statement.FindDeep<T>();
-                }
-            }
+            //if (submodelElement is AnnotatedRelationshipElement arel && arel.Annotations != null)
+            //    foreach (var x in arel.FindDeep<T>())
+            //        yield return x;
+    
+            //if (submodelElement is Entity entity)
+            //    foreach (var statement in entity.Statements)
+            //        foreach (var x in statement.FindDeep<T>())
+            //            yield return x;
 
-            if (submodelElement is Operation operation)
-            {
-                var variableCollection = new SubmodelElementCollection();
-                variableCollection.Value = new List<ISubmodelElement>();
-                foreach (var inputVariable in operation.InputVariables)
-                {
-                    variableCollection.Value.Add(inputVariable.Value);
-                }
-                foreach (var outputVariable in operation.OutputVariables)
-                {
-                    variableCollection.Value.Add(outputVariable.Value);
-                }
-                foreach (var inOutVariable in operation.InoutputVariables)
-                {
-                    variableCollection.Value.Add(inOutVariable.Value);
-                }
-                yield return (T)variableCollection.FindDeep<T>();
-            }
+            //if (submodelElement is Operation operation)
+            //{
+            //    var variableCollection = new SubmodelElementCollection();
+            //    variableCollection.Value = new List<ISubmodelElement>();
+            //    foreach (var inputVariable in operation.InputVariables)
+            //    {
+            //        variableCollection.Value.Add(inputVariable.Value);
+            //    }
+            //    foreach (var outputVariable in operation.OutputVariables)
+            //    {
+            //        variableCollection.Value.Add(outputVariable.Value);
+            //    }
+            //    foreach (var inOutVariable in operation.InoutputVariables)
+            //    {
+            //        variableCollection.Value.Add(inOutVariable.Value);
+            //    }
+            //    yield return (T)variableCollection.FindDeep<T>();
+            //}
         }
 
         public static ISubmodelElement ConvertFromV10(this ISubmodelElement submodelElement, AdminShellV10.SubmodelElement sourceSubmodelElement, bool shallowCopy = false)
@@ -877,6 +871,37 @@ namespace Extensions
             return default(T);
         }
 
+        public static IEnumerable<ISubmodelElement> FindAllIdShort(this List<ISubmodelElement> submodelElements, 
+            string idShort)
+        {
+            foreach (var smw in submodelElements)
+                if (smw != null)
+                    if (smw.IdShort.Trim().ToLower() == idShort.Trim().ToLower())
+                        yield return smw;
+        }
+
+        public static IEnumerable<T> FindAllIdShortAs<T>(this List<ISubmodelElement> submodelElements, 
+            string idShort) where T : class, ISubmodelElement
+        {
+            foreach (var smw in submodelElements)
+                if (smw is T)
+                    if (smw.IdShort.Trim().ToLower() == idShort.Trim().ToLower())
+                        yield return smw as T;
+        }
+
+        public static ISubmodelElement FindFirstIdShort(this List<ISubmodelElement> submodelElements, 
+            string idShort)
+        {
+            return submodelElements.FindAllIdShort(idShort)?.FirstOrDefault<ISubmodelElement>();
+        }
+
+        public static T FindFirstIdShortAs<T>(this List<ISubmodelElement> submodelElements, 
+            string idShort) where T : class, ISubmodelElement
+        {
+            return submodelElements.FindAllIdShortAs<T>(idShort)?.FirstOrDefault<T>();
+        }
+
+
         public static ISubmodelElement FindFirstAnySemanticId(this List<ISubmodelElement> submodelElements,
                 Key[] semId, Type[] allowedTypes = null, MatchMode matchMode = MatchMode.Strict)
         {
@@ -904,6 +929,19 @@ namespace Extensions
                     return found;
             }
             return default(T);
+        }
+
+        public static T CreateNew<T>(string idShort = null, string category = null, Reference semanticId = null)
+                where T : ISubmodelElement, new()
+        {
+            var res = new T();
+            if (idShort != null)
+                res.IdShort = idShort;
+            if (category != null)
+                res.Category = category;
+            if (semanticId != null)
+                res.SemanticId = semanticId.Copy();
+            return res;
         }
 
         public static T CreateSMEForCD<T>(this List<ISubmodelElement> submodelELements, ConceptDescription conceptDescription, string category = null, string idShort = null,
@@ -1051,10 +1089,11 @@ namespace Extensions
                     if (current is AnnotatedRelationshipElement annotatedRelationshipElement)
                     {
                         var annotationElements = new List<ISubmodelElement>();
-                        foreach (var annotation in annotatedRelationshipElement.Annotations)
-                        {
-                            annotationElements.Add(annotation);
-                        }
+                        if (annotatedRelationshipElement.Annotations != null)
+                            foreach (var annotation in annotatedRelationshipElement.Annotations)
+                            {
+                                annotationElements.Add(annotation);
+                            }
                         annotationElements.RecurseOnReferables(state, parents, lambda);
                     }
 
