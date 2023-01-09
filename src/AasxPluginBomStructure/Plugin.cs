@@ -23,23 +23,22 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        public LogInstance Log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
-        private AasxPluginBomStructure.BomStructureOptions _options = new AasxPluginBomStructure.BomStructureOptions();
+        protected AasxPluginBomStructure.BomStructureOptions _options = new AasxPluginBomStructure.BomStructureOptions();
 
         private AasxPluginBomStructure.GenericBomControl _bomControl = new AasxPluginBomStructure.GenericBomControl();
 
-        public string GetPluginName()
+        static AasxPlugin()
         {
-            return "AasxPluginBomStructure";
+            PluginName = "AasxPluginBomStructure";
         }
 
-        public void InitPlugin(string[] args)
+
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
             _options = AasxPluginBomStructure.BomStructureOptions.CreateDefault();
@@ -56,18 +55,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(
@@ -93,7 +87,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")

@@ -28,10 +28,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
         private AasxPluginTechnicalData.TechnicalDataOptions _options =
             new AasxPluginTechnicalData.TechnicalDataOptions();
 
-#if USE_WPF
-        private AasxPluginTechnicalData.TechnicalDataViewControl _viewControl = null;
-#endif
-
         public class Session : PluginSessionBase
         {
             public AasxPluginTechnicalData.TechnicalDataAnyUiControl AnyUiControl = null;
@@ -86,11 +82,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "get-events", "Pops and returns the earliest event from the event stack."));
             res.Add(new AasxPluginActionDescriptionBase(
                 "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-#if USE_WPF
-            res.Add(new AasxPluginActionDescriptionBase(
-                "fill-panel-visual-extension",
-                "When called, fill given WPF panel with control for graph display."));
-#endif
             res.Add(new AasxPluginActionDescriptionBase(
                 "fill-anyui-visual-extension",
                 "When called, fill given AnyUI panel with control for graph display."));
@@ -237,31 +228,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 // ReSharper enable UnusedVariable
             }
-
-#if USE_WPF
-            if (action == "fill-panel-visual-extension" && args != null && args.Length >= 3)
-            {
-                // access
-                var package = args[0] as AdminShellPackageEnv;
-                var sm = args[1] as AdminShell.Submodel;
-                var master = args[2] as DockPanel;
-                if (package == null || sm == null || master == null)
-                    return null;
-
-                // the Submodel elements need to have parents
-                sm.SetAllParents();
-
-                // create TOP control
-                this._viewControl = new AasxPluginTechnicalData.TechnicalDataViewControl();
-                this._viewControl.Start(package, sm, _options, _eventStack);
-                master.Children.Add(this._viewControl);
-
-                // give object back
-                var res = new AasxPluginResultBaseObject();
-                res.obj = this._viewControl;
-                return res;
-            }
-#endif
 
             // default
             return null;

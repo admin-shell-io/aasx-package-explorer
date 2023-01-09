@@ -25,26 +25,26 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginPlotting.PlottingOptions options = new AasxPluginPlotting.PlottingOptions();
+        private LogInstance _log = new LogInstance();
+        private PluginEventStack _eventStack = new PluginEventStack();
+        private AasxPluginPlotting.PlottingOptions _options = new AasxPluginPlotting.PlottingOptions();
 
         private AasxPluginPlotting.PlottingViewControl _viewControl;
 
-        public string GetPluginName()
+        static AasxPlugin()
         {
-            return "AasxPluginPlotting";
+            PluginName = "AasxPluginPlotting";
         }
 
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginPlotting.PlottingOptions.CreateDefault();
+            _options = AasxPluginPlotting.PlottingOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -54,22 +54,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                          AasxPluginPlotting.PlottingOptions>(
                             this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(
@@ -102,7 +97,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -118,8 +113,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options != null && this.options.Records != null)
-                    foreach (var rec in this.options.Records)
+                if (this._options != null && this._options.Records != null)
+                    foreach (var rec in this._options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
                                 if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
@@ -154,13 +149,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginPlotting.PlottingOptions>(
                         (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -177,10 +172,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && this._eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return this._eventStack.PopEvent();
             }
 
             if (action == "get-check-visual-extension")
@@ -214,7 +209,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // create TOP control
                 _viewControl = new AasxPluginPlotting.PlottingViewControl();
-                _viewControl.Start(package, sm, options, eventStack, Log);
+                _viewControl.Start(package, sm, _options, _eventStack, _log);
                 master.Children.Add(_viewControl);
 
                 // give object back

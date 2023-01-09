@@ -24,7 +24,7 @@ namespace AasxPluginBomStructure
 {
     public class GenericBomCreatorOptions
     {
-        public bool CompactLabels = false;
+        public bool CompactLabels = true;
         public int LayoutIndex = 0;
     }
 

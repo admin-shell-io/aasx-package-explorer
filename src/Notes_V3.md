@@ -24,18 +24,18 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * CDs below SME?
 * CD below MLP does not work
-* NavigateTo: Find also CDs with GlobalReference
-* crash: add entity
+* NavigateTo: Find also CDs with GlobalReference -> should work
+* crash: add entity -> already works
 * web browser not working
-* TreeViewItems / MLP / value displayed multi line
+* TreeViewItems / MLP / value displayed multi line -> done
 * remove unnecessary XAML files from WPF legacy
 * ImageMap does not display anything without background image
-* AasxPluginBomStructure still old plugin interface
+* Plugin options?
 * for AnnotatedRel: check SelectAdequateEnum() for allowed elems
 * change file repo format with unsynchronized AAS/ AssetIds, its stupid
 * DocuShelf / Double click in WPF does not work
-
-* AREL NOT SHOWN!!
+* BOM / Option / Styles ??
+* AREL NOT SHOWN!! -> works
 
 * solve MANY issues marked with #if TODO
 
@@ -147,6 +147,9 @@ These projects are not migrated or integrated, yet.
 * AasxPackageExplorer.Tests
 * BlazorUI
 
+## Notes, w.r.t. to procedures
+
+* Convert to new SDK style: https://www.partech.nl/nl/publicaties/2020/11/converting-c-sharp-projects-to-the-new-sdk-format
 
 ## Done
 
@@ -231,3 +234,6 @@ These projects are not migrated or integrated, yet.
 * Festo Plugins working
 * "Jump" function changed, as Asset is no longer IReferable nor Key
   and therefore could only be searched by "GlobalReference"
+* try using AasxPluginBase for all plugins,
+  including AasxPluginBomStructure, AasxPluginExportTable, AasxPluginMtpViewer, 
+  AasxPluginPlotting, AasxPluginWebBrowser, 2 x Festo plugin

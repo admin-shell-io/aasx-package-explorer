@@ -28,24 +28,22 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        public LogInstance Log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
-        private AasxPluginExportTable.ExportTableOptions options = new AasxPluginExportTable.ExportTableOptions();
+        private AasxPluginExportTable.ExportTableOptions _options = new AasxPluginExportTable.ExportTableOptions();
 
-        public string GetPluginName()
+        static AasxPlugin()
         {
-            return "AasxPluginExportTable";
+            PluginName = "AasxPluginExportTable";
         }
 
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginExportTable.ExportTableOptions.CreateDefault();
+            _options = AasxPluginExportTable.ExportTableOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -54,22 +52,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginExportTable.ExportTableOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -91,20 +84,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
                 var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginExportTable.ExportTableOptions>(
                     (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -134,9 +127,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var presets = new object[]
                 {
-                    options.Presets,
-                    options.UmlExport,
-                    options.TimeSeriesImport
+                    _options.Presets,
+                    _options.UmlExport,
+                    _options.TimeSeriesImport
                 };
                 return new AasxPluginResultBaseObject("presets", presets);
             }
@@ -174,7 +167,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                     // use functionality
                     ExportUml.ExportUmlToFile(env, sm, record, fn);
-                    Log.Info($"Export UML data to file: {fn}");
+                    _log.Info($"Export UML data to file: {fn}");
 
 
                 }
@@ -192,8 +185,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     sm.SetAllParents();
 
                     // use functionality
-                    Log.Info($"Importing time series from file: {fn} ..");
-                    ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, Log);
+                    _log.Info($"Importing time series from file: {fn} ..");
+                    ImportTimeSeries.ImportTimeSeriesFromFile(env, sm, record, fn, _log);
                 }
             }
 
@@ -294,7 +287,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             try
             {
-                Log.Info("Exporting table: {0}", fn);
+                _log.Info("Exporting table: {0}", fn);
                 var success = false;
                 try
                 {
@@ -312,18 +305,18 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 }
                 catch (Exception ex)
                 {
-                    Log?.Error(ex, "performing data format export");
+                    _log?.Error(ex, "performing data format export");
                     success = false;
                 }
 
                 if (!success && ticket?.ScriptMode != true)
-                    Log?.Error(
+                    _log?.Error(
                         "Export table: Some error occured while exporting the table. " +
                         "Please refer to the log messages.");
             }
             catch (Exception ex)
             {
-                Log?.Error(ex, "When exporting table, an error occurred");
+                _log?.Error(ex, "When exporting table, an error occurred");
             }
 
         }
@@ -340,14 +333,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             // try import
             try
             {
-                Log.Info("Importing table: {0}", fn);
+                _log.Info("Importing table: {0}", fn);
                 var success = false;
                 try
                 {
                     if (record.Format == (int)ImportExportTableRecord.FormatEnum.Word)
                     {
                         success = true;
-                        var pop = new ImportPopulateByTable(Log, record, sm, env, options);
+                        var pop = new ImportPopulateByTable(_log, record, sm, env, _options);
                         using (var stream = System.IO.File.Open(fn, FileMode.Open,
                                     FileAccess.Read, FileShare.ReadWrite))
                             foreach (var tp in ImportTableWordProvider.CreateProviders(stream))
@@ -357,25 +350,25 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     if (record.Format == (int)ImportExportTableRecord.FormatEnum.Excel)
                     {
                         success = true;
-                        var pop = new ImportPopulateByTable(Log, record, sm, env, options);
+                        var pop = new ImportPopulateByTable(_log, record, sm, env, _options);
                         foreach (var tp in ImportTableExcelProvider.CreateProviders(fn))
                             pop.PopulateBy(tp);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log?.Error(ex, "importing table");
+                    _log?.Error(ex, "importing table");
                     success = false;
                 }
 
                 if (!success && ticket?.ScriptMode != true)
-                    Log?.Error(
+                    _log?.Error(
                         "Table import: Some error occured while importing the table. " +
                         "Please refer to the log messages.");
             }
             catch (Exception ex)
             {
-                Log?.Error(ex, "When exporting table, an error occurred");
+                _log?.Error(ex, "When exporting table, an error occurred");
             }
 
         }

@@ -23,29 +23,26 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     // ReSharper disable UnusedType.Global
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     // ReSharper enable UnusedType.Global
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginMtpViewer.MtpViewerOptions options = new AasxPluginMtpViewer.MtpViewerOptions();
+        private AasxPluginMtpViewer.MtpViewerOptions _options = new AasxPluginMtpViewer.MtpViewerOptions();
 
-        private AasxPluginMtpViewer.WpfMtpControlWrapper viewerControl
+        private AasxPluginMtpViewer.WpfMtpControlWrapper _viewerControl
             = new AasxPluginMtpViewer.WpfMtpControlWrapper();
 
-        public string GetPluginName()
+        static AasxPlugin()
         {
-            Log.Info("GetPluginName() = {0}", "MtpViewer");
-            return "AasxPluginMtpViewer";
+            PluginName = "AasxPluginMtpViewer";
         }
 
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginMtpViewer.MtpViewerOptions.CreateDefault();
+            _options = AasxPluginMtpViewer.MtpViewerOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -54,22 +51,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginMtpViewer.MtpViewerOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             // for speed reasons, have the most often used at top!
             res.Add(new AasxPluginActionDescriptionBase("call-check-visual-extension",
@@ -88,7 +80,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             // for speed reasons, have the most often used at top!
             if (action == "call-check-visual-extension")
@@ -104,8 +96,8 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this.options != null && this.options.Records != null)
-                    foreach (var rec in this.options.Records)
+                if (this._options != null && this._options.Records != null)
+                    foreach (var rec in this._options.Records)
                         if (rec.AllowSubmodelSemanticId != null)
                             foreach (var x in rec.AllowSubmodelSemanticId)
                                 if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
@@ -129,12 +121,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 var newOpt = JsonConvert.DeserializeObject<AasxPluginMtpViewer.MtpViewerOptions>(args[0] as string);
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
-                var json = JsonConvert.SerializeObject(this.options, Newtonsoft.Json.Formatting.Indented);
+                var json = JsonConvert.SerializeObject(this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -150,10 +142,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && this._eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return this._eventStack.PopEvent();
             }
 
             if (action == "get-check-visual-extension")
@@ -164,7 +156,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return cve;
             }
 
-            if (action == "fill-panel-visual-extension" && this.viewerControl != null)
+            if (action == "fill-panel-visual-extension" && this._viewerControl != null)
             {
                 // arguments
                 if (args?.Length < 3)
@@ -172,7 +164,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // call
                 var resobj = AasxPluginMtpViewer.WpfMtpControlWrapper.FillWithWpfControls(args?[0], args?[1],
-                    this.options, this.eventStack, this.Log, args?[2]);
+                    this._options, this._eventStack, this._log, args?[2]);
 
                 // give object back
                 var res = new AasxPluginResultBaseObject();

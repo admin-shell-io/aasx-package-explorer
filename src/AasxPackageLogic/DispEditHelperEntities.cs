@@ -1116,11 +1116,11 @@ namespace AasxPackageLogic
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("ref-existing", "Reference to existing Aas.Submodel",
+                        .AddAction("ref-existing", "Reference to existing Submodel",
                             "Links the SubmodelReference to an existing Submodel.")
-                        .AddAction("create-template", "Create new Aas.Submodel of kind Template",
+                        .AddAction("create-template", "Create new Submodel of kind Template",
                             "Creates a new Submodel of kind Template and link to this SubmodelReference.")
-                        .AddAction("create-instance", "Create new Aas.Submodel of kind Instance",
+                        .AddAction("create-instance", "Create new Submodel of kind Instance",
                             "Creates a new Submodel of kind Instance and link to this SubmodelReference."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
@@ -1517,7 +1517,7 @@ namespace AasxPackageLogic
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Aas.Property",
+                        .AddAction("add-prop", "Add Property",
                             "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
                             "Adds a new MultiLanguageProperty to the containing collection.")
@@ -2163,7 +2163,7 @@ namespace AasxPackageLogic
                             stack, "value:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
-                                .AddAction("add-prop", "Add Aas.Property",
+                                .AddAction("add-prop", "Add Property",
                                     "Adds a new Property to the containing collection.")
                                 .AddAction("add-mlp", "Add MultiLang.Prop.",
                                     "Adds a new MultiLanguageProperty to the containing collection.")
@@ -2671,7 +2671,7 @@ namespace AasxPackageLogic
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Aas.Property",
+                        .AddAction("add-prop", "Add Property",
                             "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
                             "Adds a new MultiLanguageProperty to the containing collection.")
@@ -2950,7 +2950,7 @@ namespace AasxPackageLogic
                     stack, "annotation:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-prop", "Add Aas.Property",
+                        .AddAction("add-prop", "Add Property",
                             "Adds a new Property to the containing collection.")
                         .AddAction("add-mlp", "Add MultiLang.Prop.",
                             "Adds a new MultiLanguageProperty to the containing collection.")

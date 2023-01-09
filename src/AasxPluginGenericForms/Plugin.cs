@@ -27,10 +27,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     {
         private AasxPluginGenericForms.GenericFormOptions _options = new AasxPluginGenericForms.GenericFormOptions();
 
-#if USE_WPF
-        private AasxPluginGenericForms.GenericFormsControl _formsControl = null;
-#endif
-
         public class Session : PluginSessionBase
         {
             public AasxPluginGenericForms.GenericFormsAnyUiControl AnyUiControl = null;
@@ -132,11 +128,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 "event-return", "Called to return a result evaluated by the host for a certain event."));
             res.Add(new AasxPluginActionDescriptionBase(
                 "get-check-visual-extension", "Returns true, if plug-ins checks for visual extension."));
-#if USE_WPF
-            res.Add(new AasxPluginActionDescriptionBase(
-                "fill-panel-visual-extension",
-                "When called, fill given WPF panel with control for graph display."));
-#endif
             res.Add(new AasxPluginActionDescriptionBase(
                 "fill-anyui-visual-extension",
                 "When called, fill given AnyUI panel with control for graph display."));
@@ -232,12 +223,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     && args.Length >= 1 && args[0] is AasxPluginEventReturnBase erb)
                 {
                     // arguments (event return, session-id)
-
-#if USE_WPF
-                    if (_formsControl != null)
-                        _formsControl.HandleEventReturn(erb);
-#endif
-
                     if (args.Length >= 2
                         && _sessions.AccessSession(args[1], out Session session)
                         && session.AnyUiControl != null)
@@ -309,25 +294,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     }
                     // ReSharper enable UnusedVariable
                 }
-
-#if USE_WPF
-                if (action == "fill-panel-visual-extension")
-                {
-                    // arguments
-                    if (args == null || args.Length < 3)
-                        return null;
-
-                    // call
-                    this._formsControl = AasxPluginGenericForms.GenericFormsControl.FillWithWpfControls(
-                        _log, args[0], args[1], this._options, _eventStack, args[2]);
-
-                    // give object back
-                    var res = new AasxPluginResultBaseObject();
-                    res.obj = this._formsControl;
-                    return res;
-                }
-#endif
-
                 if (action == "get-list-new-submodel")
                 {
                     // prepare list

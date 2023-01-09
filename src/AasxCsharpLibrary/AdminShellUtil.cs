@@ -199,8 +199,6 @@ namespace AdminShellNS
         /// If len of <paramref name="str"/> exceeds <paramref name="maxLen"/> then
         /// string is shortened and returned with an ellipsis(…) at the end.
         /// </summary>
-        /// <param name="str"></param>
-        /// <param name="maxLen"></param>
         /// <returns>Shortened string</returns>
         public static string ShortenWithEllipses(string str, int maxLen)
         {
@@ -209,6 +207,17 @@ namespace AdminShellNS
             if (maxLen >= 0 && str.Length > maxLen)
                 str = str.Substring(0, maxLen) + "\u2026";
             return str;
+        }
+
+        /// <summary>
+        /// Returns a string without newlines and shortened (with ellipsis)
+        /// to a certain length
+        /// </summary>
+        /// <returns>Single-line, shortened string</returns>
+        public static string ToSingleLineShortened(string str, int maxLen, string textNewLine = " ")
+        {
+            str = str.ReplaceLineEndings(textNewLine);
+            return ShortenWithEllipses(str, maxLen);
         }
 
         /// <summary>Creates a filter-friendly name from the source.</summary>

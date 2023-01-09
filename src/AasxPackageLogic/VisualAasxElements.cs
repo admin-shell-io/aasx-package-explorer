@@ -933,6 +933,7 @@ namespace AasxPackageLogic
 
                 // extra function
                 EnrichInfoString(sme, ref ciinfo, ref showCDinfo);
+                ciinfo = AdminShellUtil.ToSingleLineShortened(ciinfo, 80, textNewLine: " \u21b5 ");
 
                 // MIHO thinks it makes sense to simply override
                 showCDinfo = true;

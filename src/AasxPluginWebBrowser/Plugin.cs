@@ -23,27 +23,25 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
     [UsedImplicitlyAttribute]
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
-    public class AasxPlugin : IAasxPluginInterface
+    public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance Log = new LogInstance();
-        private PluginEventStack eventStack = new PluginEventStack();
-        private AasxPluginWebBrowser.WebBrowserOptions options = new AasxPluginWebBrowser.WebBrowserOptions();
+        private AasxPluginWebBrowser.WebBrowserOptions _options = new AasxPluginWebBrowser.WebBrowserOptions();
 
         private Grid browserGrid = null;
-        private CefSharp.Wpf.ChromiumWebBrowser theBrowser = null;
+        private CefSharp.Wpf.ChromiumWebBrowser _browser = null;
 
-        public string GetPluginName()
+        static AasxPlugin()
         {
-            return "AasxPluginWebBrowser";
+            PluginName = "AasxPluginWebBrowser";
         }
 
-        public void InitPlugin(string[] args)
+        public new void InitPlugin(string[] args)
         {
             // start ..
-            Log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
+            _log.Info("InitPlugin() called with args = {0}", (args == null) ? "" : string.Join(", ", args));
 
             // .. with built-in options
-            options = AasxPluginWebBrowser.WebBrowserOptions.CreateDefault();
+            _options = AasxPluginWebBrowser.WebBrowserOptions.CreateDefault();
 
             // try load defaults options from assy directory
             try
@@ -52,22 +50,17 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                     AasxPluginOptionsBase.LoadDefaultOptionsFromAssemblyDir<AasxPluginWebBrowser.WebBrowserOptions>(
                         this.GetPluginName(), Assembly.GetExecutingAssembly());
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Exception when reading default options {1}");
+                _log.Error(ex, "Exception when reading default options {1}");
             }
         }
 
-        public object CheckForLogMessage()
+        public new AasxPluginActionDescriptionBase[] ListActions()
         {
-            return Log.PopLastShortTermPrint();
-        }
-
-        public AasxPluginActionDescriptionBase[] ListActions()
-        {
-            Log.Info("ListActions() called");
+            _log.Info("ListActions() called");
             var res = new List<AasxPluginActionDescriptionBase>();
             res.Add(
                 new AasxPluginActionDescriptionBase(
@@ -85,20 +78,20 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             return res.ToArray();
         }
 
-        public AasxPluginResultBase ActivateAction(string action, params object[] args)
+        public new AasxPluginResultBase ActivateAction(string action, params object[] args)
         {
             if (action == "set-json-options" && args != null && args.Length >= 1 && args[0] is string)
             {
                 var newOpt = Newtonsoft.Json.JsonConvert.DeserializeObject<AasxPluginWebBrowser.WebBrowserOptions>(
                     (args[0] as string));
                 if (newOpt != null)
-                    this.options = newOpt;
+                    this._options = newOpt;
             }
 
             if (action == "get-json-options")
             {
                 var json = Newtonsoft.Json.JsonConvert.SerializeObject(
-                    this.options, Newtonsoft.Json.Formatting.Indented);
+                    this._options, Newtonsoft.Json.Formatting.Indented);
                 return new AasxPluginResultBaseObject("OK", json);
             }
 
@@ -114,10 +107,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 return lic;
             }
 
-            if (action == "get-events" && this.eventStack != null)
+            if (action == "get-events" && this._eventStack != null)
             {
                 // try access
-                return this.eventStack.PopEvent();
+                return this._eventStack.PopEvent();
             }
 
             if (action == "get-browser-grid" && args != null && args.Length >= 1 && args[0] is string)
@@ -133,13 +126,13 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 this.browserGrid.ColumnDefinitions.Add(
                     new ColumnDefinition() { Width = new GridLength(1.0, GridUnitType.Star) });
 
-                this.theBrowser = new CefSharp.Wpf.ChromiumWebBrowser();
-                this.theBrowser.Address = url;
-                this.theBrowser.InvalidateVisual();
+                this._browser = new CefSharp.Wpf.ChromiumWebBrowser();
+                this._browser.Address = url;
+                this._browser.InvalidateVisual();
 
-                this.browserGrid.Children.Add(this.theBrowser);
-                Grid.SetRow(this.theBrowser, 0);
-                Grid.SetColumn(this.theBrowser, 0);
+                this.browserGrid.Children.Add(this._browser);
+                Grid.SetRow(this._browser, 0);
+                Grid.SetColumn(this._browser, 0);
 
                 // TODO (MIHO, 2020-08-02): when dragging the divider between elements tree and browser window,
                 // distortions can be seen (diagonal shifting of pixels). Interestingly, this problem was not
@@ -158,11 +151,11 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var url = args[0] as string;
 
                 // check, if possible
-                if (this.browserGrid != null && this.theBrowser != null)
+                if (this.browserGrid != null && this._browser != null)
                 {
                     // try execute
-                    this.theBrowser.Address = url;
-                    this.theBrowser.InvalidateVisual();
+                    this._browser.Address = url;
+                    this._browser.InvalidateVisual();
                     this.browserGrid.InvalidateVisual();
 
                     // indicate OK
@@ -176,10 +169,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 var zoom = (double)args[0];
 
                 // check, if possible
-                if (this.browserGrid != null && this.theBrowser != null)
+                if (this.browserGrid != null && this._browser != null)
                 {
                     // try execute
-                    this.theBrowser.ZoomLevel = zoom;
+                    this._browser.ZoomLevel = zoom;
 
                     // indicate OK
                     return new AasxPluginResultBaseObject("OK", true);
