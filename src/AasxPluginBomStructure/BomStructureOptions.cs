@@ -16,6 +16,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using AasxIntegrationBase;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnassignedField.Global
@@ -78,10 +79,8 @@ namespace AasxPluginBomStructure
         }
     }
 
-    public class BomStructureOptionsRecord
+    public class BomStructureOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<Aas.Key> AllowSubmodelSemanticId = new List<Aas.Key>();
-
         public int Layout;
         public bool? Compact;
 
@@ -139,7 +138,7 @@ namespace AasxPluginBomStructure
         }
     }
 
-    public class BomStructureOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class BomStructureOptions : AasxPluginLookupOptionsBase
     {
         public List<BomStructureOptionsRecord> Records = new List<BomStructureOptionsRecord>();
 
@@ -158,25 +157,5 @@ namespace AasxPluginBomStructure
             return opt;
         }
 
-        /// <summary>
-        /// For faster access of styles, index them by a hash map
-        /// </summary>
-        public void Index()
-        {
-            foreach (var rec in Records)
-                rec.Index();
-        }
-
-        /// <summary>
-        /// Find matching options records
-        /// </summary>
-        public IEnumerable<BomStructureOptionsRecord> MatchingRecords(Aas.Reference semId)
-        {
-            foreach (var rec in Records)
-                if (rec.AllowSubmodelSemanticId != null)
-                    foreach (var x in rec.AllowSubmodelSemanticId)
-                        if (semId != null && semId.MatchesExactlyOneKey(x))
-                            yield return rec;
-        }
     }
 }

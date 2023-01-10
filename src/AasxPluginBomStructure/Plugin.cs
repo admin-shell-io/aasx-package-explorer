@@ -18,6 +18,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using JetBrains.Annotations;
+using AasxPluginBomStructure;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -57,6 +58,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
@@ -103,15 +107,12 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                // ReSharper disable UnusedVariable
-                foreach (var x in _options.MatchingRecords(sm.SemanticId))
-                {
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<BomStructureOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
                     found = true;
-                    break;
-                }
                 if (!found)
                     return null;
-                // ReSharper enable UnusedVariable
 
                 // success prepare record
                 var cve = new AasxPluginResultVisualExtension("BOM", "Bill of Material - Graph display");

@@ -27,8 +27,6 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
     // the class names has to be: AasxPlugin and subclassing IAasxPluginInterface
     public class AasxPlugin : AasxPluginBase
     {
-        private LogInstance _log = new LogInstance();
-        private PluginEventStack _eventStack = new PluginEventStack();
         private AasxPluginPlotting.PlottingOptions _options = new AasxPluginPlotting.PlottingOptions();
 
         private AasxPluginPlotting.PlottingViewControl _viewControl;
@@ -60,6 +58,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
@@ -109,19 +110,14 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
                 // looking only for Submodels
                 var sm = args[0] as Aas.Submodel;
                 if (sm == null)
-                    return null;
+                    return null;               
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this._options != null && this._options.Records != null)
-                    foreach (var rec in this._options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<AasxPluginPlotting.PlottingOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
+                    found = true;
                 if (!found)
                     return null;
 

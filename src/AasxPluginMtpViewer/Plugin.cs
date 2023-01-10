@@ -18,6 +18,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using Newtonsoft.Json;
+using AasxPluginMtpViewer;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -57,6 +58,9 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
             {
                 _log.Error(ex, "Exception when reading default options {1}");
             }
+
+            // index them!
+            _options.IndexListOfRecords(_options.Records);
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()
@@ -96,15 +100,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this._options != null && this._options.Records != null)
-                    foreach (var rec in this._options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<MtpViewerOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
+                    found = true;
                 if (!found)
                     return null;
 

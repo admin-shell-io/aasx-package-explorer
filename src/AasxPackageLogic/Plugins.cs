@@ -215,9 +215,6 @@ namespace AasxPackageLogic
 
         public static AasxPluginResultLicense CompileAllLicenses()
         {
-            // OZOZ
-            return null;
-
             // make an empty one
             var res = new AasxPluginResultLicense();
             res.shortLicense = "";
@@ -371,9 +368,6 @@ namespace AasxPackageLogic
 
         public static void AllPluginsInvoke(string name, params object[] args)
         {
-            // OZOZ
-            return;
-
             // over all loaded plugins
             foreach (var lpi in LoadedPlugins.Values)
             {

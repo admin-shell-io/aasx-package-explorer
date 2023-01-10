@@ -17,18 +17,18 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using WpfMtpControl;
+using AasxIntegrationBase;
 
 namespace AasxPluginMtpViewer
 {
-    public class MtpViewerOptionsRecord
+    public class MtpViewerOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
         public enum MtpRecordType { MtpType, MtpInstance }
 
         public MtpRecordType RecordType = MtpRecordType.MtpType;
-        public List<Aas.Key> AllowSubmodelSemanticId = new List<Aas.Key>();
     }
 
-    public class MtpViewerOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class MtpViewerOptions : AasxPluginLookupOptionsBase
     {
         public List<MtpViewerOptionsRecord> Records = new List<MtpViewerOptionsRecord>();
 

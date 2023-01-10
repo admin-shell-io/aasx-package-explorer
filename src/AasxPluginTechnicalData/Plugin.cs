@@ -18,6 +18,7 @@ using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
 using JetBrains.Annotations;
+using AasxPluginTechnicalData;
 
 namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 {
@@ -110,15 +111,10 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
                 // check for a record in options, that matches Submodel
                 var found = false;
-                if (this._options != null && this._options.Records != null)
-                    foreach (var rec in this._options.Records)
-                        if (rec.AllowSubmodelSemanticId != null)
-                            foreach (var x in rec.AllowSubmodelSemanticId)
-                                if (sm.SemanticId != null && sm.SemanticId.MatchesExactlyOneKey(x))
-                                {
-                                    found = true;
-                                    break;
-                                }
+                // ReSharper disable once UnusedVariable
+                foreach (var rec in _options.LookupAllIndexKey<TechnicalDataOptionsRecord>(
+                    sm.SemanticId?.GetAsExactlyOneKey()))
+                    found = true;
                 if (!found)
                     return null;
 

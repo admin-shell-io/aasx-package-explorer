@@ -16,9 +16,8 @@ using System.Threading.Tasks;
 using AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AdminShellNS;
-using AdminShellNS.Extenstions;
-using Aml.Engine.CAEX;
 using Extensions;
+using Aml.Engine.CAEX;
 using Newtonsoft.Json.Linq;
 
 namespace AasxAmlImExport

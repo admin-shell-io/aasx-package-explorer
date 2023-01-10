@@ -21,6 +21,7 @@ using AasxIntegrationBase;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using System.Windows;
 
 namespace AasxPluginBomStructure
 {
@@ -40,12 +41,12 @@ namespace AasxPluginBomStructure
 
         private PluginEventStack eventStack = null;
 
-        private Dictionary<Aas.IReferable, int> preferredPresetIndex =
-            new Dictionary<Aas.IReferable, int>();
-
         private BomStructureOptionsRecordList _bomRecords = new BomStructureOptionsRecordList();
 
         private GenericBomCreatorOptions _creatorOptions = new GenericBomCreatorOptions();
+
+        private Dictionary<Aas.IReferable, GenericBomCreatorOptions> preferredPreset =
+            new Dictionary<Aas.IReferable, GenericBomCreatorOptions>();
 
         private BomStructureOptions _bomOptions = new BomStructureOptions();
 
@@ -67,7 +68,9 @@ namespace AasxPluginBomStructure
                 return null;
 
             // set of records helping layouting
-            _bomRecords = new BomStructureOptionsRecordList(_bomOptions?.MatchingRecords(_submodel.SemanticId));
+            _bomRecords = new BomStructureOptionsRecordList(
+                _bomOptions.LookupAllIndexKey<BomStructureOptionsRecord>(
+                    _submodel.SemanticId?.GetAsExactlyOneKey()));
 
             // clear some other members (GenericBomControl is not allways created new)
             _creatorOptions = new GenericBomCreatorOptions();
@@ -81,11 +84,12 @@ namespace AasxPluginBomStructure
                     _creatorOptions.CompactLabels = br.Compact.Value;
             }
 
+            // already user defined?
+            if (preferredPreset != null && preferredPreset.ContainsKey(_submodel))
+                _creatorOptions = preferredPreset[_submodel].Copy();
+
             // the Submodel elements need to have parents
             _submodel.SetAllParents();
-
-            // prepare options for fast access
-            _bomOptions.Index();
 
             // create TOP controls
             var spTop = new StackPanel();
@@ -93,24 +97,57 @@ namespace AasxPluginBomStructure
             DockPanel.SetDock(spTop, Dock.Top);
             master.Children.Add(spTop);
 
-            var lb1 = new Label();
-            lb1.Content = "Layout style: ";
-            spTop.Children.Add(lb1);
+            spTop.Children.Add(new Label() { Content = "Layout style: " });
 
             var cbli = new ComboBox();
             foreach (var psn in this.PresetSettingNames)
                 cbli.Items.Add(psn);
             cbli.SelectedIndex = _creatorOptions.LayoutIndex;
-            cbli.SelectionChanged += CbLayoutIndex_SelectionChanged;
+            cbli.SelectionChanged += (s3, e3) =>
+            {
+                _creatorOptions.LayoutIndex = cbli.SelectedIndex;
+                RememberSettings();
+                RedrawGraph();
+            };
             spTop.Children.Add(cbli);
 
-            var cbcomp = new CheckBox();
-            cbcomp.Content = "Compact labels";
-            cbcomp.Margin = new System.Windows.Thickness(10, 0, 10, 0);
-            cbcomp.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
-            cbcomp.IsChecked = _creatorOptions.CompactLabels;
-            cbcomp.Checked += CbCompactLabels_CheckedChanged;
-            cbcomp.Unchecked += CbCompactLabels_CheckedChanged;
+            spTop.Children.Add(new Label() { Content = "Spacing: " });
+
+            var sli = new Slider()
+            {
+                Orientation = Orientation.Horizontal,
+                Width = 150,
+                Minimum = 1,
+                Maximum = 100,
+                TickFrequency = 10,
+                IsSnapToTickEnabled = true,
+                Value = _creatorOptions.LayoutSpacing,
+                Margin = new System.Windows.Thickness(10,0,10,0),
+                VerticalAlignment = System.Windows.VerticalAlignment.Center
+            };
+            sli.ValueChanged += (s, e) =>
+            {
+                _creatorOptions.LayoutSpacing = e.NewValue;
+                RememberSettings();
+                RedrawGraph();
+            };
+            spTop.Children.Add(sli);
+
+            var cbcomp = new CheckBox()
+            {
+                Content = "Compact labels",
+                Margin = new System.Windows.Thickness(10, 0, 10, 0),
+                VerticalContentAlignment = System.Windows.VerticalAlignment.Center,
+                IsChecked = _creatorOptions.CompactLabels,
+            };
+            RoutedEventHandler cbcomb_changed = (s2, e2) =>
+            {
+                _creatorOptions.CompactLabels = cbcomp.IsChecked == true;
+                RememberSettings();
+                RedrawGraph();
+            };
+            cbcomp.Checked += cbcomb_changed;
+            cbcomp.Unchecked += cbcomb_changed;
             spTop.Children.Add(cbcomp);
 
             // create BOTTOM controls
@@ -190,17 +227,18 @@ namespace AasxPluginBomStructure
                 _bomRecords,
                 options);
 
-            using (var tw = new StreamWriter("bomgraph.log"))
+            // Turn on logging if required
+            //// using (var tw = new StreamWriter("bomgraph.log"))
             {
-                creator.RecurseOnLayout(1, graph, null, sm.SubmodelElements, 1, tw);
-                creator.RecurseOnLayout(2, graph, null, sm.SubmodelElements, 1, tw);
-                creator.RecurseOnLayout(3, graph, null, sm.SubmodelElements, 1, tw);
+                creator.RecurseOnLayout(1, graph, null, sm.SubmodelElements, 1, null);
+                creator.RecurseOnLayout(2, graph, null, sm.SubmodelElements, 1, null);
+                creator.RecurseOnLayout(3, graph, null, sm.SubmodelElements, 1, null);
             }
 
             // make default or (already) preferred settings
-            var settings = GivePresetSettings(options.LayoutIndex);
-            if (this.preferredPresetIndex != null && this.preferredPresetIndex.ContainsKey(sm))
-                settings = GivePresetSettings(this.preferredPresetIndex[sm]);
+            var settings = GivePresetSettings(options, graph.NodeCount);
+            if (this.preferredPreset != null && this.preferredPreset.ContainsKey(sm))
+                settings = GivePresetSettings(this.preferredPreset[sm], graph.NodeCount);
             if (settings != null)
                 graph.LayoutAlgorithmSettings = settings;
 
@@ -265,69 +303,39 @@ namespace AasxPluginBomStructure
         private string[] PresetSettingNames =
         {
             "1 | Tree style layout",
-            "2 | Round layout (no spacing)",
-            "3 | Round layout (middle spacing)",
-            "4 | Round layout (large spacing)"
+            "2 | Round layout (variable)",
         };
 
-        private Microsoft.Msagl.Core.Layout.LayoutAlgorithmSettings GivePresetSettings(int i)
+        private Microsoft.Msagl.Core.Layout.LayoutAlgorithmSettings GivePresetSettings(
+            GenericBomCreatorOptions opt, int nodeCount)
         {
-            if (i == 0)
+            if (opt == null || opt.LayoutIndex == 0)
             {
+                // Tree
                 var settings = new Microsoft.Msagl.Layout.Layered.SugiyamaLayoutSettings();
                 return settings;
             }
-
-            if (i == 1)
+            else
             {
+                // Round
                 var settings = new Microsoft.Msagl.Layout.Incremental.FastIncrementalLayoutSettings();
-                settings.RepulsiveForceConstant = 1.0;
+                settings.RepulsiveForceConstant = 8.0 / (1.0 + nodeCount) * (1.0 + opt.LayoutSpacing);
                 return settings;
-            }
-
-            if (i == 2)
-            {
-                var settings = new Microsoft.Msagl.Layout.Incremental.FastIncrementalLayoutSettings();
-                settings.RepulsiveForceConstant = 30.0;
-                return settings;
-            }
-
-            if (i == 3)
-            {
-                var settings = new Microsoft.Msagl.Layout.Incremental.FastIncrementalLayoutSettings();
-                settings.RepulsiveForceConstant = 100.0;
-                return settings;
-            }
-
-            return null;
-        }
-
-        private void CbCompactLabels_CheckedChanged(object sender, System.Windows.RoutedEventArgs e)
-        {
-            if (sender is CheckBox cb)
-            {
-                // re-draw (brutally)
-                _creatorOptions.CompactLabels = cb.IsChecked == true;
-                theGraph = CreateGraph(_package, _submodel, _creatorOptions);
-                theViewer.Graph = null;
-                theViewer.Graph = theGraph;
             }
         }
 
-        private void CbLayoutIndex_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        protected void RememberSettings()
         {
-            var cb = sender as ComboBox;
-            if (cb == null || theGraph == null || theViewer == null)
-                return;
+            // try to remember preferred setting
+            if (this.theReferable != null && preferredPreset != null && _creatorOptions != null)
+                this.preferredPreset[this.theReferable] = _creatorOptions.Copy();
+        }
 
+        protected void RedrawGraph()
+        {
             try
             {
-                // try to remember preferred setting
-                if (this.theReferable != null && preferredPresetIndex != null && cb.SelectedIndex >= 0)
-                    this.preferredPresetIndex[this.theReferable] = cb.SelectedIndex;
-
                 // re-draw (brutally)
-                _creatorOptions.LayoutIndex = cb.SelectedIndex;
                 theGraph = CreateGraph(_package, _submodel, _creatorOptions);
                 theViewer.Graph = null;
                 theViewer.Graph = theGraph;
@@ -337,5 +345,6 @@ namespace AasxPluginBomStructure
                 AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
             }
         }
+
     }
 }

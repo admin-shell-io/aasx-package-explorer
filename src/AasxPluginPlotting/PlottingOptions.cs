@@ -15,16 +15,15 @@ using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
-
+using AasxIntegrationBase;
 
 namespace AasxPluginPlotting
 {
-    public class PlottingOptionsRecord
+    public class PlottingOptionsRecord : AasxPluginOptionsLookupRecordBase
     {
-        public List<Aas.Key> AllowSubmodelSemanticId = new List<Aas.Key>();
     }
 
-    public class PlottingOptions : AasxIntegrationBase.AasxPluginOptionsBase
+    public class PlottingOptions : AasxPluginLookupOptionsBase
     {
         public List<PlottingOptionsRecord> Records = new List<PlottingOptionsRecord>();
 

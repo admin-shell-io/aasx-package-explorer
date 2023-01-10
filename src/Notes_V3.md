@@ -37,6 +37,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * BOM / Option / Styles ??
 * AREL NOT SHOWN!! -> works
 
+* wrong default logo is loaded (PI40)
+* integrate AML
+* more work on plotting (energy..)
+
 * solve MANY issues marked with #if TODO
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
