@@ -10,7 +10,7 @@
   "TemplateIdSubmodelTemplate": "https://example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
   "TemplateIdConceptDescription": "https://example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
   "EclassDir": ".\\eclass\\",
-  "LogoFile": "SpecPI40_t.png",
+  "LogoFile": "PI40_and_IDTA.png",
   "QualifiersFile": "qualifier-presets.json",
   "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json",
   "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",

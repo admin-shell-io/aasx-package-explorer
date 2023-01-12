@@ -1109,6 +1109,30 @@ namespace AasxPackageLogic
                 var ci = theCD.ToCaptionInfo();
                 this.Caption = "" + ci.Item1 + " ";
                 this.Info = ci.Item2;
+
+                // enrich?
+                var ds61360 = theCD.GetIEC61360();
+                if (ds61360 != null)
+                {
+                    var pn = ds61360.PreferredName?.GetDefaultString();
+                    if (pn?.HasContent() == true)
+                        this.Info += " (" + pn + ")";
+
+                    var vl = ds61360.Value;
+                    if (vl?.HasContent() == true)
+                        this.Info += " = " + vl;
+                }
+
+                var dspu = theCD.GetPhysicalUnit();
+                if (dspu != null)
+                {
+                    if (dspu.UnitName?.HasContent() == true)
+                        this.Info += " \u00bb" + dspu.UnitName + "\u00ab";
+
+                    if (dspu.UnitSymbol?.HasContent() == true)
+                        this.Info += " [" + dspu.UnitName + "]";
+
+                }
             }
         }
 
@@ -1437,6 +1461,20 @@ namespace AasxPackageLogic
                         var tiVP = new VisualElementValueRefPair(tiCD, cache, env, cd, vlp);
                         tiCD.Members.Add(tiVP);
                     }
+                }
+            }
+
+            // CD for unit below CD ?
+            if (tiCDs?.CdSortOrder == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme
+                && dsiec?.UnitId?.IsValid() == true)
+            {
+                // look up unit CD
+                var unitCD = env?.FindConceptDescriptionByReference(dsiec.UnitId);
+                if (unitCD != null)
+                {
+                    // add "real" CD
+                    var tiUnitCD = new VisualElementConceptDescription(tiCD, cache, env, unitCD);
+                    tiCD.Members.Add(tiUnitCD);
                 }
             }
 

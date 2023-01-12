@@ -150,9 +150,9 @@ namespace AasxAmlImExport
         }
 
         private static void SetModelingKind(
-            AttributeSequence aseq, ModelingKind kind, string attributeRole = null)
+            AttributeSequence aseq, ModelingKind? kind, string attributeRole = null)
         {
-            if (aseq == null || kind == null || kind == null)
+            if (aseq == null || !kind.HasValue)
                 return;
             if (attributeRole == null)
                 attributeRole = AmlConst.Attributes.HasKind_Kind;
@@ -359,7 +359,7 @@ namespace AasxAmlImExport
 
                     // add some data underneath
                     SetReferable(a.Attribute, sme);
-                    SetModelingKind(a.Attribute, (ModelingKind)sme.Kind);
+                    SetModelingKind(a.Attribute, sme.Kind);
                     SetSemanticId(a.Attribute, sme.SemanticId);
                     SetHasDataSpecification(a.Attribute, sme.EmbeddedDataSpecifications);
 
@@ -385,7 +385,7 @@ namespace AasxAmlImExport
 
                     // set some data
                     SetReferable(ie.Attribute, sme);
-                    SetModelingKind(ie.Attribute, (ModelingKind)sme.Kind);
+                    SetModelingKind(ie.Attribute, sme.Kind);
                     SetSemanticId(ie.Attribute, sme.SemanticId);
                     SetHasDataSpecification(ie.Attribute, sme.EmbeddedDataSpecifications);
 
@@ -611,7 +611,7 @@ namespace AasxAmlImExport
             SetIdentification(parent.Attribute, sm.Id);
             SetAdministration(parent.Attribute, sm.Administration);
             SetReferable(parent.Attribute, sm);
-            SetModelingKind(parent.Attribute, (ModelingKind)sm.Kind);
+            SetModelingKind(parent.Attribute, sm.Kind);
             SetSemanticId(parent.Attribute, sm.SemanticId);
             SetHasDataSpecification(parent.Attribute, sm.EmbeddedDataSpecifications);
             SetQualifiers(null, parent.Attribute, sm.Qualifiers, parentAsInternalElements: false);
@@ -879,8 +879,9 @@ namespace AasxAmlImExport
             SetReferable(aseqOuter, cd);
 
             // isCaseOf
-            foreach (var r in cd.IsCaseOf)
-                AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
+            if (cd.IsCaseOf != null)
+                foreach (var r in cd.IsCaseOf)
+                    AppendAttributeNameAndRole(aseqOuter, "isCaseOf", AmlConst.Attributes.CD_IsCaseOf, ToAmlReference(r));
 
             // which data spec as reference
             if (cd.EmbeddedDataSpecifications != null)

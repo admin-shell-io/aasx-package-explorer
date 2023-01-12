@@ -83,7 +83,7 @@ namespace AasxPackageLogic
             if (editMode)
             {
                 // let the user control the number of references
-                AddAction(
+                AddActionPanel(
                     stack, "Qualifier entities:",
                     repo: repo,
                     superMenu: superMenu,
@@ -523,7 +523,7 @@ namespace AasxPackageLogic
             if (editMode)
             {
                 // let the user control the number of references
-                AddAction(
+                AddActionPanel(
                     stack, $"{key}:",
                     new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
                     repo,
@@ -722,7 +722,7 @@ namespace AasxPackageLogic
             if (editMode)
             {
                 // let the user control the number of elements
-                AddAction(
+                AddActionPanel(
                     stack, "Extension entities:",
                     new[] { "Add blank", "Add preset", "Add from clipboard", "Delete last" },
                     repo,
@@ -990,7 +990,7 @@ namespace AasxPackageLogic
                 this.AddHintBubble(substack, hintMode, new[] {
                 new HintCheck(
                     () => extension.RefersTo?.IsValid() == true,
-                    "Currently, AAS croe allows only for 0..1 refersTo references.",
+                    "Currently, AAS core allows only for 0..1 refersTo references.",
                     breakIfTrue: true,
                     severityLevel: HintCheck.Severity.Notice) });
                 if (this.SafeguardAccess(
@@ -1005,7 +1005,7 @@ namespace AasxPackageLogic
                     if (editMode)
                     {
                         // let the user control the number of references
-                        this.AddAction(
+                        this.AddActionPanel(
                             substack, "refersTo:",
                             new[] { "Add Reference", "Delete last reference" }, repo,
                             (buttonNdx) =>
@@ -1213,7 +1213,7 @@ namespace AasxPackageLogic
             if (editMode)
             {
                 // let the user control the number of pairs
-                AddAction(
+                AddActionPanel(
                     stack, $"{key}:",
                     new[] { "Add blank", "Add from clipboard", "Delete last" },
                     repo,
@@ -1253,7 +1253,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     });
 
-                AddAction(
+                AddActionPanel(
                     stack, "Create:",
                     repo: repo,
                     superMenu: superMenu,

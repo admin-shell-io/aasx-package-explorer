@@ -29,7 +29,15 @@ namespace Extensions
                 if (eds?.DataSpecificationContent is DataSpecificationIec61360 dsiec)
                     return dsiec;
             return null;
-        }        
+        }
+
+        public static DataSpecificationPhysicalUnit GetPhysicalUnitContent(this List<EmbeddedDataSpecification> list)
+        {
+            foreach (var eds in list)
+                if (eds?.DataSpecificationContent is DataSpecificationPhysicalUnit dspu)
+                    return dspu;
+            return null;
+        }
     }
 
     public static class ExtendEmbeddedDataSpecification

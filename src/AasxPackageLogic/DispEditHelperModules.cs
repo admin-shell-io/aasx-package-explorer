@@ -461,7 +461,7 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Specifications:",
                         new[] { "Add Reference", "Delete last reference" }, repo,
                         (buttonNdx) =>
@@ -549,7 +549,7 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Specifications:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -682,7 +682,7 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Spec. records:",
                         new[] { "Add record", "Add IEC61360", "Delete last record" }, repo,
                         (buttonNdx) =>
@@ -857,7 +857,7 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, $"{entityName}:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -1090,7 +1090,7 @@ namespace AasxPackageLogic
                 if (editMode)
                 {
                     // let the user control the number of references
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Suppl.Sem.Id:",
                         new[] { "Add", "Delete last" }, repo,
                         (buttonNdx) =>
@@ -1291,8 +1291,7 @@ namespace AasxPackageLogic
                 return;
 
             // members
-            this.AddGroup(
-                        stack, "Data Specification Content IEC61360:", levelColors.SubSection);
+            this.AddGroup(stack, "Data Specification Content IEC61360:", levelColors.SubSection);
 
             // PreferredName
 
@@ -1545,10 +1544,14 @@ namespace AasxPackageLogic
                         this.AddDiaryEntry(relatedReferable, new DiaryEntryStructChange());
                         return new AnyUiLambdaActionRedrawEntity();
                     }))
+            {
+                this.AddGroup(stack, "IEC61360 value list items", levelColors.SubSection);
+
                 ValueListHelper(
                     env, stack, repo, "valueList",
                     dsiec.ValueList.ValueReferencePairs,
                     relatedReferable: relatedReferable, superMenu: superMenu);
+            }
 
             // Value
 
@@ -2034,7 +2037,7 @@ namespace AasxPackageLogic
             {
                 // Remove, create text, edit
                 // More file actions
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Action",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -2255,7 +2258,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionRedrawEntity();
                     }, minHeight: 40);
 
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Action",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()

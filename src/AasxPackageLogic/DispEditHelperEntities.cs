@@ -51,8 +51,6 @@ namespace AasxPackageLogic
             bool hintMode = false,
             AasxMenu superMenu = null)
         {
-            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
-
             // Kind
 
             this.DisplayOrEditEntityAssetKind(stack, asset.AssetKind,
@@ -174,7 +172,7 @@ namespace AasxPackageLogic
                     });
 
                 // print code sheet
-                AddAction(stack, "Actions:",
+                AddActionPanel(stack, "Actions:",
                 repo: repo,
                 superMenu: superMenu,
                 ticketMenu: new AasxMenu()
@@ -315,21 +313,23 @@ namespace AasxPackageLogic
                 });
 
                 // let the user control the number of entities
-                AddAction(
+                AddActionPanel(
                     stack, "Entities:",
+                    repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
-                        .AddAction("add-asset", "Add Asset",
-                            "Adds an asset with blank information.")
                         .AddAction("add-aas", "Add AAS",
                             "Adds an AAS with blank information.")
-                        .AddAction("add-cd", "Add Aas.ConceptDescription",
+                        .AddAction("add-cd", "Add AasConceptDescription",
                             "Adds an ConceptDescription with blank information."),
                     ticketAction: (buttonNdx, ticket) =>
                     {
                         if (buttonNdx == 0)
                         {
-                            var aas = new Aas.AssetAdministrationShell("", null, submodels:new List<Aas.Reference>()); //TODO:jtikekar refere an Asset
+                            // create TOGETHER with AssetInformation!!, as serialization might fail!
+                            var aas = new Aas.AssetAdministrationShell("", 
+                                new Aas.AssetInformation(Aas.AssetKind.Instance), 
+                                submodels:new List<Aas.Reference>());
                             aas.Id = AdminShellUtil.GenerateIdAccordingTemplate(
                                 Options.Curr.TemplateIdAas);
                             env.AssetAdministrationShells.Add(aas);
@@ -362,7 +362,7 @@ namespace AasxPackageLogic
                             severityLevel: HintCheck.Severity.Notice)
                     });
 
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Copy from existing AAS:",
                         repo: repo,
                         superMenu: superMenu,
@@ -647,7 +647,7 @@ namespace AasxPackageLogic
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Copy from existing ConceptDescription:",
                         repo: repo,
                         superMenu: superMenu,
@@ -695,7 +695,7 @@ namespace AasxPackageLogic
                             margin: new AnyUiThickness(2, 2, 2, 2), padding: new AnyUiThickness(5, 0, 5, 0),
                             minWidth: 250,
                             items: new[] {
-                            "List index", "idShort", "Identification", "By Aas.Submodel",
+                            "List index", "idShort", "Identification", "By AasSubmodel",
                             "By SubmodelElements"
                         }),
                         (o) =>
@@ -785,7 +785,7 @@ namespace AasxPackageLogic
 
                     this.AddGroup(stack, "Maintenance of ConceptDescriptions (CDs)", this.levelColors.MainSection);
 
-                    this.AddAction(
+                    this.AddActionPanel(
                         stack, "Fix:",
                         repo: repo,
                         superMenu: superMenu,
@@ -979,7 +979,7 @@ namespace AasxPackageLogic
 
             if (editMode && packages.MainStorable && psf != null)
             {
-                AddAction(stack, "Action",
+                AddActionPanel(stack, "Action",
                     repo: repo,
                     superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -1111,7 +1111,7 @@ namespace AasxPackageLogic
                                 "(see 'File' menu) to copy structures from.",
                             severityLevel: HintCheck.Severity.Notice)
                     });// adding submodels
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "SubmodelRef:",
                     repo: repo,
                     superMenu: superMenu,
@@ -1197,7 +1197,7 @@ namespace AasxPackageLogic
                         "You have opened an auxiliary AASX package. You can copy elements from it!",
                         severityLevel: HintCheck.Severity.Notice)
                 });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Copy from existing Submodel:",
                     repo: repo,
                     superMenu: superMenu,
@@ -1355,11 +1355,29 @@ namespace AasxPackageLogic
             // Asset linked with AAS
             //
 
-            // show group only if no AssetInformation is available because
-            // else DisplayOrEditAasEntityAsset will do
-            if (aas.AssetInformation == null)
-                this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection);
+            this.AddGroup(stack, "AssetInformation", this.levelColors.MainSection, repo,
+                auxButtonTitle: (aas.AssetInformation == null) ? null : "Delete",
+                auxButtonLambda: (o) =>
+                {
+                    if (AnyUiMessageBoxResult.Yes == this.context.MessageBoxFlyoutShow(
+                               "Delete AssetInformation in general? This operation can not be reverted!",
+                               "AssetInformation",
+                               AnyUiMessageBoxButton.YesNo, AnyUiMessageBoxImage.Warning))
+                    {
+                        aas.AssetInformation = null;
+                        this.AddDiaryEntry(aas, new DiaryEntryStructChange());
+                        return new AnyUiLambdaActionRedrawEntity();
+                    }
 
+                    return new AnyUiLambdaActionNone();
+                });
+
+            this.AddHintBubble(stack, hintMode, new[] {
+                new HintCheck(() => aas.AssetInformation == null,
+                    "No AssetInformation created. According to the specification, there is a 1:1 relation " +
+                    "of AAS and AssetInformation. Please urgently create the AssetInformation, as elsewise the " +
+                    "serialization of the AAS might fail!!.")
+            });
             if (this.SafeguardAccess(
                 stack, repo, aas.AssetInformation, "AssetInformation:", "Create data element!",
                 v =>
@@ -1433,7 +1451,7 @@ namespace AasxPackageLogic
                     stack, "Editing of entities (environment's Submodel collection)",
                     this.levelColors.MainSection);
 
-                AddAction(stack, "Submodel:",
+                AddActionPanel(stack, "Submodel:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("aas-elem-del", "Delete",
@@ -1513,7 +1531,7 @@ namespace AasxPackageLogic
                             "you could add meaning by relating it to a ConceptDefinition.",
                         severityLevel: HintCheck.Severity.Notice)
                 });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -1570,7 +1588,7 @@ namespace AasxPackageLogic
                         "You have opened an auxiliary AASX package. You can copy elements from it!",
                         severityLevel: HintCheck.Severity.Notice)
                 });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Copy from existing SubmodelElement:",
                     repo: repo,
                     superMenu: superMenu,
@@ -1639,7 +1657,7 @@ namespace AasxPackageLogic
                             "Consider creating ConceptDescriptions from ECLASS or from existing SubmodelElements.",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "ConceptDescriptions (missing):",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -1672,7 +1690,7 @@ namespace AasxPackageLogic
                         return new AnyUiLambdaActionNone();
                     });
 
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Submodel & -elements:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -2069,7 +2087,7 @@ namespace AasxPackageLogic
         {
             this.AddGroup(stack, "ConceptDescription / ValueList item", this.levelColors.MainSection);
 
-            AddAction(stack, "Action:",
+            AddActionPanel(stack, "Action:",
                 new[] { "Jump to CD" }, repo,
                 action: (buttonNdx) =>
                 {
@@ -2159,7 +2177,7 @@ namespace AasxPackageLogic
 
                     if (editMode)
                     {
-                        this.AddAction(
+                        this.AddActionPanel(
                             stack, "value:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
@@ -2222,7 +2240,7 @@ namespace AasxPackageLogic
 
                     if (editMode)
                     {
-                        this.AddAction(stack, "value:", 
+                        this.AddActionPanel(stack, "value:", 
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
                                 .AddAction("remove-value", "Remove existing",
@@ -2251,7 +2269,7 @@ namespace AasxPackageLogic
                                 "You have opened an auxiliary AASX package. You can copy elements from it!",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
-                        this.AddAction(
+                        this.AddActionPanel(
                             stack, "Copy from existing SubmodelElement:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
@@ -2376,7 +2394,7 @@ namespace AasxPackageLogic
 
                 // refactor?
                 if (parentContainer != null && parentContainer is Aas.IReferable)
-                    this.AddAction(
+                    this.AddActionPanel(
                         horizStack, "Refactoring:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -2467,7 +2485,7 @@ namespace AasxPackageLogic
                             "and assigns the SubmodelElement(s) to it.");
                 }
 
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Concept Description:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: cdmenu,
@@ -2623,7 +2641,7 @@ namespace AasxPackageLogic
                         "Consider importing a ConceptDescription from ECLASS for the existing SubmodelElement.",
                         severityLevel: HintCheck.Severity.Notice)
                     });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "ConceptDescriptions from ECLASS:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -2667,7 +2685,7 @@ namespace AasxPackageLogic
                                 "you could add meaning by relating it to a ConceptDefinition.",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -2724,7 +2742,7 @@ namespace AasxPackageLogic
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                 });
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Copy from existing SubmodelElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -2775,7 +2793,7 @@ namespace AasxPackageLogic
             {
                 this.AddGroup(stack, "Navigation of entities", this.levelColors.MainSection);
 
-                AddAction(stack, "Navigate to:",
+                AddActionPanel(stack, "Navigate to:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
                         .AddAction("navigate-cd", "ConceptDescription",
@@ -2815,7 +2833,7 @@ namespace AasxPackageLogic
                                     "Please check, which in- and out-variables are required.",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
-                    AddAction(
+                    AddActionPanel(
                         substack, "OperationVariable:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -2891,7 +2909,7 @@ namespace AasxPackageLogic
                                 "You have opened an auxiliary AASX package. You can copy elements from it!",
                                 severityLevel: HintCheck.Severity.Notice)
                         });
-                    AddAction(
+                    AddActionPanel(
                         substack, "Copy from existing OperationVariable:",
                         repo: repo, superMenu: superMenu,
                         ticketMenu: new AasxMenu()
@@ -2946,7 +2964,7 @@ namespace AasxPackageLogic
                                 "Consider add DataElements or refactor to ordinary RelationshipElement.",
                             severityLevel: HintCheck.Severity.Notice)
                         });
-                AddAction(
+                AddActionPanel(
                     stack, "annotation:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -3016,7 +3034,7 @@ namespace AasxPackageLogic
                             "You have opened an auxiliary AASX package. You can copy elements from it!",
                             severityLevel: HintCheck.Severity.Notice)
                     });
-                this.AddAction(
+                this.AddActionPanel(
                     substack, "Copy from existing DataElement:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()
@@ -3897,7 +3915,7 @@ namespace AasxPackageLogic
                 // group
                 this.AddGroup(stack, "Invocation of Events", this.levelColors.SubSection);
 
-                this.AddAction(
+                this.AddActionPanel(
                     stack, "Emit Event:",
                     repo: repo, superMenu: superMenu,
                     ticketMenu: new AasxMenu()

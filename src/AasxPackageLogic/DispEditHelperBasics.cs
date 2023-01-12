@@ -798,7 +798,7 @@ namespace AasxPackageLogic
             panel.Children.Add(g);
         }
 
-        public void AddAction(
+        public void AddActionPanel(
             AnyUiPanel view, string key, string[] actionStr = null, ModifyRepo repo = null,            
             Func<int, AnyUiLambdaActionBase> action = null,
             string[] actionTags = null,
@@ -911,7 +911,7 @@ namespace AasxPackageLogic
             AnyUiStackPanel view, string key, string actionStr, ModifyRepo repo = null,
             Func<int, AnyUiLambdaActionBase> action = null)
         {
-            AddAction(view, key, new[] { actionStr }, repo, action);
+            AddActionPanel(view, key, new[] { actionStr }, repo, action);
         }
 
         public void AddKeyListLangStr(
@@ -2400,7 +2400,7 @@ namespace AasxPackageLogic
             if (entity is Aas.IReferable rf)
                 entityRf = rf;
 
-            AddAction(
+            AddActionPanel(
                 stack, label,
                 repo: repo,
                 superMenu: superMenu,

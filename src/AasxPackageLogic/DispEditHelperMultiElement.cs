@@ -46,7 +46,7 @@ namespace AasxPackageLogic
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
                 repo: repo, superMenu: superMenu,
                 ticketMenu: new AasxMenu()
@@ -143,7 +143,7 @@ namespace AasxPackageLogic
                 return;
 
             // ask
-            AddAction(
+            AddActionPanel(
                 stack, label,
                 repo: repo,
                 superMenu: superMenu,
@@ -359,7 +359,7 @@ namespace AasxPackageLogic
                 return;
 
             // ask
-            AddAction(
+            AddActionPanel(
                 stack, label,
                 repo: repo, superMenu: superMenu,
                 ticketMenu: new AasxMenu()
@@ -582,7 +582,7 @@ namespace AasxPackageLogic
                     if (bos.Count > 0 &&
                         !(first is VisualElementSupplementalFile))
                     {
-                        AddAction(stack, "Actions:",
+                        AddActionPanel(stack, "Actions:",
                             repo: repo, superMenu: superMenu,
                             ticketMenu: new AasxMenu()
                                 .AddAction("aas-elem-cut", "Change attribute ..",

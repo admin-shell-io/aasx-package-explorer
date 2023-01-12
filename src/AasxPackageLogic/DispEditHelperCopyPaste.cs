@@ -499,7 +499,7 @@ namespace AasxPackageLogic
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
                 repo: repo,
                 ticketMenu: new AasxMenu()
@@ -758,7 +758,7 @@ namespace AasxPackageLogic
             // ReSharper enable RedundantCast
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
                 repo: repo,
                 superMenu: superMenu,
@@ -996,7 +996,7 @@ namespace AasxPackageLogic
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
                 repo: repo,
                 superMenu: superMenu,
@@ -1190,7 +1190,7 @@ namespace AasxPackageLogic
                 return;
 
             // use an action
-            this.AddAction(
+            this.AddActionPanel(
                 stack, label,
                 repo: repo,
                 superMenu: superMenu,

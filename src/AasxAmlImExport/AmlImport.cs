@@ -121,25 +121,21 @@ namespace AasxAmlImExport
                 // over all entries
                 foreach (var rs in refstrs)
                 {
-                    var m = Regex.Match(rs.Trim(), @"^\(([^)]+)\)\s*\(([^)]+)\)\s*\[(\w+)\](.*)$");
+                    var m = Regex.Match(rs.Trim(), @"^\(([^)]+)\)(.*)$");
                     if (!m.Success)
                         // immediate fail or next try?
                         return null;
 
                     // get string data
                     var ke = m.Groups[1].ToString();
-                    var local = m.Groups[2].ToString().Trim().ToLower();
-                    var idtype = m.Groups[3].ToString();
-                    var id = m.Groups[4].ToString();
+                    var id = m.Groups[2].ToString();
 
                     // verify: ke has to be in allowed range
-                    var keyType = (KeyTypes)Stringification.KeyTypesFromString(ke);
-                    if (keyType != null)
+                    var keyType = Stringification.KeyTypesFromString(ke);
+                    if (keyType.HasValue)
                     {
-                        var islocal = local == "local";
-
                         // create key and make on refece
-                        var k = new Key(keyType, id);
+                        var k = new Key(keyType.Value, id);
                         keyList.Add(k);
                     }
                     else
@@ -385,11 +381,10 @@ namespace AasxAmlImExport
             private AssetAdministrationShell TryParseAasFromIe(SystemUnitClassType ie)
             {
                 // begin new (temporary) object
-                var aas = new AssetAdministrationShell("", null);
+                var aas = new AssetAdministrationShell("", new AssetInformation(AssetKind.Instance));
 
                 // gather important attributes
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
                 var version = FindAttributeValueByRefSemantic(
                     ie.Attribute, AmlConst.Attributes.Administration_Version);
@@ -401,7 +396,7 @@ namespace AasxAmlImExport
                 var derivedfrom = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.AAS_DerivedFrom);
 
                 // we need to have some important information
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set data
                     aas.IdShort = ie.Name;
@@ -436,7 +431,6 @@ namespace AasxAmlImExport
 
                 // gather important attributes
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
                 var version = FindAttributeValueByRefSemantic(
                     ie.Attribute, AmlConst.Attributes.Administration_Version);
@@ -448,7 +442,7 @@ namespace AasxAmlImExport
                 var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
 
                 // we need to have some important information
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set data
                     //TODO: jtikekar Uncomment and Support
@@ -460,6 +454,9 @@ namespace AasxAmlImExport
                     //asset.Category = cat;
                     //if (desc != null)
                     //    asset.Description = desc;
+
+                    asset.GlobalAssetId = ExtendReference.CreateFromKey(KeyTypes.GlobalReference, id);
+
                     if (kind != null)
                         asset.AssetKind = (AssetKind)Stringification.AssetKindFromString(kind);
                     //No DataSpecification asset
@@ -563,7 +560,6 @@ namespace AasxAmlImExport
 
                 // gather important attributes
                 var idShort = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(ie.Attribute, AmlConst.Attributes.Identification_id);
                 var version = FindAttributeValueByRefSemantic(
                     ie.Attribute, AmlConst.Attributes.Administration_Version);
@@ -577,7 +573,7 @@ namespace AasxAmlImExport
                 var ds = TryParseDataSpecificationFromAttributes(ie.Attribute);
 
                 // we need to have some important information
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set data
                     sm.IdShort = ie.Name;
@@ -757,7 +753,8 @@ namespace AasxAmlImExport
                         if (valueId != null)
                             p.ValueId = ParseAmlReference(valueId);
                         if (valueAttr != null)
-                            p.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(ParseAmlDataType(valueAttr.AttributeDataType)); 
+                            p.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(
+                                valueAttr.AttributeDataType)) ?? DataTypeDefXsd.String; 
                     }
 
                     if (sme is AasCore.Aas3_0_RC02.Range rng)
@@ -772,14 +769,16 @@ namespace AasxAmlImExport
                         {
                             rng.Min = min;
                             if (minAttr != null)
-                                rng.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(ParseAmlDataType(minAttr.AttributeDataType));
+                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(minAttr.AttributeDataType)) 
+                                    ?? DataTypeDefXsd.String;
                         }
 
                         if (max != null)
                         {
                             rng.Max = max;
                             if (maxAttr != null)
-                                rng.ValueType = (DataTypeDefXsd)Stringification.DataTypeDefXsdFromString(ParseAmlDataType(maxAttr.AttributeDataType));
+                                rng.ValueType = Stringification.DataTypeDefXsdFromString(ParseAmlDataType(maxAttr.AttributeDataType)) 
+                                    ?? DataTypeDefXsd.String;
                         }
                     }
 
@@ -895,7 +894,6 @@ namespace AasxAmlImExport
 
                 // gather important attributes
                 var idShort = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.Referable_IdShort);
-                var idType = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.Identification_idType);
                 var id = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.Identification_id);
                 var version = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.Administration_Version);
                 var revision = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.Administration_Revision);
@@ -903,7 +901,7 @@ namespace AasxAmlImExport
                 var desc = TryParseDescriptionFromAttributes(aseq, AmlConst.Attributes.Referable_Description);
 
                 // we need to have some important information (only IReferable name, shoud be always there..)
-                if (idType != null && id != null)
+                if (id != null)
                 {
                     // set normal data
                     cd.IdShort = idShort;
@@ -944,7 +942,7 @@ namespace AasxAmlImExport
 
                 ds.Unit = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Unit);
 
-                ds.UnitId = ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId)).Copy();
+                ds.UnitId = ParseAmlReference(FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_UnitId))?.Copy();
 
                 ds.ValueFormat = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_ValueFormat);
 
@@ -953,7 +951,7 @@ namespace AasxAmlImExport
 
                 ds.Symbol = FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_Symbol);
                 ds.DataType = Stringification.DataTypeIec61360FromString(
-                    FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType));
+                    FindAttributeValueByRefSemantic(aseq, AmlConst.Attributes.CD_DSC61360_DataType) ?? "string");
 
                 var def = TryParseListOfLangStrFromAttributes(aseq, AmlConst.Attributes.CD_DSC61360_Definition);
                 if (def != null)

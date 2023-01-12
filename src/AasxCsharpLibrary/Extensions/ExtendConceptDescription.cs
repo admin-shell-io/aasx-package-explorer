@@ -93,6 +93,11 @@ namespace Extensions
             return conceptDescription.EmbeddedDataSpecifications?.GetIEC61360Content();
         }
 
+        public static DataSpecificationPhysicalUnit GetPhysicalUnit(this ConceptDescription conceptDescription)
+        {
+            return conceptDescription.EmbeddedDataSpecifications?.GetPhysicalUnitContent();
+        }
+
         public static IEnumerable<Reference> FindAllReferences(this ConceptDescription conceptDescription)
         {
             yield break;

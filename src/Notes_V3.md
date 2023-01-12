@@ -22,12 +22,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 ## Todo
 
-* CDs below SME?
-* CD below MLP does not work
-* NavigateTo: Find also CDs with GlobalReference -> should work
-* crash: add entity -> already works
+* redesign logo file
 * web browser not working
-* TreeViewItems / MLP / value displayed multi line -> done
 * remove unnecessary XAML files from WPF legacy
 * ImageMap does not display anything without background image
 * Plugin options?
@@ -35,15 +31,35 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 * change file repo format with unsynchronized AAS/ AssetIds, its stupid
 * DocuShelf / Double click in WPF does not work
 * BOM / Option / Styles ??
-* AREL NOT SHOWN!! -> works
 
-* wrong default logo is loaded (PI40)
-* integrate AML
 * more work on plotting (energy..)
+* new ICON set?
+* Package Env / AasEnv -> no "Add" button 
+  -> fixed
+  -> fixed 2nd time (wrong i == .. values)
+  => TODO: Add CD does not focus the newly added CD (though search for business object does work)
 
 * solve MANY issues marked with #if TODO
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
+
+## Fixed TODOs
+
+* CDs below SME? -> done
+* NavigateTo: Find also CDs with GlobalReference -> should work
+* TreeViewItems / MLP / value displayed multi line -> done
+* crash: add entity -> already works
+* AREL NOT SHOWN!! -> works
+* integrate AML -> done
+* .AddAction() is used in Widgets & AasxMenu -> renamed to "AddActionPanel()" -> done
+* Add "Value" to CD in case of value list application -> done
+* "New file" could not be saved!!!!! BUG !!!!!! 
+  „No open AASX file to be saved“. -> fixed
+* New package -> save -> crash AssetInformation == null in xmlization
+  -> kind of fixed (made a big warning, create AssetInfo by default, but no hard fix realized)
+* wrong default logo is loaded (PI40) -> fixed
+* CD below MLP does not work -> works
+
 
 ## Regexes
 
@@ -135,16 +151,15 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 These projects are not migrated or integrated, yet.
 
 * AasxCsharpLibrary.Tests
-* AasxAmlImExport
 * AasxDictionaryImport.Tests
-* AasxFileServerRestLibrary
+* AasxFileServerRestLibrary (already migrated) -> introduce Aas. NS
 * AasxOpenidClient
-* AasxRestServerLibrary
+* AasxRestServerLibrary <- to be replaced by AASX Server sources
 * AasxSchemaExport.Tests
 * AasxUaNetServer
 * AasxIntegrationEmptrySample
 * AasxRestConsoleServer
-* AasxToolkit
+* AasxToolkit (already migrated) -> introduce Aas. NS
 * AasxToolkit.Tests
 * AasxUaNetConsoleServer
 * AasxPackageExplorer.GuiTests
@@ -241,3 +256,4 @@ These projects are not migrated or integrated, yet.
 * try using AasxPluginBase for all plugins,
   including AasxPluginBomStructure, AasxPluginExportTable, AasxPluginMtpViewer, 
   AasxPluginPlotting, AasxPluginWebBrowser, 2 x Festo plugin
+* polished tree views for CDs (wishes from Birgit)

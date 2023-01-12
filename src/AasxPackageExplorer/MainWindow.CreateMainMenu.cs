@@ -65,7 +65,8 @@ namespace AasxPackageExplorer
 
             menu.AddMenu(header: "File",
                 childs: (new AasxMenu())
-                .AddWpf(name: "New", header: "_New …")
+                .AddWpf(name: "New", header: "_New …", inputGesture: "Ctrl+N",
+                    help: "Create new AASX package.")
                 .AddWpf(name: "Open", header: "_Open …", inputGesture: "Ctrl+O",
                     help: "Open existing AASX package.",
                     args: new AasxMenuListOfArgDefs()

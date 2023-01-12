@@ -286,7 +286,7 @@ namespace AasxPackageExplorer
                 ticket.StartExec();
 
                 // open?
-                if (!_packageCentral.MainStorable)
+                if (!_packageCentral.MainAvailable || _packageCentral.MainItem.Container == null)
                 {
                     _logic?.LogErrorToTicket(ticket, "No open AASX file to be saved.");
                     return;

@@ -271,7 +271,7 @@ namespace AasxPackageLogic.PackageCentral
                         var aasid = fi.AasIds[i];
                         var aas = new Aas.AssetAdministrationShell(
                             id: aasid,
-                            assetInformation: null,
+                            assetInformation: new Aas.AssetInformation(Aas.AssetKind.Instance),
                             idShort: $"AAS{num++:00}_{fi.Tag}",
                             description: new List<Aas.LangString>() { 
                                 new Aas.LangString("en?", "" + fi.Description) 

@@ -121,7 +121,7 @@ namespace AasxDictionaryImport
 
         private static Aas.AssetAdministrationShell CreateAdminShell(Aas.Environment env)
         {
-            var adminShell = new Aas.AssetAdministrationShell("", null)
+            var adminShell = new Aas.AssetAdministrationShell("", new Aas.AssetInformation(Aas.AssetKind.Instance))
             {
                 Id = AdminShellUtil.GenerateIdAccordingTemplate(Options.Curr.TemplateIdAas)
             };
