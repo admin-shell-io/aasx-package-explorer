@@ -640,6 +640,21 @@ namespace AnyUi
                                 e4.Handled = true;
                             };
                         }
+
+                        // double click
+                        if ((cntl.EmitEvent & AnyUiEventMask.MouseAll) > 0)
+                        {
+                            wpf.MouseDown += (s2,e2) =>
+                            {
+                                if (((cntl.EmitEvent & AnyUiEventMask.LeftDown) > 0) && (e2.ClickCount == 1))
+                                    cntl.setValueLambda?.Invoke(
+                                        new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
+
+                                if (((cntl.EmitEvent & AnyUiEventMask.LeftDouble) > 0) && (e2.ClickCount == 2))
+                                    cntl.setValueLambda?.Invoke(
+                                        new AnyUiEventData(AnyUiEventMask.LeftDouble, cntl, 2));
+                            };
+                        }
                     }
                 }),
 

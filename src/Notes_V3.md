@@ -24,12 +24,10 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * redesign logo file
 * web browser not working
-* remove unnecessary XAML files from WPF legacy
 * ImageMap does not display anything without background image
 * Plugin options?
 * for AnnotatedRel: check SelectAdequateEnum() for allowed elems
 * change file repo format with unsynchronized AAS/ AssetIds, its stupid
-* DocuShelf / Double click in WPF does not work
 * BOM / Option / Styles ??
 
 * more work on plotting (energy..)
@@ -45,6 +43,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 ## Fixed TODOs
 
+* DocuShelf / Double click in WPF does not work -> took over changes from FixAnyUiPlugins, working
+* remove unnecessary XAML files from WPF legacy -> looks ok
 * CDs below SME? -> done
 * NavigateTo: Find also CDs with GlobalReference -> should work
 * TreeViewItems / MLP / value displayed multi line -> done
