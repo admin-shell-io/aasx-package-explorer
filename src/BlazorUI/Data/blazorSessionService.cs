@@ -79,9 +79,9 @@ namespace BlazorUI.Data
 
             stack17 = new AnyUiStackPanel() { Orientation = AnyUiOrientation.Vertical };
 
-            if (env?.AasEnv?.AdministrationShells != null)
+            if (env?.AasEnv?.AssetAdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(packages, env.AasEnv,
-                    env.AasEnv.AdministrationShells[0], editMode, stack17, hintMode: hintMode);
+                    env.AasEnv.AssetAdministrationShells[0], editMode, stack17, hintMode: hintMode);
 
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();

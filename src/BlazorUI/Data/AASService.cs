@@ -16,11 +16,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Aas = AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 using AasxIntegrationBase;
 using AasxPackageLogic;
-using AdminShellNS;
 using BlazorUI;
-using static AdminShellNS.AdminShellV20;
 
 namespace BlazorUI.Data
 {
@@ -31,14 +32,14 @@ namespace BlazorUI.Data
 
     public class Item
     {
-        public AdminShell.Referable Referable;
+        public Aas.IReferable Referable;
         public string Text { get; set; }
         public IEnumerable<Item> Childs { get; set; }
         public object parent { get; set; }
         public string Type { get; set; }
         public object Tag { get; set; }
-        public AdminShellV20.Referable ParentContainer { get; set; }
-        public AdminShellV20.SubmodelElementWrapper Wrapper { get; set; }
+        public Aas.IReferable ParentContainer { get; set; }
+        public Aas.ISubmodelElement Wrapper { get; set; }
         public int envIndex { get; set; }
 
         public static void updateVisibleTree(List<Item> viewItems, Item selectedNode, IList<Item> ExpandedNodes)
@@ -72,11 +73,11 @@ namespace BlazorUI.Data
 
             return FindItems(this, (it) =>
             {
-                return it?.Referable is Submodel sm && sm?.identification?.id == smid;
+                return it?.Referable is Aas.Submodel sm && sm?.Id == smid;
             }).FirstOrDefault();
         }
 
-        public Item FindReferable(Referable rf, string pluginTag)
+        public Item FindReferable(Aas.IReferable rf, string pluginTag)
         {
             // access
             if (rf == null)
@@ -89,12 +90,12 @@ namespace BlazorUI.Data
             }).FirstOrDefault();
 
             // special case
-            if (res != null && rf is AdminShell.Submodel && pluginTag.HasContent()
+            if (res != null && rf is Aas.Submodel && pluginTag.HasContent()
                 && res.Childs != null)
                 foreach (var ch in res.Childs)
                     if (ch != null
                         && ch.Type == "Plugin"
-                        && ch.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                        && ch.Tag is Tuple<AdminShellPackageEnv, Aas.Submodel,
                             Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
                         && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower())
                         return ch;
@@ -113,9 +114,9 @@ namespace BlazorUI.Data
             {
                 if (it?.parent == null || !(it.parent is Item parit))
                     return false;
-                return parit.Referable is AdminShell.Submodel sm && sm?.identification?.id == smid
+                return parit.Referable is Aas.Submodel sm && sm?.Id == smid
                     && it.Type == "Plugin"
-                    && it.Tag is Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                    && it.Tag is Tuple<AdminShellPackageEnv, Aas.Submodel,
                             Plugins.PluginInstance, AasxIntegrationBase.AasxPluginResultVisualExtension> tag
                     && tag?.Item4?.Tag?.Trim().ToLower() == pluginTag.Trim().ToLower();
             }).FirstOrDefault();
@@ -153,10 +154,9 @@ namespace BlazorUI.Data
 
         public void syncSubTree(Item item)
         {
-            if (item.Tag is SubmodelElementCollection)
+            if (item.Tag is Aas.SubmodelElementCollection smec)
             {
-                var smec = item.Tag as SubmodelElementCollection;
-                if (item.Childs.Count() != smec.value.Count)
+                if (item.Childs.Count() != smec.Value.Count)
                 {
                     createSMECItems(item, smec, item.envIndex);
                 }
@@ -192,10 +192,10 @@ namespace BlazorUI.Data
                 if (bi.env != null)
                 {
                     // NEW (2022-05-17): iterate correctly over AAS, used Submodels
-                    foreach (var aas in bi.env.AasEnv.AdministrationShells)
+                    foreach (var aas in bi.env.AasEnv.AssetAdministrationShells)
                     {
                         // access
-                        if (aas?.submodelRefs == null)
+                        if (aas?.Submodels == null)
                             continue;
 
                         //
@@ -204,16 +204,16 @@ namespace BlazorUI.Data
 
                         Item root = new Item();
                         root.envIndex = i;
-                        root.Text = aas.idShort;
+                        root.Text = aas.IdShort;
                         root.Tag = aas;
                         List<Item> childs = new List<Item>();
 
                         // find Submodels
-                        foreach (var smref in aas.submodelRefs)
+                        foreach (var smref in aas.Submodels)
                         {
                             // access
                             var sm = bi.env.AasEnv.FindSubmodel(smref);
-                            if (sm?.idShort == null)
+                            if (sm?.IdShort == null)
                                 continue;
 
                             // Submodel with parents
@@ -224,7 +224,7 @@ namespace BlazorUI.Data
                             {
                                 Referable = sm,
                                 envIndex = i,
-                                Text = sm.idShort,
+                                Text = sm.IdShort,
                                 Tag = sm
                             };
                             childs.Add(smItem);
@@ -247,7 +247,7 @@ namespace BlazorUI.Data
                                                 Referable = sm,
                                                 envIndex = i,
                                                 Text = "PLUGIN",
-                                                Tag = new Tuple<AdminShellPackageEnv, AdminShell.Submodel,
+                                                Tag = new Tuple<AdminShellPackageEnv, Aas.Submodel,
                                                     Plugins.PluginInstance, AasxPluginResultVisualExtension>
                                                         (bi.env, sm, lpi, ext),
                                                 Type = "Plugin"
@@ -262,33 +262,30 @@ namespace BlazorUI.Data
                                 }
 
                             // add SMEs
-                            if (sm.submodelElements != null)
-                                foreach (var sme in sm.submodelElements)
+                            if (sm.SubmodelElements != null)
+                                foreach (var sme in sm.SubmodelElements)
                                 {
                                     var smeItem = new Item()
                                     {
-                                        Referable = sme?.submodelElement,
+                                        Referable = sme,
                                         envIndex = i,
-                                        Text = sme.submodelElement.idShort,
-                                        Tag = sme.submodelElement,
+                                        Text = sme.IdShort,
+                                        Tag = sme,
                                         ParentContainer = sm,
                                         Wrapper = sme
                                     };
                                     smChilds.Add(smeItem);
-                                    if (sme.submodelElement is SubmodelElementCollection)
+                                    if (sme is Aas.SubmodelElementCollection smec)
                                     {
-                                        var smec = sme.submodelElement as SubmodelElementCollection;
                                         createSMECItems(smeItem, smec, i);
                                     }
-                                    if (sme.submodelElement is Operation)
+                                    if (sme is Aas.Operation smop)
                                     {
-                                        var o = sme.submodelElement as Operation;
-                                        createOperationItems(smeItem, o, i);
+                                        createOperationItems(smeItem, smop, i);
                                     }
-                                    if (sme.submodelElement is Entity)
+                                    if (sme is Aas.Entity sment)
                                     {
-                                        var e = sme.submodelElement as Entity;
-                                        createEntityItems(smeItem, e, i);
+                                        createEntityItems(smeItem, sment, i);
                                     }
                                 }
 
@@ -308,34 +305,31 @@ namespace BlazorUI.Data
             }
         }
 
-        void createSMECItems(Item smeRootItem, SubmodelElementCollection smec, int i)
+        void createSMECItems(Item smeRootItem, Aas.SubmodelElementCollection smec, int i)
         {
             List<Item> smChilds = new List<Item>();
-            foreach (var sme in smec.value)
+            foreach (var sme in smec.Value)
             {
-                if (sme?.submodelElement != null)
+                if (sme != null)
                 {
                     var smeItem = new Item();
                     smeItem.envIndex = i;
-                    smeItem.Text = sme.submodelElement.idShort;
-                    smeItem.Tag = sme.submodelElement;
+                    smeItem.Text = sme.IdShort;
+                    smeItem.Tag = sme;
                     smeItem.ParentContainer = smec;
                     smeItem.Wrapper = sme;
                     smChilds.Add(smeItem);
-                    if (sme.submodelElement is SubmodelElementCollection)
+                    if (sme is Aas.SubmodelElementCollection smesmc)
                     {
-                        var smecNext = sme.submodelElement as SubmodelElementCollection;
-                        createSMECItems(smeItem, smecNext, i);
+                        createSMECItems(smeItem, smesmc, i);
                     }
-                    if (sme.submodelElement is Operation)
+                    if (sme is Aas.Operation smeop)
                     {
-                        var o = sme.submodelElement as Operation;
-                        createOperationItems(smeItem, o, i);
+                        createOperationItems(smeItem, smeop, i);
                     }
-                    if (sme.submodelElement is Entity)
+                    if (sme is Aas.Entity smeent)
                     {
-                        var e = sme.submodelElement as Entity;
-                        createEntityItems(smeItem, e, i);
+                        createEntityItems(smeItem, smeent, i);
                     }
                 }
             }
@@ -344,34 +338,34 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        void createOperationItems(Item smeRootItem, Operation op, int i)
+        void createOperationItems(Item smeRootItem, Aas.Operation op, int i)
         {
             List<Item> smChilds = new List<Item>();
-            foreach (var v in op.inputVariable)
+            foreach (var v in op.InputVariables)
             {
                 var smeItem = new Item();
                 smeItem.envIndex = i;
-                smeItem.Text = v.value.submodelElement.idShort;
+                smeItem.Text = v.Value.IdShort;
                 smeItem.Type = "In";
-                smeItem.Tag = v.value.submodelElement;
+                smeItem.Tag = v.Value;
                 smChilds.Add(smeItem);
             }
-            foreach (var v in op.outputVariable)
+            foreach (var v in op.OutputVariables)
             {
                 var smeItem = new Item();
                 smeItem.envIndex = i;
-                smeItem.Text = v.value.submodelElement.idShort;
+                smeItem.Text = v.Value.IdShort;
                 smeItem.Type = "Out";
-                smeItem.Tag = v.value.submodelElement;
+                smeItem.Tag = v.Value;
                 smChilds.Add(smeItem);
             }
-            foreach (var v in op.inoutputVariable)
+            foreach (var v in op.InoutputVariables)
             {
                 var smeItem = new Item();
                 smeItem.envIndex = i;
-                smeItem.Text = v.value.submodelElement.idShort;
+                smeItem.Text = v.Value.IdShort;
                 smeItem.Type = "InOut";
-                smeItem.Tag = v.value.submodelElement;
+                smeItem.Tag = v.Value;
                 smChilds.Add(smeItem);
             }
             smeRootItem.Childs = smChilds;
@@ -379,19 +373,19 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        void createEntityItems(Item smeRootItem, Entity e, int i)
+        void createEntityItems(Item smeRootItem, Aas.Entity e, int i)
         {
             List<Item> smChilds = new List<Item>();
-            if (e.statements != null)
-                foreach (var s in e.statements)
+            if (e.Statements != null)
+                foreach (var s in e.Statements)
                 {
-                    if (s?.submodelElement != null)
+                    if (s != null)
                     {
                         var smeItem = new Item();
                         smeItem.envIndex = i;
-                        smeItem.Text = s.submodelElement.idShort;
+                        smeItem.Text = s.IdShort;
                         smeItem.Type = "In";
-                        smeItem.Tag = s.submodelElement;
+                        smeItem.Tag = s;
                         smChilds.Add(smeItem);
                     }
                 }
@@ -400,7 +394,7 @@ namespace BlazorUI.Data
                 c.parent = smeRootItem;
         }
 
-        public ListOfSubmodels GetSubmodels(blazorSessionService bi)
+        public List<Aas.Submodel> GetSubmodels(blazorSessionService bi)
         {
             return bi.env.AasEnv.Submodels;
         }

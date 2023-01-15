@@ -257,3 +257,4 @@ These projects are not migrated or integrated, yet.
   including AasxPluginBomStructure, AasxPluginExportTable, AasxPluginMtpViewer, 
   AasxPluginPlotting, AasxPluginWebBrowser, 2 x Festo plugin
 * polished tree views for CDs (wishes from Birgit)
+* in BOM plugin, unify arguments handing

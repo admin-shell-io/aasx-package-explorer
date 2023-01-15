@@ -1,10 +1,9 @@
 ﻿@page "/"
-@using AasCore.Aas3_0_RC02
+@using Aas = AasCore.Aas3_0_RC02
 @using AdminShellNS
 @using AasxIntegrationBase
-@*@using static AdminShellNS.AdminShellV20;*@
 @*using BlazorUI*@
-@using AdminShellNS.Extenstions
+@using Extensions
 @using AnyUi
 @using AasxPackageLogic 
 @using BlazorUI.Shared
@@ -12,7 +11,6 @@
 @using BlazorUI.Utils
 @using BlazorUI.Data
 @using System.Threading
-@using Extensions
 @using Microsoft.AspNetCore.WebUtilities
 @using AasxPackageLogic.PackageCentral;
 @*using System*@
@@ -404,7 +402,7 @@
                     var displayData = new AnyUiDisplayDataHtml(displayContext);
                     bi.helper.context = displayContext;
 
-                    if (selectedNode.Tag is AssetAdministrationShell)
+                    if (selectedNode.Tag is Aas.AssetAdministrationShell sntaas)
                     {
                         // will need no plugin
                         bi?.DisposeLoadedPlugin();
@@ -412,12 +410,12 @@
                         bi.stack17 = new AnyUiStackPanel();
                         bi.stack17.Orientation = AnyUiOrientation.Vertical;
                         bi.helper.DisplayOrEditAasEntityAas(
-                                    bi.packages, bi.env.AasEnv, selectedNode.Tag as AssetAdministrationShell, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                                    bi.packages, bi.env.AasEnv, sntaas, bi.editMode, bi.stack17, hintMode: bi.hintMode);
                         if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     else
-                    if (selectedNode.Tag is Tuple<AdminShellPackageEnv, Submodel, Plugins.PluginInstance,
+                    if (selectedNode.Tag is Tuple<AdminShellPackageEnv, Aas.Submodel, Plugins.PluginInstance,
                             AasxIntegrationBase.AasxPluginResultVisualExtension> callInfo
                         && selectedNode.Type == "Plugin")
                     {
@@ -470,7 +468,7 @@
                         }
                     }
                     else
-                    if (selectedNode.Tag is Submodel)
+                    if (selectedNode.Tag is Aas.Submodel sntsm)
                     {
                         // will need no plugin
                         bi?.DisposeLoadedPlugin();
@@ -479,12 +477,12 @@
                         bi.stack17.Orientation = AnyUiOrientation.Vertical;
                         bi.helper.DisplayOrEditAasEntitySubmodelOrRef(
                                     bi.packages, bi.env.AasEnv, bi.env.AasEnv.AssetAdministrationShells[0],
-                                    null, selectedNode.Tag as Submodel, bi.editMode, bi.stack17, hintMode: bi.hintMode);
+                                    null, sntsm, bi.editMode, bi.stack17, hintMode: bi.hintMode);
                         if (bi.stack17.Children.Count != 0)
                             view = true;
                     }
                     else
-                    if (selectedNode.Tag is ISubmodelElement sme)
+                    if (selectedNode.Tag is Aas.ISubmodelElement sme)
                     {
                         // will need no plugin
                         bi?.DisposeLoadedPlugin();
@@ -901,7 +899,7 @@
         var clist = i.Childs as List<Item>;
         List<string> listIdshort = new List<string>();
         bool done = false;
-        if (!done && i.Tag is Submodel sm)
+        if (!done && i.Tag is Aas.Submodel sm)
         {
             foreach (var smew1 in sm.SubmodelElements)
             {
@@ -909,7 +907,7 @@
             }
             done = true;
         }
-        if (!done && i.Tag is SubmodelElementCollection smec)
+        if (!done && i.Tag is Aas.SubmodelElementCollection smec)
         {
             foreach (var smew2 in smec.Value)
             {
@@ -917,7 +915,7 @@
             }
             done = true;
         }
-        if (!done && i.Tag is ISubmodelElement sme)
+        if (!done && i.Tag is Aas.ISubmodelElement sme)
         {
             listIdshort.Add(sme.IdShort);
             done = true;
@@ -972,7 +970,7 @@
         string ret = "";
         object o = item.Tag;
 
-        if (o is AssetAdministrationShell)
+        if (o is Aas.AssetAdministrationShell)
         {
         }
 
@@ -1003,62 +1001,62 @@
         }
         */
 
-        if (o is AssetAdministrationShell)
+        if (o is Aas.AssetAdministrationShell)
         {
             ret += "AAS";
         }
-        if (o is Submodel)
+        if (o is Aas.Submodel)
         {
             ret += "Sub";
         }
-        if (o is ISubmodelElement)
+        if (o is Aas.ISubmodelElement)
         {
-            if (o is SubmodelElementCollection)
+            if (o is Aas.SubmodelElementCollection)
             {
                 ret += "Coll";
             }
-            if (o is Property)
+            if (o is Aas.Property)
             {
                 ret += "Prop";
             }
         }
-        if (o is Operation)
+        if (o is Aas.Operation)
         {
             ret += "Opr";
         }
-        if (o is File)
+        if (o is Aas.File)
         {
             ret += "File";
         }
-        if (o is Blob)
+        if (o is Aas.Blob)
         {
             ret += "Blob";
         }
-        if (o is AasCore.Aas3_0_RC02.Range)
+        if (o is Aas.Range)
         {
             ret += "Range";
         }
-        if (o is MultiLanguageProperty)
+        if (o is Aas.MultiLanguageProperty)
         {
             ret += "MLP";
         }
-        if (o is RelationshipElement)
+        if (o is Aas.RelationshipElement)
         {
             ret += "Rel";
         }
-        if (o is AnnotatedRelationshipElement)
+        if (o is Aas.AnnotatedRelationshipElement)
         {
             ret += "ARel";
         }
-        if (o is ReferenceElement)
+        if (o is Aas.ReferenceElement)
         {
             ret += "Ref";
         }
-        if (o is Entity)
+        if (o is Aas.Entity)
         {
             ret += "Ent";
         }
-        if (o is BasicEventElement)
+        if (o is Aas.BasicEventElement)
         {
             ret += "Evt";
         }
@@ -1074,7 +1072,7 @@
         }
 
         if (item.Type == "Plugin"
-            && item.Tag is Tuple<AdminShellPackageEnv, Submodel, Plugins.PluginInstance,
+            && item.Tag is Tuple<AdminShellPackageEnv, Aas.Submodel, Plugins.PluginInstance,
                 AasxIntegrationBase.AasxPluginResultVisualExtension> tag)
         {
             return $" [{tag.Item4?.Tag}] {tag.Item4?.Caption}";
@@ -1084,40 +1082,40 @@
 
         object o = item.Tag;
 
-        if (o is AssetAdministrationShell)
+        if (o is Aas.AssetAdministrationShell)
         {
-            var aas = o as AssetAdministrationShell;
+            var aas = o as Aas.AssetAdministrationShell;
             ret = aas.IdShort;
         }
-        if (o is Submodel)
+        if (o is Aas.Submodel)
         {
-            var sm = o as Submodel;
+            var sm = o as Aas.Submodel;
             ret = "";
-            if (sm.Kind != null && sm.Kind == ModelingKind.Template)
+            if (sm.Kind != null && sm.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += sm.IdShort;
         }
-        if (o is ISubmodelElement)
+        if (o is Aas.ISubmodelElement)
         {
-            var sme = o as ISubmodelElement;
+            var sme = o as Aas.ISubmodelElement;
             ret = "";
-            if (sme.Kind != null && sme.Kind == ModelingKind.Template)
+            if (sme.Kind != null && sme.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += sme.IdShort;
         }
-        if (o is File)
+        if (o is Aas.File)
         {
-            var f = o as File;
+            var f = o as Aas.File;
             ret = "";
-            if (f.Kind != null && f.Kind == ModelingKind.Template)
+            if (f.Kind != null && f.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += f.IdShort;
         }
-        if (o is Blob)
+        if (o is Aas.Blob)
         {
-            var b = o as Blob;
+            var b = o as Aas.Blob;
             ret = "";
-            if (b.Kind != null && b.Kind == ModelingKind.Template)
+            if (b.Kind != null && b.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += b.IdShort;
         }
@@ -1125,15 +1123,15 @@
         {
             var r = o as AasCore.Aas3_0_RC02.Range;
             ret = "";
-            if (r.Kind != null && r.Kind == ModelingKind.Template)
+            if (r.Kind != null && r.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += r.IdShort;
         }
-        if (o is MultiLanguageProperty)
+        if (o is Aas.MultiLanguageProperty)
         {
-            var mlp = o as MultiLanguageProperty;
+            var mlp = o as Aas.MultiLanguageProperty;
             ret = "";
-            if (mlp.Kind != null && mlp.Kind == ModelingKind.Template)
+            if (mlp.Kind != null && mlp.Kind == Aas.ModelingKind.Template)
                 ret += "<T> ";
             ret += mlp.IdShort;
         }
@@ -1151,34 +1149,34 @@
 
         object o = item.Tag;
 
-        if (o is AssetAdministrationShell)
+        if (o is Aas.AssetAdministrationShell)
         {
-            var aas = o as AssetAdministrationShell;
+            var aas = o as Aas.AssetAdministrationShell;
             // ret = aas.identification.ToString();
         }
-        if (o is Submodel)
+        if (o is Aas.Submodel)
         {
-            var sm = o as Submodel;
+            var sm = o as Aas.Submodel;
             // ret = sm.identification.ToString();
             if (sm.Qualifiers != null && sm.Qualifiers.Count > 0)
             {
                 ret += " @QUALIFIERS";
             }
         }
-        if (o is SubmodelElementCollection)
+        if (o is Aas.SubmodelElementCollection)
         {
-            var sme = o as SubmodelElementCollection;
+            var sme = o as Aas.SubmodelElementCollection;
             // ret = sm.identification.ToString();
             if (sme.Value.Count > 0)
             {
                 ret += " #" + sme.Value.Count;
             }
         }
-        if (o is ISubmodelElement)
+        if (o is Aas.ISubmodelElement)
         {
-            if (o is Property)
+            if (o is Aas.Property)
             {
-                var prop = o as Property;
+                var prop = o as Aas.Property;
                 if (prop.Value != "")
                 {
                     ret = " = " + prop.Value;
@@ -1188,9 +1186,9 @@
                     ret += " @QUALIFIERS";
                 }
             }
-            if (o is File)
+            if (o is Aas.File)
             {
-                var f = o as File;
+                var f = o as Aas.File;
                 ret = " = " + f.Value;
                 if (f.Qualifiers != null && f.Qualifiers.Count > 0)
                 {
@@ -1207,14 +1205,14 @@
                 ret += " @QUALIFIERS";
             }
         }
-        if (o is MultiLanguageProperty)
+        if (o is Aas.MultiLanguageProperty)
         {
-            var mlp = o as MultiLanguageProperty;
+            var mlp = o as Aas.MultiLanguageProperty;
             var ls = mlp.Value;
             ret = " = ";
-            for (int i = 0; i < ls.LangStrings.Count; i++)
+            for (int i = 0; i < ls.Count; i++)
             {
-                ret += ls.LangStrings[i].Language + " ";
+                ret += ls[i].Language + " ";
             }
             if (mlp.Qualifiers != null && mlp.Qualifiers.Count > 0)
             {
@@ -1282,7 +1280,7 @@
                 // plug-in? .. shorten reference
                 var srl = workReference.Keys.Last();
                 string pluginTag = null;
-                if (srl?.Type == KeyTypes.FragmentReference
+                if (srl?.Type == Aas.KeyTypes.FragmentReference
                     && srl?.Value?.StartsWith("Plugin:") == true)
                 {
                     pluginTag = srl?.Value.Substring("Plugin:".Length);
@@ -1359,9 +1357,9 @@
 
                     // result
                     if (found.htmlEventOutputs.Count == 1
-                        && found.htmlEventOutputs[0] is IReferable rf)
+                        && found.htmlEventOutputs[0] is Aas.IReferable rf)
                     {
-                        var kl = new List<Key>();
+                        var kl = new List<Aas.Key>();
                         rf?.CollectReferencesByParent(kl);
                         pluginInstance?.InvokeAction("event-return",
                            new AasxIntegrationBase.AasxPluginEventReturnSelectAasEntity()
@@ -1504,14 +1502,14 @@
         _inTimer = true;
 
         // find elements?
-        foreach (var rec in bi.significantElements.Retrieve(bi.env?.AasEnv, SignificantAasElement.QualifiedAnimation))
+        foreach (var rec in bi.significantElements.Retrieve(bi.env?.AasEnv, SignificantAasElement.ValueAnimation))
         {
             // valid?
             if (rec?.Reference == null || rec.Reference.Keys.Count < 1 || rec.LiveObject == null)
                 continue;
 
             // which SME?
-            if (rec.LiveObject is Property prop)
+            if (rec.LiveObject is Aas.Property prop)
             {
                 _mainTimer_AnimateDemoValues.Animate(prop,
                     emitEvent: (prop2, evi2) =>
