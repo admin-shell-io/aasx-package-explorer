@@ -61,6 +61,7 @@ namespace AasxIntegrationBase // the namespace has to be: AasxIntegrationBase
 
             // index them!
             _options.IndexListOfRecords(_options.Records);
+            _options.Index();
         }
 
         public new AasxPluginActionDescriptionBase[] ListActions()

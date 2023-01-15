@@ -17,11 +17,22 @@ using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
 using Extensions;
+using AasCore.Aas3_0_RC02;
 
 namespace AasxPluginBomStructure
 {
+    /// <summary>
+    /// Reference store items can be IReferable or else.
+    /// This interface serves for the else.
+    /// </summary>
+    public interface IAasReferenceStoreItem
+    {
+        Reference GetReference();
+    }
+
     public class AasReferenceStore<T>
     {
+
         protected class MultiValueDictionary<K, V>
         {
             private Dictionary<K, List<V>> dict = new Dictionary<K, List<V>>();
@@ -98,8 +109,10 @@ namespace AasxPluginBomStructure
 
             foreach (var test in dict[hk])
             {
-                var xx = (test as Aas.IReferable)?.GetReference();
-                if (xx != null && xx.Matches(r, matchMode))
+                var rf = (test as Aas.IReferable)?.GetReference();
+                if (rf == null)
+                    rf = (test as IAasReferenceStoreItem)?.GetReference();
+                if (rf != null && rf.Matches(r, matchMode))
                     return test;
             }
 

@@ -52,32 +52,19 @@
       "AllowSubmodelSemanticId": [
         {
           "type": "Submodel",
-          "local": false,
-          "value": "http://example.com/id/type/submodel/BOM/1/1",
-          "index": 0,
-          "idType": "IRI"
-        }
-      ]
-    },
-    {
-      "AllowSubmodelSemanticId": [
+          "value": "http://example.com/id/type/submodel/BOM/1/1"
+        },
         {
           "type": "Submodel",
-          "local": false,
-          "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0",
-          "index": 0,
-          "idType": "IRI"
-        }
-      ]
-    },
-    {
-      "AllowSubmodelSemanticId": [
+          "value": "http://smart.festo.com/AAS/Submodel/ElectricAndFluidPlan/1/0"
+        },
         {
           "type": "Submodel",
-          "local": false,
-          "value": "http://admin-shell.io/sandbox/CompositeComponent/General/SubmodelBOM/1/0",
-          "index": 0,
-          "idType": "IRI"
+          "value": "http://admin-shell.io/sandbox/CompositeComponent/General/SubmodelBOM/1/0"
+        },
+        {
+          "type": "Submodel",
+          "value": "https://admin-shell.io/idta/HierachicalStructures/1/0/Submodel"
         }
       ],
       "Layout": 3,
@@ -86,35 +73,30 @@
         {
           "Match": {
             "type": "ConceptDescription",
-            "local": false,
-            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/IsPartOfForBOM/1/0",
-            "index": 0,
-            "idType": "IRI"
+            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/IsPartOfForBOM/1/0"
           },
-          "Direction": "Forward",
-          "Color": "DarkGreen",
+          "Start": "Normal",
+          "End": "None",
+          "Stroke": "DarkGreen",
           "Width": 1.0,
-          "Text": "isPartOf"
+          "Title": "isPartOf"
         }
       ],
       "NodeStyles": [
         {
           "Match": {
             "type": "ConceptDescription",
-            "local": false,
-            "value": "http://admin-shell.io/sandbox/CompositeComponent/General/PneumaticFeature/1/0",
-            "index": 0,
-            "idType": "IRI"
+            "value": "https://admin-shell.io/idta/HierachicalStructures/EntryNode/1/0"
           },
           "Skip": false,
           "Shape": "Circle",
           "Background": "LightBlue",
-          "Foreground": "DarkBlue",
+          "Stroke": "DarkBlue",
           "LineWidth": 1.0,
           "Radius": 0.0,
           "FontSize": 8.0,
           "Dashed": true,
-          "Bold": false,
+          "FontBold": false,
           "Dotted": false
         }
       ]
