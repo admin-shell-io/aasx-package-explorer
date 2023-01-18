@@ -102,7 +102,9 @@ namespace AasxPackageLogic
         //
 
         public void DisplayOrEditEntityReferable(AnyUiStackPanel stack,
+            Aas.IReferable parentContainer,
             Aas.IReferable referable,
+            int indexPosition,
             DispEditInjectAction injectToIdShort = null,
             HintCheck[] addHintsCategory = null,
             bool categoryUsual = false)
@@ -114,27 +116,47 @@ namespace AasxPackageLogic
             // members
             this.AddGroup(stack, "Referable:", levelColors.SubSection);
 
-            // members
-            this.AddHintBubble(stack, hintMode, new[] {
-                new HintCheck( () => !(referable is Aas.IIdentifiable) && !referable.IdShort.HasContent(),
-                    "The idShort is mandatory for all Referables which are not Identifiable. " +
-                    "It is a short, unique identifier that is unique just in its context, " +
-                    "its name space. ", breakIfTrue: true),
-                new HintCheck(
-                    () => {
-                        if (referable.IdShort == null) return false;
-                        return !AdminShellUtil.ComplyIdShort(referable.IdShort);
-                    },
-                    "The idShort shall only feature letters, digits, underscore ('_'); " +
-                    "starting mandatory with a letter."),
-                new HintCheck(
-                    () => {
-                        return true == referable.IdShort?.Contains("---");
-                    },
-                    "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
-                    "to keep it unqiue because of an operation such a copy/ paste.",
-                    severityLevel: HintCheck.Severity.Notice)
-            });
+            // special case SML ..
+            if (parentContainer?.IsIndexed() == true)
+            {
+                AddKeyValue(stack, "index", $"#{indexPosition:D2}", repo: null);
+            }
+
+            // for clarity, have two kind of hints for SML and for other
+            var isIndexed = parentContainer.IsIndexed() == true;
+            if (!isIndexed)
+            {
+                // not SML
+                this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck( () => !(referable is Aas.IIdentifiable) && !referable.IdShort.HasContent(),
+                        "The idShort is mandatory for all Referables which are not Identifiable. " +
+                        "It is a short, unique identifier that is unique just in its context, " +
+                        "its name space. ", breakIfTrue: true),
+                    new HintCheck(
+                        () => {
+                            if (referable.IdShort == null) return false;
+                            return !AdminShellUtil.ComplyIdShort(referable.IdShort);
+                        },
+                        "The idShort shall only feature letters, digits, underscore ('_'); " +
+                        "starting mandatory with a letter."),
+                    new HintCheck(
+                        () => {
+                            return true == referable.IdShort?.Contains("---");
+                        },
+                        "The idShort contains 3 dashes. Probably, the entitiy was auto-named " +
+                        "to keep it unqiue because of an operation such a copy/ paste.",
+                        severityLevel: HintCheck.Severity.Notice)
+                    });
+            }
+            else
+            {
+                // SML ..
+                this.AddHintBubble(stack, hintMode, new[] {
+                    new HintCheck( () => referable.IdShort.HasContent(),
+                        "Constraint AASd-120: idShort of SubmodelElements being a direct child of a " +
+                        "SubmodelElementList shall not be specified.")
+                    });
+            }
             AddKeyValueExRef(
                 stack, "idShort", referable, referable.IdShort, null, repo,
                 v =>
@@ -154,7 +176,7 @@ namespace AasxPackageLogic
                 new[] {
                     new HintCheck(
                         () => referable.DisplayName?.IsValid() != true,
-                        "The use of a Display name is recommended to express a human readable name " +
+                        "The use of a display name is recommended to express a human readable name " +
                         "for the Referable in multiple languages.",
                         breakIfTrue: true,
                         severityLevel: HintCheck.Severity.Notice),

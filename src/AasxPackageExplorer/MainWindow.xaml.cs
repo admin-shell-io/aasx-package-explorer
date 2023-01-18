@@ -171,7 +171,7 @@ namespace AasxPackageExplorer
 #endif
 
             // clear the right section, first (might be rebuild by callback from below)
-            DispEditEntityPanel.ClearDisplayDefautlStack();
+            DispEditEntityPanel.ClearDisplayDefaultStack();
             ContentTakeOver.IsEnabled = false;
 
             // rebuild middle section

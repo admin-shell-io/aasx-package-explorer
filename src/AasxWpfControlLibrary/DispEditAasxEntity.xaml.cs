@@ -18,14 +18,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Aas = AasCore.Aas3_0_RC02;
+using AdminShellNS;
+using Extensions;
 using AasxIntegrationBase;
 using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AasxWpfControlLibrary;
-using AdminShellNS;
 using AnyUi;
 using Newtonsoft.Json;
 using static AnyUi.AnyUiDisplayContextWpf;
+using static QRCoder.QRCodeGenerator;
+using System.Collections;
+using System.IO.Packaging;
 
 namespace AasxPackageExplorer
 {
@@ -128,7 +132,7 @@ namespace AasxPackageExplorer
         //
         //
 
-        public AnyUiStackPanel ClearDisplayDefautlStack()
+        public AnyUiStackPanel ClearDisplayDefaultStack()
         {
             theMasterPanel.Children.Clear();
             var sp = new AnyUiStackPanel();
@@ -203,6 +207,8 @@ namespace AasxPackageExplorer
             return rh;
         }
 #endif
+
+        
 
         public DisplayRenderHints DisplayOrEditVisualAasxElement(
             PackageCentral packages,
@@ -311,187 +317,120 @@ namespace AasxPackageExplorer
 
                 //
                 // Dispatch
-                //
+                //               
 
-                if (entity is VisualElementEnvironmentItem veei)
-                {
-                    _helper.DisplayOrEditAasEntityAasEnv(
-                        packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode, 
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementAdminShell veaas)
-                {
-                    _helper.DisplayOrEditAasEntityAas(
-                        packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementAsset veas)
-                {
-                    _helper.DisplayOrEditAasEntityAssetInformation(
-                        packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
-                        editMode, repo, stack, hintMode: hintMode,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementSubmodelRef vesmref)
-                {
-                    // data
-                    Aas.AssetAdministrationShell aas = null;
-                    if (vesmref.Parent is VisualElementAdminShell xpaas)
-                        aas = xpaas.theAas;
+                // try to delegate to common routine
+                var common = _helper.DisplayOrEditCommonEntity(
+                    packages, stack, superMenu, editMode, hintMode, cdSortOrder, entity);
 
-                    // edit
-                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                        packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
-                        hintMode: hintMode,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
+                if (!common)
                 {
-                    _helper.DisplayOrEditAasEntitySubmodelOrRef(
-                        packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
-                        hintMode: hintMode,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementSubmodelElement vesme)
-                {
-                    _helper.DisplayOrEditAasEntitySubmodelElement(
-                        packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper,
-                        editMode,
-                        repo, stack, hintMode: hintMode, superMenu: superMenu,
-                        nestedCds: cdSortOrder.HasValue &&
-                            cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
-                }
-                else if (entity is VisualElementOperationVariable vepv)
-                {
-                    _helper.DisplayOrEditAasEntityOperationVariable(
-                        packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
-                        stack, hintMode: hintMode,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementConceptDescription vecd)
-                {
-                    _helper.DisplayOrEditAasEntityConceptDescription(
-                        packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
-                        superMenu: superMenu,
-                        preventMove: cdSortOrder.HasValue &&
-                            cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
-                }
-                else if (entity is VisualElementValueRefPair vevlp)
-                {
-                    _helper.DisplayOrEditAasEntityValueReferencePair(
-                        packages, vevlp.theEnv, null, vevlp.theCD, vevlp.theVLP, 
-                        editMode, repo, stack, hintMode: hintMode);
-                }
-                else
-                if (entity is VisualElementSupplementalFile vesf)
-                {
-                    _helper.DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack,
-                        superMenu: superMenu);
-                }
-                else if (entity is VisualElementPluginExtension vepe)
-                {
-                    // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
-                    var approach = 0;
-                    var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
-                    var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
-
-                    if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
-                        approach = 1;
-
-                    if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
-                        approach = 2;
-
-                    if (approach == 0 && hasAnyUi)
-                        approach = 2;
-
-                    if (approach == 0 && hasWpf)
-                        approach = 1;
-
-                    // NEW: Differentiate behaviour ..
-                    if (approach == 2)
+                    // some special cases
+                    if (entity is VisualElementPluginExtension vepe)
                     {
-                        //
-                        // Render panel via ANY UI !!
-                        //
+                        // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
+                        var approach = 0;
+                        var hasWpf = vepe.thePlugin?.HasAction("fill-panel-visual-extension") == true;
+                        var hasAnyUi = vepe.thePlugin?.HasAction("fill-anyui-visual-extension") == true;
 
-                        try
+                        if (hasWpf && Options.Curr.PluginPrefer?.ToUpper().Contains("WPF") == true)
+                            approach = 1;
+
+                        if (hasAnyUi && Options.Curr.PluginPrefer?.ToUpper().Contains("ANYUI") == true)
+                            approach = 2;
+
+                        if (approach == 0 && hasAnyUi)
+                            approach = 2;
+
+                        if (approach == 0 && hasWpf)
+                            approach = 1;
+
+                        // NEW: Differentiate behaviour ..
+                        if (approach == 2)
                         {
-                            var opContext = new PluginOperationContextBase()
-                            {
-                                DisplayMode = (editMode)
-                                            ? PluginOperationDisplayMode.MayAddEdit
-                                            : PluginOperationDisplayMode.JustDisplay
-                            };
+                            //
+                            // Render panel via ANY UI !!
+                            //
 
-                            vepe.thePlugin?.InvokeAction(
-                                "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
-                                stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
-                                opContext);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Singleton.Error(ex,
-                                $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
-                        }
-
-                        // show no panel nor scroll
-                        renderHints.scrollingPanel = false;
-                        renderHints.showDataPanel = false;
-                        renderHints.useInnerGrid = true;
-                    }
-                    else
-                    {
-                        //
-                        // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
-                        //
-
-                        // create controls
-                        object result = null;
-
-                        if (approach == 1)
                             try
                             {
-                                // replace at top level
-                                theMasterPanel.Children.Clear();
-                                if (vepe.thePlugin != null)
-                                    result = vepe.thePlugin.InvokeAction(
-                                        "fill-panel-visual-extension",
-                                        vepe.thePackage, vepe.theReferable, theMasterPanel);
+                                var opContext = new PluginOperationContextBase()
+                                {
+                                    DisplayMode = (editMode)
+                                                ? PluginOperationDisplayMode.MayAddEdit
+                                                : PluginOperationDisplayMode.JustDisplay
+                                };
+
+                                vepe.thePlugin?.InvokeAction(
+                                    "fill-anyui-visual-extension", vepe.thePackage, vepe.theReferable,
+                                    stack, _displayContext, AnyUiDisplayContextWpf.SessionSingletonWpf,
+                                    opContext);
                             }
                             catch (Exception ex)
                             {
                                 Log.Singleton.Error(ex,
-                                    $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+                                    $"render AnyUI based visual extension for plugin {vepe.thePlugin.name}");
                             }
 
-                        // add?
-                        if (result == null)
-                        {
-                            // re-init display!
-#if MONOUI
-                        stack = ClearDisplayDefautlStack();
-#else
-                            stack = new AnyUiStackPanel();
-#endif
-
-                            // helping message
-                            _helper.AddGroup(
-                                stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                            // show no panel nor scroll
+                            renderHints.scrollingPanel = false;
+                            renderHints.showDataPanel = false;
+                            renderHints.useInnerGrid = true;
                         }
                         else
                         {
-                            // this is natively done; do NOT render Any UI to WPF
-                            inhibitRenderStackToPanel = true;
+                            //
+                            // SWAP panel with NATIVE WPF CONTRAL and try render via WPF !!
+                            //
+
+                            // create controls
+                            object result = null;
+
+                            if (approach == 1)
+                                try
+                                {
+                                    // replace at top level
+                                    theMasterPanel.Children.Clear();
+                                    if (vepe.thePlugin != null)
+                                        result = vepe.thePlugin.InvokeAction(
+                                            "fill-panel-visual-extension",
+                                            vepe.thePackage, vepe.theReferable, theMasterPanel);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.Singleton.Error(ex,
+                                        $"render WPF based visual extension for plugin {vepe.thePlugin.name}");
+                                }
+
+                            // add?
+                            if (result == null)
+                            {
+                                // re-init display!
+#if MONOUI
+                            stack = ClearDisplayDefautlStack();
+#else
+                                stack = new AnyUiStackPanel();
+#endif
+
+                                // helping message
+                                _helper.AddGroup(
+                                    stack, "Entity from Plugin cannot be rendered!", _helper.levelColors.MainSection);
+                            }
+                            else
+                            {
+                                // this is natively done; do NOT render Any UI to WPF
+                                inhibitRenderStackToPanel = true;
+                            }
+
+                            // show no panel nor scroll
+                            renderHints.scrollingPanel = false;
+                            renderHints.showDataPanel = false;
                         }
 
-                        // show no panel nor scroll
-                        renderHints.scrollingPanel = false;
-                        renderHints.showDataPanel = false;
                     }
-
+                    else
+                        _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
                 }
-                else
-                    _helper.AddGroup(stack, "Entity is unknown!", _helper.levelColors.MainSection);
             }
             else
             if (entities.Count > 1)

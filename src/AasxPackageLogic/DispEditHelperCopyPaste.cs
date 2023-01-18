@@ -610,13 +610,15 @@ namespace AasxPackageLogic
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
                                         pcsm.SubmodelElements, smw2, wrapper);
 
-                                if (parentContainer is Aas.SubmodelElementCollection pcsmc &&
-                                        wrapper != null)
+                                if (parentContainer is Aas.SubmodelElementCollection pcsmc && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
                                         pcsmc.Value, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is Aas.Entity pcent &&
-                                        wrapper != null)
+                                if (parentContainer is Aas.SubmodelElementList pcsml && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
+                                        pcsml.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.Entity pcent && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListBefore<Aas.ISubmodelElement>(
                                         pcent.Statements, smw2, wrapper, makeUnique);
 
@@ -654,10 +656,13 @@ namespace AasxPackageLogic
                                     createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
                                         pcsm.SubmodelElements, smw2, wrapper, makeUnique);
 
-                                if (parentContainer is Aas.SubmodelElementCollection pcsmc &&
-                                        wrapper != null)
+                                if (parentContainer is Aas.SubmodelElementCollection pcsmc && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
                                         pcsmc.Value, smw2, wrapper, makeUnique);
+
+                                if (parentContainer is Aas.SubmodelElementList pcsml && wrapper != null)
+                                    createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(
+                                        pcsml.Value, smw2, wrapper, makeUnique);
 
                                 if (parentContainer is Aas.Entity pcent && wrapper != null)
                                     createAtIndex = this.AddElementInSmeListAfter<Aas.ISubmodelElement>(

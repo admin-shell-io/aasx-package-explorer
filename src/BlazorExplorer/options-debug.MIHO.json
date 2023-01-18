@@ -1,0 +1,359 @@
+{
+  /* "AasxToLoad" :  "sample-techdata.aasx", */
+  /* "AasxToLoad": "..\\..\\..\\..\\AasxToolkit\\bin\\Debug\\sample.aasx", */
+  /* "AasxToLoad": "sample-hsu.aasx", */
+  /* "AasxToLoad": "MTPsample.aasx", */
+  /* "AasxToLoad": "sample-generated-modified.aasx", */
+  /* "AasxToLoad": "..\\..\\..\\..\\..\\..\\aasx-sample-data\\Develop_AAS\\Sample-Fluiddraw.aasx", */
+  /* "AasxRepositoryFn": "..\\..\\..\\..\\..\\Sample_AAS\\aasxrepo-new.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo\\FestoDemoBox-RepositoryViaHTTP.json", */
+  // "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\repo3\\Festo-DemoBox-repo-local.json",
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\201112_Festo_AAS_Demo_Koffer\\Festo_Demo_Box\\Festo-DemoBox-repo-CPX_E.json", */
+  /* "AasxRepositoryFn": "C:\\Users\\miho\\Desktop\\new-aasx-repo.json", */
+  "AasxRepositoryFn": "C:\\HOMI\\Develop\\Aasx\\repo_demo_case\\Festo-DemoCase-repo-local.json",
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\200806_Sample_Repo_with_Fluidic_Plan\\MTPsample.aasx", */
+  /* "AasxToLoad": "http://localhost:51310/server/getaasx/0", */
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\AasxFesto\\AasxFesto\\AasxFctTool\\bin\\Debug\\net472\\test.aasx", */
+  /* "AasxToLoad": "C:\\Users\\miho\\Desktop\\Festo_SPAU_VR3_UA.aasx", */
+  /* "AasxToLoad": "C:\\MIHO\\Develop\\Aasx\\repo\\Festo_SPAU_VR3.aasx", */
+  // "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\01_Festo_SPAU_VR3_forV3-spiel.aasx",
+  "AasxToLoad": "C:\\HOMI\\Develop\\Aasx\\repo\\00_FestoDemoBox-Module-2-Kopie2.aasx",
+  "WindowLeft": 200,
+  "WindowTop": -1,
+  "WindowWidth": 900,
+  "WindowHeight": 600,
+  "WindowMaximized": false,
+  "TemplateIdAas": "www.example.com/ids/aas/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdAsset": "www.example.com/ids/asset/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelInstance": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdSubmodelTemplate": "www.example.com/ids/sm/DDDD_DDDD_DDDD_DDDD",
+  "TemplateIdConceptDescription": "www.example.com/ids/cd/DDDD_DDDD_DDDD_DDDD",
+  "EclassDir": ".\\eclass\\",
+  /* "LogoFile": "SpecPI40_t.png", */
+  "LogoFile": "PI40_and_IDTA.png",
+  "QualifiersFile": "qualifier-presets.json",
+  "ExtensionsPresetFile": "extension-presets.json",
+  "ContentHome": "https://github.com/admin-shell/io/blob/master/README.md",
+  "UseFlyovers": true,
+  "SplashTime": 0,
+  "InternalBrowser": false,
+  "EclassTwoPass": true,
+  "BackupDir": ".\\backup",
+  "BackupFiles": 10,
+  "RestServerHost": "localhost",
+  "RestServerPort": "1111",
+  "WriteDefaultOptionsFN": null /* "options-written.json" */,
+  "IndirectLoadSave": true,
+  "AccentColors": {},
+  "LoadWithoutPrompt": true,
+  "ShowIdAsIri": false,
+  "VerboseConnect": true,
+  "DefaultStayConnected": true,
+  "DefaultUpdatePeriod": 1000,
+  "StayConnectOptions": "REST-QUEUE", // SIM
+  /* "DefaultConnectRepositoryLocation": "http://localhost:51310", */
+  /* "DefaultConnectRepositoryLocation": "http://admin-shell-io.com:51510", */
+  /* "DefaultConnectRepositoryLocation": "https://admin-shell-io.com:51711", */
+  "DefaultConnectRepositoryLocation": "https://admin-shell-io.com/51711",
+  "MqttPublisherOptions": {
+    "BrokerUrl": "192.168.178.97:1883",
+    "MqttRetain": false,
+    "EnableFirstPublish": true,
+    "FirstTopicAAS": "AAS",
+    "FirstTopicSubmodel": "{aas}/Submodel_{sm}",
+    "EnableEventPublish": true,
+    "EventTopic": "Events/aas/{aas}/sm/{sm}/{path}",
+    "SingleValuePublish": true,
+    "SingleValueFirstTime": true,
+    "SingleValueTopic": "Values/aas/{aas}/sm/{sm}/{path}"
+  },
+  "Remarks": [
+    "This JSON file might contain special settings for debugging purposes of Michael Hoffmeisters setup."
+  ],
+  "PluginPrefer": "ANYUI",
+  "PluginDll": [
+    /*
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetServer\\bin\\Debug\\net472\\AasxPluginUaNetServer.dll",
+      "Args": [
+        "-single-nodeids",
+        "-single-keys",
+        "-ns",
+        "2",
+        "-ns",
+        "3"
+      ],
+      "Options": null
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginUaNetClient\\bin\\Debug\\net472\\AasxPluginUaNetClient.dll",
+      "Args": [],
+      "Options": null
+    }, 
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net472\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
+    */
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginKnownSubmodels\\bin\\Debug\\net6.0-windows\\AasxPluginKnownSubmodels.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginDocumentShelf\\bin\\Debug\\net6.0-windows\\AasxPluginDocumentShelf.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginGenericForms\\bin\\Debug\\net6.0-windows\\AasxPluginGenericForms.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginAdvancedTextEditor\\bin\\Debug\\net6.0-windows\\AasxPluginAdvancedTextEditor.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginTechnicalData\\bin\\Debug\\net6.0-windows\\AasxPluginTechnicalData.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginBomStructure\\bin\\Debug\\net6.0-windows\\AasxPluginBomStructure.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginPlotting\\bin\\Debug\\net6.0-windows\\AasxPluginPlotting.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginImageMap\\bin\\Debug\\net6.0-windows\\AasxPluginImageMap.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginMtpViewer\\bin\\Debug\\net6.0-windows\\AasxPluginMtpViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginExportTable\\bin\\Debug\\net6.0-windows\\AasxPluginExportTable.dll",
+      "Args": []
+    },
+    // Festo specific from here on
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\net6.0-windows\\AasxPluginFluiddrawBom.dll",
+      "Args": []
+    }
+    /* ,    
+    {
+      "Path": "..\\..\\..\\..\\..\\AasxPluginWebBrowser\\bin\\x64\\Debug\\net6.0-windows\\AasxPluginWebBrowser.dll",
+      "Args": []
+    }
+    // Festo specific from here on
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawViewer\\bin\\Debug\\AasxPluginFluiddrawViewer.dll",
+      "Args": []
+    },
+    {
+      "Path": "..\\..\\..\\..\\..\\..\\..\\AasxFesto\\AasxFesto\\AasxPluginFluiddrawBom\\bin\\Debug\\AasxPluginFluiddrawBom.dll",
+      "Args": [] 
+    }
+    */
+  ],
+  "SecureConnectPresets": [
+    {
+      "Name": "Internet Demo",
+      "Protocol": {
+        "Value": "Azure",
+        "Choices": [
+          "Unprotected",
+          "OpenID Connect",
+          "Azure"
+        ]
+      },
+      "AuthorizationServer": {
+        "Value": "http://auth1.phoenix.com",
+        "Choices": [
+          "http://auth2.phoenix.com",
+          "http://auth1.phoenix.com",
+          "http://auth3.phoenix.com"
+        ]
+      },
+      "AasServer": {
+        "Value": "http://aas2.phoenix.com",
+        "Choices": [
+          "http://aas3.phoenix.com",
+          "http://aas2.phoenix.com",
+          "http://aas1.phoenix.com"
+        ]
+      },
+      "CertificateFile": {
+        "Value": "wieso.txt",
+        "Choices": [
+          "C:\\FILE1.TXT",
+          "C:\\FILE2.TXT",
+          "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+        ]
+      },
+      "Password": {
+        "Value": "sescret",
+        "Choices": [
+          "geheim",
+          "hidden",
+          "Pand0ra"
+        ]
+      }
+    },
+    {
+      "Name": "Only Intranet",
+      "Protocol": {
+        "Value": "Unprotected",
+        "Choices": [
+          "Unprotected",
+          "OpenID Connect",
+          "Azure"
+        ]
+      },
+      "AuthorizationServer": {
+        "Value": "http://auth3.phoenix.com",
+        "Choices": [
+          "http://auth2.phoenix.com",
+          "http://auth1.phoenix.com",
+          "http://auth3.phoenix.com"
+        ]
+      },
+      "AasServer": {
+        "Value": "http://aas1.phoenix.com",
+        "Choices": [
+          "http://aas3.phoenix.com",
+          "http://aas2.phoenix.com",
+          "http://aas1.phoenix.com"
+        ]
+      },
+      "CertificateFile": {
+        "Value": "wieso22.txt",
+        "Choices": [
+          "C:\\FILE1.TXT",
+          "C:\\FILE2.TXT",
+          "C:\\FILE3_dsnchdsbcjbdsjhcbdsjhcbjdsbcjhdsbhjcbdshjcjdshjhcbjhdsbcjhcdsjhbcdsbhjcshjdbcjhdsbjcbdshjcbhsjdbcdsbchjdscbhjdsbhcjhdsb.TXT"
+        ]
+      }
+    }
+  ],
+  "IntegratedConnectPresets": [
+    {
+      "Name": "Empty",
+      "Location": "",
+      "Username": "",
+      "Password": ""
+    },
+    {
+      "Name": "First of admin-shell-io.com",
+      "Location": "http://admin-shell-io.com:51310/server/getaasx/0",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true
+    },
+    {
+      "Name": "DEMO",
+      "Location": "http://demo/",
+      "Username": "Foo",
+      "Password": "Bar",
+      "AutoClose": false
+    },
+    {
+      "Name": "Long loading of admin-shell-io.com",
+      "Location": "http://admin-shell-io.com:51410/server/getaasx/3",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true,
+      "AutoClose": false
+    },
+    {
+      "Name": "Latest testing",
+      "Location": "http://admin-shell-io.com:52001/server/getaasx/0",
+      "Username": "",
+      "Password": "",
+      "StayConnected": true,
+      "AutoClose": false
+    }
+  ],
+  "FontSizePreset": 16,
+  "ScriptPresets": [
+    {
+      "Name": "Test1",
+      "Lines": [
+        "Select(\"AAS\", \"First\");",
+        "Sleep(1000);",
+        "Location(\"Push\");",
+        "Sleep(1000);",
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "while (true) {",
+        "  rf = Select(\"This\");",
+        "  WriteLine(\"Approaching Referable \" + rf);",
+        "  if (Select(\"Submodel\", \"Next\") == null) break;",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test2",
+      "Lines": [
+        "Select(\"Submodel\", \"First\");",
+        "Sleep(1000);",
+        "Tool(\"ImportTimeSeries\", ",
+        "  \"Format\", \"Excel\", \"File\", \"Test.xlsx\", ",
+        "  \"ColData\", \"3\" );",
+        "Sleep(1000);",
+        "WriteLine(\"Done\");"
+      ]
+    },
+    {
+      "Name": "Select Test 3",
+      "Lines": [
+        "Select(\"AAS\", \"Next\");"
+      ]
+    },
+    {
+      "Name": "Select Test 4",
+      "Lines": [
+        "Select(\"AAS\", \"Prev\");"
+      ]
+    },
+    {
+      "Name": "Test 5",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsFindText\", \"FindText\", \"DE\"); ",
+        "num = 0;",
+        "while (res) {",
+        "    x = Select(\"This\"); ",
+        "    WriteLine(num, \":\", x.idShort);",
+        "    num = num + 1;",
+        "    if (num > 18)",
+        "        break;",
+        "    res = Tool(\"ToolsFindForward\");",
+        "    Sleep(200);",
+        "}"
+      ]
+    },
+    {
+      "Name": "Test 6",
+      "Lines": [
+        "Tool(\"EditMenu\", \"Mode\", true);",
+        "res = Tool(\"ToolsReplaceText\", \"FindText\", \"DE\", \"ReplaceText\", \"GDR\", \"Do\", \"All\"); "
+      ]
+    },
+    {
+      "Name": "Test 7",
+      "Lines": [
+        "Tool(\"aas-elem-delete\");"
+      ]
+    }
+  ],
+  "ScriptLoglevel": 2,
+  "ScriptLaunchWithoutPrompt": true,
+  "ScriptExecuteSystem": true
+  // "ScriptCmd":  "WriteLine(\"Hallo\");"
+  // "ScriptFn" :  "test-script.txt"
+}

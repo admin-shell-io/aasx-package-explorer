@@ -12,8 +12,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AasxIntegrationBase.AdminShellEvents;
+using Aas = AasCore.Aas3_0_RC02;
 using AdminShellNS;
+using Extensions;
+using AasxIntegrationBase;
+using AasxIntegrationBase.AdminShellEvents;
+using AasxPackageLogic;
+using AasxPackageLogic.PackageCentral;
 
 namespace AasxPackageLogic.PackageCentral
 {

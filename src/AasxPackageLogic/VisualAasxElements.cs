@@ -833,13 +833,15 @@ namespace AasxPackageLogic
         public Aas.IReferable theContainer = null;
         public Aas.ISubmodelElement theWrapper = null;
 
+        public int IndexPosition = 0;
+
         private Aas.ConceptDescription _cachedCD = null;
 
         public Aas.ConceptDescription CachedCD { get { return _cachedCD; } }
 
         public VisualElementSubmodelElement(
             VisualElementGeneric parent, TreeViewLineCache cache, Aas.Environment env,
-            Aas.IReferable parentContainer, Aas.ISubmodelElement wrap)
+            Aas.IReferable parentContainer, Aas.ISubmodelElement wrap, int indexPos)
             : base()
         {
             this.Parent = parent;
@@ -847,6 +849,7 @@ namespace AasxPackageLogic
             this.theEnv = env;
             this.theContainer = parentContainer;
             this.theWrapper = wrap;
+            this.IndexPosition = indexPos;
 
             this.Background = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
             this.Border = Options.Curr.GetColor(OptionsInformation.ColorNames.LightAccentColor);
@@ -864,10 +867,11 @@ namespace AasxPackageLogic
             return theWrapper;
         }
 
-        public static void EnrichInfoString(Aas.ISubmodelElement sme, ref string info, ref bool showCDinfo)
+        public static void EnrichInfoString(
+            Aas.IReferable parent, Aas.ISubmodelElement sme, int indexPos, ref string caption, ref string info, ref bool showCDinfo)
         {
             // access
-            if (sme == null || info == null)
+            if (sme == null || info == null || caption == null)
                 return;
 
             // case specific
@@ -919,6 +923,13 @@ namespace AasxPackageLogic
                     break;
             }
 
+            // some further
+            if (parent?.IsIndexed() == true)
+            {
+                // re-arrange infos a bit
+                info = caption + " " + info;
+                caption = $"#{indexPos:D2}";
+            }
         }
 
         public override void RefreshFromMainData()
@@ -928,18 +939,19 @@ namespace AasxPackageLogic
                 // start
                 var sme = theWrapper;
                 var ci = sme.ToCaptionInfo();
-                var ciinfo = ci.Item2;
+                var cicap = "" + ci.Item1;
+                var ciinfo = "" + ci.Item2;
                 var showCDinfo = false;
 
                 // extra function
-                EnrichInfoString(sme, ref ciinfo, ref showCDinfo);
+                EnrichInfoString(theContainer, sme, IndexPosition, ref cicap, ref ciinfo, ref showCDinfo);
                 ciinfo = AdminShellUtil.ToSingleLineShortened(ciinfo, 80, textNewLine: " \u21b5 ");
 
                 // MIHO thinks it makes sense to simply override
                 showCDinfo = true;
 
                 // decode
-                this.Caption = ((sme.Kind != null && sme.Kind == Aas.ModelingKind.Template) ? "<T> " : "") + ci.Item1;
+                this.Caption = ((sme.Kind != null && sme.Kind == Aas.ModelingKind.Template) ? "<T> " : "") + cicap;
                 this.Info = ciinfo;
 
                 // Show CD / unikts ..
@@ -1049,15 +1061,16 @@ namespace AasxPackageLogic
                 {
                     // normal stuff
                     var ci2 = theOpVar.Value.ToCaptionInfo();
-                    var ci2info = ci2.Item2;
+                    var ci2cap = "" + ci2.Item1;
+                    var ci2info = "" + ci2.Item2;
 
                     // add values
                     var showCDinfo = false;
                     VisualElementSubmodelElement.EnrichInfoString(
-                        theOpVar.Value, ref ci2info, ref showCDinfo);
+                        theContainer, theOpVar.Value, 0, ref ci2cap, ref ci2info, ref showCDinfo);
 
                     // decode
-                    this.Caption = "" + ci2.Item1;
+                    this.Caption = ci2cap;
                     this.Info = ci2info;
 
                 }
@@ -1486,6 +1499,7 @@ namespace AasxPackageLogic
             TreeViewLineCache cache, Aas.Environment env,
             Aas.Submodel sm, VisualElementGeneric parent,
             Aas.IReferable parentContainer, Aas.ISubmodelElement el,
+            int indexPos,
             VisualElementGeneric useExistingVE = null)
         {
             var ti = useExistingVE;
@@ -1493,7 +1507,7 @@ namespace AasxPackageLogic
             // generate new VI?
             if (ti == null)
             {
-                var tism = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el);
+                var tism = new VisualElementSubmodelElement(parent, cache, env, parentContainer, el, indexPos);
                 ti = tism; // set outer variable!
                 parent.Members.Add(tism);
 
@@ -1515,20 +1529,23 @@ namespace AasxPackageLogic
             }
 
             // Recurse: SMC
+            int childPos = 0;
             if (el is Aas.SubmodelElementCollection elc && elc.Value != null)
                 foreach (var elcc in elc.Value)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, elc, elcc);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, elc, elcc, childPos++);
 
             // Recurse: SML
+            childPos = 0;
             if (el is Aas.SubmodelElementList ell && ell.Value != null)
                 foreach (var elll in ell.Value)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ell, elll);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ell, elll, childPos++);
 
             // Recurse: Entity
             // ReSharper disable ExpressionIsAlwaysNull
+            childPos = 0;
             if (el is Aas.Entity ele && ele.Statements != null)
                 foreach (var eles in ele.Statements)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ele, eles, childPos++);
             // ReSharper enable ExpressionIsAlwaysNull
 
             // Recurse: Operation
@@ -1536,6 +1553,7 @@ namespace AasxPackageLogic
             {
                 foreach (var dir in AdminShellUtil.GetEnumValues<OperationVariableDirection>())
                 {
+                    childPos = 0;
                     var opv = elo.GetVars(dir);
                     if (opv != null)
                         foreach (var v in opv)
@@ -1548,7 +1566,7 @@ namespace AasxPackageLogic
                             if (v.Value != null)
                                 GenerateVisualElementsFromShellEnvAddElements(
                                     cache, env, sm, ti, elo, v.Value, 
-                                    useExistingVE: veopv);
+                                    useExistingVE: veopv, indexPos: childPos++);
                         }
 
 #if OLD
@@ -1573,9 +1591,10 @@ namespace AasxPackageLogic
             }
 
             // Recurse: AnnotatedRelationshipElement
+            childPos++;
             if (el is Aas.AnnotatedRelationshipElement ela && ela.Annotations != null)
                 foreach (var elaa in ela.Annotations)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, ti, ela, elaa, childPos++);
 
             // return topmost
             return ti;
@@ -1614,9 +1633,10 @@ namespace AasxPackageLogic
                 }
 
             // recursively into the submodel elements
+            int indexPos = 0;
             if (sm.SubmodelElements != null)
                 foreach (var sme in sm.SubmodelElements)
-                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, tiSm, sm, sme);
+                    GenerateVisualElementsFromShellEnvAddElements(cache, env, sm, tiSm, sm, sme, indexPos++);
         }
 
         private VisualElementSubmodelRef GenerateVisuElemForVisualElementSubmodelRef(
@@ -2477,6 +2497,7 @@ namespace AasxPackageLogic
                 {
                     // try specifically SubmodelRef visual elements by Submodel business object,
                     // as these are the carriers of child information
+                    int indexPos = 0;
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject<VisualElementSubmodelRef>(
                         parentSm, alsoDereferenceObjects: true))
                     {
@@ -2491,7 +2512,7 @@ namespace AasxPackageLogic
                         // add to parent
                         GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, parentSm, parentVE,
-                            data.ParentElem as Aas.IReferable, foundSmw);
+                            data.ParentElem as Aas.IReferable, foundSmw, indexPos++);
                     }
 
                     // just good
@@ -2503,6 +2524,7 @@ namespace AasxPackageLogic
                     && data.ThisElem is Aas.ISubmodelElement thisSme2)
                 {
                     // try find according visual elements by business objects == Referables
+                    int indexPos = 0;
                     foreach (var parentVE in FindAllVisualElementOnMainDataObject(
                         data.ParentElem, alsoDereferenceObjects: false))
                     {
@@ -2525,7 +2547,7 @@ namespace AasxPackageLogic
                         // TODO (MIHO, 2021-06-11): Submodel needs to be set in the long run
                         var ti = GenerateVisualElementsFromShellEnvAddElements(
                             cache, data.Container?.Env?.AasEnv, null, parentVE,
-                            data.ParentElem as Aas.IReferable, foundSmw);
+                            data.ParentElem as Aas.IReferable, foundSmw, indexPos++);
 
                         // animate
                         if (ti != null)

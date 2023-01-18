@@ -2510,10 +2510,9 @@ namespace AasxPackageLogic
                 }
 
                 // recursion?
-                if (elem is Aas.SubmodelElementCollection)
+                if (elem is Aas.SubmodelElementCollection elemsmc && elemsmc.Value != null)
                 {
-                    var childs = new List<Aas.ISubmodelElement>(
-                        (elem as Aas.SubmodelElementCollection).Value);
+                    var childs = new List<Aas.ISubmodelElement>(elemsmc.Value);
                     IdentifyTargetsForEclassImportOfCDs(env, childs, ref targets);
                 }
             }

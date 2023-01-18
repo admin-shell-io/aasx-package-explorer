@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Aas = AasCore.Aas3_0_RC02;
 using AasxIntegrationBase;
 using AasxIntegrationBase.AdminShellEvents;
+using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AdminShellNS.Display;
@@ -1283,7 +1284,8 @@ namespace AasxPackageLogic
             }
 
             // Referable
-            this.DisplayOrEditEntityReferable(stack, aas, categoryUsual: false);
+            this.DisplayOrEditEntityReferable(stack, 
+                parentContainer: null, referable: aas, indexPosition: 0, categoryUsual: false);
 
             // Identifiable
             this.DisplayOrEditEntityIdentifiable(
@@ -1772,7 +1774,8 @@ namespace AasxPackageLogic
                 this.AddGroup(stack, "Submodel", this.levelColors.MainSection);
 
                 // IReferable
-                this.DisplayOrEditEntityReferable(stack, submodel, categoryUsual: false);
+                this.DisplayOrEditEntityReferable(stack, 
+                    parentContainer: null, referable: submodel, indexPosition: 0, categoryUsual: false);
 
                 // Identifiable
                 this.DisplayOrEditEntityIdentifiable(
@@ -1914,8 +1917,9 @@ namespace AasxPackageLogic
 
             // IReferable
             this.DisplayOrEditEntityReferable(
-                stack, cd,
-                new DispEditHelperModules.DispEditInjectAction(
+                stack, parentContainer: parentContainer, referable: cd,
+                indexPosition: 0,
+                injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                     new[] { "Sync" },
                     new[] { "Copy (if target is empty) idShort to shortName and SubmodelElement idShort." },
                     (v) =>
@@ -2316,7 +2320,7 @@ namespace AasxPackageLogic
                     // huh, recursion in a lambda based GUI feedback function??!!
                     if (ov.Value != null && ov.Value != null) // avoid at least direct recursions!
                         DisplayOrEditAasEntitySubmodelElement(
-                            packages, env, parentContainer, ov.Value, null, editMode, repo,
+                            packages, env, parentContainer, ov.Value, null, 0, editMode, repo,
                             substack, hintMode);
                 }
             }
@@ -2332,7 +2336,7 @@ namespace AasxPackageLogic
         public void DisplayOrEditAasEntitySubmodelElement(
             PackageCentral.PackageCentral packages, Aas.Environment env,
             Aas.IReferable parentContainer, Aas.ISubmodelElement wrapper,
-            Aas.ISubmodelElement sme, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
+            Aas.ISubmodelElement sme, int indexPosition, bool editMode, ModifyRepo repo, AnyUiStackPanel stack,
             bool hintMode = false, bool nestedCds = false,
             AasxMenu superMenu = null)
         {
@@ -2383,6 +2387,17 @@ namespace AasxPackageLogic
                         horizStack, repo, (parentContainer as Aas.SubmodelElementCollection).Value,
                         wrapper, env, "SubmodelElement:",
                         nextFocus: wrapper, sendUpdateEvent: evTemplate,
+                        superMenu: superMenu);
+
+                // although SML is the ideal case for acceleration, the calculation/ display of
+                // the index position prevents us from this
+                // TODO (MIHO, 23-01-17): optimize also this important special case
+                if (parentContainer != null && parentContainer is Aas.SubmodelElementList &&
+                        wrapper != null)
+                    this.EntityListUpDownDeleteHelper<Aas.ISubmodelElement>(
+                        horizStack, repo, (parentContainer as Aas.SubmodelElementList).Value,
+                        wrapper, env, "SubmodelElement:",
+                        nextFocus: wrapper, sendUpdateEvent: null,
                         superMenu: superMenu);
 
                 if (parentContainer != null && parentContainer is Aas.Entity && wrapper != null)
@@ -3082,7 +3097,9 @@ namespace AasxPackageLogic
                     this.levelColors.MainSection);
 
                 // IReferable
-                this.DisplayOrEditEntityReferable(stack, sme, categoryUsual: true,
+                this.DisplayOrEditEntityReferable(stack, 
+                    parentContainer: parentContainer, referable: sme, indexPosition: indexPosition,
+                    categoryUsual: true,
                     injectToIdShort: new DispEditHelperModules.DispEditInjectAction(
                         auxTitles: new[] { "Sync" },
                         auxToolTips: new[] { "Copy (if target is empty) idShort " +
@@ -4077,5 +4094,98 @@ namespace AasxPackageLogic
         //        packages, PackageCentral.PackageCentral.Selector.Main, "",
         //        relatedReferable: view);
         //}
+
+        public bool DisplayOrEditCommonEntity(
+            PackageCentral.PackageCentral packages,
+            AnyUiStackPanel stack,
+            AasxMenu superMenu,
+            bool editMode, bool hintMode,
+            VisualElementEnvironmentItem.ConceptDescSortOrder? cdSortOrder,
+            VisualElementGeneric entity)
+        {
+            if (entity is VisualElementEnvironmentItem veei)
+            {
+                DisplayOrEditAasEntityAasEnv(
+                    packages, veei.theEnv, veei, editMode, stack, hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementAdminShell veaas)
+            {
+                DisplayOrEditAasEntityAas(
+                    packages, veaas.theEnv, veaas.theAas, editMode, stack, hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementAsset veas)
+            {
+                DisplayOrEditAasEntityAssetInformation(
+                    packages, veas.theEnv, veas.theAas, veas.theAsset, veas.theAsset,
+                    editMode, repo, stack, hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementSubmodelRef vesmref)
+            {
+                // data
+                Aas.AssetAdministrationShell aas = null;
+                if (vesmref.Parent is VisualElementAdminShell xpaas)
+                    aas = xpaas.theAas;
+
+                // edit
+                DisplayOrEditAasEntitySubmodelOrRef(
+                    packages, vesmref.theEnv, aas, vesmref.theSubmodelRef, vesmref.theSubmodel, editMode, stack,
+                    hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementSubmodel vesm && vesm.theSubmodel != null)
+            {
+                DisplayOrEditAasEntitySubmodelOrRef(
+                    packages, vesm.theEnv, null, null, vesm.theSubmodel, editMode, stack,
+                    hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementSubmodelElement vesme)
+            {
+                DisplayOrEditAasEntitySubmodelElement(
+                    packages, vesme.theEnv, vesme.theContainer, vesme.theWrapper, vesme.theWrapper,
+                    vesme.IndexPosition, editMode,
+                    repo, stack, hintMode: hintMode, superMenu: superMenu,
+                    nestedCds: cdSortOrder.HasValue &&
+                        cdSortOrder.Value == VisualElementEnvironmentItem.ConceptDescSortOrder.BySme);
+            }
+            else if (entity is VisualElementOperationVariable vepv)
+            {
+                DisplayOrEditAasEntityOperationVariable(
+                    packages, vepv.theEnv, vepv.theContainer, vepv.theOpVar, editMode,
+                    stack, hintMode: hintMode,
+                    superMenu: superMenu);
+            }
+            else if (entity is VisualElementConceptDescription vecd)
+            {
+                DisplayOrEditAasEntityConceptDescription(
+                    packages, vecd.theEnv, null, vecd.theCD, editMode, repo, stack, hintMode: hintMode,
+                    superMenu: superMenu,
+                    preventMove: cdSortOrder.HasValue &&
+                        cdSortOrder.Value != VisualElementEnvironmentItem.ConceptDescSortOrder.None);
+            }
+            else if (entity is VisualElementValueRefPair vevlp)
+            {
+                DisplayOrEditAasEntityValueReferencePair(
+                    packages, vevlp.theEnv, null, vevlp.theCD, vevlp.theVLP,
+                    editMode, repo, stack, hintMode: hintMode);
+            }
+            else
+            if (entity is VisualElementSupplementalFile vesf)
+            {
+                DisplayOrEditAasEntitySupplementaryFile(packages, vesf, vesf.theFile, editMode, stack,
+                    superMenu: superMenu);
+            }
+            else
+            {
+                // not found!
+                return false;
+            }
+
+            // one of the upper cases
+            return true;
+        }
     }
 }

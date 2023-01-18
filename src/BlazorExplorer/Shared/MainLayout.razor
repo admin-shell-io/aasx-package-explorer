@@ -1,0 +1,552 @@
+﻿@inherits LayoutComponentBase
+@using AdminShellNS;
+@using AasxPackageLogic;
+@using AasxPackageLogic.PackageCentral;
+@inject IJSRuntime JsRuntime
+@inject BlazorUI.Data.BlazorSession bi
+
+@{
+// resharper disable all
+
+// see: https://stackoverflow.com/questions/65198814/how-to-pass-a-value-from-a-page-to-the-layout-in-blazor
+}
+
+@*@<div class="sidebar">
+        <NavMenu />
+    </div>
+    <div class="top-row px-4">
+    <tr style="max-height:100%">
+*@
+
+<CascadingValue Value="this">
+    <div class="main" style="margin:0px 0px 2px 0px">
+        <!-- 
+            Header == 1
+            Standard header of Blazor UI
+        -->
+        @if (_showHeader == 1)
+        {
+            <div class="top-row px-5">
+                <div class="col-12 row">
+                    <table border="0" cellspacing="2">
+                        <tr>
+                            <td nowrap>
+                                <span style="font-weight:bold">URL or *:</span>
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                                @{
+                                    int ww = 50;
+                                    <input size="@ww" value="@text"
+                                           @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))" />
+                                    string[] textList = {
+                                        "*",
+                                        "https://admin-shell-io.com/51411",
+                                        "https://admin-shell-io.com/51711" };
+                                    <select width="10" maxwidth="10" style="height:30px"
+                                            @onchange="@((ChangeEventArgs __e) => MyTextInput(__e.Value.ToString()))">
+                                        <option value="">--select--</option>
+                                        @foreach (var item in textList)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                }
+                                @code {
+                                    string text = "";
+
+                                    private async void MyTextInput(string value)
+                                    {
+                                        text = value;
+                                        try
+                                        {
+                                            value = value.ToLower();
+                                            if (value != "" && (value.Contains("http://") || value.Contains("https://")))
+                                            {
+                                                if (value.Contains("getaasx"))
+                                                {
+                                                    await InvokeAsync(async () => await Program.getAasxAsync(bi, value));
+                                                }
+                                                else // repo
+                                                {
+                                                    string fn = value;
+                                                    var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
+                                                    // Program._packageCentral.Repositories.Add(fr);
+                                                    bi.repository = fr as PackageContainerListHttpRestRepository;
+                                                    var task = Task.Run(async () => await bi.repository.SyncronizeFromServerAsync());
+                                                    var r = task.Result;
+                                                    if (bi.repository.FileMap.Count > 0)
+                                                    {
+                                                        if (bi.env != null)
+                                                            bi.env.Dispose();
+                                                        bi.aasxFiles = new string[bi.repository.FileMap.Count];
+                                                        for (int i = 0; i < bi.repository.FileMap.Count; i++)
+                                                        {
+                                                            bi.aasxFiles[i] = bi.repository.FileMap[i].InfoIds;
+                                                        }
+                                                        var repoFile = bi.repository.FileMap[0];
+                                                        bi.container = PackageContainerFactory.GuessAndCreateFor(bi.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                        bi.env = bi.container.Env;
+                                                        bi.aasxFileSelected = "";
+                                                        bi.editMode = false;
+                                                        bi.thumbNail = null;
+                                                        Program.signalNewData(3, bi.SessionId);
+                                                    }
+                                                }
+                                            }
+                                            if (value == "*" || value == "*.*")
+                                            {
+                                                bi.repository = null;
+                                                await InvokeAsync(() => Program.loadAasxFiles(bi, true));
+                                            }
+                                        }
+                                        catch
+                                        {
+                                        }
+                                        this.StateHasChanged();
+                                    }
+                                }
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                            </td>
+                            <td nowrap>
+                                @if (!Program.DisableEdit)
+                                {
+                                    <button @onclick="toggleEditMode">
+                                        @{
+                                            if (bi.editMode)
+                                            {
+                                                <span>EditMode is ON</span>
+                                            }
+                                            else
+                                            {
+                                                <span>EditMode is OFF</span>
+                                            }
+                                        }
+                                    </button>
+                                    @code {
+                                        private void toggleEditMode()
+                                        {
+                                            bi.editMode = !bi.editMode;
+                                            this.StateHasChanged();
+                                            Program.signalNewData(0, bi.SessionId);
+                                        }
+                                    }
+                                }
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                                <a href="About">LICENSE</a>
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                                Session:@bi.SessionId
+                                <span>&nbsp</span>
+                                #@BlazorUI.Data.BlazorSession.SessionNumActive
+                                <span>&nbsp</span>
+                                %@BlazorUI.Data.BlazorSession.totalIndexTimer
+                            </td>
+                        </tr>
+                        <tr>
+                            <td nowrap>
+                                <span style="font-weight:bold">Select AASX:</span>
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                                @{
+
+                                    // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
+                                    // w = "50%";
+                                    // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
+                                    <select style="width:100%;max-width:100%;height:30px" value="@bi.aasxFileSelected"
+                                            @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
+                                        @foreach (var item in bi.aasxFiles)
+                                        {
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                    @code {
+                                        private async void MyAasxSelect(string value)
+                                        {
+                                            try
+                                            {
+                                                if (bi.repository?.FileMap?.Count > 0)
+                                                {
+                                                    for (int i = 0; i < bi.repository.FileMap.Count; i++)
+                                                    {
+                                                        if (value == bi.repository.FileMap[i].InfoIds)
+                                                        {
+                                                            var repoFile = bi.repository.FileMap[i];
+                                                            bi.container = PackageContainerFactory.GuessAndCreateFor(bi.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                            bi.env = bi.container.Env;
+                                                            bi.aasxFileSelected = "";
+                                                            bi.editMode = false;
+                                                            bi.thumbNail = null;
+                                                            Program.signalNewData(3, bi.SessionId);
+                                                        }
+                                                    }
+                                                }
+                                                else if (bi.aasxFiles?.Length > 0)
+                                                {
+                                                    await InvokeAsync(() => Program.loadAasx(bi, value));
+                                                }
+                                            }
+                                            catch
+                                            {
+                                            }
+                                            this.StateHasChanged();
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td nowrap>
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                                <span style="font-weight:bold">Upload:</span>
+                            </td>
+                            <td nowrap>
+                                @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                                *@
+                                @{
+                                    bool isDisabled = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                                    //<InputFile OnChange="HandleFileSelected" disabled="@isDisabled" />
+                                }
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                                @code {
+                                    async Task HandleFileSelected(IFileListEntry[] files)
+                                    {
+                                        try
+                                        {
+                                            var file = files.FirstOrDefault();
+                                            if (file != null)
+                                            {
+                                                var fileStream = System.IO.File.Create(file.Name);
+                                                await file.Data.CopyToAsync(fileStream);
+                                                fileStream.Close();
+                                                bi.repository = null;
+                                                await InvokeAsync(() => Program.loadAasxFiles(bi, false));
+                                                await InvokeAsync(() => Program.loadAasx(bi, file.Name));
+                                                this.StateHasChanged();
+                                            }
+                                        }
+                                        catch
+                                        {
+                                        }
+                                    }
+                                }
+                            </td>
+                            <td nowrap>
+                                @if (!Program.DisableEdit)
+                                {
+                                    <button @onclick="onSave">Save</button>
+                                }
+                                @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
+                                @{
+                                    bool isDisabled2 = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                                    <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
+                                }
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                                @code {
+                                    private async void onSave()
+                                    {
+                                        if (Program.DisableEdit)
+                                            return;
+                                        try
+                                        {
+                                            if (bi.repository?.FileMap?.Count > 0)
+                                            {
+                                                if (bi.container != null)
+                                                {
+                                                    await InvokeAsync(() => bi.container.SaveToSourceAsync());
+                                                }
+                                            }
+                                            else if (bi.aasxFiles?.Length > 0)
+                                            {
+                                                if (bi.aasxFileSelected != "")
+                                                {
+                                                    bi.env.SaveAs(bi.aasxFileSelected);
+                                                }
+                                            }
+                                        }
+                                        catch
+                                        {
+                                        }
+                                        this.StateHasChanged();
+                                    }
+                                    
+                                    async Task DownloadBinary()
+                                    {
+                                        // Generate a file
+                                        if (bi.env != null)
+                                        {
+                                            if (bi.aasxFiles?.Length > 0)
+                                            {
+                                                if (bi.aasxFileSelected != "")
+                                                {
+                                                    bi.env.SaveAs(bi.aasxFileSelected);
+                                                    bi.env.Close();
+                                                    byte[] file = System.IO.File.ReadAllBytes(bi.aasxFileSelected);
+                                                    string fileName = System.IO.Path.GetFileName(bi.aasxFileSelected);
+                                                    // Send the data to JS to actually download the file
+                                                    await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "application/octet-stream", file);
+                                                    await InvokeAsync(() => Program.loadAasx(bi, bi.aasxFileSelected));
+                                                    this.StateHasChanged();
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- 
+            Header == 2
+            AssetID and Repo item select
+        -->
+        @if (_showHeader == 2)
+        {
+            <div class="top-row px-5">
+                <div class="col-12 row">
+                    <table border="0" cellspacing="2">
+                        <tr>
+                            <td nowrap>
+                                <span style="font-weight:bold">AssetID:</span>
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                                @{
+                                    int ww = 50;
+                                    <input size="@ww" value="@searchId"
+                                           @onchange="@((ChangeEventArgs __e) => SearchIdInput(__e.Value.ToString()))" />
+                                    <select width="10" maxwidth="10" style="height:30px"
+                                            value="@selectId"
+                                            @onchange="@((ChangeEventArgs __e) => RepoItemSelected(__e.Value.ToString()))">
+                                        <option value="">--select--</option>
+                                        @{
+                                            if(Program.Repo?.FileMap != null)
+                                                foreach (var item in Program.Repo.FileMap)
+                                                {
+                                                <option value="@item.Location">@item.Description</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                                @code {
+                                    string searchId = "";
+                                    string selectId = "--select--";
+
+                                    private async Task SearchIdInput(string value)
+                                    {
+                                        try
+                                        {
+
+                                            // lookup
+                                            var rif = Program.Repo?.FindByAssetId(value);
+                                            if (rif == null)
+                                                rif = Program.Repo?.FindByAasId(value);
+                                            if (rif == null)
+                                                return;
+
+                                            // load
+                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
+                                            await RepoFnLoadReleative(loc);
+                                        }
+                                        catch { }
+
+                                        // try clear text edit field
+                                        // see: https://stackoverflow.com/questions/61454672/reset-input-text-after-onchange
+                                        searchId = null;
+                                        selectId = null;
+                                        await Task.Delay(1); //Magic!  
+                                        StateHasChanged();
+                                        searchId = "";
+                                        selectId = "--select--";
+                                        this.StateHasChanged();
+
+                                    }
+
+                                    private async Task RepoItemSelected(string location)
+                                    {
+                                        selectId = location;
+                                        // access
+                                        try
+                                        {
+                                            // as we're from the internet, make sure the repo and location
+                                            PackageContainerRepoItem rif = null;
+                                            if (Program.Repo?.FileMap != null)
+                                                foreach (var ri in Program.Repo.FileMap)
+                                                    if (ri.Location == location)
+                                                        rif = ri;
+
+                                            if (rif == null)
+                                                return;
+
+                                            // make it full path
+                                            var loc = Program.Repo?.GetFullItemLocation(rif.Location);
+                                            await RepoFnLoadReleative(loc);
+                                        }
+                                        catch { }
+                                        this.StateHasChanged();
+                                    }
+
+                                    protected async Task RepoFnLoadReleative(string location)
+                                    {
+                                        var fn = System.IO.Path.Combine(
+                                            System.IO.Path.GetDirectoryName(
+                                                System.Reflection.Assembly.GetEntryAssembly()?.Location),
+                                            location);
+                                        await InvokeAsync(() => Program.loadAasx(bi, fn));
+                                    }
+                                }
+                                <span>&nbsp&nbsp&nbsp&nbsp</span>
+                            </td>
+                            <td nowrap>
+                                Session:@bi.SessionId
+                                <span>&nbsp</span>
+                                #@BlazorUI.Data.BlazorSession.SessionNumActive
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!--
+            Header == 3
+            Top menu
+        -->
+        @if (_showHeader == 3)
+        {
+            <div class="top-row px-5">
+                <div class="col-12 row">                    
+                    @*<nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <div class="container-fluid">
+                            <a class="navbar-brand" href="#">Navbar</a>
+                            <button class="navbar-toggler" type="button">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" href="#">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Link</a>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" role="button">
+                                            Dropdown
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#">Action</a></li>
+                                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>*@
+
+                    <!--
+                    <nav class="navbar navbar-expand-lg navbar-inverse">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <a class="navbar-brand" href="#">WebSiteName</a>
+                            </div>
+                            <ul class="nav navbar-nav">
+                                <li class="active"><a href="#">Home</a></li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Page 1 <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Page 1-1</a></li>
+                                        <li><a href="#">Page 1-2</a></li>
+                                        <li><a href="#">Page 1-3</a></li>
+                                    </ul>
+                                </li>
+                                <li><a href="#">Page 2</a></li>
+                                <li><a href="#">Page 3</a></li>
+                            </ul>
+                        </div>
+                    </nav>
+                    -->
+
+                    <!--
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                        <div class="container-fluid">
+                            <a class="navbar-brand" href="#">Navbar</a>
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">Link</a>
+                                    </li>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Dropdown
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <li><a class="dropdown-item" href="#">Action</a></li>
+                                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link disabled">Disabled</a>
+                                    </li>
+                                </ul>
+                                <form class="d-flex">
+                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                                    <button class="btn btn-outline-success" type="submit">Search</button>
+                                </form>
+                            </div>
+                        </div>
+                    </nav>
+                    -->
+
+                </div>
+            </div>
+        }
+
+        <!-- 
+            Main content
+        -->
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</CascadingValue>
+
+@code
+{
+    protected int _showHeader = 3;
+    public int ShowHeader { 
+        get { 
+            return _showHeader; 
+        } 
+        set { 
+            _showHeader = value; 
+            StateHasChanged(); 
+        } 
+    }
+
+    // ---------
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            JsRuntime.InvokeVoidAsync("attachHandlers");
+        }
+    }
+
+}

@@ -190,6 +190,14 @@ namespace Extensions
                     }));
         }
 
+        /// <summary>
+        /// Tells, if the IReferable is used with an index instead of <c>idShort</c>.
+        /// </summary>
+        public static bool IsIndexed(this IReferable rf)
+        {
+            return rf is SubmodelElementList;
+        }
+
         public static AasElementSelfDescription GetSelfDescription(this IReferable referable)
         {
             if (referable is AssetAdministrationShell)

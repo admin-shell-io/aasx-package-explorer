@@ -41,6 +41,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
 
 * V3.0 will have AssetInformation.TemplateId in order to ientify Submodels
 
+* IndexPos of OperationVariables is constant == 0
+
 ## Fixed TODOs
 
 * DocuShelf / Double click in WPF does not work -> took over changes from FixAnyUiPlugins, working
@@ -59,7 +61,8 @@ This files holds notes for migrating Package Explorer sources to meta mode V3.0
   -> kind of fixed (made a big warning, create AssetInfo by default, but no hard fix realized)
 * wrong default logo is loaded (PI40) -> fixed
 * CD below MLP does not work -> works
-
+* Bug reports from Birgit, including IndexPos for SMLs
+* for SML, disabled accelerated move up/ down
 
 ## Regexes
 
@@ -258,3 +261,4 @@ These projects are not migrated or integrated, yet.
   AasxPluginPlotting, AasxPluginWebBrowser, 2 x Festo plugin
 * polished tree views for CDs (wishes from Birgit)
 * in BOM plugin, unify arguments handing
+* BlazorUI compiles & runs
