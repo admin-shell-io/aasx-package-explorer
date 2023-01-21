@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using MW.Blazor
+@using AasxIntegrationBase
+@using AnyUi
+
+@foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
+{
+    if (mi is AasxMenuSeparator)
+    {
+        <li><hr class="dropdown-divider"></li>
+
+        // done
+        continue;
+    }
+
+    // visible items?
+    if (mi is AasxMenuItem mii && !mii.Hidden)
+    {
+        if (mii.Childs == null || mii.Childs.Count < 1)
+        {
+            // normal item
+            if (Depth < 2)
+            {
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" @onclick="() => Doit(mii)" style="cursor: pointer;">@mii.Header</a>
+                </li>
+            }
+            else
+            {
+                // child item, but normal
+                <li class="nav-item">
+                    <a class="dropdown-item" aria-current="page" @onclick="() => Doit(mii)" style="cursor: pointer;">@mii.Header</a>
+                </li>
+            }
+        }
+        else
+        {
+            // item with children
+            var styleDD = new StylePile().Add("cursor", "pointer");
+            if (Depth >= 2)
+                styleDD.Add("color", "black!important");
+
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" style="@styleDD" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @mii.Header
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        
+                    @* Recursion !! *@
+
+                    <DynamicMenuItem TopMenu="TopMenu"
+                        MenuItems="mii.Childs"
+                        Depth="(Depth + 1)" />
+
+                </ul>
+            </li>
+        }
+    }
+}
+
+
+@code {
+
+    [Parameter] public AasxMenu TopMenu { get; set; }
+
+    [Parameter] public AasxMenu MenuItems { get; set; }
+
+    [Parameter] public int Depth { get; set; }
+
+    public void Doit(AasxMenuItemBase mi)
+    {
+        int a = 1;
+    }
+
+}

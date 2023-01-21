@@ -320,7 +320,7 @@
             
             <!-- Tree -->
             <div style="margin:0px 2px 1px 1px">
-                <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;border-width:2px; white-space: nowrap;position:sticky;padding:10px 2px 10px 2px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; white-space: nowrap;position:sticky;padding:10px 2px 10px 2px">
                     <div class="col" style="white-space: nowrap">
                         @updateVisibleTree(Items, selectedNode)
                         @* @if (Program.isLoading)
@@ -328,7 +328,7 @@
                         @if (Session.DisplayElements?.TreeItems == null
                             || Session.DisplayElements.TreeItems.Count() < 1)
                         {
-                            <span style="color:white;background-color:blue;">
+                            <span style="color:white;background-color:#0028cd;">
                                 Enter * to read AASX from file system<br />
                                 Enter URL of AASX Server REST API (without /server/listaas)<br />
                             </span>
@@ -394,7 +394,7 @@
             
             <!-- Details / repo -->
             <div style="margin:2px 2px 0px 1px">
-                <div class="row" style="border-style:solid;border-color:blue;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
+                <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; word-wrap:break-word;position:sticky;padding:10px">
                 @{
                     if (Session.env != null /* TODO?? && (selectedNode == null || selectedNode.Tag != null) */)
                     {
@@ -470,7 +470,7 @@
     </div>
 
     <!-- right panel -->
-    <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:blue;border-radius:8px;border-width:2px; position:sticky;padding:10px;width:100%;">
+    <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; position:sticky;padding:10px;">
         <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
             @{
                 if (selectedNode != null && selectedNode.GetMainDataObject() != null)

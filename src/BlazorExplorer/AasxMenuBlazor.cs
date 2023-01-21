@@ -73,18 +73,16 @@ namespace BlazorUI
 
         public void LoadAndRender(
             AasxMenu menuInfo,
-            System.Windows.Controls.Menu wpfMenu,
             CommandBindingCollection cmdBindings = null,
             InputBindingCollection inputBindings = null)
         {
             _menu = menuInfo;
             _menuItems.Clear();
             _blazorItems.Clear();
-            wpfMenu.Items.Clear();
 
             object kgConv = null; // new KeyGestureConverter();
 
-            RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items, cmdBindings, inputBindings, kgConv);
+            // RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items, cmdBindings, inputBindings, kgConv);
         }
 
         public bool IsChecked(string name)

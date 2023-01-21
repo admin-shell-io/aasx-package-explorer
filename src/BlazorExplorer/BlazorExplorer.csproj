@@ -42,6 +42,8 @@
     <Content Remove="Pages\Component.razor" />
     <Content Remove="Pages\FetchData.cshtml" />
     <Content Remove="Pages\Index.cshtml" />
+    <Content Remove="wwwroot\image\IDTA_AAS-Logo_312x281_RGB.png" />
+    <Content Remove="wwwroot\image\PI40_and_IDTA.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +67,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>StylePile.txt</LastGenOutput>
     </None>
+    <None Include="wwwroot\image\PI40_and_IDTA.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +100,10 @@
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="wwwroot\image\IDTA_AAS-Logo_312x281_RGB.png" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

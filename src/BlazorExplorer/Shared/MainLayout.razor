@@ -1,9 +1,10 @@
 ﻿@inherits LayoutComponentBase
 @using AdminShellNS;
+@using AasxIntegrationBase
 @using AasxPackageLogic;
 @using AasxPackageLogic.PackageCentral;
 @inject IJSRuntime JsRuntime
-@inject BlazorUI.Data.BlazorSession bi
+@inject BlazorUI.Data.BlazorSession Session
 
 @{
 // resharper disable all
@@ -65,39 +66,39 @@
                                             {
                                                 if (value.Contains("getaasx"))
                                                 {
-                                                    await InvokeAsync(async () => await Program.getAasxAsync(bi, value));
+                                                    await InvokeAsync(async () => await Program.getAasxAsync(Session, value));
                                                 }
                                                 else // repo
                                                 {
                                                     string fn = value;
                                                     var fr = PackageContainerListFactory.GuessAndCreateNew(fn);
                                                     // Program._packageCentral.Repositories.Add(fr);
-                                                    bi.repository = fr as PackageContainerListHttpRestRepository;
-                                                    var task = Task.Run(async () => await bi.repository.SyncronizeFromServerAsync());
+                                                    Session.repository = fr as PackageContainerListHttpRestRepository;
+                                                    var task = Task.Run(async () => await Session.repository.SyncronizeFromServerAsync());
                                                     var r = task.Result;
-                                                    if (bi.repository.FileMap.Count > 0)
+                                                    if (Session.repository.FileMap.Count > 0)
                                                     {
-                                                        if (bi.env != null)
-                                                            bi.env.Dispose();
-                                                        bi.aasxFiles = new string[bi.repository.FileMap.Count];
-                                                        for (int i = 0; i < bi.repository.FileMap.Count; i++)
+                                                        if (Session.env != null)
+                                                            Session.env.Dispose();
+                                                        Session.aasxFiles = new string[Session.repository.FileMap.Count];
+                                                        for (int i = 0; i < Session.repository.FileMap.Count; i++)
                                                         {
-                                                            bi.aasxFiles[i] = bi.repository.FileMap[i].InfoIds;
+                                                            Session.aasxFiles[i] = Session.repository.FileMap[i].InfoIds;
                                                         }
-                                                        var repoFile = bi.repository.FileMap[0];
-                                                        bi.container = PackageContainerFactory.GuessAndCreateFor(bi.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                        bi.env = bi.container.Env;
-                                                        bi.aasxFileSelected = "";
-                                                        bi.editMode = false;
-                                                        bi.thumbNail = null;
-                                                        Program.signalNewData(3, bi.SessionId);
+                                                        var repoFile = Session.repository.FileMap[0];
+                                                        Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                        Session.env = Session.container.Env;
+                                                        Session.aasxFileSelected = "";
+                                                        Session.editMode = false;
+                                                        Session.thumbNail = null;
+                                                        Program.signalNewData(3, Session.SessionId);
                                                     }
                                                 }
                                             }
                                             if (value == "*" || value == "*.*")
                                             {
-                                                bi.repository = null;
-                                                await InvokeAsync(() => Program.loadAasxFiles(bi, true));
+                                                Session.repository = null;
+                                                await InvokeAsync(() => Program.loadAasxFiles(Session, true));
                                             }
                                         }
                                         catch
@@ -115,7 +116,7 @@
                                 {
                                     <button @onclick="toggleEditMode">
                                         @{
-                                            if (bi.editMode)
+                                            if (Session.editMode)
                                             {
                                                 <span>EditMode is ON</span>
                                             }
@@ -128,9 +129,9 @@
                                     @code {
                                         private void toggleEditMode()
                                         {
-                                            bi.editMode = !bi.editMode;
+                                            Session.editMode = !Session.editMode;
                                             this.StateHasChanged();
-                                            Program.signalNewData(0, bi.SessionId);
+                                            Program.signalNewData(0, Session.SessionId);
                                         }
                                     }
                                 }
@@ -139,7 +140,7 @@
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
                             </td>
                             <td nowrap>
-                                Session:@bi.SessionId
+                                Session:@Session.SessionId
                                 <span>&nbsp</span>
                                 #@BlazorUI.Data.BlazorSession.SessionNumActive
                                 <span>&nbsp</span>
@@ -157,9 +158,9 @@
                                     // string w = (bi.aasxFileSelected.Length * 11 + 60).ToString() + "px";
                                     // w = "50%";
                                     // string w = "70%"; style="width:@w" height:20px; line-height: 20px class="form-control selectpicker" display:inline-block
-                                    <select style="width:100%;max-width:100%;height:30px" value="@bi.aasxFileSelected"
+                                    <select style="width:100%;max-width:100%;height:30px" value="@Session.aasxFileSelected"
                                             @onchange="@((ChangeEventArgs __e) => MyAasxSelect(__e.Value.ToString()))">
-                                        @foreach (var item in bi.aasxFiles)
+                                        @foreach (var item in Session.aasxFiles)
                                         {
                                             <option value="@item">@item</option>
                                         }
@@ -169,25 +170,25 @@
                                         {
                                             try
                                             {
-                                                if (bi.repository?.FileMap?.Count > 0)
+                                                if (Session.repository?.FileMap?.Count > 0)
                                                 {
-                                                    for (int i = 0; i < bi.repository.FileMap.Count; i++)
+                                                    for (int i = 0; i < Session.repository.FileMap.Count; i++)
                                                     {
-                                                        if (value == bi.repository.FileMap[i].InfoIds)
+                                                        if (value == Session.repository.FileMap[i].InfoIds)
                                                         {
-                                                            var repoFile = bi.repository.FileMap[i];
-                                                            bi.container = PackageContainerFactory.GuessAndCreateFor(bi.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
-                                                            bi.env = bi.container.Env;
-                                                            bi.aasxFileSelected = "";
-                                                            bi.editMode = false;
-                                                            bi.thumbNail = null;
-                                                            Program.signalNewData(3, bi.SessionId);
+                                                            var repoFile = Session.repository.FileMap[i];
+                                                            Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
+                                                            Session.env = Session.container.Env;
+                                                            Session.aasxFileSelected = "";
+                                                            Session.editMode = false;
+                                                            Session.thumbNail = null;
+                                                            Program.signalNewData(3, Session.SessionId);
                                                         }
                                                     }
                                                 }
-                                                else if (bi.aasxFiles?.Length > 0)
+                                                else if (Session.aasxFiles?.Length > 0)
                                                 {
-                                                    await InvokeAsync(() => Program.loadAasx(bi, value));
+                                                    await InvokeAsync(() => Program.loadAasx(Session, value));
                                                 }
                                             }
                                             catch
@@ -206,7 +207,7 @@
                                 @*<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
                                 *@
                                 @{
-                                    bool isDisabled = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                                    bool isDisabled = !(Session.aasxFiles?.Length > 0 && Session.aasxFileSelected != "");
                                     //<InputFile OnChange="HandleFileSelected" disabled="@isDisabled" />
                                 }
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
@@ -221,9 +222,9 @@
                                                 var fileStream = System.IO.File.Create(file.Name);
                                                 await file.Data.CopyToAsync(fileStream);
                                                 fileStream.Close();
-                                                bi.repository = null;
-                                                await InvokeAsync(() => Program.loadAasxFiles(bi, false));
-                                                await InvokeAsync(() => Program.loadAasx(bi, file.Name));
+                                                Session.repository = null;
+                                                await InvokeAsync(() => Program.loadAasxFiles(Session, false));
+                                                await InvokeAsync(() => Program.loadAasx(Session, file.Name));
                                                 this.StateHasChanged();
                                             }
                                         }
@@ -240,7 +241,7 @@
                                 }
                                 @*<span>&nbsp&nbsp&nbsp&nbsp</span>*@
                                 @{
-                                    bool isDisabled2 = !(bi.aasxFiles?.Length > 0 && bi.aasxFileSelected != "");
+                                    bool isDisabled2 = !(Session.aasxFiles?.Length > 0 && Session.aasxFileSelected != "");
                                     <button @onclick="DownloadBinary" disabled="@isDisabled2">Download</button>
                                 }
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
@@ -251,18 +252,18 @@
                                             return;
                                         try
                                         {
-                                            if (bi.repository?.FileMap?.Count > 0)
+                                            if (Session.repository?.FileMap?.Count > 0)
                                             {
-                                                if (bi.container != null)
+                                                if (Session.container != null)
                                                 {
-                                                    await InvokeAsync(() => bi.container.SaveToSourceAsync());
+                                                    await InvokeAsync(() => Session.container.SaveToSourceAsync());
                                                 }
                                             }
-                                            else if (bi.aasxFiles?.Length > 0)
+                                            else if (Session.aasxFiles?.Length > 0)
                                             {
-                                                if (bi.aasxFileSelected != "")
+                                                if (Session.aasxFileSelected != "")
                                                 {
-                                                    bi.env.SaveAs(bi.aasxFileSelected);
+                                                    Session.env.SaveAs(Session.aasxFileSelected);
                                                 }
                                             }
                                         }
@@ -275,19 +276,19 @@
                                     async Task DownloadBinary()
                                     {
                                         // Generate a file
-                                        if (bi.env != null)
+                                        if (Session.env != null)
                                         {
-                                            if (bi.aasxFiles?.Length > 0)
+                                            if (Session.aasxFiles?.Length > 0)
                                             {
-                                                if (bi.aasxFileSelected != "")
+                                                if (Session.aasxFileSelected != "")
                                                 {
-                                                    bi.env.SaveAs(bi.aasxFileSelected);
-                                                    bi.env.Close();
-                                                    byte[] file = System.IO.File.ReadAllBytes(bi.aasxFileSelected);
-                                                    string fileName = System.IO.Path.GetFileName(bi.aasxFileSelected);
+                                                    Session.env.SaveAs(Session.aasxFileSelected);
+                                                    Session.env.Close();
+                                                    byte[] file = System.IO.File.ReadAllBytes(Session.aasxFileSelected);
+                                                    string fileName = System.IO.Path.GetFileName(Session.aasxFileSelected);
                                                     // Send the data to JS to actually download the file
                                                     await JsRuntime.InvokeVoidAsync("BlazorDownloadFile", fileName, "application/octet-stream", file);
-                                                    await InvokeAsync(() => Program.loadAasx(bi, bi.aasxFileSelected));
+                                                    await InvokeAsync(() => Program.loadAasx(Session, Session.aasxFileSelected));
                                                     this.StateHasChanged();
                                                 }
                                             }
@@ -397,13 +398,13 @@
                                             System.IO.Path.GetDirectoryName(
                                                 System.Reflection.Assembly.GetEntryAssembly()?.Location),
                                             location);
-                                        await InvokeAsync(() => Program.loadAasx(bi, fn));
+                                        await InvokeAsync(() => Program.loadAasx(Session, fn));
                                     }
                                 }
                                 <span>&nbsp&nbsp&nbsp&nbsp</span>
                             </td>
                             <td nowrap>
-                                Session:@bi.SessionId
+                                Session:@Session.SessionId
                                 <span>&nbsp</span>
                                 #@BlazorUI.Data.BlazorSession.SessionNumActive
                             </td>
@@ -419,7 +420,7 @@
         -->
         @if (_showHeader == 3)
         {
-            <div class="top-row px-5">
+            <div class="top-row px-2">
                 <div class="col-12 row">                    
                     @*<nav class="navbar navbar-expand-lg navbar-light bg-light">
                         <div class="container-fluid">
@@ -473,16 +474,15 @@
                         </div>
                     </nav>
                     -->
-
+                    
                     <!--
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                        <div class="container-fluid">
-                            <a class="navbar-brand" href="#">Navbar</a>
-                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-                            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                        <div class="container" style="margin-left: 10px">
+                            <a class="navbar-brand" href="#">
+                                <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
+                            </a>
+                            <div class="navbar-collapse" id="navbarSupportedContent">
+                                <ul class="navbar-nav mb-2 mb-lg-0">
                                     <li class="nav-item">
                                         <a class="nav-link active" aria-current="page" href="#">Home</a>
                                     </li>
@@ -493,26 +493,98 @@
                                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                             Dropdown
                                         </a>
-                                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                            <li><a class="dropdown-item" href="#">Action</a></li>
+                                        <ul class="dropdown-menu" id="ddm" aria-labelledby="navbarDropdown">
+                                            <li><a class="dropdown-item" @onclick="() => Doit(null)" style="cursor: pointer;">Action</a></li>
                                             <li><a class="dropdown-item" href="#">Another action</a></li>
                                             <li><hr class="dropdown-divider"></li>
                                             <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                            <li class="nav-item dropdown">
+                                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Dropdown
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-submenu" aria-labelledby="navbarDropdown" id="test2">
+                                                    <li><a class="dropdown-item" @onclick="() => Doit(null)" style="cursor: pointer;">Action</a></li>
+                                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                                </ul>
+                                            </li>
                                         </ul>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link disabled">Disabled</a>
                                     </li>
                                 </ul>
-                                <form class="d-flex">
-                                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                                    <button class="btn btn-outline-success" type="submit">Search</button>
-                                </form>
+                                <ul class="navbar-nav ms-auto">
+                                    <img src="/image/PI40_and_IDTA.png" height="35" alt="">
+                                </ul>
                             </div>
                         </div>
                     </nav>
                     -->
+                    
+                    <!--
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+                         <div class="container-fluid">
+ 	                         <a class="navbar-brand" href="#">Brand</a>
+                          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#main_nav"  aria-expanded="false" aria-label="Toggle navigation">
+                              <span class="navbar-toggler-icon"></span>
+                            </button>
+                          <div class="collapse navbar-collapse" id="main_nav">
+	
 
+	                        <ul class="navbar-nav">
+                                <li class="nav-item active"> <a class="nav-link" href="#">Home </a> </li>
+		                        <li class="nav-item"><a class="nav-link" href="#"> About </a></li>
+		                        <li class="nav-item dropdown">
+			                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">  Treeview menu  </a>
+		                            <ul class="dropdown-menu">
+			                            <li><a class="dropdown-item" href="#"> Dropdown item 1 </a></li>
+			                            <li><a class="dropdown-item" href="#"> Dropdown item 2 &raquo; </a>
+			  	                            <ul class="submenu dropdown-menu">
+				                            <li><a class="dropdown-item" href="#">Submenu item 1</a></li>
+				                            <li><a class="dropdown-item" href="#">Submenu item 2</a></li>
+				                            <li><a class="dropdown-item" href="#">Submenu item 3 &raquo; </a>
+				    	                        <ul class="submenu dropdown-menu">
+						                            <li><a class="dropdown-item" href="#">Multi level 1</a></li>
+						                            <li><a class="dropdown-item" href="#">Multi level 2</a></li>
+						                        </ul>
+				                            </li>
+				                            <li><a class="dropdown-item" href="#">Submenu item 4</a></li>
+				                            <li><a class="dropdown-item" href="#">Submenu item 5</a></li>
+				                            </ul>
+			                            </li>
+			                            <li><a class="dropdown-item" href="#"> Dropdown item 3 </a></li>
+                                        <li><a class="dropdown-item" href="#"> Dropdown item 4 </a></li>
+		                            </ul>
+		                        </li>
+                                </ul>
+
+                            </div> 
+                        </div> 
+                    </nav>
+                    -->
+                    
+                    <nav class="navbar navbar-expand navbar-dark bg-primary">
+                        <div class="container" style="margin-left: 10px">
+                            <a class="navbar-brand" href="#">
+                                <img src="/image/IDTA_AAS-Logo_Circle.png" height="35" width="35" alt="">
+                            </a>
+                            <div class="navbar-collapse w-100" id="navbarSupportedContent">
+                                <ul class="navbar-nav mb-2 mb-lg-0">
+                                    <DynamicMenuItem TopMenu="Session.MainMenu?.Menu"
+                                                     MenuItems="Session.MainMenu?.Menu"
+                                                     Depth="1"/>
+                                </ul>
+                                
+                                <ul class="navbar-nav ms-auto">
+                                    <img src="/image/PI40_and_IDTA.png" height="35" alt="">
+                                </ul>
+                                
+                            </div>
+                        </div>
+                    </nav>
+                    
                 </div>
             </div>
         }
@@ -537,6 +609,11 @@
             _showHeader = value; 
             StateHasChanged(); 
         } 
+    }
+
+    public void Doit(AasxMenuItemBase mi)
+    {
+        int a = 1;
     }
 
     // ---------

@@ -18,8 +18,33 @@ a, .btn-link {
     border-color: #1861ac;
 }
 
+.bg-primary {
+    background-color: #0028cd!important
+}
+
 .bg-secondary {
     background-color: #e53d01!important
+}
+
+/* every nav-link?? */
+/* .nav-link {
+    color: #ffffff !important;
+} */
+
+/* dropdown in top nav menu */
+.dropdown-toggle {
+    color: #ffffff !important;
+}
+
+.dropdown-menu {
+    margin: 2px;
+    list-style: none;
+    white-space: nowrap;
+    border: 2px solid black;
+    border-color: #999999;
+    color: black;
+    padding: 5px;
+    background-color: #f0f0f0;
 }
 
 app {
