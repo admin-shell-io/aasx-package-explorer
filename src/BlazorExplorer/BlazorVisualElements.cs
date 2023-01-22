@@ -123,7 +123,6 @@ namespace BlazorUI
             return false;
         }
 
-
         public void RebuildAasxElements(
             PackageCentral packages,
             PackageCentral.Selector selector,

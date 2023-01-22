@@ -177,7 +177,7 @@ namespace AnyUi
                                     int ndm = 2;
                                     if (ret is AnyUiLambdaActionNone)
                                         ndm = 0;
-                                    Program.signalNewData(ndm, s.sessionNumber, newLambdaAction: ret,
+                                    Program.signalNewData(Program.DataRedrawMode.SomeStructChange, s.sessionNumber, newLambdaAction: ret,
                                         onlyUpdateAasxPanel: true); // build new tree
                                 }
                                 break;
@@ -194,7 +194,7 @@ namespace AnyUi
                                     s.htmlDotnetEventIn = false;
                                     s.htmlDotnetEventInputs.Clear();
                                     s.htmlEventIn = true;
-                                    Program.signalNewData(1, s.sessionNumber,
+                                    Program.signalNewData(Program.DataRedrawMode.SomeStructChange, s.sessionNumber,
                                         onlyUpdateAasxPanel: true); // same tree, but structure may change
 
                                     while (!s.htmlEventOut) Task.Delay(1);
@@ -296,7 +296,7 @@ namespace AnyUi
                 found.htmlEventInputs.Add(caption);
                 found.htmlEventInputs.Add(buttons);
                 found.htmlEventIn = true;
-                Program.signalNewData(2, found.sessionNumber); // build new tree
+                Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, found.sessionNumber); // build new tree
 
                 while (!found.htmlEventOut) Task.Delay(1);
                 if (found.htmlEventOutputs.Count == 1)
@@ -348,7 +348,7 @@ namespace AnyUi
                 found.htmlEventInputs.Add(dialogueData);
 
                 found.htmlEventIn = true;
-                Program.signalNewData(2, found.sessionNumber); // build new tree
+                Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, found.sessionNumber); // build new tree
 
                 while (!found.htmlEventOut) Task.Delay(1);
                 if (dialogueData is AnyUiDialogueDataTextEditor ddte)

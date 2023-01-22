@@ -12,7 +12,9 @@ This source code may use other Open Source software components (see LICENSE.txt)
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using AasxIntegrationBase;
 using AasxPackageExplorer;
@@ -20,6 +22,7 @@ using AasxPackageLogic;
 using AasxPackageLogic.PackageCentral;
 using AdminShellNS;
 using AnyUi;
+using Extensions;
 using Microsoft.JSInterop;
 
 namespace BlazorUI.Data
@@ -29,7 +32,7 @@ namespace BlazorUI.Data
     /// A session holds almost all data a user concerns with, as multiple users/ roles might use the same
     /// server application.
     /// </summary>
-    public class BlazorSession : IDisposable
+    public partial class BlazorSession : IDisposable
     {
         /// <summary>
         /// Monotonous index to be counted upwards to generate SessionId
@@ -74,6 +77,18 @@ namespace BlazorUI.Data
         /// </summary>
         public int DividerTreeAndElement = 4;
 
+        /// <summary>
+        /// Session is in edit mode. This setting shall be controlled by the menu / hotkey/ script
+        /// functionality.
+        /// </summary>
+        public bool EditMode = false;
+
+        /// <summary>
+        /// Session is in edit mode. This setting shall be controlled by the menu / hotkey/ script
+        /// functionality.
+        /// </summary>
+        public bool HintMode = true;
+
         // old stuff, to be refactored
 
         public AdminShellPackageEnv env = null;
@@ -81,8 +96,6 @@ namespace BlazorUI.Data
 
         public string[] aasxFiles = new string[1];
         public string aasxFileSelected = "";
-        public bool editMode = false;
-        public bool hintMode = true;
         public PackageContainerListHttpRestRepository repository = null;
         public DispEditHelperEntities helper = null;
         public ModifyRepo repo = null;
@@ -124,6 +137,7 @@ namespace BlazorUI.Data
 
             // logical main menu
             var logicalMainMenu = ExplorerMenuFactory.CreateMainMenu();
+            logicalMainMenu.DefaultActionAsync = CommandBinding_GeneralDispatch;
 
             // top level children have other color
             logicalMainMenu.DefaultForeground = AnyUiColors.Black;
@@ -248,8 +262,8 @@ namespace BlazorUI.Data
             
             // some functionality still uses repo != null to detect editMode!!
             repo = new ModifyRepo();
-            helper.editMode = editMode;
-            helper.hintMode = hintMode;
+            helper.editMode = EditMode;
+            helper.hintMode = HintMode;
             helper.repo = repo;
             helper.context = null;
             helper.packages = PackageCentral;
@@ -258,7 +272,7 @@ namespace BlazorUI.Data
 
             if (env?.AasEnv?.AssetAdministrationShells != null)
                 helper.DisplayOrEditAasEntityAas(PackageCentral, env.AasEnv,
-                    env.AasEnv.AssetAdministrationShells[0], editMode, ElementPanel, hintMode: hintMode);
+                    env.AasEnv.AssetAdministrationShells[0], EditMode, ElementPanel, hintMode: HintMode);
 
             htmlDotnetThread = new Thread(AnyUiDisplayContextHtml.htmlDotnetLoop);
             htmlDotnetThread.Start();
@@ -462,7 +476,7 @@ namespace BlazorUI.Data
 
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
-                PackageCentral, PackageCentral.Selector.Main, this.editMode,
+                PackageCentral, PackageCentral.Selector.Main, this.EditMode,
                 lazyLoadingFirst: false);
 
             // ok .. try re-focus!!
@@ -480,12 +494,116 @@ namespace BlazorUI.Data
             }
 
             // display again
-            DisplayElements.Refresh();
+            DisplayElements.Refresh();            
 
 #if _log_times
             Log.Singleton.Info("Time 90 is: " + DateTime.Now.ToString("hh:mm:ss.fff"));
 #endif
         }
+
+        public void RedrawElementView(DispEditHighlight.HighlightFieldInfo hightlightField = null)
+        {
+            if (DisplayElements == null)
+                return;
+
+            //// the AAS will cause some more visual effects
+            //var tvlaas = DisplayElements.SelectedItem as VisualElementAdminShell;
+            //if (_packageCentral.MainAvailable && tvlaas != null && tvlaas.theAas != null && tvlaas.theEnv != null)
+            //{
+            //    // AAS
+            //    // update graphic left
+
+            //    // what is AAS specific?
+            //    this.AasId.Text = WpfStringAddWrapChars(
+            //        AdminShellUtil.EvalToNonNullString("{0}", tvlaas.theAas.Id, "<id missing!>"));
+
+            //    // what is asset specific?
+            //    this.AssetPic.Source = null;
+            //    this.AssetId.Text = "<id missing!>";
+            //    var asset = tvlaas.theAas.AssetInformation;
+            //    if (asset != null)
+            //    {
+
+            //        // text id
+            //        if (asset.GlobalAssetId != null)
+            //            this.AssetId.Text = WpfStringAddWrapChars(
+            //                AdminShellUtil.EvalToNonNullString("{0}", asset.GlobalAssetId.GetAsIdentifier()));
+
+            //        // asset thumbnail
+            //        try
+            //        {
+            //            // identify which stream to use..
+            //            if (_packageCentral.MainAvailable)
+            //                try
+            //                {
+            //                    using (var thumbStream = _packageCentral.Main.GetLocalThumbnailStream())
+            //                    {
+            //                        // load image
+            //                        if (thumbStream != null)
+            //                        {
+            //                            var bi = new BitmapImage();
+            //                            bi.BeginInit();
+
+            //                            // See https://stackoverflow.com/a/5346766/1600678
+            //                            bi.CacheOption = BitmapCacheOption.OnLoad;
+
+            //                            bi.StreamSource = thumbStream;
+            //                            bi.EndInit();
+            //                            this.AssetPic.Source = bi;
+            //                        }
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            //                }
+
+            //            if (this.theOnlineConnection != null && this.theOnlineConnection.IsValid() &&
+            //                this.theOnlineConnection.IsConnected())
+            //                try
+            //                {
+            //                    using (var thumbStream = this.theOnlineConnection.GetThumbnailStream())
+            //                    {
+            //                        if (thumbStream != null)
+            //                        {
+            //                            using (var ms = new MemoryStream())
+            //                            {
+            //                                thumbStream.CopyTo(ms);
+            //                                ms.Flush();
+            //                                var bitmapdata = ms.ToArray();
+
+            //                                var bi = (BitmapSource)new ImageSourceConverter().ConvertFrom(bitmapdata);
+            //                                this.AssetPic.Source = bi;
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            //                }
+
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            // no error, intended behaviour, as thumbnail might not exist / be faulty in some way
+            //            // (not violating the spec)
+            //            AdminShellNS.LogInternally.That.SilentlyIgnoredError(ex);
+            //        }
+            //    }
+            //}
+
+            //// for all, prepare the display
+            //PrepareDispEditEntity(
+            //    _packageCentral.Main,
+            //    DisplayElements.SelectedItems,
+            //     _mainMenu?.IsChecked("EditMenu") == true,
+            //     _mainMenu?.IsChecked("HintsMenu") == true,
+            //     _mainMenu?.IsChecked("ShowIriMenu") == true,
+            //    hightlightField: hightlightField);
+
+        }
+
 
         public void StartSession()
         {

@@ -481,8 +481,8 @@
                     // brutally remember some data
                     Session.renderJsRuntime = JSRuntime;
 
-                    Session.helper.editMode = Session.editMode;
-                    if (Session.editMode)
+                    Session.helper.editMode = Session.EditMode;
+                    if (Session.EditMode)
                     {
                         Session.helper.repo = Session.repo;
                     }
@@ -511,7 +511,7 @@
                     var common = Session.helper.DisplayOrEditCommonEntity(
                         Session.PackageCentral, 
                         Session.ElementPanel,
-                        superMenu, Session.editMode, Session.hintMode, 
+                        superMenu, Session.EditMode, Session.HintMode, 
                         tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None, 
                         SelectedNode);
 
@@ -905,7 +905,7 @@
         }
     }
 
-    int newDataMode = 0;
+    Program.DataRedrawMode newDataMode = 0;
 
     protected bool _onlyUpdatePluginUi = false;
 
@@ -914,15 +914,15 @@
         // update = true;
         if (args is Program.NewDataAvailableArgs ndm)
         {
-            if (ndm.signalSessionNumber == Session.SessionId)
+            if (ndm.SessionNumber == Session.SessionId)
             {
                 // state change for inner logic
                 if (newDataMode == 0)
                     // newDataMode = Program.getSignalNewDataMode();
-                    newDataMode = ndm.signalNewDataMode;
+                    newDataMode = ndm.RedrawMode;
 
                 // some events may affect
-                if (ndm.signalNewLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi lapu)
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionPluginUpdateAnyUi lapu)
                 {                    
                     if (!lapu.PluginName.HasContent())
                     {
@@ -938,18 +938,18 @@
                     _onlyUpdatePluginUi = true;
                 }
 
-                if (ndm.onlyUpdateAasxPanel)
+                if (ndm.OnlyUpdatePanel)
                     _onlyUpdatePluginUi = true;
 
-                if (ndm.signalNewLambdaAction is AnyUiLambdaActionRedrawAllElementsBase)
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawAllElementsBase)
                     // force the sticky update mode to false, because of total redraw
                     _onlyUpdatePluginUi = false;
 
-                if (ndm.signalNewLambdaAction is AnyUiLambdaActionRedrawEntity)
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionRedrawEntity)
                     // force the sticky update mode to false, because of redraw of entity
                     _onlyUpdatePluginUi = false;
 
-                if (ndm.signalNewPluginResultEvent is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
+                if (ndm.NewPluginResultEvent is AasxIntegrationBase.AasxPluginResultEventDisplayContentFile evtDispCont
                     && Session.renderJsRuntime != null
                     && evtDispCont.fn != null)
                 {
@@ -1013,12 +1013,12 @@
             switch (newDataMode)
             {
                 // 0 == same tree, only values changed
-                case 0:
+                case Program.DataRedrawMode.ValueChanged:
                     break;
                 // 1 == same tree, structure may change
                 // 2 == build new tree, keep open nodes
-                case 1:
-                case 2:
+                case Program.DataRedrawMode.SomeStructChange:
+                case Program.DataRedrawMode.RebuildTreeKeepOpen:
                     bool isSelected = selectedNode != null;
                     bool isExpanded = ExpandedNodes.Count != 0;
                     List<string>[] expandedNodesPath = new List<string>[ExpandedNodes.Count+1];
@@ -1050,7 +1050,7 @@
                     newDataMode = 0;
                     break;
                 // 3 == build new tree, all nodes closed
-                case 3:
+                case Program.DataRedrawMode.RebuildTreeAllClosed:
                     Session.RebuildTree();
                     //SubmodelService.buildTree(Session);
                     //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
@@ -1321,7 +1321,7 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
             {
                 ;
-                Program.signalNewData(2, Session.SessionId,
+                Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
                     new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true));
             }
 
@@ -1452,7 +1452,7 @@
                         // context.UpdateRenderElements(bi.stack17, update.Mode);
 
                         // pass on with data slightly modified data
-                        Program.signalNewData(2, Session.SessionId,
+                        Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
                             new AnyUiLambdaActionPluginUpdateAnyUi()
                             {
                                 PluginName = update.PluginName,

@@ -42,6 +42,9 @@ using ExhaustiveMatch = ExhaustiveMatching.ExhaustiveMatch;
 
 namespace AasxPackageExplorer
 {
+    /// <summary>
+    /// This partial class is the "root" partial class of MainWindow.
+    /// </summary>
     public partial class MainWindow : Window, IFlyoutProvider, IPushApplicationEvent
     {
         #region Dependencies

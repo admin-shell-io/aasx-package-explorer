@@ -89,9 +89,9 @@
                                                         Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
                                                         Session.env = Session.container.Env;
                                                         Session.aasxFileSelected = "";
-                                                        Session.editMode = false;
+                                                        Session.EditMode = false;
                                                         Session.thumbNail = null;
-                                                        Program.signalNewData(3, Session.SessionId);
+                                                        Program.signalNewData(Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId);
                                                     }
                                                 }
                                             }
@@ -116,7 +116,7 @@
                                 {
                                     <button @onclick="toggleEditMode">
                                         @{
-                                            if (Session.editMode)
+                                            if (Session.EditMode)
                                             {
                                                 <span>EditMode is ON</span>
                                             }
@@ -129,7 +129,7 @@
                                     @code {
                                         private void toggleEditMode()
                                         {
-                                            Session.editMode = !Session.editMode;
+                                            Session.EditMode = !Session.EditMode;
                                             this.StateHasChanged();
                                             Program.signalNewData(0, Session.SessionId);
                                         }
@@ -180,9 +180,9 @@
                                                             Session.container = PackageContainerFactory.GuessAndCreateFor(Session.PackageCentral, repoFile.InfoLocation, repoFile.InfoLocation, overrideLoadResident: true);
                                                             Session.env = Session.container.Env;
                                                             Session.aasxFileSelected = "";
-                                                            Session.editMode = false;
+                                                            Session.EditMode = false;
                                                             Session.thumbNail = null;
-                                                            Program.signalNewData(3, Session.SessionId);
+                                                            Program.signalNewData(Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId);
                                                         }
                                                     }
                                                 }

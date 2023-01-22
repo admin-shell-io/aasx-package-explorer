@@ -110,6 +110,13 @@
             // send of
             JsRuntime.InvokeVoidAsync("setNavBarItem", "nbi_dit_" + mii.Name, header);
         }
+
+        // in any case call the top menu
+        var ticket = new AasxMenuActionTicket()
+        {
+            MenuItem = mi
+        };
+        TopMenu?.ActivateAction(mi, ticket);
     }
 
 }

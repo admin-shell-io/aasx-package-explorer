@@ -27,11 +27,11 @@ namespace BlazorUI
         //
         // Private
         //
-        protected DoubleSidedDict<string, AasxMenuItem> _menuItems
-            = new DoubleSidedDict<string, AasxMenuItem>();
+        protected DoubleSidedDict<string, AasxMenuItemBase> _menuItems
+            = new DoubleSidedDict<string, AasxMenuItemBase>();
 
-        protected DoubleSidedDict<AasxMenuItem, object> _blazorItems
-            = new DoubleSidedDict<AasxMenuItem, object>();
+        protected DoubleSidedDict<AasxMenuItemBase, object> _blazorItems
+            = new DoubleSidedDict<AasxMenuItemBase, object>();
 
         public AasxMenu Menu { get => _menu; }
         private AasxMenu _menu = new AasxMenu();
@@ -80,6 +80,13 @@ namespace BlazorUI
             _menuItems.Clear();
             _blazorItems.Clear();
 
+            if (_menu == null)
+                return;
+
+            foreach (var mi in _menu.FindAll())
+                if (mi.Name.HasContent() && !_menuItems.Contains1(mi.Name.Trim().ToLower()))
+                    _menuItems.AddPair(mi.Name.Trim().ToLower(), mi);
+
             object kgConv = null; // new KeyGestureConverter();
 
             // RenderItemCollection(menuInfo, menuInfo, wpfMenu.Items, cmdBindings, inputBindings, kgConv);
@@ -87,10 +94,17 @@ namespace BlazorUI
 
         public bool IsChecked(string name)
         {
-            var wpf = _blazorItems.Get2OrDefault(_menuItems.Get2OrDefault(name?.Trim().ToLower()));
-            if (wpf != null)
-                return false; // wpf.IsChecked;
+            //var wpf = _blazorItems.Get2OrDefault(_menuItems.Get2OrDefault(name?.Trim().ToLower()));
+            //if (wpf != null)
+            //    return false; // wpf.IsChecked;
+            //return false;
+
+            // directly look up menu item and return *internal* state
+            var mi = _menuItems.Get2OrDefault(name?.Trim().ToLower());
+            if (mi is AasxMenuItem mii && mii.IsCheckable)
+                return mii.IsChecked;
             return false;
+
         }
 
         public void SetChecked(string name, bool state)
