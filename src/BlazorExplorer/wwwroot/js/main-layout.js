@@ -55,7 +55,7 @@ window.mainLayoutAttachHandlers = () => {
 // some more code to influence the existing menu
 
 window.setNavBarItem = (id, title) => {
-    alert("SetNavBarItem " + id + " = " + title);
+    // alert("SetNavBarItem " + id + " = " + title);
     var anchor_by_id = document.getElementById(id);
     if (anchor_by_id) {
         anchor_by_id.innerText = "" + title;

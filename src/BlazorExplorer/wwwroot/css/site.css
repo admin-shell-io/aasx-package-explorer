@@ -31,6 +31,25 @@ a, .btn-link {
     color: #ffffff !important;
 } */
 
+/* drop down items are always prepared to have an icon / checkbox */
+/* see: https://stackoverflow.com/questions/16554172/adding-icons-to-bootstrap-drop-down-menu-items
+   for inspiration
+*/
+.dropdown-item {
+    padding-left: 30px;
+    padding-top: 1px !important;
+    padding-bottom: 1px !important;
+}
+
+    .dropdown-item .dropdown-item-texticon {
+        position: absolute;
+        top: -0.18rem;
+        left: -1.6rem;
+        font-size: 1.3rem;
+        font-weight: 300;
+        color: #0028cd !important
+    }
+
 /* dropdown in top nav menu */
 .dropdown-toggle {
     color: #ffffff !important;

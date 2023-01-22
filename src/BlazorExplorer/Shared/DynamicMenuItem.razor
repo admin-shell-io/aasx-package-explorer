@@ -25,27 +25,37 @@
         // clean header
         var header = ("" + mii.Header).Replace("_", "");
 
-        // introduce check state
-        if (mii.IsCheckable)
-            header = String.Format("[{0}] {1}", (mii.IsChecked) ? "1" : "0", header);
-
-        // set element id
-        var elid = "nbi_" + mii.Name;
-
         if (mii.Childs == null || mii.Childs.Count < 1)
         {
             // normal item  
             if (Depth < 2)
             {
                 <li class="nav-item">
-                    <a class="nav-link active" id="@elid" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">@header</a>
+                    <a class="nav-link active" id="nbi_@(mii.Name)" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">
+                        @header
+                    </a>
                 </li>
             }
             else
             {
                 // child item, but normal
                 <li class="nav-item">
-                    <a class="dropdown-item" id="@elid" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">@header</a>
+                    <a class="dropdown-item" id="nbi_@(mii.Name)" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">
+                        <div style="position: relative">
+                            @if(mii.IsCheckable)
+                            {
+                                if (mii.IsChecked)
+                                {
+                                    <span class="dropdown-item-texticon" id="nbi_dit_@(mii.Name)">&#x2611;</span>
+                                }
+                                else
+                                {
+                                    <span class="dropdown-item-texticon">&#x2610;</span>
+                                }
+                            }                        
+                            @header
+                        </div>
+                    </a>
                 </li>
             }
         }
@@ -54,7 +64,10 @@
             // item with children
             var styleDD = new StylePile().Add("cursor", "pointer");
             if (Depth >= 2)
+            {
                 styleDD.Add("color", "black!important");
+                styleDD.Add("padding-left", "30px!important");
+            }
 
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" style="@styleDD" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -92,11 +105,10 @@
             mii.IsChecked = !mii.IsChecked;
 
             // prepare header again            
-            var header = ("" + mii.Header).Replace("_", "");
-            header = String.Format("[{0}] {1}", (mii.IsChecked) ? "1" : "0", header);
+            var header = (mii.IsChecked) ? "&#x2611;" : "&#x2610;";
 
             // send of
-            JsRuntime.InvokeVoidAsync("setNavBarItem", "nbi_" + mii.Name, header);
+            JsRuntime.InvokeVoidAsync("setNavBarItem", "nbi_dit_" + mii.Name, header);
         }
     }
 
