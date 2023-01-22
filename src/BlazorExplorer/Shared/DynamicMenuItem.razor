@@ -2,9 +2,15 @@
 @using MW.Blazor
 @using AasxIntegrationBase
 @using AnyUi
+@inject IJSRuntime JsRuntime
 
 @foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
 {
+    // not for Blazor?
+    if ((mi.Filter & AasxMenuFilter.Blazor) == 0)
+        continue;
+
+    // better overview
     if (mi is AasxMenuSeparator)
     {
         <li><hr class="dropdown-divider"></li>
@@ -16,20 +22,30 @@
     // visible items?
     if (mi is AasxMenuItem mii && !mii.Hidden)
     {
+        // clean header
+        var header = ("" + mii.Header).Replace("_", "");
+
+        // introduce check state
+        if (mii.IsCheckable)
+            header = String.Format("[{0}] {1}", (mii.IsChecked) ? "1" : "0", header);
+
+        // set element id
+        var elid = "nbi_" + mii.Name;
+
         if (mii.Childs == null || mii.Childs.Count < 1)
         {
-            // normal item
+            // normal item  
             if (Depth < 2)
             {
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" @onclick="() => Doit(mii)" style="cursor: pointer;">@mii.Header</a>
+                    <a class="nav-link active" id="@elid" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">@header</a>
                 </li>
             }
             else
             {
                 // child item, but normal
                 <li class="nav-item">
-                    <a class="dropdown-item" aria-current="page" @onclick="() => Doit(mii)" style="cursor: pointer;">@mii.Header</a>
+                    <a class="dropdown-item" id="@elid" aria-current="page" @onclick="() => ClickOnItem(mii)" style="cursor: pointer;">@header</a>
                 </li>
             }
         }
@@ -67,9 +83,21 @@
 
     [Parameter] public int Depth { get; set; }
 
-    public void Doit(AasxMenuItemBase mi)
+    public void ClickOnItem(AasxMenuItemBase mi)
     {
-        int a = 1;
+        // toggle menu item?
+        if (mi is AasxMenuItem mii && mii.IsCheckable)
+        {
+            // switch state
+            mii.IsChecked = !mii.IsChecked;
+
+            // prepare header again            
+            var header = ("" + mii.Header).Replace("_", "");
+            header = String.Format("[{0}] {1}", (mii.IsChecked) ? "1" : "0", header);
+
+            // send of
+            JsRuntime.InvokeVoidAsync("setNavBarItem", "nbi_" + mii.Name, header);
+        }
     }
 
 }

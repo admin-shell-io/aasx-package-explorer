@@ -700,7 +700,8 @@ namespace AasxPackageExplorer
             this.AssetId.Text = "<id unknown!>";
 
             // logical main menu
-            var logicalMainMenu = CreateMainMenu();
+            var logicalMainMenu = ExplorerMenuFactory.CreateMainMenu();
+            logicalMainMenu.DefaultActionAsync = CommandBinding_GeneralDispatch;
 
             // top level children have other color
             logicalMainMenu.DefaultForeground = AnyUiColors.Black;

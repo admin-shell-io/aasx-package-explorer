@@ -44,10 +44,20 @@ window.onclick = function (event) {
     }
 }
 
-window.attachHandlers = () => {
+window.mainLayoutAttachHandlers = () => {
     var elements = document.getElementsByClassName('dropdown-toggle');
     for (var i = 0; i < elements.length; i++) {
         // alert("Attach " + elements[i].id);
         elements[i].addEventListener("click", mainLayoutOpenDropDown, false);
+    }
+}
+
+// some more code to influence the existing menu
+
+window.setNavBarItem = (id, title) => {
+    alert("SetNavBarItem " + id + " = " + title);
+    var anchor_by_id = document.getElementById(id);
+    if (anchor_by_id) {
+        anchor_by_id.innerText = "" + title;
     }
 }

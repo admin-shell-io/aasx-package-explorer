@@ -29,9 +29,10 @@ namespace AasxIntegrationBase
     public enum AasxMenuFilter
     {
         None = 0x00,
-        WPF = 0x01, Blazor = 0x02, Toolkit = 0x04,
+        Wpf = 0x01, Blazor = 0x02, Toolkit = 0x04,
         WpfBlazor = 0x03,
-        All = 0x07
+        All = 0x07,
+        NotBlazor = 0x05
     }
 
     /// <summary>
@@ -200,6 +201,11 @@ namespace AasxIntegrationBase
         public string Name = "";
 
         /// <summary>
+        /// For which application is this menu item applicable.
+        /// </summary>
+        public AasxMenuFilter Filter = AasxMenuFilter.All;
+
+        /// <summary>
         /// List of argument definitions
         /// </summary>
         public AasxMenuListOfArgDefs ArgDefs = null;
@@ -260,11 +266,6 @@ namespace AasxIntegrationBase
     /// </summary>
     public class AasxMenuItem : AasxMenuItemHotkeyed
     {
-        /// <summary>
-        /// For which application is this menu item applicable.
-        /// </summary>
-        public AasxMenuFilter Filter = AasxMenuFilter.All;
-
         /// <summary>
         /// Displayed header in GUI based applications.
         /// </summary>
@@ -363,7 +364,7 @@ namespace AasxIntegrationBase
             string help = null,
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
-            AasxMenuFilter filter = AasxMenuFilter.WPF,
+            AasxMenuFilter filter = AasxMenuFilter.Wpf,
             string inputGesture = null,
             bool onlyDisplay = false,
             bool isCheckable = false, bool isChecked = false,
@@ -392,24 +393,30 @@ namespace AasxIntegrationBase
 
         public AasxMenu AddWpfBlazor(
             string name, string header,
+            string help = null,
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
             AasxMenuFilter filter = AasxMenuFilter.WpfBlazor,
             string inputGesture = null,
             bool onlyDisplay = false,
-            bool isCheckable = false, bool isChecked = false)
+            bool isCheckable = false, bool isChecked = false,
+            AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
+            AasxMenuListOfArgDefs args = null)
         {
             this.Add(new AasxMenuItem()
             {
                 Name = name,
                 Header = header,
+                HelpText = help,
                 Action = action,
                 ActionAsync = actionAsync,
                 Filter = filter,
                 InputGesture = inputGesture,
                 GestureOnlyDisplay = onlyDisplay,
                 IsCheckable = isCheckable,
-                IsChecked = isChecked
+                IsChecked = isChecked,
+                RequiredInfos = reqs,
+                ArgDefs = args
             });
             return this;
         }
@@ -443,7 +450,7 @@ namespace AasxIntegrationBase
             string help = null,
             AasxMenuActionDelegate action = null,
             AasxMenuActionAsyncDelegate actionAsync = null,
-            AasxMenuFilter filter = AasxMenuFilter.WPF,
+            AasxMenuFilter filter = AasxMenuFilter.Wpf,
             string inputGesture = null,
             AasxMenuArgReqInfo reqs = AasxMenuArgReqInfo.None,
             AasxMenuListOfArgDefs args = null)
@@ -464,9 +471,12 @@ namespace AasxIntegrationBase
         }
 
 
-        public AasxMenu AddSeparator()
+        public AasxMenu AddSeparator(AasxMenuFilter filter = AasxMenuFilter.WpfBlazor)
         {
-            this.Add(new AasxMenuSeparator());
+            this.Add(new AasxMenuSeparator()
+            {
+                Filter = filter
+            });
             return this;
         }
 
