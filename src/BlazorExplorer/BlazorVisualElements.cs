@@ -43,16 +43,20 @@ namespace BlazorUI
         private TreeViewLineCache _treeLineCache = null;
         private bool _lastEditMode = false;
 
+        private VisualElementGeneric selectedItem = null;
         public VisualElementGeneric SelectedItem
         {
             get
             {
-                ;                
-
-                return null;
+                return selectedItem;
+            }
+            set
+            {
+                selectedItem = value;
             }
         }
 
+        public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
 
         /// <summary>
         /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
@@ -133,6 +137,7 @@ namespace BlazorUI
         {
             // clear tree
             TreeItems.Clear();
+            SelectedItem = null;
             _lastEditMode = editMode;
 
             // valid?
@@ -186,7 +191,7 @@ namespace BlazorUI
 
             // select 1st
             if (TreeItems.Count > 0)
-                TreeItems[0].IsSelected = true;
+                SelectedItem = TreeItems[0];
         }
 
         /// <summary>
@@ -212,7 +217,41 @@ namespace BlazorUI
 
         public bool TrySelectVisualElement(VisualElementGeneric ve, bool? wishExpanded)
         {
-            return false;
+            // access?
+            if (ve == null)
+                return false;
+
+            // select (but no callback!)
+            SelectedItem = ve;
+
+            if (wishExpanded == true)
+            {
+                // go upward the tree in order to expand, as well
+                var sii = ve;
+                while (sii != null)
+                {
+                    if (!(ExpandedItems.Contains(sii)))
+                        ExpandedItems.Add(sii);
+                    sii = sii.Parent;
+                }
+            }
+            if (wishExpanded == false && ExpandedItems.Contains(ve))
+                ExpandedItems.Remove(ve);
+
+
+            // OK
+            return true;
+        }
+
+        public bool TrySelectMainDataObject(object dataObject, bool? wishExpanded)
+        {
+            // access?
+            var ve = SearchVisualElementOnMainDataObject(dataObject);
+            if (ve == null)
+                return false;
+
+            // select
+            return TrySelectVisualElement(ve, wishExpanded);
         }
 
         public void Refresh()

@@ -83,7 +83,7 @@ namespace BlazorUI.Data
                 // select last object
                 if (currMdo != null)
                 {
-                    // DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
+                    DisplayElements.TrySelectMainDataObject(currMdo, wishExpanded: true);
                 }
             }
         }

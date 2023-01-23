@@ -322,7 +322,7 @@
             <div style="margin:0px 2px 1px 1px">
                 <div class="row" style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; white-space: nowrap;position:sticky;padding:10px 2px 10px 2px">
                     <div class="col" style="white-space: nowrap">
-                        @updateVisibleTree(Items, selectedNode)
+                        @updateVisibleTree(Items, Session.DisplayElements.SelectedItem)
                         @* @if (Program.isLoading)
                             {<span style="color:white;background-color:blue;">Loading...</span>} *@
                         @if (Session.DisplayElements?.TreeItems == null
@@ -338,8 +338,8 @@
 						    <Tree TNode=VisualElementGeneric
                               Nodes="Session.DisplayElements.TreeItems"
                               ChildSelector="@(item => item.Members)"
-                              @bind-ExpandedNodes="ExpandedNodes"
-                              @bind-SelectedNode="SelectedNode"
+                              @bind-ExpandedNodes="Session.DisplayElements.ExpandedItems"
+                              @bind-SelectedNode="Session.DisplayElements.SelectedItem"
                               HasChildNodes="@(item => item.Members != null && item.Members.Count() > 0)">
 							    <TitleTemplate>
                                     @{
@@ -473,10 +473,11 @@
     <div class=@($"col-{11-Session.DividerTreeAndElement}") style="border-style:solid;border-color:#0028cd;border-radius:8px;border-width:2px; position:sticky;padding:10px;">
         <div class="sticky-top" style="margin-top:-16px; word-wrap: break-word; width: 100%; overflow: hidden">
             @{
-                if (selectedNode != null && selectedNode.GetMainDataObject() != null)
+                var sn = Session.DisplayElements.SelectedItem;
+                if (sn != null && sn.GetMainDataObject() != null)
                 {
                     // get business object
-                    var bo = selectedNode.GetMainDataObject();
+                    var bo = sn.GetMainDataObject();
 
                     // brutally remember some data
                     Session.renderJsRuntime = JSRuntime;
@@ -512,13 +513,13 @@
                         Session.PackageCentral, 
                         Session.ElementPanel,
                         superMenu, Session.EditMode, Session.HintMode, 
-                        tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None, 
-                        SelectedNode);
+                        tiCds?.CdSortOrder ?? VisualElementEnvironmentItem.ConceptDescSortOrder.None,
+                    Session.DisplayElements.SelectedItem);
 
                     if (!common)
                     {
                         // some special cases
-                        if (SelectedNode is VisualElementPluginExtension vepe)
+                        if (Session.DisplayElements.SelectedItem is VisualElementPluginExtension vepe)
                         {
                             //                            // Try to figure out plugin rendering approach (1=WPF, 2=AnyUI)
                             //                            var approach = 0;
@@ -757,29 +758,32 @@
 
     protected int _inhibitSelectNodeForPanel = 0;
 
-    IList<VisualElementGeneric> ExpandedNodes = new List<VisualElementGeneric>();
+    // IList<VisualElementGeneric> ExpandedNodes = new List<VisualElementGeneric>();
 
-    VisualElementGeneric selectedNode;
-    VisualElementGeneric SelectedNode
-    {
-        get { return selectedNode; }
-        set
-        {
-            // always remember
-            selectedNode = value;
+    // in this application: redirect SelectedNode to the DisplayElements class
+    // (because most of the user logic refers to it)
+    // VisualElementGeneric selectedNode;
+    
+    //VisualElementGeneric SelectedNode
+    //{
+    //    get { return Session.DisplayElements.SelectedItem; }
+    //    set
+    //    {
+    //        // always remember
+    //        Session.DisplayElements.SelectedItem = value;
 
-            // inhibited
-            if (_inhibitSelectNodeForPanel > 0)
-            {
-                _inhibitSelectNodeForPanel--;
-                return;
-            }
+    //        // inhibited
+    //        if (_inhibitSelectNodeForPanel > 0)
+    //        {
+    //            _inhibitSelectNodeForPanel--;
+    //            return;
+    //        }
 
-            // no? execute!
-            _onlyUpdatePluginUi = false;
-            // OnSelectNode(selectedNode);
-        }
-    }
+    //        // no? execute!
+    //        _onlyUpdatePluginUi = false;
+    //        // OnSelectNode(selectedNode);
+    //    }
+    //}
 
     //protectezd void SelectedNodeChanged(Item i)
     //{
@@ -1020,20 +1024,20 @@
                 case Program.DataRedrawMode.SomeStructChange:
                 case Program.DataRedrawMode.RebuildTreeKeepOpen:
                     bool isSelected = selectedNode != null;
-                    bool isExpanded = ExpandedNodes.Count != 0;
-                    List<string>[] expandedNodesPath = new List<string>[ExpandedNodes.Count+1];
+                    bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
+                    List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
                     List<string> selectedNodePath = getPath(selectedNode);
                     if (isExpanded)
                     {
-                        for (int j = 0; j < ExpandedNodes.Count; j++)
+                        for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
                         {
-                            expandedNodesPath[j] = getPath(ExpandedNodes[j]);
+                            expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
                         }
                     }
                     Session.RebuildTree();
                     //SubmodelService.buildTree(Session);
                     //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-                    ExpandedNodes.Clear();
+                    Session.DisplayElements.ExpandedItems.Clear();
                     selectedNode = null;
                     if (isSelected)
                     {
@@ -1045,7 +1049,8 @@
                         {
                             var p = findPath(path);
                             if (p != null)
-                                ExpandedNodes.Add(p);                 }
+                                Session.DisplayElements.ExpandedItems.Add(p);
+                        }
                     }
                     newDataMode = 0;
                     break;
@@ -1054,7 +1059,7 @@
                     Session.RebuildTree();
                     //SubmodelService.buildTree(Session);
                     //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-                    ExpandedNodes.Clear();
+                    Session.DisplayElements.ExpandedItems.Clear();
                     selectedNode = null;
                     newDataMode = 0;
                     break;
@@ -1062,7 +1067,7 @@
 
             // remember new (same?) selected node, but do not redraw pluging
             _inhibitSelectNodeForPanel += 1;
-            SelectedNode = selectedNode;
+            Session.DisplayElements.SelectedItem = selectedNode;
             // update = false;
             // updateNode(viewItems[0]);
         }
