@@ -26,6 +26,28 @@ a, .btn-link {
     background-color: #e53d01!important
 }
 
+/* Disable selection of text in browser
+   see: https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting */
+* {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.selectable-text {
+    -webkit-touch-callout: initial; /* iOS Safari */
+      -webkit-user-select: text; /* Safari */
+       -khtml-user-select: text; /* Konqueror HTML */
+         -moz-user-select: text; /* Old versions of Firefox */
+          -ms-user-select: text; /* Internet Explorer/Edge */
+              user-select: text; /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
 /* every nav-link?? */
 /* .nav-link {
     color: #ffffff !important;

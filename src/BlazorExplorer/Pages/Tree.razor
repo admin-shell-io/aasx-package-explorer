@@ -1,6 +1,6 @@
-﻿
-@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Web
 @using MW.Blazor
+@using BlazorUI.Data;
 
 @typeparam TNode
 
@@ -10,7 +10,7 @@
     {
         // var nodeExpanded = ExpandedNodes.Contains(node);
         var nodeExpanded = IsExpanded?.Invoke(node) == true;
-        var nodeSelected = node.Equals(SelectedNode);
+        var nodeSelected = IsSelected?.Invoke(node) == true;
         var hasChilds = HasChildNodes(node);
 
     <div>
@@ -42,6 +42,8 @@
                       Visible="nodeExpanded"
                       IsExpanded="IsExpanded"
                       SetExpanded="SetExpanded"
+                      IsSelected="IsSelected"
+                      NodeClicked="NodeClicked"
                       HasChildNodes="HasChildNodes" />
             }
         }
@@ -72,6 +74,8 @@
     [Parameter] public IList<TNode> ExpandedNodes { get; set; } = new List<TNode>();
     [Parameter] public EventCallback<IList<TNode>> ExpandedNodesChanged { get; set; }
 
+    [Parameter] public Action<TNode, BlazorInput.KeyboardModifiers> NodeClicked { get; set; }
+
     /// <summary>
     /// This action is called, then the expansion state (expanded, collapsed) of a node
     /// is being state. It corresponds to the presence of the node in the expanded nodes
@@ -95,6 +99,12 @@
     /// Sets the expansion state.
     /// </summary>
     [Parameter] public Action<TNode, bool> SetExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Evaluates, if the given node is currently selected or not.
+    /// Assumption: selected state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<TNode, bool> IsSelected { get; set; } = null;
 
     //private void OnToggleNode(TNode node, bool expand)
     //{
@@ -121,9 +131,12 @@
 
     private async void OnSelectNode(TNode node)
     {
-        var modi = await Layout.GetKeyboardModifiers();
+        var modi = BlazorUI.Data.BlazorInput.KeyboardModifiers.None;
+        if (true)
+            modi = await Layout.GetKeyboardModifiers();
 
         SelectedNode = node;
+        NodeClicked?.Invoke(node, modi);
         await SelectedNodeChanged.InvokeAsync(node);
     }
 

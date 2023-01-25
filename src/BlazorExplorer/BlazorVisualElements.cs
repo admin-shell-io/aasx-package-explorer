@@ -31,6 +31,7 @@ using Extensions;
 using AasxIntegrationBase;
 using AnyUi;
 using BlazorUI.Data;
+using System.Windows.Controls;
 
 namespace BlazorUI
 {
@@ -43,20 +44,41 @@ namespace BlazorUI
         private TreeViewLineCache _treeLineCache = null;
         private bool _lastEditMode = false;
 
-        private VisualElementGeneric selectedItem = null;
+        /// <summary>
+        /// If it boils down to one item, which is the selected item.
+        /// </summary>
         public VisualElementGeneric SelectedItem
         {
             get
             {
-                return selectedItem;
+                if (_selectedItems == null || _selectedItems.Count < 1)
+                    return null;
+                
+                return _selectedItems[0];
             }
             set
             {
-                selectedItem = value;
+                _selectedItems ??= new ListOfVisualElementBasic();
+                _selectedItems.Clear();
+                if (value != null)
+                    _selectedItems.Add(value);
             }
         }
+        // private VisualElementGeneric _selectedItem = null;
 
-        public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
+        /// <summary>
+        /// In case of multiple selected items, use this list.
+        /// </summary>
+        public ListOfVisualElementBasic SelectedItems
+        {
+            get
+            {
+                return _selectedItems;
+            }
+        }
+        private ListOfVisualElementBasic _selectedItems = new ListOfVisualElementBasic();
+
+        // public IList<VisualElementGeneric> ExpandedItems = new List<VisualElementGeneric>();
 
         /// <summary>
         /// Activates the caching of the "expanded" states of the tree, even if the tree is multiple
@@ -256,6 +278,18 @@ namespace BlazorUI
             return null;
         }
 
+        public void SelectSingleVisualElement(VisualElementGeneric ve, bool preventFireItem = false)
+        {
+            if (ve == null)
+                return;
+            ve.IsSelected = true;
+            _selectedItems.Clear();
+            _selectedItems.Add(ve);
+            //if (!preventFireItem)
+            //    FireSelectedItem();
+        }
+
+
         public bool TrySelectVisualElement(VisualElementGeneric ve, bool? wishExpanded)
         {
             // access?
@@ -263,7 +297,7 @@ namespace BlazorUI
                 return false;
 
             // select (but no callback!)
-            SelectedItem = ve;
+            SelectSingleVisualElement(ve, preventFireItem: true);
 
             if (wishExpanded == true)
             {
@@ -271,14 +305,15 @@ namespace BlazorUI
                 var sii = ve;
                 while (sii != null)
                 {
-                    if (!(ExpandedItems.Contains(sii)))
-                        ExpandedItems.Add(sii);
+                    //if (!(ExpandedItems.Contains(sii)))
+                    //    ExpandedItems.Add(sii);
+                    sii.IsExpanded = true;
                     sii = sii.Parent;
                 }
             }
-            if (wishExpanded == false && ExpandedItems.Contains(ve))
-                ExpandedItems.Remove(ve);
 
+            //if (wishExpanded == false && ExpandedItems.Contains(ve))
+            //    ExpandedItems.Remove(ve);
 
             // OK
             return true;
@@ -304,5 +339,87 @@ namespace BlazorUI
         //{
 
         //}
+
+        // this is bascially a copy from DiplayVisualAasxElements.xaml.cs
+        private void SetSelectedState(VisualElementGeneric ve, bool newState)
+        {
+            // ok?
+            if (ve == null)
+                return;
+
+            // new state?
+            if (newState)
+            {
+                ve.IsSelected = true;
+                if (!_selectedItems.Contains(ve))
+                    _selectedItems.Add(ve);
+            }
+            else
+            {
+                ve.IsSelected = false;
+                if (_selectedItems.Contains(ve))
+                    _selectedItems.Remove(ve);
+
+            }
+        }
+
+        // this is bascially a copy from DiplayVisualAasxElements.xaml.cs
+        public void NotifyTreeSelectionChanged(VisualElementGeneric ve, BlazorInput.KeyboardModifiers modi)
+        {
+            // trivial
+            if (ve == null)
+                return;
+
+            // the toggle action could be used multiple times
+            var toogleActiveItem = true;
+
+            // look at modifiers
+            if (modi == BlazorInput.KeyboardModifiers.Ctrl)
+            {
+                // keep internal list and (extenal) model in sync
+                _selectedItems.ForEach(item => item.IsSelected = true);
+            }
+            else
+            if (modi == BlazorInput.KeyboardModifiers.Shift)
+            {
+                // make sure active treeViewItem item is in
+                SetSelectedState(ve, true);
+
+                // try check if this gives a homogenous pictur
+                var nx = _selectedItems.GetIndexedParentInfo();
+                if (nx != null && nx.SharedParent?.Members != null)
+                {
+                    for (int i = nx.MinIndex; i <= nx.MaxIndex; i++)
+                        SetSelectedState(nx.SharedParent.Members[i], true);
+                }
+
+                toogleActiveItem = false;
+            }
+            else
+            {
+                // normal behaviour
+                // deselect all selected items (internal + external) except the current one
+                // add current
+                _selectedItems.ForEach(item => item.IsSelected = (item == ve));
+                _selectedItems.Clear();
+            }
+
+            // still toggle active?
+            if (toogleActiveItem)
+            {
+                SetSelectedState(ve, !_selectedItems.Contains(ve));
+                //if (!_selectedItems.Contains(ve))
+                //{
+                //    _selectedItems.Add(ve);
+                //    ve.IsSelected = true;
+                //}
+                //else
+                //{
+                //    // deselect if already selected
+                //    ve.IsSelected = false;
+                //    _selectedItems.Remove(ve);
+                //}
+            }
+        }
     }
 }

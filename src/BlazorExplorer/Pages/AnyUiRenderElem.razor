@@ -253,7 +253,7 @@
 
         if (stb.TextAsHyperlink)
         {
-            <a href="@stb.Text" style="@style">
+            <a href="@stb.Text" class="selectable-text" style="@style">
                 <!-- <MultiLineText InputString="@stb.Text"/> -->
                 <AnyUiRenderMultiText DisplayData="@DisplayData"
                                       Session="@Session"
@@ -263,7 +263,7 @@
         }
         else
         {
-            <span style="@style">
+            <span class="selectable-text" style="@style">
                 <!-- <MultiLineText InputString="@stb.Text" /> -->
                 <AnyUiRenderMultiText DisplayData="@DisplayData"
                                       Session="@Session"

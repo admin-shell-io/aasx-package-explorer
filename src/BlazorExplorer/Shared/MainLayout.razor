@@ -3,6 +3,7 @@
 @using AasxIntegrationBase
 @using AasxPackageLogic;
 @using AasxPackageLogic.PackageCentral;
+@using BlazorUI.Data;
 @inject IJSRuntime JsRuntime
 @inject BlazorUI.Data.BlazorSession Session
 
@@ -640,18 +641,12 @@
             }
         }
     }
-
-    public enum KeyboardModifiers { 
-        None = 0,
-        Shift = 1,
-        Ctrl = 2
-    }
-
-    public async Task<KeyboardModifiers> GetKeyboardModifiers()
+    
+    public async Task<BlazorInput.KeyboardModifiers> GetKeyboardModifiers()
     {
-        KeyboardModifiers res = KeyboardModifiers.None;
+        BlazorInput.KeyboardModifiers res = BlazorInput.KeyboardModifiers.None;
         int taskRes = await JsRuntime.InvokeAsync<int>("mainLayoutGetModifiers");
-        res = (KeyboardModifiers)taskRes;
+        res = (BlazorInput.KeyboardModifiers)taskRes;
         return res;
     }
 
@@ -664,5 +659,4 @@
             ExecuteMenuItem = itemName });
         return Task.FromResult(true);
     }
-
 }
