@@ -1,0 +1,173 @@
+﻿@startuml
+
+class Program
+{
+  + Options
+  + Prefs
+  void SignalNewData()
+  void Main()
+  void CreateHostBuilder()
+}
+note top
+  Singleton
+  Program start
+  Dispacting events to session.
+end note
+
+class Startup
+note top
+  Boiler plate code
+end note
+
+class "App.razor" as AppRazor <<Razor*>>
+
+class BlazorSession
+{
+  SessionId : int
+  PackageCentral : PackageCentral
+  ElementPanel : AnyUiStackPanel
+  EditMode : bool
+  HintMode : bool
+}
+note top
+  This is the top instance for 
+  holding session data.
+  Injected into razor pages.
+end note
+
+class BlazorVisualElements
+{
+  + TreeItems
+  + SelectedItem
+  + SelectedItems
+  RebuildAasxElements()
+  TrySelectVisualElement()
+}
+note top
+  Management of tree items
+end note
+
+class Index <<RazorPage>>
+note top
+  Main content page
+  Aim: View in MVVM
+end note
+
+package AnyUiHtml
+{
+  class AnyUiDisplayDataHtml
+  class AnyUiDisplayContextHtml
+}
+
+class MainLayout <<Layout>>
+note top
+  Blazor feature
+  Hosts pages as content
+  Provides Functions via 
+  CascadingParameter
+end note
+
+class Tree <<RazorComponent>>
+note top
+  Generic component to 
+  manage hierachical tree
+end note
+
+class MultiLineText <<RazorComponent>>
+
+class Modal <<RazorComponent>>
+note top
+  Generic display of 
+  modal contents
+end note
+
+class DynamicMenuItem <<RazorComponent>>
+note top
+  Rendering of AasxMenu items
+end note
+
+class "AnyUiRender*" as AnyUiRenderStar <<RazorComponent>>
+note top
+  Recursive rendering of AnyUi widgets
+end note
+
+class StylePile
+note top
+  Composing of style="..." strings
+  out of individual C# attributes
+end note
+
+class AasxMenuBlazor
+{
+  Menu: AasxMenu
+}
+
+Package wwwroot
+{
+  class "main-layout.js" as MainLayoutJs <<JavaScript>>
+  
+  class "blazor-modal.js" as BlazorModalJs <<JavaScript>>
+  
+  class "keyboard.js" as KeyboardJs <<JavaScript>>
+
+  class "treeStyle.css" as TreeStyleCss
+
+  class "site.css" as SiteCss
+  note bottom
+    General place for CSS 
+    definitions
+    overwriting some bootstrap
+    definitions  
+  end note
+
+}
+note bottom of wwwroot
+  Files here will be automatically served via HTTP
+end note
+
+Program *-- "1..n" BlazorSession
+
+BlazorSession *-- BlazorVisualElements : DisplayElements
+BlazorSession *-- AasxMenuBlazor : MainMenu
+
+Program --> Index : starts
+
+Program --> Startup : uses
+Startup --> AppRazor : defines routes
+
+AppRazor --> Index : routes
+
+Index --> BlazorSession : views
+Index --> MainLayout : uses
+Index --> Tree : uses
+Index --> MultiLineText : uses
+Index --> AnyUiRenderStar : uses
+
+AnyUiRenderStar --> BlazorSession : renders ElementPanel
+
+
+Tree --> BlazorVisualElements : renders
+
+class ToBeDone
+ToBeDone *-- AnyUiDisplayContextHtml : displayContext
+ToBeDone *-- AnyUiDisplayDataHtml: displayData
+
+Index --> ToBeDone : includes
+
+AnyUiRenderStar --> StylePile : uses
+Index --> StylePile : uses
+DynamicMenuItem--> StylePile : uses
+DynamicMenuItem--> SiteCss : uses
+DynamicMenuItem --> AasxMenuBlazor : renders
+
+MainLayout --> MainLayoutJs : uses
+MainLayout --> DynamicMenuItem : uses
+
+Index --> Modal
+Index --> BlazorModalJs
+
+MainLayout --> KeyboardJs
+
+StylePile <--> SiteCss : co-exists
+
+@enduml

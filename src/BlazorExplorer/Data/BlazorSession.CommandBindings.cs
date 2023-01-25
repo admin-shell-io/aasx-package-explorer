@@ -45,6 +45,15 @@ namespace BlazorUI.Data
 
             // change of edit field display
 
+            if (cmd == "editkey")
+                MainMenu?.SetChecked("EditMenu", MainMenu?.IsChecked("EditMenu") != true);
+
+            if (cmd == "hintskey")
+                MainMenu?.SetChecked("HintsMenu", MainMenu?.IsChecked("HintsMenu") != true);
+
+            if (cmd == "showirikey")
+                MainMenu?.SetChecked("ShowIriMenu", MainMenu?.IsChecked("ShowIriMenu") != true);
+
             if (cmd == "editmenu" || cmd == "editkey"
                 || cmd == "hintsmenu" || cmd == "hintskey"
                 || cmd == "showirimenu" || cmd == "showirikey")
@@ -76,7 +85,9 @@ namespace BlazorUI.Data
 
                 // signalNewData should be sufficient:
                 // this.StateHasChanged(); 
-                Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, this.SessionId);
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.RebuildTreeKeepOpen, this.SessionId));
 
                 // fake selection
                 // RedrawElementView();

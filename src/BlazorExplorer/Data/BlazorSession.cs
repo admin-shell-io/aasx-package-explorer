@@ -477,7 +477,7 @@ namespace BlazorUI.Data
             // rebuild middle section
             DisplayElements.RebuildAasxElements(
                 PackageCentral, PackageCentral.Selector.Main, this.EditMode,
-                lazyLoadingFirst: false);
+                lazyLoadingFirst: true);
 
             // ok .. try re-focus!!
             if (keepFocus)

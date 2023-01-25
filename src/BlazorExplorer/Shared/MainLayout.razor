@@ -91,7 +91,10 @@
                                                         Session.aasxFileSelected = "";
                                                         Session.EditMode = false;
                                                         Session.thumbNail = null;
-                                                        Program.signalNewData(Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId);
+                                                        Program.signalNewData(
+                                                            new Program.NewDataAvailableArgs(
+                                                                Program.DataRedrawMode.RebuildTreeAllClosed, 
+                                                                Session.SessionId));
                                                     }
                                                 }
                                             }
@@ -131,7 +134,9 @@
                                         {
                                             Session.EditMode = !Session.EditMode;
                                             this.StateHasChanged();
-                                            Program.signalNewData(0, Session.SessionId);
+                                            Program.signalNewData(
+                                                new Program.NewDataAvailableArgs(
+                                                    Program.DataRedrawMode.ValueChanged, Session.SessionId));
                                         }
                                     }
                                 }
@@ -182,7 +187,9 @@
                                                             Session.aasxFileSelected = "";
                                                             Session.EditMode = false;
                                                             Session.thumbNail = null;
-                                                            Program.signalNewData(Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId);
+                                                            Program.signalNewData(
+                                                                new Program.NewDataAvailableArgs(
+                                                                    Program.DataRedrawMode.RebuildTreeAllClosed, Session.SessionId));
                                                         }
                                                     }
                                                 }
@@ -623,7 +630,39 @@
         if (firstRender)
         {
             JsRuntime.InvokeVoidAsync("mainLayoutAttachHandlers");            
+            JsRuntime.InvokeVoidAsync("mainLayoutAttachKeyboard");
+
+            var hks = Session.MainMenu?.Menu?.PrepareJavaScriptHotkeys();
+            if (hks != null)
+            {
+                // https://stackoverflow.com/questions/68654640/passing-arrays-to-blazors-ijsruntime-invokeasync
+                JsRuntime.InvokeVoidAsync("mainLayoutSetHotkeys", new object[] { Session.SessionId, hks });
+            }
         }
+    }
+
+    public enum KeyboardModifiers { 
+        None = 0,
+        Shift = 1,
+        Ctrl = 2
+    }
+
+    public async Task<KeyboardModifiers> GetKeyboardModifiers()
+    {
+        KeyboardModifiers res = KeyboardModifiers.None;
+        int taskRes = await JsRuntime.InvokeAsync<int>("mainLayoutGetModifiers");
+        res = (KeyboardModifiers)taskRes;
+        return res;
+    }
+
+    [JSInvokable]
+    public static Task<bool> MainLayoutNetHandleKey(int sessionId, string itemName)
+    {
+        // var mi = Session.MainMenu?.Menu?.FindName(itemName);
+        Program.signalNewData(new Program.NewDataAvailableArgs() { 
+            SessionNumber = sessionId,
+            ExecuteMenuItem = itemName });
+        return Task.FromResult(true);
     }
 
 }

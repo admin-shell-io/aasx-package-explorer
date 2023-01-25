@@ -53,7 +53,7 @@ namespace AasxPackageExplorer
         // Public events and properties
         //
 
-        public int MultiSelect = 2;
+        public const int MultiSelect = 2;
 
         public event EventHandler SelectedItemChanged = null;
 
@@ -65,7 +65,7 @@ namespace AasxPackageExplorer
         {
             get
             {
-                if (this.MultiSelect != 2 || _selectedItems == null)
+                if (MultiSelect != 2 || _selectedItems == null)
                     return treeViewInner.SelectedItem as VisualElementGeneric;
 
                 // ok, only return definitve results
@@ -258,7 +258,7 @@ namespace AasxPackageExplorer
 
         private void TreeViewInner_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (this.MultiSelect == 1)
+            if (MultiSelect == 1)
                 return;
 
             if (sender != treeViewInner || preventSelectedItemChanged)
@@ -635,7 +635,7 @@ namespace AasxPackageExplorer
         // may kick off the selection of multiple items (referring to 2nd function)
         private void TreeViewInner_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             // If clicking on the + of the tree
@@ -653,7 +653,7 @@ namespace AasxPackageExplorer
         // Check done to avoid deselecting everything when clicking to drag
         private void TreeViewInner_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             if (_itemToCheck != null)
@@ -684,7 +684,7 @@ namespace AasxPackageExplorer
         // does the real multi select
         private void SelectedItemChangedHandler(TreeViewItem item)
         {
-            if (this.MultiSelect != 1)
+            if (MultiSelect != 1)
                 return;
 
             ITreeViewSelectable content = (ITreeViewSelectable)item.Header;

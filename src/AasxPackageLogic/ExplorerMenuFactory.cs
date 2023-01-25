@@ -57,7 +57,7 @@ namespace AasxPackageExplorer
                     help: "Open existing AASX package.",
                     args: new AasxMenuListOfArgDefs()
                         .Add("File", "Source filename including a path and extension."))
-                .AddWpfBlazor(name: "ConnectIntegrated", header: "Connect …", inputGesture: "Ctrl+Shift+O")
+                .AddWpfBlazor(name: "ConnectIntegrated", header: "Connect …", inputGesture: "Ctrl+Shift+I")
                 .AddWpfBlazor(name: "Save", header: "_Save", inputGesture: "Ctrl+S")
                 .AddWpfBlazor(name: "SaveAs", header: "_Save as …")
                 .AddWpfBlazor(name: "Close", header: "_Close …")
@@ -93,7 +93,7 @@ namespace AasxPackageExplorer
                 .AddWpfBlazor(name: "CloseAux", header: "Close Auxiliary AAS")
                 .AddSeparator()
                 .AddMenu(header: "Further connect options …", childs: (new AasxMenu())
-                    .AddWpfBlazor(name: "ConnectSecure", header: "Secure Connect …", inputGesture: "Ctrl+Shift+O")
+                    .AddWpfBlazor(name: "ConnectSecure", header: "Secure Connect …", inputGesture: "Ctrl+Shift+S")
                     .AddWpfBlazor(name: "ConnectOpcUa", header: "Connect via OPC-UA …")
                     .AddWpfBlazor(name: "ConnectRest", header: "Connect via REST …", inputGesture: "F6"))
                 .AddSeparator()

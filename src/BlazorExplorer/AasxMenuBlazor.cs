@@ -109,9 +109,11 @@ namespace BlazorUI
 
         public void SetChecked(string name, bool state)
         {
-            var wpf = _blazorItems.Get2OrDefault(_menuItems.Get2OrDefault(name?.Trim().ToLower()));
+            var mi = _menuItems.Get2OrDefault(name?.Trim().ToLower());
             //if (wpf != null)
             //    wpf.IsChecked = state;
+            if (mi is AasxMenuItem mii && mii.IsCheckable)
+                mii.IsChecked = state;
         }
     }
 }

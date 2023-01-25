@@ -2,7 +2,17 @@
 @using MW.Blazor
 @using AasxIntegrationBase
 @using AnyUi
+@using System.Globalization;
 @inject IJSRuntime JsRuntime
+
+
+@{
+    // calculate max width of visible items
+    var maxHeaderWidth = 5;
+    foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
+        if (mi is AasxMenuItem mii && !mii.Hidden)
+            maxHeaderWidth = Math.Max(maxHeaderWidth, ("" + mii.Header).Length);
+}
 
 @foreach (var mi in MenuItems ?? Enumerable.Empty<AasxMenuItemBase>())
 {
@@ -52,8 +62,13 @@
                                 {
                                     <span class="dropdown-item-texticon">&#x2610;</span>
                                 }
-                            }                        
-                            @header
+                            }
+                            <span style="display: inline-block; overflow: hidden; width: @((0.6*maxHeaderWidth).ToString(CultureInfo.InvariantCulture))rem; vertical-align:top">
+                                @header
+                            </span>
+                            <span style="display: inline-block; vertical-align:top">
+                                @("" + mii.InputGesture)
+                            </span>
                         </div>
                     </a>
                 </li>

@@ -202,7 +202,48 @@ namespace BlazorUI
         /// </summary>
         public void ExpandAllItems()
         {
+            if (TreeItems == null)
+                return;
 
+            // try execute, may take some time
+            try
+            {
+                // search (materialized)
+                var candidates = FindAllVisualElement((ve) => ve.NeedsLazyLoading).ToList();
+
+                // susequently approach
+                foreach (var ve in candidates)
+                    TreeItems.ExecuteLazyLoading(ve);
+            }
+            catch (Exception ex)
+            {
+                Log.Singleton.Error(ex, "when expanding all visual AASX elements");
+            }
+        }
+
+        //
+        // Element management
+        //
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement()
+        {
+            if (TreeItems != null)
+                foreach (var ve in TreeItems.FindAllVisualElement())
+                    yield return ve;
+        }
+
+        public IEnumerable<VisualElementGeneric> FindAllVisualElement(Predicate<VisualElementGeneric> p)
+        {
+            if (TreeItems != null)
+                foreach (var ve in TreeItems.FindAllVisualElement(p))
+                    yield return ve;
+        }
+
+        public bool Contains(VisualElementGeneric ve)
+        {
+            if (TreeItems != null)
+                return TreeItems.ContainsDeep(ve);
+            return false;
         }
 
         public VisualElementGeneric SearchVisualElementOnMainDataObject(object dataObject,
@@ -258,5 +299,10 @@ namespace BlazorUI
         {
             ;
         }
+
+        //public void NotifyExpansionState(VisualElementGeneric ve, bool expanded)
+        //{
+
+        //}
     }
 }

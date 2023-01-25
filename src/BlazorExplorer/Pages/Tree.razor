@@ -8,7 +8,8 @@
 
     @foreach (var node in Nodes ?? Enumerable.Empty<TNode>())
     {
-        var nodeExpanded = ExpandedNodes.Contains(node);
+        // var nodeExpanded = ExpandedNodes.Contains(node);
+        var nodeExpanded = IsExpanded?.Invoke(node) == true;
         var nodeSelected = node.Equals(SelectedNode);
         var hasChilds = HasChildNodes(node);
 
@@ -39,6 +40,8 @@
                       SelectedNode="SelectedNode"
                       SelectedNodeChanged="SelectedNodeChanged"
                       Visible="nodeExpanded"
+                      IsExpanded="IsExpanded"
+                      SetExpanded="SetExpanded"
                       HasChildNodes="HasChildNodes" />
             }
         }
@@ -49,6 +52,13 @@
 </div>
 
 @code {
+
+    // Gets a reference to the MainLayout component
+
+    [CascadingParameter]
+    public BlazorExplorer.Shared.MainLayout Layout { get; set; }
+
+    // Tree parameter
 
     [Parameter] public IEnumerable<TNode> Nodes { get; set; }
 
@@ -62,32 +72,59 @@
     [Parameter] public IList<TNode> ExpandedNodes { get; set; } = new List<TNode>();
     [Parameter] public EventCallback<IList<TNode>> ExpandedNodesChanged { get; set; }
 
+    /// <summary>
+    /// This action is called, then the expansion state (expanded, collapsed) of a node
+    /// is being state. It corresponds to the presence of the node in the expanded nodes
+    /// list.
+    /// </summary>
+    // [Parameter] public Action<TNode, bool> ExpansionStateChanged { get; set; }
+
     [Parameter] public TreeStyle Style { get; set; } = TreeStyle.Bootstrap;
 
     [Parameter] public bool Visible { get; set; } = true;
 
     [Parameter] public Func<TNode, bool> HasChildNodes { get; set; } = node => true;
 
+    /// <summary>
+    /// Evaluates, if the given node is currently expanded or not.
+    /// Assumption: expanded state is held in or nearby the nodes.
+    /// </summary>
+    [Parameter] public Func<TNode, bool> IsExpanded { get; set; } = null;
+
+    /// <summary>
+    /// Sets the expansion state.
+    /// </summary>
+    [Parameter] public Action<TNode, bool> SetExpanded { get; set; } = null;
+
+    //private void OnToggleNode(TNode node, bool expand)
+    //{
+    //    var expanded = ExpandedNodes.Contains(node);
+
+    //    if (expanded && !expand)
+    //    {
+    //        ExpandedNodes.Remove(node);
+    //        ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+    //        ExpansionStateChanged?.Invoke(node, false);
+    //    }
+    //    else if (!expanded && expand)
+    //    {
+    //        ExpandedNodes.Add(node);
+    //        ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
+    //        ExpansionStateChanged?.Invoke(node, true);
+    //    }
+    //}
+
     private void OnToggleNode(TNode node, bool expand)
     {
-        var expanded = ExpandedNodes.Contains(node);
-
-        if (expanded && !expand)
-        {
-            ExpandedNodes.Remove(node);
-            ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
-        }
-        else if (!expanded && expand)
-        {
-            ExpandedNodes.Add(node);
-            ExpandedNodesChanged.InvokeAsync(ExpandedNodes);
-        }
+        SetExpanded?.Invoke(node, expand);       
     }
 
-    private void OnSelectNode(TNode node)
+    private async void OnSelectNode(TNode node)
     {
+        var modi = await Layout.GetKeyboardModifiers();
+
         SelectedNode = node;
-        SelectedNodeChanged.InvokeAsync(node);
+        await SelectedNodeChanged.InvokeAsync(node);
     }
 
 }

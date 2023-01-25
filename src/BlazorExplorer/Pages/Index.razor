@@ -339,7 +339,9 @@
                               Nodes="Session.DisplayElements.TreeItems"
                               ChildSelector="@(item => item.Members)"
                               @bind-ExpandedNodes="Session.DisplayElements.ExpandedItems"
-                              @bind-SelectedNode="Session.DisplayElements.SelectedItem"
+                              @bind-SelectedNode="Session.DisplayElements.SelectedItem"                   
+                              IsExpanded="@(item => item.IsExpanded)"
+                              SetExpanded="@((item, state) => SetExpanded(Session.DisplayElements.TreeItems, item, state))"
                               HasChildNodes="@(item => item.Members != null && item.Members.Count() > 0)">
 							    <TitleTemplate>
                                     @{
@@ -358,9 +360,12 @@
                                         .Add("white-space", "nowrap")
                                         .Add("width", "30px")
                                         .Add("text-align", "center")
+                                        .Add("font-stretch", "30%")
                                         .SetSpecifics(forceNoWrap: true,
                                         padding: new AnyUiThickness(0,-2,0,-2),
-                                        fontSizeRel: StylePile.FontSizeRelToFit(context.TagString, normLen: 2),
+                                        borderThickness: new AnyUiThickness(0),
+                                        fontSizeRel: 0.8,
+                                        // fontSizeRel: StylePile.FontSizeRelToFit(context.TagString, normLen: 2),
 									    foreground: new AnyUiBrush(context?.TagFg ?? AnyUiColors.White),
                                         background: new AnyUiBrush(context?.TagBg ?? AnyUiColors.DarkBlue));
 
@@ -763,7 +768,7 @@
     // in this application: redirect SelectedNode to the DisplayElements class
     // (because most of the user logic refers to it)
     // VisualElementGeneric selectedNode;
-    
+
     //VisualElementGeneric SelectedNode
     //{
     //    get { return Session.DisplayElements.SelectedItem; }
@@ -909,7 +914,49 @@
         }
     }
 
-    Program.DataRedrawMode newDataMode = 0;
+    protected void SetExpanded(ListOfVisualElement items, VisualElementGeneric ve, bool state)
+    {
+        ve.IsExpanded = true;
+
+        try
+        {
+            items?.ExecuteLazyLoading(ve, state);
+        }
+        catch (Exception ex)
+        {
+            LogInternally.That.CompletelyIgnoredError(ex);
+        }
+    }
+
+    protected static Dictionary<string, string> _fourLetterSubst =
+        new System.Collections.Generic.Dictionary<string, string>()
+        {
+            { "asset", "Asst" },
+            { "range", "Rang" }
+            };
+
+    protected string FourLetterTag(string tag)
+    {
+        // known exceptions
+        if (tag == null)
+            return "    ";
+
+        var tll = tag.Trim().ToLower();
+        if (_fourLetterSubst.ContainsKey(tll))
+            return _fourLetterSubst[tll];
+
+        // simply cut
+        if (tag.Length > 4)
+            tag = tag.Substring(0, 4);
+
+        // pad
+        while (tag.Length < 4)
+            tag += " ";
+
+        return tag;
+    }
+
+    Program.DataRedrawMode newDataMode = Program.DataRedrawMode.None;
 
     protected bool _onlyUpdatePluginUi = false;
 
@@ -921,7 +968,7 @@
             if (ndm.SessionNumber == Session.SessionId)
             {
                 // state change for inner logic
-                if (newDataMode == 0)
+                if (newDataMode == Program.DataRedrawMode.ValueChanged)
                     // newDataMode = Program.getSignalNewDataMode();
                     newDataMode = ndm.RedrawMode;
 
@@ -940,6 +987,15 @@
 
                     // force the sticky update mode to true
                     _onlyUpdatePluginUi = true;
+                }
+                
+                if (ndm.ExecuteMenuItem?.HasContent() == true)
+                {
+                    var mi = Session?.MainMenu?.Menu?.FindName(ndm.ExecuteMenuItem);
+                    if (mi != null)
+                        Task.Run(async () =>
+                            await Session.MainMenu.Menu.ActivateAction(mi, new AasxMenuActionTicket()));
+                    return;
                 }
 
                 if (ndm.OnlyUpdatePanel)
@@ -962,6 +1018,17 @@
                         this.StateHasChanged();
                     });
                     return;
+                }
+
+                if (ndm.ExecuteLambdaAction is AnyUiLambdaActionPackCntChange lapcc)
+                {
+                    if (lapcc.Change?.Reason == PackCntChangeEventReason.MoveToIndex)
+                    {
+                        // if an index is moved within the tree, both the tree shall be re-drawn
+                        // and the panel shall be updated (because of index)
+                        Session.RedrawAllAasxElements(keepFocus: true);
+                        _onlyUpdatePluginUi = false;
+                    }
                 }
 
                 // re-create items
@@ -1014,62 +1081,62 @@
     {
         if (update && session != null && !session.htmlEventIn && !session.htmlEventOut)
         {
-            switch (newDataMode)
-            {
-                // 0 == same tree, only values changed
-                case Program.DataRedrawMode.ValueChanged:
-                    break;
-                // 1 == same tree, structure may change
-                // 2 == build new tree, keep open nodes
-                case Program.DataRedrawMode.SomeStructChange:
-                case Program.DataRedrawMode.RebuildTreeKeepOpen:
-                    bool isSelected = selectedNode != null;
-                    bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
-                    List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
-                    List<string> selectedNodePath = getPath(selectedNode);
-                    if (isExpanded)
-                    {
-                        for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
-                        {
-                            expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
-                        }
-                    }
-                    Session.RebuildTree();
-                    //SubmodelService.buildTree(Session);
-                    //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-                    Session.DisplayElements.ExpandedItems.Clear();
-                    selectedNode = null;
-                    if (isSelected)
-                    {
-                        selectedNode = findPath(selectedNodePath);
-                    }
-                    if (isExpanded)
-                    {
-                        foreach (var path in expandedNodesPath)
-                        {
-                            var p = findPath(path);
-                            if (p != null)
-                                Session.DisplayElements.ExpandedItems.Add(p);
-                        }
-                    }
-                    newDataMode = 0;
-                    break;
-                // 3 == build new tree, all nodes closed
-                case Program.DataRedrawMode.RebuildTreeAllClosed:
-                    Session.RebuildTree();
-                    //SubmodelService.buildTree(Session);
-                    //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
-                    Session.DisplayElements.ExpandedItems.Clear();
-                    selectedNode = null;
-                    newDataMode = 0;
-                    break;
-            }
+            //switch (newDataMode)
+            //{
+            //    // 0 == same tree, only values changed
+            //    case Program.DataRedrawMode.ValueChanged:
+            //        break;
+            //    // 1 == same tree, structure may change
+            //    // 2 == build new tree, keep open nodes
+            //    case Program.DataRedrawMode.SomeStructChange:
+            //    case Program.DataRedrawMode.RebuildTreeKeepOpen:
+            //        bool isSelected = selectedNode != null;
+            //        bool isExpanded = Session.DisplayElements.ExpandedItems.Count != 0;
+            //        List<string>[] expandedNodesPath = new List<string>[Session.DisplayElements.ExpandedItems.Count + 1];
+            //        List<string> selectedNodePath = getPath(selectedNode);
+            //        if (isExpanded)
+            //        {
+            //            for (int j = 0; j < Session.DisplayElements.ExpandedItems.Count; j++)
+            //            {
+            //                expandedNodesPath[j] = getPath(Session.DisplayElements.ExpandedItems[j]);
+            //            }
+            //        }
+            //        Session.RebuildTree();
+            //        //SubmodelService.buildTree(Session);
+            //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+            //        Session.DisplayElements.ExpandedItems.Clear();
+            //        selectedNode = null;
+            //        if (isSelected)
+            //        {
+            //            selectedNode = findPath(selectedNodePath);
+            //        }
+            //        if (isExpanded)
+            //        {
+            //            foreach (var path in expandedNodesPath)
+            //            {
+            //                var p = findPath(path);
+            //                if (p != null)
+            //                    Session.DisplayElements.ExpandedItems.Add(p);
+            //            }
+            //        }
+            //        newDataMode = 0;
+            //        break;
+            //    // 3 == build new tree, all nodes closed
+            //    case Program.DataRedrawMode.RebuildTreeAllClosed:
+            //        Session.RebuildTree();
+            //        //SubmodelService.buildTree(Session);
+            //        //Items = SubmodelService.GetTree(Session, selectedNode, ExpandedNodes);
+            //        Session.DisplayElements.ExpandedItems.Clear();
+            //        selectedNode = null;
+            //        newDataMode = 0;
+            //        break;
+            //}
 
-            // remember new (same?) selected node, but do not redraw pluging
-            _inhibitSelectNodeForPanel += 1;
-            Session.DisplayElements.SelectedItem = selectedNode;
-            // update = false;
-            // updateNode(viewItems[0]);
+            //// remember new (same?) selected node, but do not redraw pluging
+            //_inhibitSelectNodeForPanel += 1;
+            //Session.DisplayElements.SelectedItem = selectedNode;
+            //// update = false;
+            //// updateNode(viewItems[0]);
         }
         return "";
     }
@@ -1316,7 +1383,9 @@
                 this.StateHasChanged();
             });
 #else
-                Program.signalNewData(0, evSessionNr, newPluginResultEvent: evtDispCont);
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.ValueChanged, evSessionNr, newPluginResultEvent: evtDispCont));
 #endif
             }
 
@@ -1326,8 +1395,10 @@
             if (evt is AasxIntegrationBase.AasxPluginResultEventRedrawAllElements)
             {
                 ;
-                Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
-                    new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true));
+                Program.signalNewData(
+                    new Program.NewDataAvailableArgs(
+                        Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
+                        new AnyUiLambdaActionRedrawAllElements(nextFocus: null, isExpanded: true)));
             }
 
             // Select AAS entity
@@ -1349,8 +1420,10 @@
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
-                    Program.signalNewData(0, found.sessionNumber,
-                        onlyUpdateAasxPanel: true); // build new tree
+                    Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.ValueChanged, found.sessionNumber,
+                            onlyUpdatePanel: true)); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;
 
@@ -1396,8 +1469,10 @@
                     found.htmlEventInputs.Add(null); // required to pass check on receiver
 
                     // perform
-                    Program.signalNewData(0, found.sessionNumber,
-                        onlyUpdateAasxPanel: true); // build new tree
+                    Program.signalNewData(
+                        new Program.NewDataAvailableArgs(
+                            Program.DataRedrawMode.ValueChanged, found.sessionNumber,
+                            onlyUpdatePanel: true)); // build new tree
 
                     while (!found.htmlEventOut) Task.Delay(1) ;
 
@@ -1457,13 +1532,15 @@
                         // context.UpdateRenderElements(bi.stack17, update.Mode);
 
                         // pass on with data slightly modified data
-                        Program.signalNewData(Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
-                            new AnyUiLambdaActionPluginUpdateAnyUi()
-                            {
-                                PluginName = update.PluginName,
-                                UpdateMode = update.Mode,
-                                UseInnerGrid = update.UseInnerGrid
-                            });
+                        Program.signalNewData(
+                            new Program.NewDataAvailableArgs(
+                                Program.DataRedrawMode.RebuildTreeKeepOpen, Session.SessionId,
+                                new AnyUiLambdaActionPluginUpdateAnyUi()
+                                {
+                                    PluginName = update.PluginName,
+                                    UpdateMode = update.Mode,
+                                    UseInnerGrid = update.UseInnerGrid
+                                }));
                     }
                     else
                     if (update.Mode == AnyUiRenderMode.All)

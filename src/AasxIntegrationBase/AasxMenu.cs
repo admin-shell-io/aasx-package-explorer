@@ -560,6 +560,61 @@ namespace AasxIntegrationBase
             return FindAll((i) => i?.Name?.Trim().ToLower() == name?.Trim().ToLower())
                 .FirstOrDefault();
         }
+
+        //
+        // Special functions
+        //
+
+        public class JavaScriptHotkey
+        {
+            public string ItemName { get; set; }
+            public string Key { get; set; }
+            public bool IsShift { get; set; }
+            public bool IsCtrl { get; set; }
+            public bool IsAlt { get; set; }
+        }
+
+        public IList<JavaScriptHotkey> PrepareJavaScriptHotkeys()
+        {
+            var res = new List<JavaScriptHotkey>();
+            foreach (var mihk in FindAll<AasxMenuItemHotkeyed>())
+            {
+                // any at all?
+                if (mihk.InputGesture?.HasContent() != true || mihk.GestureOnlyDisplay)
+                    continue;
+
+                var jshk = new JavaScriptHotkey() { ItemName = mihk.Name };
+                var found = false;
+
+                // let '+' lead us
+                var parts = mihk.InputGesture.Split('+', StringSplitOptions.RemoveEmptyEntries);
+                for (int i=0;i<parts.Length; i++)
+                {
+                    var part = "" + parts[i].Trim();
+                    if (!part.HasContent())
+                        continue;
+                    if (part.Equals("Shift", StringComparison.InvariantCultureIgnoreCase))
+                        jshk.IsShift = true;
+                    else
+                    if (part.Equals("Ctrl", StringComparison.InvariantCultureIgnoreCase))
+                        jshk.IsCtrl = true;
+                    else
+                    if (part.Equals("Alt", StringComparison.InvariantCultureIgnoreCase))
+                        jshk.IsAlt = true;
+                    else
+                    if (i == (parts.Length - 1))
+                    {
+                        jshk.Key = part;
+                        found = true;
+                    }
+                }
+
+                // ok?
+                if (found)
+                    res.Add(jshk);
+            }
+            return res;
+        }
     }
 
     /// <summary>
